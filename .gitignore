@@ -1,3 +1,5 @@
 .venv
 .DS_Store
 .env
+test_llamaindex.py
+outputs.txt

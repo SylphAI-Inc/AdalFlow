@@ -791,13 +791,13 @@ query-tools = ["guidance (>=0.0.64,<0.0.65)", "jsonpath-ng (>=1.6.0,<2.0.0)", "l
 
 [[package]]
 name = "llama-index-embeddings-openai"
-version = "0.1.7"
+version = "0.1.8"
 description = "llama-index embeddings openai integration"
 optional = false
-python-versions = ">=3.8.1,<4.0"
+python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "llama_index_embeddings_openai-0.1.7-py3-none-any.whl", hash = "sha256:6023925ed1487b0688323d21711efbf8880e82ed3b87ef413255c3dc63a2f2fe"},
-    {file = "llama_index_embeddings_openai-0.1.7.tar.gz", hash = "sha256:c71cc9820680c4cedfc9845dc87b94f6851d1ccce1e486fc91298f8fa8d9f27d"},
+    {file = "llama_index_embeddings_openai-0.1.8-py3-none-any.whl", hash = "sha256:186be52c29a8c82a39ff6e033e3a61b9c5a17cf6177a5507abe4f5c79fea3a53"},
+    {file = "llama_index_embeddings_openai-0.1.8.tar.gz", hash = "sha256:aae4ce3ec2fe2cb604d944646982c71663a8b99ed5f8c370823ee82eef4ddd3b"},
 ]
 
 [package.dependencies]
@@ -859,13 +859,13 @@ query-tools = ["guidance (>=0.0.64,<0.0.65)", "jsonpath-ng (>=1.6.0,<2.0.0)", "l
 
 [[package]]
 name = "llama-index-llms-openai"
-version = "0.1.15"
+version = "0.1.16"
 description = "llama-index llms openai integration"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "llama_index_llms_openai-0.1.15-py3-none-any.whl", hash = "sha256:401ba9db1549e4287b73749dee57b11db1e0ffa814bb1464475aea1ff84442c7"},
-    {file = "llama_index_llms_openai-0.1.15.tar.gz", hash = "sha256:6bdbf307b1d43a9a7c2a52f72ba7db61cb96d904f99e7ea5d889dd7818f10814"},
+    {file = "llama_index_llms_openai-0.1.16-py3-none-any.whl", hash = "sha256:4a9c0fe969302731907c8fa31631812397637e114a44ebbad11fd6c59def9315"},
+    {file = "llama_index_llms_openai-0.1.16.tar.gz", hash = "sha256:313bbc17c241992430a6bf686a1b1edc4276c8256ad6b0550aa1bea1e0fed1a6"},
 ]
 
 [package.dependencies]
@@ -1212,13 +1212,13 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.23.1"
+version = "1.23.2"
 description = "The official Python library for the openai API"
 optional = false
 python-versions = ">=3.7.1"
 files = [
-    {file = "openai-1.23.1-py3-none-any.whl", hash = "sha256:7941c1bc6fcdb1b6b889dfcfabff775ca52558a79d57dd1b9e15b463de1b3a4c"},
-    {file = "openai-1.23.1.tar.gz", hash = "sha256:6df937e2a1ad64494951ea3614f5516db4d67c3fcc0b751b8e5edf1bc57e2d3d"},
+    {file = "openai-1.23.2-py3-none-any.whl", hash = "sha256:293a36effde29946eb221040c89c46a4850f2f2e30b37ef09ff6d75226d71b42"},
+    {file = "openai-1.23.2.tar.gz", hash = "sha256:b84aa3005357ceb38f22a269e0e22ee58ce103897f447032d021906f18178a8e"},
 ]
 
 [package.dependencies]

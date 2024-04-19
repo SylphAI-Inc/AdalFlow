@@ -21,6 +21,13 @@ import tiktoken
 
 
 from llama_index.core.node_parser import SentenceSplitter
+from llama_index.core.extractors import (
+    TitleExtractor,
+    QuestionsAnsweredExtractor,
+)
+from llama_index.core.node_parser import TokenTextSplitter
+from llama_index.core.ingestion import IngestionPipeline
+
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -31,7 +38,7 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 # TODO: visualize the data structures
 ##############################################
 class Document:
-    meta_data: dict
+    meta_data: dict  # can save data for filtering at retrieval time too
     text: str
     id: Optional[Union[str, UUID]] = (
         None  # if the file name is unique, its better to use it as id instead of UUID
@@ -82,7 +89,9 @@ class Chunk:
     id: Optional[Union[str, UUID]] = None
     estimated_num_tokens: Optional[int] = None
     score: Optional[float] = None  # used in retrieved output
-    meta_data: Optional[Dict] = None  # only when the above fields are not enough
+    meta_data: Optional[Dict] = (
+        None  # only when the above fields are not enough or be used for metadata filtering
+    )
 
     def __init__(
         self,
@@ -250,6 +259,22 @@ class RetrieverOutput:
 
     def __str__(self):
         return self.__repr__()
+
+
+class Generator(ABC):
+    name = "Generator"
+    input_variable = "query"
+    desc = "Takes in query + context and generates the answer"
+
+    def __init__(self, top_k: int = 3):
+        self.top_k = top_k
+
+    # def reset(self):
+    #     pass
+
+    @abstractmethod
+    def __call__(self, *args, **kwargs):
+        pass
 
 
 class FAISSRetriever(Retriever):

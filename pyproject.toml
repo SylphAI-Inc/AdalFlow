@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "1000 lines of code is all you need. Be light and be lightening fast."
 authors = ["Li Yin <li.yin.gravity@gmail.com>"]
 readme = "README.md"
-include = ["lightrag", "extend", "tests"]
+include = ["lightrag", "extend", "tests", "use_cases"]
 
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
