@@ -1,5 +1,5 @@
 # LightRAG
-1000 lines of code is all you need. No vendor, no framework, only the best practices of RAGs.
+1000 lines of code is all you need. No sales from vendors, lock-in to frameworks, only the best practices of RAGs. 
 
 # Structure
 - `lightrag/`: All core data structures, the core 1000 lines of code to cover the essence of a performant RAG.
