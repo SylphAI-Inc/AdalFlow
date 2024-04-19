@@ -9,19 +9,21 @@ multi-level of class inheritance.
 
 **Our principles:**
 
-We recognize that building RAG is highly complex and customized process and no framework can have that flexibility. 
-We seek to understand, not to establish. 
-We seek to be flexible, not to be rigid.
-We seek to be organized and clear, not to be complex and confusing.
-We seek to be open, with the open contribution from the community and research on the use cases, maybe we will come up a more established framework in the future. 
-We seek to learn from code, we dont read documentations which call very high level functions and classes. 
-If we cant understand from your code quickly and easily, you should not add it to the library.
+- We recognize that building RAG is highly complex and customized process and no framework can have that flexibility. 
+- We seek to understand, not to establish. 
+- We seek to be flexible, not to be rigid.
+- We seek to be organized and clear, not to be complex and confusing.
+- We seek to be open, with the open contribution from the community and research on the use cases, maybe we will come up a more established framework in the future. 
+- We seek to learn from code, we dont read documentations which call very high level functions and classes. 
+
+Note: If we cant understand from your code quickly and easily, you should not add it to the library.
 
 This is a new beginning, where all developers can come together, enjoy the learning and building, having fun and to build the best RAGs in the world.
 
 We stay neutral to all frameworks and all vendors, and we do not allow vendors to merge code without a clear articulate and a community vouch for their performance. And compare with other vendor or open-soure solutions.
 
 **Our oppinions:**
+
 We are very much oppionated but we ground our oppinions on RAG adapters, here are some of our unique oppinions:
 - LLM is "text-in-text-out" model, we will never use model provider's APIs that will manipulate our prompts. Two examples are: OpenAI's 'role', 'function call', 'json output mode'. The problem with this: our prompt can not be directly adapted to other LLM provider and we lose transparency and adding more uncontrollable variables to our system.
 - Generally, we put all `prompt` togehter instead of separating them into multiple strings or variables. We are able to do so with using `jinja2` templating engine, which can easily takes in variables and customize or adding comments in the whole prompt system.
