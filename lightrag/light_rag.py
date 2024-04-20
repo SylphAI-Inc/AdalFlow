@@ -148,7 +148,7 @@ class Tokenizer:
 # Write it as if you are writing a document
 # 1. we like to put all content of the prompt into a single jinja2 template, all in the system role
 # 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template
-# 3. system prompts section include: role, task desc, requirements, few-shot examples [This can be removed if you fine-tune the model]
+# 3. system prompts section include: role, task desc, requirements, few-shot examples [Requirements or few-shots can be removed if you fine-tune the model]
 # 4. user prompts section include: context, query. Answer is left blank.
 ##############################################
 QA_PROMPT = r"""
@@ -289,6 +289,105 @@ class RetrieverOutput:
         return self.__repr__()
 
 
+class FAISSRetriever(Retriever):
+    """
+    https://github.com/facebookresearch/faiss
+    The retriever uses in-memory Faiss index to retrieve the top k chunks
+    d: dimension of the vectors
+    xb: number of vectors to put in the index
+    xq: number of queries
+    The data type dtype must be float32.
+    Note: When the num of chunks are less than top_k, the last columns will be -1
+
+    Other index options:
+    - faiss.IndexFlatL2: L2 or Euclidean distance, [-inf, inf]
+    - faiss.IndexFlatIP: inner product of normalized vectors will be cosine similarity, [-1, 1]
+
+    We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability
+    """
+
+    name = "FAISSRetriever"
+
+    def __init__(
+        self,
+        top_k: int = 3,
+        d: int = 768,
+        chunks: Optional[List[Chunk]] = None,
+        vectorizer: Optional[Embedder] = None,
+    ):
+        self.d = d
+        self.index = faiss.IndexFlatIP(
+            d
+        )  # inner product of normalized vectors will be cosine similarity, [-1, 1]
+
+        self.vectorizer = vectorizer  # used to vectorize the queries
+        if chunks:
+            self.set_chunks(chunks)
+        super().__init__(top_k)
+
+    # def reset(self):
+    #     self.index.reset()
+    #     self.chunks = []
+
+    def set_chunks(self, chunks: List[Chunk]):
+        self.chunks = chunks
+        self.total_chunks = len(chunks)
+        embeddings = [chunk.vector for chunk in chunks]
+        xb = np.array(embeddings, dtype=np.float32)
+        self.index.add(xb)
+
+    def _convert_cosine_similarity_to_probability(self, D: np.ndarray) -> np.ndarray:
+        D = (D + 1) / 2
+        D = np.round(D, 3)
+        return D
+
+    def _to_retriever_output(
+        self, I: np.ndarray, D: np.ndarray
+    ) -> List[RetrieverOutput]:
+        output: List[RetrieverOutput] = []
+        # Step 1: Filter out the -1, -1 columns along with its scores when top_k > len(chunks)
+        if -1 in I:
+            valid_columns = ~np.any(I == -1, axis=0)
+
+            D = D[:, valid_columns]
+            I = I[:, valid_columns]
+        # Step 2: processing rows (one query at a time)
+        for row in zip(I, D):
+            indexes, distances = row
+            chunks: List[Chunk] = []
+            for index, distance in zip(indexes, distances):
+                chunk = deepcopy(self.chunks[index])
+                chunk.score = distance
+                chunks.append(chunk)
+
+            output.append(RetrieverOutput(chunks=chunks))
+
+        return output
+
+    def __call__(
+        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
+    ) -> List[RetrieverOutput]:
+        # if you pass a single query, you should access the first element of the list
+        if self.index.ntotal == 0:
+            raise ValueError(
+                "Index is empty. Please set the chunks to build the index from"
+            )
+        queries = (
+            [query_or_queries]
+            if isinstance(query_or_queries, str)
+            else query_or_queries
+        )
+        queries = [q for q in queries if q]  # Filter empty queries
+        queries_embeddings = self.vectorizer(queries).embeddings
+        xq = np.array(queries_embeddings, dtype=np.float32)
+        D, I = self.index.search(xq, top_k if top_k else self.top_k)
+        D = self._convert_cosine_similarity_to_probability(D)
+        retrieved_output = self._to_retriever_output(I, D)
+        for i, output in enumerate(retrieved_output):
+            output.query = queries[i]
+        return retrieved_output
+
+
 class Generator(ABC):
     name = "Generator"
     input_variable = "query"
@@ -329,9 +428,7 @@ class Generator(ABC):
 
 
 class OpenAIGenerator(Generator):
-    """
-    1. we often only use 'system' role for all our prompts and history. {"role": "system", "content": "You are a helpful assistant."},
-    """
+    name = "OpenAIGenerator"
 
     def __init__(self, provider: str, model: str, **kwargs):
         if "model" in kwargs:
@@ -407,106 +504,6 @@ class OpenAIGenerator(Generator):
         )
         response = self.parse_completion(completion)
         return response
-
-
-class FAISSRetriever(Retriever):
-    """
-    https://github.com/facebookresearch/faiss
-    The retriever uses in-memory Faiss index to retrieve the top k chunks
-    d: dimension of the vectors
-    xb: number of vectors to put in the index
-    xq: number of queries
-    The data type dtype must be float32.
-    Note: When the num of chunks are less than top_k, the last columns will be -1
-
-    Other index options:
-    - faiss.IndexFlatL2: L2 or Euclidean distance, [-inf, inf]
-    - faiss.IndexFlatIP: inner product of normalized vectors will be cosine similarity, [-1, 1]
-
-    We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability
-    """
-
-    name = "FAISSRetriever"
-
-    def __init__(
-        self,
-        top_k: int = 3,
-        d: int = 768,
-        chunks: Optional[List[Chunk]] = None,
-        vectorizer: Optional[Embedder] = None,
-    ):
-        self.d = d
-        self.index = faiss.IndexFlatIP(
-            d
-        )  # inner product of normalized vectors will be cosine similarity, [-1, 1]
-
-        self.vectorizer = vectorizer  # used to vectorize the queries
-        if chunks:
-            self.set_chunks(chunks)
-        super().__init__(top_k)
-
-    # def reset(self):
-    #     self.index.reset()
-    #     self.chunks = []
-
-    def set_chunks(self, chunks: List[Chunk]):
-        self.chunks = chunks
-        self.total_chunks = len(chunks)
-        embeddings = [chunk.vector for chunk in chunks]
-        xb = np.array(embeddings, dtype=np.float32)
-        self.index.add(xb)
-
-    def _convert_cosine_similarity_to_probability(self, D: np.ndarray) -> np.ndarray:
-        D = (D + 1) / 2
-        D = np.round(D, 3)
-        return D
-
-    def _to_retriever_output(
-        self, I: np.ndarray, D: np.ndarray
-    ) -> List[RetrieverOutput]:
-        output: List[RetrieverOutput] = []
-        # Step 1: Filter out the -1, -1 areas along with its scores
-        if -1 in I:
-            valid_columns = ~np.any(I == -1, axis=0)
-
-            # Filter out rows where the last two columns
-            D = D[:, valid_columns]
-            I = I[:, valid_columns]
-        # Step 2: processing rows (one query at a time)
-        for row in zip(I, D):
-            indexes, distances = row
-            chunks: List[Chunk] = []
-            for index, distance in zip(indexes, distances):
-                chunk = deepcopy(self.chunks[index])
-                chunk.score = distance
-                chunks.append(chunk)
-
-            output.append(RetrieverOutput(chunks=chunks))
-
-        return output
-
-    def __call__(
-        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
-    ) -> List[RetrieverOutput]:
-        # if you pass a single query, you should access the first element of the list
-        if self.index.ntotal == 0:
-            raise ValueError(
-                "Index is empty. Please set the chunks to build the index from"
-            )
-        queries = (
-            [query_or_queries]
-            if isinstance(query_or_queries, str)
-            else query_or_queries
-        )
-        queries = [q for q in queries if q]  # Filter empty queries
-        queries_embeddings = self.vectorizer(queries).embeddings
-        xq = np.array(queries_embeddings, dtype=np.float32)
-        D, I = self.index.search(xq, top_k if top_k else self.top_k)
-        D = self._convert_cosine_similarity_to_probability(D)
-        retrieved_output = self._to_retriever_output(I, D)
-        for i, output in enumerate(retrieved_output):
-            output.query = queries[i]
-        return retrieved_output
 
 
 ##############################################
@@ -726,7 +723,7 @@ if __name__ == "__main__":
             "provider": "openai",
             "model": "text-embedding-3-small",
             "batch_size": 100,
-            "embedding_size": 1536,
+            "embedding_size": 256,
             "encoding_format": "float",  # from the default float64
         },
         "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever

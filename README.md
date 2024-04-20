@@ -1,8 +1,8 @@
 # LightRAG
-1000 lines of code are all you need. No sales from vendors, no lock-in to frameworks, only the best practices of RAGs. 
+[1000 lines of code are all you need](https://github.com/Sylph-AI/LightRAG/blob/main/lightrag/light_rag.py). No sales from vendors, no lock-in to frameworks, only the best practices of RAGs. 
 
 ## What is LightRAG?
-We are not a framework. We do not want you to directly install the package. We want you to carefully decide to take modules and structures from here to build your own library and applications. This is a cookbook organized uniquely for easy understanding: you can read the 1000 lines of code to see a typical RAG end-to-end without jumping between files and going through multi-level class inheritance.
+We are not a framework. We do not want you to directly install the package. We want you to carefully decide to take modules and structures from here to build your own library and applications. This is a cookbook organized uniquely for easy understanding: you can read the 1000 lines of code to see a typical RAG end-to-end without jumping between files and going through multi-level class inheritance. If we build our system expanding from `light_rag.py`, we as a community will share the same RAG languages, and share other building blocks and use cases easily without depending on a complex framework.
 
 **Our principles:**
 
@@ -21,9 +21,9 @@ We stay neutral to all frameworks and all vendors, and we do not allow vendors t
 
 **Our opinions:**
 
-We are very opinionated but we ground our opinions on RAG adapters. Here are some of our unique opinions:
-- LLM is a "text-in-text-out" model, we will never use model provider's APIs that manipulate our prompts. Two examples are OpenAI's 'role', 'function call', 'json output mode'. The problem with this: our prompt cannot be directly adapted to other LLM providers and we lose transparency, adding more uncontrollable variables to our system.
-- Generally, we put all `prompts` together instead of separating them into multiple strings or variables. We are able to do so using the `jinja2` templating engine, which can easily take in variables and customize or add comments to the whole prompt system.
+We are very opinionated but we ground our opinions on best practices. Here are some of our unique opinions:
+- LLM is a "text-in-text-out" model, we will never use model provider's APIs that manipulate our input prompts and output text. Two examples are OpenAI's 'role', 'function call', 'json output mode'. The problem with this: our prompt cannot be directly adapted to other LLM providers and we lose transparency, adding more uncontrollable variables to our system.
+- Generally, we put all `prompts` together instead of separating them into multiple strings or variables. We are able to do so using the `jinja2` templating engine, which can easily take in variables and customize or add comments to the whole prompt.
 
 # Structure
 ## Foundation
