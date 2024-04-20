@@ -732,7 +732,7 @@ if __name__ == "__main__":
             "provider": "openai",
             "model": "text-embedding-3-small",
             "batch_size": 100,
-            "embedding_size": 256,
+            "embedding_size": 1536,
             "encoding_format": "float",  # from the default float64
         },
         "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever
@@ -754,8 +754,9 @@ if __name__ == "__main__":
     )
     doc2 = Document(
         meta_data={"title": "Interviewing Li Yin"},
-        text="Li Yin is an AI researcher, engineer and also a software developer"
-        + "lots of more nonsense text" * 1000,
+        text="lots of more nonsense text" * 500
+        + "Li Yin is a software developer and AI researcher"
+        + "lots of more nonsense text" * 500,
         id="doc2",
     )
     rag = RAG(settings=settings)
@@ -763,7 +764,7 @@ if __name__ == "__main__":
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
     # in this simple case, query expansion is not necessary, this is only for demonstration the list input of queries
-    # the anaswer will only be right if we each expended query has the right relevant chunk
+    # the anaswer will only be right if each expended query has the right relevant chunk as set top_k to 1
     expanded_queries = ["Li Yin's hobby", "Li Yin's profession"]
     outputs = rag.retrieve(expanded_queries)
     print(f"retrieved: {outputs}")
@@ -771,3 +772,5 @@ if __name__ == "__main__":
     response = rag.generate(query, context_str)
     print(f"response: {response}")
     # now try to set top_k to 2, and see if the answer is still correct
+    # or set chunk_size to 20, chunk_overlap to 10, and see if the answer is still correct
+    # you can try to fit all the context into the prompt, use long-context LLM.
