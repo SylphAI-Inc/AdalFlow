@@ -24,12 +24,6 @@ import tiktoken
 
 
 from llama_index.core.node_parser import SentenceSplitter
-from llama_index.core.extractors import (
-    TitleExtractor,
-    QuestionsAnsweredExtractor,
-)
-from llama_index.core.node_parser import TokenTextSplitter
-from llama_index.core.ingestion import IngestionPipeline
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
