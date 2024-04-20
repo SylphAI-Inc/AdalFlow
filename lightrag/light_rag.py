@@ -715,6 +715,7 @@ class RAG:
         messages = [
             {"role": "system", "content": system_prompt_content},
         ]
+        print(f"messages: {messages}")
         response = self.generator.sync_chat(messages)
         return response
 
