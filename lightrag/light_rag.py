@@ -5,8 +5,11 @@ import os
 import dotenv
 import numpy as np
 from abc import ABC, abstractmethod
+import jinja2
 
 import backoff
+from openai import OpenAI, AsyncOpenAI
+from openai.types.chat import ChatCompletion
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -22,6 +25,7 @@ import tiktoken
 
 from llama_index.core.node_parser import SentenceSplitter
 
+
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 
@@ -31,7 +35,7 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 # TODO: visualize the data structures
 ##############################################
 class Document:
-    meta_data: dict
+    meta_data: dict  # can save data for filtering at retrieval time too
     text: str
     id: Optional[Union[str, UUID]] = (
         None  # if the file name is unique, its better to use it as id instead of UUID
@@ -74,7 +78,9 @@ class Document:
 class Chunk:
     vector: List[float]
     text: str
-    order: Optional[int] = None  # order of the chunk in the document
+    order: Optional[int] = (
+        None  # order of the chunk in the document. Llama index uses RelatedNodeInfo which is an overkill
+    )
 
     doc_id: Optional[Union[str, UUID]] = (
         None  # id of the Document where the chunk is from
@@ -82,7 +88,9 @@ class Chunk:
     id: Optional[Union[str, UUID]] = None
     estimated_num_tokens: Optional[int] = None
     score: Optional[float] = None  # used in retrieved output
-    meta_data: Optional[Dict] = None  # only when the above fields are not enough
+    meta_data: Optional[Dict] = (
+        None  # only when the above fields are not enough or be used for metadata filtering
+    )
 
     def __init__(
         self,
@@ -133,12 +141,42 @@ class Tokenizer:
 
 
 ##############################################
+# Basic prompts example
+# load it with jinja2
+# {# #} is for comments
+# {{ }} is for variables
+# Write it as if you are writing a document
+# 1. we like to put all content of the prompt into a single jinja2 template, all in the system role
+# 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template
+# 3. system prompts section include: role, task desc, requirements, few-shot examples [This can be removed if you fine-tune the model]
+# 4. user prompts section include: context, query. Answer is left blank.
+##############################################
+QA_PROMPT = r"""
+    <START_OF_SYSTEM_PROMPT>
+    You are a helpful assistant. 
+
+    Your task is to answer the query that may or may not come with context information.
+    When context is provided, you should stick to the context and less on your prior knowledge to answer the query.
+    {# you can add requirements and few-shot examples here #}
+    <END_OF_SYSTEM_PROMPT>
+    <START_OF_USER_PROMPT>
+    Context information:
+    ---------------------
+    {{context_str}}
+    ---------------------
+    Query: {{query_str}}
+    Answer:
+    """
+
+
+##############################################
 # Key functional modules for RAG
 ##############################################
 class Embedder(ABC):
-    def __init__(self, provider: str, model: str):
+    def __init__(self, provider: str, model: str, **kwargs):
         self.provider = provider
         self.model = model
+        self.kwargs = kwargs
 
     @abstractmethod
     def __call__(self, queries: Union[str, List[str]]) -> Any:
@@ -162,12 +200,11 @@ class EmbedderOutput:
 
 class OpenAIEmbedder(Embedder):
     def __init__(self, provider: str, model: str, **kwargs):
-        super().__init__(provider, model)
+        super().__init__(provider, model, **kwargs)
         api_key = os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         self.client = OpenAI()
-        self.kwargs = kwargs
 
     @staticmethod
     def _process_text(text: str) -> str:
@@ -250,6 +287,126 @@ class RetrieverOutput:
 
     def __str__(self):
         return self.__repr__()
+
+
+class Generator(ABC):
+    name = "Generator"
+    input_variable = "query"
+    desc = "Takes in query + context and generates the answer"
+
+    def __init__(
+        self,
+        provider: str,
+        model: str,
+        **kwargs,
+    ):
+        self.provider = provider
+        self.model = model  # default model
+        self.kwargs = kwargs
+
+    @abstractmethod
+    def __call__(
+        self,
+        messages: List[Dict],
+        model: Optional[str],
+        **kwargs,  # such as stream, temperature, max_tokens, etc
+    ) -> Any:
+        """
+        You can wrap either sync or async method here
+        """
+        pass
+
+    def sync_chat(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+        """
+        overwrite the default model if provided here
+        """
+        pass
+
+    async def async_chat(
+        self, messages: List[Dict], model: Optional[str], **kwargs
+    ) -> Any:
+        pass
+
+
+class OpenAIGenerator(Generator):
+    """
+    1. we often only use 'system' role for all our prompts and history. {"role": "system", "content": "You are a helpful assistant."},
+    """
+
+    def __init__(self, provider: str, model: str, **kwargs):
+        if "model" in kwargs:
+            raise ValueError("model should be passed as a separate argument")
+
+        super().__init__(provider, model, **kwargs)
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("Environment variable OPENAI_API_KEY must be set")
+        self.sync_client = OpenAI()
+        self.async_client = None  # only initialize when needed
+
+    def combine_kwargs(self, **kwargs) -> Dict:
+        kwargs = {**self.kwargs}
+        kwargs["model"] = self.model
+        return kwargs
+
+    def parse_completion(self, completion: ChatCompletion) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        """
+        return completion.choices[0].message.content
+
+    def __call__(self, messages: List[Dict], model: Optional[str] = None, **kwargs):
+        return self.sync_chat(messages, model, **kwargs)
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+        ),
+        max_time=5,
+    )
+    def sync_chat(
+        self, messages: List[Dict], model: Optional[str] = None, **kwargs
+    ) -> str:
+        if model:  # overwrite the default model
+            self.model = model
+        combined_kwargs = self.combine_kwargs(**kwargs)
+        if not self.sync_client:
+            self.sync_client = OpenAI()
+        completion = self.sync_client.chat.completions.create(
+            messages=messages, **combined_kwargs
+        )
+        print(f"completion: {completion}")
+        response = self.parse_completion(completion)
+        return response
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+        ),
+        max_time=5,
+    )
+    async def async_chat(
+        self, messages: List[Dict], model: Optional[str] = None, **kwargs
+    ) -> str:
+        if model:
+            self.model = model
+
+        combined_kwargs = self.combine_kwargs(**kwargs)
+        if not self.async_client:
+            self.async_client = AsyncOpenAI()
+        completion = await self.async_client.chat.completions.create(
+            messages=messages, **combined_kwargs
+        )
+        response = self.parse_completion(completion)
+        return response
 
 
 class FAISSRetriever(Retriever):
@@ -398,6 +555,17 @@ class RAG:
                         d=vectorizer_settings["embedding_size"],
                         vectorizer=self.vectorizer,
                     )
+        # initialize generator
+        self.generator = None
+        if "generator" in self.settings:
+            generator_settings = self.settings["generator"]
+            if generator_settings["provider"] == "openai":
+                self.generator = OpenAIGenerator(
+                    # provider=generator_settings["provider"],
+                    # model=generator_settings["model"],
+                    **generator_settings,
+                )
+
         self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
 
     def set_settings(self, settings: dict):
@@ -423,6 +591,12 @@ class RAG:
             "retriever": {
                 "provider": "faiss",
                 "top_k": 5,
+            },
+            "generator": {
+                "provider": "openai",
+                "model": "gpt-3.5-turbo",
+                "temperature": 0.3,
+                "stream": False,
             },
         }
 
@@ -491,8 +665,57 @@ class RAG:
             return retrieved[0] if retrieved else None
         return retrieved
 
+    @staticmethod
+    def retriever_output_to_context_str(
+        retriever_output: Union[RetrieverOutput, List[RetrieverOutput]],
+        deduplicate: bool = False,
+    ) -> str:
+        """
+        How to combine your retrieved chunks into the context is highly dependent on your use case.
+        If you used query expansion, you might want to deduplicate the chunks.
+        """
+        chunks_to_use: List[Chunk] = []
+        context_str = ""
+        sep = " "
+        if isinstance(retriever_output, RetrieverOutput):
+            chunks_to_use = retriever_output.chunks
+        else:
+            for output in retriever_output:
+                chunks_to_use.extend(output.chunks)
+        if deduplicate:
+            unique_chunks_ids = set([chunk.id for chunk in chunks_to_use])
+            # id and if it is used, it will be True
+            used_chunk_in_context_str: Dict[Any, bool] = {
+                id: False for id in unique_chunks_ids
+            }
+            for chunk in chunks_to_use:
+                if not used_chunk_in_context_str[chunk.id]:
+                    context_str += sep + chunk.text
+                    used_chunk_in_context_str[chunk.id] = True
+        else:
+            context_str = sep.join([chunk.text for chunk in chunks_to_use])
+        return context_str
+
+    def generate(self, query: str, context: Optional[str] = None) -> Any:
+        if not self.generator:
+            raise ValueError("Generator is not set")
+
+        system_prompt_template = jinja2.Template(QA_PROMPT)
+        context_str = context if context else ""
+        query_str = query
+        system_prompt_content = system_prompt_template.render(
+            context_str=context_str, query_str=query_str
+        )
+        messages = [
+            {"role": "system", "content": system_prompt_content},
+        ]
+        print(f"messages: {messages}")
+        response = self.generator.sync_chat(messages)
+        return response
+
 
 if __name__ == "__main__":
+    # NOTE: for the ouput of this following code, check text_lightrag.txt
     settings = {
         "text_splitter": {
             "type": "sentence_splitter",
@@ -509,19 +732,39 @@ if __name__ == "__main__":
         "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever
         "retriever": {
             "provider": "faiss",
-            "top_k": 5,
+            "top_k": 1,
+        },
+        "generator": {
+            "provider": "openai",
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.3,
+            "stream": False,
         },
     }
     doc1 = Document(
-        meta_data={"title": "doc1"},
-        text="This is a test document This is the second sentence " * 100,
+        meta_data={"title": "Li Yin's profile"},
+        text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 1000,
         id="doc1",
     )
     doc2 = Document(
-        meta_data={"title": "doc2"}, text="This is another test document", id="doc2"
+        meta_data={"title": "Interviewing Li Yin"},
+        text="lots of more nonsense text" * 500
+        + "Li Yin is a software developer and AI researcher"
+        + "lots of more nonsense text" * 500,
+        id="doc2",
     )
     rag = RAG(settings=settings)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
-    outputs = rag.retrieve(["test", "second sentence"])
-    print(outputs)
+    query = "What is Li Yin's hobby and profession?"
+    # in this simple case, query expansion is not necessary, this is only for demonstration the list input of queries
+    # the anaswer will only be right if each expended query has the right relevant chunk as set top_k to 1
+    expanded_queries = ["Li Yin's hobby", "Li Yin's profession"]
+    outputs = rag.retrieve(expanded_queries)
+    print(f"retrieved: {outputs}")
+    context_str = rag.retriever_output_to_context_str(outputs)
+    response = rag.generate(query, context_str)
+    print(f"response: {response}")
+    # now try to set top_k to 2, and see if the answer is still correct
+    # or set chunk_size to 20, chunk_overlap to 10, and see if the answer is still correct
+    # you can try to fit all the context into the prompt, use long-context LLM.
