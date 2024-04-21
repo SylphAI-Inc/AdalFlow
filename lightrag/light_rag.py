@@ -147,8 +147,8 @@ class Tokenizer:
 # {{ }} is for variables
 # Write it as if you are writing a document
 # 1. we like to put all content of the prompt into a single jinja2 template, all in the system role
-# 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template
-# 3. system prompts section include: role, task desc, requirements, few-shot examples [This can be removed if you fine-tune the model]
+# 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template as User and You
+# 3. system prompts section include: role, task desc, requirements, few-shot examples [Requirements or few-shots can be removed if you fine-tune the model]
 # 4. user prompts section include: context, query. Answer is left blank.
 ##############################################
 QA_PROMPT = r"""
@@ -164,8 +164,8 @@ QA_PROMPT = r"""
     ---------------------
     {{context_str}}
     ---------------------
-    Query: {{query_str}}
-    Answer:
+    User: {{query_str}}
+    You:
     """
 
 
@@ -289,126 +289,6 @@ class RetrieverOutput:
         return self.__repr__()
 
 
-class Generator(ABC):
-    name = "Generator"
-    input_variable = "query"
-    desc = "Takes in query + context and generates the answer"
-
-    def __init__(
-        self,
-        provider: str,
-        model: str,
-        **kwargs,
-    ):
-        self.provider = provider
-        self.model = model  # default model
-        self.kwargs = kwargs
-
-    @abstractmethod
-    def __call__(
-        self,
-        messages: List[Dict],
-        model: Optional[str],
-        **kwargs,  # such as stream, temperature, max_tokens, etc
-    ) -> Any:
-        """
-        You can wrap either sync or async method here
-        """
-        pass
-
-    def sync_chat(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
-        """
-        overwrite the default model if provided here
-        """
-        pass
-
-    async def async_chat(
-        self, messages: List[Dict], model: Optional[str], **kwargs
-    ) -> Any:
-        pass
-
-
-class OpenAIGenerator(Generator):
-    """
-    1. we often only use 'system' role for all our prompts and history. {"role": "system", "content": "You are a helpful assistant."},
-    """
-
-    def __init__(self, provider: str, model: str, **kwargs):
-        if "model" in kwargs:
-            raise ValueError("model should be passed as a separate argument")
-
-        super().__init__(provider, model, **kwargs)
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        self.sync_client = OpenAI()
-        self.async_client = None  # only initialize when needed
-
-    def combine_kwargs(self, **kwargs) -> Dict:
-        kwargs = {**self.kwargs}
-        kwargs["model"] = self.model
-        return kwargs
-
-    def parse_completion(self, completion: ChatCompletion) -> str:
-        """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        """
-        return completion.choices[0].message.content
-
-    def __call__(self, messages: List[Dict], model: Optional[str] = None, **kwargs):
-        return self.sync_chat(messages, model, **kwargs)
-
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            APITimeoutError,
-            InternalServerError,
-            RateLimitError,
-            UnprocessableEntityError,
-        ),
-        max_time=5,
-    )
-    def sync_chat(
-        self, messages: List[Dict], model: Optional[str] = None, **kwargs
-    ) -> str:
-        if model:  # overwrite the default model
-            self.model = model
-        combined_kwargs = self.combine_kwargs(**kwargs)
-        if not self.sync_client:
-            self.sync_client = OpenAI()
-        completion = self.sync_client.chat.completions.create(
-            messages=messages, **combined_kwargs
-        )
-        print(f"completion: {completion}")
-        response = self.parse_completion(completion)
-        return response
-
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            APITimeoutError,
-            InternalServerError,
-            RateLimitError,
-            UnprocessableEntityError,
-        ),
-        max_time=5,
-    )
-    async def async_chat(
-        self, messages: List[Dict], model: Optional[str] = None, **kwargs
-    ) -> str:
-        if model:
-            self.model = model
-
-        combined_kwargs = self.combine_kwargs(**kwargs)
-        if not self.async_client:
-            self.async_client = AsyncOpenAI()
-        completion = await self.async_client.chat.completions.create(
-            messages=messages, **combined_kwargs
-        )
-        response = self.parse_completion(completion)
-        return response
-
-
 class FAISSRetriever(Retriever):
     """
     https://github.com/facebookresearch/faiss
@@ -465,11 +345,10 @@ class FAISSRetriever(Retriever):
         self, I: np.ndarray, D: np.ndarray
     ) -> List[RetrieverOutput]:
         output: List[RetrieverOutput] = []
-        # Step 1: Filter out the -1, -1 areas along with its scores
+        # Step 1: Filter out the -1, -1 columns along with its scores when top_k > len(chunks)
         if -1 in I:
             valid_columns = ~np.any(I == -1, axis=0)
 
-            # Filter out rows where the last two columns
             D = D[:, valid_columns]
             I = I[:, valid_columns]
         # Step 2: processing rows (one query at a time)
@@ -477,7 +356,7 @@ class FAISSRetriever(Retriever):
             indexes, distances = row
             chunks: List[Chunk] = []
             for index, distance in zip(indexes, distances):
-                chunk = deepcopy(self.chunks[index])
+                chunk: Chunk = deepcopy(self.chunks[index])
                 chunk.score = distance
                 chunks.append(chunk)
 
@@ -507,6 +386,120 @@ class FAISSRetriever(Retriever):
         for i, output in enumerate(retrieved_output):
             output.query = queries[i]
         return retrieved_output
+
+
+class Generator(ABC):
+    name = "Generator"
+    input_variable = "query"
+    desc = "Takes in query + context and generates the answer"
+
+    def __init__(
+        self,
+        provider: str,
+        model: str,
+        **kwargs,
+    ):
+        self.provider = provider
+        self.model = model  # default model
+        self.kwargs = kwargs
+
+    @abstractmethod
+    def __call__(
+        self,
+        messages: List[Dict],
+        model: Optional[str],
+        **kwargs,  # such as stream, temperature, max_tokens, etc
+    ) -> Any:
+        """
+        You can wrap either sync or async method here
+        """
+        pass
+
+    def call(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+        """
+        overwrite the default model if provided here
+        """
+        pass
+
+    async def acall(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+        pass
+
+
+class OpenAIGenerator(Generator):
+    name = "OpenAIGenerator"
+
+    def __init__(self, provider: str, model: str, **kwargs):
+        if "model" in kwargs:
+            raise ValueError("model should be passed as a separate argument")
+
+        super().__init__(provider, model, **kwargs)
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("Environment variable OPENAI_API_KEY must be set")
+        self.sync_client = OpenAI()
+        self.async_client = None  # only initialize when needed
+
+    def combine_kwargs(self, **kwargs) -> Dict:
+        kwargs = {**self.kwargs}
+        kwargs["model"] = self.model
+        return kwargs
+
+    def parse_completion(self, completion: ChatCompletion) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        """
+        return completion.choices[0].message.content
+
+    def __call__(self, messages: List[Dict], model: Optional[str] = None, **kwargs):
+        return self.call(messages, model, **kwargs)
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+        ),
+        max_time=5,
+    )
+    def call(self, messages: List[Dict], model: Optional[str] = None, **kwargs) -> str:
+        if model:  # overwrite the default model
+            self.model = model
+        combined_kwargs = self.combine_kwargs(**kwargs)
+        if not self.sync_client:
+            self.sync_client = OpenAI()
+        completion = self.sync_client.chat.completions.create(
+            messages=messages, **combined_kwargs
+        )
+        print(f"completion: {completion}")
+        response = self.parse_completion(completion)
+        return response
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+        ),
+        max_time=5,
+    )
+    async def acall(
+        self, messages: List[Dict], model: Optional[str] = None, **kwargs
+    ) -> str:
+        if model:
+            self.model = model
+
+        combined_kwargs = self.combine_kwargs(**kwargs)
+        if not self.async_client:
+            self.async_client = AsyncOpenAI()
+        completion = await self.async_client.chat.completions.create(
+            messages=messages, **combined_kwargs
+        )
+        response = self.parse_completion(completion)
+        return response
 
 
 ##############################################
@@ -710,7 +703,7 @@ class RAG:
             {"role": "system", "content": system_prompt_content},
         ]
         print(f"messages: {messages}")
-        response = self.generator.sync_chat(messages)
+        response = self.generator.chat(messages)
         return response
 
 
@@ -726,7 +719,7 @@ if __name__ == "__main__":
             "provider": "openai",
             "model": "text-embedding-3-small",
             "batch_size": 100,
-            "embedding_size": 1536,
+            "embedding_size": 256,
             "encoding_format": "float",  # from the default float64
         },
         "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever
