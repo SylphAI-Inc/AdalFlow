@@ -147,7 +147,7 @@ class Tokenizer:
 # {{ }} is for variables
 # Write it as if you are writing a document
 # 1. we like to put all content of the prompt into a single jinja2 template, all in the system role
-# 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template
+# 2. Even though the whole prompt is a system role, we differentiate our own system and user prompt in the template as User and You
 # 3. system prompts section include: role, task desc, requirements, few-shot examples [Requirements or few-shots can be removed if you fine-tune the model]
 # 4. user prompts section include: context, query. Answer is left blank.
 ##############################################
@@ -164,8 +164,8 @@ QA_PROMPT = r"""
     ---------------------
     {{context_str}}
     ---------------------
-    Query: {{query_str}}
-    Answer:
+    User: {{query_str}}
+    You:
     """
 
 
@@ -356,7 +356,7 @@ class FAISSRetriever(Retriever):
             indexes, distances = row
             chunks: List[Chunk] = []
             for index, distance in zip(indexes, distances):
-                chunk = deepcopy(self.chunks[index])
+                chunk: Chunk = deepcopy(self.chunks[index])
                 chunk.score = distance
                 chunks.append(chunk)
 
@@ -415,15 +415,13 @@ class Generator(ABC):
         """
         pass
 
-    def sync_chat(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+    def call(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
         """
         overwrite the default model if provided here
         """
         pass
 
-    async def async_chat(
-        self, messages: List[Dict], model: Optional[str], **kwargs
-    ) -> Any:
+    async def acall(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
         pass
 
 
@@ -453,7 +451,7 @@ class OpenAIGenerator(Generator):
         return completion.choices[0].message.content
 
     def __call__(self, messages: List[Dict], model: Optional[str] = None, **kwargs):
-        return self.sync_chat(messages, model, **kwargs)
+        return self.call(messages, model, **kwargs)
 
     @backoff.on_exception(
         backoff.expo,
@@ -465,9 +463,7 @@ class OpenAIGenerator(Generator):
         ),
         max_time=5,
     )
-    def sync_chat(
-        self, messages: List[Dict], model: Optional[str] = None, **kwargs
-    ) -> str:
+    def call(self, messages: List[Dict], model: Optional[str] = None, **kwargs) -> str:
         if model:  # overwrite the default model
             self.model = model
         combined_kwargs = self.combine_kwargs(**kwargs)
@@ -490,7 +486,7 @@ class OpenAIGenerator(Generator):
         ),
         max_time=5,
     )
-    async def async_chat(
+    async def acall(
         self, messages: List[Dict], model: Optional[str] = None, **kwargs
     ) -> str:
         if model:
@@ -707,7 +703,7 @@ class RAG:
             {"role": "system", "content": system_prompt_content},
         ]
         print(f"messages: {messages}")
-        response = self.generator.sync_chat(messages)
+        response = self.generator.chat(messages)
         return response
 
 
