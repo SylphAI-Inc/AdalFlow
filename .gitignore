@@ -6,4 +6,5 @@ outputs.txt
 lightrag/__pycache__
 extend/*/__pycache__
 extend/__pycache__
+tests/__pycache__
 test_li.py

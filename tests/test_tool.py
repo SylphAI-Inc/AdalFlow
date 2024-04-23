@@ -1,5 +1,5 @@
 import pytest
-from extend.tools.tool import FunctionTool, ToolMetadata, ToolOutput
+from lightrag.tool import FunctionTool, ToolMetadata, ToolOutput
 
 from pydantic import BaseModel
 

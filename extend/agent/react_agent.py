@@ -15,13 +15,12 @@ The initial ReAct paper does not support different types of tools. REact agent c
 """
 
 from jinja2 import Template
-from extend.tools.tool import FunctionTool, AsyncCallable, ToolMetadata
-from lightrag.light_rag import OpenAIGenerator
+from lightrag.tool import FunctionTool, AsyncCallable, ToolMetadata
+from lightrag.string_parser import BaseTextParser, JsonParser
 from typing import List, Union, Callable, Optional, Any
 from dataclasses import dataclass
 import re
 from lightrag.light_rag import Generator
-from extend.generator.groq_generator import GroqGenerator
 
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
@@ -49,15 +48,17 @@ Your output should be in json format with two keys:
 {# Specifications #}
 Remember:
 - <step> starts at 1 and increments by 1 for each step.
-- Action must call one of the above tools with Took Name
+- Action must call one of the above tools with Took Name. It can not be empty. 
+- Use Finish() to finish the task.
 - arg1, arg2, ... are the arguments to the tool.
 - Only use positional arguments, no keyword arguments. e.g. Finish(...), not Finish(answer=...).
+- Finish(answer) to finish the task. Answer can be either the final answer or any message even if its an error message.
 {#Examples can be here#}
 <END_OF_SYSTEAM_PROMPT>
-<START_OF_USER_PROMPT>
+-----------------
 User: {{user_query}}
 {# History #}
-Your previous Thought, Action, and Observation steps:
+Your previous Thought, Action, and Observation steps if exists:
 {% for history in histories %}
 Thought {{history.step}}: {{history.thought}}
 Action {{history.step}}: {{history.action}}
@@ -114,40 +115,24 @@ class ReActAgent:
         self.generator = generator
         self.max_steps = max_steps
         self.history: List[StepOutput] = []
+        self.text_output_parser = JsonParser()
 
     def reset(self):
         self.history = []
 
-    @staticmethod
-    def _parse_response(response: str, step: int) -> Optional[StepOutput]:
+    def _parse_text_response(self, response: str, step: int) -> Optional[StepOutput]:
         """
-        Parses a structured text response into a StepOutput object for a specific step without observation.
-
-        Args:
-            response (str): The complete response text containing multiple steps.
-            step (int): The specific step number to extract.
-
-        Returns:
-            StepOutput: The parsed output for the specified step, or None if not found or an error occurs.
-        """
+        Parse the json output"""
         try:
-            response = response.strip()
-            # Regex pattern to capture 'Thought' and 'Action' for the specified step number
-            # This pattern is more flexible with spacing and formats.
-            pattern = rf"Thought {step}: (.*?)\n*Action {step}: (.*?)($|\n)"
-
-            match = re.search(pattern, response)
-            if match:
-                thought, action = match.groups()
-                return StepOutput(
-                    step=step, thought=thought.strip(), action=action.strip()
-                )
-        except re.error as e:
-            print(f"Regex error: {e}")
+            json_obj_response = self.text_output_parser(response)
+            thought_key = f"thought_{step}"
+            action_key = f"action_{step}"
+            thought = json_obj_response.get(thought_key, "")
+            action = json_obj_response.get(action_key, "")
+            return StepOutput(step=step, thought=thought, action=action)
         except Exception as e:
-            print(f"An error occurred while parsing the response: {e}")
-
-        return None
+            print(f"Error parsing response: {e}")
+            return None
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """
@@ -219,7 +204,7 @@ class ReActAgent:
         print(f"step {step}: {prompt}")
         response = self.generator(messages)
         print(f"raw generator output: {response}")
-        parsed_response = self._parse_response(response, step)
+        parsed_response = self._parse_text_response(response, step)
         print(f"parsed_response: {parsed_response}")
         # execute the action
         if parsed_response and parsed_response.action:
@@ -247,6 +232,8 @@ class ReActAgent:
 
 
 if __name__ == "__main__":
+    from lightrag.light_rag import OpenAIGenerator
+    from extend.generator.groq_generator import GroqGenerator
 
     def multiply(a: int, b: int) -> int:
         """
@@ -266,7 +253,7 @@ if __name__ == "__main__":
     ]
     settings = {
         "provider": "groq",
-        "model": "llama3-70b-8192",  # 8b is bad at function calling
+        "model": "llama3-8b-8192",  # llama3 is not good with string formatting
     }
 
     planner = GroqGenerator(**settings)
