@@ -21,12 +21,11 @@ from typing import List, Union, Callable, Optional, Any
 from dataclasses import dataclass
 import re
 
-DEFAULT_REACT_AGENT_PROMPT = r"""
-{# role/task description #}
-{# You will be given `{{input}}` and you will respond with `{{output}}`. #}
-<START_OF_SYSTEAM_PROMPT>
-You will solve a question answering task.
 
+DEFAULT_REACT_AGENT_PROMPT = r"""
+<START_OF_SYSTEAM_PROMPT>
+{# role/task description #}
+You will solve a question answering task.
 {# REACT instructions #}
 To do this, you will interleave Thought, Action, and Observation steps.
 
@@ -48,23 +47,7 @@ Action <step>: ToolName(arg1, arg2, ...)
 ---
 {# Specifications #}
 <step> starts at 1 and increments by 1 for each step.
-{#Examples#}
-{# For example, you may have the following tools:
-1. Tool Name: Multiply
-    Tool Description: Multiply two numbers.
-    Tool Args: a: int, b: int -> int
-2. Tool Name: Add
-    Tool Description: Add two numbers.
-    Tool Args: a: int, b: int -> int
-3. Tool Name: Finish
-    Tool Description: Finish the task
-    Tool Args: answer: Any
-User: "What is 2 times 3?"
-Thought 1: I should multiply 2 and 3.
-Action 1: Multiply(2, 3)
-Observation 1: 6
-Thought 2: Now I can answer the question.
-Action 2: Finish(6)#}
+{#Examples can be here#}
 <END_OF_SYSTEAM_PROMPT>
 <START_OF_USER_PROMPT>
 User: {{user_query}}
@@ -76,7 +59,6 @@ Action {{history.step}}: {{history.action}}
 Observation {{history.step}}: {{history.observation}}
 {% endfor %}
 You:
-{# REACT instructions #}
 """
 
 
@@ -131,6 +113,9 @@ class ReActAgent:
         self.planner = OpenAIGenerator(**settings)
         self.max_steps = max_steps
         self.history: List[StepOutput] = []
+
+    def reset(self):
+        self.history = []
 
     @staticmethod
     def _parse_response(response: str, step: int) -> Optional[StepOutput]:
@@ -205,6 +190,7 @@ class ReActAgent:
         func = self.tools_map[func_name]
         try:
             result = func(*args)
+            # TODO: why isnt the result of ToolOutput type?
             action_step.observation = result
             return action_step
         except Exception as e:

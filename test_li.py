@@ -1,6 +1,7 @@
 import inspect
 import json
 from typing import Callable, Dict, Any
+from llama_index.llms.openai import OpenAI
 
 
 def generate_schema_from_function(func: Callable) -> Dict[str, Any]:

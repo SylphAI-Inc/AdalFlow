@@ -13,7 +13,6 @@ from openai.types.chat import ChatCompletion
 from openai import (
     APITimeoutError,
     InternalServerError,
-    OpenAI,
     RateLimitError,
     UnprocessableEntityError,
 )
@@ -325,9 +324,10 @@ class FAISSRetriever(Retriever):
             self.set_chunks(chunks)
         super().__init__(top_k)
 
-    # def reset(self):
-    #     self.index.reset()
-    #     self.chunks = []
+    def reset(self):
+        self.index.reset()
+        self.chunks: List[Chunk] = []
+        self.total_chunks: int = 0
 
     def set_chunks(self, chunks: List[Chunk]):
         self.chunks = chunks
@@ -403,25 +403,39 @@ class Generator(ABC):
         self.model = model  # default model
         self.kwargs = kwargs
 
-    @abstractmethod
+    def combine_kwargs(self, **kwargs) -> Dict:
+        kwargs = {**self.kwargs}
+        kwargs["model"] = self.model
+        return kwargs
+
+    def parse_completion(self, completion: ChatCompletion) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        """
+        return completion.choices[0].message.content
+
     def __call__(
         self,
         messages: List[Dict],
-        model: Optional[str],
+        model: Optional[str] = None,
         **kwargs,  # such as stream, temperature, max_tokens, etc
     ) -> Any:
         """
-        You can wrap either sync or async method here
+        You can wrap either sync or async method here, in default, we use sync method
         """
-        pass
+        if not model and not self.model:
+            raise ValueError("model is required")
+        return self.call(messages, model, **kwargs)
 
-    def call(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+    def call(self, messages: List[Dict], model: Optional[str] = None, **kwargs) -> Any:
         """
         overwrite the default model if provided here
         """
         pass
 
-    async def acall(self, messages: List[Dict], model: Optional[str], **kwargs) -> Any:
+    async def acall(
+        self, messages: List[Dict], model: Optional[str] = None, **kwargs
+    ) -> Any:
         pass
 
 
@@ -438,20 +452,6 @@ class OpenAIGenerator(Generator):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         self.sync_client = OpenAI()
         self.async_client = None  # only initialize when needed
-
-    def combine_kwargs(self, **kwargs) -> Dict:
-        kwargs = {**self.kwargs}
-        kwargs["model"] = self.model
-        return kwargs
-
-    def parse_completion(self, completion: ChatCompletion) -> str:
-        """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        """
-        return completion.choices[0].message.content
-
-    def __call__(self, messages: List[Dict], model: Optional[str] = None, **kwargs):
-        return self.call(messages, model, **kwargs)
 
     @backoff.on_exception(
         backoff.expo,
@@ -703,7 +703,7 @@ class RAG:
             {"role": "system", "content": system_prompt_content},
         ]
         print(f"messages: {messages}")
-        response = self.generator.chat(messages)
+        response = self.generator.call(messages)
         return response
 
 

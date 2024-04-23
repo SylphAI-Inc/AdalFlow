@@ -3,3 +3,7 @@
 .env
 test_llamaindex.py
 outputs.txt
+lightrag/__pycache__
+extend/*/__pycache__
+extend/__pycache__
+test_li.py
