@@ -15,68 +15,56 @@ The initial ReAct paper does not support different types of tools. REact agent c
 """
 
 from jinja2 import Template
-from extend.tools.tool import FunctionTool, AsyncCallable, ToolMetadata
-from lightrag.light_rag import OpenAIGenerator
+from lightrag.tool import FunctionTool, AsyncCallable, ToolMetadata
+from lightrag.string_parser import JsonParser
 from typing import List, Union, Callable, Optional, Any
 from dataclasses import dataclass
 import re
+from lightrag.light_rag import Generator
+
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
-{# role/task description #}
-{# You will be given `{{input}}` and you will respond with `{{output}}`. #}
 <START_OF_SYSTEAM_PROMPT>
+{# role/task description #}
 You will solve a question answering task.
-
 {# REACT instructions #}
 To do this, you will interleave Thought, Action, and Observation steps.
 
 Thought can reason about the current situation, and Action can be the following types:
 {# tools #}
 {% for tool in tools %}
-{{ loop.index }}. Tool Name: {{ tool.metadata.name }}
+{{ loop.index }}. ToolName: {{ tool.metadata.name }}
     Tool Description: {{ tool.metadata.description }}
     Tool Args: {{ tool.metadata.fn_schema_str }}
 {% endfor %}
-{# output #}
+{# output is always more robust to use json than string #}
 ---
-Follow the following format.
-User: <User Query>
-<Your previous Thought, Action, and Observation steps>
-You:
-Thought <step>: steps to take based on user query and all the previous observations
-Action <step>: ToolName(arg1, arg2, ...)
+Your output should be in json format with two keys:
+{
+"thought_<step>": "<why you are taking this action>",
+"action_<step>": "<ToolName>(arg1, arg2, ...)",
+}
 ---
 {# Specifications #}
-<step> starts at 1 and increments by 1 for each step.
-{#Examples#}
-{# For example, you may have the following tools:
-1. Tool Name: Multiply
-    Tool Description: Multiply two numbers.
-    Tool Args: a: int, b: int -> int
-2. Tool Name: Add
-    Tool Description: Add two numbers.
-    Tool Args: a: int, b: int -> int
-3. Tool Name: Finish
-    Tool Description: Finish the task
-    Tool Args: answer: Any
-User: "What is 2 times 3?"
-Thought 1: I should multiply 2 and 3.
-Action 1: Multiply(2, 3)
-Observation 1: 6
-Thought 2: Now I can answer the question.
-Action 2: Finish(6)#}
+Remember:
+- <step> starts at 1 and increments by 1 for each step.
+- Action must call one of the above tools with Took Name. It can not be empty. 
+- Use Finish() to finish the task.
+- arg1, arg2, ... are the arguments to the tool.
+- Only use positional arguments, no keyword arguments. e.g. Finish(...), not Finish(answer=...).
+- Finish(answer) to finish the task. Answer can be either the final answer or any message even if its an error message.
+{#Examples can be here#}
 <END_OF_SYSTEAM_PROMPT>
-<START_OF_USER_PROMPT>
+-----------------
 User: {{user_query}}
 {# History #}
-Your previous Thought, Action, and Observation steps:
+Your previous Thought, Action, and Observation steps if exists:
 {% for history in histories %}
 Thought {{history.step}}: {{history.thought}}
 Action {{history.step}}: {{history.action}}
 Observation {{history.step}}: {{history.observation}}
 {% endfor %}
 You:
-{# REACT instructions #}
 """
 
 
@@ -98,11 +86,12 @@ class StepOutput:
 class ReActAgent:
     def __init__(
         self,
-        prompt: str = DEFAULT_REACT_AGENT_PROMPT,
+        generator: Generator = None,
+        generator_prompt: str = DEFAULT_REACT_AGENT_PROMPT,
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
     ):
-        self.prompt = prompt
+        self.prompt = generator_prompt
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
             (
@@ -116,50 +105,34 @@ class ReActAgent:
         finish_tool_metadata = ToolMetadata(
             name="Finish",
             description="Finish(answer)\nFinish the task",
-            parameters={"type": "object", "properties": {"answer": {"type": "any"}}},
+            parameters={"type": "object", "properties": {"answer": {"type": "str"}}},
         )
         finish_tool = FunctionTool(metadata=finish_tool_metadata, fn=None)
         self.tools.append(finish_tool)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
 
-        settings = {
-            "provider": "openai",
-            "model": "gpt-3.5-turbo",
-        }
-
-        self.planner = OpenAIGenerator(**settings)
+        self.generator = generator
         self.max_steps = max_steps
         self.history: List[StepOutput] = []
+        self.text_output_parser = JsonParser()
 
-    @staticmethod
-    def _parse_response(response: str, step: int) -> Optional[StepOutput]:
+    def reset(self):
+        self.history = []
+
+    def _parse_text_response(self, response: str, step: int) -> Optional[StepOutput]:
         """
-        Parses a structured text response into a StepOutput object for a specific step without observation.
-
-        Args:
-            response (str): The complete response text containing multiple steps.
-            step (int): The specific step number to extract.
-
-        Returns:
-            StepOutput: The parsed output for the specified step, or None if not found or an error occurs.
-        """
+        Parse the json output"""
         try:
-            # Regex pattern to capture 'Thought' and 'Action' for the specified step number
-            pattern = rf"Thought {step}: (.+)\nAction {step}: (.+)"
-
-            match = re.search(pattern, response)
-            if match:
-                thought, action = match.groups()
-                return StepOutput(
-                    step=step, thought=thought.strip(), action=action.strip()
-                )
-        except re.error as e:
-            print(f"Regex error: {e}")
+            json_obj_response = self.text_output_parser(response)
+            thought_key = f"thought_{step}"
+            action_key = f"action_{step}"
+            thought = json_obj_response.get(thought_key, "")
+            action = json_obj_response.get(action_key, "")
+            return StepOutput(step=step, thought=thought, action=action)
         except Exception as e:
-            print(f"An error occurred while parsing the response: {e}")
-
-        return None
+            print(f"Error parsing response: {e}")
+            return None
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """
@@ -205,6 +178,7 @@ class ReActAgent:
         func = self.tools_map[func_name]
         try:
             result = func(*args)
+            # TODO: why isnt the result of ToolOutput type?
             action_step.observation = result
             return action_step
         except Exception as e:
@@ -228,9 +202,10 @@ class ReActAgent:
             }
         ]
         print(f"step {step}: {prompt}")
-        response = self.planner.call(messages)
-        print(f"response: {response}")
-        parsed_response = self._parse_response(response, step)
+        response = self.generator(messages)
+        print(f"raw generator output: {response}")
+        parsed_response = self._parse_text_response(response, step)
+        print(f"parsed_response: {parsed_response}")
         # execute the action
         if parsed_response and parsed_response.action:
             parsed_response = self._execute_action(parsed_response)
@@ -249,6 +224,7 @@ class ReActAgent:
         for i in range(self.max_steps):
             step = i + 1
             self._run_one_step(input, step)
+            print("history:", self.history)
             # check if the task is finished
             if self.history[-1].fun_name == "Finish":
                 break
@@ -256,6 +232,8 @@ class ReActAgent:
 
 
 if __name__ == "__main__":
+    from lightrag.light_rag import OpenAIGenerator
+    from extend.generator.groq_generator import GroqGenerator
 
     def multiply(a: int, b: int) -> int:
         """
@@ -273,6 +251,17 @@ if __name__ == "__main__":
         FunctionTool.from_defaults(fn=multiply),
         FunctionTool.from_defaults(fn=add),
     ]
-    agent = ReActAgent(tools=tools, max_steps=10)
+    settings = {
+        "provider": "groq",
+        "model": "llama3-8b-8192",  # llama3 is not good with string formatting
+    }
+
+    planner = GroqGenerator(**settings)
+    # settings = {
+    #     "provider": "openai",
+    #     "model": "gpt-3.5-turbo",
+    # }
+    # planner = OpenAIGenerator(**settings)
+    agent = ReActAgent(generator=planner, tools=tools, max_steps=10)
     answer = agent.run("What is 2 times 3?")
     print(f"Answer: {answer}")

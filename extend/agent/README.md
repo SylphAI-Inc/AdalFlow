@@ -21,6 +21,7 @@ In this directory, we add the general design patterns of agent, here are four (T
 
 - Chain-of-Thought Prompting Elicits Reasoning in Large Language Models
 - HuggingGPT: Solving AI Tasks with ChatGPT and its Friends in Hugging Face
+- React
 
 4️⃣ Multi-agent collaboration
 
