@@ -99,11 +99,8 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
 
 
 def fix_json_formatting(json_str: str) -> str:
-    # Fix common JSON formatting issues
-
     # Example: adding missing commas, only after double quotes
     # Regular expression to find missing commas
-    # print("json_str: ", json_str)
     regex = r'(?<=[}\]"\'\d])(\s+)(?=[\{"\[])'
 
     # Add commas where missing

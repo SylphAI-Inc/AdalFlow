@@ -1,5 +1,6 @@
 """
-Tool is LLM's extended capability which is one of the core design pattern of Agent.
+Tool is LLM's extended capability which is one of the core design pattern of Agent. All tools can be wrapped in a FunctionTool class.
+This helps to standardize the tool interface and metadata to communicate with the Agent.
 """
 
 from typing import Any, Optional, Dict, Callable, Awaitable
