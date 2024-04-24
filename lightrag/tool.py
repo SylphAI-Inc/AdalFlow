@@ -1,3 +1,7 @@
+"""
+Tool is LLM's extended capability which is one of the core design pattern of Agent.
+"""
+
 from typing import Any, Optional, Dict, Callable, Awaitable
 from inspect import iscoroutinefunction, signature, Parameter
 from pydantic import BaseModel
