@@ -14,6 +14,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
 import json
 import ast
+from lightrag.tool_helper import ToolOutput
 
 
 ############################################################################################################
@@ -166,6 +167,7 @@ class JsonParser(BaseTextParser):
                         #       pyyaml is less strict, and allows for trailing commas
                         #       right now we rely on this since guidance program generates
                         #       trailing commas
+                        print("Parsing JSON string with PyYAML...")
                         json_obj = yaml.safe_load(json_str)
                         return json_obj
                     except yaml.YAMLError as e_yaml:
@@ -215,7 +217,9 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         return -evaluate_ast_node(node.operand, context_map)  # unary minus
     elif isinstance(node, ast.Name):  # variable name
         return context_map[node.id]
-    elif isinstance(node, ast.Call):  # another fun or class as argument and value
+    elif isinstance(
+        node, ast.Call
+    ):  # another fun or class as argument and value, e.g. add( multiply(4,5), 3)
         func = evaluate_ast_node(node.func, context_map)
         args = [evaluate_ast_node(arg, context_map) for arg in node.args]
         kwargs = {
@@ -223,6 +227,8 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         }
         print(f"another fun or class as argument and value: {func}, {args}, {kwargs}")
         output = func(*args, **kwargs)
+        if isinstance(output, ToolOutput):
+            return output.raw_output
         print(f"output: {output}")
         return output
     else:
@@ -233,7 +239,7 @@ def parse_function_call(
     call_string: str, context_map: Dict[str, Any] = None
 ) -> Tuple[str, List[Any], Dict[str, Any]]:
     """
-    Parse a string representing a function call into its components.
+    Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.
     Args:
         call_string (str): The string representing the function call.
         context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.
