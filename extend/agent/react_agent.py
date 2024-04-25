@@ -15,57 +15,68 @@ The initial ReAct paper does not support different types of tools. REact agent c
 """
 
 from jinja2 import Template
-from lightrag.tool import FunctionTool, AsyncCallable, ToolMetadata
-from lightrag.string_parser import JsonParser
-from typing import List, Union, Callable, Optional, Any
+from lightrag.tool_helper import FunctionTool, AsyncCallable
+from lightrag.string_parser import JsonParser, parse_function_call
+from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
-import re
 from lightrag.light_rag import Generator
 
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
 <START_OF_SYSTEAM_PROMPT>
 {# role/task description #}
-You will solve a question answering task.
+You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
-To do this, you will interleave Thought, Action, and Observation steps.
+To do this, you will interleave Thought, Action, and Observation(execution result of the action) at each step.
+Each step you will read the previous Thought, Action, and Observation, and then provide the next Thought and Action.
 
-Thought can reason about the current situation, and Action can be the following types:
+You have access to the following tools:
 {# tools #}
 {% for tool in tools %}
 {{ loop.index }}. ToolName: {{ tool.metadata.name }}
     Tool Description: {{ tool.metadata.description }}
-    Tool Args: {{ tool.metadata.fn_schema_str }}
+    Tool Args: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
 {% endfor %}
 {# output is always more robust to use json than string #}
 ---
-Your output should be in json format with two keys:
+Your output must be in JSON format with two keys:
 {
-"thought_<step>": "<why you are taking this action>",
-"action_<step>": "<ToolName>(arg1, arg2, ...)",
+"thought": "<summarize previous actions if needed and provide the next thought>",
+"action": "ToolName(<args>, <kwargs>)",
 }
 ---
 {# Specifications #}
 Remember:
-- <step> starts at 1 and increments by 1 for each step.
 - Action must call one of the above tools with Took Name. It can not be empty. 
-- Use Finish() to finish the task.
-- arg1, arg2, ... are the arguments to the tool.
-- Only use positional arguments, no keyword arguments. e.g. Finish(...), not Finish(answer=...).
-- Finish(answer) to finish the task. Answer can be either the final answer or any message even if its an error message.
+- Read the Tool Description and ensure your args and kwarg follow what each tool expects. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
+- You will always end with 'finish' action to finish the task. Call 'finish' as soon as you can answer the initial user query.
+- If the argument is a string, it must be enclosed in single quotes.
+- Do not do expressional evaluation in the action. For example, 2+3 should be avoided to be passed as an argument.
 {#Examples can be here#}
+{# Check if there are any examples #}
+{% if examples %}
+Examples:
+{% for example in examples %}
+{{ example }}
+{% endfor %}
+{% endif %}
 <END_OF_SYSTEAM_PROMPT>
 -----------------
-User: {{user_query}}
+User query: {{user_query}}
 {# History #}
-Your previous Thought, Action, and Observation steps if exists:
-{% for history in histories %}
-Thought {{history.step}}: {{history.thought}}
-Action {{history.step}}: {{history.action}}
-Observation {{history.step}}: {{history.observation}}
+{% for history in step_history %}
+Step {{history.step}}:
+{
+ "thought": "{{history.thought}}",
+ "action": "{{history.action}}",
+}
+"observation": "{{history.observation}}"
 {% endfor %}
 You:
 """
+
+# NOTE: if the positional and keyword arguments are not working well,
+# you can let it be a json string and use only keyword arguments and use json parser to parse the arguments instead of parse_function_call
 
 
 @dataclass
@@ -75,6 +86,7 @@ class StepOutput:
     action: str
     fun_name: Optional[str] = None  # parsed from action
     fun_args: Optional[List[Any]] = None  # parsed from action
+    fun_kwargs: Optional[Dict[str, Any]] = None  # parsed from action
     observation: Optional[str] = (
         None  # when step is created, observation is not available, the funtion result
     )
@@ -88,10 +100,12 @@ class ReActAgent:
         self,
         generator: Generator = None,
         generator_prompt: str = DEFAULT_REACT_AGENT_PROMPT,
+        examples: List[str] = [],
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
     ):
         self.prompt = generator_prompt
+        self.examples = examples
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
             (
@@ -102,31 +116,33 @@ class ReActAgent:
             for tool in tools
         ]
 
-        finish_tool_metadata = ToolMetadata(
-            name="Finish",
-            description="Finish(answer)\nFinish the task",
-            parameters={"type": "object", "properties": {"answer": {"type": "str"}}},
-        )
-        finish_tool = FunctionTool(metadata=finish_tool_metadata, fn=None)
+        def finish(answer: str) -> str:
+            """
+            Finish the task by returning the answer.
+            """
+            return answer
+
+        finish_tool = FunctionTool.from_defaults(fn=finish)
         self.tools.append(finish_tool)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
+        print(f"tools_map: {self.tools_map}")
 
         self.generator = generator
         self.max_steps = max_steps
-        self.history: List[StepOutput] = []
+        self.step_history: List[StepOutput] = []
         self.text_output_parser = JsonParser()
 
     def reset(self):
-        self.history = []
+        self.step_history = []
 
     def _parse_text_response(self, response: str, step: int) -> Optional[StepOutput]:
         """
         Parse the json output"""
         try:
             json_obj_response = self.text_output_parser(response)
-            thought_key = f"thought_{step}"
-            action_key = f"action_{step}"
+            thought_key = "thought"
+            action_key = "action"
             thought = json_obj_response.get(thought_key, "")
             action = json_obj_response.get(action_key, "")
             return StepOutput(step=step, thought=thought, action=action)
@@ -136,84 +152,49 @@ class ReActAgent:
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """
-        Parse the action string to a function call and execute it.
-
-        Args:
-            tools_map (Dict[str, Callable]): Dictionary mapping tool names to their callable functions.
-
-        Returns:
-            Optional[Any]: The result of the function call, or None if something goes wrong.
+        Parse the action string to a function call and execute it. Update the action_step with the result.
         """
-        # Use regex to parse the function name and arguments from the action string
-        pattern = r"(\w+)\((.*?)\)"
         action = action_step.action
-        match = re.match(pattern, action)
-        if not match:
-            print(f"No match found for action: {action}")
-            return None
-
-        func_name, arg_str = match.groups()
-        func_name = func_name.strip()
-        print(f"func_name: {func_name}, arg_str: {arg_str}")
-        if func_name not in self.tools_map:
-            print(f"Function {func_name} not found in tools map.")
-            return None
-        # update the action_step with the parsed function name and arguments
-        action_step.fun_name = func_name
-
-        # Prepare the arguments for the function
         try:
-            # This assumes that all arguments are integers. You might need to handle other types.
-            # TODO: handle more complicated arguments
-            args = list(map(int, arg_str.split(",")))
+            fun_name, args, kwargs = parse_function_call(action, self.tools_map)
+            fun: Union[Callable, AsyncCallable] = self.tools_map[fun_name].fn
+            result = fun(*args, **kwargs)
+            action_step.fun_name = fun_name
             action_step.fun_args = args
-        except ValueError as e:
-            print(f"Error converting arguments: {e}")
-            return None
+            action_step.fun_kwargs = kwargs
 
-        # Get the function from the tools map and call it
-        if func_name == "Finish":
-            action_step.observation = arg_str
-            return action_step
-        func = self.tools_map[func_name]
-        try:
-            result = func(*args)
-            # TODO: why isnt the result of ToolOutput type?
             action_step.observation = result
             return action_step
         except Exception as e:
-            print(f"Error executing {func_name} with args {args}: {e}")
+            print(f"Error executing {action}: {e}")
             return None
 
     def _run_one_step(self, input: str, step: int) -> str:
         """
         Run one step of the agent.
         """
-        # generate the prompt
         template = Template(self.prompt)
         prompt = template.render(
-            user_query=input, tools=self.tools, histories=self.history
+            user_query=input,
+            tools=self.tools,
+            step_history=self.step_history,
+            examples=self.examples,
         )
-        # get the response from the model
         messages = [
             {
                 "role": "system",
                 "content": prompt,
             }
         ]
-        print(f"step {step}: {prompt}")
         response = self.generator(messages)
         print(f"raw generator output: {response}")
         parsed_response = self._parse_text_response(response, step)
-        print(f"parsed_response: {parsed_response}")
         # execute the action
         if parsed_response and parsed_response.action:
             parsed_response = self._execute_action(parsed_response)
         else:
             print(f"Failed to parse response for step {step}")
-        self.history.append(parsed_response)
-
-        print(f"parsed_response: {parsed_response}")
+        self.step_history.append(parsed_response)
 
         return response
 
@@ -224,11 +205,11 @@ class ReActAgent:
         for i in range(self.max_steps):
             step = i + 1
             self._run_one_step(input, step)
-            print("history:", self.history)
-            # check if the task is finished
-            if self.history[-1].fun_name == "Finish":
+            if self.step_history[-1].fun_name == "finish":
                 break
-        return self.history[-1].observation
+        answer = self.step_history[-1].observation
+        self.reset()
+        return answer
 
 
 if __name__ == "__main__":
@@ -247,21 +228,46 @@ if __name__ == "__main__":
         """
         return a + b
 
+    def search(query: str) -> str:
+        """
+        Search the web for the given query.
+        """
+        return f"python programming is a great way to learn programming"
+
     tools = [
         FunctionTool.from_defaults(fn=multiply),
         FunctionTool.from_defaults(fn=add),
+        FunctionTool.from_defaults(fn=search),
     ]
     settings = {
         "provider": "groq",
-        "model": "llama3-8b-8192",  # llama3 is not good with string formatting
+        "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
+        # mistral also not good: mixtral-8x7b-32768, but with better prompt, it can still work
     }
 
     planner = GroqGenerator(**settings)
-    # settings = {
-    #     "provider": "openai",
-    #     "model": "gpt-3.5-turbo",
-    # }
-    # planner = OpenAIGenerator(**settings)
+    settings = {
+        "provider": "openai",
+        "model": "gpt-3.5-turbo",
+    }
+    planner = OpenAIGenerator(**settings)
     agent = ReActAgent(generator=planner, tools=tools, max_steps=10)
-    answer = agent.run("What is 2 times 3?")
-    print(f"Answer: {answer}")
+    queries = [
+        "What is 2 times 3?",
+        "What is 3 plus 4?",
+        "Search for 'python programming'",
+    ]
+    """
+    Results: mixtral-8x7b-32768, 0.9s per query
+    llama3-70b-8192, 1.8s per query
+    gpt-3.5-turbo, 2.2s per query
+    """
+    import time
+
+    average_time = 0
+    for query in queries:
+        t0 = time.time()
+        answer = agent.run(query)
+        average_time += time.time() - t0
+        print(f"Answer: {answer}")
+    print(f"Average time: {average_time / len(queries)}")
