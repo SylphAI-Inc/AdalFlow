@@ -9,7 +9,6 @@ include = ["lightrag", "extend", "tests", "use_cases"]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 python-dotenv = "^1.0.1"
-llama-index = "^0.10.30"
 faiss-cpu = "^1.8.0"
 backoff = "^2.2.1"
 openai = "^1.12.0"
@@ -20,6 +19,8 @@ groq = "^0.5.0"
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.1.16"
 langchainhub = "^0.1.15"
+llama-index = "^0.10.30"
+
 
 [build-system]
 requires = ["poetry-core"]
