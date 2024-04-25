@@ -8,11 +8,10 @@ The future: the agent can write your prompts too. Check out dspy: https://github
 
 """
 The initial ReAct paper does not support different types of tools. REact agent can be useful for
-- Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
+- Multi-hop reasoning [Q&A]
 - Plan the usage of given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools. 
 - Every react agent can be given a different tasks, different tools, and different LLM models to complete the task.
-- 'internal_knowledge' tool can be used to answer some subqueries using internal knowledge.
-- 'finish' tool can be used to finish the task by joining all subqueries answers.
+- The planner itself can answer the question directly or use the tools to answer the question. We might need to highlight your specifications.
 """
 
 from jinja2 import Template
@@ -26,7 +25,7 @@ from lightrag.light_rag import Generator
 DEFAULT_REACT_AGENT_PROMPT = r"""
 <START_OF_SYSTEAM_PROMPT>
 {# role/task description #}
-You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
+You task is to answer user's query with minimum steps and maximum accuracy.
 {# REACT instructions #}
 To do this, you will interleave Thought, Action, and Observation(execution result of the action) at each step.
 Each step you will read the previous Thought, Action, and Observation, and then provide the next Thought and Action.
@@ -40,23 +39,23 @@ You have access to the following tools:
 {% endfor %}
 {# output is always more robust to use json than string #}
 ---
-Your output must be in JSON format with two keys:
+Your output must be in JSON format with three keys:
 {
-"thought": "<Why you are taking this action>",
-"action": "ToolName(<args>, <kwargs>)",
+"thought": "<summarize previous actions if needed and provide the next thought>",
+"action": "<ToolName(<args>, <kwargs>) if using one of the above tools or provide the next subquery to be answered>",
+"is_tool": <true or false>
 }
 ---
-{# Specifications TODO: preference between the usage of internal knowlege vs the tool #}
-Process:
-- Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
-- Call one tool at a time to solve each subquery. Never call multiple tools at once: e.g. Dont do "tool2(tool1(4, 5), 3)"
-- Use 'finish' to join all subqueries answers and finish the task.
+{# Specifications #}
 Remember:
-- Action must call one of the above tools with Took Name. It can not be empty. 
 - Read the Tool Description and ensure your args and kwarg follow what each tool expects. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
-- You will always end with 'finish' action to finish the task. Call 'finish' as soon as you can answer the initial user query.
-- If the argument is a string, it must be enclosed in single quotes.
+- If action is a tool, must provide the tool name and its arguments in () separated by commas.
+- If the argument is a string, it must be encoded in single or double quotes depending on the context.
 - Do not do expressional evaluation in the action. For example, 2+3 should be avoided to be passed as an argument.
+- If you are solving a complicated reasoning task, your thought will be how you split the task into subtasks, and what subtask you are solving now and how? \
+    the action will be the actual answer to the subtask instructed by the thought.
+- You will always end with 'finish' action to finish the task as finish(answer="your final answer or failure reason")
+
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
@@ -89,6 +88,7 @@ class StepOutput:
     step: int
     thought: str
     action: str
+    is_tool: Optional[bool] = None  # parsed from action
     fun_name: Optional[str] = None  # parsed from action
     fun_args: Optional[List[Any]] = None  # parsed from action
     fun_kwargs: Optional[Dict[str, Any]] = None  # parsed from action
@@ -97,7 +97,7 @@ class StepOutput:
     )
 
     def __str__(self):
-        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
+        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}, is_tool: {self.is_tool}"
 
 
 class ReActAgent:
@@ -121,20 +121,11 @@ class ReActAgent:
             for tool in tools
         ]
 
-        def internal_knowledge(answer: str) -> str:
-            """
-            You can use your internal knowledge to answer some subqueries. Your value should be the actual answer in a string.
-            """
-            return None
-
         def finish(answer: str) -> str:
             """
-            Finish the task by joinging all subqueries answers.
+            Finish the task by returning the answer.
             """
             return answer
-
-        internal_knowledge_tool = FunctionTool.from_defaults(fn=internal_knowledge)
-        self.tools.append(internal_knowledge_tool)
 
         finish_tool = FunctionTool.from_defaults(fn=finish)
         self.tools.append(finish_tool)
@@ -157,9 +148,13 @@ class ReActAgent:
             json_obj_response = self.text_output_parser(response)
             thought_key = "thought"
             action_key = "action"
+            is_tool_key = "is_tool"
             thought = json_obj_response.get(thought_key, "")
             action = json_obj_response.get(action_key, "")
-            return StepOutput(step=step, thought=thought, action=action)
+            is_tool = json_obj_response.get(is_tool_key, False)
+            return StepOutput(
+                step=step, thought=thought, action=action, is_tool=is_tool
+            )
         except Exception as e:
             print(f"Error parsing response: {e}")
             return None
@@ -205,7 +200,11 @@ class ReActAgent:
         parsed_response = self._parse_text_response(response, step)
         # execute the action
         if parsed_response and parsed_response.action:
-            parsed_response = self._execute_action(parsed_response)
+            print(f"parsed_response: {parsed_response}")
+            if parsed_response.is_tool:
+                parsed_response = self._execute_action(parsed_response)
+            else:
+                parsed_response.observation = None
         else:
             print(f"Failed to parse response for step {step}")
         self.step_history.append(parsed_response)
@@ -264,17 +263,47 @@ if __name__ == "__main__":
     }
 
     planner = GroqGenerator(**settings)
-    settings = {
-        "provider": "openai",
-        "model": "gpt-3.5-turbo",
-    }
-    planner = OpenAIGenerator(**settings)
-    agent = ReActAgent(generator=planner, tools=tools, max_steps=10)
+    # settings = {
+    #     "provider": "openai",
+    #     "model": "gpt-3.5-turbo",
+    # }
+    # planner = OpenAIGenerator(**settings)
+    examples = [
+        r"""
+        User query: what is 4 times 10, and then add 5 to the result
+        Step 1: Thought: I need to first mutiply 4 and 10,
+        Action: multiply(4, 10),
+        Observation: 40
+        Step 2: Thought: I need to add 5 to the previous result, 40
+        Action: add(40, 5)
+        Observation: 45
+        You:
+        {
+            "thought": "I need to first mutiply 4 and 10, then add 5 to the result",
+            "action": "finish(answer='45')",
+            "is_tool": true
+        }
+        """,
+        # r"""
+        # User query: how to become the best programmer?
+        # Step 1: Thought: First, there are many types of programers, such as full-stack, machine learning, etc. I will answer for full-stack programmer first.
+        # Action: To become the best full-stack programmer, you need to learn front-end, back-end, and database technologies and build impactful projects.
+        # Observation: None,
+        # You:
+        # {
+        #     "thought": "Next, I will answer for machine learning programmer."
+        #     "action": "To become the best machine learning programmer, you need to learn deep learning, reinforcement learning, and natural language processing and build impactful projects.",
+        #     "is_tool": false
+        # }
+        # """,
+    ]
+    agent = ReActAgent(generator=planner, tools=tools, max_steps=10, examples=examples)
     queries = [
         "What is 2 times 3?",
         "What is 3 plus 4?",
-        "Search for 'python programming'",
-        "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
+        # "Search for 'python programming'",
+        "If a major new technology company decides to set up its headquarters in a small city, what might be the immediate economic effects on the local community, and how could this impact local housing markets?",
+        "How can I find a proper job and do well after I get the job on this position?",
     ]
     """
     Results: mixtral-8x7b-32768, 0.9s per query

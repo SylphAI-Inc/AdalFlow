@@ -19,6 +19,7 @@ groq = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.1.16"
+langchainhub = "^0.1.15"
 
 [build-system]
 requires = ["poetry-core"]
