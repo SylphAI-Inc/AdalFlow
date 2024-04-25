@@ -56,3 +56,9 @@ To add a new use case, you can add a new folder in `use_cases/` with the name `a
 # What is not part of LightRAG?
 - Data processing: For instance, llamaindex has `from llama_index.core.ingestion import IngestionPipeline` which transforms the data that are either in the `Document` or `Chunk`. We do not cover this in LightRAG.
   Similarly, `from llama_index.core.postprocessor import SimilarityPostprocessor` which processes the retrieved `chunk`, sometimes with further filtering. 
+
+# How to start?
+
+1. Clone the repository.
+2. Setup the Python environment using `poetry install`. And activate the environment using `poetry shell`.
+3. Now you should run any file in the repo.
