@@ -8,3 +8,4 @@ extend/*/__pycache__
 extend/__pycache__
 tests/__pycache__
 test_li.py
+test_li*.py

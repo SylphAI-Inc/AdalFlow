@@ -36,6 +36,7 @@ We are very opinionated but we ground our opinions on best practices. Here are s
   <br>
   <em>LightRAG structure</em>
 </p>
+
 ## Foundation
 - `lightrag/`: All core data structures, the core 1000 lines of code to cover the essence of a performant RAG.
 ## Building blocks
