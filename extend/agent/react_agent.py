@@ -8,10 +8,11 @@ The future: the agent can write your prompts too. Check out dspy: https://github
 
 """
 The initial ReAct paper does not support different types of tools. REact agent can be useful for
-- Multi-hop reasoning [Q&A]
+- Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
 - Plan the usage of given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools. 
 - Every react agent can be given a different tasks, different tools, and different LLM models to complete the task.
-- The planner itself can answer the question directly or use the tools to answer the question. We might need to highlight your specifications.
+- 'internal_knowledge' tool can be used to answer some subqueries using internal knowledge.
+- 'finish' tool can be used to finish the task by joining all subqueries answers.
 """
 
 from jinja2 import Template
@@ -27,31 +28,33 @@ DEFAULT_REACT_AGENT_PROMPT = r"""
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
-To do this, you will interleave Thought, Action, and Observation(execution result of the action) at each step.
-Each step you will read the previous Thought, Action, and Observation, and then provide the next Thought and Action.
+Each step you will read the previous Thought, Action, and Observation(execution result of the action)steps and then provide the next Thought and Action.
 
 You have access to the following tools:
 {# tools #}
 {% for tool in tools %}
 {{ loop.index }}. ToolName: {{ tool.metadata.name }}
     Tool Description: {{ tool.metadata.description }}
-    Tool Args: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
+    Tool Parameters: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
 {% endfor %}
 {# output is always more robust to use json than string #}
 ---
-Your output must be in JSON format with two keys:
+Your output must be in valid JSON format with two keys:
 {
-"thought": "<summarize previous actions if needed and provide the next thought>",
-"action": "ToolName(<args>, <kwargs>)",
+    "thought": "<Why you are taking this action>",
+    "action": "ToolName(<args>, <kwargs>)"
 }
 ---
-{# Specifications #}
+{# Specifications TODO: preference between the usage of internal knowlege vs the tool #}
+Process:
+- Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
+- Call one tool at a time to solve each subquery. 
+- Use 'finish' to join all subqueries answers and finish the task.
 Remember:
 - Action must call one of the above tools with Took Name. It can not be empty. 
 - Read the Tool Description and ensure your args and kwarg follow what each tool expects. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
-- You will always end with 'finish' action to finish the task. Call 'finish' as soon as you can answer the initial user query.
+- You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
 - If the argument is a string, it must be enclosed in single quotes.
-- Do not do expressional evaluation in the action. For example, 2+3 should be avoided to be passed as an argument.
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
@@ -106,6 +109,21 @@ class ReActAgent:
     ):
         self.prompt = generator_prompt
         self.examples = examples
+        self.tools = tools
+
+        def internal_knowledge(answer: str) -> str:
+            """
+            You can use your internal knowledge to answer some subqueries. Your value should be the actual answer in a string.
+            """
+            return None
+
+        def finish(answer: str) -> str:
+            """
+            Finish the task by joinging all subqueries answers.
+            """
+            return answer
+
+        self.tools.extend([internal_knowledge, finish])
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
             (
@@ -113,17 +131,8 @@ class ReActAgent:
                 if isinstance(tool, FunctionTool)
                 else FunctionTool.from_defaults(fn=tool)
             )
-            for tool in tools
+            for tool in self.tools
         ]
-
-        def finish(answer: str) -> str:
-            """
-            Finish the task by returning the answer.
-            """
-            return answer
-
-        finish_tool = FunctionTool.from_defaults(fn=finish)
-        self.tools.append(finish_tool)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         print(f"tools_map: {self.tools_map}")
@@ -138,7 +147,8 @@ class ReActAgent:
 
     def _parse_text_response(self, response: str, step: int) -> Optional[StepOutput]:
         """
-        Parse the json output"""
+        Parse the json output
+        """
         try:
             json_obj_response = self.text_output_parser(response)
             thought_key = "thought"
@@ -157,6 +167,7 @@ class ReActAgent:
         action = action_step.action
         try:
             fun_name, args, kwargs = parse_function_call(action, self.tools_map)
+            print(f"fun_name: {fun_name}, args: {args}, kwargs: {kwargs}")
             fun: Union[Callable, AsyncCallable] = self.tools_map[fun_name].fn
             result = fun(*args, **kwargs)
             action_step.fun_name = fun_name
@@ -205,9 +216,13 @@ class ReActAgent:
         for i in range(self.max_steps):
             step = i + 1
             self._run_one_step(input, step)
-            if self.step_history[-1].fun_name == "finish":
+            if (
+                self.step_history[-1].fun_name
+                and self.step_history[-1].fun_name == "finish"
+            ):
                 break
         answer = self.step_history[-1].observation
+        print(f"step_history: {self.step_history}")
         self.reset()
         return answer
 
@@ -237,7 +252,7 @@ if __name__ == "__main__":
     tools = [
         FunctionTool.from_defaults(fn=multiply),
         FunctionTool.from_defaults(fn=add),
-        FunctionTool.from_defaults(fn=search),
+        # FunctionTool.from_defaults(fn=search),
     ]
     settings = {
         "provider": "groq",
@@ -255,7 +270,7 @@ if __name__ == "__main__":
     queries = [
         "What is 2 times 3?",
         "What is 3 plus 4?",
-        "Search for 'python programming'",
+        "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
     ]
     """
     Results: mixtral-8x7b-32768, 0.9s per query
