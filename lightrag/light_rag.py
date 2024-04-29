@@ -6,6 +6,7 @@ import dotenv
 import numpy as np
 from abc import ABC, abstractmethod
 import jinja2
+from jinja2 import Template
 
 import backoff
 from openai import OpenAI, AsyncOpenAI
@@ -15,6 +16,7 @@ from openai import (
     InternalServerError,
     RateLimitError,
     UnprocessableEntityError,
+    BadRequestError,
 )
 from copy import deepcopy
 
@@ -460,6 +462,7 @@ class OpenAIGenerator(Generator):
             InternalServerError,
             RateLimitError,
             UnprocessableEntityError,
+            BadRequestError,
         ),
         max_time=5,
     )
@@ -499,6 +502,48 @@ class OpenAIGenerator(Generator):
             messages=messages, **combined_kwargs
         )
         response = self.parse_completion(completion)
+        return response
+
+
+##############################################
+# Generator Runner
+##############################################
+class GeneratorRunner:
+    """
+    A base class for running a generator.
+    TODO: history
+    """
+
+    name = "GeneratorRunner"
+
+    def __init__(
+        self,
+        generator: Generator,
+        prompt: str = None,
+        examples: List[str] = [],
+    ):
+        self.generator = generator
+        self.prompt = prompt
+        self.examples = examples
+        self.prompt_template = Template(self.prompt) if prompt else None
+
+    def __call__(self, **kwargs) -> Any:
+        self.kwargs = kwargs
+        if "examples" in self.kwargs:
+            examples = self.kwargs.get("examples")
+        else:
+            examples = self.examples
+        system_prompt = (
+            self.prompt_template.render(
+                user_query=self.kwargs.get("input"),
+                examples=examples,
+            )
+            if self.prompt_template
+            else self.kwargs.get("input")
+        )
+        messages = [{"role": "system", "content": system_prompt}]
+        print(f"messages: {messages}")
+        response = self.generator(messages)
         return response
 
 

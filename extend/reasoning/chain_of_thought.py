@@ -15,7 +15,7 @@ For instance, CoT might already be supported in gpt3.5+ api calls.
 Benchmark it with and without CoT to see if it helps.
 """
 
-from lightrag.light_rag import OpenAIGenerator, Generator
+from lightrag.light_rag import OpenAIGenerator, Generator, GeneratorRunner
 from typing import Any, List, Optional
 from jinja2 import Template
 from abc import ABC, abstractmethod
@@ -37,7 +37,7 @@ You:
 
 
 # TODO: Generalize this prompt template class
-# system reserved keywords: user_query, examples, context_str,
+# system reserved keywords: user_query, examples, context_str, chat_history
 class PromptTemplate:
     def __init__(self, prompt: str, examples: List[str]):
         self.prompt = prompt
@@ -53,37 +53,6 @@ class PromptTemplate:
 
 # TODO: jinja2 template class to enforece the type checking
 # TODO: add tracking
-class GeneratorRunner:
-    """
-    An abstract class for running a generator.
-    """
-
-    name = "GeneratorRunner"
-
-    def __init__(
-        self,
-        generator: Generator,
-        prompt: str = None,
-        examples: List[str] = [],
-    ):
-        self.generator = generator
-        self.prompt = prompt
-        self.examples = examples
-        self.prompt_template = Template(self.prompt) if prompt else None
-
-    def __call__(self, **kwargs) -> Any:
-        self.kwargs = kwargs
-        system_prompt = (
-            self.prompt_template.render(
-                user_query=self.kwargs.get("input"),
-                examples=self.examples,
-            )
-            if self.prompt_template
-            else self.kwargs.get("input")
-        )
-        messages = [{"role": "system", "content": system_prompt}]
-        response = self.generator(messages)
-        return response
 
 
 class ChainOfThought(GeneratorRunner):
@@ -119,6 +88,8 @@ if __name__ == "__main__":
     chain_of_thought = ChainOfThought(generator)
     input = "Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?"
     input = "How can I become an AI engineer?"
+    input = "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?"
+
     response = chain_of_thought(input=input)
     print(response)
 

@@ -20,17 +20,17 @@ from lightrag.tool_helper import FunctionTool, AsyncCallable
 from lightrag.string_parser import JsonParser, parse_function_call
 from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
-from lightrag.light_rag import Generator
+from lightrag.light_rag import Generator, GeneratorRunner
 
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
-<START_OF_SYSTEAM_PROMPT>
+<<SYS>>
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action)steps and then provide the next Thought and Action.
 
-You have access to the following tools:
+You only have access to the following tools:
 {# tools #}
 {% for tool in tools %}
 {{ loop.index }}. ToolName: {{ tool.metadata.name }}
@@ -39,31 +39,35 @@ You have access to the following tools:
 {% endfor %}
 {# output is always more robust to use json than string #}
 ---
-Your output must be in valid JSON format with two keys:
+Your output must be in valid JSON format(raw Python string format) with two keys: 
 {
     "thought": "<Why you are taking this action>",
     "action": "ToolName(<args>, <kwargs>)"
 }
+- Must double quote the JSON str.
+- Inside of the JSON str, Must use escape double quote and escape backslash for string.
+For example:
+"action": "finish(\"John's.\")"
 ---
-{# Specifications TODO: preference between the usage of internal knowlege vs the tool #}
+{# Specifications TODO: preference between the usage of llm tool vs the other tool #}
 Process:
 - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
-- Call one tool at a time to solve each subquery. 
-- Use 'finish' to join all subqueries answers and finish the task.
+- Call one available tool at a time to solve each subquery/subquestion. \
+- At step 'finish', join all subqueries answers and finish the task.
 Remember:
 - Action must call one of the above tools with Took Name. It can not be empty. 
-- Read the Tool Description and ensure your args and kwarg follow what each tool expects. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
+- Read the Tool Description and ensure your args and kwarg follow what each tool expects in types. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
-- If the argument is a string, it must be enclosed in single quotes.
+- When the initial query is simple, use minimum steps to answer the query.
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
-Examples:
+Learn from the examples:
 {% for example in examples %}
 {{ example }}
 {% endfor %}
 {% endif %}
-<END_OF_SYSTEAM_PROMPT>
+<</SYS>>
 -----------------
 User query: {{user_query}}
 {# History #}
@@ -113,10 +117,22 @@ class ReActAgent:
         self.examples = examples
         self.tools = tools
 
-        def internal_knowledge(answer: str) -> str:
+        self.tool_helper_attr: Dict[str, Any] = {}
+        # add a geneartor as a helper
+        self.tool_helper_attr["BaseGeneratorRunner"] = GeneratorRunner(
+            generator=generator
+        )
+
+        def llm_tool(input: str) -> str:
             """
-            You can use your internal knowledge to answer some subqueries. Your value should be the actual answer in a string.
+            I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple.
             """
+            # use the generator to answer the query
+            try:
+                return self.tool_helper_attr["BaseGeneratorRunner"](input=input)
+            except Exception as e:
+                print(f"Error using the generator: {e}")
+
             return None
 
         def finish(answer: str) -> str:
@@ -125,7 +141,7 @@ class ReActAgent:
             """
             return answer
 
-        self.tools.extend([internal_knowledge, finish])
+        self.tools.extend([llm_tool, finish])
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
             (
@@ -180,7 +196,9 @@ class ReActAgent:
             return action_step
         except Exception as e:
             print(f"Error executing {action}: {e}")
-            return None
+            # pass the error as observation so that the agent can continue and correct the error in the next step
+            action_step.observation = f"Error executing {action}: {e}"
+            return action_step
 
     def _run_one_step(self, input: str, step: int) -> str:
         """
@@ -200,6 +218,7 @@ class ReActAgent:
                 "content": prompt,
             }
         ]
+        print(f"messages: {messages}")
         response = self.generator(messages)
         print(f"raw generator output: {response}")
         parsed_response = self._parse_text_response(response, step)
@@ -218,12 +237,17 @@ class ReActAgent:
         """
         for i in range(self.max_steps):
             step = i + 1
-            self._run_one_step(input, step)
-            if (
-                self.step_history[-1].fun_name
-                and self.step_history[-1].fun_name == "finish"
-            ):
-                break
+            try:
+                self._run_one_step(input, step)
+                if (
+                    self.step_history[-1].fun_name
+                    and self.step_history[-1].fun_name == "finish"
+                ):
+                    break
+            except Exception as e:
+                error_message = f"Error running step {step}: {e}"
+                print(error_message)
+
         answer = self.step_history[-1].observation
         print(f"step_history: {self.step_history}")
         self.reset()
@@ -261,19 +285,31 @@ if __name__ == "__main__":
         "provider": "groq",
         "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
         # mistral also not good: mixtral-8x7b-32768, but with better prompt, it can still work
+        "temperature": 0.0,
     }
 
     planner = GroqGenerator(**settings)
-    settings = {
-        "provider": "openai",
-        "model": "gpt-3.5-turbo",
-    }
-    planner = OpenAIGenerator(**settings)
-    agent = ReActAgent(generator=planner, tools=tools, max_steps=10)
+    # settings = {
+    #     "provider": "openai",
+    #     "model": "gpt-3.5-turbo",
+    #     "temperature": 0.0,
+    # }
+    # planner = OpenAIGenerator(**settings)
+    examples = [
+        # r"""
+        # User: What is 9 - 3?
+        # You: {
+        #     "thought": "I need to subtract 3 from 9, but there is no subtraction tool, so I ask llm_tool to answer the query.",
+        #     "action": "llm_tool('What is 9 - 3?')"
+        # }
+        # """
+    ]
+    agent = ReActAgent(generator=planner, tools=tools, max_steps=10, examples=examples)
     queries = [
-        "What is 2 times 3?",
-        "What is 3 plus 4?",
-        "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
+        # "What is 2 times 3?",
+        # "What is 3 plus 4?",
+        # "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
+        "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?",
     ]
     """
     Results: mixtral-8x7b-32768, 0.9s per query
@@ -289,3 +325,5 @@ if __name__ == "__main__":
         average_time += time.time() - t0
         print(f"Answer: {answer}")
     print(f"Average time: {average_time / len(queries)}")
+
+    # test multiply(2024 - 2017, 12)
