@@ -9,7 +9,7 @@ The future: the agent can write your prompts too. Check out dspy: https://github
 """
 The initial ReAct paper does not support different types of tools. REact agent can be useful for
 - Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
-- Plan the usage of given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools. 
+- Plan the usage of given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools.
 - Every react agent can be given a different tasks, different tools, and different LLM models to complete the task.
 - 'internal_knowledge' tool can be used to answer some subqueries using internal knowledge.
 - 'finish' tool can be used to finish the task by joining all subqueries answers.
@@ -39,7 +39,7 @@ You only have access to the following tools:
 {% endfor %}
 {# output is always more robust to use json than string #}
 ---
-Your output must be in valid JSON format(raw Python string format) with two keys: 
+Your output must be in valid JSON format(raw Python string format) with two keys:
 {
     "thought": "<Why you are taking this action>",
     "action": "ToolName(<args>, <kwargs>)"
@@ -55,7 +55,7 @@ Process:
 - Call one available tool at a time to solve each subquery/subquestion. \
 - At step 'finish', join all subqueries answers and finish the task.
 Remember:
-- Action must call one of the above tools with Took Name. It can not be empty. 
+- Action must call one of the above tools with Took Name. It can not be empty.
 - Read the Tool Description and ensure your args and kwarg follow what each tool expects in types. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
 - When the initial query is simple, use minimum steps to answer the query.
@@ -255,7 +255,6 @@ class ReActAgent:
 
 
 if __name__ == "__main__":
-    from lightrag.light_rag import OpenAIGenerator
     from extend.generator.groq_generator import GroqGenerator
 
     def multiply(a: int, b: int) -> int:
@@ -274,7 +273,7 @@ if __name__ == "__main__":
         """
         Search the web for the given query.
         """
-        return f"python programming is a great way to learn programming"
+        return "python programming is a great way to learn programming"
 
     tools = [
         FunctionTool.from_defaults(fn=multiply),

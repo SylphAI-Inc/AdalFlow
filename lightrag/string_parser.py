@@ -158,7 +158,7 @@ class JsonParser(BaseTextParser):
             # 1st attempt to load the json string
             json_obj = json.loads(json_str)
             return json_obj
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             # 2nd attemp after fixing the json string
             if self.fix_missing_commas:
                 try:
@@ -180,7 +180,7 @@ class JsonParser(BaseTextParser):
                         print("Parsing JSON string with PyYAML...")
                         json_obj = yaml.safe_load(json_str)
                         return json_obj
-                    except yaml.YAMLError as e_yaml:
+                    except yaml.YAMLError:
                         raise ValueError(
                             f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
                         )

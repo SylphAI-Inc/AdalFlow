@@ -154,7 +154,7 @@ class Tokenizer:
 ##############################################
 QA_PROMPT = r"""
     <START_OF_SYSTEM_PROMPT>
-    You are a helpful assistant. 
+    You are a helpful assistant.
 
     Your task is to answer the query that may or may not come with context information.
     When context is provided, you should stick to the context and less on your prior knowledge to answer the query.
@@ -344,17 +344,17 @@ class FAISSRetriever(Retriever):
         return D
 
     def _to_retriever_output(
-        self, I: np.ndarray, D: np.ndarray
+        self, Ind: np.ndarray, D: np.ndarray
     ) -> List[RetrieverOutput]:
         output: List[RetrieverOutput] = []
         # Step 1: Filter out the -1, -1 columns along with its scores when top_k > len(chunks)
-        if -1 in I:
-            valid_columns = ~np.any(I == -1, axis=0)
+        if -1 in Ind:
+            valid_columns = ~np.any(Ind == -1, axis=0)
 
             D = D[:, valid_columns]
-            I = I[:, valid_columns]
+            Ind = Ind[:, valid_columns]
         # Step 2: processing rows (one query at a time)
-        for row in zip(I, D):
+        for row in zip(Ind, D):
             indexes, distances = row
             chunks: List[Chunk] = []
             for index, distance in zip(indexes, distances):
@@ -382,9 +382,9 @@ class FAISSRetriever(Retriever):
         queries = [q for q in queries if q]  # Filter empty queries
         queries_embeddings = self.vectorizer(queries).embeddings
         xq = np.array(queries_embeddings, dtype=np.float32)
-        D, I = self.index.search(xq, top_k if top_k else self.top_k)
+        D, Ind = self.index.search(xq, top_k if top_k else self.top_k)
         D = self._convert_cosine_similarity_to_probability(D)
-        retrieved_output = self._to_retriever_output(I, D)
+        retrieved_output = self._to_retriever_output(Ind, D)
         for i, output in enumerate(retrieved_output):
             output.query = queries[i]
         return retrieved_output
