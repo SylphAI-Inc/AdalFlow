@@ -183,7 +183,7 @@ class Embedder(ABC):
 
 
 class EmbedderOutput:
-    embeddings: List[List[float]]
+    embeddings: List[List[float]]  # batch_size X embedding_size
     usage: Dict[str, Any]  # api or model usage
 
     def __init__(self, embeddings: List[List[float]], usage: Dict[str, Any]):
@@ -472,7 +472,7 @@ class OpenAIGenerator(Generator):
         completion = self.sync_client.chat.completions.create(
             messages=messages, **combined_kwargs
         )
-        print(f"completion: {completion}")
+        # print(f"completion: {completion}")
         response = self.parse_completion(completion)
         return response
 

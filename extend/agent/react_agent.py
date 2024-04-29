@@ -98,16 +98,18 @@ class StepOutput:
         return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
 
 
+# TODO: can create an agent base class
+# TODO: make input a class
 class ReActAgent:
     def __init__(
         self,
         generator: Generator = None,
-        generator_prompt: str = DEFAULT_REACT_AGENT_PROMPT,
+        prompt: str = DEFAULT_REACT_AGENT_PROMPT,
         examples: List[str] = [],
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
     ):
-        self.prompt = generator_prompt
+        self.prompt = prompt
         self.examples = examples
         self.tools = tools
 
@@ -185,6 +187,7 @@ class ReActAgent:
         Run one step of the agent.
         """
         template = Template(self.prompt)
+        # TODO: use base class to provide a method to formulate the data
         prompt = template.render(
             user_query=input,
             tools=self.tools,
