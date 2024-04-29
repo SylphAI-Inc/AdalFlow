@@ -103,16 +103,23 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
     return text[start : end + 1]
 
 
-def fix_json_formatting(json_str: str) -> str:
+def fix_json_missing_commas(json_str: str) -> str:
     # Example: adding missing commas, only after double quotes
     # Regular expression to find missing commas
     regex = r'(?<=[}\]"\'\d])(\s+)(?=[\{"\[])'
 
     # Add commas where missing
     fixed_json_str = re.sub(regex, r",\1", json_str)
-    # print("adding commas when missing, fixed_json_str: ", fixed_json_str)
 
     return fixed_json_str
+
+
+def fix_json_escaped_single_quotes(json_str: str) -> str:
+    # First, replace improperly escaped single quotes inside strings
+    # json_str = re.sub(r"(?<!\\)\'", '"', json_str)
+    # Fix escaped single quotes
+    json_str = json_str.replace("\\'", "'")
+    return json_str
 
 
 ############################################################################################################
@@ -135,6 +142,7 @@ class JsonParser(BaseTextParser):
     """
     A text parser for extracting JSON strings from text to json object.
     NOTE: ensure only pass one json string in the text.
+    You can use `extract_json_str` to extract the first json string from the text.
     """
 
     def __init__(
@@ -154,8 +162,10 @@ class JsonParser(BaseTextParser):
             # 2nd attemp after fixing the json string
             if self.fix_missing_commas:
                 try:
-                    print("Fixing JSON formatting issues...")
-                    json_str = fix_json_formatting(json_str)
+                    print("Trying to fix potential missing commas...")
+                    json_str = fix_json_missing_commas(json_str)
+                    print("Trying to fix scaped single quotes...")
+                    json_str = fix_json_escaped_single_quotes(json_str)
                     json_obj = json.loads(json_str)
                     return json_obj
                 except json.JSONDecodeError as e:
@@ -215,6 +225,25 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         return tuple(evaluate_ast_node(elem) for elem in node.elts)
     elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
         return -evaluate_ast_node(node.operand, context_map)  # unary minus
+    elif isinstance(
+        node, ast.BinOp
+    ):  # support "multiply(2024-2017, 12)", the "2024-2017" is a "BinOp" node
+        left = evaluate_ast_node(node.left, context_map)
+        right = evaluate_ast_node(node.right, context_map)
+        if isinstance(node.op, ast.Add):
+            return left + right
+        elif isinstance(node.op, ast.Sub):
+            return left - right
+        elif isinstance(node.op, ast.Mult):
+            return left * right
+        elif isinstance(node.op, ast.Div):
+            return left / right
+        elif isinstance(node.op, ast.Mod):
+            return left % right
+        elif isinstance(node.op, ast.Pow):
+            return left**right
+        else:
+            raise ValueError(f"Unsupported binary operator: {type(node.op)}")
     elif isinstance(node, ast.Name):  # variable name
         return context_map[node.id]
     elif isinstance(
@@ -281,3 +310,5 @@ if __name__ == "__main__":
         print(extract_json_str(test_input_3))
     except ValueError as e:
         print(e)  # Expected to raise an error about no JSON object found
+
+    # test
