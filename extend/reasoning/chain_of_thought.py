@@ -16,12 +16,13 @@ Benchmark it with and without CoT to see if it helps.
 """
 
 from lightrag.light_rag import OpenAIGenerator, Generator
-from typing import Any, List
+from typing import Any, List, Optional
 from jinja2 import Template
+from abc import ABC, abstractmethod
 
 DEFAULT_CHAIN_OF_THOUGHT_PROMPT = r"""
 <START_OF_SYSTEM_PROMPT>
-You are a helpful assistant. Let's think step-by-step concisely to answer user's query.
+You are a helpful assistant. Let's think step-by-step (be concise too) to answer user's query.
 {#few_shot_examples#}
 {% if examples %}
 Examples:
@@ -35,24 +36,69 @@ You:
 """
 
 
-class ChainOfThought:
-    name = "Chain of Thought"
+# TODO: Generalize this prompt template class
+# system reserved keywords: user_query, examples, context_str,
+class PromptTemplate:
+    def __init__(self, prompt: str, examples: List[str]):
+        self.prompt = prompt
+        self.examples = examples
+        self.prompt_template = Template(self.prompt)
+
+    def render(self, user_query: str) -> str:
+        return self.prompt_template.render(
+            user_query=user_query,
+            examples=self.examples,
+        )
+
+
+# TODO: jinja2 template class to enforece the type checking
+# TODO: add tracking
+class GeneratorRunner:
+    """
+    An abstract class for running a generator.
+    """
+
+    name = "GeneratorRunner"
 
     def __init__(
         self,
-        generator: Generator = None,
-        prompt: str = DEFAULT_CHAIN_OF_THOUGHT_PROMPT,
+        generator: Generator,
+        prompt: str = None,
         examples: List[str] = [],
     ):
         self.generator = generator
         self.prompt = prompt
         self.examples = examples
-        self.template = Template(self.prompt)
-        # verbose
-        print(f"Chain of Thought prompt: {self.prompt}")
+        self.prompt_template = Template(self.prompt) if prompt else None
+
+    def __call__(self, **kwargs) -> Any:
+        self.kwargs = kwargs
+        system_prompt = (
+            self.prompt_template.render(
+                user_query=self.kwargs.get("input"),
+                examples=self.examples,
+            )
+            if self.prompt_template
+            else self.kwargs.get("input")
+        )
+        messages = [{"role": "system", "content": system_prompt}]
+        response = self.generator(messages)
+        return response
+
+
+class ChainOfThought(GeneratorRunner):
+    name = "Chain of Thought"
+
+    def __init__(
+        self,
+        generator: Generator,
+        prompt: str = DEFAULT_CHAIN_OF_THOUGHT_PROMPT,
+        examples: List[str] = [],
+    ):
+        super().__init__(generator, prompt, examples)
 
     def __call__(self, input: str) -> str:
-        prompt = self.template.render(
+        prompt = self.prompt_template.render(
             user_query=input,
             examples=self.examples,
         )
@@ -60,7 +106,7 @@ class ChainOfThought:
             {"role": "system", "content": prompt},
         ]
         print(f"messages: {messages}")
-        response = self.generator(messages)
+        response = self.generator(messages=messages)
         return response
 
 
@@ -72,10 +118,11 @@ if __name__ == "__main__":
     generator = OpenAIGenerator(**settings)
     chain_of_thought = ChainOfThought(generator)
     input = "Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?"
+    input = "How can I become an AI engineer?"
     response = chain_of_thought(input=input)
     print(response)
 
     # raw response
-    messages = [{"role": "system", "content": input}]
-    response = generator(messages)
+    base_generator_runner = GeneratorRunner(generator)
+    response = base_generator_runner(input=input)
     print(f"raw response: {response}")
