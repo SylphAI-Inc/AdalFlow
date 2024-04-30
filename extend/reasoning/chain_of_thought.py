@@ -3,22 +3,21 @@ https://arxiv.org/abs/2201.11903
 
 Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer. You can achieve it in two ways:
 1. Add instructions such as "Let's think step-by-step to answer this question".
-2. Add few-shot examples such as 
+2. Add few-shot examples such as
 '
 Q: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?
 A: Roger started with 5 balls. 2 cansof 3 tennis balls each is 6 tennis balls. 5 + 6 = 11. The answer is 11.
 '
 
-NOTE: CoT can be helpful for more complicated task, it also varies from task to task and model to model. 
+NOTE: CoT can be helpful for more complicated task, it also varies from task to task and model to model.
 For instance, CoT might already be supported in gpt3.5+ api calls.
 
 Benchmark it with and without CoT to see if it helps.
 """
 
 from lightrag.light_rag import OpenAIGenerator, Generator, GeneratorRunner
-from typing import Any, List, Optional
+from typing import List
 from jinja2 import Template
-from abc import ABC, abstractmethod
 
 DEFAULT_CHAIN_OF_THOUGHT_PROMPT = r"""
 <START_OF_SYSTEM_PROMPT>
