@@ -118,7 +118,7 @@ def fix_json_escaped_single_quotes(json_str: str) -> str:
     # First, replace improperly escaped single quotes inside strings
     # json_str = re.sub(r"(?<!\\)\'", '"', json_str)
     # Fix escaped single quotes
-    json_str = json_str.replace("\\'", "'")
+    json_str = json_str.replace(r"\'", "'")
     return json_str
 
 
@@ -145,11 +145,8 @@ class JsonParser(BaseTextParser):
     You can use `extract_json_str` to extract the first json string from the text.
     """
 
-    def __init__(
-        self, add_missing_right_brace: bool = True, fix_missing_commas: bool = True
-    ):
+    def __init__(self, add_missing_right_brace: bool = True):
         self.add_missing_right_brace = add_missing_right_brace
-        self.fix_missing_commas = fix_missing_commas
 
     def __call__(self, text: str) -> Dict[str, Any]:
         text = text.strip()
@@ -160,32 +157,32 @@ class JsonParser(BaseTextParser):
             return json_obj
         except json.JSONDecodeError as e:
             # 2nd attemp after fixing the json string
-            if self.fix_missing_commas:
+            try:
+                print("Trying to fix potential missing commas...")
+                json_str = fix_json_missing_commas(json_str)
+                print("Trying to fix scaped single quotes...")
+                json_str = fix_json_escaped_single_quotes(json_str)
+                print(f"Fixed JSON string: {json_str}")
+                json_obj = json.loads(json_str)
+                return json_obj
+            except json.JSONDecodeError as e:
+                # 3rd attemp using yaml
                 try:
-                    print("Trying to fix potential missing commas...")
-                    json_str = fix_json_missing_commas(json_str)
-                    print("Trying to fix scaped single quotes...")
-                    json_str = fix_json_escaped_single_quotes(json_str)
-                    json_obj = json.loads(json_str)
-                    return json_obj
-                except json.JSONDecodeError as e:
-                    # 3rd attemp using yaml
-                    try:
-                        import yaml
+                    import yaml
 
-                        # NOTE: parsing again with pyyaml
-                        #       pyyaml is less strict, and allows for trailing commas
-                        #       right now we rely on this since guidance program generates
-                        #       trailing commas
-                        print("Parsing JSON string with PyYAML...")
-                        json_obj = yaml.safe_load(json_str)
-                        return json_obj
-                    except yaml.YAMLError as e_yaml:
-                        raise ValueError(
-                            f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
-                        )
-                    except NameError as exc:
-                        raise ImportError("Please pip install PyYAML.") from exc
+                    # NOTE: parsing again with pyyaml
+                    #       pyyaml is less strict, and allows for trailing commas
+                    #       right now we rely on this since guidance program generates
+                    #       trailing commas
+                    print("Parsing JSON string with PyYAML...")
+                    json_obj = yaml.safe_load(json_str)
+                    return json_obj
+                except yaml.YAMLError as e_yaml:
+                    raise ValueError(
+                        f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
+                    )
+                except NameError as exc:
+                    raise ImportError("Please pip install PyYAML.") from exc
 
 
 ############################################################################################################
@@ -245,7 +242,15 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         else:
             raise ValueError(f"Unsupported binary operator: {type(node.op)}")
     elif isinstance(node, ast.Name):  # variable name
-        return context_map[node.id]
+        try:
+            output_fun = context_map[node.id]
+            return output_fun
+        # TODO: raise the error back to the caller so that the llm can get the error message
+        except KeyError as e:
+            raise ValueError(
+                f"Error: {e}, {node.id} does not exist in the context_map."
+            )
+
     elif isinstance(
         node, ast.Call
     ):  # another fun or class as argument and value, e.g. add( multiply(4,5), 3)
