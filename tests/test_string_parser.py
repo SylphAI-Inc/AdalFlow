@@ -1,6 +1,5 @@
 from lightrag.string_parser import (
     JsonParser,
-    parse_function_call,
     extract_json_str,
     fix_json_missing_commas,
     fix_json_escaped_single_quotes,

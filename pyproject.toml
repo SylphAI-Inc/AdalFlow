@@ -20,6 +20,7 @@ groq = "^0.5.0"
 langchain = "^0.1.16"
 langchainhub = "^0.1.15"
 llama-index = "^0.10.30"
+pre-commit = "^3.7.0"
 
 
 [build-system]

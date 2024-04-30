@@ -2,10 +2,9 @@
 LLM applications requires lots of string processing. Such as the text output needed to be parsed into:
 (1) JSON format or other formats
 (2) SQL/Python valid format
-(3) Tool call format
+(3) Tool(function) call format
 
-We design this the string_parser module to be generic to any input text without differentiate them as input text or output text.
-TODO: function and arguments parser
+We design this these string_parser modules to be generic to any input text without differentiating them as input text or output text.
 """
 
 import re
@@ -155,7 +154,7 @@ class JsonParser(BaseTextParser):
             # 1st attempt to load the json string
             json_obj = json.loads(json_str)
             return json_obj
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             # 2nd attemp after fixing the json string
             try:
                 print("Trying to fix potential missing commas...")
