@@ -138,8 +138,8 @@ class Model(Component):
         """
         pass_model_kwargs = self.model_kwargs.copy()
 
-        if pass_model_kwargs:
-            model_kwargs.update(model_kwargs)
+        if model_kwargs:
+            pass_model_kwargs.update(model_kwargs)
         return pass_model_kwargs
 
     def parse_completion(self, completion: ChatCompletion) -> str:
