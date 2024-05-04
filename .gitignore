@@ -11,3 +11,4 @@ tests/__pycache__
 test_li.py
 test_li*.py
 dist/
+llama3/

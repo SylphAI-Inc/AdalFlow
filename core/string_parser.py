@@ -13,7 +13,8 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Tuple
 import json
 import ast
-from lightrag.tool_helper import ToolOutput
+from core.tool_helper import ToolOutput
+from core.component import Component
 
 
 ############################################################################################################
@@ -121,23 +122,7 @@ def fix_json_escaped_single_quotes(json_str: str) -> str:
     return json_str
 
 
-############################################################################################################
-# Often used as the output parser for LLM text output
-############################################################################################################
-class BaseTextParser(ABC):
-    """
-    A base class for text parsers. Good for type hinting and inheritance.
-    """
-
-    @abstractmethod
-    def __call__(self, text: str) -> Any:
-        """
-        Parse the provided text and return the parsed data.
-        """
-        pass
-
-
-class JsonParser(BaseTextParser):
+class JsonParser(Component):
     """
     A text parser for extracting JSON strings from text to json object.
     NOTE: ensure only pass one json string in the text.

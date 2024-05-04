@@ -1,6 +1,10 @@
 from collections import OrderedDict
-from typing import Callable, Dict, Any, Optional
+from typing import Callable, Dict, Any, Optional, List, Tuple, Iterable, Set
 import os
+from core.data_classes import EmbedderOutput, RetrieverOutput, Chunk
+from collections import OrderedDict, abc as container_abcs
+import operator
+from itertools import islice
 
 # TODO: design hooks.
 _global_pre_call_hooks: Dict[int, Callable] = OrderedDict()
@@ -53,17 +57,287 @@ class Component:
     async def acall(self, *args, **kwargs):
         pass
 
+    def add_component(self, name: str, component: Optional["Component"]) -> None:
+        self._components[name] = component
+
     def register_subcomponent(
         self, name: str, component: Optional["Component"]
     ) -> None:
-        self._components[name] = component
+        r"""
+        Alias for add_component
+        """
+        self.add_component(name, component)
 
     def get_subcomponent(self, name: str) -> Optional["Component"]:
         return self._components.get(name)
 
+    def named_children(self) -> Iterable[Tuple[str, "Component"]]:
+        r"""
+        Returns an iterator over immediate children modules.
+        """
+        memo = set()
+        for name, component in self._components.items():
+            if component is not None and component not in memo:
+                memo.add(component)
+                yield name, component
+
+    def children(self) -> Iterable["Component"]:
+        r"""
+        Returns an iterator over immediate children modules.
+        """
+        for name, component in self.named_children():
+            yield component
+
+    def named_components(
+        self,
+        memo: Optional[Set["Component"]] = None,
+        prefix: str = "",
+        remove_duplicate: bool = True,
+    ):
+        if memo is None:
+            memo = set()
+        if self not in memo:
+            if remove_duplicate:
+                memo.add(self)
+            yield prefix, self
+            for name, module in self._components.items():
+                if module is None:
+                    continue
+                submodule_prefix = prefix + ("." if prefix else "") + name
+                yield from module.named_components(
+                    memo, submodule_prefix, remove_duplicate
+                )
+
+    def components(self) -> Iterable["Component"]:
+        r"""
+        Returns an iterator over all components in the Module.
+        """
+        for name, component in self.named_children():
+            yield component
+
+    def apply(self: "Component", fn: Callable[["Component", Any], None]) -> None:
+        r"""
+        Applies a function to all subcomponents.
+        # TODO: in what situation we need function apply?
+        """
+        for name, component in self.children():
+            component.apply(fn)
+        fn(self)
+        return self
+
+
+from typing import (
+    List,
+    Dict,
+    Any,
+    Optional,
+    Union,
+    Mapping,
+    Tuple,
+    Iterable,
+    Iterator,
+    overload,
+)
+
+
+class ComponentSequential(Component):
+    _components: Dict[str, Component]  # type: ignore[assignment]
+
+    @overload
+    def __init__(self, *args: Component) -> None: ...
+
+    @overload
+    def __init__(self, arg: "OrderedDict[str, Component]") -> None: ...
+
+    def __init__(self, *args):
+        super().__init__()
+        if len(args) == 1 and isinstance(args[0], OrderedDict):
+            for key, module in args[0].items():
+                self.add_component(key, module)
+        else:
+            for idx, module in enumerate(args):
+                self.add_component(str(idx), module)
+
+    def _get_item_by_idx(self, iterator, idx) -> Component:  # type: ignore[misc, type-var]
+        """Get the idx-th item of the iterator."""
+        size = len(self)
+        idx = operator.index(idx)
+        if not -size <= idx < size:
+            raise IndexError(f"index {idx} is out of range")
+        idx %= size
+        return next(islice(iterator, idx, None))
+
+    def __getitem__(
+        self, idx: Union[slice, int]
+    ) -> Union["ComponentSequential", Component]:
+        if isinstance(idx, slice):
+            return self.__class__(OrderedDict(list(self._components.items())[idx]))
+        else:
+            return self._get_item_by_idx(self._components.values(), idx)
+
+    def __setitem__(self, idx: int, module: Component) -> None:
+        key: str = self._get_item_by_idx(self._components.keys(), idx)
+        return setattr(self, key, module)
+
+    def __delitem__(self, idx: Union[slice, int]) -> None:
+        if isinstance(idx, slice):
+            for key in list(self._components.keys())[idx]:
+                delattr(self, key)
+        else:
+            key = self._get_item_by_idx(self._components.keys(), idx)
+            delattr(self, key)
+        # To preserve numbering
+        str_indices = [str(i) for i in range(len(self._components))]
+        self._components = OrderedDict(
+            list(zip(str_indices, self._components.values()))
+        )
+
+    def call(self, input: Any) -> Any:
+        for module in self._components.values():
+            input = module(input)
+        return input
+
+
+class ComponentDict(Component):
+    r"""
+    We directly used the code in PyTorch's ModuleDict.
+    See its design here: /torch/nn/modules/container.py
+
+    Holds submodules in a dictionary.
+
+    :class:`~torch.nn.ModuleDict` can be indexed like a regular Python dictionary,
+    but modules it contains are properly registered, and will be visible by all
+    :class:`~torch.nn.Module` methods.
+
+    :class:`~torch.nn.ModuleDict` is an **ordered** dictionary that respects
+
+    * the order of insertion, and
+
+    * in :meth:`~torch.nn.ModuleDict.update`, the order of the merged
+      ``OrderedDict``, ``dict`` (started from Python 3.6) or another
+      :class:`~torch.nn.ModuleDict` (the argument to
+      :meth:`~torch.nn.ModuleDict.update`).
+
+    Note that :meth:`~torch.nn.ModuleDict.update` with other unordered mapping
+    types (e.g., Python's plain ``dict`` before Python version 3.6) does not
+    preserve the order of the merged mapping.
+
+    Args:
+        modules (iterable, optional): a mapping (dictionary) of (string: module)
+            or an iterable of key-value pairs of type (string, module)
+
+    Example::
+
+        class MyModule(nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.choices = nn.ModuleDict({
+                        'conv': nn.Conv2d(10, 10, 3),
+                        'pool': nn.MaxPool2d(3)
+                })
+                self.activations = nn.ModuleDict([
+                        ['lrelu', nn.LeakyReLU()],
+                        ['prelu', nn.PReLU()]
+                ])
+
+            def forward(self, x, choice, act):
+                x = self.choices[choice](x)
+                x = self.activations[act](x)
+                return x
+    """
+
+    _components: Dict[str, Component]  # type: ignore[assignment]
+
+    def __init__(self, modules: Optional[Mapping[str, Component]] = None) -> None:
+        super().__init__()
+        if modules is not None:
+            self.update(modules)
+
+    def __getitem__(self, key: str) -> Component:
+        return self._components[key]
+
+    def __setitem__(self, key: str, component: Component) -> None:
+        self.add_component(key, component)
+
+    def __delitem__(self, key: str) -> None:
+        del self._components[key]
+
+    def __len__(self) -> int:
+        return len(self._components)
+
+    def __iter__(self) -> Iterator[str]:
+        return iter(self._components)
+
+    def __contains__(self, key: str) -> bool:
+        return key in self._components
+
+    def clear(self) -> None:
+        """Remove all items from the ModuleDict."""
+        self._components.clear()
+
+    def pop(self, key: str) -> Component:
+        r"""Remove key from the ModuleDict and return its module.
+
+        Args:
+            key (str): key to pop from the ModuleDict
+        """
+        v = self[key]
+        del self[key]
+        return v
+
+    def keys(self) -> Iterable[str]:
+        r"""Return an iterable of the ModuleDict keys."""
+        return self._components.keys()
+
+    def items(self) -> Iterable[Tuple[str, Component]]:
+        r"""Return an iterable of the ModuleDict key/value pairs."""
+        return self._components.items()
+
+    def values(self) -> Iterable[Component]:
+        r"""Return an iterable of the ModuleDict values."""
+        return self._components.values()
+
+    def update(self, components: Mapping[str, Component]) -> None:
+        r"""Update the :class:`~torch.nn.ModuleDict` with key-value pairs from a mapping, overwriting existing keys.
+
+        .. note::
+            If :attr:`modules` is an ``OrderedDict``, a :class:`~torch.nn.ModuleDict`, or
+            an iterable of key-value pairs, the order of new elements in it is preserved.
+
+        Args:
+            modules (iterable): a mapping (dictionary) from string to :class:`~torch.nn.Module`,
+                or an iterable of key-value pairs of type (string, :class:`~torch.nn.Module`)
+        """
+        if not isinstance(components, container_abcs.Iterable):
+            raise TypeError(
+                "ModuleDict.update should be called with an "
+                "iterable of key/value pairs, but got " + type(components).__name__
+            )
+
+        if isinstance(components, (OrderedDict, ComponentDict, container_abcs.Mapping)):
+            for key, module in components.items():
+                self[key] = module
+        else:
+            # modules here can be a list with two items
+            for j, m in enumerate(components):
+                if not isinstance(m, container_abcs.Iterable):
+                    raise TypeError(
+                        "ModuleDict update sequence element "
+                        "#" + str(j) + " should be Iterable; is" + type(m).__name__
+                    )
+                if not len(m) == 2:
+                    raise ValueError(
+                        "ModuleDict update sequence element "
+                        "#" + str(j) + " has length " + str(len(m)) + "; 2 is required"
+                    )
+                # modules can be Mapping (what it's typed at), or a list: [(name1, module1), (name2, module2)]
+                # that's too cumbersome to type correctly with overloads, so we add an ignore here
+                self[m[0]] = m[1]  # type: ignore[assignment]
+
+    # remove forward alltogether to fallback on Module's _forward_unimplemented
+
 
 from openai import OpenAI, AsyncOpenAI
-from openai.types.chat import ChatCompletion
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -73,80 +347,8 @@ from openai import (
 )
 import backoff
 from typing import List, Union, overload
-
-
-class EmbedderOutput:
-    embeddings: List[List[float]]  # batch_size X embedding_size
-    usage: Dict[str, Any]  # api or model usage
-
-    def __init__(self, embeddings: List[List[float]], usage: Dict[str, Any]):
-        self.embeddings = embeddings
-        self.usage = usage
-
-    def __repr__(self) -> str:
-        return f"EmbedderOutput(embeddings={self.embeddings[0:5]}, usage={self.usage})"
-
-    def __str__(self):
-        return self.__repr__()
-
-
-class Model(Component):
-    r"""
-    Base class for most Model inference (or potentially training). If your Model does not fit this pattern, you can extend Component directly.
-    Either local or via API calls.
-    Support Embedder, LLM Generator.
-    """
-
-    # TODO: allow for specifying the model type, e.g. "embedder", "LLM",
-    # TODO: support image models
-    type: Optional[str]
-
-    def __init__(
-        self, provider: str, type: Optional[str] = None, **model_kwargs
-    ) -> None:
-        super().__init__(provider=provider)
-        if "model" not in model_kwargs:
-            raise ValueError(
-                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
-            )
-        self.type = type
-        self.model_kwargs = model_kwargs
-
-    # define two types, one for embeddings, and one for generator with completions
-    @overload
-    def call(self, input: str, **model_kwargs) -> EmbedderOutput: ...
-
-    @overload
-    def call(self, input: List[str], **model_kwargs) -> EmbedderOutput: ...
-
-    @overload
-    def call(self, input: List[Dict], **model_kwargs) -> Any: ...
-
-    def call(self, input: Any, **model_kwargs) -> Any:
-        raise NotImplementedError(
-            f"Model {type(self).__name__} is missing the required 'call' method."
-        )
-
-    def combine_kwargs(self, **model_kwargs) -> Dict:
-        r"""
-        Combine the default model, model_kwargs with the passed model_kwargs.
-        Example:
-        model_kwargs = {"temperature": 0.5, "model": "gpt-3.5-turbo"}
-        self.model_kwargs = {"model": "gpt-3.5"}
-        combine_kwargs(model_kwargs) => {"temperature": 0.5, "model": "gpt-3.5-turbo"}
-
-        """
-        pass_model_kwargs = self.model_kwargs.copy()
-
-        if model_kwargs:
-            pass_model_kwargs.update(model_kwargs)
-        return pass_model_kwargs
-
-    def parse_completion(self, completion: ChatCompletion) -> str:
-        """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        """
-        return completion.choices[0].message.content
+from core.data_classes import EmbedderOutput
+from core.model import Model
 
 
 class OpenAIEmbedder(Model):
@@ -195,7 +397,7 @@ class OpenAIEmbedder(Model):
         num_queries = len(formulated_inputs)
 
         # check overrides for kwargs
-        pass_model_kwargs = self.combine_kwargs(**model_kwargs)
+        pass_model_kwargs = self.compose_model_kwargs(**model_kwargs)
 
         print(f"kwargs: {model_kwargs}")
 
@@ -208,95 +410,6 @@ class OpenAIEmbedder(Model):
             len(embeddings) == num_queries
         ), f"Number of embeddings {len(embeddings)} is not equal to the number of queries {num_queries}"
         return EmbedderOutput(embeddings=embeddings, usage=usage)
-
-
-class OpenAIGenerator(Model):
-    name = "OpenAIGenerator"
-
-    def __init__(self, provider: str, **kwargs) -> None:
-        type = "generator"
-        super().__init__(provider, type, **kwargs)
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        self.sync_client = OpenAI()
-        self.async_client = None  # only initialize when needed
-
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            APITimeoutError,
-            InternalServerError,
-            RateLimitError,
-            UnprocessableEntityError,
-            BadRequestError,
-        ),
-        max_time=5,
-    )
-    def call(
-        self, input: List[Dict], model: Optional[str] = None, **model_kwargs
-    ) -> str:
-        """
-        input are messages in the format of [{"role": "user", "content": "Hello"}]
-        """
-        if model:  # overwrite the default model
-            self.model = model
-        combined_kwargs = self.combine_kwargs(**model_kwargs)
-        if not self.sync_client:
-            self.sync_client = OpenAI()
-        completion = self.sync_client.chat.completions.create(
-            messages=input, **combined_kwargs
-        )
-        # print(f"completion: {completion}")
-        response = self.parse_completion(completion)
-        return response
-
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            APITimeoutError,
-            InternalServerError,
-            RateLimitError,
-            UnprocessableEntityError,
-        ),
-        max_time=5,
-    )
-    async def acall(
-        self, messages: List[Dict], model: Optional[str] = None, **kwargs
-    ) -> str:
-        if model:
-            self.model = model
-
-        combined_kwargs = self.combine_kwargs(**kwargs)
-        if not self.async_client:
-            self.async_client = AsyncOpenAI()
-        completion = await self.async_client.chat.completions.create(
-            messages=messages, **combined_kwargs
-        )
-        response = self.parse_completion(completion)
-        return response
-
-
-from core.light_rag import Chunk
-
-
-class RetrieverOutput:
-    """
-    Retrieved result per query
-    """
-
-    chunks: List[Chunk]
-    query: Optional[str] = None
-
-    def __init__(self, chunks: List[Chunk], query: Optional[str] = None):
-        self.chunks = chunks
-        self.query = query
-
-    def __repr__(self) -> str:
-        return f"RetrieverOutput(chunks={self.chunks[0:5]}, query={self.query})"
-
-    def __str__(self):
-        return self.__repr__()
 
 
 import numpy as np

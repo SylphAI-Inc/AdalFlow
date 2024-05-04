@@ -6,13 +6,29 @@ from core.component import (
     RetrieverOutput,
     FAISSRetriever,
     EmbedderOutput,
-    OpenAIGenerator,
 )
-from core.light_rag import Chunk, Document, DEFAULT_QA_PROMPT
+from core.openai_llm import OpenAIGenerator
+from core.light_rag import DEFAULT_QA_PROMPT
+from core.data_classes import Document, Chunk
 
 # TODO: rewrite SentenceSplitter and other splitter classes
 from llama_index.core.node_parser import SentenceSplitter
 from jinja2 import Template
+from core.component import Component
+
+
+class Query(Component):
+    """
+    Allow to define query.
+    #TODO: support batch processing
+    """
+
+    def __init__(self, query: str, session_id: str = None):
+        self.query = query
+        self.session_id = session_id
+
+
+from core.prompt_builder import Prompt
 
 
 ##############################################
@@ -20,7 +36,7 @@ from jinja2 import Template
 # Configs and combines functional modules
 # One settings per RAG instance instead of global settings
 ##############################################
-class RAG:
+class RAG(Component):
     """
     TODO: design a base class later
     inputs: A list of documents [Can potentially use pandas dataframe for more complex data]
@@ -73,6 +89,12 @@ class RAG:
                 )
 
         self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
+        self.llm_task_desc = """
+You are a helpful assistant.
+
+Your task is to answer the query that may or may not come with context information.
+When context is provided, you should stick to the context and less on your prior knowledge to answer the query.
+    """
 
     def set_settings(self, settings: dict):
         self.settings = settings
@@ -206,17 +228,19 @@ class RAG:
         if not self.generator:
             raise ValueError("Generator is not set")
 
-        system_prompt_template = Template(DEFAULT_QA_PROMPT)
-        context_str = context if context else ""
-        query_str = query
-        system_prompt_content = system_prompt_template.render(
-            context_str=context_str, query_str=query_str
+        # system_prompt_template = Template(DEFAULT_QA_PROMPT)
+        # context_str = context if context else ""
+        # query_str = query
+        # system_prompt_content = system_prompt_template.render(
+        #     context_str=context_str, query_str=query_str
+        # )
+        # messages = [
+        #     {"role": "system", "content": system_prompt_content},
+        # ]
+        # print(f"messages: {messages}")
+        response = self.generator.call(
+            input=query, context_str=context, task_desc_str=self.llm_task_desc
         )
-        messages = [
-            {"role": "system", "content": system_prompt_content},
-        ]
-        print(f"messages: {messages}")
-        response = self.generator.call(messages)
         return response
 
 
