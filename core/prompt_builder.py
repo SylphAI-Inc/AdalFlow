@@ -26,6 +26,7 @@ class Prompt(Component):
     """
 
     def __init__(self, template: str):
+        super().__init__()
         # first check if template is a valid Jinja2 template
         self._template_string = template
         self.template: Template = None

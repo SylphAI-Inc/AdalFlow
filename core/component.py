@@ -11,6 +11,18 @@ _global_pre_call_hooks: Dict[int, Callable] = OrderedDict()
 __all__ = ["Component", "EmbedderOutput", "OpenAIEmbedder"]
 
 
+def _addindent(s_, numSpaces):
+    s = s_.split("\n")
+    # don't do anything for single-line stuff
+    if len(s) == 1:
+        return s_
+    first = s.pop(0)
+    s = [(numSpaces * " ") + line for line in s]
+    s = "\n".join(s)
+    s = first + "\n" + s
+    return s
+
+
 def _call_unimplemented(self, *input: Any) -> None:
     r"""
     Define the call method for the component.
@@ -47,6 +59,57 @@ class Component:
         super().__setattr__("provider", None)
         if "provider" in kwargs:
             self.provider = kwargs["provider"]
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        modules = self.__dict__.get("_components")
+        if isinstance(value, Component):
+            if modules is None:
+                raise AttributeError(
+                    "cant assign component before Component.__init__() call"
+                )
+            modules[name] = value
+        else:
+            super().__setattr__(name, value)
+
+    def __getattr__(self, name: str) -> Any:
+        if "_components" in self.__dict__:
+            components = self.__dict__["_components"]
+            if name in components:
+                return components[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
+
+    def extra_repr(self) -> str:
+        return ""
+
+    def _get_name(self):
+        return self.__class__.__name__
+
+    def __repr__(self):
+        # We treat the extra repr like the sub-module, one item per line
+        extra_lines = []
+        extra_repr = self.extra_repr()
+        # empty string will be split into list ['']
+        if extra_repr:
+            extra_lines = extra_repr.split("\n")
+        child_lines = []
+        for key, module in self._components.items():
+            mod_str = repr(module)
+            mod_str = _addindent(mod_str, 2)
+            child_lines.append("(" + key + "): " + mod_str)
+        lines = extra_lines + child_lines
+
+        main_str = self._get_name() + "("
+        if lines:
+            # simple one-liner info, which most builtin Modules will use
+            if len(extra_lines) == 1 and not child_lines:
+                main_str += extra_lines[0]
+            else:
+                main_str += "\n  " + "\n  ".join(lines) + "\n"
+
+        main_str += ")"
+        return main_str
 
     def __call__(self, *args, **kwargs):
         # Default to sync call

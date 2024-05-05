@@ -284,6 +284,8 @@ if __name__ == "__main__":
         id="doc2",
     )
     rag = RAG(settings=settings)
+    print(rag)
+    exit(0)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
