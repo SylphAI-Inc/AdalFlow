@@ -52,13 +52,14 @@ class Generator(Component):
         *,
         provider: Optional[str],
         prompt: Prompt,
-        preset_prompt_kwargs: Optional[Dict] = None,
+        preset_prompt_kwargs: Optional[
+            Dict
+        ] = None,  # such as task_desc, tools, example, etc.
         output_processors: Optional[Component],
         model_kwargs: Optional[Dict] = {},
     ) -> None:
         super().__init__()
         self.model_kwargs = model_kwargs
-        # ensure model is in model_kwargs
         if "model" not in model_kwargs:
             raise ValueError(
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
@@ -85,7 +86,6 @@ class Generator(Component):
 
 
         """
-        # ensure self.prompt is set
         if not hasattr(self, "prompt") or not self.prompt:
             raise ValueError(
                 f"{type(self).__name__} requires a 'prompt' to be set before calling the model."
@@ -147,4 +147,5 @@ class Generator(Component):
         return completion.choices[0].message.content
 
     def extra_repr(self) -> str:
-        return f"provider={self.provider}, model_type={self.model_type}, model_kwargs={self.model_kwargs}, "
+        s = f"provider={self.provider}, model_type={self.model_type}, model_kwargs={self.model_kwargs} "
+        return s

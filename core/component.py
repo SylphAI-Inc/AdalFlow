@@ -1,6 +1,18 @@
 from collections import OrderedDict
-from typing import Callable, Dict, Any, Optional, List, Tuple, Iterable, Set
-import os
+from typing import (
+    Callable,
+    Dict,
+    Any,
+    Optional,
+    List,
+    Tuple,
+    Iterable,
+    Set,
+    Union,
+    overload,
+    Iterator,
+    Mapping,
+)
 from core.data_classes import EmbedderOutput, RetrieverOutput, Chunk
 from collections import OrderedDict, abc as container_abcs
 import operator
@@ -210,20 +222,6 @@ class Component:
             component.apply(fn)
         fn(self)
         return self
-
-
-from typing import (
-    List,
-    Dict,
-    Any,
-    Optional,
-    Union,
-    Mapping,
-    Tuple,
-    Iterable,
-    Iterator,
-    overload,
-)
 
 
 class Sequential(Component):

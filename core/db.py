@@ -17,7 +17,9 @@ from typing import List, Literal
 from more_itertools import windowed
 
 from core.component import Component
-from core.data_classes import Document
+from core.data_classes import Document, Chunk
+
+# TODO: convert this to function
 
 
 class DocumentSplitter(Component):
@@ -41,6 +43,7 @@ class DocumentSplitter(Component):
         :param split_length: The maximum number of units in each split.
         :param split_overlap: The number of units that each split should overlap.
         """
+        super().__init__()
 
         self.split_by = split_by
         if split_by not in ["word", "sentence", "page", "passage"]:
@@ -54,8 +57,7 @@ class DocumentSplitter(Component):
             raise ValueError("split_overlap must be greater than or equal to 0.")
         self.split_overlap = split_overlap
 
-    # @component.output_types(documents=List[Document])
-    def call(self, documents: List[Document]):
+    def call(self, documents: List[Document]) -> List[Document]:
         """
         Splits documents by the unit expressed in `split_by`, with a length of `split_length`
         and an overlap of `split_overlap`.
@@ -87,9 +89,14 @@ class DocumentSplitter(Component):
                 units, self.split_length, self.split_overlap
             )
             metadata = deepcopy(doc.meta_data)
-            metadata["source_id"] = doc.id
-            split_docs += [Document(content=txt, meta=metadata) for txt in text_splits]
-        return {"documents": split_docs}
+            # metadata["source_id"] = doc.id
+            split_docs += [
+                Chunk(
+                    text=txt, meta_data=metadata, doc_id=f"{doc.id}", order=i, vector=[]
+                )
+                for i, txt in enumerate(text_splits)
+            ]
+        return split_docs
 
     def _split_into_units(
         self, text: str, split_by: Literal["word", "sentence", "passage", "page"]

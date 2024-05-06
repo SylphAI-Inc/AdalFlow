@@ -11,7 +11,8 @@ from core.openai_llm import OpenAIGenerator
 from core.data_classes import Document, Chunk
 
 # TODO: rewrite SentenceSplitter and other splitter classes
-from llama_index.core.node_parser import SentenceSplitter
+# from llama_index.core.node_parser import SentenceSplitter
+from core.db import DocumentSplitter
 from core.component import Component, Sequential
 from core.string_parser import JsonParser
 
@@ -34,37 +35,37 @@ class RAG(Component):
 
     def __init__(self):
         super().__init__()
-        # self.vectorizer = None
-        # initialize vectorizer
+
         self.vectorizer_settings = {
-            "model": "text-embedding-3-small",
             "batch_size": 100,
-            "dimensions": 256,
+            "model_kwargs": {
+                "model": "text-embedding-3-small",
+                "dimensions": 256,
+                "encoding_format": "float",
+            },
         }
         self.retriever_settings = {
-            "top_k": 1,
+            "top_k": 2,
         }
-        self.generator_settings = {
+        self.generator_model_kwargs = {
             "model": "gpt-3.5-turbo",
             "temperature": 0.3,
             "stream": False,
         }
         self.text_splitter_settings = {
-            "type": "sentence_splitter",
-            "chunk_size": 800,
-            "chunk_overlap": 400,
+            "split_by": "word",
+            "chunk_size": 400,
+            "chunk_overlap": 200,
         }
-        # initialize vectorizer
-        self.vectorizer_model_kwargs = self.vectorizer_settings.copy()
-        # remove provider
-        print(f"Vectorizer model kwargs: {self.vectorizer_model_kwargs}")
+
         self.vectorizer = OpenAIEmbedder(
-            model_kwargs=self.vectorizer_model_kwargs,
+            batch_size=self.vectorizer_settings["batch_size"],
+            model_kwargs=self.vectorizer_settings["model_kwargs"],
         )
         # initialize retriever, which depends on the vectorizer too
         self.retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
-            d=self.vectorizer_settings["dimensions"],
+            d=self.vectorizer_settings["model_kwargs"]["dimensions"],
             vectorizer=self.vectorizer,
         )
         # initialize generator
@@ -82,7 +83,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_kwargs=self.generator_settings,
+            model_kwargs=self.generator_model_kwargs,
         )
         self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
 
@@ -91,19 +92,18 @@ Output JSON format:
 
     def _chunk_documents(self):
         self.chunks: List[Chunk] = []
-        text_splitter = None
-        text_splitter_settings = self.text_splitter_settings
-        # TODO: wrap up text splitter into a class with __call__ method
-        if text_splitter_settings["type"] == "sentence_splitter":
-            text_splitter: SentenceSplitter = SentenceSplitter(
-                chunk_size=text_splitter_settings["chunk_size"],
-                chunk_overlap=text_splitter_settings["chunk_overlap"],
-            )
+        text_splitter: DocumentSplitter = DocumentSplitter(
+            split_by=self.text_splitter_settings["split_by"],
+            split_length=self.text_splitter_settings["chunk_size"],
+            split_overlap=self.text_splitter_settings["chunk_overlap"],
+        )
+        self.chunks = text_splitter(self.documents)
+        print(f"Chunked {len(self.documents)} documents into {len(self.chunks)} chunks")
 
-        for doc in self.documents:
-            chunks = text_splitter.split_text(doc.text)
-            for i, chunk in enumerate(chunks):
-                self.chunks.append(Chunk(vector=[], text=chunk, order=i, doc_id=doc.id))
+        # for doc in self.documents:
+        #     chunks = text_splitter(doc.text)
+        #     for i, chunk in enumerate(chunks):
+        #         self.chunks.append(Chunk(vector=[], text=chunk, order=i, doc_id=doc.id))
 
     def _vectorize_chunks(self):
         """
@@ -186,24 +186,8 @@ Output JSON format:
         if not self.generator:
             raise ValueError("Generator is not set")
 
-        # system_prompt_template = Template(DEFAULT_QA_PROMPT)
-        # context_str = context if context else ""
-        # query_str = query
-        # system_prompt_content = system_prompt_template.render(
-        #     context_str=context_str, query_str=query_str
-        # )
-        # messages = [
-        #     {"role": "system", "content": system_prompt_content},
-        # ]
-        # print(f"messages: {messages}")
         prompt_kwargs = {
             "context_str": context,
-            # "query_str": input,
-            # "task_desc_str": task_desc_str,
-            # "chat_history_str": chat_history_str,
-            # "tools_str": tools_str,
-            # "example_str": example_str,
-            # "steps_str": steps_str,
         }
         response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
         return response
@@ -220,19 +204,18 @@ if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
-        text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 1000,
+        text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,
         id="doc1",
     )
     doc2 = Document(
         meta_data={"title": "Interviewing Li Yin"},
-        text="lots of more nonsense text" * 500
+        text="lots of more nonsense text" * 250
         + "Li Yin is a software developer and AI researcher"
-        + "lots of more nonsense text" * 500,
+        + "lots of more nonsense text" * 250,
         id="doc2",
     )
     rag = RAG()
     print(rag)
-    # exit(0)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
@@ -241,6 +224,3 @@ if __name__ == "__main__":
 
     response = rag.call(query)
     print(f"response: {response}")
-    # now try to set top_k to 2, and see if the answer is still correct
-    # or set chunk_size to 20, chunk_overlap to 10, and see if the answer is still correct
-    # you can try to fit all the context into the prompt, use long-context LLM.
