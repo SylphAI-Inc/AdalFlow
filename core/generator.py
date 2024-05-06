@@ -133,7 +133,10 @@ class Generator(Component):
     def print_prompt(self, **kwargs) -> str:
         composed_kwargs = self.compose_prompt_kwargs(**kwargs)
         prompt = self.prompt.call(**composed_kwargs)
-        print(f"prompt: {prompt}")
+        print("Prompt:")
+        print("-------")
+        print(prompt)
+        print("-------")
         return prompt
 
     def parse_completion(self, completion: Any) -> str:
@@ -142,3 +145,6 @@ class Generator(Component):
         # TODO: standardize the completion
         """
         return completion.choices[0].message.content
+
+    def extra_repr(self) -> str:
+        return f"provider={self.provider}, type={self.type}, model_kwargs={self.model_kwargs}, "

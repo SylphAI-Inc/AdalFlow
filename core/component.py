@@ -100,6 +100,10 @@ class Component:
             super().__delattr__(name)
 
     def extra_repr(self) -> str:
+        """
+        Normally implemented by subcomponents to print additional positional or keyword arguments.
+        # NOTE: Dont add components as it will have its own __repr__
+        """
         return ""
 
     def _get_name(self):
@@ -455,28 +459,9 @@ from openai import (
 )
 import backoff
 from typing import List, Union, overload
-from core.data_classes import EmbedderOutput, ModelType
+from core.data_classes import EmbedderOutput
 
 from core.component import Component
-import core.functional as F
-
-
-class Embedder(Component):
-    type: ModelType = ModelType.EMBEDDER
-    provider: str
-
-    def __init__(
-        self, *, provider: Optional[str] = None, model_kwargs: Optional[Dict] = {}
-    ) -> None:
-        super().__init__()
-        self.provider = provider
-        self.model_kwargs = model_kwargs
-
-    def compose_model_kwargs(self, **model_kwargs) -> Dict:
-        return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
-
-    def call(self, input: Any, **model_kwargs) -> EmbedderOutput:
-        raise NotImplementedError
 
 
 import numpy as np
@@ -584,45 +569,3 @@ class FAISSRetriever(Component):
         for i, output in enumerate(retrieved_output):
             output.query = queries[i]
         return retrieved_output
-
-
-from jinja2 import Template
-
-
-# class GeneratorRunner:
-#     """
-#     A base class for running a generator.
-#     TODO: history
-#     """
-
-#     name = "GeneratorRunner"
-
-#     def __init__(
-#         self,
-#         generator: Model,
-#         prompt: str = None,
-#         examples: List[str] = [],
-#     ):
-#         self.generator = generator
-#         self.prompt = prompt
-#         self.examples = examples
-#         self.prompt_template = Template(self.prompt) if prompt else None
-
-#     def __call__(self, **kwargs) -> Any:
-#         self.kwargs = kwargs
-#         if "examples" in self.kwargs:
-#             examples = self.kwargs.get("examples")
-#         else:
-#             examples = self.examples
-#         system_prompt = (
-#             self.prompt_template.render(
-#                 user_query=self.kwargs.get("input"),
-#                 examples=examples,
-#             )
-#             if self.prompt_template
-#             else self.kwargs.get("input")
-#         )
-#         messages = [{"role": "system", "content": system_prompt}]
-#         print(f"messages: {messages}")
-#         response = self.generator(messages)
-#         return response

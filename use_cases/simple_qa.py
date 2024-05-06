@@ -25,4 +25,5 @@ class SimpleQA(Component):
 
 if __name__ == "__main__":
     simple_qa = SimpleQA()
+    print(simple_qa)
     print(simple_qa.call("What is the capital of France?"))

@@ -69,3 +69,6 @@ class Prompt(Component):
 
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
+
+    def extra_repr(self) -> str:
+        return f"template: {self._template_string}"
