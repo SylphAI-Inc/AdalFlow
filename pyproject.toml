@@ -28,6 +28,7 @@ haystack-ai = "^2.0.1"
 transformers = "^4.40.1"
 pgvector-haystack = "^0.1.0"
 ollama = "^0.1.9"
+torchvision = "^0.18.0"
 
 
 [build-system]

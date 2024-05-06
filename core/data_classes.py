@@ -2,6 +2,13 @@ from typing import List, Dict, Any, Optional, Union
 from uuid import UUID
 import uuid
 from core.tokenizer import Tokenizer
+from enum import Enum, auto
+
+
+class ModelType(Enum):
+    EMBEDDER = auto()
+    LLM = auto()
+    UNDEFINED = auto()
 
 
 # TODO: (1) improve logging

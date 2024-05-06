@@ -11,7 +11,12 @@ from functools import lru_cache
 @lru_cache(None)
 def get_jinja2_environment():
     try:
-        default_environment = Environment(undefined=jinja2.StrictUndefined)
+        default_environment = Environment(
+            undefined=jinja2.StrictUndefined,
+            trim_blocks=True,
+            keep_trailing_newline=True,
+            lstrip_blocks=True,
+        )
         return default_environment
     except Exception as e:
         raise ValueError(f"Invalid Jinja2 environment: {e}")
@@ -36,11 +41,11 @@ class Prompt(Component):
         except Exception as e:
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
-        self.variables: Dict[str, Any] = {}
+        self.prompt_kwargs: Dict[str, Any] = {}
         # store user-defined variables in the template
         # use _find_template_variables() to find all variables in the template and set the variables as input types
         for var in self._find_template_variables():
-            self.variables[var] = None
+            self.prompt_kwargs[var] = None
 
     def _find_template_variables(self):
         """Automatically find all the variables in the template."""
@@ -53,6 +58,14 @@ class Prompt(Component):
         TODO: if there are submodules,
         """
         try:
-            return self.template.render(**kwargs)
+            # preset missing variables to None
+            # replace the missing variables with the provided variables
+            # copy the prompt_kwargs and update it with the provided variables
+            pass_kwargs = self.prompt_kwargs.copy()
+            pass_kwargs.update(kwargs)
+
+            prompt_str = self.template.render(**pass_kwargs)
+            return prompt_str
+
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")

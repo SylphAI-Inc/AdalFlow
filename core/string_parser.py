@@ -130,6 +130,7 @@ class JsonParser(Component):
     """
 
     def __init__(self, add_missing_right_brace: bool = True):
+        super().__init__()
         self.add_missing_right_brace = add_missing_right_brace
 
     def __call__(self, text: str) -> Dict[str, Any]:

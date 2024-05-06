@@ -1,20 +1,21 @@
 from typing import Any, Dict, List, Union, Optional
 
 from core.component import (
-    OpenAIEmbedder,
     Component,
     RetrieverOutput,
     FAISSRetriever,
     EmbedderOutput,
 )
+from core.openai_embedder import OpenAIEmbedder
 from core.openai_llm import OpenAIGenerator
-from core.light_rag import DEFAULT_QA_PROMPT
 from core.data_classes import Document, Chunk
 
 # TODO: rewrite SentenceSplitter and other splitter classes
 from llama_index.core.node_parser import SentenceSplitter
-from jinja2 import Template
 from core.component import Component
+import dotenv
+
+dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 
 class Query(Component):
@@ -29,6 +30,7 @@ class Query(Component):
 
 
 from core.prompt_builder import Prompt
+from core.string_parser import JsonParser
 
 
 ##############################################
@@ -46,12 +48,13 @@ class RAG(Component):
     def __init__(self, settings: dict = {}):
         super().__init__()
         self.settings = settings if settings else self.default_settings()
-        self.vectorizer = None
+        # self.vectorizer = None
         # initialize vectorizer
         if "vectorizer" in self.settings:
             vectorizer_settings = self.settings["vectorizer"]
             if vectorizer_settings["provider"] == "openai":
                 kwargs = {}
+                print(f"vectorizer_settings: {vectorizer_settings}")
                 # encoding_format and dimensions are optional
                 if "encoding_format" in vectorizer_settings:
                     kwargs["encoding_format"] = vectorizer_settings["encoding_format"]
@@ -61,40 +64,65 @@ class RAG(Component):
                 ):
                     # only for text-embedding-3-small and later
                     kwargs["dimensions"] = vectorizer_settings["embedding_size"]
-                self.vectorizer = OpenAIEmbedder(
-                    provider=vectorizer_settings["provider"],
-                    model=vectorizer_settings["model"],
-                    **kwargs,
-                )
+                kwargs["model"] = vectorizer_settings["model"]
+                print(f"kwargs: {kwargs}")
+                model_kwargs = kwargs
+                try:
+                    self.vectorizer = OpenAIEmbedder(
+                        provider=vectorizer_settings["provider"],
+                        # model=vectorizer_settings["model"],
+                        **model_kwargs,
+                    )
+                except Exception as e:
+                    print(f"Error: {e}")
+                    print(f"kwargs: {kwargs}")
+                    print(f"vectorizer_settings: {vectorizer_settings}")
+                    raise e
+
+                print(f"vectorizer: {self.vectorizer}")
         # initialize retriever, which depends on the vectorizer too
-        self.retriever = None
+        # self.retriever = None
         if "retriever_type" in self.settings:
             if self.settings["retriever_type"] == "dense_retriever":
                 dense_retriever_settings = self.settings["retriever"]
                 if dense_retriever_settings["provider"] == "faiss":
+
                     self.retriever = FAISSRetriever(
                         top_k=dense_retriever_settings["top_k"],
                         d=vectorizer_settings["embedding_size"],
                         vectorizer=self.vectorizer,
                     )
         # initialize generator
+        from core.component import Sequential
+
         self.generator = None
         if "generator" in self.settings:
             generator_settings = self.settings["generator"]
             if generator_settings["provider"] == "openai":
-                self.generator = OpenAIGenerator(
-                    # provider=generator_settings["provider"],
-                    # model=generator_settings["model"],
-                    **generator_settings,
-                )
-
-        self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
-        self.llm_task_desc = """
+                # remove provider from the settings
+                model_kwargs = generator_settings.copy()
+                model_kwargs.pop("provider")
+                self.llm_task_desc = r"""
 You are a helpful assistant.
 
 Your task is to answer the query that may or may not come with context information.
 When context is provided, you should stick to the context and less on your prior knowledge to answer the query.
-    """
+
+Output JSON format:
+{
+    "answer": "The answer to the query",
+}"""
+                self.generator = OpenAIGenerator(
+                    output_processors=Sequential(JsonParser()),
+                    preset_prompt_kwargs={
+                        "task_desc_str": self.llm_task_desc,
+                    },
+                    model_kwargs=model_kwargs,
+                )
+                self.generator.print_prompt()
+                print(f"generator: {self.generator}")
+
+        self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
 
     def set_settings(self, settings: dict):
         self.settings = settings
@@ -238,9 +266,16 @@ When context is provided, you should stick to the context and less on your prior
         #     {"role": "system", "content": system_prompt_content},
         # ]
         # print(f"messages: {messages}")
-        response = self.generator.call(
-            input=query, context_str=context, task_desc_str=self.llm_task_desc
-        )
+        prompt_kwargs = {
+            "context_str": context_str,
+            # "query_str": input,
+            # "task_desc_str": task_desc_str,
+            # "chat_history_str": chat_history_str,
+            # "tools_str": tools_str,
+            # "example_str": example_str,
+            # "steps_str": steps_str,
+        }
+        response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
         return response
 
 
@@ -285,7 +320,7 @@ if __name__ == "__main__":
     )
     rag = RAG(settings=settings)
     print(rag)
-    exit(0)
+    # exit(0)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"

@@ -52,33 +52,52 @@ class Component:
     _version: int = 0
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
-    provider: str  # meta data for the developer
+    # provider: str  # meta data for the developer
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", {})
-        super().__setattr__("provider", None)
-        if "provider" in kwargs:
-            self.provider = kwargs["provider"]
+        # super().__init__(*args, **kwargs)
+        # super().__setattr__("provider", None)
+        # if "provider" in kwargs:
+        #     self.provider = kwargs["provider"]
 
     def __setattr__(self, name: str, value: Any) -> None:
-        modules = self.__dict__.get("_components")
+        def remove_from(*dicts_or_sets):
+            for d in dicts_or_sets:
+                if name in d:
+                    if isinstance(d, dict):
+                        del d[name]
+                    else:
+                        d.discard(name)
+
+        components = self.__dict__.get("_components")
         if isinstance(value, Component):
-            if modules is None:
+            if components is None:
                 raise AttributeError(
                     "cant assign component before Component.__init__() call"
                 )
-            modules[name] = value
+            remove_from(self.__dict__)
+            components[name] = value
         else:
             super().__setattr__(name, value)
 
     def __getattr__(self, name: str) -> Any:
         if "_components" in self.__dict__:
-            components = self.__dict__["_components"]
+            components = self.__dict__.get("_components")
             if name in components:
                 return components[name]
+        # else:
+        #     super().__getattr__(name)
+
         raise AttributeError(
             f"'{type(self).__name__}' object has no attribute '{name}'"
         )
+
+    def __delattr__(self, name: str) -> None:
+        if name in self._components:
+            del self._components[name]
+        else:
+            super().__delattr__(name)
 
     def extra_repr(self) -> str:
         return ""
@@ -94,8 +113,8 @@ class Component:
         if extra_repr:
             extra_lines = extra_repr.split("\n")
         child_lines = []
-        for key, module in self._components.items():
-            mod_str = repr(module)
+        for key, component in self._components.items():
+            mod_str = repr(component)
             mod_str = _addindent(mod_str, 2)
             child_lines.append("(" + key + "): " + mod_str)
         lines = extra_lines + child_lines
@@ -203,7 +222,12 @@ from typing import (
 )
 
 
-class ComponentSequential(Component):
+class Sequential(Component):
+    r"""A sequential container.
+
+    Components will be added to it in the order they are passed to the constructor.
+    """
+
     _components: Dict[str, Component]  # type: ignore[assignment]
 
     @overload
@@ -230,17 +254,15 @@ class ComponentSequential(Component):
         idx %= size
         return next(islice(iterator, idx, None))
 
-    def __getitem__(
-        self, idx: Union[slice, int]
-    ) -> Union["ComponentSequential", Component]:
+    def __getitem__(self, idx: Union[slice, int]) -> Union["Sequential", Component]:
         if isinstance(idx, slice):
             return self.__class__(OrderedDict(list(self._components.items())[idx]))
         else:
             return self._get_item_by_idx(self._components.values(), idx)
 
-    def __setitem__(self, idx: int, module: Component) -> None:
+    def __setitem__(self, idx: int, component: Component) -> None:
         key: str = self._get_item_by_idx(self._components.keys(), idx)
-        return setattr(self, key, module)
+        return setattr(self, key, component)
 
     def __delitem__(self, idx: Union[slice, int]) -> None:
         if isinstance(idx, slice):
@@ -255,9 +277,32 @@ class ComponentSequential(Component):
             list(zip(str_indices, self._components.values()))
         )
 
+    def __len__(self) -> int:
+        return len(self._components)
+
+    def append(self, component: Component) -> "Sequential":
+        r"""Appends a component to the end of the Sequential."""
+        idx = len(self._components)
+        self.add_component(str(idx), component)
+        return self
+
+    def __add__(self, other) -> "Sequential":
+        if not isinstance(other, Sequential):
+            ret = Sequential()
+            for layer in self:
+                ret.append(layer)
+            for layer in other:
+                ret.append(layer)
+            return ret
+        else:
+            raise ValueError(
+                "add operator supports only objects "
+                f"of Sequential class, but {str(type(other))} is given."
+            )
+
     def call(self, input: Any) -> Any:
-        for module in self._components.values():
-            input = module(input)
+        for component in self._components.values():
+            input = component(input)
         return input
 
 
@@ -410,69 +455,28 @@ from openai import (
 )
 import backoff
 from typing import List, Union, overload
-from core.data_classes import EmbedderOutput
-from core.model import Model
+from core.data_classes import EmbedderOutput, ModelType
+
+from core.component import Component
+import core.functional as F
 
 
-class OpenAIEmbedder(Model):
-    def __init__(self, provider: str = "OpenAI", **model_kwargs) -> None:
-        type = "embedder"
-        super().__init__(provider, type, **model_kwargs)
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        self.client = OpenAI()
+class Embedder(Component):
+    type: ModelType = ModelType.EMBEDDER
+    provider: str
 
-    @staticmethod
-    def _process_text(text: str) -> str:
-        """
-        This is specific to OpenAI API, as removing new lines could have better performance
-        """
-        text = text.replace("\n", " ")
-        return text
+    def __init__(
+        self, *, provider: Optional[str] = None, model_kwargs: Optional[Dict] = {}
+    ) -> None:
+        super().__init__()
+        self.provider = provider
+        self.model_kwargs = model_kwargs
 
-    @backoff.on_exception(
-        backoff.expo,
-        (
-            APITimeoutError,
-            InternalServerError,
-            RateLimitError,
-            UnprocessableEntityError,
-        ),
-        max_time=5,
-    )
-    def call(
-        self,
-        input: Any,
-        **model_kwargs,  # overwrites the default kwargs
-    ) -> EmbedderOutput:
-        """
-        Automatically handles retries for the above exceptions
-        TODO: support async calls
-        """
-        formulated_inputs = []
-        if isinstance(input, str):
-            formulated_inputs.append(self._process_text(input))
-        else:
-            for query in input:
-                formulated_inputs.append(self._process_text(query))
+    def compose_model_kwargs(self, **model_kwargs) -> Dict:
+        return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
 
-        num_queries = len(formulated_inputs)
-
-        # check overrides for kwargs
-        pass_model_kwargs = self.compose_model_kwargs(**model_kwargs)
-
-        print(f"kwargs: {model_kwargs}")
-
-        response = self.client.embeddings.create(
-            input=formulated_inputs, **pass_model_kwargs
-        )
-        usage = response.usage
-        embeddings = [data.embedding for data in response.data]
-        assert (
-            len(embeddings) == num_queries
-        ), f"Number of embeddings {len(embeddings)} is not equal to the number of queries {num_queries}"
-        return EmbedderOutput(embeddings=embeddings, usage=usage)
+    def call(self, input: Any, **model_kwargs) -> EmbedderOutput:
+        raise NotImplementedError
 
 
 import numpy as np
@@ -585,40 +589,40 @@ class FAISSRetriever(Component):
 from jinja2 import Template
 
 
-class GeneratorRunner:
-    """
-    A base class for running a generator.
-    TODO: history
-    """
+# class GeneratorRunner:
+#     """
+#     A base class for running a generator.
+#     TODO: history
+#     """
 
-    name = "GeneratorRunner"
+#     name = "GeneratorRunner"
 
-    def __init__(
-        self,
-        generator: Model,
-        prompt: str = None,
-        examples: List[str] = [],
-    ):
-        self.generator = generator
-        self.prompt = prompt
-        self.examples = examples
-        self.prompt_template = Template(self.prompt) if prompt else None
+#     def __init__(
+#         self,
+#         generator: Model,
+#         prompt: str = None,
+#         examples: List[str] = [],
+#     ):
+#         self.generator = generator
+#         self.prompt = prompt
+#         self.examples = examples
+#         self.prompt_template = Template(self.prompt) if prompt else None
 
-    def __call__(self, **kwargs) -> Any:
-        self.kwargs = kwargs
-        if "examples" in self.kwargs:
-            examples = self.kwargs.get("examples")
-        else:
-            examples = self.examples
-        system_prompt = (
-            self.prompt_template.render(
-                user_query=self.kwargs.get("input"),
-                examples=examples,
-            )
-            if self.prompt_template
-            else self.kwargs.get("input")
-        )
-        messages = [{"role": "system", "content": system_prompt}]
-        print(f"messages: {messages}")
-        response = self.generator(messages)
-        return response
+#     def __call__(self, **kwargs) -> Any:
+#         self.kwargs = kwargs
+#         if "examples" in self.kwargs:
+#             examples = self.kwargs.get("examples")
+#         else:
+#             examples = self.examples
+#         system_prompt = (
+#             self.prompt_template.render(
+#                 user_query=self.kwargs.get("input"),
+#                 examples=examples,
+#             )
+#             if self.prompt_template
+#             else self.kwargs.get("input")
+#         )
+#         messages = [{"role": "system", "content": system_prompt}]
+#         print(f"messages: {messages}")
+#         response = self.generator(messages)
+#         return response
