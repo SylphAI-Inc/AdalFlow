@@ -64,14 +64,9 @@ class Component:
     _version: int = 0
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
-    # provider: str  # meta data for the developer
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", {})
-        # super().__init__(*args, **kwargs)
-        # super().__setattr__("provider", None)
-        # if "provider" in kwargs:
-        #     self.provider = kwargs["provider"]
 
     def __setattr__(self, name: str, value: Any) -> None:
         def remove_from(*dicts_or_sets):
@@ -447,15 +442,6 @@ class ComponentDict(Component):
     # remove forward alltogether to fallback on Module's _forward_unimplemented
 
 
-from openai import OpenAI, AsyncOpenAI
-from openai import (
-    APITimeoutError,
-    InternalServerError,
-    RateLimitError,
-    UnprocessableEntityError,
-    BadRequestError,
-)
-import backoff
 from typing import List, Union, overload
 from core.data_classes import EmbedderOutput
 

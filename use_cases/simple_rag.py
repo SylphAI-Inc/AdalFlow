@@ -12,7 +12,7 @@ from core.data_classes import Document, Chunk
 
 # TODO: rewrite SentenceSplitter and other splitter classes
 # from llama_index.core.node_parser import SentenceSplitter
-from core.db import DocumentSplitter
+from core.document_splitter import DocumentSplitter
 from core.component import Component, Sequential
 from core.string_parser import JsonParser
 
