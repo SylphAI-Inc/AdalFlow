@@ -47,8 +47,9 @@ class OpenAIEmbedder(Embedder):
     )
     def call(
         self,
+        *,
         input: Union[str, List[str]],
-        **model_kwargs,  # overwrites the default kwargs
+        model_kwargs: Dict = {},
     ) -> EmbedderOutput:
         """
         Automatically handles retries for the above exceptions
@@ -63,7 +64,6 @@ class OpenAIEmbedder(Embedder):
 
         num_queries = len(formulated_inputs)
 
-        # check overrides for kwargs
         pass_model_kwargs = self.compose_model_kwargs(**model_kwargs)
 
         print(f"kwargs: {pass_model_kwargs}")
