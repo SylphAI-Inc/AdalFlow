@@ -73,7 +73,7 @@ class OpenAIGenerator(Generator):
         # example_str: Optional[str] = None,
         # steps_str: Optional[str] = None,
         # **prompt_kwargs,  # end of input and prompt kwargs
-        prompt_kwargs: Optional[Dict] = None,
+        prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> str:
         """

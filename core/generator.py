@@ -58,6 +58,11 @@ class Generator(Component):
     ) -> None:
         super().__init__()
         self.model_kwargs = model_kwargs
+        # ensure model is in model_kwargs
+        if "model" not in model_kwargs:
+            raise ValueError(
+                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
+            )
         self.provider = provider
         self.prompt = prompt
         self.output_processors = output_processors
