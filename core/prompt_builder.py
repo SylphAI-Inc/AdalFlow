@@ -32,7 +32,6 @@ class Prompt(Component):
 
     def __init__(self, template: str):
         super().__init__()
-        # first check if template is a valid Jinja2 template
         self._template_string = template
         self.template: Template = None
         try:
@@ -42,8 +41,6 @@ class Prompt(Component):
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
         self.prompt_kwargs: Dict[str, Any] = {}
-        # store user-defined variables in the template
-        # use _find_template_variables() to find all variables in the template and set the variables as input types
         for var in self._find_template_variables():
             self.prompt_kwargs[var] = None
 
@@ -58,9 +55,6 @@ class Prompt(Component):
         TODO: if there are submodules,
         """
         try:
-            # preset missing variables to None
-            # replace the missing variables with the provided variables
-            # copy the prompt_kwargs and update it with the provided variables
             pass_kwargs = self.prompt_kwargs.copy()
             pass_kwargs.update(kwargs)
 

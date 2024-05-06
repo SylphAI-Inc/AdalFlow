@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Dict, List, Union
 from openai import OpenAI
 import os
 import backoff
@@ -10,7 +10,6 @@ from openai import (
 )
 from core.data_classes import EmbedderOutput
 from core.embedder import Embedder
-from core.data_classes import ModelType
 
 
 class OpenAIEmbedder(Embedder):
@@ -18,14 +17,9 @@ class OpenAIEmbedder(Embedder):
         self, *, provider: str = "OpenAI", batch_size: int = 1, model_kwargs: Dict = {}
     ) -> None:
         super().__init__(provider=provider, model_kwargs=model_kwargs)
-        self.batch_size = batch_size
+        self.batch_size = batch_size  # TODO: check the scope of the embedder
 
-        api_key = os.getenv("OPENAI_API_KEY")
-
-        if not api_key:
-            raise ValueError("Environment variable OPENAI_API_KEY must be set")
-        self.client = OpenAI()
-        print(f"OpenAI embedder initialized")
+        self._init_sync_client()
 
     def _init_sync_client(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -53,7 +47,7 @@ class OpenAIEmbedder(Embedder):
     )
     def call(
         self,
-        input: Any,
+        input: Union[str, List[str]],
         **model_kwargs,  # overwrites the default kwargs
     ) -> EmbedderOutput:
         """
@@ -74,7 +68,7 @@ class OpenAIEmbedder(Embedder):
 
         print(f"kwargs: {pass_model_kwargs}")
 
-        response = self.client.embeddings.create(
+        response = self.sync_client.embeddings.create(
             input=formulated_inputs, **pass_model_kwargs
         )
         usage = response.usage
