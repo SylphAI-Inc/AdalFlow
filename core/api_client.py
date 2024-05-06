@@ -59,6 +59,23 @@ class APIClient(Component):
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
 
+    @staticmethod
+    def _process_text(text: str) -> str:
+        """
+        This is specific to OpenAI API, as removing new lines could have better performance in the embedder
+        """
+        text = text.replace("\n", " ")
+        return text
+
+    # def format_input(self, *, input: Any) -> Any:
+    #     """
+    #     This is specific to APIClient.
+    #     # convert your component input to the API-specific format
+    #     """
+    #     raise NotImplementedError(
+    #         f"{type(self).__name__} must implement format_input method"
+    #     )
+
     def _track_usage(self, **kwargs):
         pass
 
@@ -77,6 +94,7 @@ class APIClient(Component):
         model_kwargs: dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Any:
+        # adapt the format and the key for input and model_kwargs
         combined_model_kwargs = self._combine_input_and_model_kwargs(
             input, model_kwargs, model_type=model_type
         )

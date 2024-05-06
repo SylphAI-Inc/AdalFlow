@@ -4,7 +4,7 @@ This demonstrates how you can easily use Model to use any api or local model to 
 
 import os
 from core.api_client import APIClient
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Sequence, Union
 from core.data_classes import ModelType
 from openai import OpenAI, AsyncOpenAI
 import backoff
@@ -37,15 +37,18 @@ class OpenAIClient(APIClient):
 
     def _combine_input_and_model_kwargs(
         self,
-        input: Any,
+        input: Union[str, Sequence],
         combined_model_kwargs: dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
         r"""
+        Specify the API input type.
         Convert the Component's standard input and model_kwargs into API-specific format
         """
         final_model_kwargs = combined_model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
+            if isinstance(input, str):
+                input = [input]
             # convert input to input
             assert isinstance(input, Sequence), "input must be a sequence of text"
             final_model_kwargs["input"] = input
@@ -56,6 +59,14 @@ class OpenAIClient(APIClient):
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
+
+    # def format_input(self, *, input: , model_type: ModelType = ModelType.UNDEFINED) -> Any:
+    #     if model_type == ModelType.EMBEDDER:
+    #         if isinstance(input, str):
+    #             return [input]
+    #         elif isinstance(input, Sequence):
+    #             return input
+    #     elif
 
     @backoff.on_exception(
         backoff.expo,

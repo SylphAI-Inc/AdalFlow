@@ -101,21 +101,6 @@ class Chunk:
         return self.__repr__()
 
 
-class EmbedderOutput:
-    embeddings: List[List[float]]  # batch_size X embedding_size
-    usage: Dict[str, Any]  # api or model usage
-
-    def __init__(self, embeddings: List[List[float]], usage: Dict[str, Any]):
-        self.embeddings = embeddings
-        self.usage = usage
-
-    def __repr__(self) -> str:
-        return f"EmbedderOutput(embeddings={self.embeddings[0:5]}, usage={self.usage})"
-
-    def __str__(self):
-        return self.__repr__()
-
-
 class RetrieverOutput:
     """
     Retrieved result per query

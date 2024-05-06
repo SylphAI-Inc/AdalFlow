@@ -68,7 +68,6 @@ class Generator(Component):
         self.model_client = model_client
         self.preset_prompt_kwargs = preset_prompt_kwargs
         # init the client
-        self.model_client.sync_client = None
         self.model_client._init_sync_client()
 
     def train(self, *args, **kwargs):
@@ -106,7 +105,7 @@ class Generator(Component):
 
         return self._componse_lm_input_chat(**kwargs)
 
-    def compose_model_kwargs(self, **model_kwargs) -> Dict:
+    def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
         The model configuration exclude the input itself.
         Combine the default model, model_kwargs with the passed model_kwargs.
@@ -149,11 +148,12 @@ class Generator(Component):
 
     def call(
         self,
+        *,
         input: Any,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> str:
-        composed_model_kwargs = self.compose_model_kwargs(**model_kwargs)
+        composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
         if not self.model_client.sync_client:
             self.model_client.sync_client = self.model_client._init_sync_client()
 

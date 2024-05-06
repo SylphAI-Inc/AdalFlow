@@ -13,7 +13,7 @@ from typing import (
     Iterator,
     Mapping,
 )
-from core.documents_data_class import EmbedderOutput, RetrieverOutput, Chunk
+from core.documents_data_class import RetrieverOutput, Chunk
 from collections import OrderedDict, abc as container_abcs
 import operator
 from itertools import islice
@@ -443,7 +443,6 @@ class ComponentDict(Component):
 
 
 from typing import List, Union, overload
-from core.documents_data_class import EmbedderOutput
 
 from core.component import Component
 
@@ -545,7 +544,8 @@ class FAISSRetriever(Component):
             else query_or_queries
         )
         queries = [q for q in queries if q]  # Filter empty queries
-        queries_embeddings = self.vectorizer(queries).embeddings
+        queries_embeddings = self.vectorizer(input=queries).data
+        queries_embeddings = [data.embedding for data in queries_embeddings]
         xq = np.array(queries_embeddings, dtype=np.float32)
         D, Ind = self.index.search(xq, top_k if top_k else self.top_k)
         D = self._convert_cosine_similarity_to_probability(D)

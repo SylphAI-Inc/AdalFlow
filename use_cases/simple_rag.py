@@ -4,11 +4,15 @@ from core.component import (
     Component,
     RetrieverOutput,
     FAISSRetriever,
-    EmbedderOutput,
 )
-from core.openai_embedder import OpenAIEmbedder
-from core.openai_llm import OpenAIGenerator
-from core.data_classes import Document, Chunk
+
+# from core.openai_llm import OpenAIGenerator
+from core.openai_client import OpenAIClient
+from core.generator import Generator
+from core.embedder import Embedder
+from core.documents_data_class import Document, Chunk
+from core.data_classes import EmbedderResponse
+from core.data_components import ToEmbedderResponse
 
 # TODO: rewrite SentenceSplitter and other splitter classes
 # from llama_index.core.node_parser import SentenceSplitter
@@ -48,9 +52,11 @@ class RAG(Component):
             "chunk_overlap": 200,
         }
 
-        self.vectorizer = OpenAIEmbedder(
-            batch_size=self.vectorizer_settings["batch_size"],
+        self.vectorizer = Embedder(
+            model_client=OpenAIClient(),
+            # batch_size=self.vectorizer_settings["batch_size"],
             model_kwargs=self.vectorizer_settings["model_kwargs"],
+            output_processors=Sequential(ToEmbedderResponse()),
         )
         # initialize retriever, which depends on the vectorizer too
         self.retriever = FAISSRetriever(
@@ -59,7 +65,8 @@ class RAG(Component):
             vectorizer=self.vectorizer,
         )
         # initialize generator
-        self.generator = OpenAIGenerator(
+        self.generator = Generator(
+            model_client=OpenAIClient(),
             output_processors=Sequential(JsonParser()),
             preset_prompt_kwargs={
                 "task_desc_str": r"""
@@ -104,12 +111,12 @@ Output JSON format:
 
         for i in range(0, len(self.chunks), batch_size):
             batch = self.chunks[i : i + batch_size]
-            embedder_output: EmbedderOutput = self.vectorizer(
-                [chunk.text for chunk in batch]
+            embedder_output: EmbedderResponse = self.vectorizer(
+                input=[chunk.text for chunk in batch]
             )
-            vectors = embedder_output.embeddings
+            vectors = embedder_output.data
             for j, vector in enumerate(vectors):
-                self.chunks[i + j].vector = vector
+                self.chunks[i + j].vector = vector.embedding
 
             # update tracking
             self.tracking["vectorizer"]["num_calls"] += 1
