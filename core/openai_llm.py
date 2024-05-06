@@ -97,6 +97,8 @@ class OpenAIGenerator(Generator):
         # add the input to the prompt kwargs
         prompt_kwargs["query_str"] = input
         composed_messages = self.compose_model_input(**prompt_kwargs)
+        print(f"composed_messages: {composed_messages}")
+        print(f"composed_model_kwargs: {composed_model_kwargs}")
         completion = self.sync_client.chat.completions.create(
             messages=composed_messages, **composed_model_kwargs
         )

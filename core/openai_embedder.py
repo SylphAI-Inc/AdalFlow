@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 from openai import OpenAI
 import os
 import backoff
@@ -14,12 +14,15 @@ from core.data_classes import ModelType
 
 
 class OpenAIEmbedder(Embedder):
-    def __init__(self, provider: str = "OpenAI", **model_kwargs) -> None:
-        type = ModelType.EMBEDDER
+    def __init__(self, provider: str = "OpenAI", model_kwargs: Dict = {}) -> None:
         super().__init__(provider=provider)
         # self.provider = provider
-        self.type = type
-        self.model_kwargs = model_kwargs
+        self.batch_size = 1
+        if "batch_size" in model_kwargs:
+            self.batch_size = model_kwargs["batch_size"]
+        self.model_kwargs = model_kwargs.copy()
+        self.model_kwargs.pop("batch_size", None)
+        print(f"{type(self).__name__} initialized with model type: {self.model_kwargs}")
         if "model" not in model_kwargs:
             raise ValueError(
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
@@ -70,7 +73,7 @@ class OpenAIEmbedder(Embedder):
         # check overrides for kwargs
         pass_model_kwargs = self.compose_model_kwargs(**model_kwargs)
 
-        print(f"kwargs: {model_kwargs}")
+        print(f"kwargs: {pass_model_kwargs}")
 
         response = self.client.embeddings.create(
             input=formulated_inputs, **pass_model_kwargs

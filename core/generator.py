@@ -41,7 +41,7 @@ class Generator(Component):
     A general class for all LLM models. Assume it meets the OpenAI API standard.
     """
 
-    type: ModelType = ModelType.LLM
+    model_type: ModelType = ModelType.LLM
 
     provider: str
     prompt: Prompt
@@ -147,4 +147,4 @@ class Generator(Component):
         return completion.choices[0].message.content
 
     def extra_repr(self) -> str:
-        return f"provider={self.provider}, type={self.type}, model_kwargs={self.model_kwargs}, "
+        return f"provider={self.provider}, model_type={self.model_type}, model_kwargs={self.model_kwargs}, "

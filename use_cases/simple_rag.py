@@ -12,25 +12,12 @@ from core.data_classes import Document, Chunk
 
 # TODO: rewrite SentenceSplitter and other splitter classes
 from llama_index.core.node_parser import SentenceSplitter
-from core.component import Component
+from core.component import Component, Sequential
+from core.string_parser import JsonParser
+
 import dotenv
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
-
-
-class Query(Component):
-    """
-    Allow to define query.
-    #TODO: support batch processing
-    """
-
-    def __init__(self, query: str, session_id: str = None):
-        self.query = query
-        self.session_id = session_id
-
-
-from core.prompt_builder import Prompt
-from core.string_parser import JsonParser
 
 
 ##############################################
@@ -45,64 +32,46 @@ class RAG(Component):
     Focus on retrieving for now
     """
 
-    def __init__(self, settings: dict = {}):
+    def __init__(self):
         super().__init__()
-        self.settings = settings if settings else self.default_settings()
         # self.vectorizer = None
         # initialize vectorizer
-        if "vectorizer" in self.settings:
-            vectorizer_settings = self.settings["vectorizer"]
-            if vectorizer_settings["provider"] == "openai":
-                kwargs = {}
-                print(f"vectorizer_settings: {vectorizer_settings}")
-                # encoding_format and dimensions are optional
-                if "encoding_format" in vectorizer_settings:
-                    kwargs["encoding_format"] = vectorizer_settings["encoding_format"]
-                if (
-                    "embedding_size" in vectorizer_settings
-                    and "text-embedding-3" in vectorizer_settings["model"]
-                ):
-                    # only for text-embedding-3-small and later
-                    kwargs["dimensions"] = vectorizer_settings["embedding_size"]
-                kwargs["model"] = vectorizer_settings["model"]
-                print(f"kwargs: {kwargs}")
-                model_kwargs = kwargs
-                try:
-                    self.vectorizer = OpenAIEmbedder(
-                        provider=vectorizer_settings["provider"],
-                        # model=vectorizer_settings["model"],
-                        **model_kwargs,
-                    )
-                except Exception as e:
-                    print(f"Error: {e}")
-                    print(f"kwargs: {kwargs}")
-                    print(f"vectorizer_settings: {vectorizer_settings}")
-                    raise e
-
-                print(f"vectorizer: {self.vectorizer}")
+        self.vectorizer_settings = {
+            "model": "text-embedding-3-small",
+            "batch_size": 100,
+            "dimensions": 256,
+        }
+        self.retriever_settings = {
+            "top_k": 1,
+        }
+        self.generator_settings = {
+            "model": "gpt-3.5-turbo",
+            "temperature": 0.3,
+            "stream": False,
+        }
+        self.text_splitter_settings = {
+            "type": "sentence_splitter",
+            "chunk_size": 800,
+            "chunk_overlap": 400,
+        }
+        # initialize vectorizer
+        self.vectorizer_model_kwargs = self.vectorizer_settings.copy()
+        # remove provider
+        print(f"Vectorizer model kwargs: {self.vectorizer_model_kwargs}")
+        self.vectorizer = OpenAIEmbedder(
+            model_kwargs=self.vectorizer_model_kwargs,
+        )
         # initialize retriever, which depends on the vectorizer too
-        # self.retriever = None
-        if "retriever_type" in self.settings:
-            if self.settings["retriever_type"] == "dense_retriever":
-                dense_retriever_settings = self.settings["retriever"]
-                if dense_retriever_settings["provider"] == "faiss":
-
-                    self.retriever = FAISSRetriever(
-                        top_k=dense_retriever_settings["top_k"],
-                        d=vectorizer_settings["embedding_size"],
-                        vectorizer=self.vectorizer,
-                    )
+        self.retriever = FAISSRetriever(
+            top_k=self.retriever_settings["top_k"],
+            d=self.vectorizer_settings["dimensions"],
+            vectorizer=self.vectorizer,
+        )
         # initialize generator
-        from core.component import Sequential
-
-        self.generator = None
-        if "generator" in self.settings:
-            generator_settings = self.settings["generator"]
-            if generator_settings["provider"] == "openai":
-                # remove provider from the settings
-                model_kwargs = generator_settings.copy()
-                model_kwargs.pop("provider")
-                self.llm_task_desc = r"""
+        self.generator = OpenAIGenerator(
+            output_processors=Sequential(JsonParser()),
+            preset_prompt_kwargs={
+                "task_desc_str": r"""
 You are a helpful assistant.
 
 Your task is to answer the query that may or may not come with context information.
@@ -112,49 +81,10 @@ Output JSON format:
 {
     "answer": "The answer to the query",
 }"""
-                self.generator = OpenAIGenerator(
-                    output_processors=Sequential(JsonParser()),
-                    preset_prompt_kwargs={
-                        "task_desc_str": self.llm_task_desc,
-                    },
-                    model_kwargs=model_kwargs,
-                )
-                self.generator.print_prompt()
-                print(f"generator: {self.generator}")
-
+            },
+            model_kwargs=self.generator_settings,
+        )
         self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
-
-    def set_settings(self, settings: dict):
-        self.settings = settings
-
-    @staticmethod
-    def default_settings():
-        return {
-            "text_splitter": {
-                "type": "sentence_splitter",
-                "chunk_size": 800,
-                "chunk_overlap": 400,
-            },
-            # https://platform.openai.com/docs/guides/embeddings/use-cases
-            "vectorizer": {
-                "provider": "openai",
-                "model": "text-embedding-3-small",
-                "batch_size": 100,
-                "embedding_size": 256,
-                "max_input_tokens": 8191,
-            },
-            "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever
-            "retriever": {
-                "provider": "faiss",
-                "top_k": 5,
-            },
-            "generator": {
-                "provider": "openai",
-                "model": "gpt-3.5-turbo",
-                "temperature": 0.3,
-                "stream": False,
-            },
-        }
 
     def _load_documents(self, documents: List[Document]):
         self.documents = documents
@@ -162,7 +92,7 @@ Output JSON format:
     def _chunk_documents(self):
         self.chunks: List[Chunk] = []
         text_splitter = None
-        text_splitter_settings = self.settings["text_splitter"]
+        text_splitter_settings = self.text_splitter_settings
         # TODO: wrap up text splitter into a class with __call__ method
         if text_splitter_settings["type"] == "sentence_splitter":
             text_splitter: SentenceSplitter = SentenceSplitter(
@@ -183,8 +113,8 @@ Output JSON format:
             raise ValueError("Vectorizer is not set")
         batch_size = (
             50
-            if "batch_size" not in self.settings["vectorizer"]
-            else self.settings["vectorizer"]["batch_size"]
+            if "batch_size" not in self.vectorizer_settings
+            else self.vectorizer_settings["batch_size"]
         )
 
         for i in range(0, len(self.chunks), batch_size):
@@ -267,7 +197,7 @@ Output JSON format:
         # ]
         # print(f"messages: {messages}")
         prompt_kwargs = {
-            "context_str": context_str,
+            "context_str": context,
             # "query_str": input,
             # "task_desc_str": task_desc_str,
             # "chat_history_str": chat_history_str,
@@ -278,34 +208,16 @@ Output JSON format:
         response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
         return response
 
+    def call(self, query: str) -> Any:
+        # retrieve
+        retriever_output = self.retrieve(query)
+        context_str = self.retriever_output_to_context_str(retriever_output)
+
+        return self.generate(query, context=context_str)
+
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
-    settings = {
-        "text_splitter": {
-            "type": "sentence_splitter",
-            "chunk_size": 800,
-            "chunk_overlap": 400,
-        },
-        "vectorizer": {
-            "provider": "openai",
-            "model": "text-embedding-3-small",
-            "batch_size": 100,
-            "embedding_size": 256,
-            "encoding_format": "float",  # from the default float64
-        },
-        "retriever_type": "dense_retriever",  # dense_retriever refers to embedding based retriever
-        "retriever": {
-            "provider": "faiss",
-            "top_k": 1,
-        },
-        "generator": {
-            "provider": "openai",
-            "model": "gpt-3.5-turbo",
-            "temperature": 0.3,
-            "stream": False,
-        },
-    }
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 1000,
@@ -318,7 +230,7 @@ if __name__ == "__main__":
         + "lots of more nonsense text" * 500,
         id="doc2",
     )
-    rag = RAG(settings=settings)
+    rag = RAG()
     print(rag)
     # exit(0)
     rag.build_index([doc1, doc2])
@@ -326,11 +238,8 @@ if __name__ == "__main__":
     query = "What is Li Yin's hobby and profession?"
     # in this simple case, query expansion is not necessary, this is only for demonstration the list input of queries
     # the anaswer will only be right if each expended query has the right relevant chunk as set top_k to 1
-    expanded_queries = ["Li Yin's hobby", "Li Yin's profession"]
-    outputs = rag.retrieve(expanded_queries)
-    print(f"retrieved: {outputs}")
-    context_str = rag.retriever_output_to_context_str(outputs)
-    response = rag.generate(query, context_str)
+
+    response = rag.call(query)
     print(f"response: {response}")
     # now try to set top_k to 2, and see if the answer is still correct
     # or set chunk_size to 20, chunk_overlap to 10, and see if the answer is still correct

@@ -1,4 +1,4 @@
-from lightrag.light_rag import Generator
+from core.generator import Generator
 from groq import Groq
 from groq import (
     APITimeoutError,
