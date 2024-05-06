@@ -19,16 +19,19 @@ class OpenAIEmbedder(Embedder):
     ) -> None:
         super().__init__(provider=provider, model_kwargs=model_kwargs)
         self.batch_size = batch_size
-        # if "model" not in model_kwargs:
-        #     raise ValueError(
-        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
-        #     )
+
         api_key = os.getenv("OPENAI_API_KEY")
 
         if not api_key:
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         self.client = OpenAI()
         print(f"OpenAI embedder initialized")
+
+    def _init_sync_client(self):
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("Environment variable OPENAI_API_KEY must be set")
+        self.sync_client = OpenAI()
 
     @staticmethod
     def _process_text(text: str) -> str:

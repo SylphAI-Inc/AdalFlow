@@ -18,6 +18,8 @@ from core.component import Sequential
 from core.generator import Generator, DEFAULT_LIGHTRAG_PROMPT
 
 
+# TODO: might combine the OpenAI class wrapper with Generator class into one OpenAIGenerator class
+# to share the _init_sync_client method and the backoff decorator
 class OpenAIGenerator(Generator):
     """
     All models are stateless and should be used as such.
@@ -30,7 +32,6 @@ class OpenAIGenerator(Generator):
         preset_prompt_kwargs: Optional[Dict] = None,
         model_kwargs: Optional[Dict] = {},
     ) -> None:
-        print(f"model_kwargs: {model_kwargs}    ")
 
         super().__init__(
             provider="openai",
@@ -41,8 +42,6 @@ class OpenAIGenerator(Generator):
         )
 
         self._init_sync_client()
-        # check
-        print(f"OpenAIGenerator initialized ")
 
     def _init_sync_client(self):
         api_key = os.getenv("OPENAI_API_KEY")
@@ -63,16 +62,8 @@ class OpenAIGenerator(Generator):
     )
     def call(
         self,
-        *,  # start of input and prompt kwargs
+        *,
         input: str,  # process one query
-        # context_str: Optional[str] = None,
-        # # query_str: Optional[str] = None,
-        # task_desc_str: Optional[str] = None,
-        # chat_history_str: Optional[str] = None,
-        # tools_str: Optional[str] = None,
-        # example_str: Optional[str] = None,
-        # steps_str: Optional[str] = None,
-        # **prompt_kwargs,  # end of input and prompt kwargs
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> str:
@@ -83,16 +74,7 @@ class OpenAIGenerator(Generator):
         composed_model_kwargs = self.compose_model_kwargs(**model_kwargs)
         if not self.sync_client:
             self.sync_client = OpenAI()
-        # prompt_kwargs = {
-        #     "context_str": context_str,
-        #     "query_str": input,
-        #     "task_desc_str": task_desc_str,
-        #     "chat_history_str": chat_history_str,
-        #     "tools_str": tools_str,
-        #     "example_str": example_str,
-        #     "steps_str": steps_str,
-        # }
-        # compose the prompt kwargs
+
         prompt_kwargs = self.compose_prompt_kwargs(**prompt_kwargs)
         # add the input to the prompt kwargs
         prompt_kwargs["query_str"] = input
@@ -102,9 +84,7 @@ class OpenAIGenerator(Generator):
         completion = self.sync_client.chat.completions.create(
             messages=composed_messages, **composed_model_kwargs
         )
-        # print(f"completion: {completion}")
         response = self.parse_completion(completion)
-        # apply output processors
         if self.output_processors:
             response = self.output_processors.call(response)
         return response

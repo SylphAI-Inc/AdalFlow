@@ -21,17 +21,7 @@ import dotenv
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 
-##############################################
-# Main RAG class
-# Configs and combines functional modules
-# One settings per RAG instance instead of global settings
-##############################################
 class RAG(Component):
-    """
-    TODO: design a base class later
-    inputs: A list of documents [Can potentially use pandas dataframe for more complex data]
-    Focus on retrieving for now
-    """
 
     def __init__(self):
         super().__init__()
@@ -99,11 +89,6 @@ Output JSON format:
         )
         self.chunks = text_splitter(self.documents)
         print(f"Chunked {len(self.documents)} documents into {len(self.chunks)} chunks")
-
-        # for doc in self.documents:
-        #     chunks = text_splitter(doc.text)
-        #     for i, chunk in enumerate(chunks):
-        #         self.chunks.append(Chunk(vector=[], text=chunk, order=i, doc_id=doc.id))
 
     def _vectorize_chunks(self):
         """
@@ -193,7 +178,6 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        # retrieve
         retriever_output = self.retrieve(query)
         context_str = self.retriever_output_to_context_str(retriever_output)
 
@@ -219,8 +203,6 @@ if __name__ == "__main__":
     rag.build_index([doc1, doc2])
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
-    # in this simple case, query expansion is not necessary, this is only for demonstration the list input of queries
-    # the anaswer will only be right if each expended query has the right relevant chunk as set top_k to 1
 
     response = rag.call(query)
     print(f"response: {response}")

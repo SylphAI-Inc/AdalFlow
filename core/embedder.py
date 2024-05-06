@@ -17,6 +17,14 @@ class Embedder(Component):
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
             )
 
+    def _init_sync_client(self):
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement _init_sync_client method"
+        )
+
+    def _init_async_client(self):
+        pass
+
     def compose_model_kwargs(self, **model_kwargs) -> Dict:
         return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
 
