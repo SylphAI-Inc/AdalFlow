@@ -13,7 +13,7 @@ from typing import (
     Iterator,
     Mapping,
 )
-from core.data_classes import EmbedderOutput, RetrieverOutput, Chunk
+from core.documents_data_class import EmbedderOutput, RetrieverOutput, Chunk
 from collections import OrderedDict, abc as container_abcs
 import operator
 from itertools import islice
@@ -443,7 +443,7 @@ class ComponentDict(Component):
 
 
 from typing import List, Union, overload
-from core.data_classes import EmbedderOutput
+from core.documents_data_class import EmbedderOutput
 
 from core.component import Component
 

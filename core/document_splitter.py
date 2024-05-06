@@ -24,6 +24,7 @@ from core.data_classes import Document, Chunk
 
 class DocumentSplitter(Component):
     """
+    Haystack
     Splits a list of text documents into a list of text documents with shorter texts.
 
     Splitting documents with long texts is a common preprocessing step during indexing.

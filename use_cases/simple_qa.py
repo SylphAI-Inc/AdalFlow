@@ -2,7 +2,8 @@
 We just need to very basic generator that can be used to generate text from a prompt.
 """
 
-from core.openai_llm import OpenAIGenerator
+from core.generator import Generator
+from core.openai_client import OpenAIClient
 
 from core.component import Component
 
@@ -16,7 +17,9 @@ class SimpleQA(Component):
     def __init__(self):
         super().__init__()
         model_kwargs = {"model": "gpt-3.5-turbo"}
-        self.generator = OpenAIGenerator(model_kwargs=model_kwargs)
+        self.generator = Generator(
+            model_client=OpenAIClient(), model_kwargs=model_kwargs
+        )
         self.generator.print_prompt()
 
     def call(self, query: str) -> str:
