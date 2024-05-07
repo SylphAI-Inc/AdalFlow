@@ -60,14 +60,6 @@ class OpenAIClient(APIClient):
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
 
-    # def format_input(self, *, input: , model_type: ModelType = ModelType.UNDEFINED) -> Any:
-    #     if model_type == ModelType.EMBEDDER:
-    #         if isinstance(input, str):
-    #             return [input]
-    #         elif isinstance(input, Sequence):
-    #             return input
-    #     elif
-
     @backoff.on_exception(
         backoff.expo,
         (

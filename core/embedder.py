@@ -45,5 +45,5 @@ class Embedder(Component):
             return self.output_processors(response)
 
     def extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs}, model_client={self.model_client}"
+        s = f"model_kwargs={self.model_kwargs}"
         return s

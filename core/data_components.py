@@ -25,7 +25,12 @@ def from_dict_to_dataclass(klass: Type[T], d: Dict[str, Any]) -> T:
     )
 
 
-def convert_to_embedder_response(api_response) -> EmbedderResponse:
+from openai.types import CreateEmbeddingResponse
+
+
+def convert_to_embedder_response(
+    api_response,
+) -> EmbedderResponse:
     # Assuming `api_response` has `.embeddings` and `.usage` attributes
     # and that `embeddings` is a list of objects that can be converted to `Embedding` dataclass
     # TODO: check if any embedding is missing

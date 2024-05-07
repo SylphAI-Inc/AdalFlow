@@ -133,6 +133,7 @@ class Generator(Component):
         print("-------")
         return prompt
 
+    # TODO: move this to output_processors
     def parse_completion(self, completion: Any) -> str:
         """
         Parse the completion to a structure your sytem standarizes. (here is str)
