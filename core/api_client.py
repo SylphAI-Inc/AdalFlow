@@ -27,6 +27,7 @@ class APIClient(Component):
         for key, value in kwargs.items():
             super().__setattr__(key, value)
 
+        # TODO: recheck to see if we need to initialize the client here
         self.sync_client = self._init_sync_client()
         self.async_client = None
 

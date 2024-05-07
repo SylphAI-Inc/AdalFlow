@@ -38,9 +38,9 @@ class OpenAIClient(APIClient):
     def _combine_input_and_model_kwargs(
         self,
         input: Union[str, Sequence],
-        combined_model_kwargs: dict = {},
+        combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
-    ) -> dict:
+    ) -> Dict:
         r"""
         Specify the API input type.
         Convert the Component's standard input and model_kwargs into API-specific format
