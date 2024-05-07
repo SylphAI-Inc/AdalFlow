@@ -120,13 +120,16 @@ def test_json_parser_handling_decode_error():
     assert "Got invalid JSON object" in str(excinfo.value)
 
 
-def test_hard_case():
+def test_json_parser_escape_single_quotes():
+    # we did not quote double quotes in the JSON string, so it is invalid
     parser = JsonParser()
     text = r"""
     {
     "thought": "The template 2 has been fetched and shown to the founder. I should ask for the specific company information and founder's profile to personalize the email.",
-    action: ask_for_information("company information and founder\'s profile"),
+    "action": "ask_for_information("company information and founder\'s profile")"
     }
     """
-    result = parser(text)
-    print(result)
+    with pytest.raises(ValueError) as excinfo:
+        result = parser(text)
+        print(f"result: {result}")
+    assert "Got invalid JSON object" in str(excinfo.value)

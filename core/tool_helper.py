@@ -5,7 +5,10 @@ This helps to standardize the tool interface and metadata to communicate with th
 
 from typing import Any, Optional, Dict, Callable, Awaitable
 from inspect import iscoroutinefunction, signature, Parameter
-from pydantic import BaseModel
+
+# from pydantic import BaseModel
+# TODO: remove BaseModel, ensure code is working
+from abc import ABC, abstractmethod
 import json
 
 AsyncCallable = Callable[..., Awaitable[Any]]
@@ -15,7 +18,7 @@ AsyncCallable = Callable[..., Awaitable[Any]]
 # Tool data classes, using BaseModel to auto-generate schema
 # Simplified version of LlamaIndex's BaseTool
 ##############################################
-class ToolOutput(BaseModel):
+class ToolOutput(ABC):
     str_content: Optional[str] = None  # Initially allow str_content to be optional
 
     name: Optional[str] = None
@@ -25,20 +28,30 @@ class ToolOutput(BaseModel):
     def __init__(self, **data):
         if "str_content" not in data or data["str_content"] is None:
             data["str_content"] = str(data["raw_output"])
-        super().__init__(**data)
+        # super().__init__(**data)
+        self.str_content = data.get("str_content", None)
+        self.name = data.get("name", None)
+        self.raw_input = data.get("raw_input", {})
+        self.raw_output = data.get("raw_output", None)
 
     def __str__(self) -> str:
         return str(self.str_content)
 
 
-class ToolMetadata(BaseModel):
+class ToolMetadata(ABC):
     """
     Metadata for a tool. Can be passed to LLM for tool registration.
     """
 
     description: str
-    name: Optional[str] = None
+    name: Optional[str] = None  # TODO: make it a class_name
     parameters: Dict[str, Any] = {}
+
+    def __init__(self, **data):
+        # initialize here
+        self.name = data.get("name", None)
+        self.description = data.get("description", "")
+        self.parameters = data.get("parameters", {})
 
     def get_parameters_dict(self) -> dict:
         parameters = {

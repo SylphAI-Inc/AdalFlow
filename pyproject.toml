@@ -21,6 +21,14 @@ langchain = "^0.1.16"
 langchainhub = "^0.1.15"
 llama-index = "^0.10.30"
 pre-commit = "^3.7.0"
+torch = "^2.3.0"
+dspy-ai = "^2.4.9"
+litellm = "^1.35.34"
+haystack-ai = "^2.0.1"
+transformers = "^4.40.1"
+pgvector-haystack = "^0.1.0"
+ollama = "^0.1.9"
+torchvision = "^0.18.0"
 
 
 [build-system]
