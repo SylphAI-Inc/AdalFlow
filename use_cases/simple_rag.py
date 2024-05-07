@@ -1,6 +1,10 @@
-from typing import Any, List, Union, Optional
-import dotenv
-
+from typing import Any, Dict, List, Union, Optional
+import yaml
+from core.component import (
+    Component,
+    RetrieverOutput,
+    FAISSRetriever,
+)
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
@@ -13,6 +17,7 @@ from core.data_components import (
 from core.data_classes import Document
 
 from core.document_splitter import DocumentSplitter
+from core.component import Sequential
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
@@ -26,30 +31,13 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 # TODO: RAG can potentially be a component itsefl and be provided to the users
 class RAG(Component):
 
-    def __init__(self):
+    def __init__(self, settings: dict):
         super().__init__()
-
-        self.vectorizer_settings = {
-            "batch_size": 100,
-            "model_kwargs": {
-                "model": "text-embedding-3-small",
-                "dimensions": 256,
-                "encoding_format": "float",
-            },
-        }
-        self.retriever_settings = {
-            "top_k": 2,
-        }
-        self.generator_model_kwargs = {
-            "model": "gpt-3.5-turbo",
-            "temperature": 0.3,
-            "stream": False,
-        }
-        self.text_splitter_settings = {  # TODO: change it to direct to spliter kwargs
-            "split_by": "word",
-            "chunk_size": 400,
-            "chunk_overlap": 200,
-        }
+        self.settings = settings
+        self.vectorizer_settings = self.settings["vectorizer"]
+        self.retriever_settings = self.settings["retriever"]
+        self.generator_model_kwargs = self.settings["generator"]
+        self.text_splitter_settings = self.settings["text_splitter"]
 
         vectorizer = Embedder(
             model_client=OpenAIClient(),
@@ -138,6 +126,9 @@ Output JSON format:
 
 
 if __name__ == "__main__":
+    with open("./configs/simple_rag.yaml", "r") as file:
+        settings = yaml.safe_load(file)
+    print(settings)
     # NOTE: for the ouput of this following code, check text_lightrag.txt
 
     doc1 = Document(
