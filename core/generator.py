@@ -73,7 +73,7 @@ class Generator(Component):
     def train(self, *args, **kwargs):
         pass
 
-    def _componse_lm_input_chat(self, **kwargs: Any) -> List[Dict]:
+    def _compose_lm_input_chat(self, **kwargs: Any) -> List[Dict]:
         """
         This combines the default lm input using Prompt, and the passed input. history, steps, etc.
         It builds the final chat input to the model.
@@ -91,7 +91,7 @@ class Generator(Component):
         messages = previous_messages + [{"role": current_role, "content": prompt_text}]
         return messages
 
-    def _componse_lm_input_non_chat(self, **kwargs: Any) -> str:
+    def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
         """
         This combines the default lm input using Prompt, and the passed input. history, steps, etc.
         It builds the final chat input to the model.
@@ -103,7 +103,7 @@ class Generator(Component):
 
     def compose_model_input(self, **kwargs) -> List[Dict]:
 
-        return self._componse_lm_input_chat(**kwargs)
+        return self._compose_lm_input_chat(**kwargs)
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
