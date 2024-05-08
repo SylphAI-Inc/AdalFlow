@@ -10,3 +10,21 @@ In this case, we only manage the memory for the current session.
 """
 
 from core.component import Component
+from core.data_classes import DialogSession, DialogTurn, UserQuery, AssistantResponse
+
+
+class Memory(Component):
+    def __init__(self):
+        super().__init__()
+        self.memory = DialogSession()
+
+    def __call__(self) -> str:
+        return self.memory.get_chat_history_str()
+
+    def add_dialog_turn(self, user_query: str, assistant_response: str):
+        self.memory.append_dialog_turn(
+            DialogTurn(
+                user_query=UserQuery(user_query),
+                assistant_response=AssistantResponse(assistant_response),
+            )
+        )

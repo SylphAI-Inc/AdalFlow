@@ -140,7 +140,7 @@ class DialogSession:
             if isinstance(dialog_turns_input, list):
                 # Assume the list is of DialogTurn objects and needs to be added to an OrderedDict
                 for order, dialog_turn in enumerate(dialog_turns_input):
-                    self.append_dialog_turn(dialog_turn, order)
+                    self.append_dialog_turn(dialog_turn)
             elif isinstance(dialog_turns_input, OrderedDict):
                 self.dialog_turns = dialog_turns_input
             else:
@@ -161,6 +161,15 @@ class DialogSession:
 
     def get_dialog_turns(self) -> OrderedDict[int, DialogTurn]:
         return self.dialog_turns
+
+    def get_chat_history_str(self) -> str:
+        chat_history_str = ""
+        for order, dialog_turn in self.dialog_turns.items():
+            chat_history_str += f"User: {dialog_turn.user_query.query_str}\n"
+            chat_history_str += (
+                f"Assistant: {dialog_turn.assistant_response.response_str}\n"
+            )
+        return chat_history_str
 
     def delete_dialog_turn(self, order: int):
         self.dialog_turns.pop(order)
