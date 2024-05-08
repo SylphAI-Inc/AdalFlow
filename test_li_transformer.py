@@ -46,7 +46,7 @@ pipe = pipeline(
     "text-generation",
     model=model_name,
     tokenizer=tokenizer_name,
-    # model_kwargs={"quantization_config": quantization_config},
+    model_kwargs={"quantization_config": quantization_config},
 )
 # pipe = pipeline("text-generation", model="mistralai/Mistral-7B-v0.1")
 print(pipe)

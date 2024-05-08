@@ -72,9 +72,7 @@ class TransformerEmbedder(Component):
             return embeddings
         # load files and models, cache it for the next inference
         model_name = kwargs["model"]
-        print(f"model_name: {model_name}")
         self._init_model(model_name)
-        print(f"done loading model {model_name}")
         # inference the model
         if model_name == "thenlper/gte-base":
             return self._infer_gte_base_embedding(kwargs["input"])
@@ -120,7 +118,6 @@ if __name__ == "__main__":
         transformer_embedder_model = "thenlper/gte-base"
         transformer_embedder_model_component = TransformerEmbedder()
         print("Testing transformer embedder")
-        # run the model
         output = transformer_embedder_model_component(
             model=transformer_embedder_model, input="Hello world"
         )
@@ -132,7 +129,7 @@ if __name__ == "__main__":
         # run the model
         kwargs = {
             "model": "thenlper/gte-base",
-            "mock": True,
+            "mock": False,
         }
         output = transformer_client.call(
             input="Hello world", model_type=ModelType.EMBEDDER, model_kwargs=kwargs
