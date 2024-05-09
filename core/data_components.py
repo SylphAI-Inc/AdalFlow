@@ -2,10 +2,15 @@ r"""These helps parse model or api's output to commonly used data structures.
 It is commonly used as output_processors.
 """
 
+from copy import deepcopy
+import dataclasses
+from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence
+
+
 from core.component import Component
 from core.data_classes import EmbedderResponse, Embedding, Usage
-import dataclasses
-from typing import Any, Dict, List, Type, TypeVar
+from core.documents_data_class import Chunk
+
 
 T = TypeVar("T")
 
@@ -64,3 +69,37 @@ class ToEmbedderResponse(Component):
         """
         return convert_to_embedder_response(input)
         # return from_dict_to_dataclass(EmbedderResponse, input)
+
+
+"""
+For now these are the data transformation components
+"""
+
+
+class ToEmbeddings(Component):
+    r"""It transforms a Sequence of Chunks or Documents to a List of Embeddings.
+
+    It operates on a copy of the input data, and does not modify the input data.
+    """
+
+    def __init__(self, vectorizer: Component, batch_size: int = 50) -> None:
+        super().__init__()
+        self.vectorizer = vectorizer
+        self.batch_size = batch_size
+
+    def __call__(self, input: Sequence[Chunk]) -> Sequence[Chunk]:
+        output = deepcopy(input)
+        for i in range(0, len(output), self.batch_size):
+            batch = output[i : i + self.batch_size]
+            embedder_output: EmbedderResponse = self.vectorizer(
+                input=[chunk.text for chunk in batch]
+            )
+            vectors = embedder_output.data
+            for j, vector in enumerate(vectors):
+                output[i + j].vector = vector.embedding
+            # update tracking
+            # self.tracking["vectorizer"]["num_calls"] += 1
+            # self.tracking["vectorizer"][
+            #     "num_tokens"
+            # ] += embedder_output.usage.total_tokens
+        return output

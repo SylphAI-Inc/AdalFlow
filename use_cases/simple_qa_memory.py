@@ -45,6 +45,7 @@ class SimpleDialog(Component):
                 user_query=user_input, assistant_response=response
             )
             """
+            Most components mush have a __call__ method in order to be chained together with other component in the data pipeline.
             From the memory management, it is  difficult to just chain them together.
             This is similar to the retrieval. This additional step is to manage the exteral db like 
             data injection. Retrieving can be chained such as we use self.chat_history() to get the chat history.
