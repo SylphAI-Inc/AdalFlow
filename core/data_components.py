@@ -4,12 +4,13 @@ It is commonly used as output_processors.
 
 from copy import deepcopy
 import dataclasses
-from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence
+from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence, Union
 
 
 from core.component import Component
 from core.data_classes import EmbedderResponse, Embedding, Usage
-from core.documents_data_class import Chunk
+from core.documents_data_class import Chunk, RetrieverOutput
+import core.functional as F
 
 
 T = TypeVar("T")
@@ -103,3 +104,26 @@ class ToEmbeddings(Component):
             #     "num_tokens"
             # ] += embedder_output.usage.total_tokens
         return output
+
+
+# TODO: a helper factory that converts any given function to a component
+class RetrieverOutputToContextStr(Component):
+    r"""
+    Wrap on functional F.retriever_output_to_context_str
+    """
+
+    def __init__(self, deduplicate: bool = False):
+        super().__init__()
+        self.deduplicate = deduplicate
+
+    def __call__(
+        self,
+        input: Union[RetrieverOutput, List[RetrieverOutput]],
+    ) -> str:
+        return F.retriever_output_to_context_str(
+            retriever_output=input, deduplicate=self.deduplicate
+        )
+
+    def extra_repr(self) -> str:
+        s = f"deduplicate={self.deduplicate}, "
+        return s

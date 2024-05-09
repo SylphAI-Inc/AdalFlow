@@ -29,6 +29,7 @@ class LocalDocumentDB(Component):
         self.data_transformer = data_transformer
         self.transformed_documents = []
 
+    # TODO: load documents from local folders
     def load_documents(self, documents: List[Document]):
         self.documents = documents
 

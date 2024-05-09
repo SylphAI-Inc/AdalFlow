@@ -1,6 +1,5 @@
-from typing import List, Union, overload
 from copy import deepcopy
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Any
 
 import faiss
 import numpy as np
@@ -36,15 +35,16 @@ class FAISSRetriever(Component):
         self,
         *,
         top_k: int = 3,
-        d: int = 768,
+        dimensions: int = 768,
         chunks: Optional[List[Chunk]] = None,
         vectorizer: Optional[Component] = None,
         db: Optional[Component] = None,
+        output_processors: Optional[Component] = None,
     ):
         super().__init__(provider="Meta")
-        self.d = d
+        self.dimensions = dimensions
         self.index = faiss.IndexFlatIP(
-            d
+            dimensions
         )  # inner product of normalized vectors will be cosine similarity, [-1, 1]
 
         self.vectorizer = vectorizer  # used to vectorize the queries
@@ -55,6 +55,7 @@ class FAISSRetriever(Component):
             self.total_chunks: int = 0
         self.top_k = top_k
         self.db = db  # it can directly use the data from db or directly from the chunks
+        self.output_processors = output_processors
 
     def reset(self):
         self.index.reset()
@@ -96,7 +97,7 @@ class FAISSRetriever(Component):
 
         return output
 
-    def __call__(
+    def retrieve(
         self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
     ) -> List[RetrieverOutput]:
         # if you pass a single query, you should access the first element of the list
@@ -120,6 +121,14 @@ class FAISSRetriever(Component):
             output.query = queries[i]
         return retrieved_output
 
+    def __call__(
+        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
+    ) -> Any:
+        response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
+        if self.output_processors:
+            response = self.output_processors(response)
+        return response
+
     def extra_repr(self) -> str:
-        s = f"top_k={self.top_k}, d={self.d}, total_chunks={len(self.chunks)}, "
+        s = f"top_k={self.top_k}, dimensions={self.dimensions}, total_chunks={len(self.chunks)}, "
         return s
