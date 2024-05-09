@@ -19,14 +19,15 @@ DEFAULT_LIGHTRAG_PROMPT = r"""
 {{example_str}}
 {% endif %}<</SYS>>
 ---------------------
+{# chat history #}
+{% if chat_history_str %}
+Chat history:
+{{chat_history_str}}
+{% endif %}
 User query: {{query_str}}
 {#contex#}
 {% if context_str %}
 Context: {{context_str}}
-{% endif %}
-{# chat history #}
-{% if chat_history_str %}
-{{chat_history_str}}
 {% endif %}
 {# steps #}
 {% if steps_str %}
@@ -35,6 +36,7 @@ Context: {{context_str}}
 {# assistant response #}
 You:
 """
+# TODO: special delimiters for different sections
 
 
 class Generator(Component):
