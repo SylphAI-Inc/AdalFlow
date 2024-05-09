@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.data_components &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">core.data_components</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for core.data_components</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;These helps parse model or api&#39;s output to commonly used data structures.</span>
+<span class="sd">It is commonly used as output_processors.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">core.data_classes</span> <span class="kn">import</span> <span class="n">EmbedderResponse</span><span class="p">,</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Usage</span>
+<span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># TODO: move this to a separate file</span>
+<div class="viewcode-block" id="from_dict_to_dataclass"><a class="viewcode-back" href="../../core.html#core.data_components.from_dict_to_dataclass">[docs]</a><span class="k">def</span> <span class="nf">from_dict_to_dataclass</span><span class="p">(</span><span class="n">klass</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">d</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="n">fieldtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">type</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">fields</span><span class="p">(</span><span class="n">klass</span><span class="p">)}</span>
+    <span class="k">return</span> <span class="n">klass</span><span class="p">(</span>
+        <span class="o">**</span><span class="p">{</span>
+            <span class="n">f</span><span class="p">:</span> <span class="p">(</span>
+                <span class="n">from_dict_to_dataclass</span><span class="p">(</span><span class="n">fieldtypes</span><span class="p">[</span><span class="n">f</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">dataclasses</span><span class="o">.</span><span class="n">is_dataclass</span><span class="p">(</span><span class="n">fieldtypes</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+                <span class="k">else</span> <span class="n">d</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">d</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="n">CreateEmbeddingResponse</span>
+
+
+<div class="viewcode-block" id="convert_to_embedder_response"><a class="viewcode-back" href="../../core.html#core.data_components.convert_to_embedder_response">[docs]</a><span class="k">def</span> <span class="nf">convert_to_embedder_response</span><span class="p">(</span>
+    <span class="n">api_response</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderResponse</span><span class="p">:</span>
+    <span class="c1"># Assuming `api_response` has `.embeddings` and `.usage` attributes</span>
+    <span class="c1"># and that `embeddings` is a list of objects that can be converted to `Embedding` dataclass</span>
+    <span class="c1"># TODO: check if any embedding is missing</span>
+    <span class="n">embeddings</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Embedding</span><span class="p">(</span><span class="n">embedding</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">embedding</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">api_response</span><span class="o">.</span><span class="n">data</span>
+    <span class="p">]</span>
+    <span class="n">usage</span> <span class="o">=</span> <span class="n">Usage</span><span class="p">(</span>
+        <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">api_response</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">prompt_tokens</span><span class="p">,</span>
+        <span class="n">total_tokens</span><span class="o">=</span><span class="n">api_response</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="p">,</span>
+    <span class="p">)</span>  <span class="c1"># Assuming `usage` is an object with a `count` attribute</span>
+
+    <span class="c1"># Assuming the model name is part of the response or set statically here</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">api_response</span><span class="o">.</span><span class="n">model</span>
+
+    <span class="k">return</span> <span class="n">EmbedderResponse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ToEmbedderResponse"><a class="viewcode-back" href="../../core.html#core.data_components.ToEmbedderResponse">[docs]</a><span class="k">class</span> <span class="nc">ToEmbedderResponse</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    TODO: this might not apply to all Embedder models, this applys to one pattern</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        convert the model output to EmbedderResponse</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">convert_to_embedder_response</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
+        <span class="c1"># return from_dict_to_dataclass(EmbedderResponse, input)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
