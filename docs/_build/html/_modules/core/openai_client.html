@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.openai_client &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">core.openai_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for core.openai_client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This demonstrates how you can easily use Model to use any api or local model to generate text.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">core.api_client</span> <span class="kn">import</span> <span class="n">APIClient</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">core.data_classes</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
+<span class="kn">import</span> <span class="nn">backoff</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">APITimeoutError</span><span class="p">,</span>
+    <span class="n">InternalServerError</span><span class="p">,</span>
+    <span class="n">RateLimitError</span><span class="p">,</span>
+    <span class="n">UnprocessableEntityError</span><span class="p">,</span>
+    <span class="n">BadRequestError</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="OpenAIClient"><a class="viewcode-back" href="../../core.html#core.openai_client.OpenAIClient">[docs]</a><span class="k">class</span> <span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">APIClient</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="s2">&quot;OpenAI&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_sync_client</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">OpenAI</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AsyncOpenAI</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_combine_input_and_model_kwargs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span>
+        <span class="n">combined_model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specify the API input type.</span>
+<span class="sd">        Convert the Component&#39;s standard input and model_kwargs into API-specific format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">final_model_kwargs</span> <span class="o">=</span> <span class="n">combined_model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span>
+            <span class="c1"># convert input to input</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">),</span> <span class="s2">&quot;input must be a sequence of text&quot;</span>
+            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="c1"># convert input to messages</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">),</span> <span class="s2">&quot;input must be a sequence of messages&quot;</span>
+            <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">final_model_kwargs</span>
+
+    <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
+        <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="n">APITimeoutError</span><span class="p">,</span>
+            <span class="n">InternalServerError</span><span class="p">,</span>
+            <span class="n">RateLimitError</span><span class="p">,</span>
+            <span class="n">UnprocessableEntityError</span><span class="p">,</span>
+            <span class="n">BadRequestError</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">max_time</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        kwargs is the combined input and model_kwargs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
