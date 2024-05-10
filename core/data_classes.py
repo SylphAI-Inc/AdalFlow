@@ -4,10 +4,9 @@ We use dataclass which provides a decorator that automatically adds special meth
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Sequence
+from typing import List, Dict, Any, Optional, Union
 from collections import OrderedDict
 from dataclasses import dataclass, field, InitVar
-from typing import overload
 
 from datetime import datetime
 import uuid
@@ -176,3 +175,13 @@ class DialogSession:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
+
+
+@dataclass
+class Example:
+    r"""
+    An example is a pair of input and output, which are provided to LLMs for in-context learning.
+    """
+
+    input: str
+    output: str

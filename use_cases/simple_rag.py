@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List
 import dotenv
 
 
@@ -101,19 +101,9 @@ Output JSON format:
         self.db()  # transform the documents
         self.retriever.set_chunks(self.db.transformed_documents)
 
-    def generate(self, query: str, context: Optional[str] = None) -> Any:
-        if not self.generator:
-            raise ValueError("Generator is not set")
-
-        prompt_kwargs = {
-            "context_str": context,
-        }
-        response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
-        return response
-
     def call(self, query: str) -> Any:
         context_str = self.retriever(query)
-        return self.generate(query, context=context_str)
+        return self.generator(input=query, prompt_kwargs={"context_str": context_str})
 
 
 if __name__ == "__main__":

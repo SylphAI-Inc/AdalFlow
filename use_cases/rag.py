@@ -1,4 +1,4 @@
-from typing import Any, List, Optional
+from typing import Any, List
 import dotenv
 import yaml
 
@@ -26,11 +26,10 @@ class RAG(Component):
 
     def __init__(self, settings: dict):
         super().__init__()
-        self.settings = settings
-        self.vectorizer_settings = self.settings["vectorizer"]
-        self.retriever_settings = self.settings["retriever"]
-        self.generator_model_kwargs = self.settings["generator"]
-        self.text_splitter_settings = self.settings["text_splitter"]
+        self.vectorizer_settings = settings["vectorizer"]
+        self.retriever_settings = settings["retriever"]
+        self.generator_model_kwargs = settings["generator"]
+        self.text_splitter_settings = settings["text_splitter"]
 
         self.vectorizer = Embedder(
             model_client=OpenAIClient(),
@@ -84,19 +83,9 @@ Output JSON format:
         self.db()  # transform the documents
         self.retriever.set_chunks(self.db.transformed_documents)
 
-    def generate(self, query: str, context: Optional[str] = None) -> Any:
-        if not self.generator:
-            raise ValueError("Generator is not set")
-
-        prompt_kwargs = {
-            "context_str": context,
-        }
-        response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
-        return response
-
     def call(self, query: str) -> Any:
         context_str = self.retriever(query)
-        return self.generate(query, context=context_str)
+        return self.generator(input=query, prompt_kwargs={"context_str": context_str})
 
 
 if __name__ == "__main__":

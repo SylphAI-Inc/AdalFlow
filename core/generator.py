@@ -16,6 +16,7 @@ DEFAULT_LIGHTRAG_PROMPT = r"""
 {% endif %}
 {# example #}
 {% if example_str %}
+Example:
 {{example_str}}
 {% endif %}<</SYS>>
 ---------------------
