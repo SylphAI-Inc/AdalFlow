@@ -2,6 +2,23 @@
 
 If you want to contribute to the LightRAG documentation system, please refer to the following instructions.
 
+## Table of Contents
+1. [Setup](#setup)
+   - [Prerequisites](#prerequisites)
+   - [Clone the GitHub Project](#clone-the-github-project)
+   - [Install Necessary Packages](#install-necessary-packages)
+   - [Optional: Generate Texts from Doc Strings](#optional-generate-texts-from-doc-strings)
+   - [Build the Documentation](#build-the-documentation)
+   - [View the Documentation](#view-the-documentation)
+2. [File Structure](#file-structure)
+   - [conf.py](#confpy)
+   - [index.rst](#indexrst)
+   - [Sections](#sections)
+3. [Editing Tips for Sphinx Documentation](#editing-tips-for-sphinx-documentation)
+   - [Directly Edit an Existing .rst File](#directly-edit-an-existing-rst-file)
+   - [Create a New .rst File](#create-a-new-rst-file)
+   - [Convert a Markdown File to .rst Using Pandoc](#convert-a-markdown-file-to-rst-using-pandoc)
+
 ## Setup
 
 ### **Prerequisites**
