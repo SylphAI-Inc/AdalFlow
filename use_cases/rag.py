@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 import dotenv
-
+import yaml
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
@@ -24,30 +24,13 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 # TODO: RAG can potentially be a component itsefl and be provided to the users
 class RAG(Component):
 
-    def __init__(self):
+    def __init__(self, settings: dict):
         super().__init__()
-
-        self.vectorizer_settings = {
-            "batch_size": 100,
-            "model_kwargs": {
-                "model": "text-embedding-3-small",
-                "dimensions": 256,
-                "encoding_format": "float",
-            },
-        }
-        self.retriever_settings = {
-            "top_k": 2,
-        }
-        self.generator_model_kwargs = {
-            "model": "gpt-3.5-turbo",
-            "temperature": 0.3,
-            "stream": False,
-        }
-        self.text_splitter_settings = {  # TODO: change it to direct to spliter kwargs
-            "split_by": "word",
-            "chunk_size": 400,
-            "chunk_overlap": 200,
-        }
+        self.settings = settings
+        self.vectorizer_settings = self.settings["vectorizer"]
+        self.retriever_settings = self.settings["retriever"]
+        self.generator_model_kwargs = self.settings["generator"]
+        self.text_splitter_settings = self.settings["text_splitter"]
 
         self.vectorizer = Embedder(
             model_client=OpenAIClient(),
@@ -118,6 +101,9 @@ Output JSON format:
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
+    with open("./configs/rag.yaml", "r") as file:
+        settings = yaml.safe_load(file)
+    print(settings)
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,
@@ -130,7 +116,7 @@ if __name__ == "__main__":
         + "lots of more nonsense text" * 250,
         id="doc2",
     )
-    rag = RAG()
+    rag = RAG(settings)
     print(rag)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
