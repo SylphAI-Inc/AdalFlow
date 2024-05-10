@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, List, Union
 import dotenv
 import yaml
 
@@ -93,7 +93,9 @@ Output JSON format:
         )
 
 
-def get_supporting_sentences(supporting_facts, context):
+def get_supporting_sentences(
+    supporting_facts: dict[str, list[Union[str, int]]], context: dict[str, list[str]]
+) -> List[str]:
     extracted_sentences = []
     for title, sent_id in zip(supporting_facts["title"], supporting_facts["sent_id"]):
         if title in context["title"]:
@@ -103,42 +105,67 @@ def get_supporting_sentences(supporting_facts, context):
     return extracted_sentences
 
 
+def compute_retrieval_recall(
+    all_retrieved_context: List[str], all_gt_context: List[List[str]]
+) -> float:
+    recall_list = []
+    for retrieved_context, gt_context in zip(all_retrieved_context, all_gt_context):
+        recalled = 0
+        for gt_context_sentence in gt_context:
+            if gt_context_sentence in retrieved_context:
+                recalled += 1
+        recall_list.append(recalled / len(gt_context))
+
+    return sum(recall_list) / len(recall_list)
+
+
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
     with open("./configs/rag.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
 
-    # Load the dataset and select the first one as the showcase
+    # Load the dataset and select the first 10 as the showcase
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
     dataset = load_dataset("hotpot_qa", "fullwiki")
-    data = dataset["train"][0]
+    dataset = dataset["train"].select(range(10))
 
-    # Each sample in HotpotQA has multiple documents to retrieve from. Each document has a title and a list of sentences.
-    num_docs = len(data["context"]["title"])
-    doc_list = [
-        Document(
-            meta_data=data["context"]["title"][i],
-            text=" ".join(data["context"]["sentences"][i]),
+    all_retrieved_context = []
+    all_gt_context = []
+    for data in dataset:
+        # Each sample in HotpotQA has multiple documents to retrieve from. Each document has a title and a list of sentences.
+        num_docs = len(data["context"]["title"])
+        doc_list = [
+            Document(
+                meta_data=data["context"]["title"][i],
+                text=" ".join(data["context"]["sentences"][i]),
+            )
+            for i in range(num_docs)
+        ]
+
+        # Run the RAG and validate the retrieval and generation
+        rag = RAG(settings)
+        print(rag)
+        rag.build_index(doc_list)
+        print(rag.tracking)
+
+        query = data["question"]
+        response, context_str = rag.call(query)
+
+        # Get the ground truth context_str
+        gt_context_sentence_list = get_supporting_sentences(
+            data["supporting_facts"], data["context"]
         )
-        for i in range(num_docs)
-    ]
 
-    # Run the RAG and validate the retrieval and generation
-    rag = RAG(settings)
-    print(rag)
-    rag.build_index(doc_list)
-    print(rag.tracking)
+        all_retrieved_context.append(context_str)
+        all_gt_context.append(gt_context_sentence_list)
+        print("====================================================")
+        print(f"query: {query}")
+        print(f"response: {response['answer']}")
+        print(f"ground truth response: {data['answer']}")
+        print(f"context_str: {context_str}")
+        print(f"ground truth context_str: {gt_context_sentence_list}")
+        print("====================================================")
 
-    query = data["question"]
-    response, context_str = rag.call(query)
-
-    # Get the ground truth context_str
-    gt_context_str = get_supporting_sentences(data["supporting_facts"], data["context"])
-    print("====================================================")
-    print(f"query: {query}")
-    print(f"response: {response['answer']}")
-    print(f"ground truth response: {data['answer']}")
-    print(f"context_str: {context_str}")
-    print(f"ground truth context_str: {gt_context_str}")
-    print("====================================================")
+    avg_recall = compute_retrieval_recall(all_retrieved_context, all_gt_context)
+    print(f"Average Recall: {avg_recall}")
