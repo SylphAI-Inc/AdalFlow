@@ -32,16 +32,16 @@ author = 'SylphAI'
 # ones.
 extensions = [
 'sphinx.ext.autodoc',
-# 'sphinx.ext.autosummary',
-# 'sphinx.ext.doctest',
-# 'sphinx.ext.intersphinx',
-# 'sphinx.ext.mathjax',
-# 'sphinx.ext.napoleon',
+'sphinx.ext.autosummary',
+'sphinx.ext.doctest',
+'sphinx.ext.intersphinx',
+'sphinx.ext.mathjax',
+'sphinx.ext.napoleon',
 'sphinx.ext.viewcode',
 'sphinx.ext.githubpages',
 'sphinx.ext.todo',
 # 'recommonmark',
-'myst_parser'
+# 'myst_parser'
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
