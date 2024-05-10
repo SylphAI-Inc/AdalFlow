@@ -7,6 +7,7 @@ from typing import List, Dict, Any, Optional, Union
 from uuid import UUID
 import uuid
 from core.tokenizer import Tokenizer
+from dataclasses import dataclass
 
 
 ##############################################
@@ -101,6 +102,7 @@ class Chunk:
         return self.__repr__()
 
 
+@dataclass
 class RetrieverOutput:
     """
     Retrieved result per query
@@ -109,12 +111,12 @@ class RetrieverOutput:
     chunks: List[Chunk]
     query: Optional[str] = None
 
-    def __init__(self, chunks: List[Chunk], query: Optional[str] = None):
-        self.chunks = chunks
-        self.query = query
+    # def __init__(self, chunks: List[Chunk], query: Optional[str] = None):
+    #     self.chunks = chunks
+    #     self.query = query
 
-    def __repr__(self) -> str:
-        return f"RetrieverOutput(chunks={self.chunks[0:5]}, query={self.query})"
+    # def __repr__(self) -> str:
+    #     return f"RetrieverOutput(chunks={self.chunks[0:5]}, query={self.query})"
 
-    def __str__(self):
-        return self.__repr__()
+    # def __str__(self):
+    #     return self.__repr__()

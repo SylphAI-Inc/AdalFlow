@@ -134,3 +134,7 @@ class DocumentSplitter(Component):
             if len(txt) > 0:
                 text_splits.append(txt)
         return text_splits
+
+    def extra_repr(self) -> str:
+        s = f"split_by={self.split_by}, split_length={self.split_length}, split_overlap={self.split_overlap}"
+        return s
