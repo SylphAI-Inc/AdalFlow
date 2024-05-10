@@ -1,4 +1,4 @@
-from typing import Any, List, Union, Optional
+from typing import Any, List, Optional
 import dotenv
 import yaml
 
