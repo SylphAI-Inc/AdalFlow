@@ -1,10 +1,11 @@
 import pytest
-from lightrag.tool import FunctionTool, ToolMetadata, ToolOutput
+from core.tool_helper import FunctionTool, ToolMetadata, ToolOutput
 
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 
-class User(BaseModel):
+@dataclass
+class User:
     id: int
     name: str
 

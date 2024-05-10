@@ -1,5 +1,5 @@
 """
-This demonstrates how you can easily use Model to use any api or local model to generate text.
+This demonstrates how to wrap the OpenAI API client to fit into LightRAG APIClient
 """
 
 import os
