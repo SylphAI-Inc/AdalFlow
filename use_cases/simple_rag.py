@@ -1,4 +1,4 @@
-from typing import Any, List, Union, Optional
+from typing import Any, List, Optional
 import dotenv
 import yaml
 
@@ -14,7 +14,7 @@ from core.data_components import (
 
 from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
-from core.component import Component, RetrieverOutput, Sequential
+from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
 
@@ -84,16 +84,6 @@ Output JSON format:
         self.db()  # transform the documents
         self.retriever.set_chunks(self.db.transformed_documents)
 
-    def retrieve(
-        self, query_or_queries: Union[str, List[str]]
-    ) -> Union[RetrieverOutput, List[RetrieverOutput]]:
-        if not self.retriever:
-            raise ValueError("Retriever is not set")
-        retrieved = self.retriever(query_or_queries)
-        if isinstance(query_or_queries, str) and isinstance(retrieved, list):
-            return retrieved[0] if retrieved else None
-        return retrieved
-
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
             raise ValueError("Generator is not set")
@@ -105,7 +95,7 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        context_str = self.retrieve(query)
+        context_str = self.retriever(query)
         return self.generate(query, context=context_str)
 
 
