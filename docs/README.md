@@ -1,3 +1,16 @@
+# LightRAG Documentation Contribution Instruction
+
+If you want to contribute to the LightRAG documentation system, please refer to the following instructions.
+
+## Setup
+
+### **Prerequisites**
+
+Before you start, please ensure you have:
+
+- **Basic knowledge of command-line operations and Git:** These tools are essential for managing our project files. If you're new to these, check out [Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics) and Command Line Basics.
+- **LightRAG project set up on your machine:** This ensures you can run and test changes locally.
+
 ## **Steps**
 
 ### **1. Clone the Github Project**
