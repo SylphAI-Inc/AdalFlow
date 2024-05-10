@@ -18,11 +18,14 @@ dotenv.load_dotenv()
 
 
 class SimpleICL(Component):
-    def __init__(self):
+    def __init__(self, task_desc: str):
         super().__init__()
         model_kwargs = {"model": "gpt-3.5-turbo"}
+        preset_prompt_kwargs = {"task_desc_str": task_desc}
         self.generator = Generator(
-            model_client=OpenAIClient(), model_kwargs=model_kwargs
+            model_client=OpenAIClient(),
+            model_kwargs=model_kwargs,
+            preset_prompt_kwargs=preset_prompt_kwargs,
         )
         self.generator.print_prompt()
 
@@ -55,7 +58,7 @@ if __name__ == "__main__":
         output="Sentiment: Positive",
     )
 
-    simple_icl = SimpleICL()
+    simple_icl = SimpleICL(task_desc)
     example_str = simple_icl.get_few_shot_example_str(
         [example1, example2, example3], n=2
     )

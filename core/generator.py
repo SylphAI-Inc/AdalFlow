@@ -16,8 +16,9 @@ DEFAULT_LIGHTRAG_PROMPT = r"""
 {% endif %}
 {# example #}
 {% if example_str %}
-Example:
+<EXAMPLES>
 {{example_str}}
+</EXAMPLES>
 {% endif %}<</SYS>>
 ---------------------
 {# chat history #}
