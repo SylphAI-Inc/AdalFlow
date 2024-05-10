@@ -66,3 +66,7 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# In Sphinx documentation, the configuration option add_module_names in the conf.py file controls 
+# whether module names are prefixed before object names in the documentation. This setting is particularly 
+# relevant when documenting Python modules and their contents, such as classes, functions, and methods.
+add_module_names = False 
