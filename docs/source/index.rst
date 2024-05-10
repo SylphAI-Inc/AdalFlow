@@ -6,7 +6,7 @@
 LightRAG documentation
 =======================
 
-.. image:: ../imgs/LightRAG-logo.jpg
+.. image:: ../../images/LightRAG-logo.jpg
    :width: 20%
 
 LightRAG: 1000 lines of code are all you need. No lock-in to vendors and frameworks, only the best practices of productionable RAG and Agent.
@@ -17,7 +17,7 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
 
 Structure
 ^^^^^^^^^
-.. image:: ../imgs/lightrag_structure.png
+.. image:: ../../images/lightrag_structure.png
    :width: 80%
 
 .. toctree::
