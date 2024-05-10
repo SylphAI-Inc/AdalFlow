@@ -11,8 +11,6 @@ Before you start, please ensure you have:
 - **Basic knowledge of command-line operations and Git:** These tools are essential for managing our project files. If you're new to these, check out [Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics) and Command Line Basics.
 - **LightRAG project set up on your machine:** This ensures you can run and test changes locally.
 
-## **Steps**
-
 ### **1. Clone the Github Project**
 
 Clone the repository to get the latest source files. The HTML files are not included in the repository because they are generated dynamically and can consume considerable space.
@@ -40,13 +38,7 @@ Install Sphinx and the required Sphinx theme directly into your active virtual e
     
     `sphinx-apidoc -o docs/source/documents . -f -e` 
     
-    By doing this, you are generating the code-related texts and pages in the `docs/source/documents`, and the module path is the current directory`.` containing `components/` and `core/` .
-    
-    *Note:* 
-    
-    `-f` , or `--force`  is to overwrite the existing files.
-    
-    `-e` or `--separate`  is to put documentation for each module on its own page. In this case, it will generate components and cores separately.
+    By doing this, you are generating the code-related texts and pages in the `docs/source/documents`, and the module path is the current directory`.` containing `components/` and `core/` . [sphinx-apidoc command reference](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html).
     
 
 ### **4. Build the Documentation**
@@ -83,43 +75,67 @@ You will see that at the end of the toctree, there are paths linked, such as `ge
 
 The documentation has 
 
-**get_started/**
+**`get_started/`**
 
-installation.rst
+- installation.rst
+- introduction.rst
 
-introduction.rst
+**`tutorials/`**
 
-**tutorials/**
+- simpleQA.rst - This is a dummy file, we should add the tutorials as different.rst files here
 
-simpleQA.rst - This is a dummy file, we should add the tutorials as different.rst files here
+**`documents/`**
 
-**documents/**
-
-The files in `documents` are the code APIs to present. Please refer to [Setup Generate Texts from Doc Strings[Optional in setup]](https://www.notion.so/LightRAG-Documentation-Setup-Proposal-144d6a1a06ee469a8e760b221e011571?pvs=21) to generate the texts and source code.
+The files in `documents` are the code APIs to present. Please refer to Setup Generate Texts from Doc Strings[Optional in setup] to generate the texts and source code.
 
 You can go through the .rst files under `documents` and edit accordingly. Remember to add the unnecessary files into `LightRAG/.gitignore`.
 
-**Resources/**
+**`Resources/`**
 
 This folder contains a `resource.rst` file with the necessary links and sources to help the developers.
 
-## Editing Tips
+## Editing Tips for Sphinx Documentation
 
-To edit the documentation, you have 3 options:
+To effectively edit the LightRAG documentation, you have several options depending on your specific needs:
 
-- directly find the .rst file in the section, edit the content with markers(reference: https://docutils.sourceforge.io/docs/user/rst/quickstart.html, https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html).
-- create a new .rst file and add your ideal content.
-- generate a .rst file from an existing file. To do this, you should firstly install the pandoc package using `brew install pandoc` , a package to transform the README.md file to `.rst` files. You might want to combine the [sphinx extensions](https://www.sphinx-doc.org/en/master/usage/extensions/index.html) for a better layout.
+### 1. Directly Edit an Existing .rst File
+
+Locate the `.rst` file within the `docs/source` directory that you wish to edit. You can modify the content directly in any text editor. For formatting help, refer to the reStructuredText Quickstart Guide:
+- [Quickstart](https://docutils.sourceforge.io/docs/user/rst/quickstart.html)
+- [reStructuredText Markup Specification](https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html)
+
+### 2. Create a New .rst File
+
+If you need to add a new section or topic:
+
+- Create a new `.rst` file in the appropriate subdirectory within `docs/source`.
+- Write your content following reStructuredText syntax.
+- If you are creating a new section, ensure to include your new file in the relevant `toctree` located usually in `index.rst` or within the closest parent `.rst` file, to make it appear in the compiled documentation.
+
+### 3. Convert a Markdown File to .rst Using Pandoc
+
+To integrate content written in Markdown into the Sphinx project, use Pandoc to convert it to `.rst` format:
+
+Pandoc is a package to transform the files to `.rst` files.
+
+- First, install Pandoc with Homebrew:
     
-    Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>` . For example, in the root directory `pandoc -s README.md -o docs/source/get_started/introduction.rst` .
+    `brew install pandoc` 
+    
+- You might also want to combine the [sphinx extensions](https://www.sphinx-doc.org/en/master/usage/extensions/index.html) in your `doc/source/conf.py` for a better layout.
+- Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>` . For example, in the root directory `pandoc -s README.md -o docs/source/get_started/introduction.rst` .This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
+
+### After editing
+
+Once you've made your edits, rebuild the documentation to see your changes:
+
+- Clean previous builds:
+    
+    `make clean`
+    
+- Generate new HTML documentation:
+    
+    `make html`
     
 
-After editing, you should rebuild the documentation using 
-
-`make clean`
-
-`make html`
-
-And then push these files to the github repo running
-
-`git push`
+Ensure to commit your changes and push them to the GitHub repository to make them available to others.
