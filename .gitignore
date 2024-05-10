@@ -12,3 +12,8 @@ test_li.py
 test_li*.py
 dist/
 llama3/
+docs/build/
+docs/_build/
+docs/source/_static
+docs/source/_templates
+docs/source/documents/tests*.rst
