@@ -1,10 +1,6 @@
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, List, Union, Optional
+import dotenv
 import yaml
-from core.component import (
-    Component,
-    RetrieverOutput,
-    FAISSRetriever,
-)
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
@@ -17,7 +13,6 @@ from core.data_components import (
 from core.data_classes import Document
 
 from core.document_splitter import DocumentSplitter
-from core.component import Sequential
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
@@ -126,6 +121,7 @@ Output JSON format:
 
 
 if __name__ == "__main__":
+    # NOTE: for the ouput of this following code, check text_lightrag.txt
     with open("./configs/simple_rag.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
