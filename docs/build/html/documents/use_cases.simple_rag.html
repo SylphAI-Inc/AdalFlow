@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>use_cases.simple_rag module &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="use_cases.simple_rag copy module" href="use_cases.simple_rag%20copy.html" />
+    <link rel="prev" title="use_cases.simple_qa_stream module" href="use_cases.simple_qa_stream.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/simpleQA.html">simpleQA</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">LightRAG</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">components package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">core package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="use_cases.html">use_cases package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="use_cases.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="use_cases.simple_qa.html">use_cases.simple_qa module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="use_cases.simple_qa_groq.html">use_cases.simple_qa_groq module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="use_cases.simple_qa_stream.html">use_cases.simple_qa_stream module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">use_cases.simple_rag module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="use_cases.simple_rag%20copy.html">use_cases.simple_rag copy module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="use_cases.html#module-use_cases">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../resources/resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">LightRAG</a></li>
+          <li class="breadcrumb-item"><a href="use_cases.html">use_cases package</a></li>
+      <li class="breadcrumb-item active">use_cases.simple_rag module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/documents/use_cases.simple_rag.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-use_cases.simple_rag">
+<span id="use-cases-simple-rag-module"></span><h1>use_cases.simple_rag module<a class="headerlink" href="#module-use_cases.simple_rag" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">use_cases.simple_rag.</span></span><span class="sig-name descname"><span class="pre">RAG</span></span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG.build_index">
+<span class="sig-name descname"><span class="pre">build_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">documents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document" title="core.documents_data_class.Document"><span class="pre">Document</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG.build_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG.build_index" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG.call" title="Link to this definition"></a></dt>
+<dd><p>Define the call method for the component.
+Should be overriden by all subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG.generate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG.retrieve">
+<span class="sig-name descname"><span class="pre">retrieve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_or_queries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput" title="core.documents_data_class.RetrieverOutput"><span class="pre">RetrieverOutput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput" title="core.documents_data_class.RetrieverOutput"><span class="pre">RetrieverOutput</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG.retrieve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG.retrieve" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="use_cases.simple_rag.RAG.retriever_output_to_context_str">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">retriever_output_to_context_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">retriever_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput" title="core.documents_data_class.RetrieverOutput"><span class="pre">RetrieverOutput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput" title="core.documents_data_class.RetrieverOutput"><span class="pre">RetrieverOutput</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deduplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/use_cases/simple_rag.html#RAG.retriever_output_to_context_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#use_cases.simple_rag.RAG.retriever_output_to_context_str" title="Link to this definition"></a></dt>
+<dd><p>How to combine your retrieved chunks into the context is highly dependent on your use case.
+If you used query expansion, you might want to deduplicate the chunks.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="use_cases.simple_qa_stream.html" class="btn btn-neutral float-left" title="use_cases.simple_qa_stream module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="use_cases.simple_rag%20copy.html" class="btn btn-neutral float-right" title="use_cases.simple_rag copy module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

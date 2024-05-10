@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="simpleQA" href="../tutorials/simpleQA.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lightrag">LightRAG</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#what-is-lightrag">What is LightRAG?</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#foundation">Foundation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#end-to-end-applications">End-to-end applications</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-not-part-of-lightrag">What is not part of LightRAG?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-start">How to start?</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/simpleQA.html">simpleQA</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../documents/modules.html">LightRAG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../resources/resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/get_started/introduction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
+<section id="lightrag">
+<h2>LightRAG<a class="headerlink" href="#lightrag" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/Sylph-AI/LightRAG/blob/main/lightrag/light_rag.py">1000 lines of code are all you
+need</a>.
+No lock-in to vendors and frameworks, only the best practices of
+<strong>productionable RAG and Agent</strong>.</p>
+<section id="what-is-lightrag">
+<h3>What is LightRAG?<a class="headerlink" href="#what-is-lightrag" title="Link to this heading"></a></h3>
+<p>LightRAG comes from the best of the AI research and engineering.
+Fundamentally, we ask ourselves: what kind of system that combines the
+best of research(such as LLM), engineering (such as ‘jinja’) to build
+the best applications? We are not a framework. We do not want you to
+directly install the package. We want you to carefully decide to take
+modules and structures from here to build your own library and
+applications. This is a cookbook organized uniquely for easy
+understanding: you can read the 1000 lines of code to see a typical RAG
+end-to-end without jumping between files and going through multi-level
+class inheritance. If we build our system expanding from
+<code class="docutils literal notranslate"><span class="pre">light_rag.py</span></code>, we as a community will share the same RAG languages,
+and share other building blocks and use cases easily without depending
+on a complex framework.</p>
+<p><strong>Our principles:</strong></p>
+<ul class="simple">
+<li><p>We recognize that building a RAG is a highly complex and customized
+process, and no framework can offer that flexibility.</p></li>
+<li><p>We seek to understand, not to establish.</p></li>
+<li><p>We seek to be flexible, not rigid.</p></li>
+<li><p>We seek to be organized and clear, not complex and confusing.</p></li>
+<li><p>We seek to be open, with open contributions from the community and
+research on use cases, maybe we will come up with a more established
+framework in the future.</p></li>
+<li><p>We seek to learn from code; we don’t read documentation that calls
+very high-level functions and classes.</p></li>
+</ul>
+<p>Note: If we can’t understand your code quickly and easily, you should
+not add it to the library.</p>
+<p>This is a new beginning, where all developers can come together, enjoy
+learning and building, have fun, and build the best RAGs in the world.</p>
+<p>We stay neutral to all frameworks and all vendors, and we do not allow
+vendors to merge code without a clear, articulate community vouch for
+their performance, and comparison with other vendor or open-source
+solutions.</p>
+<p><strong>Our opinions:</strong></p>
+<p>We are very opinionated but we ground our opinions on best practices.
+Here are some of our unique opinions: - We code in a way that we can
+switch between model providers or between oss and proprietary models
+easily.</p>
+<p>How? LLM is a “text-in-text-out” model. <code class="docutils literal notranslate"><span class="pre">Prompts</span></code> are the new model
+parameters–The in-context learning. We want full-control over it. Any
+model provider API that manipulates our input prompts and output text,
+we dont use it. Three examples are OpenAI’s <code class="docutils literal notranslate"><span class="pre">role</span></code>, <code class="docutils literal notranslate"><span class="pre">function</span> <span class="pre">call</span></code>
+(<code class="docutils literal notranslate"><span class="pre">tool</span></code>), <code class="docutils literal notranslate"><span class="pre">json</span> <span class="pre">output</span> <span class="pre">mode</span></code>. The problem with this: our prompt
+cannot be directly adapted to other LLM providers and we lose
+transparency, adding more uncontrollable variables to our system. - We
+write the <code class="docutils literal notranslate"><span class="pre">prompts</span></code> all together like writing a document instead of
+separating them into multiple strings or variables. We think <code class="docutils literal notranslate"><span class="pre">jinja2</span></code>
+speaks the best of the prompt language. [Here show how Llamaindex addes
+different prompts together but we put all of them together.] Yes, we
+think manual prompt enginerring is just a stage, like manually label
+your data. The future is another LLM can take your description and will
+be optimized to do your prompt, or another <code class="docutils literal notranslate"><span class="pre">hypernetwork</span></code> will convert
+the lengthy prompt into parameters that can be plugged into the model.</p>
+</section>
+</section>
+<section id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Link to this heading"></a></h2>
+<p align="center"><p>LightRAG structure</p>
+</p><section id="foundation">
+<h3>Foundation<a class="headerlink" href="#foundation" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lightrag/</span></code>: All core data structures, the core 1000 lines of code
+to cover the essence of a performant RAG. ## Building blocks</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extend/</span></code>: All modules that can be used to extend the core RAG.</p>
+<ol class="arabic simple">
+<li><p>Mainly including functional modules: we can extend different
+<code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Agent</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Reranker</span></code>, etc.</p></li>
+<li><p>Tracking or monitoring modules: such as <code class="docutils literal notranslate"><span class="pre">CallbackManager</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Phoenix</span></code> integration. When necessary, please add a
+<code class="docutils literal notranslate"><span class="pre">README.md</span></code> to explain why this module is necessary and how to
+use it.</p></li>
+</ol>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tests/</span></code>: All tests for the core RAG and its extensions. Includng
+<code class="docutils literal notranslate"><span class="pre">dummy</span> <span class="pre">modules</span></code> for testing new modules.</p></li>
+</ul>
+</section>
+<section id="end-to-end-applications">
+<h3>End-to-end applications<a class="headerlink" href="#end-to-end-applications" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">use_cases/</span></code>: All use cases that can be solved using LightRAG. For
+instance, we can solve <code class="docutils literal notranslate"><span class="pre">Question</span> <span class="pre">Answering</span></code>, <code class="docutils literal notranslate"><span class="pre">Summarization</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Information</span> <span class="pre">Extraction</span></code>, etc.</p></li>
+</ul>
+<p>To add a new use case, you can add a new folder in <code class="docutils literal notranslate"><span class="pre">use_cases/</span></code> with
+the name <code class="docutils literal notranslate"><span class="pre">application_name</span></code> and add the following files: -
+<code class="docutils literal notranslate"><span class="pre">/prompt</span></code>: a directory containing all prompts used in the application.
+- <code class="docutils literal notranslate"><span class="pre">/data</span></code>: a directory containing all data used in the application, or
+instructions on how to download the data. - <code class="docutils literal notranslate"><span class="pre">/main.py</span></code>: a file
+containing the main code to run the application.</p>
+</section>
+</section>
+<section id="what-is-not-part-of-lightrag">
+<h2>What is not part of LightRAG?<a class="headerlink" href="#what-is-not-part-of-lightrag" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Data processing: For instance, llamaindex has
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">llama_index.core.ingestion</span> <span class="pre">import</span> <span class="pre">IngestionPipeline</span></code> which
+transforms the data that are either in the <code class="docutils literal notranslate"><span class="pre">Document</span></code> or <code class="docutils literal notranslate"><span class="pre">Chunk</span></code>.
+We do not cover this in LightRAG. Similarly,
+<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">llama_index.core.postprocessor</span> <span class="pre">import</span> <span class="pre">SimilarityPostprocessor</span></code>
+which processes the retrieved <code class="docutils literal notranslate"><span class="pre">chunk</span></code>, sometimes with further
+filtering.</p></li>
+</ul>
+</section>
+<section id="how-to-start">
+<h2>How to start?<a class="headerlink" href="#how-to-start" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p>Clone the repository.</p></li>
+<li><p>Setup API keys by make a copy of <code class="docutils literal notranslate"><span class="pre">.env.example</span></code> to <code class="docutils literal notranslate"><span class="pre">.env</span></code> and
+fill in the necessary API keys.</p></li>
+<li><p>Setup the Python environment using <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code>. And activate
+the environment using <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code>.</p></li>
+<li><p>(For contributors only) Install pre-commit into your git hooks using
+<code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span></code>, which will automatically check the code
+standard on every commit.</p></li>
+<li><p>Now you should run any file in the repo.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../tutorials/simpleQA.html" class="btn btn-neutral float-right" title="simpleQA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

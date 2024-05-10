@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.api_client &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../get_started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../get_started/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/simpleQA.html">simpleQA</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../documents/modules.html">LightRAG</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../resources/resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">core.api_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for core.api_client</h1><div class="highlight"><pre>
+<span></span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;This is our attempt to componentize all API clients,  local or cloud.</span>
+
+<span class="sd">For a particular API provider, such as OpenAI, we will have a class that inherits from APIClient.</span>
+<span class="sd">It does four things:</span>
+<span class="sd">(1) Initialize the client, sync and async.</span>
+<span class="sd">(2) Convert the input to the API-specific format.</span>
+<span class="sd">(3) Call the API with the right client api method.</span>
+<span class="sd">(4) Handle API specific exceptions and errors to retry the call.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Dict</span>
+
+
+<span class="kn">from</span> <span class="nn">core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">core.data_classes</span> <span class="kn">import</span> <span class="n">ModelType</span>
+
+
+<div class="viewcode-block" id="APIClient">
+<a class="viewcode-back" href="../../documents/core.api_client.html#core.api_client.APIClient">[docs]</a>
+<span class="k">class</span> <span class="nc">APIClient</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="c1"># take the *args and **kwargs to be compatible with the Component class</span>
+        <span class="c1"># comvert args to attributes</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;arg_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+        <span class="c1"># convert kwargs to attributes</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># TODO: recheck to see if we need to initialize the client here</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_sync_client</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _init_sync_client method&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _init_async_client method&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _call method&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">_combine_input_and_model_kwargs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">combined_model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the Component&#39;s standard input and model_kwargs into API-specific format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _combine_input_and_model_kwargs method&quot;</span>
+        <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_process_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is specific to OpenAI API, as removing new lines could have better performance in the embedder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">text</span>
+
+    <span class="c1"># def format_input(self, *, input: Any) -&gt; Any:</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     This is specific to APIClient.</span>
+    <span class="c1">#     # convert your component input to the API-specific format</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     raise NotImplementedError(</span>
+    <span class="c1">#         f&quot;{type(self).__name__} must implement format_input method&quot;</span>
+    <span class="c1">#     )</span>
+
+    <span class="k">def</span> <span class="nf">_track_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># TODO: implement the error process later. Customized error handling per api provider</span>
+    <span class="c1"># def _backoff_on_exception(self, exception, max_time=5):</span>
+    <span class="c1">#     return backoff.on_exception(</span>
+    <span class="c1">#         backoff.expo,</span>
+    <span class="c1">#         exception,</span>
+    <span class="c1">#         max_time=max_time,</span>
+    <span class="c1">#     )</span>
+
+<div class="viewcode-block" id="APIClient.call">
+<a class="viewcode-back" href="../../documents/core.api_client.html#core.api_client.APIClient.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="c1"># adapt the format and the key for input and model_kwargs</span>
+        <span class="n">combined_model_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine_input_and_model_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call</span><span class="p">(</span><span class="n">kwargs</span><span class="o">=</span><span class="n">combined_model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="APIClient.acall">
+<a class="viewcode-back" href="../../documents/core.api_client.html#core.api_client.APIClient.acall">[docs]</a>
+    <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">combined_model_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_combine_input_and_model_kwargs</span><span class="p">(</span>
+            <span class="nb">input</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="n">model_type</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_acall</span><span class="p">(</span><span class="o">**</span><span class="n">combined_model_kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># class OpenAIClientOld(Component):</span>
+<span class="c1">#     def __init__(self):</span>
+<span class="c1">#         super().__init__()</span>
+<span class="c1">#         self.provider = &quot;OpenAI&quot;</span>
+<span class="c1">#         self._init_sync_client()</span>
+
+<span class="c1">#     def _init_sync_client(self):</span>
+<span class="c1">#         api_key = os.getenv(&quot;OPENAI_API_KEY&quot;)</span>
+<span class="c1">#         if not api_key:</span>
+<span class="c1">#             raise ValueError(&quot;Environment variable OPENAI_API_KEY must be set&quot;)</span>
+<span class="c1">#         self.sync_client = OpenAI()</span>
+
+<span class="c1">#     def _init_async_client(self):</span>
+<span class="c1">#         api_key = os.getenv(&quot;OPENAI_API_KEY&quot;)</span>
+<span class="c1">#         if not api_key:</span>
+<span class="c1">#             raise ValueError(&quot;Environment variable OPENAI_API_KEY must be set&quot;)</span>
+<span class="c1">#         self.async_client = AsyncOpenAI()</span>
+
+<span class="c1">#     def _call(self, **kwargs):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         kwargs is the combined input and model_kwargs</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         raise NotImplementedError(f&quot;{type(self).__name__} must implement _call method&quot;)</span>
+
+<span class="c1">#     def _acall(self, **kwargs):</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     def _combine_input_and_model_kwargs(</span>
+<span class="c1">#         self,</span>
+<span class="c1">#         input: Any,</span>
+<span class="c1">#         combined_model_kwargs: dict = {},</span>
+<span class="c1">#         model_type: ModelType = ModelType.UNDEFINED,</span>
+<span class="c1">#     ) -&gt; dict:</span>
+<span class="c1">#         r&quot;&quot;&quot;</span>
+<span class="c1">#         Convert the Component&#39;s standard input and model_kwargs into API-specific format</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         final_model_kwargs = combined_model_kwargs.copy()</span>
+<span class="c1">#         if model_type == ModelType.EMBEDDER:</span>
+<span class="c1">#             # convert input to input</span>
+<span class="c1">#             assert isinstance(input, Sequence), &quot;input must be a sequence of text&quot;</span>
+<span class="c1">#             final_model_kwargs[&quot;input&quot;] = input</span>
+<span class="c1">#         elif model_type == ModelType.LLM:</span>
+<span class="c1">#             # convert input to messages</span>
+<span class="c1">#             assert isinstance(input, Sequence), &quot;input must be a sequence of messages&quot;</span>
+<span class="c1">#             final_model_kwargs[&quot;messages&quot;] = input</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             raise ValueError(f&quot;model_type {model_type} is not supported&quot;)</span>
+<span class="c1">#         return final_model_kwargs</span>
+
+<span class="c1">#     def _track_usage(self, **kwargs):</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         Track usage of the API</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         pass</span>
+
+<span class="c1">#     @backoff.on_exception(</span>
+<span class="c1">#         backoff.expo,</span>
+<span class="c1">#         (</span>
+<span class="c1">#             APITimeoutError,</span>
+<span class="c1">#             InternalServerError,</span>
+<span class="c1">#             RateLimitError,</span>
+<span class="c1">#             UnprocessableEntityError,</span>
+<span class="c1">#             BadRequestError,</span>
+<span class="c1">#         ),</span>
+<span class="c1">#         max_time=5,</span>
+<span class="c1">#     )</span>
+<span class="c1">#     def call(</span>
+<span class="c1">#         self,</span>
+<span class="c1">#         *,</span>
+<span class="c1">#         input: Any,</span>
+<span class="c1">#         model_kwargs: dict = {},</span>
+<span class="c1">#         model_type: ModelType = ModelType.LLM,</span>
+<span class="c1">#     ) -&gt; Any:</span>
+
+<span class="c1">#         combined_model_kwargs = self._combine_input_and_model_kwargs(</span>
+<span class="c1">#             input, model_kwargs, model_type=model_type</span>
+<span class="c1">#         )</span>
+<span class="c1">#         return self._call(**combined_model_kwargs)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
