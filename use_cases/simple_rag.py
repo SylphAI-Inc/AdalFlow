@@ -1,10 +1,6 @@
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, List, Union, Optional
+import dotenv
 import yaml
-from core.component import (
-    Component,
-    RetrieverOutput,
-    FAISSRetriever,
-)
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
@@ -17,7 +13,6 @@ from core.data_components import (
 )
 
 from core.document_splitter import DocumentSplitter
-from core.component import Sequential
 from core.string_parser import JsonParser
 from core.component import Component, RetrieverOutput, Sequential
 from core.retriever import FAISSRetriever
@@ -95,7 +90,7 @@ Output JSON format:
         if not self.retriever:
             raise ValueError("Retriever is not set")
         retrieved = self.retriever(query_or_queries)
-        if isinstance(query_or_queries, str):
+        if isinstance(query_or_queries, str) and isinstance(retrieved, list):
             return retrieved[0] if retrieved else None
         return retrieved
 
@@ -115,10 +110,10 @@ Output JSON format:
 
 
 if __name__ == "__main__":
+    # NOTE: for the ouput of this following code, check text_lightrag.txt
     with open("./configs/simple_rag.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
-    # NOTE: for the ouput of this following code, check text_lightrag.txt
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,
