@@ -61,6 +61,10 @@ if __name__ == "__main__":
     data = Data()
     data.add_to_history("What's your name?", "My name is LightRAG.")
     data.add_to_history("How are you?", "I'm fine, thank you.")
-    print(
-        data.get_history()
-    )  # Outputs: [{'query': "What's your name?", 'answer': 'My name is AI.'}, {'query': 'How are you?', 'answer': "I'm fine, thank you."}]
+    print(data.get_history())
+    print(data.get_history_length())
+    print(data.get_last_query())
+    print(data.get_last_answer())
+    print(data.get_query_answer_pair(0))
+    data.clear_history()
+    print(data.get_history())
