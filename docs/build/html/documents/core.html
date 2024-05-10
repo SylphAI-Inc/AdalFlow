@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core package &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="core.api_client module" href="core.api_client.html" />
+    <link rel="prev" title="components.retriever package" href="components.retriever.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/simpleQA.html">simpleQA</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">LightRAG</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">components package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">core package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="core.api_client.html">core.api_client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.component.html">core.component module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.data_classes.html">core.data_classes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.data_components.html">core.data_components module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.document_splitter.html">core.document_splitter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.documents_data_class.html">core.documents_data_class module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.embedder.html">core.embedder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.functional.html">core.functional module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.generator.html">core.generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.openai_client.html">core.openai_client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.prompt_builder.html">core.prompt_builder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.string_parser.html">core.string_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.tokenizer.html">core.tokenizer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.tool_helper.html">core.tool_helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html">use_cases package</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../resources/resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">LightRAG</a></li>
+      <li class="breadcrumb-item active">core package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/documents/core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="core-package">
+<h1>core package<a class="headerlink" href="#core-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="core.api_client.html">core.api_client module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.api_client.html#core.api_client.APIClient"><code class="docutils literal notranslate"><span class="pre">APIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.api_client.html#core.api_client.APIClient.acall"><code class="docutils literal notranslate"><span class="pre">APIClient.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.api_client.html#core.api_client.APIClient.call"><code class="docutils literal notranslate"><span class="pre">APIClient.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.component.html">core.component module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.component.html#core.component.Component"><code class="docutils literal notranslate"><span class="pre">Component</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.acall"><code class="docutils literal notranslate"><span class="pre">Component.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.add_component"><code class="docutils literal notranslate"><span class="pre">Component.add_component()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.apply"><code class="docutils literal notranslate"><span class="pre">Component.apply()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.call"><code class="docutils literal notranslate"><span class="pre">Component.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.children"><code class="docutils literal notranslate"><span class="pre">Component.children()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.components"><code class="docutils literal notranslate"><span class="pre">Component.components()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.extra_repr"><code class="docutils literal notranslate"><span class="pre">Component.extra_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.get_subcomponent"><code class="docutils literal notranslate"><span class="pre">Component.get_subcomponent()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.named_children"><code class="docutils literal notranslate"><span class="pre">Component.named_children()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.named_components"><code class="docutils literal notranslate"><span class="pre">Component.named_components()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.component.html#core.component.Component.register_subcomponent"><code class="docutils literal notranslate"><span class="pre">Component.register_subcomponent()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.data_classes.html">core.data_classes module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.data_classes.html#core.data_classes.EmbedderResponse"><code class="docutils literal notranslate"><span class="pre">EmbedderResponse</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.EmbedderResponse.data"><code class="docutils literal notranslate"><span class="pre">EmbedderResponse.data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.EmbedderResponse.model"><code class="docutils literal notranslate"><span class="pre">EmbedderResponse.model</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.EmbedderResponse.usage"><code class="docutils literal notranslate"><span class="pre">EmbedderResponse.usage</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.data_classes.html#core.data_classes.Embedding"><code class="docutils literal notranslate"><span class="pre">Embedding</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.Embedding.embedding"><code class="docutils literal notranslate"><span class="pre">Embedding.embedding</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.Embedding.index"><code class="docutils literal notranslate"><span class="pre">Embedding.index</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.data_classes.html#core.data_classes.ModelType"><code class="docutils literal notranslate"><span class="pre">ModelType</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.ModelType.EMBEDDER"><code class="docutils literal notranslate"><span class="pre">ModelType.EMBEDDER</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.ModelType.LLM"><code class="docutils literal notranslate"><span class="pre">ModelType.LLM</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.ModelType.UNDEFINED"><code class="docutils literal notranslate"><span class="pre">ModelType.UNDEFINED</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.data_classes.html#core.data_classes.Usage"><code class="docutils literal notranslate"><span class="pre">Usage</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.Usage.prompt_tokens"><code class="docutils literal notranslate"><span class="pre">Usage.prompt_tokens</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.data_classes.html#core.data_classes.Usage.total_tokens"><code class="docutils literal notranslate"><span class="pre">Usage.total_tokens</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.data_components.html">core.data_components module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.data_components.html#core.data_components.ToEmbedderResponse"><code class="docutils literal notranslate"><span class="pre">ToEmbedderResponse</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.data_components.html#core.data_components.convert_to_embedder_response"><code class="docutils literal notranslate"><span class="pre">convert_to_embedder_response()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.data_components.html#core.data_components.from_dict_to_dataclass"><code class="docutils literal notranslate"><span class="pre">from_dict_to_dataclass()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.document_splitter.html">core.document_splitter module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.document_splitter.html#core.document_splitter.DocumentSplitter"><code class="docutils literal notranslate"><span class="pre">DocumentSplitter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.document_splitter.html#core.document_splitter.DocumentSplitter.call"><code class="docutils literal notranslate"><span class="pre">DocumentSplitter.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.documents_data_class.html">core.documents_data_class module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk"><code class="docutils literal notranslate"><span class="pre">Chunk</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.doc_id"><code class="docutils literal notranslate"><span class="pre">Chunk.doc_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.estimated_num_tokens"><code class="docutils literal notranslate"><span class="pre">Chunk.estimated_num_tokens</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.id"><code class="docutils literal notranslate"><span class="pre">Chunk.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.meta_data"><code class="docutils literal notranslate"><span class="pre">Chunk.meta_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.order"><code class="docutils literal notranslate"><span class="pre">Chunk.order</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.score"><code class="docutils literal notranslate"><span class="pre">Chunk.score</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.text"><code class="docutils literal notranslate"><span class="pre">Chunk.text</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Chunk.vector"><code class="docutils literal notranslate"><span class="pre">Chunk.vector</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document"><code class="docutils literal notranslate"><span class="pre">Document</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document.estimated_num_tokens"><code class="docutils literal notranslate"><span class="pre">Document.estimated_num_tokens</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document.from_dict"><code class="docutils literal notranslate"><span class="pre">Document.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document.id"><code class="docutils literal notranslate"><span class="pre">Document.id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document.meta_data"><code class="docutils literal notranslate"><span class="pre">Document.meta_data</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.Document.text"><code class="docutils literal notranslate"><span class="pre">Document.text</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput"><code class="docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput.chunks"><code class="docutils literal notranslate"><span class="pre">RetrieverOutput.chunks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.documents_data_class.html#core.documents_data_class.RetrieverOutput.query"><code class="docutils literal notranslate"><span class="pre">RetrieverOutput.query</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.embedder.html">core.embedder module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder"><code class="docutils literal notranslate"><span class="pre">Embedder</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.call"><code class="docutils literal notranslate"><span class="pre">Embedder.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.extra_repr"><code class="docutils literal notranslate"><span class="pre">Embedder.extra_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.model_client"><code class="docutils literal notranslate"><span class="pre">Embedder.model_client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.model_type"><code class="docutils literal notranslate"><span class="pre">Embedder.model_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.output_processors"><code class="docutils literal notranslate"><span class="pre">Embedder.output_processors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.embedder.html#core.embedder.Embedder.update_default_model_kwargs"><code class="docutils literal notranslate"><span class="pre">Embedder.update_default_model_kwargs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.functional.html">core.functional module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.functional.html#core.functional.compose_model_kwargs"><code class="docutils literal notranslate"><span class="pre">compose_model_kwargs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.generator.html">core.generator module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.generator.html#core.generator.Generator"><code class="docutils literal notranslate"><span class="pre">Generator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.call"><code class="docutils literal notranslate"><span class="pre">Generator.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.compose_model_input"><code class="docutils literal notranslate"><span class="pre">Generator.compose_model_input()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.compose_prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">Generator.compose_prompt_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.extra_repr"><code class="docutils literal notranslate"><span class="pre">Generator.extra_repr()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.model_client"><code class="docutils literal notranslate"><span class="pre">Generator.model_client</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.model_type"><code class="docutils literal notranslate"><span class="pre">Generator.model_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.output_processors"><code class="docutils literal notranslate"><span class="pre">Generator.output_processors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.parse_completion"><code class="docutils literal notranslate"><span class="pre">Generator.parse_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.print_prompt"><code class="docutils literal notranslate"><span class="pre">Generator.print_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.prompt"><code class="docutils literal notranslate"><span class="pre">Generator.prompt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.provider"><code class="docutils literal notranslate"><span class="pre">Generator.provider</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.train"><code class="docutils literal notranslate"><span class="pre">Generator.train()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.generator.html#core.generator.Generator.update_default_model_kwargs"><code class="docutils literal notranslate"><span class="pre">Generator.update_default_model_kwargs()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.openai_client.html">core.openai_client module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.openai_client.html#core.openai_client.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.prompt_builder.html">core.prompt_builder module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.prompt_builder.html#core.prompt_builder.Prompt"><code class="docutils literal notranslate"><span class="pre">Prompt</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.prompt_builder.html#core.prompt_builder.Prompt.call"><code class="docutils literal notranslate"><span class="pre">Prompt.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.prompt_builder.html#core.prompt_builder.Prompt.extra_repr"><code class="docutils literal notranslate"><span class="pre">Prompt.extra_repr()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.prompt_builder.html#core.prompt_builder.get_jinja2_environment"><code class="docutils literal notranslate"><span class="pre">get_jinja2_environment()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.string_parser.html">core.string_parser module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.JsonParser"><code class="docutils literal notranslate"><span class="pre">JsonParser</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.evaluate_ast_node"><code class="docutils literal notranslate"><span class="pre">evaluate_ast_node()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.extract_json_str"><code class="docutils literal notranslate"><span class="pre">extract_json_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.extract_list_str"><code class="docutils literal notranslate"><span class="pre">extract_list_str()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.fix_json_escaped_single_quotes"><code class="docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.fix_json_missing_commas"><code class="docutils literal notranslate"><span class="pre">fix_json_missing_commas()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html#core.string_parser.parse_function_call"><code class="docutils literal notranslate"><span class="pre">parse_function_call()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.tokenizer.html">core.tokenizer module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html#core.tokenizer.Tokenizer"><code class="docutils literal notranslate"><span class="pre">Tokenizer</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.tokenizer.html#core.tokenizer.Tokenizer.count_tokens"><code class="docutils literal notranslate"><span class="pre">Tokenizer.count_tokens()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tokenizer.html#core.tokenizer.Tokenizer.decode"><code class="docutils literal notranslate"><span class="pre">Tokenizer.decode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tokenizer.html#core.tokenizer.Tokenizer.encode"><code class="docutils literal notranslate"><span class="pre">Tokenizer.encode()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="core.tool_helper.html">core.tool_helper module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool"><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.acall"><code class="docutils literal notranslate"><span class="pre">FunctionTool.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.async_fn"><code class="docutils literal notranslate"><span class="pre">FunctionTool.async_fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.call"><code class="docutils literal notranslate"><span class="pre">FunctionTool.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.fn"><code class="docutils literal notranslate"><span class="pre">FunctionTool.fn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.from_defaults"><code class="docutils literal notranslate"><span class="pre">FunctionTool.from_defaults()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.FunctionTool.metadata"><code class="docutils literal notranslate"><span class="pre">FunctionTool.metadata</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata"><code class="docutils literal notranslate"><span class="pre">ToolMetadata</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.description"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.description</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.fn_schema_str"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.fn_schema_str</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.get_name"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.get_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.get_parameters_dict"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.get_parameters_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.name"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.parameters"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.parameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolMetadata.tool_str"><code class="docutils literal notranslate"><span class="pre">ToolMetadata.tool_str</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolOutput"><code class="docutils literal notranslate"><span class="pre">ToolOutput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolOutput.name"><code class="docutils literal notranslate"><span class="pre">ToolOutput.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolOutput.raw_input"><code class="docutils literal notranslate"><span class="pre">ToolOutput.raw_input</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolOutput.raw_output"><code class="docutils literal notranslate"><span class="pre">ToolOutput.raw_output</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.ToolOutput.str_content"><code class="docutils literal notranslate"><span class="pre">ToolOutput.str_content</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="core.tool_helper.html#core.tool_helper.get_fun_schema"><code class="docutils literal notranslate"><span class="pre">get_fun_schema()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-core" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="components.retriever.html" class="btn btn-neutral float-left" title="components.retriever package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="core.api_client.html" class="btn btn-neutral float-right" title="core.api_client module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

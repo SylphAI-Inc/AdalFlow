@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>core.string_parser module &mdash; LightRAG  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="core.tokenizer module" href="core.tokenizer.html" />
+    <link rel="prev" title="core.prompt_builder module" href="core.prompt_builder.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LightRAG
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Get Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/simpleQA.html">simpleQA</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Docs</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">LightRAG</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="components.html">components package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="core.html">core package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="core.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="core.api_client.html">core.api_client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.component.html">core.component module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.data_classes.html">core.data_classes module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.data_components.html">core.data_components module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.document_splitter.html">core.document_splitter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.documents_data_class.html">core.documents_data_class module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.embedder.html">core.embedder module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.functional.html">core.functional module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.generator.html">core.generator module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.openai_client.html">core.openai_client module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.prompt_builder.html">core.prompt_builder module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">core.string_parser module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.tokenizer.html">core.tokenizer module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="core.tool_helper.html">core.tool_helper module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="core.html#module-core">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="use_cases.html">use_cases package</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../resources/resources.html">Resources</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LightRAG</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">LightRAG</a></li>
+          <li class="breadcrumb-item"><a href="core.html">core package</a></li>
+      <li class="breadcrumb-item active">core.string_parser module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/documents/core.string_parser.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-core.string_parser">
+<span id="core-string-parser-module"></span><h1>core.string_parser module<a class="headerlink" href="#module-core.string_parser" title="Link to this heading"></a></h1>
+<p>LLM applications requires lots of string processing. Such as the text output needed to be parsed into:
+(1) JSON format or other formats
+(2) SQL/Python valid format
+(3) Tool(function) call format</p>
+<p>We design this these string_parser modules to be generic to any input text without differentiating them as input text or output text.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.JsonParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">JsonParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/string_parser.html#JsonParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.JsonParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
+<p>A text parser for extracting JSON strings from text to json object.
+NOTE: ensure only pass one json string in the text.
+You can use <cite>extract_json_str</cite> to extract the first json string from the text.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.evaluate_ast_node">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">evaluate_ast_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AST</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/core/string_parser.html#evaluate_ast_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.evaluate_ast_node" title="Link to this definition"></a></dt>
+<dd><p>Recursively evaluates an AST node and returns the corresponding Python object.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><dl class="simple">
+<dt>node (ast.AST): The AST node to evaluate. This node can represent various parts of Python expressions,</dt><dd><p>such as literals, identifiers, lists, dictionaries, and function calls.</p>
+</dd>
+<dt>context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.</dt><dd><p>This context is used to resolve names and execute functions.</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns:</dt><dd><dl class="simple">
+<dt>Any: The result of evaluating the node. The type of the returned object depends on the nature of the node:</dt><dd><ul class="simple">
+<li><p>Constants return their literal value.</p></li>
+<li><p>Names are looked up in the context_map.</p></li>
+<li><p>Lists and tuples return their contained values as a list or tuple.</p></li>
+<li><p>Dictionaries return a dictionary with keys and values evaluated.</p></li>
+<li><p>Function calls invoke the function with evaluated arguments and return its result.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the node type is unsupported, a ValueError is raised indicating the inability to evaluate the node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.extract_json_str">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">extract_json_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/string_parser.html#extract_json_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.extract_json_str" title="Link to this definition"></a></dt>
+<dd><p>Extract JSON string from text.
+NOTE: Only handles the first JSON object found in the text. And it expects at least one JSON object in the text.
+If right brace is not found, we add one to the end of the string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.extract_list_str">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">extract_list_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_missing_right_bracket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/string_parser.html#extract_list_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.extract_list_str" title="Link to this definition"></a></dt>
+<dd><p>Extract the first complete list string from the provided text. If the list string is incomplete
+(missing the closing bracket), an option allows adding a closing bracket at the end.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>text (str): The text containing potential list data.
+add_missing_right_bracket (bool): Whether to add a closing bracket if it is missing.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: The extracted list string.</p>
+</dd>
+<dt>Raises:</dt><dd><dl class="simple">
+<dt>ValueError: If no list is found or if the list extraction is incomplete</dt><dd><p>without the option to add a missing bracket.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.fix_json_escaped_single_quotes">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">fix_json_escaped_single_quotes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/string_parser.html#fix_json_escaped_single_quotes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.fix_json_escaped_single_quotes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.fix_json_missing_commas">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">fix_json_missing_commas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">json_str</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/core/string_parser.html#fix_json_missing_commas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.fix_json_missing_commas" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.string_parser.parse_function_call">
+<span class="sig-prename descclassname"><span class="pre">core.string_parser.</span></span><span class="sig-name descname"><span class="pre">parse_function_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">call_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/core/string_parser.html#parse_function_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.parse_function_call" title="Link to this definition"></a></dt>
+<dd><p>Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.
+Args:</p>
+<blockquote>
+<div><p>call_string (str): The string representing the function call.
+context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.</p>
+<blockquote>
+<div><p>This context is used to resolve names and execute functions.</p>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="core.prompt_builder.html" class="btn btn-neutral float-left" title="core.prompt_builder module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="core.tokenizer.html" class="btn btn-neutral float-right" title="core.tokenizer module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, SylphAI.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
