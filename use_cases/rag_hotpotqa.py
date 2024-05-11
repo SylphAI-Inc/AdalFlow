@@ -19,6 +19,7 @@ from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
+from core.evaluator import RetrieverEvaluator
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -96,6 +97,9 @@ Output JSON format:
 def get_supporting_sentences(
     supporting_facts: dict[str, list[Union[str, int]]], context: dict[str, list[str]]
 ) -> List[str]:
+    """
+    Extract the supporting sentences from the context based on the supporting facts. This function is specific to the HotpotQA dataset.
+    """
     extracted_sentences = []
     for title, sent_id in zip(supporting_facts["title"], supporting_facts["sent_id"]):
         if title in context["title"]:
@@ -103,20 +107,6 @@ def get_supporting_sentences(
             sentence = context["sentences"][index][sent_id]
             extracted_sentences.append(sentence)
     return extracted_sentences
-
-
-def compute_retrieval_recall(
-    all_retrieved_context: List[str], all_gt_context: List[List[str]]
-) -> float:
-    recall_list = []
-    for retrieved_context, gt_context in zip(all_retrieved_context, all_gt_context):
-        recalled = 0
-        for gt_context_sentence in gt_context:
-            if gt_context_sentence in retrieved_context:
-                recalled += 1
-        recall_list.append(recalled / len(gt_context))
-
-    return sum(recall_list) / len(recall_list)
 
 
 if __name__ == "__main__":
@@ -167,5 +157,8 @@ if __name__ == "__main__":
         print(f"ground truth context_str: {gt_context_sentence_list}")
         print("====================================================")
 
-    avg_recall = compute_retrieval_recall(all_retrieved_context, all_gt_context)
+    retriever_evaluator = RetrieverEvaluator()
+    avg_recall = retriever_evaluator.compute_recall(
+        all_retrieved_context, all_gt_context
+    )
     print(f"Average Recall: {avg_recall}")
