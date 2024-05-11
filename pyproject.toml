@@ -37,6 +37,7 @@ litellm = "^1.35.34"
 haystack-ai = "^2.0.1"
 torchvision = "^0.18.0"
 torch = "^2.3.0"
+langsmith = "^0.1.56"
 
 
 [tool.ruff]

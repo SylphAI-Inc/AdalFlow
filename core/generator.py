@@ -177,5 +177,5 @@ class Generator(Component):
         )
         response = self.parse_completion(completion)
         if self.output_processors:
-            response = self.output_processors.call(response)
+            response = self.output_processors(response)
         return response

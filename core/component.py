@@ -220,9 +220,9 @@ class Component:
 
 
 class Sequential(Component):
-    r"""A sequential container.
+    r"""A sequential container. Components will be added to it in the order they are passed to the constructor.
 
-    Components will be added to it in the order they are passed to the constructor.
+    Output of the previous component is input to the next component as positional argument.
     """
 
     _components: Dict[str, Component]  # type: ignore[assignment]
@@ -440,5 +440,3 @@ class ComponentDict(Component):
                 self[m[0]] = m[1]  # type: ignore[assignment]
 
     # remove forward alltogether to fallback on Module's _forward_unimplemented
-
-

@@ -15,7 +15,9 @@ from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
 from core.component import Component, RetrieverOutput, Sequential
 from core.retriever import FAISSRetriever
+from components.retriever.bm25_retriever import InMemoryBM25Retriever
 from core.db import LocalDocumentDB
+from core.documents_data_class import Document
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -26,14 +28,6 @@ class RAG(Component):
     def __init__(self):
         super().__init__()
 
-        self.vectorizer_settings = {
-            "batch_size": 100,
-            "model_kwargs": {
-                "model": "text-embedding-3-small",
-                "dimensions": 256,
-                "encoding_format": "float",
-            },
-        }
         self.retriever_settings = {
             "top_k": 2,
         }
@@ -42,38 +36,12 @@ class RAG(Component):
             "temperature": 0.3,
             "stream": False,
         }
-        self.text_splitter_settings = {  # TODO: change it to direct to spliter kwargs
-            "split_by": "word",
-            "chunk_size": 400,
-            "chunk_overlap": 200,
-        }
 
-        vectorizer = Embedder(
-            model_client=OpenAIClient(),
-            # batch_size=self.vectorizer_settings["batch_size"],
-            model_kwargs=self.vectorizer_settings["model_kwargs"],
-            output_processors=Sequential(ToEmbedderResponse()),
-        )
-        text_splitter = DocumentSplitter(
-            split_by=self.text_splitter_settings["split_by"],
-            split_length=self.text_splitter_settings["chunk_size"],
-            split_overlap=self.text_splitter_settings["chunk_overlap"],
-        )
-        data_transformer = Sequential(
-            text_splitter,
-            ToEmbeddings(
-                vectorizer=vectorizer,
-                batch_size=self.vectorizer_settings["batch_size"],
-            ),
-        )
-        self.db = LocalDocumentDB(data_transformer=data_transformer)
+        self.db = LocalDocumentDB(data_transformer=None)
         # initialize retriever, which depends on the vectorizer too
         # TODO: separate the db and the retrieval method? is itpossible?
-        self.retriever = FAISSRetriever(
+        self.retriever = InMemoryBM25Retriever(
             top_k=self.retriever_settings["top_k"],
-            dimensions=self.vectorizer_settings["model_kwargs"]["dimensions"],
-            vectorizer=vectorizer,
-            # db=self.db,
             output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
         # initialize generator
@@ -98,8 +66,9 @@ Output JSON format:
 
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
-        self.db()  # transform the documents
-        self.retriever.load_index(self.db.transformed_documents)
+        # self.db()  # transform the documents
+        self.retriever.load_documents(documents)
+        self.retriever.build_index_from_documents()
 
     def retrieve(
         self, query_or_queries: Union[str, List[str]]

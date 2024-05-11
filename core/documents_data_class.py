@@ -6,7 +6,8 @@ r"""Data classes to be consumed by retriever component.
 from typing import List, Dict, Any, Optional, Union
 from uuid import UUID
 import uuid
-from core.tokenizer import Tokenizer
+
+# from core.tokenizer import Tokenizer
 from dataclasses import dataclass
 
 
@@ -40,9 +41,9 @@ class Document:
     def from_dict(doc: Dict):
         assert "meta_data" in doc, "meta_data is required"
         assert "text" in doc, "text is required"
-        if "estimated_num_tokens" not in doc:
-            tokenizer = Tokenizer()
-            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
+        # if "estimated_num_tokens" not in doc:
+        #     tokenizer = Tokenizer()
+        #     doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
         if "id" not in doc:
             doc["id"] = uuid.uuid4()
 
@@ -89,14 +90,14 @@ class Chunk:
         self.id = id if id else uuid.uuid4()
         self.meta_data = meta_data
 
-        self.estimated_num_tokens = estimated_num_tokens if estimated_num_tokens else 0
-        # estimate the number of tokens
-        if not self.estimated_num_tokens:
-            tokenizer = Tokenizer()
-            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+        # self.estimated_num_tokens = estimated_num_tokens if estimated_num_tokens else 0
+        # # estimate the number of tokens
+        # if not self.estimated_num_tokens:
+        #     tokenizer = Tokenizer()
+        #     self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
     def __repr__(self) -> str:
-        return f"Chunk(id={self.id}, doc_id={self.doc_id}, order={self.order}, text={self.text}, vector={self.vector[0:5]}, estimated_num_tokens={self.estimated_num_tokens}, score={self.score})"
+        return f"Chunk(id={self.id}, doc_id={self.doc_id}, order={self.order}, text={self.text}, vector={self.vector[0:5]}, score={self.score})"
 
     def __str__(self):
         return self.__repr__()
@@ -108,7 +109,7 @@ class RetrieverOutput:
     Retrieved result per query
     """
 
-    chunks: List[Chunk]
+    chunks: List[Union[Chunk, Document]]
     query: Optional[str] = None
 
     # def __init__(self, chunks: List[Chunk], query: Optional[str] = None):

@@ -23,9 +23,10 @@ from core.documents_data_class import Document, Chunk
 
 
 class DocumentSplitter(Component):
-    """
-    Haystack
+    r"""
     Splits a list of text documents into a list of text documents with shorter texts.
+
+    Output: List[Document]
 
     Splitting documents with long texts is a common preprocessing step during indexing.
     This allows Embedders to create significant semantic representations

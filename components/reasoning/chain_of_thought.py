@@ -15,84 +15,55 @@ For instance, CoT might already be supported in gpt3.5+ api calls.
 Benchmark it with and without CoT to see if it helps.
 """
 
-from lightrag.light_rag import OpenAIGenerator, Generator, GeneratorRunner
 from typing import List
-from jinja2 import Template
+from core.component import Component
 
-DEFAULT_CHAIN_OF_THOUGHT_PROMPT = r"""
-<START_OF_SYSTEM_PROMPT>
-You are a helpful assistant. Let's think step-by-step (be concise too) to answer user's query.
-{#few_shot_examples#}
-{% if examples %}
-Examples:
-{% for example in examples %}
-{{ example }}
-{% endfor %}
-{% endif %}
-<END_OF_SYSTEM_PROMPT>
-User: {{user_query}}
-You:
+
+COT_TASK_DESC_STR_BASIC = "You are a helpful assistant. Let's think step-by-step (be concise too) to answer user's query."
+# Using triple quotes to include JSON-like structure more cleanly
+COT_TASK_DESC_STR_WITH_JSON_OUTPUT = f"""
+{COT_TASK_DESC_STR_BASIC} Output JSON format: {{"thought": "<The thought process to answer the query>", "answer": "<The answer to the query>"}}
 """
 
-
-# TODO: Generalize this prompt template class
-# system reserved keywords: user_query, examples, context_str, chat_history
-class PromptTemplate:
-    def __init__(self, prompt: str, examples: List[str]):
-        self.prompt = prompt
-        self.examples = examples
-        self.prompt_template = Template(self.prompt)
-
-    def render(self, user_query: str) -> str:
-        return self.prompt_template.render(
-            user_query=user_query,
-            examples=self.examples,
-        )
-
-
-# TODO: jinja2 template class to enforece the type checking
-# TODO: add tracking
-
-
-class ChainOfThought(GeneratorRunner):
-    name = "Chain of Thought"
-
-    def __init__(
-        self,
-        generator: Generator,
-        prompt: str = DEFAULT_CHAIN_OF_THOUGHT_PROMPT,
-        examples: List[str] = [],
-    ):
-        super().__init__(generator, prompt, examples)
-
-    def __call__(self, input: str) -> str:
-        prompt = self.prompt_template.render(
-            user_query=input,
-            examples=self.examples,
-        )
-        messages = [
-            {"role": "system", "content": prompt},
-        ]
-        print(f"messages: {messages}")
-        response = self.generator(messages=messages)
-        return response
+# ChainOfThought will just be a generator with preset_prompt_kwargs of the task_desc_str = COT_TASK_DESC_STR
+# additional you can ask it to generate a json with "thought" and "anwer" keys and use jsonParser
 
 
 if __name__ == "__main__":
-    settings = {
-        "provider": "openai",
-        "model": "gpt-3.5-turbo",
-    }
-    generator = OpenAIGenerator(**settings)
-    chain_of_thought = ChainOfThought(generator)
-    input = "Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?"
-    input = "How can I become an AI engineer?"
-    input = "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?"
+    from core.generator import Generator
+    from core.openai_client import OpenAIClient
+    from components.api_client.groq_client import GroqAPIClient
+    from core.string_parser import JsonParser
+    import dotenv
 
-    response = chain_of_thought(input=input)
-    print(response)
+    dotenv.load_dotenv()
+    model_client = GroqAPIClient()
+    model = "llama3-8b-8192"
 
-    # raw response
-    base_generator_runner = GeneratorRunner(generator)
-    response = base_generator_runner(input=input)
-    print(f"raw response: {response}")
+    def test_chain_of_thought_basic():
+
+        cot = Generator(
+            model_client=model_client,
+            model_kwargs={"model": model},
+            preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_BASIC},
+        )
+        input = "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?"
+
+        answer = cot(input=input)
+        print(answer)
+
+    def test_chain_of_thought_with_json_output():
+
+        cot = Generator(
+            model_client=model_client,
+            model_kwargs={"model": model},
+            preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_WITH_JSON_OUTPUT},
+            output_processors=JsonParser(),
+        )
+        input = "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?"
+
+        answer = cot(input=input)
+        print(answer)
+
+    test_chain_of_thought_basic()
+    test_chain_of_thought_with_json_output()

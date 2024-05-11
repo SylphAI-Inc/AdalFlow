@@ -34,11 +34,13 @@ class FAISSRetriever(Component):
     def __init__(
         self,
         *,
+        # arguments
         top_k: int = 3,
         dimensions: int = 768,
         chunks: Optional[List[Chunk]] = None,
+        # components
         vectorizer: Optional[Component] = None,
-        db: Optional[Component] = None,
+        document_db: Optional[Component] = None,
         output_processors: Optional[Component] = None,
     ):
         super().__init__(provider="Meta")
@@ -54,7 +56,7 @@ class FAISSRetriever(Component):
             self.chunks: List[Chunk] = []
             self.total_chunks: int = 0
         self.top_k = top_k
-        self.db = db  # it can directly use the data from db or directly from the chunks
+        self.document_db = document_db  # it can directly use the data from db or directly from the chunks
         self.output_processors = output_processors
 
     def reset(self):
@@ -68,6 +70,12 @@ class FAISSRetriever(Component):
         embeddings = [chunk.vector for chunk in chunks]
         xb = np.array(embeddings, dtype=np.float32)
         self.index.add(xb)
+
+    def load_index(self, chunks: List[Chunk]):
+        """
+        Ensure embeddings are already in the chunks
+        """
+        self.set_chunks(chunks)
 
     def _convert_cosine_similarity_to_probability(self, D: np.ndarray) -> np.ndarray:
         D = (D + 1) / 2
