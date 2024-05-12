@@ -111,14 +111,14 @@ def get_supporting_sentences(
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
-    with open("./configs/rag.yaml", "r") as file:
+    with open("./configs/rag_hotpotqa.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
 
     # Load the dataset and select the first 10 as the showcase
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
     dataset = load_dataset("hotpot_qa", "fullwiki")
-    dataset = dataset["train"].select(range(10))
+    dataset = dataset["train"].select(range(3))
 
     all_retrieved_context = []
     all_gt_context = []
@@ -158,7 +158,13 @@ if __name__ == "__main__":
         print("====================================================")
 
     retriever_evaluator = RetrieverEvaluator()
-    avg_recall = retriever_evaluator.compute_recall(
+    avg_recall, recall_list = retriever_evaluator.compute_recall(
         all_retrieved_context, all_gt_context
     )
-    print(f"Average Recall: {avg_recall}")
+    avg_relevance, relevance_list = retriever_evaluator.compute_context_relevance(
+        all_retrieved_context, all_gt_context
+    )
+    print(f"Average recall: {avg_recall}")
+    print(f"Recall for each query: {recall_list}")
+    print(f"Average relevance: {avg_relevance}")
+    print(f"Relevance for each query: {relevance_list}")
