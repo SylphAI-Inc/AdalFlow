@@ -7,7 +7,6 @@ import numpy as np
 from core.component import Component
 from core.data_classes import (
     Chunk,
-    RetrieverOutput,
     Document,
     RetrieverOutput,
 )
@@ -18,7 +17,7 @@ RetrieverOutputType = List[RetrieverOutput]
 
 class Retriever(Component):
     """
-    Retriever will manage its own index and retrieve in format of NewRetrieverOutput
+    Retriever will manage its own index and retrieve in format of RetrieverOutput
     It does not manage the initial documents.
     """
 

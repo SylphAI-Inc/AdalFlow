@@ -1,20 +1,15 @@
-from typing import Any, List, Union, Optional
+from typing import Any, List, Optional
 import dotenv
 
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
-from core.embedder import Embedder
 from core.data_components import (
-    ToEmbedderResponse,
     RetrieverOutputToContextStr,
-    ToEmbeddings,
 )
 
-from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
-from core.retriever import FAISSRetriever
 from components.retriever.bm25_retriever import InMemoryBM25Retriever
 from core.db import LocalDocumentDB
 from core.data_classes import Document
@@ -36,11 +31,9 @@ class RAG(Component):
             "temperature": 0.3,
             "stream": False,
         }
-        # initialize retriever, which depends on the vectorizer too
-        # TODO: separate the db and the retrieval method? is itpossible?
+
         retriever = InMemoryBM25Retriever(
             top_k=self.retriever_settings["top_k"],
-            # output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
 
         self.db = LocalDocumentDB(
@@ -74,16 +67,6 @@ Output JSON format:
         # self.db()  # transform the documents
         self.db.build_retrieve_index()
 
-    # def retrieve(
-    #     self, query_or_queries: Union[str, List[str]]
-    # ) -> Union[RetrieverOutput, List[RetrieverOutput]]:
-    #     if not self.retriever:
-    #         raise ValueError("Retriever is not set")
-    #     retrieved = self.retriever(query_or_queries)
-    #     if isinstance(query_or_queries, str):
-    #         return retrieved[0] if retrieved else None
-    #     return retrieved
-
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
             raise ValueError("Generator is not set")
@@ -95,15 +78,11 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        # context_str = self.retrieve(query)
         context_str = self.db.retrieve(query)
         return self.generate(query, context=context_str)
 
 
 if __name__ == "__main__":
-    # NOTE: for the ouput of this following code, check text_lightrag.txt
-    from core.data_classes import Document
-
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,
