@@ -2,7 +2,57 @@ from typing import List, Union, Tuple
 from core.tokenizer import Tokenizer
 
 
+class AnswerMacthEvaluator:
+    """
+    Evaluator for evaluating the performance of a matching model.
+    Args:
+        type (str): Type of matching evaluation. Can be "exact_match" or "fuzzy_match". "exact_match" requires the predicted answer to be exactly the same as the ground truth answer. "fuzzy_match" requires the predicted answer to contain the ground truth answer.
+    """
+
+    def __init__(self, type: str = "exact_match"):
+        self.type = type
+
+    def compute_match_acc_single_query(self, pred_answer: str, gt_answer: str) -> float:
+        """
+        Compute the match accuracy of the predicted answer for a single query.
+        Args:
+            pred_answer (str): Predicted answer string
+            gt_answer (str): Ground truth answer string
+        Returns:
+            float: Match accuracy
+        """
+        if self.type == "exact_match":
+            return 1.0 if pred_answer == gt_answer else 0.0
+        elif self.type == "fuzzy_match":
+            return 1.0 if gt_answer in pred_answer else 0.0
+        else:
+            raise NotImplementedError
+
+    def compute_match_acc(
+        self, all_pred_answer: List[str], all_gt_answer: List[str]
+    ) -> Tuple[float, List[float]]:
+        """
+        Compute the match accuracy of the predicted answer for a list of queries.
+        Args:
+            all_pred_answer: List of predicted answer strings
+            all_gt_answer: List of ground truth answer strings
+        Returns:
+            float: Average match accuracy
+            List[float]: Match accuracy values for each query
+        """
+        match_acc_list = []
+        for pred_answer, gt_answer in zip(all_pred_answer, all_gt_answer):
+            match = self.compute_match_acc_single_query(pred_answer, gt_answer)
+            match_acc_list.append(match)
+
+        return sum(match_acc_list) / len(match_acc_list), match_acc_list
+
+
 class RetrieverEvaluator:
+    """
+    Evaluator for evaluating the performance of a retriever.
+    """
+
     def __init__(self):
         pass
 
@@ -72,7 +122,7 @@ class RetrieverEvaluator:
         all_gt_context: Union[List[str], List[List[str]]],
     ) -> Tuple[float, List[float]]:
         """
-        Compute the context relevance of the retrieved context for a list of queries.
+        Compute the context relevance of the retrieved context for a list of queries. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
         Args:
             all_retrieved_context: List of retrieved context strings
             all_gt_context: List of ground truth context strings and each of them can be a string or a list of strings
