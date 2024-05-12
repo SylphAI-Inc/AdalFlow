@@ -8,8 +8,7 @@ from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence, Union
 
 
 from core.component import Component
-from core.data_classes import EmbedderResponse, Embedding, Usage
-from core.documents_data_class import Chunk, RetrieverOutput
+from core.data_classes import EmbedderResponse, Embedding, Usage, Chunk, RetrieverOutput
 import core.functional as F
 
 
@@ -31,7 +30,7 @@ def from_dict_to_dataclass(klass: Type[T], d: Dict[str, Any]) -> T:
     )
 
 
-from openai.types import CreateEmbeddingResponse
+# from openai.types import CreateEmbeddingResponse
 
 
 def convert_to_embedder_response(

@@ -1,5 +1,5 @@
 from typing import Dict, List, Union, Any
-from core.documents_data_class import RetrieverOutput, Chunk, Document
+from core.data_classes import RetrieverOutput, Chunk, Document
 
 # TODO: import all other  functions into this single file to be exposed to users
 

@@ -17,7 +17,7 @@ from typing import List, Literal
 from more_itertools import windowed
 
 from core.component import Component
-from core.documents_data_class import Document, Chunk
+from core.data_classes import Document, Chunk
 
 # TODO: convert this to function
 

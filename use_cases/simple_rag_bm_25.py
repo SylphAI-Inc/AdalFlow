@@ -13,11 +13,11 @@ from core.data_components import (
 
 from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
-from core.component import Component, RetrieverOutput, Sequential
+from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from components.retriever.bm25_retriever import InMemoryBM25Retriever
 from core.db import LocalDocumentDB
-from core.documents_data_class import Document
+from core.data_classes import Document
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -29,21 +29,26 @@ class RAG(Component):
         super().__init__()
 
         self.retriever_settings = {
-            "top_k": 2,
+            "top_k": 1,
         }
         self.generator_model_kwargs = {
             "model": "gpt-3.5-turbo",
             "temperature": 0.3,
             "stream": False,
         }
-
-        self.db = LocalDocumentDB(data_transformer=None)
         # initialize retriever, which depends on the vectorizer too
         # TODO: separate the db and the retrieval method? is itpossible?
-        self.retriever = InMemoryBM25Retriever(
+        retriever = InMemoryBM25Retriever(
             top_k=self.retriever_settings["top_k"],
-            output_processors=RetrieverOutputToContextStr(deduplicate=True),
+            # output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
+
+        self.db = LocalDocumentDB(
+            data_transformer=None,
+            retriever=retriever,
+            retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
+        )
+
         # initialize generator
         self.generator = Generator(
             preset_prompt_kwargs={
@@ -67,18 +72,17 @@ Output JSON format:
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
         # self.db()  # transform the documents
-        self.retriever.load_documents(documents)
-        self.retriever.build_index_from_documents()
+        self.db.build_retrieve_index()
 
-    def retrieve(
-        self, query_or_queries: Union[str, List[str]]
-    ) -> Union[RetrieverOutput, List[RetrieverOutput]]:
-        if not self.retriever:
-            raise ValueError("Retriever is not set")
-        retrieved = self.retriever(query_or_queries)
-        if isinstance(query_or_queries, str):
-            return retrieved[0] if retrieved else None
-        return retrieved
+    # def retrieve(
+    #     self, query_or_queries: Union[str, List[str]]
+    # ) -> Union[RetrieverOutput, List[RetrieverOutput]]:
+    #     if not self.retriever:
+    #         raise ValueError("Retriever is not set")
+    #     retrieved = self.retriever(query_or_queries)
+    #     if isinstance(query_or_queries, str):
+    #         return retrieved[0] if retrieved else None
+    #     return retrieved
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
@@ -91,13 +95,14 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        context_str = self.retrieve(query)
+        # context_str = self.retrieve(query)
+        context_str = self.db.retrieve(query)
         return self.generate(query, context=context_str)
 
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
-    from core.documents_data_class import Document
+    from core.data_classes import Document
 
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
@@ -115,7 +120,7 @@ if __name__ == "__main__":
     print(rag)
     rag.build_index([doc1, doc2])
     print(rag.tracking)
-    query = "What is Li Yin's hobby and profession?"
+    query = "What is Li Yin's profession?"
 
     response = rag.call(query)
     print(f"response: {response}")

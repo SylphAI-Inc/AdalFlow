@@ -9,7 +9,7 @@ components/*/__pycache__
 components/__pycache__
 tests/__pycache__
 test_li.py
-test_li*.py
+test_li*
 dist/
 llama3/
 docs/build/

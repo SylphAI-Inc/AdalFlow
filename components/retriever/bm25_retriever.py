@@ -16,7 +16,8 @@ from functools import partial
 
 from core.component import Component
 from core.tokenizer import Tokenizer
-from core.documents_data_class import RetrieverOutput, Document
+from core.data_classes import RetrieverOutput, Document, RetrieverOutput
+from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 
 
 PARAM_K1 = 1.5
@@ -30,7 +31,7 @@ def split_function_by_token(tokenizer: Tokenizer, x: str) -> List[str]:
     return tokenizer(x)
 
 
-class InMemoryBM25Retriever(Component):
+class InMemoryBM25Retriever(Retriever):
     """Fast Implementation of Best Matching 25 ranking function.
     Part of information theory.
 
@@ -65,7 +66,6 @@ class InMemoryBM25Retriever(Component):
         split_function: Optional[Callable] = partial(
             split_function_by_token, Tokenizer()
         ),
-        output_processors: Optional[Component] = None,
     ):
         """
         Parameters
@@ -93,9 +93,8 @@ class InMemoryBM25Retriever(Component):
         self.top_k = top_k
 
         self.split_function = split_function
-        self.documents: List[str] = []
-        self.original_documents: List[Document] = []
-        self.output_processors = output_processors
+
+        self.indexed = False  # this is important to check if the retrieve is possible
 
     def _apply_split_function(self, documents: List[str]):
         if self.split_function is None:
@@ -106,10 +105,6 @@ class InMemoryBM25Retriever(Component):
         pool = Pool(cpu_count())
         tokenized_documents = pool.map(self.split_function, documents)
         return tokenized_documents
-
-    def load_documents(self, documents: List[Document]):
-        self.original_documents = documents.copy()
-        self.documents = [doc.text for doc in documents]
 
     @property
     def corpus_size(self):
@@ -136,8 +131,20 @@ class InMemoryBM25Retriever(Component):
             "alpha": self.alpha,
         }
 
-    def build_index_from_documents(self):
-        self.tokenized_documents = self._apply_split_function(self.documents)
+    def reset_index(self):
+        self.t2d = {}
+        self.idf = {}
+        self.doc_len = []
+        self.avgdl = 0
+        self.k1 = PARAM_K1
+        self.b = PARAM_B
+        self.alpha = IDF_CUTOFF
+        self.indexed = False
+
+    def build_index_from_documents(self, documents: List[Document]):
+        # make a copy of the documents
+        list_of_documents_str = [doc.text for doc in documents]
+        self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         # start to calculate the DF,TF, IDF
         self.avgdl = 0  # average document length
         self.t2d: Dict[str, Tuple[int, int]] = (
@@ -145,7 +152,7 @@ class InMemoryBM25Retriever(Component):
         )  # term to document, <term: <doc_index, freq>>
         self.idf = {}
         self.doc_len = []
-        corpus_size = len(self.documents)
+        corpus_size = len(list_of_documents_str)
         for i, document in enumerate(self.tokenized_documents):
             self.doc_len.append(len(document))
             for token in document:
@@ -154,7 +161,7 @@ class InMemoryBM25Retriever(Component):
                 if i not in self.t2d[token]:
                     self.t2d[token][i] = 0
                 self.t2d[token][i] += 1
-        self.avgdl = sum(self.doc_len) / len(self.documents)
+        self.avgdl = sum(self.doc_len) / len(list_of_documents_str)
         to_delete = []
         for token, docs in self.t2d.items():
             idf = math.log(corpus_size - len(docs) + 0.5) - math.log(len(docs) + 0.5)
@@ -174,12 +181,14 @@ class InMemoryBM25Retriever(Component):
                 " unintuitive results.",
                 file=sys.stderr,
             )
+        self.indexed = True
 
+    # TODO: retriever should output the list of indexes of the documents.
     def retrieve(
-        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
-    ) -> List[RetrieverOutput]:
+        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
+    ) -> RetrieverOutputType:
         """
-        Retrieve the top n documents for the query.
+        Retrieve the top n documents for the query and return only the indexes of the documents.
 
         Parameters
         ----------
@@ -220,12 +229,18 @@ class InMemoryBM25Retriever(Component):
                         scores[index] += (
                             self.idf[token] * freq * (self.k1 + 1) / (freq + denom_cst)
                         )
-            retrieved_documents = [
-                self.original_documents[i]
+
+            retrieved_documents_indexes = [
+                i for i in heapq.nlargest(top_k, scores.keys(), key=scores.__getitem__)
+            ]
+            retrieved_documents_scores = [
+                scores[i]
                 for i in heapq.nlargest(top_k, scores.keys(), key=scores.__getitem__)
             ]
             query_response = RetrieverOutput(
-                chunks=retrieved_documents, query=queries[idx]
+                doc_indexes=retrieved_documents_indexes,
+                query=queries[idx],
+                doc_scores=retrieved_documents_scores,
             )
             output.append(query_response)
 
@@ -233,12 +248,13 @@ class InMemoryBM25Retriever(Component):
 
         return output
 
+    # TODO: enforce typing along the whole lifecycle of the retriever
     def __call__(
         self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
-    ) -> Any:
+    ) -> RetrieverOutputType:
         response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
-        if self.output_processors:
-            response = self.output_processors(response)
+        # if self.output_processors:
+        #     response = self.output_processors(response)
         return response
 
     # def save(self, filename):

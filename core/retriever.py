@@ -5,7 +5,43 @@ import faiss
 import numpy as np
 
 from core.component import Component
-from core.documents_data_class import Chunk, RetrieverOutput
+from core.data_classes import (
+    Chunk,
+    RetrieverOutput,
+    Document,
+    RetrieverOutput,
+)
+
+RetrieverInputType = Union[str, List[str]]
+RetrieverOutputType = List[RetrieverOutput]
+
+
+class Retriever(Component):
+    """
+    Retriever will manage its own index and retrieve in format of NewRetrieverOutput
+    It does not manage the initial documents.
+    """
+
+    indexed = False
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def reset_index(self):
+        raise NotImplementedError(f"reset_index is not implemented")
+
+    def build_index_from_documents(self, documents: List[Document]):
+        raise NotImplementedError(f"build_index_from_documents is not implemented")
+
+    def retrieve(
+        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
+    ) -> RetrieverOutputType:
+        raise NotImplementedError(f"retrieve is not implemented")
+
+    def __call__(
+        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
+    ) -> RetrieverOutputType:
+        raise NotImplementedError(f"__call__ is not implemented")
 
 
 class FAISSRetriever(Component):

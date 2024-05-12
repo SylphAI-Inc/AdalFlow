@@ -17,13 +17,13 @@ class SimpleQA(Component):
     def __init__(self):
         super().__init__()
         model_kwargs = {"model": "gpt-3.5-turbo"}
-        self.generator = Generator(
+        self.generator = Generator[int](
             model_client=OpenAIClient(), model_kwargs=model_kwargs
         )
         self.generator.print_prompt()
 
     def call(self, query: str) -> str:
-        return self.generator.call(input=query)
+        return self.generator(input=query)
 
 
 if __name__ == "__main__":

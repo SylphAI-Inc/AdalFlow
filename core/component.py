@@ -13,7 +13,6 @@ from typing import (
     Iterator,
     Mapping,
 )
-from core.documents_data_class import RetrieverOutput, Chunk
 from collections import OrderedDict, abc as container_abcs
 import operator
 from itertools import islice
