@@ -14,6 +14,6 @@ generator:
   stream: false
 
 text_splitter:
-  split_by: word
-  chunk_size: 400
-  chunk_overlap: 200
+  split_by: sentence
+  chunk_size: 1
+  chunk_overlap: 0

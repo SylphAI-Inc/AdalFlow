@@ -118,7 +118,7 @@ if __name__ == "__main__":
     # Load the dataset and select the first 10 as the showcase
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
     dataset = load_dataset("hotpot_qa", "fullwiki")
-    dataset = dataset["train"].select(range(3))
+    dataset = dataset["train"].select(range(10))
 
     all_retrieved_context = []
     all_gt_context = []
