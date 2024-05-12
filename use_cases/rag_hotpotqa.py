@@ -19,7 +19,7 @@ from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
-from core.evaluator import RetrieverEvaluator
+from core.evaluator import RetrieverEvaluator, AnswerMacthEvaluator
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -122,6 +122,8 @@ if __name__ == "__main__":
 
     all_retrieved_context = []
     all_gt_context = []
+    all_pred_answer = []
+    all_gt_answer = []
     for data in dataset:
         # Each sample in HotpotQA has multiple documents to retrieve from. Each document has a title and a list of sentences.
         num_docs = len(data["context"]["title"])
@@ -149,6 +151,8 @@ if __name__ == "__main__":
 
         all_retrieved_context.append(context_str)
         all_gt_context.append(gt_context_sentence_list)
+        all_pred_answer.append(response["answer"])
+        all_gt_answer.append(data["answer"])
         print("====================================================")
         print(f"query: {query}")
         print(f"response: {response['answer']}")
@@ -157,6 +161,7 @@ if __name__ == "__main__":
         print(f"ground truth context_str: {gt_context_sentence_list}")
         print("====================================================")
 
+    # Evaluate the retriever
     retriever_evaluator = RetrieverEvaluator()
     avg_recall, recall_list = retriever_evaluator.compute_recall(
         all_retrieved_context, all_gt_context
@@ -168,3 +173,11 @@ if __name__ == "__main__":
     print(f"Recall for each query: {recall_list}")
     print(f"Average relevance: {avg_relevance}")
     print(f"Relevance for each query: {relevance_list}")
+
+    # Evaluate the generator
+    generator_evaluator = AnswerMacthEvaluator(type="fuzzy_match")
+    answer_match_acc, match_acc_list = generator_evaluator.compute_match_acc(
+        all_pred_answer, all_gt_answer
+    )
+    print(f"Answer match accuracy: {answer_match_acc}")
+    print(f"Match accuracy for each query: {match_acc_list}")
