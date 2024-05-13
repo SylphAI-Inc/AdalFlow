@@ -54,8 +54,8 @@ class AnswerMacthEvaluator:
         """
         Compute the match accuracy of the predicted answer for a list of queries.
         Args:
-            all_pred_answer: List of predicted answer strings
-            all_gt_answer: List of ground truth answer strings
+            all_pred_answer (List[str]): List of predicted answer strings
+            all_gt_answer (List[str]): List of ground truth answer strings
         Returns:
             float: Average match accuracy
             List[float]: Match accuracy values for each query
@@ -103,8 +103,8 @@ class RetrieverEvaluator:
         """
         Compute the recall of the retrieved context for a list of queries.
         Args:
-            all_retrieved_context: List of retrieved context strings
-            all_gt_context: List of ground truth context strings and each of them can be a string or a list of strings
+            all_retrieved_context (List[str]): List of retrieved context strings
+            all_gt_context (Union[List[str], List[List[str]]]: List of ground truth context strings and each of them can be a string or a list of strings
         Returns:
             float: Average recall value
             List[float]: Recall values for each query
@@ -144,8 +144,8 @@ class RetrieverEvaluator:
         """
         Compute the context relevance of the retrieved context for a list of queries. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
         Args:
-            all_retrieved_context: List of retrieved context strings
-            all_gt_context: List of ground truth context strings and each of them can be a string or a list of strings
+            all_retrieved_context (List[str]): List of retrieved context strings
+            all_gt_context (Union[List[str], List[List[str]]]): List of ground truth context strings and each of them can be a string or a list of strings
         Returns:
             float: Average context relevance value
             List[float]: Context relevance values for each query
@@ -207,9 +207,9 @@ class LLMasJudge:
         """
         Get the judgement of the predicted answer for a list of questions.
         Args:
-            all_questions: List of question strings
-            all_pred_answer: List of predicted answer strings
-            all_gt_answer: List of ground truth answer strings
+            all_questions (List[str]): List of question strings
+            all_pred_answer (List[str]): List of predicted answer strings
+            all_gt_answer (List[str]): List of ground truth answer strings
             judgement_query (str): judgement query string
         Returns:
             List[bool]: Judgement results
