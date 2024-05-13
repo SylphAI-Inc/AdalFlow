@@ -17,3 +17,8 @@ text_splitter:
   split_by: sentence
   chunk_size: 1
   chunk_overlap: 0
+
+llm_evaluator:
+  model: gpt-4
+  temperature: 0.3
+  stream: false
