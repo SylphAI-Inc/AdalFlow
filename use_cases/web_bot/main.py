@@ -15,8 +15,15 @@
 
 # Step2: filter out Document from the local db by meta_data
 
+# Step3: split data, embed, and save to another local db, and attach FAISSRetriever to the local db and generate [context_str]
+
 # So local database needs to apply filter
 
-# Step2: initiate extraction task for each field
+# Step4: initiate extraction task for each field
 # Three types of retriever for the generators
-# 1. urls, input documents are just all urls. LLMs as Retriever
+# One: document retriever and generator with combine.
+# 1. documents_retriever input documents are just all urls. LLMs as Retriever````
+# 2. convert all retrieved documents to context_str -> Generator1, GenetatorContinue (loop) -> multiple responses and then combine
+
+# Two: dense retriever + query expansion + generator
+# typical FAISSRetriever, Ensure if the query fails due to token limits, we have auto retry with simple truncation (error and robustness handling)
