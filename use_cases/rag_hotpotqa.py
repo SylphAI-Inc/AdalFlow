@@ -211,9 +211,8 @@ if __name__ == "__main__":
     judgement_query = (
         "For the question, does the predicted answer contain the ground truth answer?"
     )
-    all_judgement = llm_judge.compute_judgement(
+    avg_judgement, judgement_list = llm_judge.compute_judgement(
         all_questions, all_pred_answer, all_gt_answer, judgement_query
     )
-    avg_judgement = all_judgement.count(True) / len(all_judgement)
     print(f"Average judgement: {avg_judgement}")
-    print(f"Judgement for each query: {all_judgement}")
+    print(f"Judgement for each query: {judgement_list}")

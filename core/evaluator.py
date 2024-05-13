@@ -24,7 +24,7 @@ You:
 
 class AnswerMacthEvaluator:
     """
-    Evaluator for evaluating the performance of a matching model.
+    Evaluator for evaluating the match between predicted answer and ground truth answer.
     Args:
         type (str): Type of matching evaluation. Can be "exact_match" or "fuzzy_match". "exact_match" requires the predicted answer to be exactly the same as the ground truth answer. "fuzzy_match" requires the predicted answer to contain the ground truth answer.
     """
@@ -223,4 +223,4 @@ class LLMasJudge:
             )
             judgement_list.append(judgement)
 
-        return judgement_list
+        return judgement_list.count(True) / len(judgement_list), judgement_list
