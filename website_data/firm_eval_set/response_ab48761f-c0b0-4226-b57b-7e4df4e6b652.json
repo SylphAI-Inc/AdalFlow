@@ -1,0 +1,24 @@
+{
+    "relevant_links": [
+        "https://www.blackopalventures.com/",
+        "https://www.blackopalventures.com/contact",
+        "https://www.blackopalventures.com/about-1",
+        "https://www.blackopalventures.com/team"
+    ],
+    "relative_urls": [
+        "https://www.blackopalventures.com/",
+        "https://www.blackopalventures.com/contact",
+        "https://www.blackopalventures.com/news",
+        "https://www.blackopalventures.com/about-1",
+        "https://www.blackopalventures.com/team"
+    ],
+    "primary_email_in_retrieved_content": 0,
+    "primary_email_in_truncated_retrieved_content": 0,
+    "gt_email_list": [],
+    "locations_thought": "I found the office locations in the 'Contact' page at file: https://www.blackopalventures.com/contact, section: 'p_5'.",
+    "locations": null,
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary email in the 'contact' page.",
+    "primary_email": null
+}

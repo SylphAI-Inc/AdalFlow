@@ -1,0 +1,34 @@
+{
+    "relevant_links": [
+        "https://www.10d.vc/",
+        "https://www.10d.vc/about-us",
+        "https://www.10d.vc/2024/03/19/euno-secures-6-25m-in-seed-for-its-data-model-governance-platform",
+        "https://www.10d.vc/2023/11/17/augurys-partnership-with-global-manufacturer-pepsico",
+        "https://www.10d.vc/news",
+        "https://www.10d.vc/portfolio",
+        "https://www.10d.vc/team",
+        "https://www.10d.vc/2024/02/27/exodigo-secures-105m-in-series-a-funding"
+    ],
+    "relative_urls": [
+        "https://www.10d.vc/",
+        "https://www.10d.vc/about-us",
+        "https://www.10d.vc/accessibility-statement",
+        "https://www.10d.vc/2024/03/19/euno-secures-6-25m-in-seed-for-its-data-model-governance-platform",
+        "https://www.10d.vc/2023/11/17/augurys-partnership-with-global-manufacturer-pepsico",
+        "https://www.10d.vc/news",
+        "https://www.10d.vc/portfolio",
+        "https://www.10d.vc/team",
+        "https://www.10d.vc/2024/02/27/exodigo-secures-105m-in-series-a-funding"
+    ],
+    "primary_email_in_retrieved_content": 0,
+    "primary_email_in_truncated_retrieved_content": 0,
+    "gt_email_list": [
+        "info@10d.vc"
+    ],
+    "locations_thought": "I couldn't find any office locations or team member locations from the given firm's website, thus I will use an empty string as the value.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in the '/about-us' or '/team' page, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary email in the 'About us' page under the 'Team' section.",
+    "primary_email": null
+}

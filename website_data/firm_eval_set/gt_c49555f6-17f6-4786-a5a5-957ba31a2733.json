@@ -1,0 +1,28 @@
+{
+    "name": "NTT DoCoMo Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations": "Tokyo, Japan; Silicon Valley, USA",
+    "primary_contact": "https://www.nttdocomo-v.com/en/contact/",
+    "description": "At NTT DOCOMO Ventures, we unite your vision with the NTT Group\u2019s proven deployment expertise to create a better future. Together we can make a huge impact and transform the global landscape. Uniting the business and technology needs of NTT Group companies with start-ups and investors yields outsized impact and growth \u2013 uniting vision and talent is a driving force for the future. The NTT Group transforms the global landscape with its preeminent technological skills and proven deployment capabilities. By joining together your ambitions and our aspirations, we will create a new driving force towards the future and making world-changing impacts that we have never seen before.",
+    "socials": {
+        "note_url": "https://note.com/docomo_v/",
+        "facebook_url": "https://www.facebook.com/NTTDOCOMOVentures",
+        "twitter_url": "https://twitter.com/DOCOMOVentures"
+    
+    },
+    "url": "https://www.nttdocomo-v.com/en/",
+
+    "portfolio_companies_urls": [
+        "https://www.nttdocomo-v.com/en/portfolio"
+    ],
+    "portfolio_companies": "MintTown, Parallel Inc, A Model, Minto, Sakana.ai, BlockSmith&co, UGO, FEZ, HaydenAI, Josys, Alation, FLUX, GooPass, Ev Motors Japan, now.gg, Baseconnect, PoliPoli, TechTouch, MFS, Sitetracker, inworld, FastLabel, RapidSos, MOV, Jinjer, Boost Technologies, JumpCloud, TileDB, Fast Doctor, Reconstruct, Timers, VoloCopter, Arcturus, Avatour, Homma, Crosser",
+
+    "professional_info": {
+        "investment_verticals": "Telecommunications; IOWN; Data-driven technologies; Sustainability",
+        "fund_size": "JPY 15 Billion; JPY 10 Billion; JPY 20 Billion",
+        "investment_thesis": "Through investment and business development, NTT DOCOMO Ventures uses the business expertise and assets of NTT Group to support promising B2C / B2B startups that have high growth potential and medium- to long-term collaboration.",
+        "number_of_investments_or_portfolio_companies": "Invested in nearly 30 venture companies; Invested in more than 20 companies in a wide range of stages from startup to pre-IPO round",
+        "value_add": "Co-innovation; Business collaborations between startups and NTT group; Leveraging global assets of NTT Group, NTT Docomo and team based in Tokyo and Silicon Valley"
+    }
+}

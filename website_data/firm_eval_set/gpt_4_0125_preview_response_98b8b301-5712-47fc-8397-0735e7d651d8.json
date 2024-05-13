@@ -1,0 +1,33 @@
+{
+    "relevant_links": [
+        "entradaventures.com",
+        "entradaventures.com/news",
+        "entradaventures.com/who-we-are",
+        "entradaventures.com/post/ferroglobe-coreshell-sign-a-memorandum-of-understanding-to-deliver-world-s-first-battery-grade-met",
+        "entradaventures.com/post/quintessent-raises-11-5m-in-seed-funding-to-future-proof-optical-connectivity",
+        "entradaventures.com/post/perspective-how-predictive-ai-will-change-cybersecurity-in-2021",
+        "entradaventures.com/contact",
+        "entradaventures.com/approach",
+        "entradaventures.com/companies"
+    ],
+    "relative_urls": [
+        "entradaventures.com",
+        "careers.entradaventures.com",
+        "entradaventures.com/news",
+        "careers.entradaventures.com/jobs",
+        "entradaventures.com/privacy-policy",
+        "entradaventures.com/who-we-are",
+        "entradaventures.com/post/ferroglobe-coreshell-sign-a-memorandum-of-understanding-to-deliver-world-s-first-battery-grade-met",
+        "entradaventures.com/post/quintessent-raises-11-5m-in-seed-funding-to-future-proof-optical-connectivity",
+        "entradaventures.com/post/perspective-how-predictive-ai-will-change-cybersecurity-in-2021",
+        "entradaventures.com/contact",
+        "entradaventures.com/approach",
+        "entradaventures.com/companies"
+    ],
+    "locations_thought": "Found office locations in the footer section of the main website page.",
+    "locations": "Santa Barbara, CA 93101; Los Altos, CA 94022",
+    "primary_phone_thought": "No phone number is present in the provided content, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "Found the general inquiries email on the '/contact' page.",
+    "primary_email": "info@entradaventures.com"
+}

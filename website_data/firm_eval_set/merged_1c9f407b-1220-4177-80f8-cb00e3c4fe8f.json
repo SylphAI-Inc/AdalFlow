@@ -1,0 +1,26 @@
+{
+    "id": "1c9f407b-1220-4177-80f8-cb00e3c4fe8f",
+    "url": "https://www.taliscapital.com",
+    "name": "Talis Capital",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations_freeform": "London; Unit 4 Rowan Court, 56 High Street, Wimbledon, London, United Kingdom, SW19 5EE",
+    "description": "Talis Capital is a venture capital firm that invests with high conviction at Seed & Series A stages across Europe and the US, helping founders who envision the future differently to build it.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/talis-capital-limited",
+        "crunchbase_url": "https://www.crunchbase.com/organization/talis-capital",
+        "nfx_signal_url": "https://signal.nfx.com/firms/talis-capital",
+        "twitter_url": "https://twitter.com/TalisCapital",
+        "medium_url": "https://medium.com/talis-capital"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Series B, Series A",
+            "1": "Talis invests with high conviction at Seed & Series A across Europe and US"
+        },
+        "investment_verticals": {
+            "2": "Health IT, IoT, Cloud Infrastructure, Impact, FinTech, DeepTech, Gaming/eSports, Social Commerce, Real Estate/PropTech, AI, Fashion, Health & Hospital Services, Material Science, Consumer Internet, Chemicals, Insurance, Social Networks, Data Services, Cybersecurity, ClimateTech/CleanTech, SaaS, Food and Beverage, Enterprise, EnergyTech, Enterprise Infrastructure, Consumer Health, Wellness & Fitness, AgTech, BioTech, Direct-to-Consumer (DTC), Future of Work",
+            "1": "Talis invests in various sectors including Darktrace, Onfido, Portalone, Ynsect, Carta, and Howl"
+        }
+    }
+}

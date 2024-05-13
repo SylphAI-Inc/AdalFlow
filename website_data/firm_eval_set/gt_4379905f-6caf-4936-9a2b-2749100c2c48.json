@@ -1,0 +1,21 @@
+{
+    "primary_contact": null,
+    "primary_email": null,
+    "primary_phone": null,
+    "locations": "181 E. Tasman Drive, Suite 20241, San Jose, Ca 95134",
+    "description": "42Phi Ventures is dedicated to supporting early-stage startups by providing them with the necessary tools, resources, guidance, support, and network to thrive. They focus on helping founders, regardless of their background or technical acumen, to build great companies. The firm emphasizes a hands-on approach, offering day-to-day caretaking to reduce the risk of investing in early-stage companies and ensuring their growth. With a commitment to diversity and inclusion, 42Phi Ventures works towards bridging the wealth gap and creating equal opportunities for success.",
+    "portfolio_companies": null,
+    "portfolio_companies_urls": [
+        "https://www.42phiventures.com/portfolio-companies"
+    ],
+    "url": "https://www.42phiventures.com/",
+
+    "professional_info": {
+        "investment_thesis": "To equalize access to wealth creation through the desegregation of capital; We create pipelines for entrepreneurs with lack of access to the tools, network, mentoring, and investment necessary for success.",
+        "value_add": "Our hands-on interactive advising, coaching and training are designed to scale your startup sustainably; We use recruiting, personality & skill matching techniques to help founders establish early company culture; We identify paths for accelerated growth and help founders develop strategies for customer adoption; We help founders, technical and non-technical, with product strategy, development and placement; We prepare founders for investor expectations and help to navigate changing industry trends.",
+        "number_of_investments_or_portfolio_companies": "Access has previously been reserved only for our portfolio companies."
+    },
+    "socials": {
+    }
+
+}

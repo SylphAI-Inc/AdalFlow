@@ -1,0 +1,26 @@
+{
+    "id": "f60e4f14-cf56-400f-b5ab-82034c2a943c",
+    "url": "https://www.forumvc.com/",
+    "name": "Forum Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations_freeform": "United States. New York, New York. Chicago, Illinois. Austin, Texas. San Francisco, California. Seattle, Washington. Boulder, Colorado. Brooklyn, New York. Toronto, Ontario. New York City. Romania; Toronto; New York City; San Francisco",
+    "description": "Forum Ventures is a venture capital firm that aims to make the B2B SaaS journey easier and more successful for early-stage founders. They prioritize investing in early-stage SaaS founders and treat their community with respect, integrity, honesty, and inclusivity. The team consists of ex SaaS founders, operators, and early builders who are passionate about helping founders succeed; They provide support from creation to sustainability, offering services such as building a B2B SaaS company from scratch, accelerating growth, and providing seed stage funding. The team at Forum Ventures consists of experts in go-to-market strategies, early sales, and fundraising, dedicated to helping founders build sustainable businesses.",
+    "socials": {
+        "twitter_url": "https://twitter.com/forumventures",
+        "linkedin_url": "https://www.linkedin.com/company/forumvc",
+        "angellist_url": "https://angel.co/company/forumventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/forumventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/forum-ventures"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Series A, Pre-seed"
+        },
+        "investment_verticals": {
+            "2": "E-commerce, Health IT, Web3/Blockchain, IoT, MarketingTech, Logistics, SMB Software, Impact, FinTech, Gig Economy, Gaming/eSports, Developer Tools, Social Commerce, Real Estate/PropTech, AI, Media/Content, Analytics, Health & Hospital Services, Enterprise Applications, Supply Chain Tech, Insurance, Web3/Crypto, Retail, TransportationTech, Data Services, ClimateTech/CleanTech, SaaS, Enterprise, Generative Tech/AI, EnergyTech, Games, AR/VR, Direct-to-Consumer (DTC), Human Capital/HRTech, Digital Health, Manufacturing, Sales & CRM, Future of Work"
+        }
+    },
+    "is_url_valid": true,
+    "scraped_source_at": "2024-04-09T14:10:07.438750"
+}

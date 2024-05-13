@@ -1,0 +1,21 @@
+{
+    "name": "Aperture Venture Capital",
+    "primary_email": "press@aperturevc.com",
+    "primary_phone": null,
+    "locations": null,
+    "headquarter_location_freeform": null,
+    "primary_contact": "https://aperturevc.com/contact/",
+    "founded_at": null,
+    "description": "Aperture Venture Capital is VC for the Multicultural Mainstream\u2122, on a mission to redefine the venture landscape for generations of diverse entrepreneurs by building an ecosystem engineered for successful exits. They focus on the fintech innovation led by diverse founders and the strategic interests and capabilities of their corporate LPs, investing in Fintech, Enterprise, and Consumer startups. Their Diversity Investing API\u2120 platform is a key aspect of their model, designed to nurture engagement between corporate partners and portfolio companies.",
+    "socials": {
+        "twitter_url": "https://twitter.com/aperturevc",
+        "linkedin_url": "https://www.linkedin.com/company/aperture-vc/"
+    },
+    "portfolio_companies": "Alaffia Health, Anonybit, Freeing Returns, Grain, Pro Platforms, Pryon, Surround Insurance, Wizest, Aptdeco, Community Gaming, Cuyana, Dynepic, Empyreal Logistics, Fueloz Capital, Gather Voices, Karina Dresses, Landit, PartPic-Amazon-acquired, Squire",
+    "url": "https://aperturevc.com/",
+
+    "professional_info": {
+        "investment_thesis": "The venture capital industry has failed founders of color; Aperture VC's fund model is built around the Diversity Investing API℠ platform to nurture engagement between corporate partners and portfolio companies, focusing on diverse founders.",
+        "value_add": "Large Capital Pools; Human, Relationship and Intellectual Capital; Product & Technology Expertise; Sales & Distribution Channels"
+    }
+}

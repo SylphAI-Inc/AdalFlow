@@ -1,0 +1,37 @@
+{
+    "relevant_links": [
+        "ocvpartners.com",
+        "ocvpartners.com/portfolio",
+        "ocvpartners.com/contact",
+        "ocvpartners.com/about-us",
+        "ocvpartners.com/team",
+        "ocvpartners.com/insights",
+        "ocvpartners.com/byheart-cascadia",
+        "ocvpartners.com/byheart-acquisition",
+        "ocvpartners.com/news",
+        "ocvpartners.com/torl-series-b-financing",
+        "ocvpartners.com/ocv-testimonials"
+    ],
+    "relative_urls": [
+        "ocvpartners.com",
+        "ocvpartners.com/terms-of-use",
+        "ocvpartners.com/portfolio",
+        "ocvpartners.com/contact",
+        "ocvpartners.com/about-us",
+        "ocvpartners.com/team",
+        "ocvpartners.com/insights",
+        "ocvpartners.com/byheart-cascadia",
+        "ocvpartners.com/privacy-policy",
+        "ocvpartners.com/byheart-acquisition",
+        "ocvpartners.com/news",
+        "ocvpartners.com/careers",
+        "ocvpartners.com/torl-series-b-financing",
+        "ocvpartners.com/ocv-testimonials"
+    ],
+    "locations_thought": "Found the firm's office location in Los Angeles, CA from the contact page.",
+    "locations": "4700 Wilshire BlvdLos Angeles, CA 90010",
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page under 'p_1'.",
+    "primary_phone": "4700 Wilshire BlvdLos Angeles, CA 90010",
+    "primary_email_thought": "No email address is provided in the provided firm information, so I will use an empty string as the value.",
+    "primary_email": null
+}

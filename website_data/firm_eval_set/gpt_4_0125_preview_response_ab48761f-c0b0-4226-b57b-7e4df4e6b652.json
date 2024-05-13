@@ -1,0 +1,22 @@
+{
+    "relevant_links": [
+        "blackopalventures.com",
+        "blackopalventures.com/contact",
+        "blackopalventures.com/news",
+        "blackopalventures.com/about-1",
+        "blackopalventures.com/team"
+    ],
+    "relative_urls": [
+        "blackopalventures.com",
+        "blackopalventures.com/contact",
+        "blackopalventures.com/news",
+        "blackopalventures.com/about-1",
+        "blackopalventures.com/team"
+    ],
+    "locations_thought": "No office locations or team member residencies provided in the content; thus, using an empty string as the value.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in any of the provided pages, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "No email address is provided in the provided content, including the '/contact' page which typically contains contact information.",
+    "primary_email": null
+}

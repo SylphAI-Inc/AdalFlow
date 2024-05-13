@@ -1,0 +1,25 @@
+{
+    "name": "Entrada Ventures",
+    "primary_contact": null,
+    "primary_phone": null,
+    "primary_email": "partnerwithus@entradaventures.com; info@entradaventures.com",
+    "locations": "1117 State Street #9, Santa Barbara, CA 93101; 4 Main Street Ste. 60B, Los Altos, CA 94022",
+    "description": "Entrada Ventures is a venture capital firm that partners with founding teams to build competencies crucial for their growth. They focus on pre-seed investments and aim to guide companies towards Series Seed, A, and beyond, increasing their likelihood of follow-on capital and long-term success. Entrada Ventures has created over $80 billion in value over 25 years, leveraging world-class research ecosystems to generate unique deal flow on the Central Coast and beyond.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/entradavc/",
+        "angellist_url": "https://angel.co/company/entrada-ventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/entrada-ventures"
+    },
+    "portfolio_companies_urls": [
+        "https://www.entradaventures.com/companies"
+    ],
+    "portfolio_companies": "Anari, Anchore, AppliedVR, Billy, Coreshell, d-Matrix, eTailPet, Fathom Radiant, Gemist, Kipu Quantum, LightDeck, Live Data, MixMode, Nectir, OpenTug, Quintessent, Snapwire, StyleRow, TITAN Haptics, The Futures App, Wald, Wildnote, Worksana, ACT, Agility, Apeel, Athleta, Aurrion, Bioiq, Callwave, Conversant, Cytomx, docfox, Flume, HGInsights, Invoca, JetClosing, LungLife, Medable, MindSciences, NextPro, OmniUpdate, ParentSquare, ProCore, Pulsa, SmartReceipt, Software, ThinGap, TrueVision,zyBooks", 
+    "url": "https://www.entradaventures.com",
+
+    "professional_info": {
+        "investment_stages": "pre-seed,  series A and beyond",
+        "investment_verticals": "Web3/Crypto, Security, AgTech, Web3/Blockchain, Cybersecurity, Enterprise Applications, SaaS, Marketplaces, Enterprise, Cloud Infrastructure, DeepTech",
+        "investment_thesis": "We’ve identified six critical vectors where we add value, increasing the likelihood of follow-on capital and long term success.",
+        "value_add": "Partnering with founding teams, we help them build competencies when and where they matter most; Our proven approach includes developing a company’s initial profile, collaborating to chart the course for growth, and building the right foundations for groundbreaking growth."
+    }
+}

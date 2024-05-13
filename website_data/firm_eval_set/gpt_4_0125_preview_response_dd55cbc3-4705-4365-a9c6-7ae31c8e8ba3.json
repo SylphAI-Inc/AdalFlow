@@ -1,0 +1,20 @@
+{
+    "relevant_links": [
+        "purplesageventures.com",
+        "purplesageventures.com/about",
+        "purplesageventures.com/portfolio"
+    ],
+    "relative_urls": [
+        "purplesageventures.com",
+        "purplesageventures.com/resources",
+        "purplesageventures.com/about",
+        "purplesageventures.com/faq",
+        "purplesageventures.com/portfolio"
+    ],
+    "locations_thought": "No specific office locations or team member residencies were mentioned in the provided content.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in the provided content, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "No email address is provided in the provided content from the firm's website.",
+    "primary_email": null
+}

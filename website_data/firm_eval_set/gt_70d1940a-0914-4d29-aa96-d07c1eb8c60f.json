@@ -1,0 +1,23 @@
+{
+    "primary_contact": null,
+    "primary_email": "info@ventureisrael.com",   
+    "primary_phone": null,
+    "locations": "Azrieli Sarona Tower, Floor 61, 121 Menachem Begin Road, Tel Aviv, Israel",
+    "description": "VentureIsrael is a venture capital firm focused on investing in Israeli-based deep tech startups. The firm aims to support innovative companies that are at the forefront of technology, providing them with the necessary capital to grow and succeed. VentureIsrael's portfolio showcases a commitment to a wide range of technologies and industries, demonstrating their belief in the potential of Israeli tech startups.",
+    "socials": {
+        "twitter_url": "https://twitter.com/VentureIsrael",
+        "linkedin_url": "https://www.linkedin.com/company/ventureisrael/",
+        "facebook_url": "https://www.facebook.com/VentureIsraelVC"
+    },
+    "portfolio_companies_urls": [
+        "https://ventureisrael.com/"
+    ],
+    "url": "https://ventureisrael.com/",
+
+    "portfolio_companies": "CorrActions, Revuze, NeuroBrave, FinCom.Co, Gaia BioTechnologies, Cyngular Security, Cydome, Honeydew, Polyn, Infinidome, NetOp, QuantLR, Maolac, WIB, FlexiWAN",
+
+    "professional_info": {
+        "investment_stages": "early_stage",
+        "investment_verticals": "deep_tech, cybersecurity, biotechnology, fintech, artificial_intelligence, data_security"
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "name": "LOUD Capital",
+    "primary_email": "info@loud.vc",
+    "primary_contact": "https://www.loud.vc/contact",
+    "primary_phone": null,
+    "locations": "25 North Street, Dublin, OH 43017",
+    "description": "LOUD Capital is more than just an investment firm; it's a team of passionate investors, experienced entrepreneurs, operators, physicians, and more, all working together to create massive value for investors, portfolio companies, and communities. They focus on people-first investments and aim to connect on shared experiences, telling stories, educating, and embracing diverse perspectives. Their diverse team brings unique insights and opportunities, aiming to reshape the venture capital model with a focus on healthcare and alternative investment strategies.",
+    "socials": {
+        "facebook_url": "https://www.facebook.com/LOUDCap/",
+        "linkedin_url": "https://www.linkedin.com/company/loud-capital/",
+        "twitter_url": "https://twitter.com/loudcapital?lang=en"
+    },
+    "portfolio_companies_urls": [
+        "https://loud.vc/portfolio"
+    ],
+    "url": "https://loud.vc",
+
+    "portfolio_companies": "\"Genetesis(genetesis.com)\", \"Share Mobility(sharemobility.com)\", \"OFFOR Health(offorhealth.com)\", \"Hyperion Motors, Inc.(hyperion.inc)\", \"LiveEasy(liveeasy.com)\", \"Carely(care.ly)\", \"Raydiant Oximetry(raydiantoximetry.com)\", \"10XTS(10xts.com)\", \"Honest Game(honestgame.com)\", \"Pay Theory(paytheory.com)\", \"Medzoomer(medzoomer.com)\", \"SupplyHive(supplyhive.com)\", \"Revibe Technologies(revibetech.com)\", \"Knowwake(knowwake.com)\", \"Gemelli Biotech(gemellibiotech.com)\", \"GiftHealth(gifthealth.com)\", \"Carallel(carallel.com)\", \"Beyond Physician(beyondphysician.org)\"",
+
+    "professional_info": {
+        "investment_thesis": "Fueling innovations that drive equitable access to high-quality, inclusive healthcare. We invest in people-centered healthcare - including medtech, alternative care models, and healthcare infrastructure and IT.",
+        "number_of_investments_or_portfolio_companies": "Over 100 companies",
+        "value_add": "A comprehensive platform of resources to empower teams, enable rapid growth and ensure longevity for our portfolio companies; Massive value, improved solutions for communities and mitigated risk for our investors."
+    }
+}

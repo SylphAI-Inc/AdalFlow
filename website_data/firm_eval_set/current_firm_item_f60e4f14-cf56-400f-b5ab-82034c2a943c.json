@@ -1,0 +1,31 @@
+{
+    "id": "f60e4f14-cf56-400f-b5ab-82034c2a943c",
+    "slug": "forum-ventures",
+    "firm_type": "COMPANY",
+    "name": "Forum Ventures",
+    "description": null,
+    "url": "https://www.forumvc.com/",
+    "socials": {
+        "twitter_url": "https://twitter.com/forumventures",
+        "linkedin_url": "https://www.linkedin.com/company/3766769/admin/",
+        "angellist_url": "https://angel.co/company/forumventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/forumventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/forum-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": "2012-01-01",
+    "created_at": "2024-02-28T21:40:01.204391",
+    "updated_at": "2024-02-28T21:40:01.204391",
+    "professional_info": {
+        "investment_stages": "Seed, Series A, Pre-seed",
+        "investment_verticals": "E-commerce, Health IT, Web3/Blockchain, IoT, MarketingTech, Logistics, SMB Software, Impact, FinTech, Gig Economy, Gaming/eSports, Developer Tools, Social Commerce, Real Estate/PropTech, AI, Media/Content, Analytics, Health & Hospital Services, Enterprise Applications, Supply Chain Tech, Insurance, Web3/Crypto, Retail, TransportationTech, Data Services, ClimateTech/CleanTech, SaaS, Enterprise, Generative Tech/AI, EnergyTech, Games, AR/VR, Direct-to-Consumer (DTC), Human Capital/HRTech, Digital Health, Manufacturing, Sales & CRM, Future of Work"
+    },
+    "locations_freeform": "United States. New York, New York. Chicago, Illinois. Austin, Texas. San Francisco, California. Seattle, Washington. Boulder, Colorado. Brooklyn, New York. Toronto, Ontario. New York City. Romania",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

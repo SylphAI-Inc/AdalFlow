@@ -1,0 +1,33 @@
+{
+    "relevant_links": [
+        "https://www.forumvc.com/",
+        "https://www.forumvc.com/accelerator",
+        "https://www.forumvc.com/about-forum",
+        "https://www.forumvc.com/portfolio-spotlights",
+        "https://www.forumvc.com/pitch-us"
+    ],
+    "relative_urls": [
+        "https://www.forumvc.com/",
+        "https://www.forumvc.com/accelerator",
+        "https://www.forumvc.com/privacy-policy",
+        "https://www.forumvc.com/terms-of-use",
+        "https://www.forumvc.com/resources",
+        "https://www.forumvc.com/studio",
+        "https://www.forumvc.com/seed-fund",
+        "https://www.forumvc.com?908e5856_page=2",
+        "https://www.forumvc.com/about-forum",
+        "https://www.forumvc.com/portfolio-spotlights",
+        "https://www.forumvc.com/corporate",
+        "https://www.forumvc.com/pitch-us",
+        "https://www.forumvc.com/careers"
+    ],
+    "primary_email_in_retrieved_content": 0,
+    "primary_email_in_truncated_retrieved_content": 0,
+    "gt_email_list": [],
+    "locations_thought": "I found multiple office locations in the 'Accelerator' page in p_14.",
+    "locations": "Toronto; New York City; San Francisco",
+    "primary_phone_thought": "No phone number is present in the '/about-forum' page, even if team members are listed, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the firm's email in the 'https://www.forumvc.com/' page.",
+    "primary_email": null
+}

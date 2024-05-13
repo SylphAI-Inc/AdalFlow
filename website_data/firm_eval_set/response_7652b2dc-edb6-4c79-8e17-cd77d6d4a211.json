@@ -1,0 +1,28 @@
+{
+    "relevant_links": [
+        "https://loud.vc",
+        "https://loud.vc/portfolio",
+        "https://loud.vc/about"
+    ],
+    "relative_urls": [
+        "https://loud.vc",
+        "https://loud.vc/privacy-policy",
+        "https://loud.vc/contact",
+        "https://loud.vc/services",
+        "https://loud.vc/portfolio",
+        "https://loud.vc/invest",
+        "https://loud.vc/about",
+        "https://loud.vc/terms"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "info@loud.vc"
+    ],
+    "locations_thought": "I couldn't find the office locations from the given firm's website, thus I will use empty string as the value.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in the firm's website, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the email addresses of the team members in the '/about' page.",
+    "primary_email": "info@loud.vc; info@loud.vc; info@loud.vc; info@loud.vc; info@loud.vc; info@loud.vc"
+}

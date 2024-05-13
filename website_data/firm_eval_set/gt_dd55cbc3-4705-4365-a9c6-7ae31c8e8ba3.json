@@ -1,0 +1,24 @@
+{
+    "name": "Purple Sage Ventures",
+    "primary_email": "contact@purplesageventures.com",
+    "primary_phone": null,
+    "locations": "New York, New York",
+    "primary_contact": "https://aiv1lyu3mvf.typeform.com/to/NVUa9SHi",
+    "headquarter_location_freeform": "New York, USA",
+    "founded_at": null,
+    "description": "Purple Sage Ventures focuses on investing in changemakers with a clear focus and purpose. They prioritize underrepresented founders, recognizing the value and superior outcomes diverse teams can achieve. The firm provides strategic input and support to early-stage companies, guiding them through chaotic phases towards growth. Their investment philosophy is rooted in supporting entrepreneurial journeys that yield significant societal impacts alongside financial returns.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/purple-sage-ventures/"
+    },
+    "portfolio_companies_urls": [
+        "https://www.purplesageventures.com/portfolio"
+    ],
+    "portfolio_companies": "Character, Epicured, Guava, Health in Her HUE, Inclusively, Juno Health, Keep Company, Pratt Standard, Realworld, Renewal Mill, Sendspark, Sprezz, TO THE MARKET, Tailored Industry, Trusty.care",
+    "url": "https://purplesageventures.com/",
+
+    "professional_info": {
+        "investment_verticals": "Impactful products & services that innovate supply chains, increase business and personal productivity, and reimagine wellness.",
+        "investment_thesis": "Supporting underrepresented founders who are undervalued and underfunded, believing diverse teams produce better results.",
+        "value_add": "High-level strategic input, structure around challenges, guidance, support, access to networks, knowledge, and capital."
+    }
+}

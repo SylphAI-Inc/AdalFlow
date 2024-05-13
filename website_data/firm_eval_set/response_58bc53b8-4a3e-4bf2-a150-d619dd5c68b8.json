@@ -1,0 +1,40 @@
+{
+    "relevant_links": [
+        "https://www.ocvpartners.com/",
+        "https://www.ocvpartners.com/portfolio",
+        "https://www.ocvpartners.com/contact",
+        "https://www.ocvpartners.com/about-us",
+        "https://www.ocvpartners.com/team",
+        "https://www.ocvpartners.com/insights",
+        "https://www.ocvpartners.com/byheart-acquisition",
+        "https://www.ocvpartners.com/news",
+        "https://www.ocvpartners.com/careers",
+        "https://www.ocvpartners.com/torl-series-b-financing",
+        "https://www.ocvpartners.com/ocv-testimonials"
+    ],
+    "relative_urls": [
+        "https://www.ocvpartners.com/",
+        "https://www.ocvpartners.com/terms-of-use",
+        "https://www.ocvpartners.com/portfolio",
+        "https://www.ocvpartners.com/contact",
+        "https://www.ocvpartners.com/about-us",
+        "https://www.ocvpartners.com/team",
+        "https://www.ocvpartners.com/insights",
+        "https://www.ocvpartners.com/byheart-cascadia",
+        "https://www.ocvpartners.com/privacy-policy",
+        "https://www.ocvpartners.com/byheart-acquisition",
+        "https://www.ocvpartners.com/news",
+        "https://www.ocvpartners.com/careers",
+        "https://www.ocvpartners.com/torl-series-b-financing",
+        "https://www.ocvpartners.com/ocv-testimonials"
+    ],
+    "primary_email_in_retrieved_content": 0,
+    "primary_email_in_truncated_retrieved_content": 0,
+    "gt_email_list": [],
+    "locations_thought": "I found the office location in the 'Contact' page under p_1.",
+    "locations": "4700 Wilshire Blvd, Los Angeles, CA, 90010",
+    "primary_phone_thought": "No phone number is present in the '/contact' page or '/team' page, even if email is present, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "No email is present in the firm's website, even though there are testimonials and contact information available.",
+    "primary_email": null
+}

@@ -1,0 +1,29 @@
+{
+    "relevant_links": [
+        "https://www.scv.vc/",
+        "https://www.scv.vc/press",
+        "https://www.scv.vc/portfolio",
+        "https://www.scv.vc/about",
+        "https://www.scv.vc/contact",
+        "https://www.scv.vc/team"
+    ],
+    "relative_urls": [
+        "https://www.scv.vc/",
+        "https://www.scv.vc/press",
+        "https://www.scv.vc/portfolio",
+        "https://www.scv.vc/about",
+        "https://www.scv.vc/contact",
+        "https://www.scv.vc/team"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "hello@SecondCenturyVentures.com"
+    ],
+    "locations_thought": "I found the contact page with the email address 'hello@SecondCenturyVentures.com' in the 'contact' page.",
+    "locations": null,
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary email 'hello@SecondCenturyVentures.com' in the '/contact' page.",
+    "primary_email": "hello@SecondCenturyVentures.com"
+}

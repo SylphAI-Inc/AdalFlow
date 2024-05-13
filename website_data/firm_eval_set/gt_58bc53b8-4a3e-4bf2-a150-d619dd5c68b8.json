@@ -1,0 +1,22 @@
+{
+    "name": "OCV Partners",
+    "primary_email": null,
+    "primary_phone": null,
+    "primary_contact": "https://www.ocvpartners.com/contact/",
+    "locations": "4700 Wilshire Blvd, Los Angeles, CA 90010",
+    "description": "OCV Partners is a venture capital firm with a focus on creating long-term sustainable value through investments in technology and healthcare sectors. Their leadership boasts decades of experience in company building across various industries, including software, financial services, healthcare, and real assets. OCV aims to create asymmetric advantages when backing winning teams, leveraging their diverse expertise to support extraordinary founders.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/ocv-partners/"
+    },
+    "portfolio_companies_urls": [
+        "https://www.ocvpartners.com/portfolio"
+    ],
+    "portfolio_companies": "1200 Pharma, ByHeart, Figure 8, Finch, Invoice2go, Ockam, Orca AI, Ossio, Praxis, Precision BioSciences, Rad AI, SafeBreach, Social Native, TechStyle Fashion Group",
+    "url": "https://www.ocvpartners.com/",
+
+    "professional_info": {
+        "investment_verticals": "Technology, Healthcare",
+        "investment_thesis": "Partnering with exceptional technology and healthcare Founders to help create asymmetric advantages; experience in founding, backing, and scaling startups from humble beginnings to an IPO and beyond",
+        "value_add": "Decades of company-building experience across a variety of industries; understanding the joys and difficulties of scaling a high-growth startup"
+    }
+}

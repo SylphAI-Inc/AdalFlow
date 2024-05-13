@@ -1,0 +1,29 @@
+{
+    "id": "ce004deb-ada9-45a8-8884-44d14fe6cfa8",
+    "url": "https://monozukuri.vc/",
+    "name": "Monozukuri Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations_freeform": "New York, New York; Umekoji MArKEt 3F, 34 Suzaku Hozocho, Shimogyo-ku, Kyoto-shi, Kyoto-fu, 600-8846 Japan",
+    "description": "Monozukuri Ventures is a venture capital firm based in Japan and North America specializing in hard tech. They aim to create a world where entrepreneurs and startups can quickly produce and sell high-quality products, even in small quantities. The firm provides essential resources such as investment, mentorship, prototyping know-how, manufacturing expertise, and community support to help founders deliver high-quality products to the market rapidly.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/monozukuriventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/makers-boot-camp",
+        "nfx_signal_url": "https://signal.nfx.com/firms/monozukuri-ventures",
+        "facebook_url": "https://www.facebook.com/monozukurivc",
+        "twitter_url": "https://twitter.com/monozukurivc",
+        "youtube_url": "https://www.youtube.com/channel/UCafJ586IxqUHzYwixx6EDYg/featured"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Pre-seed",
+            "1": "The firm invests in pre-seed, seed, and early-stage hard-tech startups in the US, Canada, and Japan."
+        },
+        "investment_verticals": {
+            "2": "Consumer Health, Hardware, Medical Devices, TransportationTech, IoT, Robotics, ConstructionTech, Manufacturing, EnergyTech, DeepTech, Consumer Internet",
+            "1": "The firm focuses on various industry domains including healthcare, industrial IoT, climate change tech, cleantech, smart home, wearable technologies, sharing economy, agri-tech, AI and machine learning, robotics, space tech, and more."
+        }
+    },
+    "_is_url_valid": true,
+    "_scraped_source_at": "2024-04-09T13:58:06.798423"
+}

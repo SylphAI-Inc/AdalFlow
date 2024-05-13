@@ -1,0 +1,27 @@
+{
+    "relevant_links": [
+        "https://purplesageventures.com/",
+        "https://www.purplesageventures.com/resources",
+        "https://www.purplesageventures.com/about",
+        "https://www.purplesageventures.com/portfolio"
+    ],
+    "relative_urls": [
+        "https://purplesageventures.com/",
+        "https://www.purplesageventures.com/resources",
+        "https://www.purplesageventures.com/about",
+        "https://www.purplesageventures.com/faq",
+        "https://www.purplesageventures.com/portfolio",
+        "https://www.purplesageventures.com"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "contact@purplesageventures.com"
+    ],
+    "locations_thought": "I found multiple office locations in the 'About Purple Sage Ventures' page under the 'Our Team' section.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in the '/about' page, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the team email addresses in the 'Team' section of the '/about' page.",
+    "primary_email": "contact@purplesageventures.com; katy@purplesageventures.com"
+}

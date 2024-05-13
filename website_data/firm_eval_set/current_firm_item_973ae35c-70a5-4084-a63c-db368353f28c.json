@@ -1,0 +1,29 @@
+{
+    "id": "973ae35c-70a5-4084-a63c-db368353f28c",
+    "slug": "b37-ventures",
+    "firm_type": "COMPANY",
+    "name": "B37 Ventures",
+    "description": null,
+    "url": "https:/www.b37.vc",
+    "socials": {
+        "linkedin_url": "http://linkedin.com/in/davidhite",
+        "crunchbase_url": "https://www.crunchbase.com/organization/b37-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/b37-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:44:27.105376",
+    "updated_at": "2024-02-28T21:44:27.105376",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "AR/VR, Cloud Infrastructure, Consumer Internet, BioTech, TransportationTech, Supply Chain Tech, IoT, SaaS, Food and Beverage, Logistics, Enterprise, Manufacturing, Generative Tech/AI, FinTech, EnergyTech, Future of Work, Smart Cities/UrbanTech"
+    },
+    "locations_freeform": "San Francisco, California. San Francisco Bay Area",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

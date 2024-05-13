@@ -1,0 +1,30 @@
+{
+    "id": "4379905f-6caf-4936-9a2b-2749100c2c48",
+    "slug": "42phi-ventures",
+    "firm_type": "COMPANY",
+    "name": "42Phi Ventures",
+    "description": "42Phi Ventures an inclusive pipeline entrepreneurs & startups delivering network, tools, mentors, & access to capital necessary for success.",
+    "url": "https://www.42phiventures.com/",
+    "socials": {
+        "twitter_url": "https://twitter.com/42PhiVentures",
+        "linkedin_url": "https://www.linkedin.com/company/42phi-ventures/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/42phi-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/42phi-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": "2016-01-01",
+    "created_at": "2024-02-28T21:47:27.786982",
+    "updated_at": "2024-02-28T21:47:27.786982",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A, Pre-seed",
+        "investment_verticals": "E-commerce, Insurance, Consumer Health, TransportationTech, AI, ClimateTech/CleanTech, Smart Cities/UrbanTech, SaaS, Marketplaces, Creator/Passion Economy, Enterprise, Enterprise Applications, AutoTech, Enterprise Infrastructure"
+    },
+    "locations_freeform": "United States. Massachusetts. San Francisco, California. Palo Alto, California",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

@@ -1,0 +1,39 @@
+{
+    "id": "01c4bb7d-0787-4331-9750-7d701806958a",
+    "url": "https://www.scv.vc/",
+    "name": "Second Century Ventures",
+    "primary_email": "hello@SecondCenturyVentures.com",
+    "primary_phone": null,
+    "locations_freeform": "Los Angeles, California. Chicago, Illinois. Washington, District of Columbia. Provo, Utah. Toronto, Ontario. San Francisco Bay Area. Canada. Melbourne, Australia",
+    "description": "Second Century Ventures brings a highly collaborative approach to venture capital, providing unparalleled market expertise through strategic partnerships, a diversely skilled team, and access to a rapidly growing global community of entrepreneurs and practitioners. They fuel innovation through investment, people, and technology, backed by the National Association of REALTORS® with 100 bilateral partnerships across 85 countries.",
+    "socials": {
+        "linkedin_url": "",
+        "angellist_url": "",
+        "crunchbase_url": "",
+        "nfx_signal_url": "",
+        "facebook_url": "",
+        "twitter_url": "",
+        "instagram_url": "",
+        "youtube_url": "",
+        "pinterest_url": "",
+        "github_url": "",
+        "reddit_url": "",
+        "tiktok_url": "",
+        "snapchat_url": "",
+        "medium_url": "",
+        "product_hunt_url": "",
+        "glassdoor_url": "",
+        "yelp_url": ""
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Series B, Series A"
+        },
+        "investment_verticals": {
+            "2": "Insurance, Security, Web3/Blockchain, Advertising, Social Commerce, Real Estate/PropTech, AI, Data Services, Media/Content, IoT, SaaS, Marketplaces, MarketingTech, Enterprise, FinTech, Consumer Internet",
+            "1": "SCV focuses on early to mid-stage technology companies in sectors like SaaS, big data applications, digital media, fintech, and business services that span multiple verticals and geographies."
+        }
+    },
+    "_is_url_valid": true,
+    "_scraped_source_at": "2024-04-09T14:06:58.986362"
+}

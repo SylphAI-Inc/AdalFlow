@@ -1,0 +1,28 @@
+{
+    "id": "76f51ba2-8f88-4a76-bede-59dc1ab2c60c",
+    "slug": "iangels-brasil",
+    "firm_type": "COMPANY",
+    "name": "iAngels Brasil",
+    "description": null,
+    "url": "https://iangels.com.br/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/iangelsbrasil/",
+        "nfx_signal_url": "https://signal.nfx.com/firms/iangels-brasil"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:46:38.689508",
+    "updated_at": "2024-02-28T21:46:38.689508",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "E-commerce, Insurance, AR/VR, Retail, TransportationTech, AI, Data Services, AutoTech, Analytics, Logistics, Enterprise, Pharmaceuticals, EnergyTech, Consumer Internet"
+    },
+    "locations_freeform": "Sao Paulo, Brazil. Madrid, Spain",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

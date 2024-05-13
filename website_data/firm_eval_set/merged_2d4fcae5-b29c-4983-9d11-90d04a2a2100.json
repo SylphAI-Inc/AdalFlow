@@ -1,0 +1,25 @@
+{
+    "id": "2d4fcae5-b29c-4983-9d11-90d04a2a2100",
+    "url": "https://www.10d.vc/",
+    "name": "10D",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations_freeform": "Tel Aviv, Israel. Israel. Tel Aviv-Yafo, Israel",
+    "description": "10D symbolizes the dimensions of reality - the four revealed dimensions of space and time, and six additional concealed dimensions, representing the elusive challenges and opportunities faced while building a successful venture. The vision is to partner with entrepreneurs who know how to look beyond, to create beyond and to lead beyond the seen and the unseen. 10D seeks founders from diverse backgrounds, ethnicities, and gender identities, driving success through unique opinions and perspectives. The firm makes future and follow-up fundraising happen, engineers rounds, connects companies to the right investors, and actively works to help raise funds.",
+    "socials": {
+        "linkedin_url": "https://il.linkedin.com/company/10dvc",
+        "crunchbase_url": "https://www.crunchbase.com/organization/ofek-venture-fund",
+        "nfx_signal_url": "https://signal.nfx.com/firms/10d"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Series B, Series A"
+        },
+        "investment_verticals": {
+            "2": "Insurance, Medical Devices, AI, Data Services, Cybersecurity, IoT, Enterprise Applications, SaaS, Marketplaces, Digital Health, Enterprise, Logistics, Cloud Infrastructure, Pharmaceuticals, FinTech",
+            "1": "Enterprise SaaS, Deep Tech, Digital Transformation, Fintech, Digital Health, Industry 4.0"
+        }
+    },
+    "_is_url_valid": true,
+    "_scraped_source_at": "2024-04-09T13:51:44.591314"
+}

@@ -1,0 +1,40 @@
+{
+    "relevant_links": [
+        "https://www.entradaventures.com",
+        "http://careers.entradaventures.com",
+        "https://www.entradaventures.com/news",
+        "https://www.entradaventures.com/who-we-are",
+        "https://www.entradaventures.com/post/ferroglobe-coreshell-sign-a-memorandum-of-understanding-to-deliver-world-s-first-battery-grade-met",
+        "https://www.entradaventures.com/post/quintessent-raises-11-5m-in-seed-funding-to-future-proof-optical-connectivity",
+        "https://www.entradaventures.com/post/perspective-how-predictive-ai-will-change-cybersecurity-in-2021",
+        "https://www.entradaventures.com/contact",
+        "https://www.entradaventures.com/approach",
+        "https://www.entradaventures.com/companies"
+    ],
+    "relative_urls": [
+        "https://www.entradaventures.com",
+        "http://careers.entradaventures.com",
+        "https://www.entradaventures.com/news",
+        "https://careers.entradaventures.com/jobs",
+        "https://www.entradaventures.com/privacy-policy",
+        "https://www.entradaventures.com/who-we-are",
+        "https://www.entradaventures.com/post/ferroglobe-coreshell-sign-a-memorandum-of-understanding-to-deliver-world-s-first-battery-grade-met",
+        "https://www.entradaventures.com/post/quintessent-raises-11-5m-in-seed-funding-to-future-proof-optical-connectivity",
+        "https://www.entradaventures.com/post/perspective-how-predictive-ai-will-change-cybersecurity-in-2021",
+        "https://www.entradaventures.com/contact",
+        "https://www.entradaventures.com/approach",
+        "https://www.entradaventures.com/companies"
+    ],
+    "primary_email_in_retrieved_content": 2,
+    "primary_email_in_truncated_retrieved_content": 2,
+    "gt_email_list": [
+        "partnerwithus@entradaventures.com",
+        "info@entradaventures.com"
+    ],
+    "locations_thought": "I found the office locations in the footer section of the website in footer_0.",
+    "locations": "Los Altos, CA 94022; Santa Barbara, CA 93101",
+    "primary_phone_thought": "No phone number is present in the '/contact' page or '/who-we-are' page, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the firm's primary email in the 'contact' page under the 'mailto' link.",
+    "primary_email": "info@entradaventures.com"
+}

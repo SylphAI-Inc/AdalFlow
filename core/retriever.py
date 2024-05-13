@@ -24,7 +24,7 @@ class Retriever(Component):
     indexed = False
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        raise NotImplementedError(f"Retriever is an abstract class")
 
     def reset_index(self):
         raise NotImplementedError(f"reset_index is not implemented")
@@ -43,7 +43,7 @@ class Retriever(Component):
         raise NotImplementedError(f"__call__ is not implemented")
 
 
-class FAISSRetriever(Component):
+class FAISSRetriever(Retriever):
     """
     https://github.com/facebookresearch/faiss
     To use the retriever,
@@ -64,8 +64,6 @@ class FAISSRetriever(Component):
     We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability
     """
 
-    name = "FAISSRetriever"
-
     def __init__(
         self,
         *,
@@ -78,7 +76,7 @@ class FAISSRetriever(Component):
         document_db: Optional[Component] = None,
         output_processors: Optional[Component] = None,
     ):
-        super().__init__(provider="Meta")
+        super().__init__()
         self.dimensions = dimensions
         self.index = faiss.IndexFlatIP(
             dimensions

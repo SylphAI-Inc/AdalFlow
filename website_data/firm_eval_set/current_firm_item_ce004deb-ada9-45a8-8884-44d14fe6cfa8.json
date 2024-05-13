@@ -1,0 +1,29 @@
+{
+    "id": "ce004deb-ada9-45a8-8884-44d14fe6cfa8",
+    "slug": "monozukuri-ventures",
+    "firm_type": "COMPANY",
+    "name": "Monozukuri Ventures",
+    "description": null,
+    "url": "https://monozukuri.vc/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/monozukuriventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/makers-boot-camp",
+        "nfx_signal_url": "https://signal.nfx.com/firms/monozukuri-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:39:08.843905",
+    "updated_at": "2024-02-28T21:39:08.843905",
+    "professional_info": {
+        "investment_stages": "Seed, Pre-seed",
+        "investment_verticals": "Consumer Health, Hardware, Medical Devices, TransportationTech, IoT, Robotics, ConstructionTech, Manufacturing, EnergyTech, DeepTech, Consumer Internet"
+    },
+    "locations_freeform": "New York, New York",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

@@ -1,0 +1,38 @@
+{
+    "id": "076c710f-4468-47f1-b43b-ca65dda2a8e4",
+    "slug": "claret-capital",
+    "firm_type": "COMPANY",
+    "name": "Claret Capital Partners",
+    "description": null,
+    "url": "https://www.claret-capital.com/",
+    "socials": {
+        "twitter_url": "https://twitter.com/ClaretCapital",
+        "linkedin_url": "https://www.linkedin.com/company/claret-capital-partners/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/harbert-european-growth-capital",
+        "nfx_signal_url": "https://signal.nfx.com/firms/claret-capital"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": "2013-01-01",
+    "created_at": "2024-02-28T21:38:20.049017",
+    "updated_at": "2024-02-28T21:38:20.049017",
+    "professional_info": {
+        "investment_stages": "Series B, Series A",
+        "investment_verticals": "Real Estate/PropTech, AI, Cybersecurity, Enterprise Applications, SaaS, Human Capital/HRTech, Enterprise, SMB Software, Cloud Infrastructure, Enterprise Infrastructure"
+    },
+    "locations_freeform": "Europe",
+    "url_dict": {
+        "1": "https://www.claret-capital.com/",
+        "2": "https://signal.nfx.com/firms/claret-capital",
+        "3":  "https://twitter.com/ClaretCapital",
+        "4": "https://www.linkedin.com/company/claret-capital-partners/",
+        "5": "https://www.crunchbase.com/organization/harbert-european-growth-capital"
+
+    },
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

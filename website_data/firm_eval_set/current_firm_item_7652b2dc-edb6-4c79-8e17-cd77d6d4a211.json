@@ -1,0 +1,30 @@
+{
+    "id": "7652b2dc-edb6-4c79-8e17-cd77d6d4a211",
+    "slug": "loud-capital",
+    "firm_type": "COMPANY",
+    "name": "LOUD Capital",
+    "description": null,
+    "url": "https://loud.vc",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/in/hunegnaw",
+        "angellist_url": "https://angel.co/loud-capital-1",
+        "crunchbase_url": "https://www.crunchbase.com/organization/loud-capital",
+        "nfx_signal_url": "https://signal.nfx.com/firms/loud-capital"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:45:12.132707",
+    "updated_at": "2024-02-28T21:45:12.132707",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "E-commerce, Health IT, Medical Devices, Lodging/Hospitality, Health & Hospital Services, Travel, Human Capital/HRTech, Digital Health, Messaging, Payments, Education, SaaS, AutoTech, FinTech, Consumer Internet"
+    },
+    "locations_freeform": "Ohio. Los Angeles, California. Chicago, Illinois. Columbus, Ohio. Raleigh-Durham / Southeast US",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

@@ -1,0 +1,30 @@
+{
+    "name": "Monozukuri Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations": "Kyoto, Japan; New York, USA",
+    "headquarter_location_freeform": "Umekoji MArKEt 3F, 34 Suzaku Hozocho, Shimogyo-ku, Kyoto-shi, Kyoto-fu, 600-8846 Japan",
+    "primary_contact": "https://monozukuri.vc/contact-select/",
+    "description": "Monozukuri Ventures is dedicated to helping the world's entrepreneurs rapidly deliver high-quality products to the market, regardless of production volume. As a global ecosystem contributor, it provides founders with essential resources such as investment, mentorship, prototyping know-how, manufacturing expertise, and community support. The firm aims to build a global ecosystem that prioritizes the growth of startups, believing that the success of startups benefits all partners in industry, government, and academia. Monozukuri Ventures was formed through the merger of Kyoto-based Darma Tech Labs and New York-based FabFoundry, leveraging their combined knowledge and networks to grow alongside startups.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/monozukuriventures",
+        "facebook_url": "https://www.facebook.com/monozukurivc/",
+        "twitter_url": "https://twitter.com/monozukurivc",
+        "youtube_url": "https://www.youtube.com/channel/UCafJ586IxqUHzYwixx6EDYg/featured"
+    },
+    "portfolio_companies_urls": [
+        "https://monozukuri.vc/portfolio"
+    ],
+    "url": "https://monozukuri.vc/",
+
+    "portfolio_companies": "FingerVision, REVORN, StimScience, Edge Case Research, ImaCreate, Arblet, Arieca, ARIN Technologies, Atmoph, Blast, Brelyon Inc, C-INK, CleanRobotics, DENSHINDO, Digital Dream Labs, EarthGrid, EASEL, EdgeCortix, Enecoat Technologies, Enowa, ESTAT Actuation, Everykey, Flextrapower, Hava Health, Forest Devices, HiberSense, Hoplite Power, KAKAXI, Lab 91, Load & Road, log build, Magic Shields, Maxwell Labs, Melody International, Mentore, Mira, Mitate Zepto Technica, MonoLets, mui Lab, OhmniLabs, ORPHE, PlayDate, Pristeem, Proteus Motion, RUTILEA, Sana Health, SeaSats, Sembient, 16Lab, SmartShopping, Space Power Technologies, teamS, ugo, Amanogi, Vertiq, VELDT, Waqua",
+
+    "professional_info": {
+        "investment_stages": "Pre-seed, Seed to early-stage hardware startups.",
+        "investment_verticals": "IoT, manufacturing innovation including manufacturing DX, materials and components, advanced manufacturing technology, procurement and supply chain.",
+        "fund_size": "Monozukuri Ventures announced the final close of its 2nd Fund in July 2022, indicating a significant fund size but not specifying the amount.",
+        "investment_thesis": "Focus on hardware startups, promoting business collaboration between US startups and major Japanese manufacturing companies, and investing in startups focused on deep tech in Japan.",
+        "number_of_investments_or_portfolio_companies": "A total of 57 hardware startups (26 in Japan, 30 in the US, and 1 in Singapore) as of August 31, 2022.",
+        "value_add": "Technical consulting on prototyping and mass production; support for startups aiming to expand globally and help create innovation and new businesses in the manufacturing industry in Japan and abroad."
+    }
+}

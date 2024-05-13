@@ -1,0 +1,16 @@
+{
+    "relevant_links": [
+        "vttv.biz",
+        "vttv.biz/contact"
+    ],
+    "relative_urls": [
+        "vttv.biz",
+        "vttv.biz/contact"
+    ],
+    "locations_thought": "No office locations or team member's residency history found in the provided content.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in the provided content, including the '/contact' page; only an email address was found.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary contact email of the firm in the '/contact' page.",
+    "primary_email": "contact@vttb.biz"
+}

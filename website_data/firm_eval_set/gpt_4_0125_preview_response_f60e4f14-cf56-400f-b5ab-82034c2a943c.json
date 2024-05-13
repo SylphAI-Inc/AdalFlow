@@ -1,0 +1,33 @@
+{
+    "relevant_links": [
+        "forumvc.com",
+        "forumvc.com/accelerator",
+        "forumvc.com/resources",
+        "forumvc.com/studio",
+        "forumvc.com/seed-fund",
+        "forumvc.com/about-forum",
+        "forumvc.com/portfolio-spotlights",
+        "forumvc.com/corporate",
+        "forumvc.com/pitch-us"
+    ],
+    "relative_urls": [
+        "forumvc.com",
+        "forumvc.com/accelerator",
+        "forumvc.com/privacy-policy",
+        "forumvc.com/terms-of-use",
+        "forumvc.com/resources",
+        "forumvc.com/studio",
+        "forumvc.com/seed-fund",
+        "forumvc.com/about-forum",
+        "forumvc.com/portfolio-spotlights",
+        "forumvc.com/corporate",
+        "forumvc.com/pitch-us",
+        "forumvc.com/careers"
+    ],
+    "locations_thought": "Found office locations in the 'accelerator' page mentioning Toronto, New York City, and San Francisco.",
+    "locations": "Toronto; New York City; San Francisco",
+    "primary_phone_thought": "No phone number is present in any of the provided content chunks.",
+    "primary_phone": null,
+    "primary_email_thought": "No primary email for the firm was found in the provided content.",
+    "primary_email": null
+}

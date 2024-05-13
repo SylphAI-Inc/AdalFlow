@@ -1,0 +1,27 @@
+{
+    "id": "076c710f-4468-47f1-b43b-ca65dda2a8e4",
+    "url": "https://www.claret-capital.com/",
+    "name": "Claret Capital Partners",
+    "primary_email": "info@claret-capital.com",
+    "primary_phone": "+44 207 408 4160",
+    "locations_freeform": "Europe; 5th Floor Warwick House, 25 Buckingham Palace Road, London SW1W 0PP",
+    "description": "Claret Capital Partners provides growth capital to innovative businesses in the technology and life science sectors, offering a less dilutive alternative to traditional equity fundraising. They have a significant track record of partnering with growth businesses and aim to be a trusted market leader in the European ecosystem by funding high-growth businesses with proven management teams in need of less dilutive capital.",
+    "socials": {
+        "twitter_url": "https://twitter.com/claretcapital",
+        "linkedin_url": "https://www.linkedin.com/company/claret-capital-partners",
+        "crunchbase_url": "https://www.crunchbase.com/organization/harbert-european-growth-capital",
+        "nfx_signal_url": "https://signal.nfx.com/firms/claret-capital"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Series B, Series A",
+            "1": "Claret's 'Fund III' focuses on backing innovative businesses in the technology and life sciences sector, with plans to deploy over €500M of capital to support 50-60 companies in the next three years."
+        },
+        "investment_verticals": {
+            "2": "Real Estate/PropTech, AI, Cybersecurity, Enterprise Applications, SaaS, Human Capital/HRTech, Enterprise, SMB Software, Cloud Infrastructure, Enterprise Infrastructure",
+            "1": "Claret invests in growth-stage technology and life science businesses throughout Europe, primarily to support organic growth and M&A."
+        }
+    },
+    "_is_url_valid": true,
+    "_scraped_source_saved_at": "2024-04-09T13:48:06.607721"
+}

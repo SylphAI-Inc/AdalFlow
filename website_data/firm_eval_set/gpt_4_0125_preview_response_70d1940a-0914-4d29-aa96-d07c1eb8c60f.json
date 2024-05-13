@@ -1,0 +1,17 @@
+{
+    "relevant_links": [
+        "ventureisrael.com"
+    ],
+    "relative_urls": [
+        "ventureisrael.com",
+        "ventureisrael.com/privacy",
+        "ventureisrael.com/legal",
+        "ventureisrael.com/cookies"
+    ],
+    "locations_thought": "Found the firm's office location in div_107 on the contact us section.",
+    "locations": "Azrieli Sarona Tower, Floor 61 121 Menachem Begin Road, Tel Aviv, Israel",
+    "primary_phone_thought": "No phone number is present in the provided content, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "Found the primary contact email in the 'Contact us' section on the website.",
+    "primary_email": "info@ventureisrael.com; careers@ventureisrael.com"
+}

@@ -1,0 +1,29 @@
+{
+    "id": "95284a22-8ef3-43ec-bf32-9c7eddeafb5e",
+    "slug": "vt-technology-venture-partners",
+    "firm_type": "COMPANY",
+    "name": "VT Technology Venture Partners",
+    "description": null,
+    "url": "https://www.vttv.biz/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/vt-technology-ventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/vt-technology-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/vt-technology-venture-partners"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:45:06.953536",
+    "updated_at": "2024-02-28T21:45:06.953536",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A, Pre-seed",
+        "investment_verticals": "Security, Space, Medical Devices, AI, FinTech, EnergyTech"
+    },
+    "locations_freeform": "",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

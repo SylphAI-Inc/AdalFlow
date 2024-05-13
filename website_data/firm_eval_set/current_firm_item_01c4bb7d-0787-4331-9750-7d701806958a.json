@@ -1,0 +1,30 @@
+{
+    "id": "01c4bb7d-0787-4331-9750-7d701806958a",
+    "slug": "second-century-ventures",
+    "firm_type": "COMPANY",
+    "name": "Second Century Ventures",
+    "description": null,
+    "url": "https://www.scv.vc/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/second-century-ventures/",
+        "angellist_url": "https://angel.co/company/second-century-ventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/second-century-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/second-century-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": "2009-01-01",
+    "created_at": "2024-02-28T21:39:31.432359",
+    "updated_at": "2024-02-28T21:39:31.432359",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "Insurance, Security, Web3/Blockchain, Advertising, Social Commerce, Real Estate/PropTech, AI, Data Services, Media/Content, IoT, SaaS, Marketplaces, MarketingTech, Enterprise, FinTech, Consumer Internet"
+    },
+    "locations_freeform": "Los Angeles, California. Chicago, Illinois. Washington, District of Columbia. Provo, Utah. Toronto, Ontario. San Francisco Bay Area. Canada. Melbourne, Australia",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

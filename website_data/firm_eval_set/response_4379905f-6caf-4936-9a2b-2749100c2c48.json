@@ -1,0 +1,31 @@
+{
+    "relevant_links": [
+        "https://www.42phiventures.com/",
+        "https://www.42phiventures.com/portfolio-companies",
+        "https://www.42phiventures.com/contact",
+        "https://www.42phiventures.com/team"
+    ],
+    "relative_urls": [
+        "https://www.42phiventures.com/",
+        "https://www.42phiventures.com/privacy",
+        "https://www.42phiventures.com/post/why42phiventures",
+        "https://www.42phiventures.com/blog",
+        "https://www.42phiventures.com/portfolio-companies",
+        "https://www.42phiventures.com/wellness",
+        "https://www.42phiventures.com/contact",
+        "https://www.42phiventures.com/post/from-ipo-to-oh-no",
+        "https://www.42phiventures.com/learning",
+        "https://www.42phiventures.com/post/investment-or-intelligence",
+        "https://www.42phiventures.com/terms",
+        "https://www.42phiventures.com/team"
+    ],
+    "primary_email_in_retrieved_content": 0,
+    "primary_email_in_truncated_retrieved_content": 0,
+    "gt_email_list": [],
+    "locations_thought": "I found the firm's office location in the 'Contact' page under 'Our Address' section.",
+    "locations": "181 E. Tasman Drive, Suite 20241, San Jose, Ca 95134",
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary email in the '/contact' page under the 'Contact' section.",
+    "primary_email": null
+}

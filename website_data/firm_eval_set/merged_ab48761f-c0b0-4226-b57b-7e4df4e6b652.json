@@ -1,0 +1,25 @@
+{
+    "id": "ab48761f-c0b0-4226-b57b-7e4df4e6b652",
+    "url": "https://www.blackopalventures.com/",
+    "name": "Black Opal Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations_freeform": "New York, New York. Minneapolis, Minnesota. Hartford, Connecticut. Calgary. San Francisco Bay Area. Boston / New England; 5th Floor Warwick House, 25 Buckingham Palace Road, London SW1W 0PP",
+    "description": "Black Opal Ventures is a firm founded by seasoned investors and operators Tara Bishop and Eileen Tanghal. They aim to bring rare, everlasting value to entrepreneurs and investors by identifying and elevating technology start-ups with purposes that go beyond business. The firm focuses on disrupting industries, removing barriers, and closing the gender and diversity gap in the venture capital industry.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/black-opal-ventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/black-opal-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/black-opal-ventures"
+    },
+    "professional_info": {
+        "investment_stages": {
+            "2": "Seed, Series B, Series A"
+        },
+        "investment_verticals": {
+            "2": "Health IT, Medical Devices, BioTech, Health & Hospital Services, Digital Health, Logistics, Pharmaceuticals, FinTech",
+            "1": "Healthcare and technology"
+        }
+    },
+    "_is_url_valid": true,
+    "_scraped_source_at": "2024-04-09T13:49:45.934468"
+}

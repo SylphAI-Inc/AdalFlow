@@ -1,0 +1,23 @@
+{
+    "name": "Forum Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "headquarter_location_freeform": "Toronto, New York City, San Francisco",
+    "locations": "Toronto; New York City; San Francisco",
+    "founded_at": null,
+    "primary_contact": "https://www.forumvc.com/pitch-us",
+    "description": "Forum Ventures specializes in investing in and accelerating B2B SaaS startups. With a focus on early-stage companies, they offer a comprehensive suite of services including seed funding, an accelerator program, and a venture studio to support founders from concept to scale. Their team, comprised of experienced SaaS founders and operators, provides hands-on support in areas such as go-to-market strategies, product development, and fundraising. Forum Ventures has made over 250 pre-seed and seed stage investments and is dedicated to building a supportive community for SaaS founders.",
+    "socials": {
+        "twitter_url": "https://twitter.com/forumventures",
+        "linkedin_url": "https://www.linkedin.com/company/forumvc/"
+    },
+    "portfolio_companies": "Aicon Construction, Adinmo, Advanced Symbolics, Agreemint, Akute Health, Allbound, Alvin Finance, Answerable, Arcade Quest, Archslate, Arkestro, Arnie, Ascendo.ai, Ascent Platform, Attune, AudiencePlus",
+    "url": "https://www.forumvc.com/",
+
+    "professional_info": {
+        "investment_stages": "Early-stage",
+        "investment_verticals": "B2B SaaS",
+        "investment_thesis": "Invest in early-stage SaaS founders first, and their companies second, with a focus on making the B2B SaaS journey easier, more accessible, and successful.",
+        "value_add": "Expertise, honest feedback, network, resources, and community support"
+    }
+}

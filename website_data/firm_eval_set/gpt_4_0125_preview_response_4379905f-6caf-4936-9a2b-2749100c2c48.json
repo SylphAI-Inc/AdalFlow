@@ -1,0 +1,33 @@
+{
+    "relevant_links": [
+        "42phiventures.com",
+        "42phiventures.com/post/why42phiventures",
+        "42phiventures.com/blog",
+        "42phiventures.com/portfolio-companies",
+        "42phiventures.com/contact",
+        "42phiventures.com/post/from-ipo-to-oh-no",
+        "42phiventures.com/learning",
+        "42phiventures.com/post/investment-or-intelligence",
+        "42phiventures.com/team"
+    ],
+    "relative_urls": [
+        "42phiventures.com",
+        "42phiventures.com/privacy",
+        "42phiventures.com/post/why42phiventures",
+        "42phiventures.com/blog",
+        "42phiventures.com/portfolio-companies",
+        "42phiventures.com/wellness",
+        "42phiventures.com/contact",
+        "42phiventures.com/post/from-ipo-to-oh-no",
+        "42phiventures.com/learning",
+        "42phiventures.com/post/investment-or-intelligence",
+        "42phiventures.com/terms",
+        "42phiventures.com/team"
+    ],
+    "locations_thought": "Found the firm's office address in the 'Contact' page under 'Our Address'.",
+    "locations": "181 E. Tasman Drive, Suite 20241, San Jose, Ca 95134",
+    "primary_phone_thought": "No phone number is present in any of the provided content, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "No email address is provided in the provided content, so I will use an empty string as the value.",
+    "primary_email": null
+}

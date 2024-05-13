@@ -1,0 +1,39 @@
+{
+    "relevant_links": [
+        "/",
+        "/press",
+        "/portfolio",
+        "/about",
+        "/contact",
+        "/team"
+    ],
+    "relative_urls": [
+        "/",
+        "/press",
+        "/portfolio",
+        "/about",
+        "/contact",
+        "/team"
+    ],
+    "url": "https://www.scv.vc/",
+    "description": "Second Century Ventures is dedicated to fueling innovation in the real estate sector by investing in ambitious teams and ideas that aim to scale across real estate, financial, insurance, and home service verticals. Backed by the National Association of REALTORS\u00ae, it offers unparalleled access to the global marketplace and a thriving community of industry executives, entrepreneurs, and practitioners. The firm de-risks investments and maximizes returns through meaningful partnerships, aiming to define and deliver the future of the world's largest industries by being a catalyst for new technologies, opportunities, and talent.",
+    "primary_email": "hello@SecondCenturyVentures.com",
+    "primary_phone": null,
+    
+    "name": "Second Century Ventures",
+    "socials": {},
+    "locations": null,
+    "headquarter_location_freeform": null,
+    "primary_contact": "https://www.scv.vc/contact/",
+    "portfolio_companies": "DocuSign, Inc.; Courted; Fractional; Inspectify; Perchwell; Leadpops; Place; Reggora; Revive; ARX; Cretelligent; LeaseUp; Matrix; Spackle; Stake; Stratafolio; WYL; Clairco; Future Rent; Hipla; Homelive; Redoc; RoomMe; Settle Easy; Fyma; BD; MOKKI; Houzen; Edozo; Cleverly; SS; Residently; Safe2; PDI; Punchlist; Modus; Earnnest; Black; rtrs; Pearchef; Occupier; Obie; Leasera; EPR; Dealius; Uxtrata; Pam; Sorted; Really; Igloo; SDN Logo; RateMyAgent; Logotype; Kleard; Evocalize; Amarki; Twofold; Lulafit; Cresimple; Zavvie; Biproxi; Trove; RealKey; Curbio; Centriq; ActivePipe; Glide; ConnectNow; Boxbrownie; Hurdlr; Quigler; Relola; Pearl; Occly; Notarize; Immoviewer; HouseCanary; Propy; Adwerx; TrustedMail; Zenergyst; ValoanCaptain; Sindeo; RealScout; HomeSelfe; HomeDiary; Flipt; TrsutStamp; Pro.com; NotaryCam; Elmspring; BoostUp; UbiPark; Workface; Updater; Reach150; BombBomb; Lumsocial; Treater; Planwise; Coeo; Docusign Copy; Abode; Blue Crates; DIGIBILT; DrawBridge Solutions; Enodo; Kin Insurance; LoudSteps; Megalytics, Inc.; MILLIE; My Home Expert; NZA; CFX Markets; Parafin; ParqEx; PTD; RentHub; Realync; Setter; BrokerAssist; Document extraction based machine learning software; HonestDoor; Key; Local Logic; Parkbench; RentMoola; Boom; Build Apps; Openn Negotiation; Propic; Soho; Superdraft; Cove; Groundbreaker; Land Intelligence; ProDeal; LEX; Otso; Remarkably; Valcre; Plunk; Feather; Landis; Milestones; K4Connect; Super; Knock; The Minte; Aryeo; CartoFront; Ylopo",
+    "portfolio_companies_urls": [
+        "https://www.scv.vc/portfolio"
+    ],
+    "professional_info": {
+        "investment_stages": "early to mid-stage",
+        "investment_verticals": "big data applications, digital media, fintech, business services",
+        "investment_thesis": "invests in strong teams and technologies with the potential to serve multiple industries; round-agnostic, favoring investments in organizations with strong market traction and proof of product market fit",
+        "number_of_investments_or_portfolio_companies": "REACH has graduated more than 80 companies",
+        "value_add": "unparalleled market expertise through strategic partnerships, a diversely skilled team, access to a rapidly growing global community of entrepreneurs and practitioners; REACH growth accelerator program"
+    }
+}

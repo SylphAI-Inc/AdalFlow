@@ -1,0 +1,29 @@
+{
+    "id": "2d4fcae5-b29c-4983-9d11-90d04a2a2100",
+    "slug": "10d",
+    "firm_type": "COMPANY",
+    "name": "10D",
+    "description": null,
+    "url": "https://www.10d.vc/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/10dvc/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/ofek-venture-fund",
+        "nfx_signal_url": "https://signal.nfx.com/firms/10d"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": "2018-01-01",
+    "created_at": "2024-02-28T21:39:01.870289",
+    "updated_at": "2024-02-28T21:39:01.870289",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "Insurance, Medical Devices, AI, Data Services, Cybersecurity, IoT, Enterprise Applications, SaaS, Marketplaces, Digital Health, Enterprise, Logistics, Cloud Infrastructure, Pharmaceuticals, FinTech"
+    },
+    "locations_freeform": "Tel Aviv, Israel. Israel. Tel Aviv-Yafo, Israel",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

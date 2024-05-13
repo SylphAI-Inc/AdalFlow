@@ -1,0 +1,24 @@
+{
+    "name": "Camp One Ventures",
+    "primary_email": "info@camponeventures.com",
+    "primary_phone": null,
+    "primary_contact": "https://www.camponeventures.com/contact",
+    "locations": "Palo Alto, California",
+    "description": "Camp One Ventures is an early-stage venture capital firm with a focus on financial technology investments. The firm has been involved in advising and investing in leading companies in the fintech and SaaS space. The team comprises experts with extensive experience in the technology, financial services, and legal sectors, aiming to support and grow innovative fintech startups.",
+    "socials": {
+        "facebook_url": "https://www.facebook.com/camponeventures/"
+    },
+    "url": "https://www.camponeventures.com/",
+
+    "portfolio_companies_urls": [
+        "https://www.camponeventures.com/portfolio"
+    ],
+    "portfolio_companies": "Ripple, Even, Credit Sesame, Xola, Albert, NYDIG, ApplePie Capital, Candex, One, Inc., inDinero, Boomtown, Fenway Summer, Earnin, BookingPal, Resolve, Token Transit, Mint.com, Aarki, Cornerstone OnDemand",
+
+    "professional_info": {
+        "investment_stages": "early-stage",
+        "investment_verticals": "financial technology, blockchain, consumer internet, SaaS",
+        "investment_thesis": "Camp One Ventures provides critical capital to early-stage innovators with a focus on financial technology, mobile marketplaces, and software-as-a-service (SaaS) segments where they have a competitive advantage.",
+        "value_add": "technical expertise, deep-rooted Silicon Valley relationships, investment experience"
+    }
+}

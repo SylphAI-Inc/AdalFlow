@@ -1,0 +1,43 @@
+{
+    "relevant_links": [
+        "/",
+        "/team",
+        "/capital",
+        "/g2m",
+        "/home",
+        "/network"
+    ],
+    "relative_urls": [
+        "/",
+        "/whatsapp",
+        "/team",
+        "/capital",
+        "/g2m",
+        "/cart",
+        "/home",
+        "/network",
+        "/events"
+    ],
+    "name": "Aviv Growth Partners",
+    "url": "https://www.avivgrowth.com/",
+
+    "primary_email": "scott@avivgrowth.com; daniel@avivgrowth.com; israel@avivgrowth.com; jon@avivgrowth.com; neil@avivgrowth.com; shmaya@avivgrowth.com; david@avivgrowth.com",
+    "primary_phone": null,
+    "locations": "Tel Aviv; Boston",
+    "primary_contact": null,
+    "description": "Aviv Growth Partners specializes in venture capital for early-stage Israeli startups, focusing on helping them commercialize in the U.S. market. Leveraging relationships with hundreds of U.S. corporations, Aviv Growth Partners provides Israeli founders with capital investment and an array of U.S. go-to-market services. The firm invests in companies that are ready to leverage their network of executives at the largest companies in the U.S. and matches their investment hypotheses in the future of commerce, work, and health.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/aviv-growth-partners"
+    },
+    "portfolio_companies_urls": [
+        "https://www.avivgrowth.com/"
+    ],
+    "portfolio_companies": "Advabio, Ask AI, Congruity Health, Feel.Tech, timeOS, GoToLstoy, Tulu, Seemetrics, Vierally",
+
+    "professional_info": {
+        "investment_stages": "Early-Stage, Past the R&D or MVP stages after product-market fit with mature, proven technologies",
+        "investment_verticals": "Israeli Startups;  future of commerce, the future of work, and the future of health.",
+        "investment_thesis": "Invests in early-stage Israeli founders and accelerates their commercialization in the U.S.; Provides later-stage Israeli founders with U.S. go-to-market services, from strategy to sales.",
+        "value_add": "Leveraging relationships at hundreds of U.S. corporations; Provides unique access to Israel’s innovation ecosystem; Offers G2M expertise."
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "relevant_links": [
+        "loud.vc",
+        "loud.vc/contact",
+        "loud.vc/services",
+        "loud.vc/portfolio",
+        "loud.vc/invest",
+        "loud.vc/about"
+    ],
+    "relative_urls": [
+        "loud.vc",
+        "loud.vc/privacy-policy",
+        "loud.vc/contact",
+        "loud.vc/services",
+        "loud.vc/portfolio",
+        "loud.vc/invest",
+        "loud.vc/about",
+        "loud.vc/terms"
+    ],
+    "locations_thought": "Found the firm's office location in the footer section of the main page.",
+    "locations": "25 North Street, Dublin, OH, 43017",
+    "primary_phone_thought": "No phone number is present in the provided content, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "Found the primary email in the footer section of the main page.",
+    "primary_email": "info@loud.vc"
+}

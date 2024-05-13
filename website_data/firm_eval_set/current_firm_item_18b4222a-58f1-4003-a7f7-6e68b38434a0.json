@@ -1,0 +1,29 @@
+{
+    "id": "18b4222a-58f1-4003-a7f7-6e68b38434a0",
+    "slug": "aviv-growth-partners",
+    "firm_type": "COMPANY",
+    "name": "Aviv Growth Partners",
+    "description": null,
+    "url": "https://www.avivgrowth.com/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/13052593/admin/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/aviv-growth-partners",
+        "nfx_signal_url": "https://signal.nfx.com/firms/aviv-growth-partners"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:41:44.364607",
+    "updated_at": "2024-02-28T21:41:44.364607",
+    "professional_info": {
+        "investment_stages": "Seed, Pre-seed",
+        "investment_verticals": "E-commerce, Health IT, AI, IoT, Analytics, Health & Hospital Services, Marketplaces, Logistics, Manufacturing, Future of Work"
+    },
+    "locations_freeform": "Tel Aviv, Israel",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

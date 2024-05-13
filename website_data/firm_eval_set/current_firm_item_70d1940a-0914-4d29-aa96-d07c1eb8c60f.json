@@ -1,0 +1,31 @@
+{
+    "id": "70d1940a-0914-4d29-aa96-d07c1eb8c60f",
+    "slug": "ventureisrael",
+    "firm_type": "COMPANY",
+    "name": "VentureIsrael",
+    "description": null,
+    "url": "https://ventureisrael.com/",
+    "socials": {
+        "twitter_url": "https://www.twitter.com/ventureisrael",
+        "linkedin_url": "https://www.linkedin.com/company/ventureisrael/",
+        "angellist_url": "https://angel.co/company/ventureisrael",
+        "crunchbase_url": "https://www.crunchbase.com/organization/ventureisrael",
+        "nfx_signal_url": "https://signal.nfx.com/firms/ventureisrael"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:45:34.996338",
+    "updated_at": "2024-02-28T21:45:34.996338",
+    "professional_info": {
+        "investment_stages": "Seed, Series A",
+        "investment_verticals": "Consumer Health, Web3/Crypto, AI, Data Services, Cybersecurity, SaaS, Digital Health, Cloud Infrastructure, FinTech, DeepTech"
+    },
+    "locations_freeform": "London. Israel",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

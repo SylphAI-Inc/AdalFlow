@@ -1,0 +1,23 @@
+{
+    "name": "Black Opal Ventures",
+    "primary_email": null,
+    "primary_phone": null,
+    "locations": "London, UK; US", 
+    "primary_contact": "https://www.blackopalventures.com/contact",
+    "description": "Black Opal Ventures, founded in 2021 by Tara Bishop and Eileen Tanghal, aims to bring rare, everlasting value to entrepreneurs and investors at the intersection of healthcare and technology. With decades of success and rich insights, the firm is poised to recognize and elevate technology startups that promise to disrupt industries and remove barriers, particularly in the U.S. healthcare sector. Black Opal Ventures focuses on building better businesses and a better future by providing more than financial support; they offer advocacy, expertise, and leadership shaping to their portfolio companies.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/black-opal-ventures/",
+        "medium_url": "https://medium.com/@tarabishopmd"
+    },
+    "portfolio_companies_urls": [
+        "https://www.blackopalventures.com/"
+    ],
+    "url": "https://www.blackopalventures.com/",
+
+    "portfolio_companies": null,
+    "professional_info": {
+        "investment_verticals": "healthcare and technology",
+        "investment_thesis": "Bringing together the knowledge, practices, and diverse thinking of healthcare and technology is transformational. Identifying and elevating technology start-ups with purposes that mirror our own, whose definitions of success go beyond business.",
+        "value_add": "Value that shapes leadership and establishes radiant brilliance through advocacy and expertise; value that realizes potential and effects change."
+    }
+}

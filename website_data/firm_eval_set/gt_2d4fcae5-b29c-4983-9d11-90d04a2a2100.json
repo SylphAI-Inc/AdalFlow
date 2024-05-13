@@ -1,0 +1,43 @@
+{
+    "relevant_links": [
+        "/",
+        "/about-us",
+        "/2024/03/19/euno-secures-6-25m-in-seed-for-its-data-model-governance-platform",
+        "/2023/11/17/augurys-partnership-with-global-manufacturer-pepsico",
+        "/portfolio",
+        "/team",
+        "/2024/02/27/exodigo-secures-105m-in-series-a-funding"
+    ],
+    "relative_urls": [
+        "/",
+        "/about-us",
+        "/accessibility-statement",
+        "/2024/03/19/euno-secures-6-25m-in-seed-for-its-data-model-governance-platform",
+        "/2023/11/17/augurys-partnership-with-global-manufacturer-pepsico",
+        "/news",
+        "/portfolio",
+        "/team",
+        "/2024/02/27/exodigo-secures-105m-in-series-a-funding"
+    ],
+    "primary_email": "info@10d.vc",
+    "primary_phone": null,
+    "locations": null,
+    "primary_contact": null,
+    "description": "10D is a venture capital firm focusing on early stage investments, aiming to partner with exceptional Israeli entrepreneurs creating category-disrupting companies. With a vision that encompasses the dimensions of reality and beyond, 10D supports ventures that address the market's biggest challenges and opportunities. The firm emphasizes a hands-on approach while maintaining a balance between mentoring and autonomy, leveraging its global network to foster growth and facilitate future fundraising.",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/10dvc/"
+    },
+    "url": "https://www.10d.vc/",
+
+    "portfolio_companies_urls": [
+        "https://www.10d.vc/portfolio"
+    ],
+    "portfolio_companies": "Augury(augury.com), DayTwo(daytwo.com), DriveNets(drivenets.com), EverMile(evermile.io), Exodigo(exodigo.com), Juno Journey(junojourney.com), Medorion(medorion.com), MyObligo(myobligo.com), OneStep(onestep.co), QS-Labs(qs-labs.com), Weka.io(weka.io), MyZorro(myzorro.co), Qbiq(qbiq.ai), Seebo(seebo.com), Waze(waze.com), WalkMe(walkme.com), AppsFlyer(appsflyer.com), Moovit(moovit.com), Argus(argus-sec.com), Innoviz(innoviz.tech), CorePhotonics(corephotonics.com), Hola(hola.org), Tenable(tenable.com), Onavo(onavo.com), Minute Media(minutemedia.com), Gloat(gloat.com), Aidoc(aidoc.com), Applitools(applitools.com), Valens(valens.com), CoreTigo(coretigo.com), Magisto(magisto.com), Syte(syte.ai), ScyllaDB(scylladb.com)",
+
+    "professional_info": {
+        "investment_stages": "early stage",
+        "investment_verticals": "Israeli entrepreneurs; category disrupting companies; unique business models; leading technologies",
+        "investment_thesis": "Investing in exceptional early stage Israeli entrepreneurs creating category disrupting companies with unique business models and leading technologies that enable a competitive edge, and major market opportunities.",
+        "value_add": "Mentoring; strategy; helping to understand what’s around the corner; cultivating valuable relationships in a large variety of industries; making future and follow-up fundraising happen; engineering the rounds; connecting companies to the right investors at the right time"
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "relevant_links": [
+        "https://www.vttv.biz/",
+        "https://www.vttv.biz/contact"
+    ],
+    "relative_urls": [
+        "https://www.vttv.biz/",
+        "https://www.vttv.biz/contact"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "contact@vttb.biz"
+    ],
+    "locations_thought": "I couldn't find the office locations from the given firm's website, thus I will use empty string as the value.",
+    "locations": null,
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the contact email of the firm in the '/contact' page.",
+    "primary_email": "contact@vttb.biz"
+}

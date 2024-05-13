@@ -1,0 +1,38 @@
+{
+    "relevant_links": [
+        "https://www.avivgrowth.com/",
+        "https://www.avivgrowth.com/team",
+        "https://www.avivgrowth.com/capital",
+        "https://www.avivgrowth.com/home",
+        "https://www.avivgrowth.com/network",
+        "https://www.avivgrowth.com/events"
+    ],
+    "relative_urls": [
+        "https://www.avivgrowth.com/",
+        "https://www.avivgrowth.com/whatsapp",
+        "https://www.avivgrowth.com/team",
+        "https://www.avivgrowth.com/capital",
+        "https://www.avivgrowth.com/g2m",
+        "https://www.avivgrowth.com/cart",
+        "https://www.avivgrowth.com/home",
+        "https://www.avivgrowth.com/network",
+        "https://www.avivgrowth.com/events"
+    ],
+    "primary_email_in_retrieved_content": 7,
+    "primary_email_in_truncated_retrieved_content": 7,
+    "gt_email_list": [
+        "scott@avivgrowth.com",
+        "daniel@avivgrowth.com",
+        "israel@avivgrowth.com",
+        "jon@avivgrowth.com",
+        "neil@avivgrowth.com",
+        "shmaya@avivgrowth.com",
+        "david@avivgrowth.com"
+    ],
+    "locations_thought": "I found the locations of Aviv Growth Partners' team members in the 'Team' page.",
+    "locations": "Boston, MA; Tel Aviv, Israel",
+    "primary_phone_thought": "I found no phone number in the '/team' page.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the primary emails of the firm in the '/team' page under the respective team member sections.",
+    "primary_email": "scott@avivgrowth.com; daniel@avivgrowth.com; israel@avivgrowth.com; jon@avivgrowth.com; neil@avivgrowth.com; david@avivgrowth.com; shmaya@avivgrowth.com"
+}

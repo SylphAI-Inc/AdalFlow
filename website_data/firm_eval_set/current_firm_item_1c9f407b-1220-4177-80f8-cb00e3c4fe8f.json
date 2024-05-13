@@ -1,0 +1,29 @@
+{
+    "id": "1c9f407b-1220-4177-80f8-cb00e3c4fe8f",
+    "slug": "talis-capital",
+    "firm_type": "COMPANY",
+    "name": "Talis Capital",
+    "description": null,
+    "url": "https://www.taliscapital.com",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/talis-capital-limited/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/talis-capital",
+        "nfx_signal_url": "https://signal.nfx.com/firms/talis-capital"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:37:58.245910",
+    "updated_at": "2024-02-28T21:37:58.245910",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "Health IT, IoT, Cloud Infrastructure, Impact, FinTech, DeepTech, Gaming/eSports, Social Commerce, Real Estate/PropTech, AI, Fashion, Health & Hospital Services, Material Science, Consumer Internet, Chemicals, Insurance, Social Networks, Data Services, Cybersecurity, ClimateTech/CleanTech, SaaS, Food and Beverage, Enterprise, EnergyTech, Enterprise Infrastructure, Consumer Health, Wellness & Fitness, AgTech, BioTech, Direct-to-Consumer (DTC), Future of Work"
+    },
+    "locations_freeform": "London",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

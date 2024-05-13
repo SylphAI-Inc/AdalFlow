@@ -1,0 +1,41 @@
+{
+    "relevant_links": [
+        "https://www.claret-capital.com/",
+        "https://www.claret-capital.com/about/",
+        "https://www.claret-capital.com/what-is-the-real-cost-of-capital-in-venture-debt/",
+        "https://www.claret-capital.com/sustainability-statement/",
+        "https://www.claret-capital.com/tis-signs-binding-agreement-with-marlin-equity-partners-to-secure-a-majority-growth-investment/",
+        "https://www.claret-capital.com/portfolio/",
+        "https://www.claret-capital.com/team/",
+        "https://www.claret-capital.com/claret-european-growth-capital-fund-iii-backs-territory-studio-to-fuel-growth/",
+        "https://www.claret-capital.com/contact/",
+        "https://www.claret-capital.com/claret-capital-announces-final-close-of-fund-iii-over-target/"
+    ],
+    "relative_urls": [
+        "https://www.claret-capital.com/",
+        "https://www.claret-capital.com/news",
+        "https://www.claret-capital.com/about/",
+        "https://www.claret-capital.com/what-is-the-real-cost-of-capital-in-venture-debt/",
+        "https://www.claret-capital.com/sustainability-statement/",
+        "https://www.claret-capital.com/tis-signs-binding-agreement-with-marlin-equity-partners-to-secure-a-majority-growth-investment/",
+        "https://www.claret-capital.com/portfolio/",
+        "https://www.claret-capital.com/team/",
+        "https://www.claret-capital.com/claret-european-growth-capital-fund-iii-backs-territory-studio-to-fuel-growth/",
+        "https://www.claret-capital.com/contact/",
+        "https://www.claret-capital.com/privacy-statement/",
+        "https://www.claret-capital.com/claret-capital-announces-final-close-of-fund-iii-over-target/",
+        "https://www.claret-capital.com/news/",
+        "https://www.claret-capital.com/public-disclosures/"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "info@claret-capital.com"
+    ],
+    "locations_thought": "I found the office location in the 'Contact' page.",
+    "locations": "5th Floor Warwick House, 25 Buckingham Palace Road, London SW1W 0PP",
+    "primary_phone_thought": "I found the primary phone number in the '/contact' page.",
+    "primary_phone": "+44 207 408 4160",
+    "primary_email_thought": "I found the contact email of the firm in the '/contact' page.",
+    "primary_email": "info@claret-capital.com"
+}

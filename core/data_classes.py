@@ -189,7 +189,8 @@ r"""Data classes to be consumed by retriever component.
 # TODO: visualize the data structures
 ##############################################
 class Document:
-    meta_data: dict  # can save data for filtering at retrieval time too
+    meta_data: Dict  # can save data for filtering at retrieval time too or if the original data is needed, you can save it as meta_data["original_content"]
+    content: Any  # for instance a dictionary
     text: str
     id: Optional[Union[str, UUID]] = (
         None  # if the file name is unique, its better to use it as id instead of UUID
@@ -200,7 +201,7 @@ class Document:
 
     def __init__(
         self,
-        meta_data: dict,
+        meta_data: Dict,
         text: str,
         id: Optional[Union[str, UUID]] = None,
         estimated_num_tokens: Optional[int] = None,
@@ -284,13 +285,3 @@ class RetrieverOutput:
     chunks: Optional[List[Union[Chunk, Document]]] = (
         None  # TODO: change chunks to documents
     )
-
-
-# @dataclass
-# class RetrieverOutput:
-#     """
-#     Retrieved result per query
-#     """
-
-#     chunks: List[Union[Chunk, Document]]
-#     query: Optional[str] = None

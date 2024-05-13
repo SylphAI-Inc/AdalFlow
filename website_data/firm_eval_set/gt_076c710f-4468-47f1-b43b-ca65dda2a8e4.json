@@ -1,0 +1,26 @@
+{
+    "name": "Claret Capital Partners",
+    "primary_contact": null,
+    "primary_phone": "+44 207 408 4160",
+    "primary_email": "info@claret-capital.com",
+    "locations": "5th Floor Warwick House, 25 Buckingham Palace Road, London SW1W 0PP",
+    "description": "Claret Capital Partners, based in London, England, specializes in providing growth financing to innovative businesses across Europe, focusing on Technology and Life Science sectors. With over 20 years of experience, the firm has backed more than 200 companies, offering loans typically between \u20ac1 million to \u20ac50 million. Claret Capital Partners aims to support high-growth businesses with less dilutive capital, emphasizing their role in the European growth lending sector and their commitment to fostering the success of their portfolio companies.",
+    "socials": {
+        "twitter_url": "https://twitter.com/ClaretCapital",
+        "linkedin_url": "https://www.linkedin.com/company/claret-capital-partners/"
+    },
+    "portfolio_companies": "Botify; Novacyt; PPRO; Jobandtalent; SuperAwesome; wefox; Epic Games; Cubyn; Miss Group; Lingoda; Lyst; LoopMe; Holidu; Medical; Butternut Box; StorMagic; CurrencyFair; Razor Group; ScreenCloud; Travador",
+    "portfolio_companies_urls": [
+        "https://www.claret-capital.com/portfolio"
+    ],
+    "url": "https://www.claret-capital.com/",
+
+    "professional_info": {
+        "investment_stages": "growth stage",
+        "investment_verticals": "Technology and Life Science businesses",
+        "fund_size": "Loans typically between €1 million to €50 million",
+        "investment_thesis": "Provide less dilutive capital for organic growth, acquisitions, capital expenditure, working capital, R&D, geographical expansion, marketing and distribution channel maximisation, bridge loans, and various forms of recapitalization",
+        "number_of_investments_or_portfolio_companies": "Backed more than 200 companies",
+        "value_add": "Supporting role with focus on quality of interactions; extensive network in the technology investment ecosystem"
+    }
+}

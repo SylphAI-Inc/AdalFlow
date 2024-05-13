@@ -1,0 +1,25 @@
+{
+    "relevant_links": [
+        "avivgrowth.com",
+        "avivgrowth.com/team",
+        "avivgrowth.com/capital",
+        "avivgrowth.com/g2m",
+        "avivgrowth.com/network",
+        "avivgrowth.com/events"
+    ],
+    "relative_urls": [
+        "avivgrowth.com",
+        "avivgrowth.com/whatsapp",
+        "avivgrowth.com/team",
+        "avivgrowth.com/capital",
+        "avivgrowth.com/g2m",
+        "avivgrowth.com/network",
+        "avivgrowth.com/events"
+    ],
+    "locations_thought": "Found team members' locations in avivgrowth.com/team, indicating offices in Tel Aviv and Boston.",
+    "locations": "Tel Aviv; Boston",
+    "primary_phone_thought": "No phone number is present in any of the provided content chunks, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found multiple team member emails on the '/team' page, indicating a pattern of using individual emails for contact.",
+    "primary_email": "israel@avivgrowth.com; jon@avivgrowth.com; neil@avivgrowth.com; scott@avivgrowth.com; daniel@avivgrowth.com; david@avivgrowth.com; shmaya@avivgrowth.com"
+}

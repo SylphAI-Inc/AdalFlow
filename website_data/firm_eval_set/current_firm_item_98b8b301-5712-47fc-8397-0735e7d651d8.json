@@ -1,0 +1,30 @@
+{
+    "id": "98b8b301-5712-47fc-8397-0735e7d651d8",
+    "slug": "entrada-ventures",
+    "firm_type": "COMPANY",
+    "name": "Entrada Ventures",
+    "description": null,
+    "url": "https://www.entradaventures.com",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/entradavc/",
+        "angellist_url": "https://angel.co/company/entrada-ventures",
+        "crunchbase_url": "https://www.crunchbase.com/organization/entrada-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/entrada-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:44:17.511682",
+    "updated_at": "2024-02-28T21:44:17.511682",
+    "professional_info": {
+        "investment_stages": "Seed, Series A, Pre-seed",
+        "investment_verticals": "Web3/Crypto, Security, AgTech, Web3/Blockchain, Cybersecurity, Enterprise Applications, SaaS, Marketplaces, Enterprise, Cloud Infrastructure, DeepTech"
+    },
+    "locations_freeform": "Santa Barbara, California",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

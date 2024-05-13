@@ -1,0 +1,24 @@
+{
+    "relevant_links": [
+        "scv.vc",
+        "scv.vc/press",
+        "scv.vc/portfolio",
+        "scv.vc/about",
+        "scv.vc/contact",
+        "scv.vc/team"
+    ],
+    "relative_urls": [
+        "scv.vc",
+        "scv.vc/press",
+        "scv.vc/portfolio",
+        "scv.vc/about",
+        "scv.vc/contact",
+        "scv.vc/team"
+    ],
+    "locations_thought": "No office locations or team member residencies provided in the content, thus returning an empty string.",
+    "locations": null,
+    "primary_phone_thought": "No phone number is present in any of the provided pages, so I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "Found the primary contact email in the '/contact' page under 'Connect With Us' section.",
+    "primary_email": "hello@SecondCenturyVentures.com"
+}

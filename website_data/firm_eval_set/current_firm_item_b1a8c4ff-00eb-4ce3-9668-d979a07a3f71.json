@@ -1,0 +1,28 @@
+{
+    "id": "b1a8c4ff-00eb-4ce3-9668-d979a07a3f71",
+    "slug": "camp-one-ventures",
+    "firm_type": "COMPANY",
+    "name": "Camp One Ventures",
+    "description": null,
+    "url": "https://www.camponeventures.com/",
+    "socials": {
+        "crunchbase_url": "https://www.crunchbase.com/organization/camp-one-ventures",
+        "nfx_signal_url": "https://signal.nfx.com/firms/camp-one-ventures"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:47:27.786982",
+    "updated_at": "2024-02-28T21:47:27.786982",
+    "professional_info": {
+        "investment_stages": "",
+        "investment_verticals": ""
+    },
+    "locations_freeform": "",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

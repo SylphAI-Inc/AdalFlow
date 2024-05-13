@@ -1,0 +1,29 @@
+{
+    "id": "58bc53b8-4a3e-4bf2-a150-d619dd5c68b8",
+    "slug": "ocv-partners",
+    "firm_type": "COMPANY",
+    "name": "OCV Partners",
+    "description": null,
+    "url": "https://www.ocvpartners.com/",
+    "socials": {
+        "linkedin_url": "https://www.linkedin.com/company/ocv-partners/",
+        "crunchbase_url": "https://www.crunchbase.com/organization/ocv",
+        "nfx_signal_url": "https://signal.nfx.com/firms/ocv-partners"
+    },
+    "primary_email": null,
+    "other_emails": null,
+    "primary_phone": null,
+    "other_phones": null,
+    "headquarter_location_freeform": null,
+    "founded_at": null,
+    "created_at": "2024-02-28T21:45:57.733188",
+    "updated_at": "2024-02-28T21:45:57.733188",
+    "professional_info": {
+        "investment_stages": "Seed, Series B, Series A",
+        "investment_verticals": "Health IT, Medical Devices, Real Estate/PropTech, Health & Hospital Services, SaaS, Diagnostics, Digital Health, Enterprise, ConstructionTech, FinTech"
+    },
+    "locations_freeform": "Los Angeles, California",
+    "_is_url_valid": null,
+    "_scraped_source_at": null,
+    "_scraped_source_saved_at": null
+}

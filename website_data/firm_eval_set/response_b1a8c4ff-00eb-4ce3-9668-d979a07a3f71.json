@@ -1,0 +1,25 @@
+{
+    "relevant_links": [
+        "https://www.camponeventures.com/",
+        "https://www.camponeventures.com/portfolio",
+        "https://www.camponeventures.com/team"
+    ],
+    "relative_urls": [
+        "https://www.camponeventures.com/",
+        "https://www.camponeventures.com/cart",
+        "https://www.camponeventures.com/contact",
+        "https://www.camponeventures.com/portfolio",
+        "https://www.camponeventures.com/team"
+    ],
+    "primary_email_in_retrieved_content": 1,
+    "primary_email_in_truncated_retrieved_content": 1,
+    "gt_email_list": [
+        "info@camponeventures.com"
+    ],
+    "locations_thought": "I found the location in the 'footer' section of the home page.",
+    "locations": "Palo Alto, California",
+    "primary_phone_thought": "No phone number is present in the '/team' page, I will use empty string as the value.",
+    "primary_phone": null,
+    "primary_email_thought": "I found the email in the footer section of the website.",
+    "primary_email": "info@camponeventures.com"
+}
