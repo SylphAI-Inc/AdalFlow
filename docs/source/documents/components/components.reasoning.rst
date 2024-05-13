@@ -4,10 +4,13 @@ components.reasoning package
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 4
+components.reasoning.chain\_of\_thought module
+----------------------------------------------
 
-   components.reasoning.chain_of_thought
+.. automodule:: components.reasoning.chain_of_thought
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

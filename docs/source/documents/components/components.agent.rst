@@ -4,10 +4,13 @@ components.agent package
 Submodules
 ----------
 
-.. toctree::
-   :maxdepth: 4
+components.agent.react\_agent module
+------------------------------------
 
-   components.agent.react_agent
+.. automodule:: components.agent.react_agent
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

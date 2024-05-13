@@ -37,9 +37,11 @@ Structure
 
 .. toctree::
    :maxdepth: 1
-   :caption: Docs
+   :caption: API Reference
 
-   documents/modules
+   documents/components/modules
+   documents/core/modules
+   documents/use_cases/modules
    
 
 .. toctree::
