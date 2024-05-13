@@ -19,7 +19,13 @@ from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
-from core.evaluator import RetrieverEvaluator, AnswerMacthEvaluator
+from core.evaluator import (
+    RetrieverEvaluator,
+    AnswerMacthEvaluator,
+    LLMasJudge,
+    DEFAULT_LLM_EVALUATOR_PROMPT,
+)
+from core.prompt_builder import Prompt
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -120,6 +126,7 @@ if __name__ == "__main__":
     dataset = load_dataset("hotpot_qa", "fullwiki")
     dataset = dataset["train"].select(range(10))
 
+    all_questions = []
     all_retrieved_context = []
     all_gt_context = []
     all_pred_answer = []
@@ -149,6 +156,7 @@ if __name__ == "__main__":
             data["supporting_facts"], data["context"]
         )
 
+        all_questions.append(query)
         all_retrieved_context.append(context_str)
         all_gt_context.append(gt_context_sentence_list)
         all_pred_answer.append(response["answer"])
@@ -181,3 +189,31 @@ if __name__ == "__main__":
     )
     print(f"Answer match accuracy: {answer_match_acc}")
     print(f"Match accuracy for each query: {match_acc_list}")
+    # Evaluate the generator using LLM as judge. We use GPT-4 as the judge here.
+    # The task description and the judgement query can be customized.
+    llm_evaluator = Generator(
+        model_client=OpenAIClient(),
+        prompt=Prompt(DEFAULT_LLM_EVALUATOR_PROMPT),
+        output_processors=Sequential(JsonParser()),
+        preset_prompt_kwargs={
+            "task_desc_str": r"""
+                You are a helpful assistant.
+                Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
+                Output True or False according to the judgement query following this JSON format:
+                {
+                    "judgement": True
+                }
+                """
+        },
+        model_kwargs=settings["llm_evaluator"],
+    )
+    llm_judge = LLMasJudge(llm_evaluator)
+    judgement_query = (
+        "For the question, does the predicted answer contain the ground truth answer?"
+    )
+    all_judgement = llm_judge.compute_judgement(
+        all_questions, all_pred_answer, all_gt_answer, judgement_query
+    )
+    avg_judgement = all_judgement.count(True) / len(all_judgement)
+    print(f"Average judgement: {avg_judgement}")
+    print(f"Judgement for each query: {all_judgement}")

@@ -1,5 +1,25 @@
 from typing import List, Union, Tuple
 from core.tokenizer import Tokenizer
+from core.generator import Generator
+
+
+DEFAULT_LLM_EVALUATOR_PROMPT = r"""
+<<SYS>>{# task desc #}
+{% if task_desc_str %}
+{{task_desc_str}}
+{% endif %}<</SYS>>
+---------------------
+{# question #}
+Question: {{question_str}}
+{# ground truth answer #}
+Ground truth answer: {{gt_answer}}
+{# predicted answer #}
+Predicted answer: {{pred_answer}}
+{# judgement question #}
+Judgement question: {{query_str}}
+{# assistant response #}
+You:
+"""
 
 
 class AnswerMacthEvaluator:
@@ -141,3 +161,66 @@ class RetrieverEvaluator:
             sum(context_relevance_list) / len(context_relevance_list),
             context_relevance_list,
         )
+
+
+class LLMasJudge:
+    """
+    LLM as judge for evaluating the performance of a LLM.
+
+    Args:
+        llm_evaluator (Generator): LLM model to be used as judge
+    """
+
+    def __init__(self, llm_evaluator: Generator):
+        self.llm_evaluator = llm_evaluator
+
+    def compute_judgement_single_question(
+        self, question: str, pred_answer: str, gt_answer: str, judgement_query: str
+    ) -> bool:
+        """
+        Get the judgement of the predicted answer for a single question.
+        Args:
+            question (str): Question string
+            pred_answer (str): Predicted answer string
+            gt_answer (str): Ground truth answer string
+            judgement_query (str): judgement query string
+        Returns:
+            bool: Judgement result
+        """
+        judgement = self.llm_evaluator(
+            input=judgement_query,
+            prompt_kwargs={
+                "question_str": question,
+                "gt_answer": gt_answer,
+                "pred_answer": pred_answer,
+            },
+        )
+        return judgement["judgement"]
+
+    def compute_judgement(
+        self,
+        all_questions: List[str],
+        all_pred_answer: List[str],
+        all_gt_answer: List[str],
+        judgement_query: str,
+    ) -> List[bool]:
+        """
+        Get the judgement of the predicted answer for a list of questions.
+        Args:
+            all_questions: List of question strings
+            all_pred_answer: List of predicted answer strings
+            all_gt_answer: List of ground truth answer strings
+            judgement_query (str): judgement query string
+        Returns:
+            List[bool]: Judgement results
+        """
+        judgement_list = []
+        for question, pred_answer, gt_answer in zip(
+            all_questions, all_pred_answer, all_gt_answer
+        ):
+            judgement = self.compute_judgement_single_question(
+                question, pred_answer, gt_answer, judgement_query
+            )
+            judgement_list.append(judgement)
+
+        return judgement_list
