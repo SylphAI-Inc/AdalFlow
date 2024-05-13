@@ -21,6 +21,9 @@ from core.data_classes import Document, Chunk
 
 # TODO: convert this to function
 
+DocumentSplitterInputType = List[Document]
+DocumentSplitterOutputType = List[Document]
+
 
 class DocumentSplitter(Component):
     r"""

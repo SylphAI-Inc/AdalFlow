@@ -191,8 +191,17 @@ r"""Data classes to be consumed by retriever component.
 class Document:
     meta_data: dict  # can save data for filtering at retrieval time too
     text: str
+    vector: List[float] = []  # the vector representation of the document
+
     id: Optional[Union[str, UUID]] = (
         None  # if the file name is unique, its better to use it as id instead of UUID
+    )
+    order: Optional[int] = (
+        None  # order of the chunked document in the original document
+    )
+    score: Optional[float] = None  # used in retrieved output
+    parent_doc_id: Optional[Union[str, UUID]] = (
+        None  # id of the Document where the chunk is from
     )
     estimated_num_tokens: Optional[int] = (
         None  # useful for cost and chunking estimation
@@ -223,57 +232,58 @@ class Document:
         return Document(**doc)
 
     def __repr__(self) -> str:
+        # TODO: repr only those non empty fields
         return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:50]}, estimated_num_tokens={self.estimated_num_tokens})"
 
     def __str__(self):
         return self.__repr__()
 
 
-class Chunk:
-    vector: List[float]
-    text: str
-    order: Optional[int] = (
-        None  # order of the chunk in the document. Llama index uses RelatedNodeInfo which is an overkill
-    )
+# class Chunk:
+#     vector: List[float]
+#     text: str
+#     order: Optional[int] = (
+#         None  # order of the chunk in the document. Llama index uses RelatedNodeInfo which is an overkill
+#     )
 
-    doc_id: Optional[Union[str, UUID]] = (
-        None  # id of the Document where the chunk is from
-    )
-    id: Optional[Union[str, UUID]] = None
-    estimated_num_tokens: Optional[int] = None
-    score: Optional[float] = None  # used in retrieved output
-    meta_data: Optional[Dict] = (
-        None  # only when the above fields are not enough or be used for metadata filtering
-    )
+#     doc_id: Optional[Union[str, UUID]] = (
+#         None  # id of the Document where the chunk is from
+#     )
+#     id: Optional[Union[str, UUID]] = None
+#     estimated_num_tokens: Optional[int] = None
+#     score: Optional[float] = None  # used in retrieved output
+#     meta_data: Optional[Dict] = (
+#         None  # only when the above fields are not enough or be used for metadata filtering
+#     )
 
-    def __init__(
-        self,
-        vector: List[float],
-        text: str,
-        order: Optional[int] = None,
-        doc_id: Optional[Union[str, UUID]] = None,
-        id: Optional[Union[str, UUID]] = None,
-        estimated_num_tokens: Optional[int] = None,
-        meta_data: Optional[Dict] = None,
-    ):
-        self.vector = vector if vector else []
-        self.text = text
-        self.order = order
-        self.doc_id = doc_id
-        self.id = id if id else uuid.uuid4()
-        self.meta_data = meta_data
+#     def __init__(
+#         self,
+#         vector: List[float],
+#         text: str,
+#         order: Optional[int] = None,
+#         doc_id: Optional[Union[str, UUID]] = None,
+#         id: Optional[Union[str, UUID]] = None,
+#         estimated_num_tokens: Optional[int] = None,
+#         meta_data: Optional[Dict] = None,
+#     ):
+#         self.vector = vector if vector else []
+#         self.text = text
+#         self.order = order
+#         self.doc_id = doc_id
+#         self.id = id if id else uuid.uuid4()
+#         self.meta_data = meta_data
 
-        # self.estimated_num_tokens = estimated_num_tokens if estimated_num_tokens else 0
-        # # estimate the number of tokens
-        # if not self.estimated_num_tokens:
-        #     tokenizer = Tokenizer()
-        #     self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+#         # self.estimated_num_tokens = estimated_num_tokens if estimated_num_tokens else 0
+#         # # estimate the number of tokens
+#         # if not self.estimated_num_tokens:
+#         #     tokenizer = Tokenizer()
+#         #     self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
-    def __repr__(self) -> str:
-        return f"Chunk(id={self.id}, doc_id={self.doc_id}, order={self.order}, text={self.text}, vector={self.vector[0:5]}, score={self.score})"
+#     def __repr__(self) -> str:
+#         return f"Chunk(id={self.id}, doc_id={self.doc_id}, order={self.order}, text={self.text}, vector={self.vector[0:5]}, score={self.score})"
 
-    def __str__(self):
-        return self.__repr__()
+#     def __str__(self):
+#         return self.__repr__()
 
 
 @dataclass
@@ -281,9 +291,7 @@ class RetrieverOutput:
     doc_indexes: List[int]  # either index or ids potentially
     doc_scores: Optional[List[float]] = None
     query: Optional[str] = None
-    chunks: Optional[List[Union[Chunk, Document]]] = (
-        None  # TODO: change chunks to documents
-    )
+    chunks: Optional[List[Document]] = None  # TODO: change chunks to documents
 
 
 # @dataclass

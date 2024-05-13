@@ -10,10 +10,11 @@ from core.data_components import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
+from core.data_classes import Document
 
 from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
-from core.component import Component, RetrieverOutput, Sequential
+from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
 
@@ -54,6 +55,7 @@ class RAG(Component):
             model_kwargs=self.vectorizer_settings["model_kwargs"],
             output_processors=Sequential(ToEmbedderResponse()),
         )
+        # TODO: check document splitter, how to process the parent and order of the chunks
         text_splitter = DocumentSplitter(
             split_by=self.text_splitter_settings["split_by"],
             split_length=self.text_splitter_settings["chunk_size"],
@@ -66,16 +68,19 @@ class RAG(Component):
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )
-        self.db = LocalDocumentDB(data_transformer=data_transformer)
         # initialize retriever, which depends on the vectorizer too
-        # TODO: separate the db and the retrieval method? is itpossible?
-        self.retriever = FAISSRetriever(
+        retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
             dimensions=self.vectorizer_settings["model_kwargs"]["dimensions"],
             vectorizer=vectorizer,
-            # db=self.db,
-            output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
+        # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
+        self.db = LocalDocumentDB(
+            data_transformer=data_transformer,  # prepare data for retriever to build index with
+            retriever=retriever,
+            retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
+        )
+
         # initialize generator
         self.generator = Generator(
             preset_prompt_kwargs={
@@ -98,18 +103,9 @@ Output JSON format:
 
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
-        self.db()  # transform the documents
-        self.retriever.load_index(self.db.transformed_documents)
-
-    def retrieve(
-        self, query_or_queries: Union[str, List[str]]
-    ) -> Union[RetrieverOutput, List[RetrieverOutput]]:
-        if not self.retriever:
-            raise ValueError("Retriever is not set")
-        retrieved = self.retriever(query_or_queries)
-        if isinstance(query_or_queries, str):
-            return retrieved[0] if retrieved else None
-        return retrieved
+        # transform the documents
+        self.db()
+        self.db.build_retrieve_index()
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
@@ -122,13 +118,12 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        context_str = self.retrieve(query)
+        context_str = self.db.retrieve(query)
         return self.generate(query, context=context_str)
 
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
-    from core.documents_data_class import Document
 
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},

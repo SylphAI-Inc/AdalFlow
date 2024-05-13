@@ -70,14 +70,19 @@ class LocalDocumentDB(Component):
     def reset_documents(self):
         self.documents = []
 
-    def build_retrieve_index(self):
-        documents_to_use = self.documents
+    def _get_documents_to_use(self):
         if self.transformed_documents:
-            documents_to_use = self.transformed_documents
+            return self.transformed_documents
+        return self.documents
+
+    def build_retrieve_index(self):
+        documents_to_use = self._get_documents_to_use()
         self.retriever.build_index_from_documents(documents_to_use)
 
     # TODO: allow better otuput type specification and type hinting
     def retrieve(self, query_or_queries: RetrieverInputType) -> Any:
+        documents_to_use = self._get_documents_to_use()
+
         # check if the retriever has build index or not
         if not self.retriever.indexed:
             raise ValueError("Retriever is not indexed, please call build_index first")
@@ -86,7 +91,7 @@ class LocalDocumentDB(Component):
         for i, output in enumerate(response):
             # convert doc_indexes to doc_contents
             response[i].chunks = [
-                self.documents[doc_index] for doc_index in output.doc_indexes
+                documents_to_use[doc_index] for doc_index in output.doc_indexes
             ]
         if self.retrieve_output_processors:
             response = self.retrieve_output_processors(response)
