@@ -126,7 +126,9 @@ Once you've made your edits, rebuild the documentation dynamically to see your c
 
 ### Automatic Update
 
-We have already included the necessary extensions in the configuration(conf.py), therefore, when you update the code, simply do the rebuilding by `make html` , the documentation will be updated.
+We have already included the necessary extensions in the configuration(conf.py). Therefore, if you correctly include the source code in `.. automodule::` in the `.rst` file, when you update the code doc string, simply do the rebuilding by `make html`, the documentation will be automatically updated.
+
+For example, `.. automodule:: components.api_client.transformers_client`
 
 Ensure to commit your changes and push them to the GitHub repository to make them available to others. 
 
@@ -137,6 +139,6 @@ Ensure to commit your changes and push them to the GitHub repository to make the
 - You should run the `sphinx-apidoc -o <output_path> <module_path>` to generate the texts. Make sure your module includes __init__.py.
 - If you are in the root directory, you can run
     
-    `sphinx-apidoc -o docs/source/documents/use_cases use_cases *test*` . *test* is to exclude the files containing `test` in the filename 
+    `sphinx-apidoc -o docs/source/documents/use_cases use_cases *test*` . `*test*` is to exclude the files containing `test` in the filename 
     
     By doing this, you are generating the code-related texts and pages in the `docs/source/apis`, and the source module path is the current directory `components/` . [sphinx-apidoc command reference](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html).

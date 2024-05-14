@@ -95,7 +95,8 @@ Once you've made your edits, rebuild the documentation to see your changes:
 
       make html
 
-  We have already included the necessary extensions in the configuration (conf.py), therefore, when you update the code, simply do the rebuilding by ``make html``, the documentation will be updated.
+  We have already included the necessary extensions in the configuration(conf.py). Therefore, if you correctly include the source code in ``.. automodule::`` in the ``.rst`` file, when you update the code doc string, simply do the rebuilding by ``make html``, the documentation will be automatically updated.
+  For example, ``.. automodule:: components.api_client.transformers_client``
 
 - You can preview the documentation locally by opening ``docs/build/html/index.html``
 - Ensure to commit your changes, push them to the GitHub repository and submit a pull request to make them available to others.
