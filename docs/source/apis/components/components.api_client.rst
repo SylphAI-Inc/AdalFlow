@@ -1,10 +1,8 @@
-components.api\_client package
-==============================
+LightRAG.components.api\_client
+===============================
 
-Submodules
-----------
 
-components.api\_client.groq\_client module
+components.api\_client.groq\_client
 ------------------------------------------
 
 .. automodule:: components.api_client.groq_client
@@ -12,7 +10,7 @@ components.api\_client.groq\_client module
    :undoc-members:
    :show-inheritance:
 
-components.api\_client.transformers\_client module
+components.api\_client.transformers\_client
 --------------------------------------------------
 
 .. automodule:: components.api_client.transformers_client
@@ -20,10 +18,3 @@ components.api\_client.transformers\_client module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: components.api_client
-   :members:
-   :undoc-members:
-   :show-inheritance:

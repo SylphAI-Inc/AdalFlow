@@ -41,7 +41,6 @@ extensions = [
 'sphinx.ext.viewcode',
 'sphinx.ext.githubpages',
 'sphinx.ext.todo',
-'autodocsumm',
 # 'recommonmark',
 # 'myst_parser'
 ]
@@ -74,13 +73,13 @@ html_static_path = ['_static']
 add_module_names = False 
 
 
-autodoc_default_options = {'autosummary-no-titles': True,
-                           'autosummary-force-inline': True,
-                           'autosummary-nosignatures': True,
-                           'members': True,
-                           'private-members': False,
-                           'special-members': False,
-                           'member-order': 'bysource',
-                            'show-inheritance': True,
-                            'undoc-members': True,
+autodoc_default_options={'autosummary-no-titles': True,
+                          'autosummary-force-inline': True,
+                          'autosummary-nosignatures': True,
+                          'members': True,
+                          'private-members': False, #(those starting with _).
+                          'special-members': False, #(those starting and ending with __).
+                          'member-order': 'bysource',
+                          'show-inheritance': True,
+                          'undoc-members': True,
                           }

@@ -1,10 +1,8 @@
-core package
-============
+LightRAG.core
+=============
 
-Submodules
-----------
 
-core.api\_client module
+core.api\_client
 -----------------------
 
 .. automodule:: core.api_client
@@ -12,7 +10,7 @@ core.api\_client module
    :undoc-members:
    :show-inheritance:
 
-core.component module
+core.component
 ---------------------
 
 .. automodule:: core.component
@@ -20,7 +18,7 @@ core.component module
    :undoc-members:
    :show-inheritance:
 
-core.data\_classes module
+core.data\_classes
 -------------------------
 
 .. automodule:: core.data_classes
@@ -28,7 +26,7 @@ core.data\_classes module
    :undoc-members:
    :show-inheritance:
 
-core.data\_components module
+core.data\_components
 ----------------------------
 
 .. automodule:: core.data_components
@@ -36,7 +34,7 @@ core.data\_components module
    :undoc-members:
    :show-inheritance:
 
-core.db module
+core.db 
 --------------
 
 .. automodule:: core.db
@@ -44,7 +42,7 @@ core.db module
    :undoc-members:
    :show-inheritance:
 
-core.document\_splitter module
+core.document\_splitter
 ------------------------------
 
 .. automodule:: core.document_splitter
@@ -52,7 +50,7 @@ core.document\_splitter module
    :undoc-members:
    :show-inheritance:
 
-core.documents\_data\_class module
+core.documents\_data\_class
 ----------------------------------
 
 .. automodule:: core.documents_data_class
@@ -60,7 +58,7 @@ core.documents\_data\_class module
    :undoc-members:
    :show-inheritance:
 
-core.embedder module
+core.embedder
 --------------------
 
 .. automodule:: core.embedder
@@ -68,7 +66,7 @@ core.embedder module
    :undoc-members:
    :show-inheritance:
 
-core.functional module
+core.functional
 ----------------------
 
 .. automodule:: core.functional
@@ -76,7 +74,7 @@ core.functional module
    :undoc-members:
    :show-inheritance:
 
-core.generator module
+core.generator
 ---------------------
 
 .. automodule:: core.generator
@@ -84,7 +82,7 @@ core.generator module
    :undoc-members:
    :show-inheritance:
 
-core.memory module
+core.memory
 ------------------
 
 .. automodule:: core.memory
@@ -92,7 +90,7 @@ core.memory module
    :undoc-members:
    :show-inheritance:
 
-core.openai\_client module
+core.openai\_client
 --------------------------
 
 .. automodule:: core.openai_client
@@ -100,7 +98,7 @@ core.openai\_client module
    :undoc-members:
    :show-inheritance:
 
-core.prompt\_builder module
+core.prompt\_builder
 ---------------------------
 
 .. automodule:: core.prompt_builder
@@ -108,7 +106,7 @@ core.prompt\_builder module
    :undoc-members:
    :show-inheritance:
 
-core.retriever module
+core.retriever
 ---------------------
 
 .. automodule:: core.retriever
@@ -116,7 +114,7 @@ core.retriever module
    :undoc-members:
    :show-inheritance:
 
-core.string\_parser module
+core.string\_parser
 --------------------------
 
 .. automodule:: core.string_parser
@@ -124,7 +122,7 @@ core.string\_parser module
    :undoc-members:
    :show-inheritance:
 
-core.tokenizer module
+core.tokenizer
 ---------------------
 
 .. automodule:: core.tokenizer
@@ -132,7 +130,7 @@ core.tokenizer module
    :undoc-members:
    :show-inheritance:
 
-core.tool\_helper module
+core.tool\_helper
 ------------------------
 
 .. automodule:: core.tool_helper
@@ -140,10 +138,3 @@ core.tool\_helper module
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: core
-   :members:
-   :undoc-members:
-   :show-inheritance:
