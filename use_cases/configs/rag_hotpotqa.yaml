@@ -19,6 +19,6 @@ text_splitter:
   chunk_overlap: 0
 
 llm_evaluator:
-  model: gpt-4
+  model: gpt-3.5-turbo
   temperature: 0.3
   stream: false

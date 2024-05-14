@@ -85,7 +85,10 @@ Output JSON format:
 
     def call(self, query: str) -> Any:
         context_str = self.retriever(query)
-        return self.generator(input=query, prompt_kwargs={"context_str": context_str})
+        return (
+            self.generator(input=query, prompt_kwargs={"context_str": context_str}),
+            context_str,
+        )
 
 
 if __name__ == "__main__":
@@ -111,5 +114,5 @@ if __name__ == "__main__":
     print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
 
-    response = rag.call(query)
+    response, _ = rag.call(query)
     print(f"response: {response}")
