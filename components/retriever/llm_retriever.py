@@ -26,9 +26,9 @@ class LLMRetriever(Retriever):
     # initialize the
     def __init__(
         self,
-        retriever_standard_spec: str = DEFAULT_LLM_AS_RETRIEVER_TASK_DESC,
+        # retriever_standard_spec: str = DEFAULT_LLM_AS_RETRIEVER_TASK_DESC,
         generator_kwargs: Dict[str, Any] = {},  # all arguments for generator
-        top_k: Optional[int] = None,
+        top_k: Optional[int] = 1,
     ):
         super().__init__()
         print(f"generator_kwargs: {generator_kwargs}")
@@ -38,10 +38,10 @@ class LLMRetriever(Retriever):
         ):
             generator_kwargs["preset_prompt_kwargs"][
                 "task_desc_str"
-            ] = retriever_standard_spec  # i want to set the retriever_standard_spec to the task_desc_str using jina preset?
+            ] = DEFAULT_LLM_AS_RETRIEVER_TASK_DESC  # i want to set the retriever_standard_spec to the task_desc_str using jina preset?
         if "preset_prompt_kwargs" not in generator_kwargs:
             generator_kwargs["preset_prompt_kwargs"] = {
-                "task_desc_str": retriever_standard_spec
+                "task_desc_str": DEFAULT_LLM_AS_RETRIEVER_TASK_DESC
             }
 
         # context_str: Optional[str] = None,
@@ -50,7 +50,7 @@ class LLMRetriever(Retriever):
         ] = DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR
         self.generator = Generator(**generator_kwargs)
         print(f"generator: {self.generator}")
-        self.retriever_standard_spec = retriever_standard_spec
+        # self.retriever_standard_spec = retriever_standard_spec
         self.top_k = top_k
 
     def build_index_from_documents(
@@ -75,7 +75,17 @@ class LLMRetriever(Retriever):
         # run the generator
         print(f"query_or_queries: {query_or_queries}")
         # self.preset
-        response = self.generator.generate(query_or_queries)
+        # render top_k
+        if top_k is None:
+            top_k = self.top_k
+        # update the task_desc_str with the top_k
+        template = Template(self.generator.preset_prompt_kwargs["task_desc_str"])
+        rendered_query_str = template.render(top_k=top_k)
+        self.generator.preset_prompt_kwargs["task_desc_str"] = rendered_query_str
+        print(
+            f"self.generator.preset_prompt_kwargs: {self.generator.preset_prompt_kwargs}"
+        )
+        response = self.generator(query_or_queries)
         # process it with list output parser
         return response
 
