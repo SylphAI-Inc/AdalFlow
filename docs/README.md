@@ -2,23 +2,11 @@
 
 If you want to contribute to the LightRAG documentation system, please refer to the following instructions.
 
-## Table of Contents
-1. [Setup](#setup)
-   - [Prerequisites](#prerequisites)
-   - [Clone the Github Project](#1-clone-the-github-project)
-   - [Install Necessary Packages](#2-install-necessary-packages)
-   - [Optional: Generate Texts from Doc Strings](#3-optional-in-setup-generate-texts-from-doc-strings)
-   - [Build the Documentation](#4-build-the-documentation)
-   - [View the Documentation](#5-view-the-documentation)
-2. [File Structure](#file-structure)
-   - [conf.py](#confpy)
-   - [index.rst](#indexrst)
-   - [Sections](#sections)
-3. [Editing Tips for Sphinx Documentation](#editing-tips-for-sphinx-documentation)
-   - [Directly Edit an Existing .rst File](#1-directly-edit-an-existing-rst-file)
-   - [Create a New .rst File](#2-create-a-new-rst-file)
-   - [Convert a Markdown File to .rst Using Pandoc](#3-convert-a-markdown-file-to-rst-using-pandoc)
-4. [After Editing](#after-editing)
+### Instruction Summary for Quick Navigation
+
+- [Setup](#setup)
+- [File Structure](#file-structure)
+- [Editing Tips for Sphinx Documentation](#editing-tips-for-sphinx-documentation)
 
 ## Setup
 
@@ -39,27 +27,11 @@ Please run the following command:
 
 ### **2. Install Necessary Packages**
 
-Install Sphinx and the required Sphinx theme directly into your active virtual environment:
+Install Sphinx and the required theme directly into your active virtual environment:
 
 `pip install sphinx sphinx-rtd-theme`  install the sphinx package and the sphinx theme
 
-**[Optional]** For contributors planning to convert Markdown documents to **`.rst`**,  install Pandoc, a package to transform the README.md file to `.rst` files. Run
-
- `brew install pandoc`
-
-### **3. [Optional in setup] Generate Texts from Doc Strings**
-
-**You don’t necessarily do this in setup.** But you should better run the following instructions if you have modified the codebase.
-
-- To generate texts from the doc strings and show source code conveniently, you should firstly find the `docs/source/conf.py` . In this file, make sure the extensions `'sphinx.ext.autodoc’, 'sphinx.ext.viewcode'`  are included.
-- Then you should run the `sphinx-apidoc -o <output_path> <module_path>` to generate the texts. In LightRAG, we have multiple modules and subdirectories. Therefore, if you are in the root directory, you can run
-    
-    `sphinx-apidoc -o docs/source/documents . -f -e` 
-    
-    By doing this, you are generating the code-related texts and pages in the `docs/source/documents`, and the module path is the current directory`.` containing `components/` and `core/` . [sphinx-apidoc command reference](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html).
-    
-
-### **4. Build the Documentation**
+### **3. Build the Documentation**
 
 Navigate to the `docs` directory within your project folder and compile the documentation:
 
@@ -69,7 +41,7 @@ Navigate to the `docs` directory within your project folder and compile the docu
 
 This command generates the documentation from the source files and outputs HTML files to `docs/build/html`.
 
-### **5. View the Documentation**
+### **4. View the Documentation**
 
 After building the documentation, you can view it by opening the `index.html` file located in `docs/build/html`. You can open this file in any web browser to review the generated documentation.
 
@@ -91,8 +63,6 @@ You will see that at the end of the toctree, there are paths linked, such as `ge
 
 ### **Sections**
 
-The documentation has 
-
 **`get_started/`**
 
 - installation.rst
@@ -102,11 +72,9 @@ The documentation has
 
 - simpleQA.rst - This is a dummy file, we should add the tutorials as different.rst files here
 
-**`documents/`**
+**`apis/`**
 
-The files in `documents` are the code APIs to present. Please refer to Setup Generate Texts from Doc Strings[Optional in setup] to generate the texts and source code.
-
-You can go through the .rst files under `documents` and edit accordingly. Remember to add the unnecessary files into `LightRAG/.gitignore`.
+You can go through the .rst files under `apis` and edit accordingly. Remember to add the unnecessary files into `LightRAG/.gitignore`.
 
 **`Resources/`**
 
@@ -145,15 +113,32 @@ Pandoc is a package to transform the files to `.rst` files.
 
 ### After editing
 
-Once you've made your edits, rebuild the documentation to see your changes:
+Once you've made your edits, rebuild the documentation dynamically to see your changes:
 
 - Clean previous builds:
     
     `make clean`
     
-- Generate new HTML documentation:
+- rebuild HTML documentation:
     
     `make html`
     
 
-Ensure to commit your changes and push them to the GitHub repository to make them available to others.
+### Automatic Update
+
+We have already included the necessary extensions in the configuration(conf.py). Therefore, if you correctly include the source code in `.. automodule::` in the `.rst` file, when you update the code doc string, simply do the rebuilding by `make html`, the documentation will be automatically updated.
+
+For example, `.. automodule:: components.api_client.transformers_client`
+
+Ensure to commit your changes and push them to the GitHub repository to make them available to others. 
+
+### **[Optional] Generate Texts from Doc Strings Automatically**
+
+**You don’t necessarily do this.** But you can use this to quickly generate the text from doc strings.
+
+- You should run the `sphinx-apidoc -o <output_path> <module_path>` to generate the texts. Make sure your module includes __init__.py.
+- If you are in the root directory, you can run
+    
+    `sphinx-apidoc -o docs/source/documents/use_cases use_cases *test*` . `*test*` is to exclude the files containing `test` in the filename 
+    
+    By doing this, you are generating the code-related texts and pages in the `docs/source/apis`, and the source module path is the current directory `components/` . [sphinx-apidoc command reference](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html).
