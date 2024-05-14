@@ -1,14 +1,14 @@
 from typing import List, Optional, Any, Callable, Dict, Union
 from jinja2 import Template
 
-from core.data_classes import RetrieverOutput, Document, RetrieverOutput
+from core.data_classes import Document
 from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 from core.generator import Generator
 
 DEFAULT_LLM_AS_RETRIEVER_TASK_DESC = r"""Your are a retriever. You will be given a list of documents, and you will retrieve documents in the following way:
 {{retriever_standard_spec}}
-You will output a list of {{top_k}} incices of the documents that are most relevant to the query. You will output a list as follows:
-[..., ...]
+You will output a list of {{top_k}} incices(int) of the documents that are most relevant to the query. You will output a list as follows:
+[<id from the most relevent with top_k options>]
 """
 
 DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR = r"""

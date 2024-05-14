@@ -7,6 +7,8 @@ core/__pycache__
 lightrag/__pycache__
 components/*/__pycache__
 components/__pycache__
+use_cases/__pycache__
+*/__pycache__
 tests/__pycache__
 test_li.py
 test_li*
@@ -17,3 +19,4 @@ docs/_build/
 docs/source/_static
 docs/source/_templates
 docs/source/documents/tests*.rst
+docs/source/documents/
