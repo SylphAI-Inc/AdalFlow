@@ -24,18 +24,13 @@ class SimpleQA(Component):
 
     def call(self, query: str) -> str:
         # return self.generator.call(input=query)
-        logger.info(f"Received query: {query}")
         response = self.generator.call(input=query)
-        logger.info(f"Generated response: {response}")
         return response
 
 
 if __name__ == "__main__":
-    from core.logging import getLogger, setup_logging
-    setup_logging(output_type="json", method="file", file_name="./tests/log_test/app.log", log_level="INFO")
-    logger = getLogger(__name__)
+    from utils.logging_tools import LogSettings
+    log_settings = LogSettings(output_type="str", method="file", file_name="./tests/log_test/test.log", log_level="INFO")
+    logger = log_settings.logger  # Retrieve the configured logger
     simple_qa = SimpleQA()
-    logger.info(f"Initialized SimpleQA Component: {simple_qa}")
-    # print(simple_qa)
-    # print(simple_qa.call("What is the capital of France?"))
-    response = simple_qa.call("What is the capital of France?")
+    logger.info(simple_qa)
