@@ -4,7 +4,7 @@ https://github.com/Inspirateur/Fast-BM25/blob/main/fast_bm25.py
 It needs to tokenize the entire corpus and calculate the inverse document frequency (IDF) for each term.
 """
 
-from typing import List, Dict, Tuple, Optional, Callable, Any, Union
+from typing import List, Dict, Tuple, Optional, Callable, Union
 import collections
 import heapq
 import math
@@ -33,7 +33,7 @@ def split_function_by_token(tokenizer: Tokenizer, x: str) -> List[str]:
 
 class InMemoryBM25Retriever(Retriever):
     """Fast Implementation of Best Matching 25 ranking function.
-    Part of information theory.
+    Build index from List[str] where the str is from Document
 
     IDF(q_i)= log(N/ DF) = log(N/n(q_i) + 0.5)/(n(q_i) + 0.5) + 1, to avoid division by zero and to diminish the weight of terms that occur very frequently in the document set and increase the weight of terms that occur rarely.
     N: total number of documents
@@ -141,9 +141,15 @@ class InMemoryBM25Retriever(Retriever):
         self.alpha = IDF_CUTOFF
         self.indexed = False
 
-    def build_index_from_documents(self, documents: List[Document]):
+    def build_index_from_documents(
+        self,
+        documents: List[Document],
+        input_field_map_func: Callable[[Document], str] = lambda x: x.text,
+    ):
+        r"""Built index from the `text` field of each document in the list of documents"""
+
         # make a copy of the documents
-        list_of_documents_str = [doc.text for doc in documents]
+        list_of_documents_str = [input_field_map_func(doc) for doc in documents]
         self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         # start to calculate the DF,TF, IDF
         self.avgdl = 0  # average document length

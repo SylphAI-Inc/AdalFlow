@@ -187,15 +187,16 @@ r"""Data classes to be consumed by retriever component.
 ##############################################
 # Key data structures for RAG
 # TODO: visualize the data structures
-##############################################
+@dataclass
 class Document:
     meta_data: dict  # can save data for filtering at retrieval time too
     text: str
-    vector: List[float] = []  # the vector representation of the document
+    vector: List[float] = field(default_factory=list)
+    # the vector representation of the document
 
-    id: Optional[Union[str, UUID]] = (
-        None  # if the file name is unique, its better to use it as id instead of UUID
-    )
+    id: Optional[str] = field(
+        default_factory=lambda: str(uuid.uuid4())
+    )  # unique id of the document
     order: Optional[int] = (
         None  # order of the chunked document in the original document
     )
@@ -206,18 +207,6 @@ class Document:
     estimated_num_tokens: Optional[int] = (
         None  # useful for cost and chunking estimation
     )
-
-    def __init__(
-        self,
-        meta_data: dict,
-        text: str,
-        id: Optional[Union[str, UUID]] = None,
-        estimated_num_tokens: Optional[int] = None,
-    ):
-        self.meta_data = meta_data
-        self.text = text
-        self.id = id
-        self.estimated_num_tokens = estimated_num_tokens
 
     @staticmethod
     def from_dict(doc: Dict):
@@ -239,66 +228,9 @@ class Document:
         return self.__repr__()
 
 
-# class Chunk:
-#     vector: List[float]
-#     text: str
-#     order: Optional[int] = (
-#         None  # order of the chunk in the document. Llama index uses RelatedNodeInfo which is an overkill
-#     )
-
-#     doc_id: Optional[Union[str, UUID]] = (
-#         None  # id of the Document where the chunk is from
-#     )
-#     id: Optional[Union[str, UUID]] = None
-#     estimated_num_tokens: Optional[int] = None
-#     score: Optional[float] = None  # used in retrieved output
-#     meta_data: Optional[Dict] = (
-#         None  # only when the above fields are not enough or be used for metadata filtering
-#     )
-
-#     def __init__(
-#         self,
-#         vector: List[float],
-#         text: str,
-#         order: Optional[int] = None,
-#         doc_id: Optional[Union[str, UUID]] = None,
-#         id: Optional[Union[str, UUID]] = None,
-#         estimated_num_tokens: Optional[int] = None,
-#         meta_data: Optional[Dict] = None,
-#     ):
-#         self.vector = vector if vector else []
-#         self.text = text
-#         self.order = order
-#         self.doc_id = doc_id
-#         self.id = id if id else uuid.uuid4()
-#         self.meta_data = meta_data
-
-#         # self.estimated_num_tokens = estimated_num_tokens if estimated_num_tokens else 0
-#         # # estimate the number of tokens
-#         # if not self.estimated_num_tokens:
-#         #     tokenizer = Tokenizer()
-#         #     self.estimated_num_tokens = tokenizer.count_tokens(self.text)
-
-#     def __repr__(self) -> str:
-#         return f"Chunk(id={self.id}, doc_id={self.doc_id}, order={self.order}, text={self.text}, vector={self.vector[0:5]}, score={self.score})"
-
-#     def __str__(self):
-#         return self.__repr__()
-
-
 @dataclass
 class RetrieverOutput:
     doc_indexes: List[int]  # either index or ids potentially
     doc_scores: Optional[List[float]] = None
     query: Optional[str] = None
     chunks: Optional[List[Document]] = None  # TODO: change chunks to documents
-
-
-# @dataclass
-# class RetrieverOutput:
-#     """
-#     Retrieved result per query
-#     """
-
-#     chunks: List[Union[Chunk, Document]]
-#     query: Optional[str] = None

@@ -6,7 +6,7 @@ For cloud db, you can additionally add a manager to CRUD the data. These are dat
 use some functional components in lightrag to process the data.
 """
 
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Any
 from core.component import Component
 from core.data_classes import Document
 
@@ -36,6 +36,7 @@ class LocalDocumentDB(Component):
     def __init__(
         self,
         documents: Optional[List[Document]] = None,
+        # TODO: rename to retriever_transformer: only used to transform documents to retriever input which it uses to build index with
         data_transformer: Optional[Component] = None,
         retriever: Optional[
             Retriever

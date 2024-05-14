@@ -17,7 +17,7 @@ from typing import List, Literal
 from more_itertools import windowed
 
 from core.component import Component
-from core.data_classes import Document, Chunk
+from core.data_classes import Document
 
 # TODO: convert this to function
 
@@ -96,8 +96,12 @@ class DocumentSplitter(Component):
             metadata = deepcopy(doc.meta_data)
             # metadata["source_id"] = doc.id
             split_docs += [
-                Chunk(
-                    text=txt, meta_data=metadata, doc_id=f"{doc.id}", order=i, vector=[]
+                Document(
+                    text=txt,
+                    meta_data=metadata,
+                    parent_doc_id=f"{doc.id}",
+                    order=i,
+                    vector=[],
                 )
                 for i, txt in enumerate(text_splits)
             ]

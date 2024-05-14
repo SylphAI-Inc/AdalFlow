@@ -1,5 +1,5 @@
 from typing import Dict, List, Union, Any
-from core.data_classes import RetrieverOutput, Chunk, Document
+from core.data_classes import RetrieverOutput, Document
 
 # TODO: import all other  functions into this single file to be exposed to users
 
@@ -32,7 +32,7 @@ def retriever_output_to_context_str(
     How to combine your retrieved chunks into the context is highly dependent on your use case.
     If you used query expansion, you might want to deduplicate the chunks.
     """
-    chunks_to_use: List[Chunk] = []
+    chunks_to_use: List[Document] = []
     context_str = ""
     sep = " "
     if isinstance(retriever_output, RetrieverOutput):

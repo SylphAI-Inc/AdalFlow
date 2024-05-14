@@ -1,12 +1,10 @@
-from copy import deepcopy
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Union, Callable, Any, Sequence
 
 import faiss
 import numpy as np
 
 from core.component import Component
 from core.data_classes import (
-    Chunk,
     Document,
     RetrieverOutput,
 )
@@ -19,6 +17,8 @@ class Retriever(Component):
     """
     Retriever will manage its own index and retrieve in format of RetrieverOutput
     It does not manage the initial documents.
+
+    Normally you can assume to use document text or vector, but we can pass a get
     """
 
     indexed = False
@@ -29,8 +29,17 @@ class Retriever(Component):
     def reset_index(self):
         raise NotImplementedError(f"reset_index is not implemented")
 
-    def build_index_from_documents(self, documents: List[Document]):
-        raise NotImplementedError(f"build_index_from_documents is not implemented")
+    def build_index_from_documents(
+        self,
+        documents: List[Document],
+        input_field_map_func: Callable[[Document], Any] = lambda x: x.text,
+    ):
+        r"""Built index from the `text` field of each document in the list of documents.
+        input_field_map_func: a function that maps the document to the input field to be used for indexing
+        """
+        raise NotImplementedError(
+            f"build_index_from_documents and input_field_map_func is not implemented"
+        )
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
@@ -71,11 +80,8 @@ class FAISSRetriever(Retriever):
         # arguments
         top_k: int = 3,
         dimensions: int = 768,
-        # chunks: Optional[List[Chunk]] = None,
         # components
         vectorizer: Optional[Component] = None,
-        document_db: Optional[Component] = None,
-        # output_processors: Optional[Component] = None,
     ):
         super().__init__()
         self.dimensions = dimensions
@@ -84,24 +90,25 @@ class FAISSRetriever(Retriever):
         )  # inner product of normalized vectors will be cosine similarity, [-1, 1]
 
         self.vectorizer = vectorizer  # used to vectorize the queries
-        # if chunks:
-        #     self.set_chunks(chunks)
-        # else:
-        #     self.chunks: List[Chunk] = []
-        #     self.total_chunks: int = 0
+
         self.top_k = top_k
-        self.document_db = document_db  # it can directly use the data from db or directly from the chunks
-        # self.output_processors = output_processors
 
     def reset_index(self):
         self.index.reset()
         self.total_chunks: int = 0
         self.indexed = False
 
-    def build_index_from_documents(self, documents: List[Chunk]):
-        # TODO: merge Chunk and Document structure
+    # TODO: Callable or AsyncCallable
+    def build_index_from_documents(
+        self,
+        documents: List[Document],
+        input_field_map_func: Callable[
+            [Document], Sequence[float]
+        ] = lambda x: x.vector,
+    ):
+        r"""Built index from the `vector` field of each document in the list of documents"""
         self.total_chunks = len(documents)
-        embeddings = [document.vector for document in documents]
+        embeddings = [input_field_map_func(document) for document in documents]
         print(f"embeddings: {embeddings}")
         xb = np.array(embeddings, dtype=np.float32)
         self.index.add(xb)
@@ -148,13 +155,6 @@ class FAISSRetriever(Retriever):
                 )
             )
 
-            # for index, distance in zip(indexes, distances):
-            #     chunk: Chunk = deepcopy(self.chunks[index])
-            #     chunk.score = distance
-            #     chunks.append(chunk)
-
-            # output.append(RetrieverOutput(chunks=chunks))
-
         return output
 
     def retrieve(
@@ -186,8 +186,6 @@ class FAISSRetriever(Retriever):
         self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
     ) -> RetrieverOutputType:
         response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
-        # if self.output_processors:
-        #     response = self.output_processors(response)
         return response
 
     def extra_repr(self) -> str:

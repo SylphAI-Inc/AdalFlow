@@ -13,7 +13,7 @@ classifiers = [
 packages = [
     { include = "core", from = "." },
     { include = "components", from = "." },
-    { include = "use_cases", from = "." },
+    # { include = "use_cases", from = "." },
 ]
 
 [tool.poetry.dependencies]
