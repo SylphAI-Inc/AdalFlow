@@ -16,9 +16,8 @@ RetrieverOutputType = List[RetrieverOutput]
 class Retriever(Component):
     """
     Retriever will manage its own index and retrieve in format of RetrieverOutput
-    It does not manage the initial documents.
-
-    Normally you can assume to use document text or vector, but we can pass a get
+    It takes a list of Document and builds index used for retrieval use anyway formed content from fields of the document
+    using the input_field_map_func
     """
 
     indexed = False

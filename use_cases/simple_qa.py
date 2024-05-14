@@ -5,6 +5,7 @@ We just need to very basic generator that can be used to generate text from a pr
 from core.generator import Generator
 from core.openai_client import OpenAIClient
 
+# TODO: index generator with get_generator(client: str, model_kwargs: Dict[str, Any] = {}) -> Generator:
 from core.component import Component
 
 # TODO: make the environment variable loading more robust, and let users specify the .env path

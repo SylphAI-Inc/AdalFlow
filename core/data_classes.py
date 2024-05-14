@@ -189,8 +189,10 @@ r"""Data classes to be consumed by retriever component.
 # TODO: visualize the data structures
 @dataclass
 class Document:
-    meta_data: dict  # can save data for filtering at retrieval time too
-    text: str
+    text: str = None
+
+    meta_data: Optional[Dict[str, Any]] = None
+    # can save data for filtering at retrieval time too
     vector: List[float] = field(default_factory=list)
     # the vector representation of the document
 

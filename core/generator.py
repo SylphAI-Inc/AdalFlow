@@ -154,9 +154,8 @@ class Generator(Generic[GeneratorOutput], Component):
             s += f", preset_prompt_kwargs={self.preset_prompt_kwargs} "
         return s
 
-    def call(
+    def generate(
         self,
-        *,
         input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
@@ -186,3 +185,16 @@ class Generator(Generic[GeneratorOutput], Component):
         if self.output_processors:
             response = self.output_processors(response)
         return response
+
+    def call(
+        self,
+        input: str,
+        prompt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+    ) -> (
+        GeneratorOutput
+    ):  # a generic type, and ensure consistency across all runs of the instance
+        # call generate is become we dont want generator and the retriever to have the same call signature
+        return self.generate(
+            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+        )
