@@ -63,10 +63,6 @@ You will see that at the end of the toctree, there are paths linked, such as `ge
 
 ### **Sections**
 
-[LightRAG documentation coverage](https://www.notion.so/LightRAG-documentation-coverage-2a39791ebe6b461b95a6f33b8b14979b?pvs=21) 
-
-The documentation has 
-
 **`get_started/`**
 
 - installation.rst
