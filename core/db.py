@@ -37,7 +37,7 @@ class LocalDocumentDB(Component):
         self,
         documents: Optional[List[Document]] = None,
         # TODO: rename to retriever_transformer: only used to transform documents to retriever input which it uses to build index with
-        data_transformer: Optional[Component] = None,
+        retriever_transformer: Optional[Component] = None,
         retriever: Optional[
             Retriever
         ] = None,  # retriever can be stateless and should have build_index method, attach a retriever to the db
@@ -49,7 +49,7 @@ class LocalDocumentDB(Component):
         self.documents = documents if documents else []  # the original documents
         # data_transformer = Sequential(DocumentSplitter())
         # TODO: how is data_transformer fit into the pipeline?, should it do in-place transformation?
-        self.data_transformer = data_transformer
+        self.retriever_transformer = retriever_transformer
         self.transformed_documents = []
         self.retriever = retriever
         self.retrieve_output_processors = retriever_output_processors
@@ -98,7 +98,9 @@ class LocalDocumentDB(Component):
             response = self.retrieve_output_processors(response)
         return response
 
+    def run_retriever_transformer(self) -> None:
+        if self.retriever_transformer:
+            self.transformed_documents = self.retriever_transformer(self.documents)
+
     def __call__(self) -> Optional[List[Document]]:
-        if self.data_transformer:
-            self.transformed_documents = self.data_transformer(self.documents)
-            return self.transformed_documents
+        self.run_retriever_transformer()

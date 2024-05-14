@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Callable, Any, Sequence
+from typing import List, Optional, Union, Callable, Any, Sequence, Any
 
 import faiss
 import numpy as np
@@ -9,7 +9,7 @@ from core.data_classes import (
     RetrieverOutput,
 )
 
-RetrieverInputType = Union[str, List[str]]
+RetrieverInputType = Union[str, List[str]]  # query
 RetrieverOutputType = List[RetrieverOutput]
 
 
@@ -28,13 +28,17 @@ class Retriever(Component):
     def reset_index(self):
         raise NotImplementedError(f"reset_index is not implemented")
 
+    def _get_inputs(self, documents: List[Any], input_field_map_func: Callable):
+        return [input_field_map_func(document) for document in documents]
+
     def build_index_from_documents(
         self,
-        documents: List[Document],
-        input_field_map_func: Callable[[Document], Any] = lambda x: x.text,
+        documents: List[Any],
+        input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
     ):
         r"""Built index from the `text` field of each document in the list of documents.
         input_field_map_func: a function that maps the document to the input field to be used for indexing
+        You can use _get_inputs to get a standard format fits for this retriever or you can write your own
         """
         raise NotImplementedError(
             f"build_index_from_documents and input_field_map_func is not implemented"
@@ -100,14 +104,13 @@ class FAISSRetriever(Retriever):
     # TODO: Callable or AsyncCallable
     def build_index_from_documents(
         self,
-        documents: List[Document],
-        input_field_map_func: Callable[
-            [Document], Sequence[float]
-        ] = lambda x: x.vector,
+        documents: List[Any],
+        input_field_map_func: Callable[[Any], Sequence[float]] = lambda x: x.vector,
     ):
         r"""Built index from the `vector` field of each document in the list of documents"""
         self.total_chunks = len(documents)
         embeddings = [input_field_map_func(document) for document in documents]
+        # embeddings = self._get_inputs(documents, input_field_map_func)
         print(f"embeddings: {embeddings}")
         xb = np.array(embeddings, dtype=np.float32)
         self.index.add(xb)

@@ -76,7 +76,7 @@ class RAG(Component):
         )
         # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
         self.db = LocalDocumentDB(
-            data_transformer=data_transformer,  # prepare data for retriever to build index with
+            retriever_transformer=data_transformer,  # prepare data for retriever to build index with
             retriever=retriever,
             retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )

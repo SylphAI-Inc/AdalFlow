@@ -37,7 +37,6 @@ class RAG(Component):
         )
 
         self.db = LocalDocumentDB(
-            data_transformer=None,
             retriever=retriever,
             retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )

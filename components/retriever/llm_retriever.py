@@ -1,7 +1,6 @@
 from typing import List, Optional, Any, Callable, Dict, Union
 from jinja2 import Template
 
-from core.data_classes import Document
 from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 from core.generator import Generator
 
@@ -55,8 +54,8 @@ class LLMRetriever(Retriever):
 
     def build_index_from_documents(
         self,
-        documents: List[Document],
-        input_field_map_func: Callable[[Document], Any] = lambda x: x.text,
+        documents: List[Any],
+        input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
     ):
         """prepare the user query input for the retriever"""
         documents_to_use = [input_field_map_func(doc) for doc in documents]

@@ -4,7 +4,7 @@ https://github.com/Inspirateur/Fast-BM25/blob/main/fast_bm25.py
 It needs to tokenize the entire corpus and calculate the inverse document frequency (IDF) for each term.
 """
 
-from typing import List, Dict, Tuple, Optional, Callable, Union
+from typing import List, Dict, Tuple, Optional, Callable, Union, Any
 import collections
 import heapq
 import math
@@ -16,7 +16,7 @@ from functools import partial
 
 from core.component import Component
 from core.tokenizer import Tokenizer
-from core.data_classes import RetrieverOutput, Document, RetrieverOutput
+from core.data_classes import RetrieverOutput, RetrieverOutput
 from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 
 
@@ -143,8 +143,8 @@ class InMemoryBM25Retriever(Retriever):
 
     def build_index_from_documents(
         self,
-        documents: List[Document],
-        input_field_map_func: Callable[[Document], str] = lambda x: x.text,
+        documents: List[Any],
+        input_field_map_func: Callable[[Any], str] = lambda x: x.text,
     ):
         r"""Built index from the `text` field of each document in the list of documents"""
 
