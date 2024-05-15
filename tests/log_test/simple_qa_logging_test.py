@@ -23,14 +23,16 @@ class SimpleQA(Component):
         self.generator.print_prompt()
 
     def call(self, query: str) -> str:
-        # return self.generator.call(input=query)
-        response = self.generator.call(input=query)
-        return response
+        return self.generator.call(input=query)
 
 
 if __name__ == "__main__":
     from utils.logging_tools import LogSettings
-    log_settings = LogSettings(output_type="str", method="file", file_name="./tests/log_test/test.log", log_level="INFO")
-    logger = log_settings.logger  # Retrieve the configured logger
+    # configure the logging once and use it
+    log_settings = LogSettings(logger_name='testlog', output_type="str", method="file", file_name="./tests/log_test/app.log", log_level="INFO")
+    logger = log_settings.get_logger()  # Retrieve the configured logger
+    
     simple_qa = SimpleQA()
     logger.info(simple_qa)
+    response = simple_qa.call("What is the capital of France?")
+    logger.info(f'response: {response}')
