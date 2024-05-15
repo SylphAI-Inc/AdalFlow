@@ -5,7 +5,6 @@ import numpy as np
 
 from core.component import Component
 from core.data_classes import (
-    Document,
     RetrieverOutput,
 )
 

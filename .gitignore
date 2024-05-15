@@ -22,3 +22,4 @@ docs/source/documents/tests*.rst
 docs/source/documents/
 lib/
 docs/source/apis/tests*.rst
+li_test/

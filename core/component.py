@@ -185,7 +185,9 @@ class Component:
         )
         plt.show()
 
+    # TODO: do we need to disable this format of calling instead use call and acall extensively?
     def __call__(self, *args, **kwargs):
+        r"""In default, we use sync call."""
         # Register the edge if this call follows another component's call
         component_name = self._get_name()
         input_repr = repr(args) + " " + repr(kwargs)
@@ -209,9 +211,15 @@ class Component:
         self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
         return output
 
-    call: Callable[..., Any] = _call_unimplemented
+    # call: Callable[..., Any] = _call_unimplemented
+
+    def call(self, *args, **kwargs):
+        raise NotImplementedError(
+            f"Component {type(self).__name__} is missing the required 'call' method."
+        )
 
     async def acall(self, *args, **kwargs):
+        r"""API call, file io."""
         pass
 
     def add_component(self, name: str, component: Optional["Component"]) -> None:

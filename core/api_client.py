@@ -41,10 +41,17 @@ class APIClient(Component):
             f"{type(self).__name__} must implement _init_async_client method"
         )
 
-    def _call(self, kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+        r"""kwargs: all the arguments that the API call needs, subclass should implement this method.
+
+        Additionally in subclass you can implement the error handling and retry logic here. See OpenAIClient for example.
+        """
         raise NotImplementedError(f"{type(self).__name__} must implement _call method")
 
-    def _acall(self, **kwargs):
+    async def _acall(
+        self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
+    ):
+        r"""kwargs: all the arguments that the API async call needs, subclass should implement this method if the API supports async call"""
         pass
 
     def _combine_input_and_model_kwargs(
@@ -54,7 +61,7 @@ class APIClient(Component):
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
-        Convert the Component's standard input and model_kwargs into API-specific format
+        Bridge the Component's standard input and model_kwargs into API-specific format
         """
         raise NotImplementedError(
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
@@ -88,6 +95,9 @@ class APIClient(Component):
     #         max_time=max_time,
     #     )
 
+    def __call__(self, *args, **kwargs):
+        return super().__call__(*args, **kwargs)
+
     def call(
         self,
         *,
@@ -99,9 +109,9 @@ class APIClient(Component):
         combined_model_kwargs = self._combine_input_and_model_kwargs(
             input, model_kwargs, model_type=model_type
         )
-        return self._call(kwargs=combined_model_kwargs, model_type=model_type)
+        return self._call(api_kwargs=combined_model_kwargs, model_type=model_type)
 
-    def acall(
+    async def acall(
         self,
         *,
         input: Any,
@@ -111,4 +121,4 @@ class APIClient(Component):
         combined_model_kwargs = self._combine_input_and_model_kwargs(
             input, model_kwargs, model_type=model_type
         )
-        return self._acall(**combined_model_kwargs)
+        return self._acall(api_kwargs=combined_model_kwargs, model_type=model_type)
