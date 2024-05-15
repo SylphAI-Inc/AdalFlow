@@ -20,3 +20,4 @@ docs/source/_static
 docs/source/_templates
 docs/source/documents/tests*.rst
 docs/source/documents/
+lib/

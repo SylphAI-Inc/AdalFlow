@@ -27,7 +27,7 @@ A dataset can include anything, and some parts will be represented as local docu
 
 
 # TODO: they dont have to be a component.
-class LocalDocumentDB(Component):
+class LocalDocumentDB:
     r"""
     It inherits from the Component class for better structure visualization. But normally it cant be chained as part of the query flow/pipeline.
     For now we use a list of Documents, might consider optimize it later
@@ -47,7 +47,7 @@ class LocalDocumentDB(Component):
         #     Component
         # ] = None,  # any output processors to be applied to the retrieved documents, such as deduplication if query expansion is used
     ):
-        super().__init__()
+        # super().__init__()
         self.documents = documents if documents else []  # the original documents
         self.transformed_documents = {}  # transformed documents
         self.mapped_documents = {}  # mapped documents

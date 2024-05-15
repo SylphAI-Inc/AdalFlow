@@ -26,6 +26,7 @@ openai = "^1.12.0"
 groq = "^0.5.0"      # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
 torchviz = "^0.0.2"
+matplotlib = "^3.8.4"
 
 
 [tool.poetry.group.test.dependencies]
@@ -50,6 +51,7 @@ torchvision = "^0.18.0"
 torch = "^2.3.0"
 langsmith = "^0.1.56"
 langchain-openai = "^0.1.6"
+pyvis = "^0.3.2"
 
 
 [tool.ruff]

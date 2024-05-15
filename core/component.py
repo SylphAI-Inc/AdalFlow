@@ -16,6 +16,12 @@ from typing import (
 from collections import OrderedDict, abc as container_abcs
 import operator
 from itertools import islice
+import networkx as nx
+from pyvis.network import Network
+
+import matplotlib.pyplot as plt
+import uuid
+
 
 # TODO: design hooks.
 _global_pre_call_hooks: Dict[int, Callable] = OrderedDict()
@@ -63,9 +69,20 @@ class Component:
     _version: int = 0
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
+    _execution_graph: List[str] = []  # This will store the graph of execution.
+    _graph = nx.DiGraph()
+    _last_called = None  # Tracks the last component called
+    _last_called_input_repr = None  # Tracks the input to the last component called
+    _name = None
+
+    def _generate_unique_name(self):
+        # Generate a unique identifier that includes the class name
+        return f"{self.__class__.__name__}_{uuid.uuid4().hex[:8]}"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", {})
+        self._name = self._generate_unique_name()
+        # self._graph.add_node(self._name)
 
     def __setattr__(self, name: str, value: Any) -> None:
         def remove_from(*dicts_or_sets):
@@ -113,6 +130,7 @@ class Component:
         return ""
 
     def _get_name(self):
+        # return self._name
         return self.__class__.__name__
 
     def __repr__(self):
@@ -140,9 +158,60 @@ class Component:
         main_str += ")"
         return main_str
 
+    @staticmethod
+    def visualize_graph_html(filename="graph.html"):
+        nt = Network(directed=True)
+        nt.from_nx(Component._graph)
+        for edge in nt.edges:
+            edge["title"] = edge["label"]
+            edge["value"] = (
+                10  # You can adjust the 'value' to set the width of the edges
+            )
+        nt.show_buttons(
+            filter_=["physics"]
+        )  # Optional: Show interactive buttons to adjust physics and other settings
+        nt.show(
+            filename, notebook=False
+        )  # Make sure to set notebook=False for non-notebook environments
+
+    @staticmethod
+    def visualize_graph():
+        pos = nx.spring_layout(Component._graph)
+        nx.draw(
+            Component._graph,
+            pos,
+            with_labels=True,
+            node_color="lightblue",
+            node_size=2000,
+            edge_color="gray",
+            linewidths=1,
+            font_size=15,
+        )
+        plt.show()
+
     def __call__(self, *args, **kwargs):
+        # Register the edge if this call follows another component's call
+        component_name = self._get_name()
+        input_repr = repr(args) + " " + repr(kwargs)
+
+        if Component._last_called is not None:
+            Component._graph.add_edge(
+                Component._last_called, component_name, label=input_repr[0:50]
+            )
+
+        Component._last_called = component_name
+        # Component._last_called_input = input_repr[0:50]
+        # Update last called to current component
         # Default to sync call
-        return self.call(*args, **kwargs)
+        # Log input and the function
+        # being called
+        self._execution_graph.append(
+            f"{self._get_name()} called with input {input_repr}"
+        )
+        output = self.call(*args, **kwargs)
+        # Log output
+        self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
+        return output
 
     call: Callable[..., Any] = _call_unimplemented
 

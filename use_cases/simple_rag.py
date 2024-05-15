@@ -55,7 +55,7 @@ class RAG(Component):
             model_client=OpenAIClient(),
             # batch_size=self.vectorizer_settings["batch_size"],
             model_kwargs=self.vectorizer_settings["model_kwargs"],
-            output_processors=Sequential(ToEmbedderResponse()),
+            output_processors=ToEmbedderResponse(),
         )
         # TODO: check document splitter, how to process the parent and order of the chunks
         text_splitter = DocumentSplitter(
@@ -101,7 +101,7 @@ Output JSON format:
             },
             model_client=OpenAIClient(),
             model_kwargs=self.generator_model_kwargs,
-            output_processors=Sequential(JsonParser()),
+            output_processors=JsonParser(),
         )
         self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
 
@@ -121,7 +121,7 @@ Output JSON format:
         prompt_kwargs = {
             "context_str": context,
         }
-        response = self.generator.call(input=query, prompt_kwargs=prompt_kwargs)
+        response = self.generator(input=query, prompt_kwargs=prompt_kwargs)
         return response
 
     def call(self, query: str) -> Any:
@@ -162,4 +162,8 @@ if __name__ == "__main__":
     query = "What is Li Yin's hobby and profession?"
 
     response = rag.call(query)
+
+    print(f"execution graph: {rag._execution_graph}")
     print(f"response: {response}")
+    print(f"subcomponents: {rag._components}")
+    rag.visualize_graph_html("my_component_graph.html")
