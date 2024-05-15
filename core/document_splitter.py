@@ -62,6 +62,17 @@ class DocumentSplitter(Component):
             raise ValueError("split_overlap must be greater than or equal to 0.")
         self.split_overlap = split_overlap
 
+    def split_text(self, text: str) -> List[str]:
+        """
+        Splits a text into a list of shorter texts.
+
+        :param text: The text to split.
+
+        :returns: A list of shorter texts.
+        """
+        units = self._split_into_units(text, self.split_by)
+        return self._concatenate_units(units, self.split_length, self.split_overlap)
+
     def call(self, documents: List[Document]) -> List[Document]:
         """
         Splits documents by the unit expressed in `split_by`, with a length of `split_length`
@@ -89,16 +100,12 @@ class DocumentSplitter(Component):
                 raise ValueError(
                     f"DocumentSplitter only works with text documents but document.content for document ID {doc.id} is None."
                 )
-            units = self._split_into_units(doc.text, self.split_by)
-            text_splits = self._concatenate_units(
-                units, self.split_length, self.split_overlap
-            )
-            metadata = deepcopy(doc.meta_data)
-            # metadata["source_id"] = doc.id
+            text_splits = self.split_text(doc.text)
+            meta_data = deepcopy(doc.meta_data)
             split_docs += [
                 Document(
                     text=txt,
-                    meta_data=metadata,
+                    meta_data=meta_data,
                     parent_doc_id=f"{doc.id}",
                     order=i,
                     vector=[],

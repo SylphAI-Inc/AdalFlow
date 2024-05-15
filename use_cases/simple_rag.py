@@ -137,6 +137,7 @@ if __name__ == "__main__":
         + "lots of more nonsense text" * 250,
         id="doc2",
     )
+    print(doc1)
     rag = RAG()
     print(rag)
     rag.build_index([doc1, doc2])

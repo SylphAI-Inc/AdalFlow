@@ -33,7 +33,7 @@ class Retriever(Component):
 
     def build_index_from_documents(
         self,
-        documents: List[Any],
+        documents: Any,
         input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
     ):
         r"""Built index from the `text` field of each document in the list of documents.
@@ -46,12 +46,12 @@ class Retriever(Component):
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> RetrieverOutputType:
+    ) -> Any:
         raise NotImplementedError(f"retrieve is not implemented")
 
     def __call__(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> RetrieverOutputType:
+    ) -> Any:
         raise NotImplementedError(f"__call__ is not implemented")
 
 
