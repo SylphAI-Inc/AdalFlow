@@ -121,4 +121,6 @@ class APIClient(Component):
         combined_model_kwargs = self._combine_input_and_model_kwargs(
             input, model_kwargs, model_type=model_type
         )
-        return self._acall(api_kwargs=combined_model_kwargs, model_type=model_type)
+        return await self._acall(
+            api_kwargs=combined_model_kwargs, model_type=model_type
+        )

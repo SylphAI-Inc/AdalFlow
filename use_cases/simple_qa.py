@@ -1,17 +1,10 @@
-"""
-We just need to very basic generator that can be used to generate text from a prompt.
-"""
-
+import asyncio
 from core.generator import Generator
 from core.openai_client import OpenAIClient
 
-# TODO: index generator with get_generator(client: str, model_kwargs: Dict[str, Any] = {}) -> Generator:
 from core.component import Component
 
-# TODO: make the environment variable loading more robust, and let users specify the .env path
-import dotenv
-
-dotenv.load_dotenv()
+import utils.setup_env
 
 
 class SimpleQA(Component):
@@ -26,8 +19,32 @@ class SimpleQA(Component):
     def call(self, query: str) -> str:
         return self.generator(input=query)
 
+    async def acall(self, query: str) -> str:
+        return await self.generator.acall(input=query)
+
 
 if __name__ == "__main__":
+    import time
+
     simple_qa = SimpleQA()
     print(simple_qa)
+    t0 = time.time()
     print(simple_qa.call("What is the capital of France?"))
+    t1 = time.time()
+    print(f"Total time for 1 sync call: {t1 - t0} seconds")
+
+    async def make_async_call(query: str) -> str:
+        return await simple_qa.acall(query)
+
+    async def main():
+        queries = ["What is the capital of France?"] * 10
+        tasks = [make_async_call(query) for query in queries]
+
+        start_time = time.time()
+        results = await asyncio.gather(*tasks)
+        end_time = time.time()
+
+        print(f"Total time for 10 async calls: {end_time - start_time} seconds")
+
+    # Execute the asynchronous function
+    asyncio.run(main())

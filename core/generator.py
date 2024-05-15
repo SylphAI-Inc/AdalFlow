@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Generic, TypeVar
+from typing import Any, Dict, List, Optional, Generic, TypeVar, Tuple
 from core.data_classes import ModelType
 from core.component import Component
 from core.prompt_builder import Prompt
@@ -154,33 +154,24 @@ class Generator(Generic[GeneratorOutput], Component):
             s += f", preset_prompt_kwargs={self.preset_prompt_kwargs} "
         return s
 
-    def generate(
+    def _pre_call(
         self,
         input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> (
-        GeneratorOutput
-    ):  # a generic type, and ensure consistency across all runs of the instance
+    ) -> Tuple[List[Dict], Dict]:
+        r"""Compose the input and model_kwargs before calling the model."""
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
         if not self.model_client.sync_client:
             self.model_client.sync_client = self.model_client._init_sync_client()
-
         prompt_kwargs = self.compose_prompt_kwargs(**prompt_kwargs)
         # add the input to the prompt kwargs
         prompt_kwargs["query_str"] = input
         composed_messages = self.compose_model_input(**prompt_kwargs)
-        print(f"composed_messages: {composed_messages}")
-        print(f"composed_model_kwargs: {composed_model_kwargs}")
-        # completion = self.sync_client.chat.completions.create(
-        #     messages=composed_messages, **composed_model_kwargs
-        # )
-        # TODO: the model client deal with backoff, improve it maybe dont need to relies on the backoff
-        completion = self.model_client.call(
-            input=composed_messages,
-            model_kwargs=composed_model_kwargs,
-            model_type=ModelType.LLM,
-        )
+        return composed_messages, composed_model_kwargs
+
+    def _post_call(self, completion: Any) -> GeneratorOutput:
+        r"""Parse the completion and process the output."""
         response = self.parse_completion(completion)
         if self.output_processors:
             response = self.output_processors(response)
@@ -191,10 +182,30 @@ class Generator(Generic[GeneratorOutput], Component):
         input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> (
-        GeneratorOutput
-    ):  # a generic type, and ensure consistency across all runs of the instance
-        # call generate is become we dont want generator and the retriever to have the same call signature
-        return self.generate(
-            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+    ) -> GeneratorOutput:
+        r"""Call the model with the input and model_kwargs."""
+        composed_messages, composed_model_kwargs = self._pre_call(
+            input, prompt_kwargs, model_kwargs
         )
+        completion = self.model_client.call(
+            input=composed_messages,
+            model_kwargs=composed_model_kwargs,
+            model_type=ModelType.LLM,
+        )
+        return self._post_call(completion)
+
+    async def acall(
+        self,
+        input: str,
+        prompt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+    ) -> GeneratorOutput:
+        composed_messages, composed_model_kwargs = self._pre_call(
+            input, prompt_kwargs, model_kwargs
+        )
+        completion = await self.model_client.acall(
+            input=composed_messages,
+            model_kwargs=composed_model_kwargs,
+            model_type=ModelType.LLM,
+        )
+        return self._post_call(completion)
