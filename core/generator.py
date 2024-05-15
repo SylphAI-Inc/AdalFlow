@@ -200,6 +200,9 @@ class Generator(Generic[GeneratorOutput], Component):
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutput:
+        r"""Async call the model with the input and model_kwargs.
+        Note: watch out for the rate limit and the timeout.
+        """
         composed_messages, composed_model_kwargs = self._pre_call(
             input, prompt_kwargs, model_kwargs
         )
