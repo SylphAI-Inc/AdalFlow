@@ -25,7 +25,6 @@ A dataset can include anything, and some parts will be represented as local docu
 """
 
 
-# TODO: they dont have to be a component.
 class LocalDocumentDB:
     r"""
     It inherits from the Component class for better structure visualization. But normally it cant be chained as part of the query flow/pipeline.
@@ -95,6 +94,3 @@ class LocalDocumentDB:
 
     def reset_documents(self):
         self.documents = []
-
-    def __call__(self) -> Optional[List[Document]]:
-        raise ValueError("LocalDocumentDB is not callable")
