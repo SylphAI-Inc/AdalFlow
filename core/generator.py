@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Generic, TypeVar
 from core.data_classes import ModelType
 from core.component import Component
 from core.prompt_builder import Prompt
@@ -38,20 +38,26 @@ You:
 """
 # TODO: special delimiters for different sections
 
+GeneratorInput = str
+GeneratorOutput = TypeVar("GeneratorOutput")
 
-class Generator(Component):
+
+# TODO: investigate more on the type checking
+class Generator(Generic[GeneratorOutput], Component):
+    """
+    An orchestrator component that combines the Prompt, the model client, and the output processors.
+
+    It takes the user query as input in string format, and returns the response or processed response.
+    """
+
     model_type: ModelType = ModelType.LLM
     model_client: APIClient
-    provider: str  # provider is model_provider
     prompt: Prompt
     output_processors: Optional[Component]
 
     def __init__(
         self,
         *,
-        provider: Optional[
-            str
-        ] = None,  # TODO: not necessary as model_client has the provider already
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
         prompt: Prompt = Prompt(DEFAULT_LIGHTRAG_PROMPT),
@@ -64,7 +70,6 @@ class Generator(Component):
             raise ValueError(
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
             )
-        self.provider = provider
         self.prompt = prompt
         self.output_processors = output_processors
         self.model_client = model_client
@@ -149,13 +154,14 @@ class Generator(Component):
             s += f", preset_prompt_kwargs={self.preset_prompt_kwargs} "
         return s
 
-    def call(
+    def generate(
         self,
-        *,
-        input: Any,
+        input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> str:
+    ) -> (
+        GeneratorOutput
+    ):  # a generic type, and ensure consistency across all runs of the instance
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
         if not self.model_client.sync_client:
             self.model_client.sync_client = self.model_client._init_sync_client()
@@ -169,7 +175,7 @@ class Generator(Component):
         # completion = self.sync_client.chat.completions.create(
         #     messages=composed_messages, **composed_model_kwargs
         # )
-        # ToDO: the model client deal with backoff
+        # TODO: the model client deal with backoff, improve it maybe dont need to relies on the backoff
         completion = self.model_client.call(
             input=composed_messages,
             model_kwargs=composed_model_kwargs,
@@ -177,5 +183,18 @@ class Generator(Component):
         )
         response = self.parse_completion(completion)
         if self.output_processors:
-            response = self.output_processors.call(response)
+            response = self.output_processors(response)
         return response
+
+    def call(
+        self,
+        input: str,
+        prompt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+    ) -> (
+        GeneratorOutput
+    ):  # a generic type, and ensure consistency across all runs of the instance
+        # call generate is become we dont want generator and the retriever to have the same call signature
+        return self.generate(
+            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+        )

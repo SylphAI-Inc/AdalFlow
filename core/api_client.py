@@ -9,7 +9,7 @@ It does four things:
 """
 
 import os
-from typing import Any, Sequence, Dict
+from typing import Any, Dict
 
 
 from core.component import Component
@@ -50,9 +50,9 @@ class APIClient(Component):
     def _combine_input_and_model_kwargs(
         self,
         input: Any,
-        combined_model_kwargs: dict = {},
+        combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
-    ) -> dict:
+    ) -> Dict:
         r"""
         Convert the Component's standard input and model_kwargs into API-specific format
         """
@@ -112,83 +112,3 @@ class APIClient(Component):
             input, model_kwargs, model_type=model_type
         )
         return self._acall(**combined_model_kwargs)
-
-
-# class OpenAIClientOld(Component):
-#     def __init__(self):
-#         super().__init__()
-#         self.provider = "OpenAI"
-#         self._init_sync_client()
-
-#     def _init_sync_client(self):
-#         api_key = os.getenv("OPENAI_API_KEY")
-#         if not api_key:
-#             raise ValueError("Environment variable OPENAI_API_KEY must be set")
-#         self.sync_client = OpenAI()
-
-#     def _init_async_client(self):
-#         api_key = os.getenv("OPENAI_API_KEY")
-#         if not api_key:
-#             raise ValueError("Environment variable OPENAI_API_KEY must be set")
-#         self.async_client = AsyncOpenAI()
-
-#     def _call(self, **kwargs):
-#         """
-#         kwargs is the combined input and model_kwargs
-#         """
-#         raise NotImplementedError(f"{type(self).__name__} must implement _call method")
-
-#     def _acall(self, **kwargs):
-#         pass
-
-#     def _combine_input_and_model_kwargs(
-#         self,
-#         input: Any,
-#         combined_model_kwargs: dict = {},
-#         model_type: ModelType = ModelType.UNDEFINED,
-#     ) -> dict:
-#         r"""
-#         Convert the Component's standard input and model_kwargs into API-specific format
-#         """
-#         final_model_kwargs = combined_model_kwargs.copy()
-#         if model_type == ModelType.EMBEDDER:
-#             # convert input to input
-#             assert isinstance(input, Sequence), "input must be a sequence of text"
-#             final_model_kwargs["input"] = input
-#         elif model_type == ModelType.LLM:
-#             # convert input to messages
-#             assert isinstance(input, Sequence), "input must be a sequence of messages"
-#             final_model_kwargs["messages"] = input
-#         else:
-#             raise ValueError(f"model_type {model_type} is not supported")
-#         return final_model_kwargs
-
-#     def _track_usage(self, **kwargs):
-#         """
-#         Track usage of the API
-#         """
-#         pass
-
-#     @backoff.on_exception(
-#         backoff.expo,
-#         (
-#             APITimeoutError,
-#             InternalServerError,
-#             RateLimitError,
-#             UnprocessableEntityError,
-#             BadRequestError,
-#         ),
-#         max_time=5,
-#     )
-#     def call(
-#         self,
-#         *,
-#         input: Any,
-#         model_kwargs: dict = {},
-#         model_type: ModelType = ModelType.LLM,
-#     ) -> Any:
-
-#         combined_model_kwargs = self._combine_input_and_model_kwargs(
-#             input, model_kwargs, model_type=model_type
-#         )
-#         return self._call(**combined_model_kwargs)

@@ -5,6 +5,7 @@ We just need to very basic generator that can be used to generate text from a pr
 from core.generator import Generator
 from core.openai_client import OpenAIClient
 
+# TODO: index generator with get_generator(client: str, model_kwargs: Dict[str, Any] = {}) -> Generator:
 from core.component import Component
 
 # TODO: make the environment variable loading more robust, and let users specify the .env path
@@ -17,13 +18,13 @@ class SimpleQA(Component):
     def __init__(self):
         super().__init__()
         model_kwargs = {"model": "gpt-3.5-turbo"}
-        self.generator = Generator(
+        self.generator = Generator[int](
             model_client=OpenAIClient(), model_kwargs=model_kwargs
         )
         self.generator.print_prompt()
 
     def call(self, query: str) -> str:
-        return self.generator.call(input=query)
+        return self.generator(input=query)
 
 
 if __name__ == "__main__":

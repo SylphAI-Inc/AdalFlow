@@ -18,8 +18,8 @@ to answer questions that cant be answered or better be answered by llm using its
 """
 
 from jinja2 import Template
-from lightrag.tool_helper import FunctionTool, AsyncCallable
-from lightrag.string_parser import JsonParser, parse_function_call
+from core.tool_helper import FunctionTool, AsyncCallable
+from core.string_parser import JsonParser, parse_function_call
 from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
 from lightrag.light_rag import Generator, GeneratorRunner
