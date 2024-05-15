@@ -13,7 +13,7 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
 
     @patch("core.openai_client.AsyncOpenAI")
     @patch("core.openai_client.os.getenv")
-    async def test_acall_llm_1(self, mock_getenv: Any, MockAsyncOpenAI: Any):
+    async def test_acall_llm(self, mock_getenv: Any, MockAsyncOpenAI: Any):
         mock_getenv.return_value = "fake_api_key"
         mock_async_client = AsyncMock()
         MockAsyncOpenAI.return_value = mock_async_client
