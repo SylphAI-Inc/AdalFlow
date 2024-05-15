@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Callable, Any, Sequence, Any
+from typing import List, Optional, Union, Callable, Any, Sequence, Any, overload
 
 import faiss
 import numpy as np
@@ -10,6 +10,7 @@ from core.data_classes import (
 )
 
 RetrieverInputType = Union[str, List[str]]  # query
+RetrieverDocumentType = Any  # Documents
 RetrieverOutputType = List[RetrieverOutput]
 
 
@@ -33,7 +34,7 @@ class Retriever(Component):
 
     def build_index_from_documents(
         self,
-        documents: Any,
+        documents: RetrieverDocumentType,
         input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
     ):
         r"""Built index from the `text` field of each document in the list of documents.
@@ -53,6 +54,9 @@ class Retriever(Component):
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
     ) -> Any:
         raise NotImplementedError(f"__call__ is not implemented")
+
+
+FAISSRetrieverDocumentType = Sequence[List[float]]  # embeddings
 
 
 class FAISSRetriever(Retriever):
@@ -104,12 +108,13 @@ class FAISSRetriever(Retriever):
     # TODO: Callable or AsyncCallable
     def build_index_from_documents(
         self,
-        documents: List[Any],
-        input_field_map_func: Callable[[Any], Sequence[float]] = lambda x: x.vector,
+        documents: FAISSRetrieverDocumentType,
+        # input_field_map_func: Callable[[Any], Sequence[float]] = lambda x: x.vector,
     ):
         r"""Built index from the `vector` field of each document in the list of documents"""
         self.total_chunks = len(documents)
-        embeddings = [input_field_map_func(document) for document in documents]
+        # embeddings = [input_field_map_func(document) for document in documents]
+        embeddings = [document.vector for document in documents]
         # embeddings = self._get_inputs(documents, input_field_map_func)
         print(f"embeddings: {embeddings}")
         xb = np.array(embeddings, dtype=np.float32)

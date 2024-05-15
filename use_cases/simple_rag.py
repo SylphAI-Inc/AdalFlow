@@ -18,6 +18,8 @@ from core.component import Component, Sequential
 from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
 
+from core.functional import generate_component_key
+
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 
@@ -61,24 +63,26 @@ class RAG(Component):
             split_length=self.text_splitter_settings["chunk_size"],
             split_overlap=self.text_splitter_settings["chunk_overlap"],
         )
-        data_transformer = Sequential(
+        self.data_transformer = Sequential(
             text_splitter,
             ToEmbeddings(
                 vectorizer=vectorizer,
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )
+        self.data_transformer_key = generate_component_key(self.data_transformer)
         # initialize retriever, which depends on the vectorizer too
-        retriever = FAISSRetriever(
+        self.retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
             dimensions=self.vectorizer_settings["model_kwargs"]["dimensions"],
             vectorizer=vectorizer,
         )
+        self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
         # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
         self.db = LocalDocumentDB(
-            retriever_transformer=data_transformer,  # prepare data for retriever to build index with
-            retriever=retriever,
-            retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
+            # retriever_transformer=data_transformer,  # prepare data for retriever to build index with
+            # retriever=retriever,
+            # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
 
         # initialize generator
@@ -103,9 +107,12 @@ Output JSON format:
 
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
-        # transform the documents
-        self.db()
-        self.db.build_retrieve_index()
+        self.map_key = self.db.map_data()
+        print(f"map_key: {self.map_key}")
+        self.data_key = self.db.transform_data(self.data_transformer)
+        print(f"data_key: {self.data_key}")
+        self.transformed_documents = self.db.get_transformed_data(self.data_key)
+        self.retriever.build_index_from_documents(self.transformed_documents)
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
@@ -118,7 +125,17 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        context_str = self.db.retrieve(query)
+        retrieved_documents = self.retriever(query)
+        # fill in the document
+        for i, retriever_output in enumerate(retrieved_documents):
+            retrieved_documents[i].documents = [
+                self.transformed_documents[doc_index]
+                for doc_index in retriever_output.doc_indexes
+            ]
+        # convert all the documents to context string
+
+        context_str = self.retriever_output_processors(retrieved_documents)
+
         return self.generate(query, context=context_str)
 
 

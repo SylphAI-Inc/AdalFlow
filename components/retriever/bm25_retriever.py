@@ -143,13 +143,14 @@ class InMemoryBM25Retriever(Retriever):
 
     def build_index_from_documents(
         self,
-        documents: List[Any],
-        input_field_map_func: Callable[[Any], str] = lambda x: x.text,
+        documents: List[str],
+        # input_field_map_func: Callable[[Any], str] = lambda x: x.text,
     ):
         r"""Built index from the `text` field of each document in the list of documents"""
 
         # make a copy of the documents
-        list_of_documents_str = [input_field_map_func(doc) for doc in documents]
+        # list_of_documents_str = [input_field_map_func(doc) for doc in documents]
+        list_of_documents_str = documents.copy()
         self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         # start to calculate the DF,TF, IDF
         self.avgdl = 0  # average document length

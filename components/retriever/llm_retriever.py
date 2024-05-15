@@ -54,11 +54,12 @@ class LLMRetriever(Retriever):
 
     def build_index_from_documents(
         self,
-        documents: List[Any],
-        input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
+        documents: List[str],
+        # input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
     ):
         """prepare the user query input for the retriever"""
-        documents_to_use = [input_field_map_func(doc) for doc in documents]
+        # documents_to_use = [input_field_map_func(doc) for doc in documents]
+        documents_to_use = documents.copy()
         # form the index as the query_str in the default prompt
         # pass it to preset_prompt_kwargs documents
         template = Template(DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR)

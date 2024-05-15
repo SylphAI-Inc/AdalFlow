@@ -32,13 +32,14 @@ class RAG(Component):
             "stream": False,
         }
 
-        retriever = InMemoryBM25Retriever(
+        self.retriever = InMemoryBM25Retriever(
             top_k=self.retriever_settings["top_k"],
         )
+        self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
 
         self.db = LocalDocumentDB(
-            retriever=retriever,
-            retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
+            # retriever=retriever,
+            # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
         )
 
         # initialize generator
@@ -64,7 +65,8 @@ Output JSON format:
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
         # self.db()  # transform the documents
-        self.db.build_retrieve_index()
+        self.retriever.build_index_from_documents(documents=self.db.documents)
+        # self.db.build_retrieve_index()
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
@@ -77,7 +79,15 @@ Output JSON format:
         return response
 
     def call(self, query: str) -> Any:
-        context_str = self.db.retrieve(query)
+        retrieved_documents = self.retriever(query)
+        # fill in the document content
+        for i, retriever_output in enumerate(retrieved_documents):
+            retrieved_documents[i].documents = [
+                self.transformed_documents[doc_id]
+                for doc_id in retriever_output.doc_indexes
+            ]
+        # apply the retriever output processors
+        context_str = self.retriever_output_processors(retrieved_documents)
         return self.generate(query, context=context_str)
 
 
