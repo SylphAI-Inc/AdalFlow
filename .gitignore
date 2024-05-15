@@ -21,3 +21,4 @@ docs/source/_templates
 docs/source/documents/tests*.rst
 docs/source/documents/
 lib/
+docs/source/apis/tests*.rst

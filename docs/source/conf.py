@@ -16,6 +16,7 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../'))
 
 
 # -- Project information -----------------------------------------------------
@@ -50,7 +51,7 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = []
-
+# exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.module.rst', '**/tests/*', '**/test_*.py', '*test.rst']
 
 # -- Options for HTML output -------------------------------------------------
 
@@ -70,3 +71,15 @@ html_static_path = ['_static']
 # whether module names are prefixed before object names in the documentation. This setting is particularly 
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 add_module_names = False 
+
+
+autodoc_default_options={'autosummary-no-titles': True,
+                          'autosummary-force-inline': True,
+                          'autosummary-nosignatures': True,
+                          'members': True,
+                          'private-members': False, #(those starting with _).
+                          'special-members': False, #(those starting and ending with __).
+                          'member-order': 'bysource',
+                          'show-inheritance': True,
+                          'undoc-members': True,
+                          }
