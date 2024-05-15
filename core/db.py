@@ -82,9 +82,6 @@ class LocalDocumentDB:
     def get_transformed_data(self, key: str) -> List[Document]:
         return self.transformed_documents[key]
 
-    def attach_retriever(self, retriever: Component) -> None:
-        self.retriever = retriever
-
     # TODO: load documents from local folders
     # TODO: delete documents or modify documents
     # TODO: persist the documents to the local folders
