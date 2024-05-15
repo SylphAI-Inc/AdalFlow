@@ -32,10 +32,12 @@ class SimpleEmbedder(Component):
 if __name__ == "__main__":
     import time
 
+    queries = ["What is the capital of France?"] * 10
+
     embedder = SimpleEmbedder()
     print(embedder)
     t0 = time.time()
-    print(embedder.call("What is the capital of France?"))
+    print(embedder.call(queries))
     t1 = time.time()
     print(f"Total time for 1 sync call: {t1 - t0} seconds")
 
@@ -43,8 +45,8 @@ if __name__ == "__main__":
         return await embedder.acall(query)
 
     async def main():
-        queries = ["What is the capital of France?"] * 10
-        tasks = [make_async_call(query) for query in queries]
+        async_queries = [queries] * 10
+        tasks = [make_async_call(query) for query in async_queries]
 
         start_time = time.time()
         results = await asyncio.gather(*tasks)

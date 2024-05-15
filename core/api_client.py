@@ -8,7 +8,6 @@ It does four things:
 (4) Handle API specific exceptions and errors to retry the call.
 """
 
-import os
 from typing import Any, Dict
 
 
