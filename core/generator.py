@@ -64,6 +64,17 @@ class Generator(Generic[GeneratorOutput], Component):
         preset_prompt_kwargs: Optional[Dict] = None,
         output_processors: Optional[Component] = None,
     ) -> None:
+        r"""The default prompt is set to the DEFAULT_LIGHTRAG_PROMPT. It has the following variables:
+        - task_desc_str
+        - tools_str
+        - example_str
+        - chat_history_str
+        - query_str
+        - context_str
+        - steps_str
+        You can preset the prompt kwargs to fill in the variables in the prompt using preset_prompt_kwargs.
+        But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
+        """
         super().__init__()
         self.model_kwargs = model_kwargs
         if "model" not in model_kwargs:

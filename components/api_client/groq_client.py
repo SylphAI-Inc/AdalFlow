@@ -73,13 +73,13 @@ class GroqAPIClient(APIClient):
         ),
         max_time=5,
     )
-    def _call(self, kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        assert "model" in kwargs, "model must be specified"
+    def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+        assert "model" in api_kwargs, "model must be specified"
         assert (
-            kwargs["model"] in self.model_lists
-        ), f"model {kwargs['model']} not in the list of available models: {self.model_lists}"
+            api_kwargs["model"] in self.model_lists
+        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
-            completion = self.sync_client.chat.completions.create(**kwargs)
+            completion = self.sync_client.chat.completions.create(**api_kwargs)
             return completion
         else:
             raise ValueError(f"model_type {model_type} is not supported")
