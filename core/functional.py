@@ -1,6 +1,7 @@
 from typing import Dict, List, Union, Any, Callable
 from core.data_classes import RetrieverOutput, Document
 
+# TODO: delete component here
 from core.component import Component
 
 # TODO: import all other  functions into this single file to be exposed to users
@@ -137,3 +138,148 @@ Generator:
 Retriever
 (1) 
 """
+
+import re
+from typing import Any, Dict, List
+import json
+
+
+def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
+    """
+    Extract JSON string from text.
+    NOTE: Only handles the first JSON object found in the text. And it expects at least one JSON object in the text.
+    If right brace is not found, we add one to the end of the string.
+    """
+    # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
+    text = text.strip().replace("{{", "{").replace("}}", "}")
+    start = text.find("{")
+    if start == -1:
+        raise ValueError(f"No JSON object found in the text: {text}")
+
+    # Attempt to find the matching closing brace
+    brace_count = 0
+    end = -1
+    for i in range(start, len(text)):
+        if text[i] == "{":
+            brace_count += 1
+        elif text[i] == "}":
+            brace_count -= 1
+
+        if brace_count == 0:
+            end = i
+            break
+
+    if end == -1 and add_missing_right_brace:
+        # If no closing brace is found, but we are allowed to add one
+        text += "}"
+        end = len(text) - 1
+    elif end == -1:
+        raise ValueError(
+            "Incomplete JSON object found and add_missing_right_brace is False."
+        )
+
+    return text[start : end + 1]
+
+
+def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
+    """
+    Extract the first complete list string from the provided text. If the list string is incomplete
+    (missing the closing bracket), an option allows adding a closing bracket at the end.
+
+    Args:
+        text (str): The text containing potential list data.
+        add_missing_right_bracket (bool): Whether to add a closing bracket if it is missing.
+
+    Returns:
+        str: The extracted list string.
+
+    Raises:
+        ValueError: If no list is found or if the list extraction is incomplete
+                    without the option to add a missing bracket.
+    """
+    text = text.strip()
+    start = text.find("[")
+    if start == -1:
+        raise ValueError("No list found in the text.")
+
+    # Attempt to find the matching closing bracket
+    bracket_count = 0
+    end = -1
+    for i in range(start, len(text)):
+        if text[i] == "[":
+            bracket_count += 1
+        elif text[i] == "]":
+            bracket_count -= 1
+
+        if bracket_count == 0:
+            end = i
+            break
+
+    if end == -1 and add_missing_right_bracket:
+        # If no closing bracket is found, but we are allowed to add one
+        text += "]"
+        end = len(text) - 1
+    elif end == -1:
+        raise ValueError(
+            "Incomplete list found and add_missing_right_bracket is False."
+        )
+
+    return text[start : end + 1]
+
+
+def fix_json_missing_commas(json_str: str) -> str:
+    # Example: adding missing commas, only after double quotes
+    # Regular expression to find missing commas
+    regex = r'(?<=[}\]"\'\d])(\s+)(?=[\{"\[])'
+
+    # Add commas where missing
+    fixed_json_str = re.sub(regex, r",\1", json_str)
+
+    return fixed_json_str
+
+
+def fix_json_escaped_single_quotes(json_str: str) -> str:
+    # First, replace improperly escaped single quotes inside strings
+    # json_str = re.sub(r"(?<!\\)\'", '"', json_str)
+    # Fix escaped single quotes
+    json_str = json_str.replace(r"\'", "'")
+    return json_str
+
+
+def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
+    r"""
+    Parse a JSON string to a Python object.
+    json_str: has to be a valid JSON string. Either {} or [].
+    """
+    json_str = json_str.strip()
+    try:
+        json_obj = json.loads(json_str)
+        return json_obj
+    except json.JSONDecodeError as e:
+        # 2nd attemp after fixing the json string
+        try:
+            print("Trying to fix potential missing commas...")
+            json_str = fix_json_missing_commas(json_str)
+            print("Trying to fix scaped single quotes...")
+            json_str = fix_json_escaped_single_quotes(json_str)
+            print(f"Fixed JSON string: {json_str}")
+            json_obj = json.loads(json_str)
+            return json_obj
+        except json.JSONDecodeError as e:
+            # 3rd attemp using yaml
+            try:
+                import yaml
+
+                # NOTE: parsing again with pyyaml
+                #       pyyaml is less strict, and allows for trailing commas
+                #       right now we rely on this since guidance program generates
+                #       trailing commas
+                print("Parsing JSON string with PyYAML...")
+                json_obj = yaml.safe_load(json_str)
+                return json_obj
+            except yaml.YAMLError as e_yaml:
+                raise ValueError(
+                    f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
+                )
+            except NameError as exc:
+                raise ImportError("Please pip install PyYAML.") from exc
