@@ -1,144 +1,164 @@
 # LightRAG Documentation Contribution Instruction
 
-If you want to contribute to the LightRAG documentation system, please refer to the following instructions.
+## Content Overview
 
-### Instruction Summary for Quick Navigation
-
+- [How the Documentation Works](#how-the-documentation-works)
 - [Setup](#setup)
 - [File Structure](#file-structure)
-- [Editing Tips for Sphinx Documentation](#editing-tips-for-sphinx-documentation)
+- [How to Edit the Documentation](#how-to-edit-the-documentation)
+
+## How the Documentation Works
+
+We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) as the language. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files. 
 
 ## Setup
 
-### **Prerequisites**
-
-Before you start, please ensure you have:
-
-- **Basic knowledge of command-line operations and Git:** These tools are essential for managing our project files. If you're new to these, check out [Git Basics](https://git-scm.com/book/en/v2/Getting-Started-Git-Basics) and Command Line Basics.
-- **LightRAG project set up on your machine:** This ensures you can run and test changes locally.
-
 ### **1. Clone the Github Project**
-
-Clone the repository to get the latest source files. The HTML files are not included in the repository because they are generated dynamically and can consume considerable space.
-
-Please run the following command:
 
 `git clone https://github.com/SylphAI-Inc/LightRAG.git`
 
 ### **2. Install Necessary Packages**
 
-Install Sphinx and the required theme directly into your active virtual environment:
-
-`pip install sphinx sphinx-rtd-theme`  install the sphinx package and the sphinx theme
+`pip install sphinx sphinx-rtd-theme`  
 
 ### **3. Build the Documentation**
 
-Navigate to the `docs` directory within your project folder and compile the documentation:
-
-`cd docs`
-
-`make html`
-
-This command generates the documentation from the source files and outputs HTML files to `docs/build/html`.
+```python
+cd docs
+make html
+```
 
 ### **4. View the Documentation**
 
-After building the documentation, you can view it by opening the `index.html` file located in `docs/build/html`. You can open this file in any web browser to review the generated documentation.
+After building the documentation, you can use any browser to view it by opening the `index.html` file located in `docs/build/html`.
 
 ## File Structure
 
-The files to edit are located in `docs/source`. 
-
 ### **conf.py**
 
-This file contains the configurations, including the paths setup, Project information, and General configuration(extension, templates, HTML theme, exclude patterns)
+The `docs/source/conf.py` controls the configurations used by Sphinx to build the documentation, including the project-related information, [sphinx extensions](https://www.sphinx-doc.org/en/master/usage/extensions/index.html), templates configuration, html theme, patterns to exclude, language configuration, project path setup, etc.
 
 ### **index.rst**
 
-This file contains the information on the home(index) page. You can edit the sections that appear on this page by modifying the toctree modules.
+The `docs/source/index.rst` is the root document for Sphinx-generated documentation("homepage" for the documentation site). It includes the `toctree` that defines the documentation hierarchical structure(sections/chapters). It also links to other `.rst` files that users can navigate through.
 
-Each toctree can represent a section, when you update the caption, you will update the names of the sections. For example, :caption: Get Started
+For example, in the `index.rst`, the `:caption: Get Started` corresponds to the section name of the documentation site. `installation` and `introduction` are the detailed pages.
 
-You will see that at the end of the toctree, there are paths linked, such as `get_started/installation`. This path points to the installation.rst file in docs/source/get_started, which contains the information to show in the installation section.
+```python
+What is LightRAG?
+=================
+LightRAG comes from the best of the AI research and engineering. Fundamentally, we ask ourselves: what kind of system that combines the best of research(such as LLM), engineering (such as 'jinja') to build the best applications? We are not a framework. We do not want you to directly install the package. We want you to carefully decide to take modules and structures from here to build your own library and applications. This is a cookbook organized uniquely for easy understanding: you can read the 1000 lines of code to see a typical RAG end-to-end without jumping between files and going through multi-level class inheritance. If we build our system expanding from light_rag.py, we as a community will share the same RAG languages, and share other building blocks and use cases easily without depending on a complex framework.
 
-### **Sections**
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Get Started
 
-**`get_started/`**
+   get_started/installation
+   get_started/introduction
+```
 
-- installation.rst
-- introduction.rst
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/bf4570a3-1b74-45d8-8b3b-10221ec99a40/edd3bba3-265a-44cc-94d5-5ab222f9cb71/Untitled.png)
 
-**`tutorials/`**
+### **Existing Sections**
 
-- simpleQA.rst - This is a dummy file, we should add the tutorials as different.rst files here
+Existing sections include: 
 
-**`apis/`**
+`get_started/`: Includes installation and LightRAG introduction
 
-You can go through the .rst files under `apis` and edit accordingly. Remember to add the unnecessary files into `LightRAG/.gitignore`.
+`tutorials/`: Includes sample code and instructions
 
-**`Resources/`**
+`apis/`: All the source-code-related documents will be included in this directory
 
-This folder contains a `resource.rst` file with the necessary links and sources to help the developers.
+`resources/`: Include all the LightRAG-relevant resources.
 
-## Editing Tips for Sphinx Documentation
+## How to Edit the Documentation
 
-To effectively edit the LightRAG documentation, you have several options depending on your specific needs:
+Most of the documentation updates should be written as comments/doc-strings in your source code, which will be automatically converted to docs. Do manual editing when you add instructions to use your code, adjust the layout, etc.
 
-### 1. Directly Edit an Existing .rst File
+The existing documentation is a combination of automatic generation and human editing.  
 
-Locate the `.rst` file within the `docs/source` directory that you wish to edit. You can modify the content directly in any text editor. For formatting help, refer to the reStructuredText Quickstart Guide:
-- [Quickstart](https://docutils.sourceforge.io/docs/user/rst/quickstart.html)
-- [reStructuredText Markup Specification](https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html)
+### **Source Code Doc-string Update**
 
-### 2. Create a New .rst File
+The `autodoc` extension in `conf.py` combined with `.. automodule::` in the `.rst` files makes it easy to update documents from the source code.
 
-If you need to add a new section or topic:
+If you update the existing source code, you only need to run:
 
-- Create a new `.rst` file in the appropriate subdirectory within `docs/source`.
-- Write your content following reStructuredText syntax.
-- If you are creating a new section, ensure to include your new file in the relevant `toctree` located usually in `index.rst` or within the closest parent `.rst` file, to make it appear in the compiled documentation.
+```python
+cd docs
+make clean
+make html
+```
 
-### 3. Convert a Markdown File to .rst Using Pandoc
+And your documentation will be updated.
 
-To integrate content written in Markdown into the Sphinx project, use Pandoc to convert it to `.rst` format:
+### Add New Code
 
-Pandoc is a package to transform the files to `.rst` files.
+If you add new modules or code to the project, sphinx has a [command](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html#sphinx-apidoc) to automatically generate the code docs.
+
+```python
+sphinx-apidoc [OPTIONS] -o <OUTPUT_PATH> <MODULE_PATH> [EXCLUDE_PATTERN …]
+```
+
+***Note:*** 
+
+If your new module is a folder, it should contain a `__init__.py` file.
+
+Remember to exclude the code that you don’t need in the [EXCLUDE_PATTERN …], otherwise Sphinx will compile them all.
+
+***Example:***
+
+Located in the root directory, run:
+
+```python
+sphinx-apidoc -o docs/source/tutorials ./use_cases **test**
+```
+
+(*test* is to exclude the files containing `test` in the filename)
+
+You will find a `modules.rst` and a `use_cases.rst`  in the `docs/source/tutorials`. The `use_cases.rst` contains all the packages included in your `./use_cases`. 
+
+Then you should add the link to the `index.rst` to show your source code and docs in the documentation. Find `docs/source/index.rst` and add the new section:
+
+```python
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Use Cases
+   
+   tutorials/use_cases
+```
+
+Then run: 
+
+```python
+cd docs
+make clean
+make html
+```
+
+And you will be able to find the newly added use_cases module.
+
+### Add New Docs
+
+If you want to add any written files such as README.md to the documentation, there is an easy way to transform the files to `.rst` files using `Pandoc`.
 
 - First, install Pandoc with Homebrew:
     
     `brew install pandoc` 
     
-- You might also want to combine the [sphinx extensions](https://www.sphinx-doc.org/en/master/usage/extensions/index.html) in your `doc/source/conf.py` for a better layout.
-- Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>` . For example, in the root directory `pandoc -s README.md -o docs/source/get_started/introduction.rst` .This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
+- Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>`. For example, in the root directory run `pandoc -s README.md -o docs/source/get_started/introduction.rst`.This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
 
-### After editing
+After editing, run
 
-Once you've made your edits, rebuild the documentation dynamically to see your changes:
+```python
+cd docs
+make clean
+make html
+```
 
-- Clean previous builds:
-    
-    `make clean`
-    
-- rebuild HTML documentation:
-    
-    `make html`
-    
+### Commit the Edited Documentation
 
-### Automatic Update
+Remember to exclude any unnecessary files in `.gitignore`. Please don’t commit files in `docs/build`. We can dynamically build local documentation with the make files and `source/`.
 
-We have already included the necessary extensions in the configuration(conf.py). Therefore, if you correctly include the source code in `.. automodule::` in the `.rst` file, when you update the code doc string, simply do the rebuilding by `make html`, the documentation will be automatically updated.
-
-For example, `.. automodule:: components.api_client.transformers_client`
-
-Ensure to commit your changes and push them to the GitHub repository to make them available to others. 
-
-### **[Optional] Generate Texts from Doc Strings Automatically**
-
-**You don’t necessarily do this.** But you can use this to quickly generate the text from doc strings.
-
-- You should run the `sphinx-apidoc -o <output_path> <module_path>` to generate the texts. Make sure your module includes __init__.py.
-- If you are in the root directory, you can run
-    
-    `sphinx-apidoc -o docs/source/documents/use_cases use_cases *test*` . `*test*` is to exclude the files containing `test` in the filename 
-    
-    By doing this, you are generating the code-related texts and pages in the `docs/source/apis`, and the source module path is the current directory `components/` . [sphinx-apidoc command reference](https://www.sphinx-doc.org/en/master/man/sphinx-apidoc.html).
+Please push your updates to the GitHub repo.
