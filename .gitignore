@@ -17,3 +17,4 @@ docs/_build/
 docs/source/_static
 docs/source/_templates
 docs/source/apis/tests*.rst
+tests/log_test/*.log
