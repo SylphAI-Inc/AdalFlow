@@ -294,13 +294,6 @@ if __name__ == "__main__":
         "temperature": 0.0,
     }
 
-    # planner = Generator(model_client=GroqAPIClient(), model_kwargs=llm_model_kwargs)
-    # settings = {
-    #     "provider": "openai",
-    #     "model": "gpt-3.5-turbo",
-    #     "temperature": 0.0,
-    # }
-    # planner = OpenAIGenerator(**settings)
     examples = [
         # r"""
         # User: What is 9 - 3?
@@ -318,7 +311,6 @@ if __name__ == "__main__":
         model_kwargs=llm_model_kwargs,
     )
     print(agent)
-    # agent = ReActAgent(generator=planner, tools=tools, max_steps=10, examples=examples)
     queries = [
         # "What is 2 times 3?",
         # "What is 3 plus 4?",
@@ -339,5 +331,3 @@ if __name__ == "__main__":
         average_time += time.time() - t0
         print(f"Answer: {answer}")
     print(f"Average time: {average_time / len(queries)}")
-
-    # test multiply(2024 - 2017, 12)
