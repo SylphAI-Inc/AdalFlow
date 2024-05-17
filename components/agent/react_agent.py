@@ -146,13 +146,15 @@ class ReActAgent(Generator):
         max_steps: int = 10,
         *,
         # the following arguments are inherited from Generator
-        prompt: Prompt = Prompt(DEFAULT_REACT_AGENT_PROMPT),  # reset the default prompt
+        template: str = DEFAULT_REACT_AGENT_PROMPT,
+        preset_prompt_kwargs: Optional[Dict] = None,
         output_processors: Optional[Component] = JsonParser(),
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
     ):
         super().__init__(
-            prompt=prompt,
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
             output_processors=output_processors,
             model_client=model_client,
             model_kwargs=model_kwargs,

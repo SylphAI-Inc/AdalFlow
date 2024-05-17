@@ -21,6 +21,7 @@ from core.prompt_builder import Prompt
 from core.generator import Generator
 from core.string_parser import JsonParser
 from core.api_client import APIClient
+from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
 
 
 COT_TASK_DESC_STR_BASIC = "You are a helpful assistant. Let's think step-by-step (be concise too) to answer user's query."
@@ -49,9 +50,8 @@ class CoTGenerator(Generator):
         *,
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
-        prompt: Prompt = Prompt(
-            preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_BASIC}
-        ),
+        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_BASIC},
         # preset_prompt_kwargs: Optional[Dict] = None,
         output_processors: Optional[Component] = None,
     ) -> None:
@@ -59,7 +59,8 @@ class CoTGenerator(Generator):
         super().__init__(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            prompt=prompt,
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
             output_processors=output_processors,
         )
 
@@ -79,16 +80,16 @@ class CoTGeneratorWithJsonOutput(Generator):
         *,
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
-        prompt: Prompt = Prompt(
-            preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_WITH_JSON_OUTPUT}
-        ),
+        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        preset_prompt_kwargs={"task_desc_str": COT_TASK_DESC_STR_WITH_JSON_OUTPUT},
         output_processors: Optional[Component] = JsonParser(),
     ) -> None:
 
         super().__init__(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            prompt=prompt,
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
             output_processors=output_processors,
         )
 
