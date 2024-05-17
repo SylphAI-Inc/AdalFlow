@@ -1,10 +1,9 @@
-from components.retriever.llm_retriever import LLMRetriever
-from core.generator import Generator
-from core.openai_client import OpenAIClient
 from core.data_classes import Document
-import dotenv
 
-dotenv.load_dotenv(dotenv_path=".env", override=True)
+from components.retriever import LLMRetriever
+from components.api_client import OpenAIClient
+
+import utils.setup_env
 
 
 def test_llm_retriever():

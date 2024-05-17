@@ -61,8 +61,10 @@ class LLMRetriever(Retriever):
             template=DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR,
             preset_prompt_kwargs={"documents": documents_to_use},
         )
-        context_str = self.index_prompt()
-        self.generator.prompt.update_preset_prompt_kwargs(context_str=context_str)
+        self.index_context_str = self.index_prompt()
+        self.generator.prompt.update_preset_prompt_kwargs(
+            context_str=self.index_context_str
+        )
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None

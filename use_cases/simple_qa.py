@@ -1,7 +1,6 @@
 import asyncio
+
 from core.generator import Generator
-
-
 from core.component import Component
 
 import utils.setup_env
@@ -18,7 +17,8 @@ class SimpleQA(Component):
         super().__init__()
         if provider == "openai":
             try:
-                from core.openai_client import OpenAIClient
+                from components.api_client.openai_client import OpenAIClient
+
             except ImportError:
                 raise ImportError(
                     "Please install the OpenAI API client by running 'pip install openai'"

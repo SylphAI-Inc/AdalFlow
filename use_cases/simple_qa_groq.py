@@ -3,15 +3,11 @@ We just need to very basic generator that can be used to generate text from a pr
 """
 
 from core.generator import Generator
-from components.api_client.groq_client import GroqAPIClient
-
 from core.component import Component
-from core.prompt_builder import Prompt
 
-# TODO: make the environment variable loading more robust, and let users specify the .env path
-import dotenv
+from components.api_client import GroqAPIClient
 
-dotenv.load_dotenv()
+import utils.setup_env
 
 
 class SimpleQA(Component):
