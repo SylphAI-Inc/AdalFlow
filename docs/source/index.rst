@@ -26,6 +26,7 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
    developer_notes/generator
    developer_notes/embedder
    developer_notes/retriever
+   developer_notes/data_classes
 
 .. toctree::
    :glob:
