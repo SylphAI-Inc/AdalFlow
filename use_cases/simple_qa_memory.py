@@ -6,7 +6,6 @@ from core.generator import Generator
 from core.openai_client import OpenAIClient
 
 from core.component import Component
-from core.data_classes import DialogTurn, UserQuery, AssistantResponse
 from core.memory import Memory
 
 # TODO: make the environment variable loading more robust, and let users specify the .env path

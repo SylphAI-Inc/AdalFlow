@@ -6,6 +6,7 @@ from core.generator import Generator
 from components.api_client.groq_client import GroqAPIClient
 
 from core.component import Component
+from core.prompt_builder import Prompt
 
 # TODO: make the environment variable loading more robust, and let users specify the .env path
 import dotenv
@@ -16,8 +17,15 @@ dotenv.load_dotenv()
 class SimpleQA(Component):
     def __init__(self):
         super().__init__()
+        prompt = Prompt(
+            preset_prompt_kwargs={
+                "task_desc_str": "You are a helpful assistant and with a great sense of humor."
+            }
+        )
         self.generator = Generator(
-            model_client=GroqAPIClient(), model_kwargs={"model": "llama3-8b-8192"}
+            model_client=GroqAPIClient(),
+            model_kwargs={"model": "llama3-8b-8192"},
+            prompt=prompt,
         )
         self.generator.print_prompt()
 

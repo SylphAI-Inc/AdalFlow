@@ -37,10 +37,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
 
-        self.db = LocalDocumentDB(
-            # retriever=retriever,
-            # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
-        )
+        self.db = LocalDocumentDB()
 
         # initialize generator
         self.generator = Generator(

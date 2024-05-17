@@ -1,4 +1,4 @@
-from groq import Groq
+from groq import Groq, AsyncGroq, AsyncStream
 from groq import (
     APITimeoutError,
     InternalServerError,
@@ -41,12 +41,19 @@ class GroqAPIClient(APIClient):
                 "context_size": "8192",
             },
         }
+        self.async_client = None  # only initialize if the async call is called
 
     def _init_sync_client(self):
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
         self.sync_client = Groq()
+
+    def _init_async_client(self):
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("Environment variable GROQ_API_KEY must be set")
+        self.async_client = AsyncGroq()
 
     def _combine_input_and_model_kwargs(
         self,
@@ -80,6 +87,31 @@ class GroqAPIClient(APIClient):
         ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
             completion = self.sync_client.chat.completions.create(**api_kwargs)
+            return completion
+        else:
+            raise ValueError(f"model_type {model_type} is not supported")
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+        ),
+        max_time=5,
+    )
+    async def _acall(
+        self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
+    ):
+        if self.async_client is None:
+            self._init_async_client()
+        assert "model" in api_kwargs, "model must be specified"
+        assert (
+            api_kwargs["model"] in self.model_lists
+        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
+        if model_type == ModelType.LLM:
+            completion = await self.async_client.chat.completions.create(**api_kwargs)
             return completion
         else:
             raise ValueError(f"model_type {model_type} is not supported")

@@ -1,10 +1,13 @@
 import jinja2.meta
-from core.component import Component
 from jinja2 import Template, Environment
 import jinja2
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from functools import lru_cache
+
+from core.component import Component
+
+from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
 
 
 # cache the environment for faster template rendering
@@ -17,6 +20,7 @@ def get_jinja2_environment():
             keep_trailing_newline=True,
             lstrip_blocks=True,
         )
+
         return default_environment
     except Exception as e:
         raise ValueError(f"Invalid Jinja2 environment: {e}")
@@ -30,7 +34,12 @@ class Prompt(Component):
     to have it here.
     """
 
-    def __init__(self, template: str):
+    def __init__(
+        self,
+        *,
+        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        preset_prompt_kwargs: Optional[Dict] = {},
+    ):
         super().__init__()
         self._template_string = template
         self.template: Template = None
@@ -43,11 +52,44 @@ class Prompt(Component):
         self.prompt_kwargs: Dict[str, Any] = {}
         for var in self._find_template_variables():
             self.prompt_kwargs[var] = None
+        self.preset_prompt_kwargs = preset_prompt_kwargs
 
     def _find_template_variables(self):
         """Automatically find all the variables in the template."""
         parsed_content = self.template.environment.parse(self._template_string)
         return jinja2.meta.find_undeclared_variables(parsed_content)
+
+    def compose_prompt_kwargs(self, **kwargs) -> Dict:
+        composed_kwargs = self.prompt_kwargs.copy()
+        if self.preset_prompt_kwargs:
+            composed_kwargs.update(self.preset_prompt_kwargs)
+        # runtime kwargs will overwrite the preset kwargs
+        composed_kwargs.update(kwargs)
+        return composed_kwargs
+
+    def print_prompt(self, **kwargs):
+        r"""To better visualize the prompt: as close as the final prompt string.
+        For task-specific variables, such as task_desc_str, tools_str, we replace the them with the actual values from the preset_prompt_kwargs.
+        For per-query variables such as query_str, chat_history_str, we leave it as it is in the template using the custom filter none_filter.
+        """
+        try:
+            pass_kwargs = self.compose_prompt_kwargs(**kwargs)
+
+            print(f"pass_kwargs: {pass_kwargs}  ")
+
+            prompt_str = self.template.render(**pass_kwargs)
+            print("Prompt:")
+            print("-------")
+            print(prompt_str)
+            print("-------")
+        except Exception as e:
+            raise ValueError(f"Error rendering Jinja2 template: {e}")
+
+    def print_prompt_template(self):
+        print("Template:")
+        print(f"-------")
+        print(f"{self._template_string}")
+        print(f"-------")
 
     def call(self, **kwargs) -> str:
         """
@@ -55,8 +97,7 @@ class Prompt(Component):
         TODO: if there are submodules,
         """
         try:
-            pass_kwargs = self.prompt_kwargs.copy()
-            pass_kwargs.update(kwargs)
+            pass_kwargs = self.compose_prompt_kwargs(**kwargs)
 
             prompt_str = self.template.render(**pass_kwargs)
             return prompt_str
@@ -65,4 +106,7 @@ class Prompt(Component):
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
     def extra_repr(self) -> str:
-        return f"template: {self._template_string}"
+        s = f"template: {self._template_string}"
+        if self.preset_prompt_kwargs:
+            s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
+        return s

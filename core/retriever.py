@@ -115,7 +115,6 @@ class FAISSRetriever(Retriever):
         # embeddings = [input_field_map_func(document) for document in documents]
         embeddings = [document.vector for document in documents]
         # embeddings = self._get_inputs(documents, input_field_map_func)
-        print(f"embeddings: {embeddings}")
         xb = np.array(embeddings, dtype=np.float32)
         self.index.add(xb)
         self.indexed = True
