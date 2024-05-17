@@ -25,7 +25,7 @@ import uuid
 
 # TODO: design hooks.
 _global_pre_call_hooks: Dict[int, Callable] = OrderedDict()
-__all__ = ["Component", "EmbedderOutput", "OpenAIEmbedder"]
+# __all__ = ["Component", "EmbedderOutput", "OpenAIEmbedder"]
 
 
 def _addindent(s_, numSpaces):
@@ -72,17 +72,13 @@ class Component:
     _execution_graph: List[str] = []  # This will store the graph of execution.
     _graph = nx.DiGraph()
     _last_called = None  # Tracks the last component called
-    _last_called_input_repr = None  # Tracks the input to the last component called
-    _name = None
 
-    def _generate_unique_name(self):
-        # Generate a unique identifier that includes the class name
-        return f"{self.__class__.__name__}_{uuid.uuid4().hex[:8]}"
+    # def _generate_unique_name(self):
+    #     # Generate a unique identifier that includes the class name
+    #     return f"{self.__class__.__name__}_{uuid.uuid4().hex[:8]}"
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", {})
-        self._name = self._generate_unique_name()
-        # self._graph.add_node(self._name)
 
     def __setattr__(self, name: str, value: Any) -> None:
         def remove_from(*dicts_or_sets):
@@ -189,7 +185,9 @@ class Component:
         )
         plt.show()
 
+    # TODO: do we need to disable this format of calling instead use call and acall extensively?
     def __call__(self, *args, **kwargs):
+        r"""In default, we use sync call."""
         # Register the edge if this call follows another component's call
         component_name = self._get_name()
         input_repr = repr(args) + " " + repr(kwargs)
@@ -213,9 +211,15 @@ class Component:
         self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
         return output
 
-    call: Callable[..., Any] = _call_unimplemented
+    # call: Callable[..., Any] = _call_unimplemented
+
+    def call(self, *args, **kwargs):
+        raise NotImplementedError(
+            f"Component {type(self).__name__} is missing the required 'call' method."
+        )
 
     async def acall(self, *args, **kwargs):
+        r"""API call, file io."""
         pass
 
     def add_component(self, name: str, component: Optional["Component"]) -> None:

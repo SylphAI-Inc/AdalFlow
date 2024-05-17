@@ -53,7 +53,7 @@ class RAG(Component):
 
         vectorizer = Embedder(
             model_client=OpenAIClient(),
-            # batch_size=self.vectorizer_settings["batch_size"],
+            # batch_size=self.vectorizer_settings["batch_size"], #TODO: where to put the batch size control and how big can it go?
             model_kwargs=self.vectorizer_settings["model_kwargs"],
             output_processors=ToEmbedderResponse(),
         )
@@ -79,11 +79,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
         # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
-        self.db = LocalDocumentDB(
-            # retriever_transformer=data_transformer,  # prepare data for retriever to build index with
-            # retriever=retriever,
-            # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
-        )
+        self.db = LocalDocumentDB()
 
         # initialize generator
         self.generator = Generator(
@@ -99,11 +95,13 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             model_kwargs=self.generator_model_kwargs,
             output_processors=JsonParser(),
         )
-        self.tracking = {"vectorizer": {"num_calls": 0, "num_tokens": 0}}
+        self.tracking = {
+            "vectorizer": {"num_calls": 0, "num_tokens": 0}
+        }  # TODO: tracking of the usage can be added in default in APIClient component
 
     def build_index(self, documents: List[Document]):
         self.db.load_documents(documents)
@@ -163,7 +161,7 @@ if __name__ == "__main__":
 
     response = rag.call(query)
 
-    print(f"execution graph: {rag._execution_graph}")
+    # print(f"execution graph: {rag._execution_graph}")
     print(f"response: {response}")
-    print(f"subcomponents: {rag._components}")
+    # print(f"subcomponents: {rag._components}")
     rag.visualize_graph_html("my_component_graph.html")

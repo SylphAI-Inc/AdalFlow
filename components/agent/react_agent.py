@@ -17,13 +17,17 @@ to answer questions that cant be answered or better be answered by llm using its
 - 'finish' tool is defined to finish the task by joining all subqueries answers.
 """
 
-from jinja2 import Template
-from core.tool_helper import FunctionTool, AsyncCallable
-from core.string_parser import JsonParser, parse_function_call
 from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
-from lightrag.light_rag import Generator, GeneratorRunner
 
+
+from core.generator import Generator
+from core.component import Component
+from core.prompt_builder import Prompt
+from core.tool_helper import FunctionTool, AsyncCallable
+from core.string_parser import JsonParser, parse_function_call
+
+from core.api_client import APIClient
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
 <<SYS>>
@@ -64,10 +68,11 @@ Remember:
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
-Learn from the examples:
+<EXAMPLES>
 {% for example in examples %}
 {{ example }}
 {% endfor %}
+</EXAMPLES>
 {% endif %}
 <</SYS>>
 -----------------
@@ -104,25 +109,59 @@ class StepOutput:
         return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
 
 
-# TODO: can create an agent base class
-# TODO: make input a class
-class ReActAgent:
+class ReActAgent(Generator):
+    r"""
+    ReActAgent is a type of Generator that runs multiple steps to generate the final response, with default_react_agent_prompt_template and JsonParser output_processors.
+    Users only need to set:
+    - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
+    - max_steps: the maximum number of steps the agent can take to complete the task.
+    - All other arguments are inherited from Generator such as model_client, model_kwargs, prompt, output_processors, etc.
+
+    Example:
+    ```
+    from core.openai_client import OpenAIClient
+    from components.agent.react_agent import ReActAgent
+    from core.tool_helper import FunctionTool
+    # define the tools
+    def multiply(a: int, b: int) -> int:
+        '''Multiply two numbers.'''
+        return a * b
+    def add(a: int, b: int) -> int:
+        '''Add two numbers.'''
+        return a + b
+    examples = [...] # optional, a list of string examples
+    agent = ReActAgent(
+    tools=[multiply, add],
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-3.5-turbo"},
+    )
+    """
+
     def __init__(
         self,
-        generator: Generator = None,
-        prompt: str = DEFAULT_REACT_AGENT_PROMPT,
-        examples: List[str] = [],
+        # added arguments specifc to React
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
+        *,
+        # the following arguments are inherited from Generator
+        template: str = DEFAULT_REACT_AGENT_PROMPT,
+        preset_prompt_kwargs: Optional[Dict] = None,
+        output_processors: Optional[Component] = JsonParser(),
+        model_client: APIClient,
+        model_kwargs: Optional[Dict] = {},
     ):
-        self.prompt = prompt
-        self.examples = examples
+        super().__init__(
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
+            output_processors=output_processors,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+        )
         self.tools = tools
+        self.max_steps = max_steps
 
-        self.tool_helper_attr: Dict[str, Any] = {}
-        # add a geneartor as a helper
-        self.tool_helper_attr["BaseGeneratorRunner"] = GeneratorRunner(
-            generator=generator
+        self.additional_llm_tool = Generator(
+            model_client=model_client, model_kwargs=model_kwargs
         )
 
         def llm_tool(input: str) -> str:
@@ -131,7 +170,7 @@ class ReActAgent:
             """
             # use the generator to answer the query
             try:
-                return self.tool_helper_attr["BaseGeneratorRunner"](input=input)
+                return self.additional_llm_tool(input=input)
             except Exception as e:
                 print(f"Error using the generator: {e}")
 
@@ -155,22 +194,20 @@ class ReActAgent:
         ]
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
-        print(f"tools_map: {self.tools_map}")
-
-        self.generator = generator
-        self.max_steps = max_steps
         self.step_history: List[StepOutput] = []
-        self.text_output_parser = JsonParser()
+        self.output_processors = output_processors
 
     def reset(self):
         self.step_history = []
 
-    def _parse_text_response(self, response: str, step: int) -> Optional[StepOutput]:
+    def _parse_text_response(
+        self, json_obj_response: Dict[str, Any], step: int
+    ) -> Optional[StepOutput]:
         """
         Parse the json output
         """
         try:
-            json_obj_response = self.text_output_parser(response)
+            # json_obj_response = self.output_processors(response)
             thought_key = "thought"
             action_key = "action"
             thought = json_obj_response.get(thought_key, "")
@@ -202,28 +239,25 @@ class ReActAgent:
             action_step.observation = f"Error executing {action}: {e}"
             return action_step
 
-    def _run_one_step(self, input: str, step: int) -> str:
+    def _run_one_step(
+        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs
+    ) -> str:
         """
         Run one step of the agent.
         """
-        template = Template(self.prompt)
-        # TODO: use base class to provide a method to formulate the data
-        prompt = template.render(
-            user_query=input,
-            tools=self.tools,
-            step_history=self.step_history,
-            examples=self.examples,
+        prompt_kwargs = {
+            "user_query": input,
+            "tools": self.tools,
+            "step_history": self.step_history,
+            "examples": self.examples,
+        }
+        # call the super class to generate the response
+        response = super().call(
+            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
-        messages = [
-            {
-                "role": "system",
-                "content": prompt,
-            }
-        ]
-        print(f"messages: {messages}")
-        response = self.generator(messages)
-        print(f"raw generator output: {response}")
-        parsed_response = self._parse_text_response(response, step)
+        parsed_response = self._parse_text_response(
+            json_obj_response=response, step=step
+        )
         # execute the action
         if parsed_response and parsed_response.action:
             parsed_response = self._execute_action(parsed_response)
@@ -233,14 +267,17 @@ class ReActAgent:
 
         return response
 
-    def run(self, input: str) -> str:
-        """
-        Run the agent on the given input.
-        """
+    def call(
+        self,
+        input: str,
+        promt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+    ) -> Any:
+        """If you want to use examples, you can pass promt_kwargs with examples."""
         for i in range(self.max_steps):
             step = i + 1
             try:
-                self._run_one_step(input, step)
+                self._run_one_step(input, step, promt_kwargs, model_kwargs)
                 if (
                     self.step_history[-1].fun_name
                     and self.step_history[-1].fun_name == "finish"
@@ -257,7 +294,8 @@ class ReActAgent:
 
 
 if __name__ == "__main__":
-    from extend.generator.groq_generator import GroqGenerator
+    from components.api_client.groq_client import GroqAPIClient
+    import utils.setup_env
 
     def multiply(a: int, b: int) -> int:
         """
@@ -282,20 +320,12 @@ if __name__ == "__main__":
         FunctionTool.from_defaults(fn=add),
         # FunctionTool.from_defaults(fn=search),
     ]
-    settings = {
-        "provider": "groq",
+    llm_model_kwargs = {
         "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
         # mistral also not good: mixtral-8x7b-32768, but with better prompt, it can still work
         "temperature": 0.0,
     }
 
-    planner = GroqGenerator(**settings)
-    # settings = {
-    #     "provider": "openai",
-    #     "model": "gpt-3.5-turbo",
-    #     "temperature": 0.0,
-    # }
-    # planner = OpenAIGenerator(**settings)
     examples = [
         # r"""
         # User: What is 9 - 3?
@@ -305,7 +335,14 @@ if __name__ == "__main__":
         # }
         # """
     ]
-    agent = ReActAgent(generator=planner, tools=tools, max_steps=10, examples=examples)
+    agent = ReActAgent(
+        examples=examples,
+        tools=tools,
+        max_steps=10,
+        model_client=GroqAPIClient(),
+        model_kwargs=llm_model_kwargs,
+    )
+    print(agent)
     queries = [
         # "What is 2 times 3?",
         # "What is 3 plus 4?",
@@ -322,9 +359,7 @@ if __name__ == "__main__":
     average_time = 0
     for query in queries:
         t0 = time.time()
-        answer = agent.run(query)
+        answer = agent(query)
         average_time += time.time() - t0
         print(f"Answer: {answer}")
     print(f"Average time: {average_time / len(queries)}")
-
-    # test multiply(2024 - 2017, 12)

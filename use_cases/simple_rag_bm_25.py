@@ -37,10 +37,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
 
-        self.db = LocalDocumentDB(
-            # retriever=retriever,
-            # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),
-        )
+        self.db = LocalDocumentDB()
 
         # initialize generator
         self.generator = Generator(
@@ -56,7 +53,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             model_kwargs=self.generator_model_kwargs,
             output_processors=Sequential(JsonParser()),
         )
