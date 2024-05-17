@@ -13,17 +13,17 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../..'))
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../../"))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'LightRAG'
-copyright = '2024, SylphAI'
-author = 'SylphAI'
+project = "LightRAG"
+copyright = "2024, SylphAI"
+author = "SylphAI"
 
 
 # -- General configuration ---------------------------------------------------
@@ -32,20 +32,20 @@ author = 'SylphAI'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-'sphinx.ext.autodoc',
-'sphinx.ext.autosummary',
-'sphinx.ext.doctest',
-'sphinx.ext.intersphinx',
-'sphinx.ext.mathjax',
-'sphinx.ext.napoleon',
-'sphinx.ext.viewcode',
-'sphinx.ext.githubpages',
-'sphinx.ext.todo',
-# 'recommonmark',
-# 'myst_parser'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.doctest",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.todo",
+    # 'recommonmark',
+    # 'myst_parser'
 ]
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -59,27 +59,28 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
-# In Sphinx documentation, the configuration option add_module_names in the conf.py file controls 
-# whether module names are prefixed before object names in the documentation. This setting is particularly 
+# In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
+# whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
-add_module_names = False 
+add_module_names = False
 
 
-autodoc_default_options={'autosummary-no-titles': True,
-                          'autosummary-force-inline': True,
-                          'autosummary-nosignatures': True,
-                          'members': True,
-                          'private-members': False, #(those starting with _).
-                          'special-members': False, #(those starting and ending with __).
-                          'member-order': 'bysource',
-                          'show-inheritance': True,
-                          'undoc-members': True,
-                          }
+autodoc_default_options = {
+    "autosummary-no-titles": True,
+    "autosummary-force-inline": True,
+    "autosummary-nosignatures": True,
+    "members": True,
+    "private-members": False,  # (those starting with _).
+    "special-members": False,  # (those starting and ending with __).
+    "member-order": "bysource",
+    "show-inheritance": True,
+    "undoc-members": True,
+}
