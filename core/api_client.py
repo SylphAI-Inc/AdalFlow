@@ -99,7 +99,6 @@ class APIClient(Component):
 
     def call(
         self,
-        *,
         input: Any,
         model_kwargs: dict = {},
         model_type: ModelType = ModelType.UNDEFINED,

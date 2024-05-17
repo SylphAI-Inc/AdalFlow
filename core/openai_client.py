@@ -20,7 +20,6 @@ from openai import (
 class OpenAIClient(APIClient):
     def __init__(self):
         super().__init__()
-        self.provider = "OpenAI"
         self.sync_client = self._init_sync_client()
         self.async_client = None  # only initialize if the async call is called
 

@@ -15,7 +15,8 @@ GeneratorOutput = TypeVar("GeneratorOutput")
 # TODO: investigate more on the type checking
 class Generator(Generic[GeneratorOutput], Component):
     """
-    An orchestrator component that combines the Prompt, the model client, and the output processors.
+    An orchestrator component that combines the Prompt and the API client to generate text from a prompt.
+    Additionally, it allows you to pass the output_processors to further parse the output from the model. Thus the arguments are almost a combination of that of Prompt and APIClient.
 
     It takes the user query as input in string format, and returns the response or processed response.
     """
@@ -30,8 +31,9 @@ class Generator(Generic[GeneratorOutput], Component):
         *,
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
-        prompt: Prompt = Prompt(template=DEFAULT_LIGHTRAG_PROMPT),
-        # preset_prompt_kwargs: Optional[Dict] = None,
+        # args for the prompt
+        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
         output_processors: Optional[Component] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_PROMPT. It has the following variables:
@@ -51,12 +53,12 @@ class Generator(Generic[GeneratorOutput], Component):
             raise ValueError(
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
             )
-        self.prompt = prompt
+        # init the model client
+        self.model_client = model_client()
+        self.prompt = Prompt(
+            template=template, preset_prompt_kwargs=preset_prompt_kwargs
+        )
         self.output_processors = output_processors
-        self.model_client = model_client
-        # self.preset_prompt_kwargs = preset_prompt_kwargs
-        # init the client
-        self.model_client._init_sync_client()
 
     def train(self, *args, **kwargs):
         pass
@@ -141,9 +143,6 @@ class Generator(Generic[GeneratorOutput], Component):
     ) -> Tuple[List[Dict], Dict]:
         r"""Compose the input and model_kwargs before calling the model."""
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
-        if not self.model_client.sync_client:
-            self.model_client.sync_client = self.model_client._init_sync_client()
-        # prompt_kwargs = self.compose_prompt_kwargs(**prompt_kwargs)
         # add the input to the prompt kwargs
         prompt_kwargs["query_str"] = input
         prompt_str = self.prompt(**prompt_kwargs)

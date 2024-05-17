@@ -24,7 +24,7 @@ class SimpleQA(Component):
                     "Please install the OpenAI API client by running 'pip install openai'"
                 )
 
-            model_client = OpenAIClient()
+            model_client = OpenAIClient
         elif provider == "groq":
             try:
                 from components.api_client.groq_client import GroqAPIClient
@@ -33,7 +33,7 @@ class SimpleQA(Component):
                     "Please install the Groq API client by running 'pip install groq'"
                 )
 
-            model_client = GroqAPIClient()
+            model_client = GroqAPIClient
         else:
             raise ValueError(f"Unknown provider: {provider}")
         self.generator = Generator(model_client=model_client, model_kwargs=model_kwargs)

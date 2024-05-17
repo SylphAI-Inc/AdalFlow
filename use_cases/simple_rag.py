@@ -95,7 +95,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             model_kwargs=self.generator_model_kwargs,
             output_processors=JsonParser(),
         )

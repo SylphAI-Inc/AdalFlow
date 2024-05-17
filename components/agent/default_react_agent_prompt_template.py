@@ -37,10 +37,11 @@ Remember:
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
-Learn from the examples:
+<EXAMPLES>
 {% for example in examples %}
 {{ example }}
 {% endfor %}
+</EXAMPLES>
 {% endif %}
 <</SYS>>
 -----------------

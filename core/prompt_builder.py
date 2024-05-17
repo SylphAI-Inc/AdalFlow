@@ -54,6 +54,9 @@ class Prompt(Component):
             self.prompt_kwargs[var] = None
         self.preset_prompt_kwargs = preset_prompt_kwargs
 
+    def update_preset_prompt_kwargs(self, **kwargs):
+        self.preset_prompt_kwargs.update(kwargs)
+
     def _find_template_variables(self):
         """Automatically find all the variables in the template."""
         parsed_content = self.template.environment.parse(self._template_string)

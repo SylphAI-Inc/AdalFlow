@@ -17,15 +17,12 @@ dotenv.load_dotenv()
 class SimpleQA(Component):
     def __init__(self):
         super().__init__()
-        prompt = Prompt(
+        self.generator = Generator(
+            model_client=GroqAPIClient,
+            model_kwargs={"model": "llama3-8b-8192"},
             preset_prompt_kwargs={
                 "task_desc_str": "You are a helpful assistant and with a great sense of humor."
-            }
-        )
-        self.generator = Generator(
-            model_client=GroqAPIClient(),
-            model_kwargs={"model": "llama3-8b-8192"},
-            prompt=prompt,
+            },
         )
         self.generator.print_prompt()
 
@@ -36,4 +33,5 @@ class SimpleQA(Component):
 if __name__ == "__main__":
     simple_qa = SimpleQA()
     print(simple_qa)
+    print(f"prompt: {simple_qa.generator.print_prompt()}")
     print(simple_qa.call("What is the capital of France?"))

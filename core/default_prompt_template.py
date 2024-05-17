@@ -1,5 +1,4 @@
-DEFAULT_LIGHTRAG_PROMPT = r"""
-<<SYS>>{# task desc #}
+DEFAULT_LIGHTRAG_PROMPT = r"""<<SYS>>{# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}
 {% endif %}

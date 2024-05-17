@@ -29,6 +29,67 @@ from core.string_parser import JsonParser, parse_function_call
 from components.agent.default_react_agent_prompt_template import (
     DEFAULT_REACT_AGENT_PROMPT,
 )
+from core.api_client import APIClient
+
+DEFAULT_REACT_AGENT_PROMPT = r"""
+<<SYS>>
+{# role/task description #}
+You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
+{# REACT instructions #}
+Each step you will read the previous Thought, Action, and Observation(execution result of the action)steps and then provide the next Thought and Action.
+
+You only have access to the following tools:
+{# tools #}
+{% for tool in tools %}
+{{ loop.index }}. ToolName: {{ tool.metadata.name }}
+    Tool Description: {{ tool.metadata.description }}
+    Tool Parameters: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
+{% endfor %}
+{# output is always more robust to use json than string #}
+---
+Your output must be in valid JSON format(raw Python string format) with two keys:
+{
+    "thought": "<Why you are taking this action>",
+    "action": "ToolName(<args>, <kwargs>)"
+}
+- Must double quote the JSON str.
+- Inside of the JSON str, Must use escape double quote and escape backslash for string.
+For example:
+"action": "finish(\"John's.\")"
+---
+{# Specifications TODO: preference between the usage of llm tool vs the other tool #}
+Process:
+- Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
+- Call one available tool at a time to solve each subquery/subquestion. \
+- At step 'finish', join all subqueries answers and finish the task.
+Remember:
+- Action must call one of the above tools with Took Name. It can not be empty.
+- Read the Tool Description and ensure your args and kwarg follow what each tool expects in types. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
+- You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
+- When the initial query is simple, use minimum steps to answer the query.
+{#Examples can be here#}
+{# Check if there are any examples #}
+{% if examples %}
+<EXAMPLES>
+{% for example in examples %}
+{{ example }}
+{% endfor %}
+</EXAMPLES>
+{% endif %}
+<</SYS>>
+-----------------
+User query: {{user_query}}
+{# History #}
+{% for history in step_history %}
+Step {{history.step}}:
+{
+ "thought": "{{history.thought}}",
+ "action": "{{history.action}}",
+}
+"observation": "{{history.observation}}"
+{% endfor %}
+You:
+"""
 
 # NOTE: if the positional and keyword arguments are not working well,
 # you can let it be a json string and use only keyword arguments and use json parser to parse the arguments instead of parse_function_call
@@ -52,33 +113,56 @@ class StepOutput:
 
 class ReActAgent(Generator):
     r"""
-    ReActAgent is just a subclass of Generator with more functionalities to plan and replan steps that each involves the usage of various tools,
+    ReActAgent is a type of Generator that runs multiple steps to generate the final response, with default_react_agent_prompt_template and JsonParser output_processors.
+    Users only need to set:
+    - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
+    - max_steps: the maximum number of steps the agent can take to complete the task.
+    - All other arguments are inherited from Generator such as model_client, model_kwargs, prompt, output_processors, etc.
+
+    Example:
+    ```
+    from core.openai_client import OpenAIClient
+    from components.agent.react_agent import ReActAgent
+    from core.tool_helper import FunctionTool
+    # define the tools
+    def multiply(a: int, b: int) -> int:
+        '''Multiply two numbers.'''
+        return a * b
+    def add(a: int, b: int) -> int:
+        '''Add two numbers.'''
+        return a + b
+    examples = [...] # optional, a list of string examples
+    agent = ReActAgent(
+    tools=[multiply, add],
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-3.5-turbo"},
+    )
     """
 
     def __init__(
         self,
-        *,
         # added arguments specifc to React
-        examples: List[str] = [],
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
+        *,
         # the following arguments are inherited from Generator
         prompt: Prompt = Prompt(DEFAULT_REACT_AGENT_PROMPT),  # reset the default prompt
-        output_processors: Optional[
-            Component
-        ] = JsonParser(),  # reset the default output_processors
-        **other_generator_kwargs,
+        output_processors: Optional[Component] = JsonParser(),
+        model_client: APIClient,
+        model_kwargs: Optional[Dict] = {},
     ):
         super().__init__(
-            prompt=prompt, output_processors=output_processors, **other_generator_kwargs
+            prompt=prompt,
+            output_processors=output_processors,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
         )
-        self.examples = examples
         self.tools = tools
         self.max_steps = max_steps
 
         self.additional_llm_tool = Generator(
-            **other_generator_kwargs
-        )  # use any other setting and set prompt and output_processors to default
+            model_client=model_client, model_kwargs=model_kwargs
+        )
 
         def llm_tool(input: str) -> str:
             """
@@ -155,7 +239,9 @@ class ReActAgent(Generator):
             action_step.observation = f"Error executing {action}: {e}"
             return action_step
 
-    def _run_one_step(self, input: str, step: int) -> str:
+    def _run_one_step(
+        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs
+    ) -> str:
         """
         Run one step of the agent.
         """
@@ -167,7 +253,7 @@ class ReActAgent(Generator):
         }
         # call the super class to generate the response
         response = super().call(
-            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=self.model_kwargs
+            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
         parsed_response = self._parse_text_response(
             json_obj_response=response, step=step
@@ -181,14 +267,17 @@ class ReActAgent(Generator):
 
         return response
 
-    def call(self, input: str) -> str:
-        """
-        Run the agent on the given input.
-        """
+    def call(
+        self,
+        input: str,
+        promt_kwargs: Optional[Dict] = {},
+        model_kwargs: Optional[Dict] = {},
+    ) -> Any:
+        """If you want to use examples, you can pass promt_kwargs with examples."""
         for i in range(self.max_steps):
             step = i + 1
             try:
-                self._run_one_step(input, step)
+                self._run_one_step(input, step, promt_kwargs, model_kwargs)
                 if (
                     self.step_history[-1].fun_name
                     and self.step_history[-1].fun_name == "finish"
