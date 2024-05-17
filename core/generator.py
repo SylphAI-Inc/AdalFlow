@@ -8,12 +8,12 @@ from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
 
 # TODO: special delimiters for different sections
 
-GeneratorInput = str
-GeneratorOutput = TypeVar("GeneratorOutput")
+GeneratorInputType = str
+GeneratorOutputType = Any
 
 
 # TODO: investigate more on the type checking
-class Generator(Generic[GeneratorOutput], Component):
+class Generator(Component):
     """
     An orchestrator component that combines the Prompt and the API client to generate text from a prompt.
     Additionally, it allows you to pass the output_processors to further parse the output from the model. Thus the arguments are almost a combination of that of Prompt and APIClient.
@@ -22,15 +22,13 @@ class Generator(Generic[GeneratorOutput], Component):
     """
 
     model_type: ModelType = ModelType.LLM
-    model_client: APIClient
-    prompt: Prompt
-    output_processors: Optional[Component]
+    model_client: APIClient  # for better type checking
 
     def __init__(
         self,
         *,
         model_client: APIClient,
-        model_kwargs: Optional[Dict] = {},
+        model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
@@ -132,7 +130,7 @@ class Generator(Generic[GeneratorOutput], Component):
         return completion.choices[0].message.content
 
     def extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs} "
+        s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
         return s
 
     def _pre_call(
@@ -148,10 +146,11 @@ class Generator(Generic[GeneratorOutput], Component):
         prompt_str = self.prompt(**prompt_kwargs)
         # TODO: the message might be api specific
         composed_messages = [{"role": "system", "content": prompt_str}]
+        print(f"composed_messages: {composed_messages}")
         # composed_messages = self.compose_model_input(prompt_str=prompt_str)
         return composed_messages, composed_model_kwargs
 
-    def _post_call(self, completion: Any) -> GeneratorOutput:
+    def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
         response = self.parse_completion(completion)
         if self.output_processors:
@@ -163,7 +162,7 @@ class Generator(Generic[GeneratorOutput], Component):
         input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> GeneratorOutput:
+    ) -> GeneratorOutputType:
         r"""Call the model with the input and model_kwargs."""
         composed_messages, composed_model_kwargs = self._pre_call(
             input, prompt_kwargs, model_kwargs
@@ -171,7 +170,7 @@ class Generator(Generic[GeneratorOutput], Component):
         completion = self.model_client.call(
             input=composed_messages,
             model_kwargs=composed_model_kwargs,
-            model_type=ModelType.LLM,
+            model_type=self.model_type,
         )
         return self._post_call(completion)
 
@@ -180,16 +179,17 @@ class Generator(Generic[GeneratorOutput], Component):
         input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> GeneratorOutput:
+    ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
         Note: watch out for the rate limit and the timeout.
         """
         composed_messages, composed_model_kwargs = self._pre_call(
             input, prompt_kwargs, model_kwargs
         )
+
         completion = await self.model_client.acall(
             input=composed_messages,
             model_kwargs=composed_model_kwargs,
-            model_type=ModelType.LLM,
+            model_type=self.model_type,
         )
         return self._post_call(completion)

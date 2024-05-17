@@ -50,16 +50,21 @@ class Prompt(Component):
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
         self.prompt_kwargs: Dict[str, Any] = {}
-        for var in self._find_template_variables():
+        for var in self._find_template_variables(self._template_string):
             self.prompt_kwargs[var] = None
         self.preset_prompt_kwargs = preset_prompt_kwargs
+        # iterate each key value in preset and to discover potential variables
+        for key, value in preset_prompt_kwargs.items():
+            for var in self._find_template_variables(value):
+                if var not in self.prompt_kwargs:
+                    self.prompt_kwargs[var] = None
 
     def update_preset_prompt_kwargs(self, **kwargs):
         self.preset_prompt_kwargs.update(kwargs)
 
-    def _find_template_variables(self):
+    def _find_template_variables(self, template_str: str):
         """Automatically find all the variables in the template."""
-        parsed_content = self.template.environment.parse(self._template_string)
+        parsed_content = self.template.environment.parse(template_str)
         return jinja2.meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
@@ -112,4 +117,6 @@ class Prompt(Component):
         s = f"template: {self._template_string}"
         if self.preset_prompt_kwargs:
             s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
+        if self.prompt_kwargs:
+            s += f", prompt_kwargs: {self.prompt_kwargs}"
         return s
