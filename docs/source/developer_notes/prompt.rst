@@ -57,9 +57,11 @@ Here is one example of `Llama3 Documentation <https://llama.meta.com/docs/model-
     <|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
     You are a helpful AI assistant for travel tips and recommendations<|eot_id|>
+    
     <|start_header_id|>user<|end_header_id|>
+    What can you help me with?<|eot_id|>
 
-    What can you help me with?<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+    <|start_header_id|>assistant<|end_header_id|>
 
 
 Across our library, here our advanced features: 
@@ -75,6 +77,26 @@ Across our library, here our advanced features:
 - Agent with multiple step planning and replanning capabilities, where the `steps_str` variable is used to pass the previous steps to the model.
 
 
+Here is how you customize a new prompt:
+
+.. code-block:: python
+   :linenos:
+
+    from core.prompt_builder import Prompt
+
+    new_template = r"""
+    <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+    {{task_desc_str}}
+    Your context: {{context_str}} <|eot_id|>
+
+    <|start_header_id|>user<|end_header_id|>
+    {{query_str}}<|eot_id|>
+
+    <|start_header_id|>assistant<|end_header_id|>
+    """
+
+
+    prompt = Prompt(template=new_template)
 
 
 

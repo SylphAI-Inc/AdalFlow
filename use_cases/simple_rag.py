@@ -52,7 +52,7 @@ class RAG(Component):
         }
 
         vectorizer = Embedder(
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             # batch_size=self.vectorizer_settings["batch_size"], #TODO: where to put the batch size control and how big can it go?
             model_kwargs=self.vectorizer_settings["model_kwargs"],
             output_processors=ToEmbedderResponse(),
