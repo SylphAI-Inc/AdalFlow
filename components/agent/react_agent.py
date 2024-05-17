@@ -26,9 +26,7 @@ from core.component import Component
 from core.prompt_builder import Prompt
 from core.tool_helper import FunctionTool, AsyncCallable
 from core.string_parser import JsonParser, parse_function_call
-from components.agent.default_react_agent_prompt_template import (
-    DEFAULT_REACT_AGENT_PROMPT,
-)
+
 from core.api_client import APIClient
 
 DEFAULT_REACT_AGENT_PROMPT = r"""
