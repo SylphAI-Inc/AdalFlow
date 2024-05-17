@@ -23,7 +23,6 @@ from dataclasses import dataclass
 
 from core.generator import Generator
 from core.component import Component
-from core.prompt_builder import Prompt
 from core.tool_helper import FunctionTool, AsyncCallable
 from core.string_parser import JsonParser, parse_function_call
 

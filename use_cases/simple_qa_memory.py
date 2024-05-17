@@ -3,15 +3,13 @@ We just need to very basic generator that can be used to generate text from a pr
 """
 
 from core.generator import Generator
-from core.openai_client import OpenAIClient
-
 from core.component import Component
 from core.memory import Memory
 
-# TODO: make the environment variable loading more robust, and let users specify the .env path
-import dotenv
+from components.api_client import OpenAIClient
 
-dotenv.load_dotenv()
+
+import utils.setup_env
 
 
 class SimpleDialog(Component):
