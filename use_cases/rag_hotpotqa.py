@@ -6,7 +6,7 @@ from datasets import load_dataset
 
 from core.openai_client import OpenAIClient
 from core.generator import Generator
-from core.documents_data_class import Document
+from core.data_classes import Document
 
 from core.string_parser import JsonParser
 from core.component import Sequential
