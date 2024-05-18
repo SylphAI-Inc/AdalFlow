@@ -42,9 +42,17 @@ class Embedder(Component):
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
 
-    def _pre_call(self, model_kwargs: Dict) -> Dict:
+    def _pre_call(self, input: EmbedderInputType, model_kwargs: Dict) -> Dict:
+        # step 1: combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
-        return composed_model_kwargs
+        # step 2: convert the input to the api_kwargs
+        api_kwargs = self.model_client.convert_input_to_api_kwargs(
+            input=input,
+            combined_model_kwargs=composed_model_kwargs,
+            model_type=self.model_type,
+        )
+        print(f"api_kwargs {api_kwargs}")
+        return api_kwargs
 
     def _post_call(self, response: Any) -> EmbedderOutputType:
         if self.output_processors:
@@ -57,9 +65,11 @@ class Embedder(Component):
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
-        composed_model_kwargs = self._pre_call(model_kwargs)
+        print(f"start to embed the data")
+        api_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
+        print(f"start to call")
         response = self.model_client.call(
-            input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
+            api_kwargs=api_kwargs, model_type=self.model_type
         )
         return self._post_call(response)
 

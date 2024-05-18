@@ -5,7 +5,7 @@ from core.component import Component
 from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 from core.generator import Generator
 from core.api_client import APIClient
-from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
+from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from core.string_parser import ListParser
 from core.prompt_builder import Prompt
 
@@ -31,7 +31,7 @@ class LLMRetriever(Retriever):
         # the genearator kwargs
         model_client: APIClient,
         model_kwargs: Dict[str, Any] = {},
-        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},
         output_processors: Optional[Component] = ListParser(),
     ):

@@ -13,7 +13,7 @@ GeneratorOutputType = Any
 
 class Generator(Component):
     """
-    An orchestrator component that combines the Prompt and the API client to generate text from a prompt.
+    An orchestrator component that combines the system Prompt and the API client to process user input queries, and to generate responses.
     Additionally, it allows you to pass the output_processors to further parse the output from the model. Thus the arguments are almost a combination of that of Prompt and APIClient.
 
     It takes the user query as input in string format, and returns the response or processed response.
@@ -37,7 +37,6 @@ class Generator(Component):
         - tools_str
         - example_str
         - chat_history_str
-        - query_str
         - context_str
         - steps_str
         You can preset the prompt kwargs to fill in the variables in the prompt using preset_prompt_kwargs.
@@ -74,7 +73,7 @@ class Generator(Component):
             raise ValueError(
                 f"{type(self).__name__} requires a 'system_prompt' to be set before calling the model."
             )
-
+        # render system prompt
         system_prompt_text = self.system_prompt.call(**kwargs).strip()
         messages: List[Dict[str, str]] = []
         if system_prompt_text and system_prompt_text != "":
@@ -126,25 +125,31 @@ class Generator(Component):
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
         return s
 
-    def _pre_call(
-        self,
-        input: str,
-        prompt_kwargs: Optional[Dict] = {},
-        model_kwargs: Optional[Dict] = {},
-    ) -> Tuple[List[Dict], Dict]:
-        r"""Compose the input and model_kwargs before calling the model."""
-        composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
-        composed_messages = self.compose_model_input(input=input, **prompt_kwargs)
-        print(f"composed_messages: {composed_messages}")
-        # TODO: change everything to logger(info)
-        return composed_messages, composed_model_kwargs
-
     def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
         response = self.parse_completion(completion)
         if self.output_processors:
             response = self.output_processors(response)
         return response
+
+    def _pre_call(
+        self, input: str, prompt_kwargs: Dict, model_kwargs: Dict
+    ) -> Dict[str, Any]:
+        r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
+        # step 1: render the system prompt
+        system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
+
+        # step 2: combine the model_kwargs with the default model_kwargs
+        composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
+
+        # step 3: use model_client.combined_input_and_model_kwargs to get the api_kwargs
+        api_kwargs = self.model_client.convert_input_to_api_kwargs(
+            input=input,
+            system_input=system_prompt_str,
+            combined_model_kwargs=composed_model_kwargs,
+            model_type=self.model_type,
+        )
+        return api_kwargs
 
     def call(
         self,
@@ -153,13 +158,10 @@ class Generator(Component):
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Call the model with the input(user_query) and model_kwargs."""
-        composed_messages, composed_model_kwargs = self._pre_call(
-            input, prompt_kwargs, model_kwargs
-        )
+
+        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
         completion = self.model_client.call(
-            input=composed_messages,
-            model_kwargs=composed_model_kwargs,
-            model_type=self.model_type,
+            api_kwargs=api_kwargs, model_type=self.model_type
         )
         return self._post_call(completion)
 
@@ -172,13 +174,8 @@ class Generator(Component):
         r"""Async call the model with the input and model_kwargs.
         Note: watch out for the rate limit and the timeout.
         """
-        composed_messages, composed_model_kwargs = self._pre_call(
-            input, prompt_kwargs, model_kwargs
-        )
-
+        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
-            input=composed_messages,
-            model_kwargs=composed_model_kwargs,
-            model_type=self.model_type,
+            api_kwargs=api_kwargs, model_type=self.model_type
         )
         return self._post_call(completion)
