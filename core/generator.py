@@ -1,18 +1,16 @@
-from typing import Any, Dict, List, Optional, Generic, TypeVar, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from core.data_classes import ModelType
 from core.component import Component
 from core.prompt_builder import Prompt
 from core.functional import compose_model_kwargs
 from core.api_client import APIClient
-from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
+from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
-# TODO: special delimiters for different sections
 
 GeneratorInputType = str
 GeneratorOutputType = Any
 
 
-# TODO: investigate more on the type checking
 class Generator(Component):
     """
     An orchestrator component that combines the Prompt and the API client to generate text from a prompt.
@@ -30,12 +28,11 @@ class Generator(Component):
         model_client: APIClient,
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
-        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
-        input_prompt_key: str = "query_str",  # the key to fill in the input in the prompt
         output_processors: Optional[Component] = None,
     ) -> None:
-        r"""The default prompt is set to the DEFAULT_LIGHTRAG_PROMPT. It has the following variables:
+        r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
         - tools_str
         - example_str
@@ -54,20 +51,16 @@ class Generator(Component):
             )
         # init the model client
         self.model_client = model_client()
-        self.prompt = Prompt(
+        self.system_prompt = Prompt(
             template=template, preset_prompt_kwargs=preset_prompt_kwargs
         )
-        self.input_prompt_key = input_prompt_key
-        if not self.prompt.is_key_in_template(input_prompt_key):
-            raise ValueError(
-                f"{type(self).__name__} requires the input_prompt_key `{input_prompt_key}` to be in the prompt template."
-            )
+
         self.output_processors = output_processors
 
     def train(self, *args, **kwargs):
         pass
 
-    def _compose_lm_input_chat(self, **kwargs: Any) -> List[Dict]:
+    def _compose_lm_input_chat(self, input: str, **kwargs: Any) -> List[Dict]:
         """
         Forms the final messages to LLM chat model.
 
@@ -76,19 +69,19 @@ class Generator(Component):
             "role": "system",
 
         }
-
-
         """
-        if not hasattr(self, "prompt") or not self.prompt:
+        if not hasattr(self, "system_prompt") or not self.system_prompt:
             raise ValueError(
-                f"{type(self).__name__} requires a 'prompt' to be set before calling the model."
+                f"{type(self).__name__} requires a 'system_prompt' to be set before calling the model."
             )
-        current_role: str = kwargs.get("role", "system")
-        # TODO: clean up
-        previous_messages: List[Dict] = kwargs.get("previous_messages", [])
-        prompt_text = self.prompt.call(**kwargs)
-        # llm input or the api's input
-        messages = previous_messages + [{"role": current_role, "content": prompt_text}]
+
+        system_prompt_text = self.system_prompt.call(**kwargs).strip()
+        messages: List[Dict[str, str]] = []
+        if system_prompt_text and system_prompt_text != "":
+            messages = [{"role": "system", "content": system_prompt_text}]
+        user_message = {"role": "user", "content": input}
+        messages.append(user_message)
+
         return messages
 
     def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
@@ -98,12 +91,13 @@ class Generator(Component):
 
         As
         """
-        prompt_text = self.prompt.call(**kwargs)
+        prompt_text = self.system_prompt.call(**kwargs)
         return prompt_text
 
-    def compose_model_input(self, **kwargs) -> List[Dict]:
+    # TODO: not used for now
+    def compose_model_input(self, input: str, **kwargs) -> List[Dict]:
 
-        return self._compose_lm_input_chat(**kwargs)
+        return self._compose_lm_input_chat(input=input, **kwargs)
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
@@ -117,17 +111,10 @@ class Generator(Component):
         """
         return compose_model_kwargs(self.model_kwargs, model_kwargs)
 
-    # def compose_prompt_kwargs(self, **kwargs) -> Dict:
-    #     composed_kwargs = (
-    #         self.preset_prompt_kwargs.copy() if self.preset_prompt_kwargs else {}
-    #     )
-    #     composed_kwargs.update(kwargs)
-    #     return composed_kwargs
-
     def print_prompt(self, **kwargs) -> str:
-        self.prompt.print_prompt(**kwargs)
+        self.system_prompt.print_prompt(**kwargs)
 
-    # TODO: move this to output_processors
+    # TODO: move this potntially to api_client
     def parse_completion(self, completion: Any) -> str:
         """
         Parse the completion to a structure your sytem standarizes. (here is str)
@@ -147,13 +134,9 @@ class Generator(Component):
     ) -> Tuple[List[Dict], Dict]:
         r"""Compose the input and model_kwargs before calling the model."""
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
-        # add the input to the prompt kwargs
-        prompt_kwargs[self.input_prompt_key] = input
-        prompt_str = self.prompt(**prompt_kwargs)
-        # TODO: the message might be api specific
-        composed_messages = [{"role": "system", "content": prompt_str}]
+        composed_messages = self.compose_model_input(input=input, **prompt_kwargs)
         print(f"composed_messages: {composed_messages}")
-        # composed_messages = self.compose_model_input(prompt_str=prompt_str)
+        # TODO: change everything to logger(info)
         return composed_messages, composed_model_kwargs
 
     def _post_call(self, completion: Any) -> GeneratorOutputType:
@@ -169,7 +152,7 @@ class Generator(Component):
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
-        r"""Call the model with the input and model_kwargs."""
+        r"""Call the model with the input(user_query) and model_kwargs."""
         composed_messages, composed_model_kwargs = self._pre_call(
             input, prompt_kwargs, model_kwargs
         )

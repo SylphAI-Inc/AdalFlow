@@ -259,10 +259,8 @@ class ReActAgent(Generator):
         Run one step of the agent.
         """
         # step_history is the only per-query variable, and should not be controlled by the user
-        # add teh step_history to the prompt_kwargs
+        # add the step_history to the prompt_kwargs
         prompt_kwargs["step_history"] = self.step_history
-        # prompt_kwargs["user_query"] = input
-        print(f"input: {input}, step: {step}, prompt_kwargs: {prompt_kwargs}")
         # call the super class Generator to get the response
         response = super().call(
             input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs

@@ -20,7 +20,6 @@ class SimpleQA(Component):
                 "task_desc_str": "You are a helpful assistant and with a great sense of humor."
             },
         )
-        self.generator.print_prompt()
 
     def call(self, query: str) -> str:
         return self.generator.call(input=query)
@@ -29,5 +28,6 @@ class SimpleQA(Component):
 if __name__ == "__main__":
     simple_qa = SimpleQA()
     print(simple_qa)
-    print(f"prompt: {simple_qa.generator.print_prompt()}")
+    print("show the system prompt")
+    simple_qa.generator.print_prompt()
     print(simple_qa.call("What is the capital of France?"))
