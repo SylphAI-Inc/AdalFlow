@@ -59,30 +59,6 @@ class Generator(Component):
     def train(self, *args, **kwargs):
         pass
 
-    def _compose_lm_input_chat(self, input: str, **kwargs: Any) -> List[Dict]:
-        """
-        Forms the final messages to LLM chat model.
-
-        example:
-        {
-            "role": "system",
-
-        }
-        """
-        if not hasattr(self, "system_prompt") or not self.system_prompt:
-            raise ValueError(
-                f"{type(self).__name__} requires a 'system_prompt' to be set before calling the model."
-            )
-        # render system prompt
-        system_prompt_text = self.system_prompt.call(**kwargs).strip()
-        messages: List[Dict[str, str]] = []
-        if system_prompt_text and system_prompt_text != "":
-            messages = [{"role": "system", "content": system_prompt_text}]
-        user_message = {"role": "user", "content": input}
-        messages.append(user_message)
-
-        return messages
-
     def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
         """
         This combines the default lm input using Prompt, and the passed input. history, steps, etc.
@@ -92,11 +68,6 @@ class Generator(Component):
         """
         prompt_text = self.system_prompt.call(**kwargs)
         return prompt_text
-
-    # TODO: not used for now
-    def compose_model_input(self, input: str, **kwargs) -> List[Dict]:
-
-        return self._compose_lm_input_chat(input=input, **kwargs)
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
