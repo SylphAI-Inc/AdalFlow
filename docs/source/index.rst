@@ -20,9 +20,10 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
    :maxdepth: 1
    :caption: Developer Notes
 
+   developer_notes/llm_intro.rst
+   developer_notes/prompt
    developer_notes/component
    developer_notes/api_client
-   developer_notes/prompt
    developer_notes/generator
    developer_notes/embedder
    developer_notes/retriever

@@ -7,7 +7,7 @@ from functools import lru_cache
 
 from core.component import Component
 
-from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
+from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 # cache the environment for faster template rendering
@@ -37,7 +37,7 @@ class Prompt(Component):
     def __init__(
         self,
         *,
-        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},
     ):
         super().__init__()
@@ -70,7 +70,8 @@ class Prompt(Component):
         if self.preset_prompt_kwargs:
             composed_kwargs.update(self.preset_prompt_kwargs)
         # runtime kwargs will overwrite the preset kwargs
-        composed_kwargs.update(kwargs)
+        if kwargs:
+            composed_kwargs.update(kwargs)
         return composed_kwargs
 
     def print_prompt(self, **kwargs):
@@ -81,13 +82,9 @@ class Prompt(Component):
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
 
-            print(f"pass_kwargs: {pass_kwargs}  ")
-
             prompt_str = self.template.render(**pass_kwargs)
             print("Prompt:")
-            print("-------")
             print(prompt_str)
-            print("-------")
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 

@@ -16,6 +16,8 @@ from core.data_classes import ModelType
 
 
 class APIClient(Component):
+    r"""Bridge the gap between LightRAG components and model APIs."""
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__()
         # take the *args and **kwargs to be compatible with the Component class
@@ -41,7 +43,9 @@ class APIClient(Component):
         )
 
     def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        r"""kwargs: all the arguments that the API call needs, subclass should implement this method.
+        r"""Subclass use this to call the API with the sync client.
+        model_type: this decides which API, such as chat.completions or embeddings for OpenAI.
+        api_kwargs: all the arguments that the API call needs, subclass should implement this method.
 
         Additionally in subclass you can implement the error handling and retry logic here. See OpenAIClient for example.
         """
@@ -50,7 +54,7 @@ class APIClient(Component):
     async def _acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
-        r"""kwargs: all the arguments that the API async call needs, subclass should implement this method if the API supports async call"""
+        r"""Subclass use this to call the API with the async client."""
         pass
 
     def _combine_input_and_model_kwargs(
