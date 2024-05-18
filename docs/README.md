@@ -32,6 +32,15 @@ make html
 
 After building the documentation, you can use any browser to view it by opening the `index.html` file located in `docs/build/html`.
 
+Some browsers restrict loading local resources like CSS for security reasons. In this case, try to use a local server to serve the file in the `build/html` directory. Run the following code:
+
+```
+cd docs/build/html
+python -m http.server  # Run this in your build/html directory
+```
+
+You will find the port shown in the terminal, e.g. `Serving HTTP on :: port 8000 (http://[::]:8000/) ...`. In this case, you should open `http://127.0.0.1:8000/` in your browser and you will see the documentation.
+
 ## File Structure
 
 ### **conf.py**
