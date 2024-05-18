@@ -53,14 +53,12 @@ class Prompt(Component):
         for var in self._find_template_variables(self._template_string):
             self.prompt_kwargs[var] = None
         self.preset_prompt_kwargs = preset_prompt_kwargs
-        # iterate each key value in preset and to discover potential variables
-        for key, value in preset_prompt_kwargs.items():
-            for var in self._find_template_variables(value):
-                if var not in self.prompt_kwargs:
-                    self.prompt_kwargs[var] = None
 
     def update_preset_prompt_kwargs(self, **kwargs):
         self.preset_prompt_kwargs.update(kwargs)
+
+    def is_key_in_template(self, key: str) -> bool:
+        return key in self.prompt_kwargs
 
     def _find_template_variables(self, template_str: str):
         """Automatically find all the variables in the template."""

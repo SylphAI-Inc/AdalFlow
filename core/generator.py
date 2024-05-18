@@ -32,6 +32,7 @@ class Generator(Component):
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
+        input_prompt_key: str = "query_str",  # the key to fill in the input in the prompt
         output_processors: Optional[Component] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_PROMPT. It has the following variables:
@@ -56,6 +57,11 @@ class Generator(Component):
         self.prompt = Prompt(
             template=template, preset_prompt_kwargs=preset_prompt_kwargs
         )
+        self.input_prompt_key = input_prompt_key
+        if not self.prompt.is_key_in_template(input_prompt_key):
+            raise ValueError(
+                f"{type(self).__name__} requires the input_prompt_key `{input_prompt_key}` to be in the prompt template."
+            )
         self.output_processors = output_processors
 
     def train(self, *args, **kwargs):
@@ -142,7 +148,7 @@ class Generator(Component):
         r"""Compose the input and model_kwargs before calling the model."""
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
         # add the input to the prompt kwargs
-        prompt_kwargs["query_str"] = input
+        prompt_kwargs[self.input_prompt_key] = input
         prompt_str = self.prompt(**prompt_kwargs)
         # TODO: the message might be api specific
         composed_messages = [{"role": "system", "content": prompt_str}]
