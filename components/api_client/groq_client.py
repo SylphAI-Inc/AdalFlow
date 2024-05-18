@@ -6,7 +6,7 @@ from groq import (
     UnprocessableEntityError,
 )
 import os
-from typing import Dict, Sequence
+from typing import Dict, Sequence, Union, Optional
 import backoff
 
 from core.api_client import APIClient
@@ -16,7 +16,6 @@ from core.data_classes import ModelType
 class GroqAPIClient(APIClient):
     def __init__(self):
         super().__init__()
-        self.provider = "Groq"
         self._init_sync_client()
         # https://console.groq.com/docs/models, 4/22/2024
         self.model_lists = {
@@ -55,17 +54,22 @@ class GroqAPIClient(APIClient):
             raise ValueError("Environment variable GROQ_API_KEY must be set")
         self.async_client = AsyncGroq()
 
-    def _combine_input_and_model_kwargs(
+    def convert_input_to_api_kwargs(
         self,
-        input: Sequence,
+        input: Union[str],
+        system_input: Optional[Union[str]] = None,
         combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         final_model_kwargs = combined_model_kwargs.copy()
         if model_type == ModelType.LLM:
             # convert input to messages
-            assert isinstance(input, Sequence), "input must be a sequence of messages"
-            final_model_kwargs["messages"] = input
+            assert isinstance(input, str), "input must be a string"
+            messages: Sequence[Dict[str, str]] = []
+            if system_input is not None and system_input != "":
+                messages.append({"role": "system", "content": system_input})
+            messages.append({"role": "user", "content": input})
+            final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
@@ -80,7 +84,7 @@ class GroqAPIClient(APIClient):
         ),
         max_time=5,
     )
-    def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         assert "model" in api_kwargs, "model must be specified"
         assert (
             api_kwargs["model"] in self.model_lists
@@ -101,7 +105,7 @@ class GroqAPIClient(APIClient):
         ),
         max_time=5,
     )
-    async def _acall(
+    async def acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         if self.async_client is None:

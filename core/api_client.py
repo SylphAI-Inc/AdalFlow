@@ -8,7 +8,7 @@ It does four things:
 (4) Handle API specific exceptions and errors to retry the call.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, Union, Optional
 
 
 from core.component import Component
@@ -42,7 +42,7 @@ class APIClient(Component):
             f"{type(self).__name__} must implement _init_async_client method"
         )
 
-    def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         r"""Subclass use this to call the API with the sync client.
         model_type: this decides which API, such as chat.completions or embeddings for OpenAI.
         api_kwargs: all the arguments that the API call needs, subclass should implement this method.
@@ -51,20 +51,23 @@ class APIClient(Component):
         """
         raise NotImplementedError(f"{type(self).__name__} must implement _call method")
 
-    async def _acall(
+    async def acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         r"""Subclass use this to call the API with the async client."""
         pass
 
-    def _combine_input_and_model_kwargs(
+    def convert_input_to_api_kwargs(
         self,
-        input: Any,
+        input: Any,  # user input
+        system_input: Optional[
+            Union[str]
+        ] = None,  # system input that llm will use to generate the response
         combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
-        Bridge the Component's standard input and model_kwargs into API-specific format
+        Bridge the Component's standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.
         """
         raise NotImplementedError(
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
@@ -101,28 +104,28 @@ class APIClient(Component):
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)
 
-    def call(
-        self,
-        input: Any,
-        model_kwargs: dict = {},
-        model_type: ModelType = ModelType.UNDEFINED,
-    ) -> Any:
-        # adapt the format and the key for input and model_kwargs
-        combined_model_kwargs = self._combine_input_and_model_kwargs(
-            input, model_kwargs, model_type=model_type
-        )
-        return self._call(api_kwargs=combined_model_kwargs, model_type=model_type)
+    # def call(
+    #     self,
+    #     input: Any,
+    #     model_kwargs: dict = {},
+    #     model_type: ModelType = ModelType.UNDEFINED,
+    # ) -> Any:
+    #     # adapt the format and the key for input and model_kwargs
+    #     combined_model_kwargs = self._combine_input_and_model_kwargs(
+    #         input, model_kwargs, model_type=model_type
+    #     )
+    #     return self._call(api_kwargs=combined_model_kwargs, model_type=model_type)
 
-    async def acall(
-        self,
-        *,
-        input: Any,
-        model_kwargs: dict = {},
-        model_type: ModelType = ModelType.UNDEFINED,
-    ) -> Any:
-        combined_model_kwargs = self._combine_input_and_model_kwargs(
-            input, model_kwargs, model_type=model_type
-        )
-        return await self._acall(
-            api_kwargs=combined_model_kwargs, model_type=model_type
-        )
+    # async def acall(
+    #     self,
+    #     *,
+    #     input: Any,
+    #     model_kwargs: dict = {},
+    #     model_type: ModelType = ModelType.UNDEFINED,
+    # ) -> Any:
+    #     combined_model_kwargs = self._combine_input_and_model_kwargs(
+    #         input, model_kwargs, model_type=model_type
+    #     )
+    #     return await self._acall(
+    #         api_kwargs=combined_model_kwargs, model_type=model_type
+    #     )
