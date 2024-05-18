@@ -28,8 +28,7 @@ from core.string_parser import JsonParser, parse_function_call
 
 from core.api_client import APIClient
 
-DEFAULT_REACT_AGENT_PROMPT = r"""
-<<SYS>>
+DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
@@ -75,7 +74,6 @@ Remember:
 {% endif %}
 <</SYS>>
 -----------------
-User query: {{query_str}}
 {# History #}
 {% for history in step_history %}
 Step {{history.step}}:
@@ -85,10 +83,10 @@ Step {{history.step}}:
 }
 "observation": "{{history.observation}}"
 {% endfor %}
-You:
 """
 
 
+# TODO: add better logging @xiaoyi
 @dataclass
 class StepOutput:
     step: int
@@ -153,7 +151,7 @@ class ReActAgent(Generator):
         max_steps: int = 10,
         *,
         # the following arguments are inherited from Generator
-        template: str = DEFAULT_REACT_AGENT_PROMPT,
+        template: str = DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[
             Dict
         ] = {},  # you can pass examples here, additionally leverage few-shot or many-shots ICL.
@@ -204,7 +202,7 @@ class ReActAgent(Generator):
             for tool in self.tools
         ]
         # pass the tools to the prompt
-        self.prompt.update_preset_prompt_kwargs(tools=self.tools)
+        self.system_prompt.update_preset_prompt_kwargs(tools=self.tools)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []
@@ -261,6 +259,7 @@ class ReActAgent(Generator):
         # step_history is the only per-query variable, and should not be controlled by the user
         # add the step_history to the prompt_kwargs
         prompt_kwargs["step_history"] = self.step_history
+
         # call the super class Generator to get the response
         response = super().call(
             input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
@@ -353,7 +352,7 @@ if __name__ == "__main__":
     agent = ReActAgent(
         # examples=examples,
         tools=tools,
-        max_steps=1,
+        max_steps=5,
         model_client=GroqAPIClient,
         model_kwargs=llm_model_kwargs,
     )
