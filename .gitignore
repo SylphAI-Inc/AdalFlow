@@ -7,10 +7,16 @@ core/__pycache__
 lightrag/__pycache__
 components/*/__pycache__
 components/__pycache__
+*/__pycache__
 tests/__pycache__
 test_li.py
 test_li*.py
 dist/
+li_test/
+lib/
+logs/
+__pycache__/
+docs/source/
 llama3/
 docs/build/
 docs/_build/
