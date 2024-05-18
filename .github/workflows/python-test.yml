@@ -1,0 +1,37 @@
+name: Python Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, 3.10]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run tests with pytest
+        run: pytest
+
+      - name: Upload pytest results as an artifact (optional)
+        uses: actions/upload-artifact@v2
+        if: always() # Always run this step to ensure test results are saved even if previous steps fail
+        with:
+          name: pytest-results
+          path: .pytest_cache

@@ -30,3 +30,6 @@ docs/source/documents/
 lib/
 docs/source/apis/tests*.rst
 li_test/
+.mypy_cache/
+.pytest_cache/
+local_cache/

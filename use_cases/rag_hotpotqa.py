@@ -4,7 +4,6 @@ import yaml
 
 from datasets import load_dataset
 
-from core.openai_client import OpenAIClient
 from core.generator import Generator
 from core.data_classes import Document
 
@@ -17,7 +16,11 @@ from eval.evaluator import (
     DEFAULT_LLM_EVALUATOR_PROMPT,
 )
 from core.prompt_builder import Prompt
+
 from use_cases.rag import RAG
+
+from components.api_client import OpenAIClient
+
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 

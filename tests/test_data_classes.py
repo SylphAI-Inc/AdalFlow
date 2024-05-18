@@ -1,5 +1,6 @@
 import pytest
 from uuid import uuid4
+
 from core.data_classes import UserQuery, AssistantResponse, DialogTurn, DialogSession
 
 
