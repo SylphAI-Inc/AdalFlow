@@ -4,13 +4,16 @@ We use dataclass which provides a decorator that automatically adds special meth
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Sequence
+from typing import List, Dict, Any, Optional, Union
 from collections import OrderedDict
 from dataclasses import dataclass, field, InitVar
-from typing import overload
+from uuid import UUID
+
 
 from datetime import datetime
 import uuid
+
+from core.tokenizer import Tokenizer
 
 # if sys.version_info >= (3, 10, 1):
 #     Literal = typing.Literal
@@ -176,3 +179,65 @@ class DialogSession:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
+
+
+@dataclass
+class Document:
+    r"""A document object is a text container with optional metadata and vector representation.
+    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
+    """
+
+    text: str = None
+
+    meta_data: Optional[Dict[str, Any]] = None
+    # can save data for filtering at retrieval time too
+    vector: List[float] = field(default_factory=list)
+    # the vector representation of the document
+
+    id: Optional[str] = field(
+        default_factory=lambda: str(uuid.uuid4())
+    )  # unique id of the document
+    order: Optional[int] = (
+        None  # order of the chunked document in the original document
+    )
+    score: Optional[float] = None  # used in retrieved output
+    parent_doc_id: Optional[Union[str, UUID]] = (
+        None  # id of the Document where the chunk is from
+    )
+    estimated_num_tokens: Optional[int] = (
+        None  # useful for cost and chunking estimation
+    )
+
+    def __post_init__(self):
+        if self.estimated_num_tokens is None and self.text:
+            tokenizer = Tokenizer()
+            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+
+    @staticmethod
+    def from_dict(doc: Dict):
+        assert "meta_data" in doc, "meta_data is required"
+        assert "text" in doc, "text is required"
+        # if "estimated_num_tokens" not in doc:
+        #     tokenizer = Tokenizer()
+        #     doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
+        if "id" not in doc:
+            doc["id"] = uuid.uuid4()
+
+        return Document(**doc)
+
+    def __repr__(self) -> str:
+        # TODO: repr only those non empty fields
+        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:50]}, estimated_num_tokens={self.estimated_num_tokens})"
+
+    def __str__(self):
+        return self.__repr__()
+
+
+@dataclass
+class RetrieverOutput:
+    r"""Mainly used to retrieve a list of documents with scores."""
+
+    doc_indexes: List[int]  # either index or ids potentially
+    doc_scores: Optional[List[float]] = None
+    query: Optional[str] = None
+    documents: Optional[List[Document]] = None

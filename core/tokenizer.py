@@ -1,15 +1,24 @@
 import tiktoken
 
 from typing import List
+from core.component import Component
 
 
-##############################################
-# Helper modules for RAG
-##############################################
-class Tokenizer:
+class Tokenizer(Component):
+    """
+    Tokenizer component that wraps around the tokenizer from tiktoken.
+    __call__ is the same as forward/encode, so that we can use it in Sequential
+    Additonally, you can can also use encode and decode methods.
+    """
+
     def __init__(self, name: str = "cl100k_base"):
+        super().__init__()
         self.name = name
         self.tokenizer = tiktoken.get_encoding(name)
+
+    # call is the same as forward/encode, so that we can use it in Sequential
+    def __call__(self, input: str) -> List[str]:
+        return self.encode(input)
 
     def encode(self, text: str) -> List[str]:
         return self.tokenizer.encode(text)
