@@ -10,7 +10,7 @@ from core.data_classes import Document
 
 from core.string_parser import JsonParser
 from core.component import Sequential
-from core.evaluator import (
+from eval.evaluator import (
     RetrieverEvaluator,
     AnswerMacthEvaluator,
     LLMasJudge,
@@ -43,10 +43,10 @@ if __name__ == "__main__":
         settings = yaml.safe_load(file)
     print(settings)
 
-    # Load the dataset and select the first 10 as the showcase
+    # Load the dataset and select the first 5 as the showcase
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
     dataset = load_dataset(path="hotpot_qa", name="fullwiki")
-    dataset = dataset["train"].select(range(3))
+    dataset = dataset["train"].select(range(5))
 
     all_questions = []
     all_retrieved_context = []
