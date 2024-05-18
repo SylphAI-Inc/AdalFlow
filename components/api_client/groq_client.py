@@ -1,3 +1,7 @@
+import os
+from typing import Dict, Sequence, Union, Optional, Any
+import backoff
+
 from groq import Groq, AsyncGroq, AsyncStream
 from groq import (
     APITimeoutError,
@@ -5,9 +9,6 @@ from groq import (
     RateLimitError,
     UnprocessableEntityError,
 )
-import os
-from typing import Dict, Sequence, Union, Optional
-import backoff
 
 from core.api_client import APIClient
 from core.data_classes import ModelType
@@ -53,6 +54,13 @@ class GroqAPIClient(APIClient):
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
         self.async_client = AsyncGroq()
+
+    def parse_chat_completion(self, completion: Any) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        # TODO: standardize the completion
+        """
+        return completion.choices[0].message.content
 
     def convert_input_to_api_kwargs(
         self,

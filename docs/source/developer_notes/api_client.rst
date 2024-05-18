@@ -43,6 +43,14 @@ For the subclass model type to convert their input into the `api_kwargs` that ca
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
 
+    def parse_chat_completion(self, completion: Any) -> str:
+        r"""
+        Parse the chat completion to a structure your sytem standarizes. (here is str)
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement parse_chat_completion method"
+        )
+
 The `call` method is used to make a synchronous call to the API. The subclass model type will have to implement this method.
 
 .. code-block:: python

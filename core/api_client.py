@@ -72,6 +72,15 @@ class APIClient(Component):
         raise NotImplementedError(
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
+    
+    def parse_chat_completion(self, completion: Any) -> str:
+        r"""
+        Parse the chat completion to a structure your sytem standarizes. (here is str)
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement parse_chat_completion method"
+        )
+
 
     @staticmethod
     def _process_text(text: str) -> str:
