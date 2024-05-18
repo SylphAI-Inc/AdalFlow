@@ -105,7 +105,7 @@ class StepOutput:
 
 class ReActAgent(Generator):
     r"""
-    ReActAgent is a type of Generator that runs multiple and sequential steps to generate the final response, with default_react_agent_prompt_template and JsonParser output_processors.
+    ReActAgent is a type of Generator that runs multiple and sequential steps to generate the final response, with DEFAULT_REACT_AGENT_SYSTEM_PROMPT and JsonParser output_processors.
 
     Users need these arguments to initialize the ReActAgent:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
@@ -126,7 +126,6 @@ class ReActAgent(Generator):
     def add(a: int, b: int) -> int:
         '''Add two numbers.'''
         return a + b
-    examples = [...] # optional, a list of string examples
     agent = ReActAgent(
     tools=[multiply, add],
     model_client=OpenAIClient,
@@ -134,6 +133,7 @@ class ReActAgent(Generator):
     )
 
     Using examples:
+
     preset_prompt_kwargs = {"examples": examples}
     agent = ReActAgent(
     tools=[multiply, add],
