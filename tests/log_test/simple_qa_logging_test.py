@@ -27,9 +27,9 @@ class SimpleQA(Component):
 
 
 if __name__ == "__main__":
-    from utils.logging_tools import LogSettings
+    from utils.logging_config import LogSettings
     # configure the logging once and use it
-    log_settings = LogSettings(logger_name='testlog', output_type="str", method="file", file_name="./tests/log_test/app.log", log_level="INFO")
+    log_settings = LogSettings(file_name="./tests/log_test/app.log")
     logger = log_settings.get_logger()  # Retrieve the configured logger
     
     simple_qa = SimpleQA()
