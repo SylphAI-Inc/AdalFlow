@@ -1,8 +1,6 @@
 from typing import Any, List, Optional
 import dotenv
 
-
-from core.openai_client import OpenAIClient
 from core.generator import Generator
 from core.data_components import (
     RetrieverOutputToContextStr,
@@ -10,11 +8,13 @@ from core.data_components import (
 
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
-from components.retriever.bm25_retriever import InMemoryBM25Retriever
 from core.db import LocalDocumentDB
 from core.data_classes import Document
 
-dotenv.load_dotenv(dotenv_path=".env", override=True)
+from components.retriever import InMemoryBM25Retriever
+from components.api_client import OpenAIClient
+
+import utils.setup_env
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users

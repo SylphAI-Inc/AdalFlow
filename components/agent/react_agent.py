@@ -23,14 +23,12 @@ from dataclasses import dataclass
 
 from core.generator import Generator
 from core.component import Component
-from core.prompt_builder import Prompt
 from core.tool_helper import FunctionTool, AsyncCallable
 from core.string_parser import JsonParser, parse_function_call
 
 from core.api_client import APIClient
 
-DEFAULT_REACT_AGENT_PROMPT = r"""
-<<SYS>>
+DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
@@ -76,7 +74,6 @@ Remember:
 {% endif %}
 <</SYS>>
 -----------------
-User query: {{user_query}}
 {# History #}
 {% for history in step_history %}
 Step {{history.step}}:
@@ -86,13 +83,10 @@ Step {{history.step}}:
 }
 "observation": "{{history.observation}}"
 {% endfor %}
-You:
 """
 
-# NOTE: if the positional and keyword arguments are not working well,
-# you can let it be a json string and use only keyword arguments and use json parser to parse the arguments instead of parse_function_call
 
-
+# TODO: add better logging @xiaoyi
 @dataclass
 class StepOutput:
     step: int
@@ -111,11 +105,14 @@ class StepOutput:
 
 class ReActAgent(Generator):
     r"""
-    ReActAgent is a type of Generator that runs multiple steps to generate the final response, with default_react_agent_prompt_template and JsonParser output_processors.
-    Users only need to set:
+    ReActAgent is a type of Generator that runs multiple and sequential steps to generate the final response, with DEFAULT_REACT_AGENT_SYSTEM_PROMPT and JsonParser output_processors.
+
+    Users need these arguments to initialize the ReActAgent:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
     - max_steps: the maximum number of steps the agent can take to complete the task.
     - All other arguments are inherited from Generator such as model_client, model_kwargs, prompt, output_processors, etc.
+
+    There are `examples` which is optional, a list of string examples in the prompt.
 
     Example:
     ```
@@ -129,12 +126,22 @@ class ReActAgent(Generator):
     def add(a: int, b: int) -> int:
         '''Add two numbers.'''
         return a + b
-    examples = [...] # optional, a list of string examples
     agent = ReActAgent(
     tools=[multiply, add],
-    model_client=OpenAIClient(),
+    model_client=OpenAIClient,
     model_kwargs={"model": "gpt-3.5-turbo"},
     )
+
+    Using examples:
+
+    preset_prompt_kwargs = {"examples": examples}
+    agent = ReActAgent(
+    tools=[multiply, add],
+    model_client=OpenAIClient,
+    model_kwargs={"model": "gpt-3.5-turbo"},
+    preset_prompt_kwargs=preset_prompt_kwargs,
+    )
+    ```
     """
 
     def __init__(
@@ -144,8 +151,10 @@ class ReActAgent(Generator):
         max_steps: int = 10,
         *,
         # the following arguments are inherited from Generator
-        template: str = DEFAULT_REACT_AGENT_PROMPT,
-        preset_prompt_kwargs: Optional[Dict] = None,
+        template: str = DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
+        preset_prompt_kwargs: Optional[
+            Dict
+        ] = {},  # you can pass examples here, additionally leverage few-shot or many-shots ICL.
         output_processors: Optional[Component] = JsonParser(),
         model_client: APIClient,
         model_kwargs: Optional[Dict] = {},
@@ -192,12 +201,15 @@ class ReActAgent(Generator):
             )
             for tool in self.tools
         ]
+        # pass the tools to the prompt
+        self.system_prompt.update_preset_prompt_kwargs(tools=self.tools)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []
         self.output_processors = output_processors
 
     def reset(self):
+        r"""Reset the agent to start a new query."""
         self.step_history = []
 
     def _parse_text_response(
@@ -207,7 +219,6 @@ class ReActAgent(Generator):
         Parse the json output
         """
         try:
-            # json_obj_response = self.output_processors(response)
             thought_key = "thought"
             action_key = "action"
             thought = json_obj_response.get(thought_key, "")
@@ -240,18 +251,16 @@ class ReActAgent(Generator):
             return action_step
 
     def _run_one_step(
-        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs
+        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs: Dict
     ) -> str:
         """
         Run one step of the agent.
         """
-        prompt_kwargs = {
-            "user_query": input,
-            "tools": self.tools,
-            "step_history": self.step_history,
-            "examples": self.examples,
-        }
-        # call the super class to generate the response
+        # step_history is the only per-query variable, and should not be controlled by the user
+        # add the step_history to the prompt_kwargs
+        prompt_kwargs["step_history"] = self.step_history
+
+        # call the super class Generator to get the response
         response = super().call(
             input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
@@ -273,7 +282,7 @@ class ReActAgent(Generator):
         promt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> Any:
-        """If you want to use examples, you can pass promt_kwargs with examples."""
+        r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         for i in range(self.max_steps):
             step = i + 1
             try:
@@ -292,9 +301,14 @@ class ReActAgent(Generator):
         self.reset()
         return answer
 
+    def extra_repr(self) -> str:
+        s = f"tools={self.tools}, max_steps={self.max_steps}, "
+        s += super().extra_repr()
+        return s
+
 
 if __name__ == "__main__":
-    from components.api_client.groq_client import GroqAPIClient
+    from components.api_client import GroqAPIClient
     import utils.setup_env
 
     def multiply(a: int, b: int) -> int:
@@ -336,10 +350,10 @@ if __name__ == "__main__":
         # """
     ]
     agent = ReActAgent(
-        examples=examples,
+        # examples=examples,
         tools=tools,
-        max_steps=10,
-        model_client=GroqAPIClient(),
+        max_steps=5,
+        model_client=GroqAPIClient,
         model_kwargs=llm_model_kwargs,
     )
     print(agent)

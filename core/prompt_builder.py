@@ -7,7 +7,7 @@ from functools import lru_cache
 
 from core.component import Component
 
-from core.default_prompt_template import DEFAULT_LIGHTRAG_PROMPT
+from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 # cache the environment for faster template rendering
@@ -37,7 +37,7 @@ class Prompt(Component):
     def __init__(
         self,
         *,
-        template: str = DEFAULT_LIGHTRAG_PROMPT,
+        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},
     ):
         super().__init__()
@@ -50,16 +50,19 @@ class Prompt(Component):
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
         self.prompt_kwargs: Dict[str, Any] = {}
-        for var in self._find_template_variables():
+        for var in self._find_template_variables(self._template_string):
             self.prompt_kwargs[var] = None
         self.preset_prompt_kwargs = preset_prompt_kwargs
 
     def update_preset_prompt_kwargs(self, **kwargs):
         self.preset_prompt_kwargs.update(kwargs)
 
-    def _find_template_variables(self):
+    def is_key_in_template(self, key: str) -> bool:
+        return key in self.prompt_kwargs
+
+    def _find_template_variables(self, template_str: str):
         """Automatically find all the variables in the template."""
-        parsed_content = self.template.environment.parse(self._template_string)
+        parsed_content = self.template.environment.parse(template_str)
         return jinja2.meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
@@ -67,7 +70,8 @@ class Prompt(Component):
         if self.preset_prompt_kwargs:
             composed_kwargs.update(self.preset_prompt_kwargs)
         # runtime kwargs will overwrite the preset kwargs
-        composed_kwargs.update(kwargs)
+        if kwargs:
+            composed_kwargs.update(kwargs)
         return composed_kwargs
 
     def print_prompt(self, **kwargs):
@@ -78,13 +82,9 @@ class Prompt(Component):
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
 
-            print(f"pass_kwargs: {pass_kwargs}  ")
-
             prompt_str = self.template.render(**pass_kwargs)
             print("Prompt:")
-            print("-------")
             print(prompt_str)
-            print("-------")
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
@@ -112,4 +112,6 @@ class Prompt(Component):
         s = f"template: {self._template_string}"
         if self.preset_prompt_kwargs:
             s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
+        if self.prompt_kwargs:
+            s += f", prompt_kwargs: {self.prompt_kwargs}"
         return s

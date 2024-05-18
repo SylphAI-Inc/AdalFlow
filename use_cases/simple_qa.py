@@ -1,7 +1,6 @@
 import asyncio
+
 from core.generator import Generator
-
-
 from core.component import Component
 
 import utils.setup_env
@@ -18,7 +17,8 @@ class SimpleQA(Component):
         super().__init__()
         if provider == "openai":
             try:
-                from core.openai_client import OpenAIClient
+                from components.api_client import OpenAIClient
+
             except ImportError:
                 raise ImportError(
                     "Please install the OpenAI API client by running 'pip install openai'"
@@ -27,13 +27,22 @@ class SimpleQA(Component):
             model_client = OpenAIClient
         elif provider == "groq":
             try:
-                from components.api_client.groq_client import GroqAPIClient
+                from components.api_client import GroqAPIClient
             except ImportError:
                 raise ImportError(
                     "Please install the Groq API client by running 'pip install groq'"
                 )
 
             model_client = GroqAPIClient
+        elif provider == "anthropic":
+            try:
+                from components.api_client import AnthropicAPIClient
+            except ImportError:
+                raise ImportError(
+                    "Please install the Anthropic API client by running 'pip install anthropic'"
+                )
+
+            model_client = AnthropicAPIClient
         else:
             raise ValueError(f"Unknown provider: {provider}")
         self.generator = Generator(model_client=model_client, model_kwargs=model_kwargs)
@@ -52,10 +61,11 @@ if __name__ == "__main__":
     query = "What is the capital of France?"
     queries = [query] * 10
 
-    providers = ["openai", "groq"]
+    providers = ["openai", "groq", "anthropic"]
     model_kwargs_list = [
         {"model": "gpt-3.5-turbo"},
         {"model": "llama3-8b-8192"},
+        {"model": "claude-3-opus-20240229", "max_tokens": 1000},
     ]
     for provider, model_kwargs in zip(providers, model_kwargs_list):
         simple_qa = SimpleQA(provider=provider, model_kwargs=model_kwargs)

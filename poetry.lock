@@ -151,6 +151,30 @@ files = [
 ]
 
 [[package]]
+name = "anthropic"
+version = "0.26.0"
+description = "The official Python library for the anthropic API"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "anthropic-0.26.0-py3-none-any.whl", hash = "sha256:38fc415561d71dcf263b89da0cc6ecec498379b56256fc4242e9128bc707b283"},
+    {file = "anthropic-0.26.0.tar.gz", hash = "sha256:6aaffeb05d515cf9788eef57150a5f827f3786883628ccac71dbe5671ab6f44e"},
+]
+
+[package.dependencies]
+anyio = ">=3.5.0,<5"
+distro = ">=1.7.0,<2"
+httpx = ">=0.23.0,<1"
+pydantic = ">=1.9.0,<3"
+sniffio = "*"
+tokenizers = ">=0.13.0"
+typing-extensions = ">=4.7,<5"
+
+[package.extras]
+bedrock = ["boto3 (>=1.28.57)", "botocore (>=1.31.57)"]
+vertex = ["google-auth (>=2,<3)"]
+
+[[package]]
 name = "anyio"
 version = "4.3.0"
 description = "High level compatibility layer for multiple asynchronous event loop implementations"
@@ -1867,6 +1891,20 @@ postgres = ["asyncpg (>=0.28.0,<0.29.0)", "pgvector (>=0.1.0,<0.2.0)", "psycopg2
 query-tools = ["guidance (>=0.0.64,<0.0.65)", "jsonpath-ng (>=1.6.0,<2.0.0)", "lm-format-enforcer (>=0.4.3,<0.5.0)", "rank-bm25 (>=0.2.2,<0.3.0)", "scikit-learn", "spacy (>=3.7.1,<4.0.0)"]
 
 [[package]]
+name = "llama-index-llms-ollama"
+version = "0.1.3"
+description = "llama-index llms ollama integration"
+optional = false
+python-versions = "<4.0,>=3.8.1"
+files = [
+    {file = "llama_index_llms_ollama-0.1.3-py3-none-any.whl", hash = "sha256:510cefea9a3a76160e47340a870ba9f66603e0a495f0e1c54aaae42cd096edf4"},
+    {file = "llama_index_llms_ollama-0.1.3.tar.gz", hash = "sha256:c796654b73d103f9324ed4c55c76c49b73738abc6e50d02596ed5e2b1c66dec5"},
+]
+
+[package.dependencies]
+llama-index-core = ">=0.10.1,<0.11.0"
+
+[[package]]
 name = "llama-index-llms-openai"
 version = "0.1.18"
 description = "llama-index llms openai integration"
@@ -1879,6 +1917,20 @@ files = [
 
 [package.dependencies]
 llama-index-core = ">=0.10.24,<0.11.0"
+
+[[package]]
+name = "llama-index-llms-replicate"
+version = "0.1.3"
+description = "llama-index llms replicate integration"
+optional = false
+python-versions = ">=3.8.1,<4.0"
+files = [
+    {file = "llama_index_llms_replicate-0.1.3-py3-none-any.whl", hash = "sha256:585ad62653c4a97807161f38c7f5c47e53c24fdbd7dd10c39da1dd0c703913f8"},
+    {file = "llama_index_llms_replicate-0.1.3.tar.gz", hash = "sha256:2e8769c0f79c99bc77d152152428e46e9491a84a8346051efbfdd825fece0816"},
+]
+
+[package.dependencies]
+llama-index-core = ">=0.10.1,<0.11.0"
 
 [[package]]
 name = "llama-index-multi-modal-llms-openai"
@@ -4745,4 +4797,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.12"
-content-hash = "c47a66444076cf8adc2da1eab22c2c0c30bf35b1dd182c19641b8126bd4e8f9b"
+content-hash = "733443bdd381ab316abe3f7d6b68fd7edf9d357804d6cf48810dd26184abbffa"

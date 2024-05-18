@@ -4,7 +4,7 @@ This demonstrates how to wrap the OpenAI API client to fit into LightRAG APIClie
 
 import os
 from core.api_client import APIClient
-from typing import Any, Dict, Sequence, Union
+from typing import Any, Dict, Sequence, Union, Optional, List
 from core.data_classes import ModelType
 from openai import OpenAI, AsyncOpenAI
 import backoff
@@ -15,6 +15,8 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
+
+from openai.types import Completion
 
 
 class OpenAIClient(APIClient):
@@ -35,15 +37,23 @@ class OpenAIClient(APIClient):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI()
 
-    def _combine_input_and_model_kwargs(
+    def parse_chat_completion(self, completion: Completion) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        # TODO: standardize the completion
+        """
+        return completion.choices[0].message.content
+
+    def convert_input_to_api_kwargs(
         self,
         input: Union[str, Sequence],
+        system_input: Optional[Union[str]] = None,
         combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
-        Specify the API input type.
-        Convert the Component's standard input and model_kwargs into API-specific format
+        Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
+        Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format
         """
         final_model_kwargs = combined_model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
@@ -54,8 +64,14 @@ class OpenAIClient(APIClient):
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
             # convert input to messages
-            assert isinstance(input, Sequence), "input must be a sequence of messages"
-            final_model_kwargs["messages"] = input
+            messages: List[Dict[str, str]] = []
+            if system_input is not None and system_input != "":
+                messages.append({"role": "system", "content": system_input})
+            messages.append({"role": "user", "content": input})
+            assert isinstance(
+                messages, Sequence
+            ), "input must be a sequence of messages"
+            final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
@@ -71,7 +87,7 @@ class OpenAIClient(APIClient):
         ),
         max_time=5,
     )
-    def _call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         """
         kwargs is the combined input and model_kwargs
         """
@@ -93,7 +109,7 @@ class OpenAIClient(APIClient):
         ),
         max_time=5,
     )
-    async def _acall(
+    async def acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         """
