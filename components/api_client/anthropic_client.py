@@ -1,6 +1,6 @@
 # https://docs.anthropic.com/en/api/messages
 import os
-from typing import Any
+from typing import Any, Dict, Optional, Sequence, Union
 import anthropic
 from anthropic import (
     RateLimitError,
@@ -9,32 +9,98 @@ from anthropic import (
     UnprocessableEntityError,
     BadRequestError,
 )
+from anthropic.types import Message
+import backoff
+
 
 from core.api_client import APIClient
+from core.data_classes import ModelType
 
 
 class AnthropicAPIClient(APIClient):
     def __init__(self):
         super().__init__()
+        self.sync_client = self._init_sync_client()
+        self.async_client = None  # only initialize if the async call is called
 
     def _init_sync_client(self):
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
             raise ValueError("Environment variable ANTHROPIC_API_KEY must be set")
-        self.sync_client = anthropic.Anthropic()
+        return anthropic.Anthropic()
 
     def _init_async_client(self):
         api_key = os.getenv("ANTHROPIC_API_KEY")
         if not api_key:
             raise ValueError("Environment variable ANTHROPIC_API_KEY must be set")
-        self.async_client = anthropic.AsyncAnthropic()
+        return anthropic.AsyncAnthropic()
 
-    def _combine_input_and_model_kwargs(
+    def parse_chat_completion(self, completion: Message) -> str:
+        print(f"completion: {completion}")
+        return completion.content[0].text
+
+    def convert_input_to_api_kwargs(
         self,
-        input: Any,  # user input such as a query or a sequence of str for embeddings
-        combined_model_kwargs: dict = {},
+        input: Union[str, Sequence],
+        system_input: Optional[Union[str]] = None,
+        combined_model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
-        return {
-            "message": input,
-            **combined_model_kwargs,
-        }
+        api_kwargs = combined_model_kwargs.copy()
+        if model_type == ModelType.LLM:
+            api_kwargs["messages"] = [
+                {"role": "user", "content": input},
+            ]
+            if system_input and system_input != "":
+                api_kwargs["system"] = system_input
+        else:
+            raise ValueError(f"Model type {model_type} not supported")
+        return api_kwargs
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+            BadRequestError,
+        ),
+        max_time=5,
+    )
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+        """
+        kwargs is the combined input and model_kwargs
+        """
+        if model_type == ModelType.EMBEDDER:
+            raise ValueError(f"Model type {model_type} not supported")
+        elif model_type == ModelType.LLM:
+            return self.sync_client.messages.create(**api_kwargs)
+        else:
+            raise ValueError(f"model_type {model_type} is not supported")
+
+    @backoff.on_exception(
+        backoff.expo,
+        (
+            APITimeoutError,
+            InternalServerError,
+            RateLimitError,
+            UnprocessableEntityError,
+            BadRequestError,
+        ),
+        max_time=5,
+    )
+    async def acall(
+        self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
+    ):
+        """
+        kwargs is the combined input and model_kwargs
+        """
+        if self.async_client is None:
+            self.async_client = self._init_async_client()
+        if model_type == ModelType.EMBEDDER:
+            raise ValueError(f"Model type {model_type} not supported")
+        elif model_type == ModelType.LLM:
+            return await self.async_client.messages.create(**api_kwargs)
+        else:
+            raise ValueError(f"model_type {model_type} is not supported")

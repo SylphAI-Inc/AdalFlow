@@ -113,21 +113,13 @@ class Generator(Component):
     def print_prompt(self, **kwargs) -> str:
         self.system_prompt.print_prompt(**kwargs)
 
-    # TODO: move this potntially to api_client
-    def parse_completion(self, completion: Any) -> str:
-        """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        # TODO: standardize the completion
-        """
-        return completion.choices[0].message.content
-
     def extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
         return s
 
     def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
-        response = self.parse_completion(completion)
+        response = self.model_client.parse_chat_completion(completion)
         if self.output_processors:
             response = self.output_processors(response)
         return response
@@ -160,6 +152,7 @@ class Generator(Component):
         r"""Call the model with the input(user_query) and model_kwargs."""
 
         api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )

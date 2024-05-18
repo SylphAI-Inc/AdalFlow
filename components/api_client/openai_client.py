@@ -16,6 +16,8 @@ from openai import (
     BadRequestError,
 )
 
+from openai.types import Completion
+
 
 class OpenAIClient(APIClient):
     def __init__(self):
@@ -35,7 +37,13 @@ class OpenAIClient(APIClient):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI()
 
-    # TODO: maybe a better name
+    def parse_chat_completion(self, completion: Completion) -> str:
+        """
+        Parse the completion to a structure your sytem standarizes. (here is str)
+        # TODO: standardize the completion
+        """
+        return completion.choices[0].message.content
+
     def convert_input_to_api_kwargs(
         self,
         input: Union[str, Sequence],
