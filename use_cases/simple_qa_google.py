@@ -5,7 +5,7 @@ We just need to very basic generator that can be used to generate text from a pr
 from core.generator import Generator
 from core.component import Component
 
-from components.api_client import GroqAPIClient
+from components.api_client import GoogleGenAIClient
 
 import utils.setup_env
 
@@ -14,8 +14,8 @@ class SimpleQA(Component):
     def __init__(self):
         super().__init__()
         self.generator = Generator(
-            model_client=GroqAPIClient,
-            model_kwargs={"model": "llama3-8b-8192"},
+            model_client=GoogleGenAIClient,
+            model_kwargs={"model": "gemini-1.5-pro-latest"},
             preset_prompt_kwargs={
                 "task_desc_str": "You are a helpful assistant and with a great sense of humor."
             },

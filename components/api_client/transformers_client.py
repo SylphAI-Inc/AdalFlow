@@ -95,10 +95,10 @@ class TransformersClient(APIClient):
     def _init_sync_client(self):
         return TransformerEmbedder()
 
-    def _call(self, kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        return self.sync_client(**kwargs)
+    def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+        return self.sync_client(**api_kwargs)
 
-    def _combine_input_and_model_kwargs(
+    def convert_input_to_api_kwargs(
         self,
         input: Any,
         combined_model_kwargs: dict = {},
@@ -131,9 +131,16 @@ if __name__ == "__main__":
             "model": "thenlper/gte-base",
             "mock": False,
         }
-        output = transformer_client.call(
-            input="Hello world", model_type=ModelType.EMBEDDER, model_kwargs=kwargs
+        api_kwargs = transformer_client.convert_input_to_api_kwargs(
+            input="Hello world",
+            combined_model_kwargs=kwargs,
+            model_type=ModelType.EMBEDDER,
         )
+        print(api_kwargs)
+        output = transformer_client.call(
+            api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
+        )
+
         print(transformer_client)
         print(output)
 
