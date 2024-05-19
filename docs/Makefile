@@ -1,12 +1,14 @@
 # Minimal makefile for Sphinx documentation
 #
 
-# You can set these variables from the command line, and also
-# from the environment for the first two.
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = source
+
+# You can set these variables from the command line.
+SPHINXOPTS    =
+SPHINXBUILD   = sphinx-build
+SPHINXPROJ    = LightRAG
+SOURCEDIR     = source# the source of output and conf.py
 BUILDDIR      = build
+APIDOCOUTDIR  = $(SOURCEDIR)/apis
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -18,3 +20,14 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+apidoc:
+	@echo "Running sphinx-apidoc for core"
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate
+	@echo "Running sphinx-apidoc for components"
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate
+
+
+
+html: apidoc
+	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

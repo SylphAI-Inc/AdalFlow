@@ -1,12 +1,12 @@
-class Prompt [link to api class]
+Prompt [link to api class]
 ============
 LightRAG library in default maximizes developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
 
 For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
-often you have a message `{'role': 'user', 'text': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and 
-intermediate step history from the agent.
+often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and 
+intermediate step history from agents.
 
-Our `DEFAULT_LIGHTRAG_PROMPT` decides the content you send to the system and is represented with `jinjia2` template with 6 variables: `task_desc_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
+Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 6 important sections. We leverage `jinjia2` template with 6 variables: `task_desc_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
 
 .. code-block:: python
    :linenos:
@@ -59,8 +59,14 @@ Across our library, here our advanced features:
 
 - Agent with multiple step planning and replanning capabilities, where the `steps_str` variable is used to pass the previous steps to the model.
 
-Note: this means in default our out-of-box components would not support API providers's tools/function calls as we only send the system and user messages to the model.
-But it should not stop you from implementing them yourself.
+**Note: this means in default our out-of-box components would not support API providers's tools/function calls as we only send the system and user messages to the model.
+But it should not stop you from implementing them yourself.**
+
+Prompt class
+---------------------
+We designed a `Prompt` class to render the `template` with the variables to string as the final system prompt. In the simplest case, the string is empty and we will only send
+a user message to the model. And in most cases, you want to add at least the `task_desc_str` to the system message.
+
 
 Prompt and Special Tokens context
 ---------------------

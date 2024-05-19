@@ -45,12 +45,14 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
 
    tutorials/simpleQA
 
+
 .. toctree::
    :maxdepth: 1
    :caption: API Reference
 
-   apis/components/components
-   apis/core/core
+   apis/core/modules
+   apis/components/modules
+
 
 .. toctree::
    :glob:

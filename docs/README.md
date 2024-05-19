@@ -171,3 +171,41 @@ make html
 Remember to exclude any unnecessary files in `.gitignore`. Please don’t commit files in `docs/build`. We can dynamically build local documentation with the make files and `source/`.
 
 Please push your updates to the GitHub repo.
+
+The structure of the code base and the docs:
+
+```
+LightRAG/
+├── docs/
+│   ├── apis/
+│   │   ├── core/
+│   │   │   ├── core.module1.rst
+│   │   │   ├── core.module2.rst
+│   │   ├── components/
+│   │   │   ├── components.module1.rst
+│   │   │   ├── components.module2.rst
+│   ├── build/
+│   │   ├── html/
+│   │   │   ├── _static/
+│   │   │   ├── _templates/
+│   │   │   ├── index.html
+│   │   │   ├── core/
+│   │   │   │   ├── core.module1.html
+│   │   │   │   ├── core.module2.html
+│   │   │   ├── components/
+│   │   │   │   ├── components.module1.html
+│   │   │   │   ├── components.module2.html
+│   ├── _static/
+│   ├── _templates/
+│   ├── conf.py
+│   ├── index.rst
+│   ├── Makefile
+├── core/
+│   ├── __init__.py
+│   ├── module1.py
+│   ├── module2.py
+├── components/
+│   ├── __init__.py
+│   ├── module1.py
+│   ├── module2.py
+```
