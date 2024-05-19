@@ -68,11 +68,23 @@ exclude_patterns = []
 # html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
 
-
+# These options are for the sphinx_rtd_theme
+html_theme_options = {
+    "collapse_navigation": False,
+    "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+    "navigation_depth": 4,  # Controls how many headers are shown in the sidebar
+    "includehidden": True,
+    "titles_only": False,
+}
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
+
+
+def setup(app):
+    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
+
 
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
 # whether module names are prefixed before object names in the documentation. This setting is particularly

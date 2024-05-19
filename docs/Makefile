@@ -23,9 +23,9 @@ help:
 
 apidoc:
 	@echo "Running sphinx-apidoc for core"
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate --force --module-first
 	@echo "Running sphinx-apidoc for components"
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force --module-first
 
 
 

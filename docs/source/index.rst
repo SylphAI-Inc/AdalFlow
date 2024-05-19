@@ -50,8 +50,8 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
    :maxdepth: 1
    :caption: API Reference
 
-   apis/core/modules
-   apis/components/modules
+   apis/core/core
+   apis/components/components
 
 
 .. toctree::
