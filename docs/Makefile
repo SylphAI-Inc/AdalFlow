@@ -24,6 +24,8 @@ help:
 apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force
+	@echo "Inserting reference labels into RST files."
+	@python $(SOURCEDIR)/insert_labels.py
 
 
 html: apidoc
