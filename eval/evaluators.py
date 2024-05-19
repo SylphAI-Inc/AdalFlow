@@ -23,7 +23,7 @@ You:
 
 
 class AnswerMacthEvaluator:
-    """
+    r"""
     Evaluator for evaluating the match between predicted answer and ground truth answer.
     Args:
         type (str): Type of matching evaluation. Can be "exact_match" or "fuzzy_match". "exact_match" requires the predicted answer to be exactly the same as the ground truth answer. "fuzzy_match" requires the predicted answer to contain the ground truth answer.
@@ -33,7 +33,7 @@ class AnswerMacthEvaluator:
         self.type = type
 
     def compute_match_acc_single_query(self, pred_answer: str, gt_answer: str) -> float:
-        """
+        r"""
         Compute the match accuracy of the predicted answer for a single query.
         Args:
             pred_answer (str): Predicted answer string
@@ -51,7 +51,7 @@ class AnswerMacthEvaluator:
     def compute_match_acc(
         self, all_pred_answer: List[str], all_gt_answer: List[str]
     ) -> Tuple[float, List[float]]:
-        """
+        r"""
         Compute the match accuracy of the predicted answer for a list of queries.
         Args:
             all_pred_answer (List[str]): List of predicted answer strings
@@ -69,7 +69,7 @@ class AnswerMacthEvaluator:
 
 
 class RetrieverEvaluator:
-    """
+    r"""
     Evaluator for evaluating the performance of a retriever.
     """
 
@@ -79,7 +79,7 @@ class RetrieverEvaluator:
     def compute_recall_single_query(
         self, retrieved_context: str, gt_context: Union[str, List[str]]
     ) -> float:
-        """
+        r"""
         Compute the recall of the retrieved context for a single query.
         Args:
             retrieved_context (str): Retrieved context string
@@ -100,8 +100,8 @@ class RetrieverEvaluator:
         all_retrieved_context: List[str],
         all_gt_context: Union[List[str], List[List[str]]],
     ) -> Tuple[float, List[float]]:
-        """
-        Compute the recall of the retrieved context for a list of queries.
+        r"""
+        Compute the recall of the retrieved context for a list of queries. The recall is the ratio of the number of relevant context strings in the retrieved context to the total number of relevant context strings.
         Args:
             all_retrieved_context (List[str]): List of retrieved context strings
             all_gt_context (Union[List[str], List[List[str]]]: List of ground truth context strings and each of them can be a string or a list of strings
@@ -119,7 +119,7 @@ class RetrieverEvaluator:
     def compute_context_relevance_single_query(
         self, retrieved_context: str, gt_context: Union[str, List[str]]
     ) -> float:
-        """
+        r"""
         Compute the context relevance of the retrieved context for a single query. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
         Args:
             retrieved_context (str): Retrieved context string
@@ -141,7 +141,7 @@ class RetrieverEvaluator:
         all_retrieved_context: List[str],
         all_gt_context: Union[List[str], List[List[str]]],
     ) -> Tuple[float, List[float]]:
-        """
+        r"""
         Compute the context relevance of the retrieved context for a list of queries. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
         Args:
             all_retrieved_context (List[str]): List of retrieved context strings
@@ -164,7 +164,7 @@ class RetrieverEvaluator:
 
 
 class LLMasJudge:
-    """
+    r"""
     LLM as judge for evaluating the performance of a LLM.
 
     Args:
@@ -177,7 +177,7 @@ class LLMasJudge:
     def compute_judgement_single_question(
         self, question: str, pred_answer: str, gt_answer: str, judgement_query: str
     ) -> bool:
-        """
+        r"""
         Get the judgement of the predicted answer for a single question.
         Args:
             question (str): Question string
@@ -204,7 +204,7 @@ class LLMasJudge:
         all_gt_answer: List[str],
         judgement_query: str,
     ) -> List[bool]:
-        """
+        r"""
         Get the judgement of the predicted answer for a list of questions.
         Args:
             all_questions (List[str]): List of question strings
