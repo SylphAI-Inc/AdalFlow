@@ -1,10 +1,6 @@
-"""
-This demonstrates how to wrap the OpenAI API client to fit into LightRAG APIClient
-"""
-
 import os
 from core.api_client import APIClient
-from typing import Any, Dict, Sequence, Union, Optional, List
+from typing import Dict, Sequence, Union, Optional
 from core.data_classes import ModelType
 import backoff
 
@@ -91,6 +87,9 @@ class GoogleGenAIClient(APIClient):
             # remove model from api_kwargs
             model = api_kwargs.pop("model")
             prompt = api_kwargs.pop("prompt")
+
+            assert model != "", "model must be specified"
+            assert prompt != "", "prompt must be specified"
 
             config = genai.GenerationConfig(**api_kwargs)
             llm = genai.GenerativeModel(model_name=model, generation_config=config)

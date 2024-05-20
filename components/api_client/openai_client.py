@@ -1,10 +1,6 @@
-"""
-This demonstrates how to wrap the OpenAI API client to fit into LightRAG APIClient
-"""
-
 import os
 from core.api_client import APIClient
-from typing import Any, Dict, Sequence, Union, Optional, List
+from typing import Dict, Sequence, Union, Optional, List
 from core.data_classes import ModelType
 from openai import OpenAI, AsyncOpenAI
 import backoff

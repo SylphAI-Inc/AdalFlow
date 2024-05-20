@@ -2,7 +2,7 @@ import os
 from typing import Dict, Sequence, Union, Optional, Any
 import backoff
 
-from groq import Groq, AsyncGroq, AsyncStream
+from groq import Groq, AsyncGroq
 from groq import (
     APITimeoutError,
     InternalServerError,

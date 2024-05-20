@@ -1,11 +1,21 @@
-r"""This is our attempt to componentize all API clients,  local or cloud.
+r"""APIClient is LightRAG'protocol for all API clients, cloud or local to communicate with LightRAG's internal components.
+
+We designed the abstract APIClient class to separate the model API calls from the rest of the system,
+making it a plug-and-play component that can be used in functional components like Generator and Embedder.
+
 
 For a particular API provider, such as OpenAI, we will have a class that inherits from APIClient.
 It does four things:
+
 (1) Initialize the client, sync and async.
-(2) Convert the input to the API-specific format.
-(3) Call the API with the right client api method.
+
+(2) Convert the standard LightRAG components inputs to the API-specific format.
+
+(3) Call the API and parse the response.
+
 (4) Handle API specific exceptions and errors to retry the call.
+
+Check the subclasses in `components/api_client/` directory for the functional API clients we have.
 """
 
 from typing import Any, Dict, Union, Optional

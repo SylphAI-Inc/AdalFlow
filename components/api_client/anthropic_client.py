@@ -1,6 +1,5 @@
-# https://docs.anthropic.com/en/api/messages
 import os
-from typing import Any, Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union
 import anthropic
 from anthropic import (
     RateLimitError,
