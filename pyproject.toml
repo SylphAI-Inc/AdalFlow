@@ -17,7 +17,7 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = ">=3.11"
 python-dotenv = "^1.0.1"
 backoff = "^2.2.1"
 jinja2 = "^3.1.3"
