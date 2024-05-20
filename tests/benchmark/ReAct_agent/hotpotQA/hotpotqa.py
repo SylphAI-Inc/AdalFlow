@@ -2,17 +2,19 @@
 https://arxiv.org/abs/2210.03629, published in Mar, 2023
 
 Use LightRAG agent component to build the same version of ReAct agent as in the paper.
-Apply the API code from the Paper (open-source).
+Apply the similar code for wikipedia search from the Paper (open-source).
 Use the default prompt without any example.
 """
 
 
 import dotenv
-from tests.benchmark.ReAct_agent.paper_code import wikienv, wrappers
 from components.api_client.openai_client import OpenAIClient
 from components.agent.react_agent import ReActAgent
 from core.tool_helper import FunctionTool
+from core.api_client import APIClient
 import time
+from tests.benchmark.ReAct_agent.hotpotQA.tools import search, lookup
+from eval.evaluator import AnswerMacthEvaluator
 
 
 # load evironment
@@ -32,71 +34,56 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 # Here are some examples.
 # """
 
-class HotpotQAReActAgent:
-    """
-    Use LightRAG agent component to build the same version of ReAct agent as in the paper.
-    Apply the API code from the Paper (open-source).
-    Use the default prompt without any example.
-    """
-    def __init__(self, model="gpt-3.5-turbo"):
-        dotenv.load_dotenv(dotenv_path=".env", override=True)
-        self.env = self.setup_environment()
-        self.agent = self.setup_agent(model)
+from components.api_client import GroqAPIClient
+tools = [
+        FunctionTool.from_defaults(fn=search),
+        FunctionTool.from_defaults(fn=lookup),
+    ]
 
-    def setup_environment(self):
-        """
-        Sets up the Wiki environment and wraps it with necessary wrappers.
-        """
-        env = wikienv.WikiEnv()
-        env = wrappers.HotPotQAWrapper(env, split="dev")
-        env = wrappers.LoggingWrapper(env)
-        return env
+llm_model_kwargs = {
+        "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
+        # mistral also not good: mixtral-8x7b-32768, but with better prompt, it can still work
+        "temperature": 0.0,
+    }
 
-    def setup_agent(self, model):
-        """
-        Configures and returns a ReAct Agent with specified tools and model.
-        """
-        tools = [
-            FunctionTool.from_defaults(fn=self.search),
-            FunctionTool.from_defaults(fn=self.lookup)
-        ]
-        return ReActAgent(
-            tools=tools,
-            model_client=OpenAIClient,  # Ensure OpenAIClient is instantiated
-            model_kwargs={"model": model}
-        )
+# TODO: Add examples to improve the performance
+# examples = [] 
 
-    def search(self, entity: str) -> str:
-        """
-        Searches for an entity on Wikipedia.
-        """
-        self.env.step(f"search({entity})")
-        return self.env.obs
+react_agent = ReActAgent(
+    # examples=examples,
+    tools=tools,
+    # max_steps=5,
+    model_client=GroqAPIClient,
+    model_kwargs=llm_model_kwargs,
+)
 
-    def lookup(self, keyword: str) -> str:
-        """
-        Searches within a specific text passage and returns the next sentence containing the keyword.
-        """
-        self.env.step(f"lookup({keyword})")
-        return self.env.obs
+import json
+evaluator = AnswerMacthEvaluator(type="exact_match")
+file = open('./tests/benchmark/ReAct_agent/paper_data/hotpot_dev_v1_simplified.json')
+dataset = json.load(file)
 
-
-# Usage Example
-if __name__ == "__main__":
-    react_agent = HotpotQAReActAgent(model="gpt-3.5-turbo")
+average_time = 0
+num_questions = 10
+em = 0
+for i in range(num_questions):
+    question = dataset[i].get("question")
+    gt_answer = dataset[i].get("answer")
+    # print(question)
+    # print(gt_answer)
     
-    # sample 
-    average_time = 0
-    num_questions = 10
-    for i in range(num_questions):
-        question = react_agent.env.reset(idx=i)  # get the question
-        t0 = time.time()
-        answer = react_agent.agent(question)
-        average_time += time.time() - t0
-        print(f"Answer: {answer}")
+    t0 = time.time()
+    pred_answer = react_agent(question)
     
-    print(f"Average time: {average_time / num_questions}")
-    """
-    Results: 11s per query, gpt-3.5-turbo, without setting max step
+    res = evaluator.compute_match_acc_single_query(pred_answer=pred_answer, gt_answer=gt_answer)
+    em += res
     
-    """
+    average_time += time.time() - t0
+    # print(f"Answer: {pred_answer}")
+    # print(f'Result: {res}')
+print(f"Average time: {average_time / num_questions}")
+print(f"EM: {em / num_questions}")
+
+"""
+Average time: 150.9188715696335
+EM: 0.1
+"""
