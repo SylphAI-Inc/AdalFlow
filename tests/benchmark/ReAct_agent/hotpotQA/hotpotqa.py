@@ -52,7 +52,7 @@ llm_model_kwargs = {
 react_agent = ReActAgent(
     # examples=examples,
     tools=tools,
-    # max_steps=5,
+    max_steps=8, # paper's max step should be 8
     model_client=GroqAPIClient,
     model_kwargs=llm_model_kwargs,
 )
@@ -68,8 +68,6 @@ em = 0
 for i in range(num_questions):
     question = dataset[i].get("question")
     gt_answer = dataset[i].get("answer")
-    # print(question)
-    # print(gt_answer)
     
     t0 = time.time()
     pred_answer = react_agent(question)
@@ -78,12 +76,11 @@ for i in range(num_questions):
     em += res
     
     average_time += time.time() - t0
-    # print(f"Answer: {pred_answer}")
-    # print(f'Result: {res}')
+
 print(f"Average time: {average_time / num_questions}")
 print(f"EM: {em / num_questions}")
 
 """
-Average time: 150.9188715696335
+Average time: 145.89896335601807
 EM: 0.1
 """
