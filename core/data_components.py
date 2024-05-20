@@ -129,6 +129,6 @@ class RetrieverOutputToContextStr(Component):
             retriever_output=input, deduplicate=self.deduplicate
         )
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         s = f"deduplicate={self.deduplicate}"
         return s

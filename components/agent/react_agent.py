@@ -301,9 +301,9 @@ class ReActAgent(Generator):
         self.reset()
         return answer
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         s = f"tools={self.tools}, max_steps={self.max_steps}, "
-        s += super().extra_repr()
+        s += super()._extra_repr()
         return s
 
 

@@ -84,7 +84,7 @@ class Generator(Component):
     def print_prompt(self, **kwargs) -> str:
         self.system_prompt.print_prompt(**kwargs)
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
         return s
 

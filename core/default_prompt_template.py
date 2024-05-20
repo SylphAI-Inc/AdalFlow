@@ -1,7 +1,3 @@
-"""
-See the Promp in developer notes for why we design the system prompt this way.
-"""
-
 DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
  {% if task_desc_str %}
  {{task_desc_str}}
@@ -36,4 +32,8 @@ DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
  {{steps_str}}
  </STEPS>
  {% endif %}
+"""
+"""This is the default system prompt template used in the LightRAG.
+
+Use :ref:`Prompt<core-prompt_builder>` class  to manage it.
 """

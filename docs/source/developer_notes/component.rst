@@ -1,6 +1,6 @@
-abstract class Component
+Component
 ============
-Component is the base classes for all components. It is similar to PyTorch's `nn.Module` class.
+:ref:`Component<core-component>` is the base class for all LightRAG components. It is similar to PyTorch's `nn.Module` class.
 We name it differently to avoid confusion and also for better compatibility with `PyTorch`.
 You write the code similar to how you write a PyTorch model.
 

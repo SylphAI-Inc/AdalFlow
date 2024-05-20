@@ -56,7 +56,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["tests", "test_*"]
 
 # exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.module.rst', '**/tests/*', '**/test_*.py', '*test.rst']
 
@@ -91,16 +91,27 @@ def setup(app):
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 add_module_names = False
 
+autodoc_docstring_signature = True
 
+# autodoc_default_options = {
+#     "autosummary-no-titles": True,
+#     "autosummary-force-inline": True,
+#     "autosummary-nosignatures": True,
+#     "members": True,
+#     "private-members": False,  # (those starting with _).
+#     "special-members": False,  # (those starting and ending with __).
+#     "member-order": "bysource",
+#     "show-inheritance": True,
+#     # "undoc-members": True,
+#     "autosectionlabel_prefix_document": True,
+# }
 autodoc_default_options = {
-    "autosummary-no-titles": True,
-    "autosummary-force-inline": True,
-    "autosummary-nosignatures": True,
     "members": True,
-    "private-members": False,  # (those starting with _).
-    "special-members": False,  # (those starting and ending with __).
+    "undoc-members": True,
     "member-order": "bysource",
     "show-inheritance": True,
-    "undoc-members": True,
+    "private-members": False,  # Ensure this is True if you want to document private members
+    "special-members": False,  # (those starting and ending with __).
+    # "special-members": "__init__",  # Document special members like __init__
     "autosectionlabel_prefix_document": True,
 }

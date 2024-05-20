@@ -1,10 +1,13 @@
-Prompt [link to api class]
+Prompt
 ============
 LightRAG library in default maximizes developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
 
 For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
 often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and 
 intermediate step history from agents.
+
+Prompt template
+---------------------
 
 Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 6 important sections. We leverage `jinjia2` template with 6 variables: `task_desc_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
 
@@ -64,8 +67,35 @@ But it should not stop you from implementing them yourself.**
 
 Prompt class
 ---------------------
-We designed a `Prompt` class to render the `template` with the variables to string as the final system prompt. In the simplest case, the string is empty and we will only send
+We designed a :ref:`Prompt<core-prompt_builder>` class  to render the `template` with the variables to string as the final system prompt. In the simplest case, the string is empty and we will only send
 a user message to the model. And in most cases, you want to add at least the `task_desc_str` to the system message.
+
+The cool thing about our `Prompt` system is how flexible it can be. If you need to put another `template` for say `task_desc_str`, you can do that using the `Prompt` class.
+For example, your task is to instruct the llm to choose `top_k` from the given choices, you can define a new template like this:
+
+.. code-block:: python
+   :linenos:
+
+   from core.prompt_builder import Prompt
+   
+   task_desc_template = r"""
+   Choose the top {{top_k}} from the following choices: {{choices}}
+   """
+   top_k = 3
+   choices = ['apple', 'banana', 'orange', 'grape']
+   task_desc_prompt = Prompt(template=task_desc_template, preset_prompt_kwargs={'top_k': top_k, 'choices': choices})
+   task_desc_str = task_desc_prompt.call()
+   prompt = Prompt(preset_prompt_kwargs={'task_desc_str': task_desc_str})
+   prompt.print_prompt()
+
+The output would be:
+
+.. code-block:: xml
+   :linenos:
+
+   Choose the top 3 from the following choices: ['apple', 'banana', 'orange', 'grape']
+
+
 
 
 Prompt and Special Tokens context

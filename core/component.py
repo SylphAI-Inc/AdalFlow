@@ -52,7 +52,7 @@ def _call_unimplemented(self, *input: Any) -> None:
 
 class Component:
     r"""
-    Component defines all functional base classes such as Embedder, Retriever, Generator.
+    Component is the base class for all LightRAG components, such as Prompt, APIClient, Embedder, Retriever, Generator, etc.
 
     We purposly avoid using the name "Module" to avoid confusion with PyTorch's nn.Module.
     As we consider 'Component' to be an extension to 'Moduble' as if you use a local llm model
@@ -118,7 +118,7 @@ class Component:
         else:
             super().__delattr__(name)
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         """
         Normally implemented by subcomponents to print additional positional or keyword arguments.
         # NOTE: Dont add components as it will have its own __repr__
@@ -132,7 +132,7 @@ class Component:
     def __repr__(self):
         # We treat the extra repr like the sub-module, one item per line
         extra_lines = []
-        extra_repr = self.extra_repr()
+        extra_repr = self._extra_repr()
         # empty string will be split into list ['']
         if extra_repr:
             extra_lines = extra_repr.split("\n")

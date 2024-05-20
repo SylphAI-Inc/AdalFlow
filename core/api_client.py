@@ -20,15 +20,7 @@ class APIClient(Component):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__()
-        # take the *args and **kwargs to be compatible with the Component class
-        # comvert args to attributes
-        for i, arg in enumerate(args):
-            super().__setattr__(f"arg_{i}", arg)
-        # convert kwargs to attributes
-        for key, value in kwargs.items():
-            super().__setattr__(key, value)
 
-        # TODO: recheck to see if we need to initialize the client here
         self.sync_client = self._init_sync_client()
         self.async_client = None
 
@@ -72,7 +64,7 @@ class APIClient(Component):
         raise NotImplementedError(
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
-    
+
     def parse_chat_completion(self, completion: Any) -> str:
         r"""
         Parse the chat completion to a structure your sytem standarizes. (here is str)
@@ -81,7 +73,6 @@ class APIClient(Component):
             f"{type(self).__name__} must implement parse_chat_completion method"
         )
 
-
     @staticmethod
     def _process_text(text: str) -> str:
         """
@@ -89,15 +80,6 @@ class APIClient(Component):
         """
         text = text.replace("\n", " ")
         return text
-
-    # def format_input(self, *, input: Any) -> Any:
-    #     """
-    #     This is specific to APIClient.
-    #     # convert your component input to the API-specific format
-    #     """
-    #     raise NotImplementedError(
-    #         f"{type(self).__name__} must implement format_input method"
-    #     )
 
     def _track_usage(self, **kwargs):
         pass
@@ -112,29 +94,3 @@ class APIClient(Component):
 
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)
-
-    # def call(
-    #     self,
-    #     input: Any,
-    #     model_kwargs: dict = {},
-    #     model_type: ModelType = ModelType.UNDEFINED,
-    # ) -> Any:
-    #     # adapt the format and the key for input and model_kwargs
-    #     combined_model_kwargs = self._combine_input_and_model_kwargs(
-    #         input, model_kwargs, model_type=model_type
-    #     )
-    #     return self._call(api_kwargs=combined_model_kwargs, model_type=model_type)
-
-    # async def acall(
-    #     self,
-    #     *,
-    #     input: Any,
-    #     model_kwargs: dict = {},
-    #     model_type: ModelType = ModelType.UNDEFINED,
-    # ) -> Any:
-    #     combined_model_kwargs = self._combine_input_and_model_kwargs(
-    #         input, model_kwargs, model_type=model_type
-    #     )
-    #     return await self._acall(
-    #         api_kwargs=combined_model_kwargs, model_type=model_type
-    #     )

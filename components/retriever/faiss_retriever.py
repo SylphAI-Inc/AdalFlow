@@ -144,6 +144,6 @@ class FAISSRetriever(Retriever):
         response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
         return response
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         s = f"top_k={self.top_k}, dimensions={self.dimensions}, "
         return s
