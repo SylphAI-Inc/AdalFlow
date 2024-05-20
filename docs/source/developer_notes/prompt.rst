@@ -77,7 +77,7 @@ For example, your task is to instruct the llm to choose `top_k` from the given c
    :linenos:
 
    from core.prompt_builder import Prompt
-   
+
    task_desc_template = r"""
    Choose the top {{top_k}} from the following choices: {{choices}}
    """

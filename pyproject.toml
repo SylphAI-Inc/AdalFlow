@@ -40,6 +40,7 @@ datasets = "^2.19.1"
 sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
 
+
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.1.16"
 llama-index = "^0.10.30"
