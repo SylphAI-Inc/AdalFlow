@@ -16,12 +16,18 @@ from core.data_classes import ModelType
 
 
 class APIClient(Component):
-    r"""Bridge the gap between LightRAG components and model APIs."""
+    __doc__ = r"""The abstract class for all API clients.
+
+    This interface is designed to bridge the gap between LightRAG components inputs and model APIs.
+
+    You can see examples of the subclasses in components/api_client/ directory.
+    """
 
     def __init__(self, *args, **kwargs) -> None:
+        r"""Ensure the subclasses will at least call self._init_sync_client() to initialize the sync client."""
         super().__init__()
 
-        self.sync_client = self._init_sync_client()
+        self.sync_client = None
         self.async_client = None
 
     def _init_sync_client(self):

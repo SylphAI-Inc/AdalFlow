@@ -21,33 +21,31 @@ except ImportError:
 
 
 class GoogleGenAIClient(APIClient):
-    def __init__(self):
+    __doc__ = r"""A component wrapper for the Google GenAI API client.
+
+    Visit https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference for more api details.
+    """
+
+    def __init__(self, api_key: Optional[str] = None):
+        r"""It is recommended to set the GOOGLE_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
+        self._api_key = api_key
         self.sync_client = self._init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.tested_llm_models = ["gemini-1.0-pro", "gemini-1.5-pro-latest"]
 
     def _init_sync_client(self):
-        api_key = os.getenv("GOOGLE_API_KEY")
+        api_key = self._api_key or os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GOOGLE_API_KEY must be set")
         genai.configure(api_key=api_key)
         return genai
 
-    # def _init_async_client(self):
-    #     api_key = os.getenv("GOOGLE_API_KEY")
-    #     if not api_key:
-    #         raise ValueError("Environment variable GOOGLE_API_KEY must be set")
-    #     return AsyncOpenAI()
-
     def parse_chat_completion(self, completion: GenerateContentResponse) -> str:
         """
         Parse the completion to a structure your sytem standarizes. (here is str)
-        # TODO: standardize the completion
         """
-        print(f"completion: {completion}")
         return completion.text
-        # result["candidates"][0]["contents"]["parts"][0]["text"]
 
     def convert_input_to_api_kwargs(
         self,

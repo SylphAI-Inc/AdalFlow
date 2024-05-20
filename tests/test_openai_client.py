@@ -2,17 +2,20 @@ import unittest
 from unittest.mock import patch, AsyncMock
 from core.data_classes import ModelType
 from components.api_client import OpenAIClient
-import utils.setup_env
+
+
+def getenv_side_effect(key):
+    # This dictionary can hold more keys and values as needed
+    env_vars = {"OPENAI_API_KEY": "fake_api_key"}
+    return env_vars.get(key, None)  # Returns None if key is not found
 
 
 class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
-
     def setUp(self):
-        self.client = OpenAIClient()
+        self.client = OpenAIClient(api_key="fake_api_key")
 
     @patch("components.api_client.openai_client.AsyncOpenAI")
-    @patch("components.api_client.os.getenv", return_value="fake_api_key")
-    async def test_acall_llm(self, mock_getenv, MockAsyncOpenAI):
+    async def test_acall_llm(self, MockAsyncOpenAI):
         mock_async_client = AsyncMock()
         MockAsyncOpenAI.return_value = mock_async_client
 
@@ -32,14 +35,12 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         )
 
         # Assertions
-        mock_getenv.assert_called_once_with("OPENAI_API_KEY")
         MockAsyncOpenAI.assert_called_once()
         mock_async_client.chat.completions.create.assert_awaited_once_with(**api_kwargs)
         self.assertEqual(result, mock_response)
 
     @patch("components.api_client.openai_client.AsyncOpenAI")
-    @patch("components.api_client.os.getenv", return_value="fake_api_key")
-    async def test_acall_embedder(self, mock_getenv, MockAsyncOpenAI):
+    async def test_acall_embedder(self, MockAsyncOpenAI):
         mock_async_client = AsyncMock()
         MockAsyncOpenAI.return_value = mock_async_client
 
@@ -54,7 +55,6 @@ class TestOpenAIClient(unittest.IsolatedAsyncioTestCase):
         )
 
         # Assertions
-        mock_getenv.assert_called_once_with("OPENAI_API_KEY")
         MockAsyncOpenAI.assert_called_once()
         mock_async_client.embeddings.create.assert_awaited_once_with(**api_kwargs)
         self.assertEqual(result, mock_response)

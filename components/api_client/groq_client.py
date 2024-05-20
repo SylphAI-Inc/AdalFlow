@@ -15,8 +15,19 @@ from core.data_classes import ModelType
 
 
 class GroqAPIClient(APIClient):
-    def __init__(self):
+    __doc__ = r"""A component wrapper for the Groq API client.
+
+    Visit https://console.groq.com/docs/ for more api details.
+    """
+
+    def __init__(self, api_key: Optional[str] = None):
+        r"""It is recommended to set the GROQ_API_KEY environment variable instead of passing it as an argument.
+
+        Args:
+            api_key (Optional[str], optional): Groq API key. Defaults to None.
+        """
         super().__init__()
+        self._api_key = api_key
         self._init_sync_client()
         # https://console.groq.com/docs/models, 4/22/2024
         self.model_lists = {
@@ -44,16 +55,16 @@ class GroqAPIClient(APIClient):
         self.async_client = None  # only initialize if the async call is called
 
     def _init_sync_client(self):
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
-        self.sync_client = Groq()
+        self.sync_client = Groq(api_key=api_key)
 
     def _init_async_client(self):
-        api_key = os.getenv("GROQ_API_KEY")
+        api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
-        self.async_client = AsyncGroq()
+        self.async_client = AsyncGroq(api_key=api_key)
 
     def parse_chat_completion(self, completion: Any) -> str:
         """
