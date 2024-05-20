@@ -90,8 +90,11 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
 3. **Suitted for Both Researchers and Production Engineers**
 
-   We start with understanding the frontier of AI research and LLM productionalization, and our design is grounded on our understanding of all dataflow in LLM applications, and 
-   the process of 
+   On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions. 
+   Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production. 
+   With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data. 
+   Researchers will want their code to be adapted into more products too. 
+   
 
 
 **LightRAG vs other LLM libraries:**
