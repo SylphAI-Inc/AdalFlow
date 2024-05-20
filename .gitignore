@@ -22,9 +22,9 @@ llama3/
 docs/build/
 docs/_build/
 docs/source/_templates
-tests/log_test/*.log
 docs/source/documents/
-docts/source/apis/*
+docs/source/apis/*
+tests/log_test/*.log
 lib/
 li_test/
 .mypy_cache/

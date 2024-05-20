@@ -1,0 +1,9 @@
+/* custom.css */
+.wy-nav-content {
+    max-width: 1000px; /* Adjust the width of the main content area */
+}
+.wy-nav-side.wy-menu-vertical {
+    background-color: #f0f0f0 !important; /* Light gray color */
+    color: #000000 !important; /* Sets text color to black */
+
+}
