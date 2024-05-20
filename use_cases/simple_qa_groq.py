@@ -3,15 +3,11 @@ We just need to very basic generator that can be used to generate text from a pr
 """
 
 from core.generator import Generator
-from components.api_client.groq_client import GroqAPIClient
-
 from core.component import Component
-from core.prompt_builder import Prompt
 
-# TODO: make the environment variable loading more robust, and let users specify the .env path
-import dotenv
+from components.api_client import GroqAPIClient
 
-dotenv.load_dotenv()
+import utils.setup_env
 
 
 class SimpleQA(Component):
@@ -24,7 +20,6 @@ class SimpleQA(Component):
                 "task_desc_str": "You are a helpful assistant and with a great sense of humor."
             },
         )
-        self.generator.print_prompt()
 
     def call(self, query: str) -> str:
         return self.generator.call(input=query)
@@ -33,5 +28,6 @@ class SimpleQA(Component):
 if __name__ == "__main__":
     simple_qa = SimpleQA()
     print(simple_qa)
-    print(f"prompt: {simple_qa.generator.print_prompt()}")
+    print("show the system prompt")
+    simple_qa.generator.print_prompt()
     print(simple_qa.call("What is the capital of France?"))

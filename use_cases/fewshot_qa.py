@@ -1,9 +1,7 @@
 from typing import List
 
 from core.generator import Generator
-from core.openai_client import OpenAIClient
 from core.data_classes import Document
-from core.retriever import FAISSRetriever
 from core.embedder import Embedder
 from core.data_components import (
     ToEmbedderResponse,
@@ -13,6 +11,10 @@ from core.db import LocalDocumentDB
 from core.component import Component
 from core.document_splitter import DocumentSplitter
 from icl.retrieval_icl import RetrievalICL
+
+from components.api_client import OpenAIClient
+from components.retriever import FAISSRetriever
+
 
 import dotenv
 

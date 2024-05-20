@@ -19,3 +19,8 @@ pytest tests/test_file.py::test_function -vv
 ```
 pytest tests/test_file.py::test_function -vv -s
 ```
+
+# About API keys
+For test, we dont pass the real API keys. We use the `pytest` library to mock the API keys.
+
+In the action workflow, we use the `secrets` to pass the test API keys.

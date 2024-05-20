@@ -89,6 +89,8 @@ class DocumentSplitter(Component):
         :raises ValueError: if the content of a document is None.
         """
 
+        print(f"start to split documents")
+
         if not isinstance(documents, list) or (
             documents and not isinstance(documents[0], Document)
         ):
@@ -112,6 +114,7 @@ class DocumentSplitter(Component):
                 )
                 for i, txt in enumerate(text_splits)
             ]
+        print(f"splitted_doc: {split_docs}")
         return split_docs
 
     def _split_into_units(

@@ -159,8 +159,9 @@ class FunctionTool:
             if not iscoroutinefunction(async_fn):
                 raise ValueError("async_fn must be an asynchronous function")
             self._async_fn = async_fn
-        # else:
-        #     raise ValueError("At least one of fn or async_fn must be provided")
+
+        else:
+            raise ValueError("At least one of fn or async_fn must be provided")
 
         self._metadata = metadata
 

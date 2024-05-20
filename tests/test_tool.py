@@ -1,7 +1,7 @@
 import pytest
-from core.tool_helper import FunctionTool, ToolMetadata, ToolOutput
-
 from dataclasses import dataclass
+
+from core.tool_helper import FunctionTool, ToolMetadata, ToolOutput
 
 
 @dataclass

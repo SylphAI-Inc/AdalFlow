@@ -16,8 +16,8 @@ Benchmark it with and without CoT to see if it helps.
 """
 
 from typing import Dict, Optional
+
 from core.component import Component
-from core.prompt_builder import Prompt
 from core.generator import Generator
 from core.string_parser import JsonParser
 from core.api_client import APIClient

@@ -21,12 +21,12 @@ docs/source/
 llama3/
 docs/build/
 docs/_build/
-docs/source/_static
 docs/source/_templates
-docs/source/apis/tests*.rst
-tests/log_test/*.log
-docs/source/documents/tests*.rst
 docs/source/documents/
+docs/source/apis/*
+tests/log_test/*.log
 lib/
-docs/source/apis/tests*.rst
 li_test/
+.mypy_cache/
+.pytest_cache/
+local_cache/

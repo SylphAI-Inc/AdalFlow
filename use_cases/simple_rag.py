@@ -2,7 +2,6 @@ from typing import Any, List, Optional
 import dotenv
 
 
-from core.openai_client import OpenAIClient
 from core.generator import Generator
 from core.embedder import Embedder
 from core.data_components import (
@@ -11,14 +10,15 @@ from core.data_components import (
     ToEmbeddings,
 )
 from core.data_classes import Document
-
 from core.document_splitter import DocumentSplitter
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
-from core.retriever import FAISSRetriever
 from core.db import LocalDocumentDB
-
 from core.functional import generate_component_key
+
+from components.retriever import FAISSRetriever
+from components.api_client import OpenAIClient
+
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
@@ -52,7 +52,7 @@ class RAG(Component):
         }
 
         vectorizer = Embedder(
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             # batch_size=self.vectorizer_settings["batch_size"], #TODO: where to put the batch size control and how big can it go?
             model_kwargs=self.vectorizer_settings["model_kwargs"],
             output_processors=ToEmbedderResponse(),
