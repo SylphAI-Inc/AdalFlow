@@ -41,9 +41,9 @@ class BaseLogger:
 
         # Configure handlers only if they haven't been added yet
         if not self.logger.handlers:
-            self._configure_handlers()
+            self.configure_handlers()
 
-    def _configure_handlers(self):
+    def configure_handlers(self):
         """Configure file and console handlers for the logger."""
         self.logger.setLevel(self.log_level)  # Set the default logging level
         formatter = logging.Formatter(
