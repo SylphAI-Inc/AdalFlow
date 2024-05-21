@@ -1,118 +1,84 @@
-"""
-LLM application log is unique, as developers pay much attention to the input text, intermediate data flow and final output.
-This logging system aims to facilitate the developers check the application in a flexible way.
-It is easy to use while highly configurable.
-
-Reference: https://github.com/stanfordnlp/dspy/blob/main/dspy/utils/logging.py
-"""
-
 import logging
 import os
-import sys
-from typing import Optional
-import structlog
 
+# Get or create a logger at the module level
+logger = logging.getLogger(__name__)
 
-# TODO:
-# 1. Add colors to the log console output: https://www.structlog.org/en/stable/console-output.html
-# 2. Wrap it with other functions/components
-
-
-def setup_handler(handler: logging.Handler, log_level: str):
-    """
-    Setup the logging handler with the specified log level.
-    """
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - [%(pathname)s:%(lineno)d] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )  # add time and filename
-    handler.setFormatter(formatter)  # configure the formatter
-    handler.setLevel(log_level)  # set log levels to output
-
-
-def configure_logging(
-    logger: logging.Logger, log_level: str, method: str, file_name: str
-):
-    """
-    Configure the logging system with structured and output.
-    """
-    if method == "console":
-        renderer = structlog.dev.ConsoleRenderer()
-    elif method == "file":
-        # check if the path exists
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        renderer = structlog.processors.JSONRenderer()
-    else:
-        raise ValueError(f"Invalid method: {method}")
-
-    structlog.configure(
-        processors=[
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            renderer,
-        ],
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-    )
-
-    logger.setLevel(logging.getLevelName(log_level))
-    handler = (
-        logging.FileHandler(file_name)
-        if method == "file"
-        else logging.StreamHandler(sys.stdout)
-    )
-    setup_handler(handler, log_level)
-    logger.addHandler(handler)
-
-
-def get_logger(
-    logger_name: str = "AppLog",
-    method: str = "file",
-    file_name: Optional[str] = "./logs/app.log",
-    log_level: str = "INFO",
-):
-    """
-    Configures the logging system with structured and output.
-    method: str, default="file", options=["console", "file"]
-    file_name: str, default=None, the file name to store the logs
-    log_level: str, default="INFO", options=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
+class BaseLogger:
+    r"""
+    Base class for loggers.
+    Logger setup that configures file and console handlers, ensuring no duplicates.
+    
     Example:
-
-    from utils.logger import get_logger
-    logger = get_logger(file_name="./logs/app.log")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f'response: {response}')
-
-    Then you can open ./logs/app.log and view the content.
+    from utils import BaseLogger
+    import logging
+    base_logger = BaseLogger(filename='myapp.log', log_level=logging.DEBUG).logger
+    base_logger.debug('This is a debug message')
+    
+    Args:
+        directory (str, optional): It is the directory that stores the log file. Defaults to './logs'.
+        filename (str, optional): It is the name of the log file. Defaults to 'app.log'.
+        log_level (int, optional): It is the level of log to show. Defaults to logging.INFO.
+        Reference: https://docs.python.org/3/library/logging.html#levels
     """
-    logger = logging.getLogger(logger_name)
-    # create the logs directory if it does not exist
-    os.makedirs(os.path.dirname(file_name), exist_ok=True)
-    configure_logging(logger, log_level, method, file_name)
-    return logger
+    def __init__(self, directory: str = './logs', filename: str = 'app.log', log_level: int = logging.INFO):
+        """
+        Initialize the logger, the log file directory, file name, and level of the log.
+        """
+        self.logger = logger
+        self.file_path = os.path.join(directory, filename)
+        self.log_level = log_level
+
+        # Ensure the log directory exists
+        try:
+            os.makedirs(directory, exist_ok=True)
+        except Exception as e:
+            print(f"Failed to create log directory {directory}: {e}")
+            raise
+
+        # Clear existing handlers, so that new logger instances will generate new loggers if new filename is configured
+        self.logger.handlers = []  # Clear all handlers to ensure no duplicates
+
+        # Configure handlers only if they haven't been added yet
+        if not self.logger.handlers:
+            self._configure_handlers()
+
+    def _configure_handlers(self):
+        """Configure file and console handlers for the logger."""
+        self.logger.setLevel(self.log_level)  # Set the default logging level
+        formatter = logging.Formatter(
+            '%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        try:
+            # # File handler, defines the behavior of the log file
+            # file_handler = logging.FileHandler(self.file_path)
+            # file_handler.setFormatter(formatter)
+            # self.logger.addHandler(file_handler)
+
+            # If there are no such handlers, it then proceeds to create a new FileHandler
+            if not any(isinstance(h, logging.FileHandler) for h in self.logger.handlers):
+                file_handler = logging.FileHandler(self.file_path)
+                file_handler.setFormatter(formatter)
+                self.logger.addHandler(file_handler)
+                
+            # Console handler, the log will be automatically shown in the console
+            console_handler = logging.StreamHandler()
+            console_handler.setFormatter(formatter)
+            self.logger.addHandler(console_handler)
+        except Exception as e:
+            print(f"Failed to set up logging handlers: {e}")
+            raise
 
 
+# Usage Example
 if __name__ == "__main__":
-    from utils.logger import get_logger
-    from use_cases.simple_qa_groq import SimpleQA
-
-    logger = get_logger(method="console")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f"response: {response}")
-    # log_settings = LogSettings(
-    #     output_type="str", method="file", file_name="./utils/test.log", log_level="INFO"
-    # )
-    # logger = (
-    #     log_settings.get_logger()
-    # )  # Explicitly get the configured logger from log_settings
-    # logger.info("hello this is logger")  # Log message to 'test.log'
-
-    # check ./utils/test.log to view the log
+    # base_logger = BaseLogger().logger
+    # base_logger.info("This is a test log message.")
+    
+    base_logger = BaseLogger(log_level=logging.DEBUG).logger
+    base_logger.debug('This is a debug message')
+    base_logger.info('This is an info message')
+    base_logger.warning('This is a warning message')
+    base_logger.error('This is an error message')
+    base_logger.critical('This is a critical message')
