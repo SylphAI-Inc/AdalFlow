@@ -57,6 +57,7 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
    :caption: Tutorials
 
    tutorials/simpleQA
+   tutorials/logging_system
 
 
 .. toctree::
@@ -65,6 +66,7 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
 
    apis/core/core
    apis/components/components
+   apis/utils/utils
 
 
 .. toctree::
