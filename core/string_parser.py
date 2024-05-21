@@ -25,8 +25,8 @@ class ListParser(Component):
         super().__init__()
         self.add_missing_right_bracket = add_missing_right_bracket
 
-    def __call__(self, text: str) -> List[Any]:
-        list_str = F.extract_list_str(text, self.add_missing_right_bracket)
+    def __call__(self, input: str) -> List[Any]:
+        list_str = F.extract_list_str(input, self.add_missing_right_bracket)
         list_obj = F.parse_json_str_to_obj(list_str)
         return list_obj
 
@@ -45,9 +45,9 @@ class JsonParser(Component):
         super().__init__()
         self.add_missing_right_brace = add_missing_right_brace
 
-    def __call__(self, text: str) -> JASON_PARSER_OUTPUT_TYPE:
-        text = text.strip()
-        json_str = F.extract_json_str(text, self.add_missing_right_brace)
+    def call(self, input: str) -> JASON_PARSER_OUTPUT_TYPE:
+        input = input.strip()
+        json_str = F.extract_json_str(input, self.add_missing_right_brace)
         json_obj = F.parse_json_str_to_obj(json_str)
         return json_obj
 

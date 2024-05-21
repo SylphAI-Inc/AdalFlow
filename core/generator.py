@@ -43,6 +43,7 @@ class Generator(Component):
         But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
         """
         super().__init__()
+
         self.model_kwargs = model_kwargs
         if "model" not in model_kwargs:
             raise ValueError(
@@ -91,6 +92,7 @@ class Generator(Component):
     def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
         response = self.model_client.parse_chat_completion(completion)
+        print(f"Raw response: \n{response}")
         if self.output_processors:
             response = self.output_processors(response)
         return response
@@ -123,11 +125,12 @@ class Generator(Component):
         r"""Call the model with the input(user_query) and model_kwargs."""
 
         api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
-        print(f"api_kwargs: {api_kwargs}")
+        # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
-        return self._post_call(completion)
+        output = self._post_call(completion)
+        return output
 
     async def acall(
         self,
@@ -142,4 +145,5 @@ class Generator(Component):
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
-        return self._post_call(completion)
+        output = self._post_call(completion)
+        return output

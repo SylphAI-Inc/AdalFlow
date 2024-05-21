@@ -1,26 +1,67 @@
+"""The most commonly used output parsers for the Generator.
+
+Note: Even with OutputParser for output_format_str formatting and the response parsing, it is not 100% guaranteed 
+as user query can impact the output.
+"""
+
 from dataclasses import is_dataclass
-from typing import Dict, Any, Type, Optional
+from typing import Dict, Any, Type
 
 from core.component import Component
 from core.prompt_builder import Prompt
 from core.functional import get_data_class_schema
-from core.string_parser import YAMLParser
+from core.string_parser import YAMLParser, ListParser, JsonParser
+
+# TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
+# setup: Why couldn't the bicycle stand up by itself?
+# punchline: Because it was two-tired.
+#
+# setup: What do you call a fake noodle?
+# punchline: An impasta.
 
 JSON_OUTPUT_FORMAT = r""""""
-YAML_OUTPUT_FORMAT = r"""The output should be formatted as a standard YAML instance with the following JSON schema:
+YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following JSON schema:
 ```
 {{schema}}
 ```
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
--Follow the YAML formatting conventions with an indent of 2 spaces.
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
 """
-LIST_OUTPUT_FORMAT = r""""""
+LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python list.
+-Each element can be of any Python data type such as string, integer, float, list, dictionary, etc.
+-You can also have nested lists and dictionaries.
+-Please do not add anything other than valid Python list output!
+"""
 
 
 YAML_OUTPUT_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
-class YAMLOutputParser(Component):
+class OutputParser(Component):
+    __doc__ = r"""The abstract class for all output parsers.
+
+    This interface helps users to customize their output parsers with consistent interfaces for the Generator.
+    Even though you don't always need to subclass it.
+
+    LightRAG uses two core components: 
+    1. the Prompt to format output instruction
+    2. A string parser component from core.string_parser for response parsing.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__()
+        pass
+
+    def format_instructions(self) -> str:
+        r"""Return the formatted instructions to use in prompt for the output format."""
+        raise NotImplementedError("This is an abstract method.")
+
+    def call(self, input: str) -> Any:
+        r"""Parse the output string to the desired format and return the parsed output."""
+        raise NotImplementedError("This is an abstract method.")
+
+
+class YAMLOutputParser(OutputParser):
     __doc__ = r"""YAML output parser using dataclass for schema extraction.
 
     Examples:
@@ -58,9 +99,15 @@ class YAMLOutputParser(Component):
     def __init__(
         self,
         data_class_for_yaml: Type,
-        yaml_output_format_template: Optional[str] = YAML_OUTPUT_FORMAT,
-        output_processors: Optional[Component] = YAMLParser(),
+        yaml_output_format_template: str = YAML_OUTPUT_FORMAT,
+        output_processors: Component = YAMLParser(),
     ):
+        r"""
+        Args:
+            data_class_for_yaml (Type): The dataclass to extract the schema for the YAML output.
+            yaml_output_format_template (str, optional): The template for the YAML output format. Defaults to YAML_OUTPUT_FORMAT.
+            output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YAMLParser().
+        """
         super().__init__()
         if not is_dataclass(data_class_for_yaml):
             raise ValueError(
@@ -82,3 +129,16 @@ class YAMLOutputParser(Component):
     def _extra_repr(self) -> str:
         s = f"data_class_for_yaml={self.data_class_for_yaml}"
         return s
+
+
+class ListOutputParser(OutputParser):
+    def __init__(self, list_output_format_template: str = LIST_OUTPUT_FORMAT):
+        super().__init__()
+        self.list_output_format_prompt = Prompt(template=list_output_format_template)
+        self.output_processors = ListParser()
+
+    def format_instructions(self) -> str:
+        return self.list_output_format_prompt()
+
+    def call(self, input: str) -> list:
+        return self.output_processors(input)

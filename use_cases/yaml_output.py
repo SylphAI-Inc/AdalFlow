@@ -2,8 +2,8 @@ from dataclasses import dataclass, field
 
 from core.component import Component
 from core.generator import Generator
-from components.api_client import GroqAPIClient
-from prompts.outputs import YAMLOutputParser
+from components.api_client import GroqAPIClient, OpenAIClient
+from prompts.outputs import YAMLOutputParser, ListOutputParser
 
 import utils.setup_env
 
@@ -21,16 +21,15 @@ class JokeGenerator(Component):
         yaml_parser = YAMLOutputParser(data_class_for_yaml=Joke)
         self.generator = Generator(
             model_client=GroqAPIClient,
-            model_kwargs={"model": "llama3-8b-8192"},
+            model_kwargs={"model": "llama3-8b-8192", "temperature": 1.0},
             preset_prompt_kwargs={
-                "task_desc_str": "Answer user query. "
-                + yaml_parser.format_instructions()
+                "output_format_str": yaml_parser.format_instructions()
             },
             output_processors=yaml_parser,
         )
 
-    def call(self, query: str) -> str:
-        return self.generator.call(input=query)
+    def call(self, query: str, model_kwargs: dict = {}) -> dict:
+        return self.generator.call(input=query, model_kwargs=model_kwargs)
 
 
 if __name__ == "__main__":
@@ -39,4 +38,6 @@ if __name__ == "__main__":
     print("show the system prompt")
     joke_generator.generator.print_prompt()
     print("Answer:")
-    print(joke_generator.call("Tell me a joke."))
+    answer = joke_generator.call("Tell me two jokes.", model_kwargs={"temperature": 1})
+    print(answer)
+    print(f"typeof answer: {type(answer)}")
