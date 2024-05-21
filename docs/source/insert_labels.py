@@ -17,3 +17,5 @@ if __name__ == "__main__":
     # Specify the directories you want to process
     add_reference_labels("./source/apis/core")
     add_reference_labels("./source/apis/components")
+    add_reference_labels("./source/apis/eval")
+    add_reference_labels("./source/apis/prompts")

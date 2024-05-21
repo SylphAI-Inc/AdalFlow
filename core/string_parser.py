@@ -7,9 +7,7 @@ LLM applications requires lots of string processing. Such as the text output nee
 We design this these string_parser modules to be generic to any input text without differentiating them as input text or output text.
 """
 
-import re
 from typing import Any, Dict, List, Tuple
-import json
 import ast
 from core.tool_helper import ToolOutput
 from core.component import Component
@@ -33,6 +31,9 @@ class ListParser(Component):
         return list_obj
 
 
+JASON_PARSER_OUTPUT_TYPE = Dict[str, Any]
+
+
 class JsonParser(Component):
     """
     A text parser for extracting JSON strings from text to json object.
@@ -44,11 +45,35 @@ class JsonParser(Component):
         super().__init__()
         self.add_missing_right_brace = add_missing_right_brace
 
-    def __call__(self, text: str) -> Dict[str, Any]:
+    def __call__(self, text: str) -> JASON_PARSER_OUTPUT_TYPE:
         text = text.strip()
         json_str = F.extract_json_str(text, self.add_missing_right_brace)
         json_obj = F.parse_json_str_to_obj(json_str)
         return json_obj
+
+
+YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
+
+
+class YAMLParser(Component):
+    __doc__ = r"""A text parser for extracting YAML strings and parsing them into a JSON object.
+
+    Examples:
+        >>> yaml_parser = YAMLParser()
+        >>> yaml_str = "```yaml\nkey: value\n```"
+        >>> yaml_obj = yaml_parser(yaml_str)
+        >>> print(yaml_obj)
+        {'key': 'value'}
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def call(self, input: str) -> YAML_PARSER_OUTPUT_TYPE:
+        input = input.strip()
+        yaml_str = F.extract_yaml_str(input)
+        json_object = F.parse_yaml_str_to_obj(yaml_str)
+        return json_object
 
 
 ############################################################################################################

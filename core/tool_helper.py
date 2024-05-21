@@ -79,13 +79,9 @@ class ToolMetadata(ABC):
         return self.name
 
 
-##############################################
-# Helper functions
-##############################################
 def get_fun_schema(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
-    """
-    Get a schema for a function.
-    Example:
+    r"""Get the schema of a function.
+    Examples:
     def example_function(x: int, y: str = "default") -> int:
         return x
     schema = get_fun_schema("example_function", example_function)

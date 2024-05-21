@@ -153,6 +153,8 @@ Developer documentation
 
    apis/core/core
    apis/components/components
+   apis/prompts/prompts
+   apis/eval/eval
 
 
 .. toctree::
