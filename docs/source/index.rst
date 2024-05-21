@@ -118,7 +118,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 We encourage all users to at least skim through the developer documentation. Different from "PyTorch" where a normal user does not have to customize a building module for neural network, 
 LLM applications have much bigger scope and varies even more to different product environments, so developers customizing components on their own is much more common.
 
-Developer documentation
+Dive deep into the design of the libraries
 =======================
 
 .. toctree::
@@ -156,6 +156,11 @@ Developer documentation
    apis/prompts/prompts
    apis/eval/eval
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Benchmarks
+   .. Manually add documents for the code in benchmarks
+
 
 .. toctree::
    :glob:
@@ -166,7 +171,7 @@ Developer documentation
    resources/contributing
 
 
-User documentation
+Use the library
 =======================
 
 .. toctree::

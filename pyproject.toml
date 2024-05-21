@@ -1,19 +1,20 @@
 [tool.poetry]
 name = "lightrag"
 
+packages = [
+    { include = "core", from = "." },
+    { include = "components", from = "." },
+    { include = "prompts", from = "." },
+    { include = "eval", from = "." },
+]
 version = "0.1.0"
-description = "1000 lines of code is all you need. Be light and be lightening fast."
+description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
 authors = ["Li Yin <li.yin.gravity@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
-]
-packages = [
-    { include = "core", from = "." },
-    { include = "components", from = "." },
-    # { include = "use_cases", from = "." },
 ]
 
 [tool.poetry.dependencies]
