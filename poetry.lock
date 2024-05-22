@@ -2024,6 +2024,27 @@ checking = ["black", "flake8", "isort", "mdformat", "mypy", "pydocstyle", "pylin
 testing = ["packaging", "pytest"]
 
 [[package]]
+name = "lightning-utilities"
+version = "0.11.2"
+description = "Lightning toolbox for across the our ecosystem."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "lightning-utilities-0.11.2.tar.gz", hash = "sha256:adf4cf9c5d912fe505db4729e51d1369c6927f3a8ac55a9dff895ce5c0da08d9"},
+    {file = "lightning_utilities-0.11.2-py3-none-any.whl", hash = "sha256:541f471ed94e18a28d72879338c8c52e873bb46f4c47644d89228faeb6751159"},
+]
+
+[package.dependencies]
+packaging = ">=17.1"
+setuptools = "*"
+typing-extensions = "*"
+
+[package.extras]
+cli = ["fire"]
+docs = ["requests (>=2.0.0)"]
+typing = ["mypy (>=1.0.0)", "types-setuptools"]
+
+[[package]]
 name = "litellm"
 version = "1.37.16"
 description = "Library to easily interface with LLM API providers"
@@ -5106,6 +5127,35 @@ opt-einsum = ["opt-einsum (>=3.3)"]
 optree = ["optree (>=0.9.1)"]
 
 [[package]]
+name = "torchmetrics"
+version = "1.4.0.post0"
+description = "PyTorch native Metrics"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "torchmetrics-1.4.0.post0-py3-none-any.whl", hash = "sha256:ab234216598e3fbd8d62ee4541a0e74e7e8fc935d099683af5b8da50f745b3c8"},
+    {file = "torchmetrics-1.4.0.post0.tar.gz", hash = "sha256:ab9bcfe80e65dbabbddb6cecd9be21f1f1d5207bb74051ef95260740f2762358"},
+]
+
+[package.dependencies]
+lightning-utilities = ">=0.8.0"
+numpy = ">1.20.0"
+packaging = ">17.1"
+torch = ">=1.10.0"
+
+[package.extras]
+all = ["SciencePlots (>=2.0.0)", "ipadic (>=1.0.0)", "matplotlib (>=3.3.0)", "mecab-python3 (>=1.0.6)", "mypy (==1.9.0)", "nltk (>=3.6)", "piq (<=0.8.0)", "pretty-errors (>=1.2.0)", "pycocotools (>2.0.0)", "pystoi (>=0.3.0)", "regex (>=2021.9.24)", "scipy (>1.0.0)", "sentencepiece (>=0.2.0)", "torch (==2.3.0)", "torch-fidelity (<=0.4.0)", "torchaudio (>=0.10.0)", "torchvision (>=0.8)", "tqdm (>=4.41.0)", "transformers (>4.4.0)", "transformers (>=4.10.0)", "types-PyYAML", "types-emoji", "types-protobuf", "types-requests", "types-setuptools", "types-six", "types-tabulate"]
+audio = ["pystoi (>=0.3.0)", "torchaudio (>=0.10.0)"]
+debug = ["pretty-errors (>=1.2.0)"]
+detection = ["pycocotools (>2.0.0)", "torchvision (>=0.8)"]
+dev = ["SciencePlots (>=2.0.0)", "bert-score (==0.3.13)", "dython (<=0.7.5)", "fairlearn", "fast-bss-eval (>=0.1.0)", "faster-coco-eval (>=1.3.3)", "huggingface-hub (<0.23)", "ipadic (>=1.0.0)", "jiwer (>=2.3.0)", "kornia (>=0.6.7)", "lpips (<=0.1.4)", "matplotlib (>=3.3.0)", "mecab-ko (>=1.0.0)", "mecab-ko-dic (>=1.0.0)", "mecab-python3 (>=1.0.6)", "mir-eval (>=0.6)", "monai (==1.3.0)", "mypy (==1.9.0)", "netcal (>1.0.0)", "nltk (>=3.6)", "numpy (<1.27.0)", "pandas (>1.0.0)", "pandas (>=1.4.0)", "piq (<=0.8.0)", "pretty-errors (>=1.2.0)", "pycocotools (>2.0.0)", "pystoi (>=0.3.0)", "pytorch-msssim (==1.0.0)", "regex (>=2021.9.24)", "rouge-score (>0.1.0)", "sacrebleu (>=2.3.0)", "scikit-image (>=0.19.0)", "scipy (>1.0.0)", "sentencepiece (>=0.2.0)", "sewar (>=0.4.4)", "statsmodels (>0.13.5)", "torch (==2.3.0)", "torch-complex (<=0.4.3)", "torch-fidelity (<=0.4.0)", "torchaudio (>=0.10.0)", "torchvision (>=0.8)", "tqdm (>=4.41.0)", "transformers (>4.4.0)", "transformers (>=4.10.0)", "types-PyYAML", "types-emoji", "types-protobuf", "types-requests", "types-setuptools", "types-six", "types-tabulate"]
+image = ["scipy (>1.0.0)", "torch-fidelity (<=0.4.0)", "torchvision (>=0.8)"]
+multimodal = ["piq (<=0.8.0)", "transformers (>=4.10.0)"]
+text = ["ipadic (>=1.0.0)", "mecab-python3 (>=1.0.6)", "nltk (>=3.6)", "regex (>=2021.9.24)", "sentencepiece (>=0.2.0)", "tqdm (>=4.41.0)", "transformers (>4.4.0)"]
+typing = ["mypy (==1.9.0)", "torch (==2.3.0)", "types-PyYAML", "types-emoji", "types-protobuf", "types-requests", "types-setuptools", "types-six", "types-tabulate"]
+visual = ["SciencePlots (>=2.0.0)", "matplotlib (>=3.3.0)"]
+
+[[package]]
 name = "torchvision"
 version = "0.18.0"
 description = "image and video datasets and models for torch deep learning"
@@ -5750,4 +5800,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "3ae6e04fa33bfb1fa9be278acbd333ccea7596d2c1acfdcd0e936172ec1e1224"
+content-hash = "78316580b378ba40faa8971d9f1f15e740f5b04654b2d6b47dd815f025eeeb2a"

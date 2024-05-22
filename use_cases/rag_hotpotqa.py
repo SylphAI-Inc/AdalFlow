@@ -49,6 +49,7 @@ if __name__ == "__main__":
     # Load the dataset and select the first 5 as the showcase
     # 300 M.
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
+    # where is the downloaded data saved?
     dataset = load_dataset(path="hotpot_qa", name="fullwiki")
     print(f"len of eval: {len(dataset['test'])}")
     print(f"example: {dataset['test'][1]}")
