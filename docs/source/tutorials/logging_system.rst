@@ -14,15 +14,23 @@ Python’s `default logging module <https://docs.python.org/3/library/logging.ht
 How does the logging system work?
 ---------------------------------
 
-Our logging system, built on Python’s versatile logging module, introduces a ``BaseLogger`` that simplifies logging setup. This ``BaseLogger`` facilitates both console and file outputs, with configurable file path, file name, and log level.
+Our logging system, built on Python’s versatile logging module, introduces a ``BaseLogger`` that simplifies logging setup. This ``BaseLogger`` facilitates both console and file outputs, with configurable ``file path``, ``file name`` and ``log level`.  
 
-Developers can import the ``BaseLogger`` into any script requiring debugging, configure it as needed, and start logging messages. Upon initialization, ``BaseLogger`` creates a log file at the specified location. All log messages are automatically appended to this file in a standardized format and are also displayed in the console.
+Developers can import the ``BaseLogger`` into any script requiring debugging, configure it as needed, and start logging messages. Upon initialization, ``BaseLogger`` creates **one log file** at the specified location. All log messages are automatically appended to this file in a standardized format and are also displayed in the console.
 
 Our logging system maintains the properties of the logging module:
 
-1. **Singleton Loggers**: Only one instance of each logger name exists throughout the Python process, maintaining consistency.
-2. **Hierarchical Logging**: Our system enhances Python's hierarchical logging by explicitly indicating the file name in log entries, streamlining debugging with direct traces to the message origins and clear display of module names and locations.
-3. **Log Files**: One logger instance corresponds to one log file as you configure. Our logging system allows you to initialize multiple loggers with multiple log files.
+1. **Root Logger vs. Named Logger**: The root logger oversees the overall logging configuration, while named loggers like our ``BaseLogger`` provide module-specific logging capabilities.
+2. **Singleton Logger**: Only one instance of each logger name exists throughout the Python process, which keeps consistency and prevents redundant logger instances.
+3. **Hierarchical Logging**: Our system enhances `Python's hierarchical logging <https://docs.python.org/3/library/logging.html>` by explicitly indicating the file name and line number in log entries, providing direct traces to the message origins and clear display of module names. 
+
+**Output format:** 
+
+``timestamp - logger name - log level - [filename: line number]- logging message``
+
+.. note::
+    While the ``BaseLogger`` acts as a named logger within the Python logging hierarchy, it respects the hierarchical nature of Python's logging. This means logs can be passed to higher-level loggers, including the root logger, unless explicitly configured not to do so. This capability ensures that ``BaseLogger`` can be used either in conjunction with a centrally configured root logger or on its own, accommodating a wide range of logging strategies to suit various development needs.
+
 
 Examples
 --------
