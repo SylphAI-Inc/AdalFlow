@@ -1,8 +1,8 @@
 import logging
 import os
 
-# Get or create a logger at the module level
-logger = logging.getLogger(__name__)
+# # Get or create a logger at the module level
+# logger = logging.getLogger(__name__)
 
 class BaseLogger:
     r"""
@@ -25,9 +25,13 @@ class BaseLogger:
         """
         Initialize the logger, the log file directory, file name, and level of the log.
         """
-        self.logger = logger
+        # self.logger = logger
+        # use unique logger name for each instance
+        unique_logger_name = f"{__name__}_{filename.replace('.', '_')}"
+        self.logger = logging.getLogger(unique_logger_name)
         self.file_path = os.path.join(directory, filename)
         self.log_level = log_level
+        self.logger.setLevel(self.log_level)  # Set the default logging level
 
         # Ensure the log directory exists
         try:
@@ -36,16 +40,12 @@ class BaseLogger:
             print(f"Failed to create log directory {directory}: {e}")
             raise
 
-        # Clear existing handlers, so that new logger instances will generate new loggers if new filename is configured
-        self.logger.handlers = []  # Clear all handlers to ensure no duplicates
-
-        # Configure handlers only if they haven't been added yet
+        # Configure handlers of the initialized logger only if they haven't been added yet
         if not self.logger.handlers:
             self.configure_handlers()
 
     def configure_handlers(self):
         """Configure file and console handlers for the logger."""
-        self.logger.setLevel(self.log_level)  # Set the default logging level
         formatter = logging.Formatter(
             '%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
             datefmt='%Y-%m-%d %H:%M:%S'
@@ -62,10 +62,12 @@ class BaseLogger:
                 file_handler.setFormatter(formatter)
                 self.logger.addHandler(file_handler)
                 
-            # Console handler, the log will be automatically shown in the console
-            console_handler = logging.StreamHandler()
-            console_handler.setFormatter(formatter)
-            self.logger.addHandler(console_handler)
+            # Ensure only one console handler exists
+            if not any(isinstance(h, logging.StreamHandler) for h in self.logger.handlers):
+                console_handler = logging.StreamHandler()
+                console_handler.setFormatter(formatter)
+                self.logger.addHandler(console_handler)
+
         except Exception as e:
             print(f"Failed to set up logging handlers: {e}")
             raise
