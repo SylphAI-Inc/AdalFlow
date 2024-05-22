@@ -60,6 +60,14 @@ class Generator(Component):
     def train(self, *args, **kwargs):
         pass
 
+    def load_state_dict(self, state_dict: Dict):
+        r"""Load the state_dict for the generator component."""
+        if "preset_prompt_kwargs" in state_dict:
+            # update its prompt
+            self.system_prompt.update_preset_prompt_kwargs(
+                **state_dict["preset_prompt_kwargs"]
+            )
+
     def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
         """
         This combines the default lm input using Prompt, and the passed input. history, steps, etc.
@@ -103,6 +111,8 @@ class Generator(Component):
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # step 1: render the system prompt
         system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
+
+        print(f"system_prompt_str: {system_prompt_str}")
 
         # step 2: combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)

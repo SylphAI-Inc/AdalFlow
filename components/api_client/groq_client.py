@@ -87,7 +87,7 @@ class GroqAPIClient(APIClient):
             messages: Sequence[Dict[str, str]] = []
             if system_input is not None and system_input != "":
                 messages.append({"role": "system", "content": system_input})
-            messages.append({"role": "user", "content": input})
+            # messages.append({"role": "user", "content": input})
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")

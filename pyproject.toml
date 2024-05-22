@@ -58,6 +58,7 @@ anthropic = "^0.26.0"
 google-generativeai = "^0.5.4"
 transformers = "^4.41.0"
 torchmetrics = "^1.4.0.post0"
+lightning = "^2.2.4"
 
 
 [tool.ruff]

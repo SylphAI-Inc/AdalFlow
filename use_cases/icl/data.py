@@ -2,14 +2,32 @@
 # labels: https://huggingface.co/datasets/trec/blob/main/trec.py
 
 from datasets import load_dataset, DatasetDict
+import torch
+from typing import Dict, Sequence
+from torch.utils.data import DataLoader, Dataset
+from torchvision.datasets import CIFAR100
+
+from core.prompt_builder import Prompt
+from core.component import Component
+from typing import Any
+
+from use_cases.icl.prompt import EXAMPLES_STR
 
 _COARSE_LABELS = [
-    "ABBR:Abbreviation",
-    "ENTY:Entity",
-    "DESC:Description and abstract concept",
-    "HUM:Human being",
-    "LOC:Location",
-    "NUM:Numeric value",
+    "ABBR",
+    "ENTY",
+    "DESC",
+    "HUM",
+    "LOC",
+    "NUM",
+]
+_COARSE_LABELS_DESC = [
+    "Abbreviation",
+    "Entity",
+    "Description and abstract concept",
+    "Human being",
+    "Location",
+    "Numeric value",
 ]
 
 _FINE_LABELS = [
@@ -72,33 +90,49 @@ print(dataset)
 print(f"Train example: {dataset['train'][0]}")
 print(f"Test example: {dataset['test'][0]}")
 
-import torch
-from typing import Dict, Sequence
+
+class ToSampleStr(Component):
+    def __init__(self):
+        super().__init__()
+        self.template = Prompt(template=EXAMPLES_STR)
+
+    def call(self, data: Dict[str, Any]) -> str:
+        assert "text" in data, "The data must have a 'text' field"
+        assert "coarse_label" in data, "The data must have a 'coarse_label' field"
+        example_str = self.template(
+            input=data["text"],
+            output=data["coarse_label"],
+            # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
+        )
+        # example_str = "*" * len(example_str)
+        return example_str
 
 
-class TrecDataset(torch.utils.data.Dataset):
+class TrecDataset(Dataset):
     def __init__(self, dataset: DatasetDict, split: str):
         """
         Args:
             dataset: The dataset to use.
             split: The split to use.
         """
-        self.dataset = dataset
+        self.dataset = dataset[split]
         self.split = split
 
     def __len__(self):
-        return len(self.dataset[self.split])
+        return len(self.dataset)
 
     def __getitem__(self, idx):
-        item = self.dataset[idx]
-        question = item["text"]
-        label = item["label-coarse"]
-        inputs = self.tokenizer(
-            question,
-            padding="max_length",
-            truncation=True,
-            max_length=self.max_length,
-            return_tensors="pt",
-        )
-        inputs["label"] = torch.tensor(_COARSE_LABELS.index(label))
-        return inputs
+        r"""
+        Return the trainable states used as the input to the model [task pipeline]
+        """
+        # Retrieve the data at the specified index
+        data = self.dataset[idx]
+        return data
+
+
+# dataset = CIFAR100(transform=None, download=True)
+# data_loader = DataLoader(dataset["train"], batch_size=2, shuffle=True)
+# for batch in data_loader:
+#     print(batch)
+#     print(batch["text"], batch["coarse_label"], batch["fine_label"])
+#     break

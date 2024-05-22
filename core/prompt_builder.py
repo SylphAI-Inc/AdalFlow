@@ -81,6 +81,7 @@ class Prompt(Component):
         for var in self._find_template_variables(self._template_string):
             self.prompt_kwargs[var] = None
         self.preset_prompt_kwargs = preset_prompt_kwargs
+        self.trainable_params = self.prompt_kwargs.keys()
 
     def update_preset_prompt_kwargs(self, **kwargs):
         r"""Update the preset prompt kwargs after Prompt is initialized."""
