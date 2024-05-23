@@ -6,6 +6,7 @@ from components.api_client import GroqAPIClient, OpenAIClient
 from prompts.outputs import YAMLOutputParser, ListOutputParser
 
 import utils.setup_env
+import yaml
 
 
 # Define a dataclass for the YAML output schema extraction
@@ -15,10 +16,16 @@ class Joke:
     punchline: str = field(metadata={"description": "answer to resolve the joke"})
 
 
+joke_example = Joke(
+    setup="Why did the scarecrow win an award?",
+    punchline="Because he was outstanding in his field.",
+)
+
+
 class JokeGenerator(Component):
     def __init__(self):
         super().__init__()
-        yaml_parser = YAMLOutputParser(data_class_for_yaml=Joke)
+        yaml_parser = YAMLOutputParser(data_class_for_yaml=Joke, example=joke_example)
         self.generator = Generator(
             model_client=GroqAPIClient,
             model_kwargs={"model": "llama3-8b-8192", "temperature": 1.0},

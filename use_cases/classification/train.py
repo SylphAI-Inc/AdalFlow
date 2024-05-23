@@ -1,7 +1,14 @@
-from use_cases.icl.task import TRECClassifier
-from use_cases.icl.eval import ClassifierEvaluator
+from use_cases.classification.task import TRECClassifier
+from use_cases.classification.eval import ClassifierEvaluator
 from core.component import Component
-from use_cases.icl.data import TrecDataset, ToSampleStr, dataset
+from use_cases.classification.data import (
+    TrecDataset,
+    ToSampleStr,
+    dataset,
+    _COARSE_LABELS_DESC,
+    _COARSE_LABELS,
+    _FINE_LABELS,
+)
 from torch.utils.data import DataLoader
 import random
 
@@ -66,7 +73,9 @@ class TrecTrainer(Orchestrator):
     ) -> None:
         super().__init__()
         self.num_classes = num_classes
-        self.task = TRECClassifier()
+        self.task = TRECClassifier(
+            labels=_COARSE_LABELS, labels_desc=_COARSE_LABELS_DESC
+        )
         self.example_input = "How did serfdom develop in and then leave Russia ?"
         self.default_num_shots = 5
         self.train_dataset = train_dataset
@@ -120,16 +129,24 @@ class TrecTrainer(Orchestrator):
         """
         samples = self.sample_optimizer.random_sample(shots, self.train_dataset)
         samples_str = [self.to_sample_str(sample) for sample in samples]
-        state_dict = {
-            "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
-        }
-        self.task.load_state_dict(state_dict)
+        # state_dict = {
+        #     "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
+        # }
+        # self.task.load_state_dict(state_dict)
         self.task.generator.print_prompt()
         acc, macro_f1 = self.eval()
         print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
 
 
 if __name__ == "__main__":
+    import logging
+    import sys
+
+    # Configure logging to output to standard output (console)
+    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    # Example of setting logging to debug level
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
     train_dataset = dataset["train"]
     eval_dataset = dataset["test"]
     trainer = TrecTrainer(

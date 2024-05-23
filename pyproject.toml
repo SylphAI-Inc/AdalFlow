@@ -28,6 +28,7 @@ groq = "^0.5.0"       # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
 torchviz = "^0.0.2"
 matplotlib = "^3.8.4"
+ipykernel = "^6.29.4"
 
 
 [tool.poetry.group.test.dependencies]
@@ -37,7 +38,7 @@ pytest = "^8.1.1"
 mypy = "^1"
 
 [tool.poetry.group.doc.dependencies]
-datasets = "^2.19.1"
+datasets = ">=2.14.6, <=2.19.1"
 sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
 
@@ -59,6 +60,8 @@ google-generativeai = "^0.5.4"
 transformers = "^4.41.0"
 torchmetrics = "^1.4.0.post0"
 lightning = "^2.2.4"
+dspy-ai = "^2.4.9"
+jupyter = "^1.0.0"
 
 
 [tool.ruff]

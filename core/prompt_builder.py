@@ -123,6 +123,7 @@ class Prompt(Component):
         r"""Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs."""
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
+            logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
             prompt_str = self.template.render(**pass_kwargs)
             print("Prompt:")

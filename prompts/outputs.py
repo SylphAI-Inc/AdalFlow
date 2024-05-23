@@ -4,8 +4,10 @@ Note: Even with OutputParser for output_format_str formatting and the response p
 as user query can impact the output. Test your code well!
 """
 
-from dataclasses import is_dataclass
+from dataclasses import is_dataclass, asdict
 from typing import Dict, Any, Type
+import yaml
+import logging
 
 from core.component import Component
 from core.prompt_builder import Prompt
@@ -18,14 +20,23 @@ from core.string_parser import YAMLParser, ListParser, JsonParser
 #
 # setup: What do you call a fake noodle?
 # punchline: An impasta.
+logger = logging.getLogger(__name__)
 
 JSON_OUTPUT_FORMAT = r""""""
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following JSON schema:
 ```
 {{schema}}
 ```
+{% if example %}
+Here is an example:
+```
+{{example}}
+```
+{% endif %}
+
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
 -Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
 """
 LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python list.
 -Each element can be of any Python data type such as string, integer, float, list, dictionary, etc.
@@ -99,6 +110,7 @@ class YAMLOutputParser(OutputParser):
     def __init__(
         self,
         data_class_for_yaml: Type,
+        example: Type = None,
         yaml_output_format_template: str = YAML_OUTPUT_FORMAT,
         output_processors: Component = YAMLParser(),
     ):
@@ -116,11 +128,21 @@ class YAMLOutputParser(OutputParser):
         self.data_class_for_yaml = data_class_for_yaml
         self.yaml_output_format_prompt = Prompt(template=yaml_output_format_template)
         self.output_processors = output_processors
+        self.example = example
 
     def format_instructions(self) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format."""
         schema = get_data_class_schema(self.data_class_for_yaml)
-        return self.yaml_output_format_prompt(schema=schema)
+        # convert example to string, convert data class to yaml string
+        try:
+            example_dict = asdict(self.example)
+            example_str = yaml.dump(example_dict, default_flow_style=False)
+            logger.debug(f"{__class__.__name__} example_str: {example_str}")
+
+        except Exception:
+            example_str = None
+
+        return self.yaml_output_format_prompt(schema=schema, example=example_str)
 
     def call(self, input: str) -> YAML_OUTPUT_PARSER_OUTPUT_TYPE:
         r"""Parse the YAML string to JSON object and return the JSON object."""

@@ -11,7 +11,7 @@ from core.prompt_builder import Prompt
 from core.component import Component
 from typing import Any
 
-from use_cases.icl.prompt import EXAMPLES_STR
+from use_cases.classification.prompt import EXAMPLES_STR
 
 _COARSE_LABELS = [
     "ABBR",
@@ -101,7 +101,8 @@ class ToSampleStr(Component):
         assert "coarse_label" in data, "The data must have a 'coarse_label' field"
         example_str = self.template(
             input=data["text"],
-            output=data["coarse_label"],
+            label=data["coarse_label"],
+            output=_COARSE_LABELS_DESC[data["coarse_label"]],
             # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
         )
         # example_str = "*" * len(example_str)
@@ -136,3 +137,18 @@ class TrecDataset(Dataset):
 #     print(batch)
 #     print(batch["text"], batch["coarse_label"], batch["fine_label"])
 #     break
+import re
+
+
+def extract_class_label(text: str) -> int:
+    re_pattern = r"\d+"
+
+    if isinstance(text, str):
+        label_match = re.findall(re_pattern, text)
+        if label_match:
+            label = int(label_match[0])
+        else:
+            label = -1
+        return label
+    else:
+        return text
