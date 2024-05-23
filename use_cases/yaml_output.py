@@ -7,13 +7,59 @@ from prompts.outputs import YAMLOutputParser, ListOutputParser
 
 import utils.setup_env
 import yaml
+from dataclasses import fields, is_dataclass, MISSING
+from typing import Any, Dict, List, Optional
+
+"""
+from dataclasses import fields, is_dataclass, MISSING
+
+    if not is_dataclass(data_class):
+        raise ValueError("Provided class is not a dataclass")
+    schema = {}
+    for f in fields(data_class):
+        field_info = {
+            "type": f.type.__name__,
+            "description": f.metadata.get("description", ""),
+        }
+
+        # Determine if the field is required or optional
+        if f.default is MISSING and f.default_factory is MISSING:
+            field_info["required"] = True
+        else:
+            field_info["required"] = False
+            if f.default is not MISSING:
+                field_info["default"] = f.default
+            elif f.default_factory is not MISSING:
+                field_info["default"] = f.default_factory()
+
+        schema[f.name] = field_info
+
+    return schema
+"""
 
 
 # Define a dataclass for the YAML output schema extraction
 @dataclass
 class Joke:
-    setup: str = field(metadata={"description": "question to set up a joke"})
-    punchline: str = field(metadata={"description": "answer to resolve the joke"})
+    setup: Optional[str] = field(
+        default=None, metadata={"description": "question to set up a joke"}
+    )
+    punchline: Optional[str] = field(
+        default=None, metadata={"description": "answer to resolve the joke"}
+    )
+
+    def to_yaml_signature(self) -> str:
+        """Generate a YAML signature based on field metadata descriptions."""
+        # Create a dictionary to hold the descriptions
+        metadata_dict = {}
+        # Iterate over the fields of the dataclass
+        for f in fields(self):
+            # Each field's metadata 'description' is used as the value
+            description = f.metadata.get("description", "No description provided")
+            metadata_dict[f.name] = description
+
+        # Convert the dictionary to a YAML string
+        return yaml.dump(metadata_dict, default_flow_style=False)
 
 
 joke_example = Joke(
@@ -40,11 +86,14 @@ class JokeGenerator(Component):
 
 
 if __name__ == "__main__":
-    joke_generator = JokeGenerator()
-    print(joke_generator)
-    print("show the system prompt")
-    joke_generator.generator.print_prompt()
-    print("Answer:")
-    answer = joke_generator.call("Tell me two jokes.", model_kwargs={"temperature": 1})
-    print(answer)
-    print(f"typeof answer: {type(answer)}")
+    # joke_generator = JokeGenerator()
+    # print(joke_generator)
+    # print("show the system prompt")
+    # joke_generator.generator.print_prompt()
+    # print("Answer:")
+    # answer = joke_generator.call("Tell me two jokes.", model_kwargs={"temperature": 1})
+    # print(answer)
+    # print(f"typeof answer: {type(answer)}")
+    joker_class = Joke()
+    print(joker_class)
+    print(f"signature:\n", joker_class.to_yaml_signature())

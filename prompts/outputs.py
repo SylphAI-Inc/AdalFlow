@@ -132,7 +132,8 @@ class YAMLOutputParser(OutputParser):
 
     def format_instructions(self) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format."""
-        schema = get_data_class_schema(self.data_class_for_yaml)
+        # schema = get_data_class_schema(self.data_class_for_yaml)
+        schema = self.data_class_for_yaml.to_yaml_signature()
         # convert example to string, convert data class to yaml string
         try:
             example_dict = asdict(self.example)

@@ -20,12 +20,17 @@ class TrecClassifier(Signature):
     5. NUM, Numeric value"""
 
     question = InputField(
-        name="query", type=str, description="The question to classify"
+        name="question", type=str, description="The question to classify"
     )
-    output = OutputField(
-        name="label",
+    class_name = OutputField(
+        name="class_name",
+        type=str,
+        description="class_name",
+    )
+    class_index = OutputField(
+        name="class_index",
         type=int,
-        description="The class index of the question",
+        description="class_index in range[0, 5]",
     )
 
 
@@ -36,9 +41,8 @@ class CoT(dspy.Module):
 
     def forward(self, question):
         pred = self.prog(question=question)
-        output = pred.output if pred and pred.output else -1
-        parsed_output = extract_class_label(output)
-        return parsed_output
+
+        return pred
 
 
 if __name__ == "__main__":

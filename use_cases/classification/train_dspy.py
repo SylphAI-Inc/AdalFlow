@@ -19,29 +19,6 @@ from typing import Any, Optional, Sequence, Dict
 from torch.utils.data.sampler import Sampler, SubsetRandomSampler, RandomSampler
 
 
-class Orchestrator(Component):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self._example_input = "What is the capital of France?"
-
-    @property
-    def example_input(self):
-        return "How did serfdom develop in and then leave Russia ?"
-
-    @example_input.setter
-    def example_input(self, value):
-        self._example_input = value
-
-    # def training_step(self, *args, **kwargs) -> None:
-    #     raise NotImplementedError("training_step method is not implemented")
-
-    def train(self, *args, **kwargs) -> None:
-        raise NotImplementedError("train method is not implemented")
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"example_input={self._example_input}"
-
-
 class ExampleOptimizer(Component):
     def __init__(self, dataset, num_shots: int) -> None:
         super().__init__()
@@ -63,85 +40,6 @@ class ExampleOptimizer(Component):
 # for this trainer, we will learn from pytorch lightning
 
 
-class TrecTrainer(Orchestrator):
-    r"""
-    data loader which is random shuffed already, and the batch can be used as the # samples
-    """
-
-    def __init__(
-        self,
-        num_classes: int,
-        train_dataset,
-        eval_dataset,
-        test_dataset=None,
-    ) -> None:
-        super().__init__()
-        self.num_classes = num_classes
-        self.task = TRECClassifier(
-            labels=_COARSE_LABELS, labels_desc=_COARSE_LABELS_DESC
-        )
-        self.example_input = "How did serfdom develop in and then leave Russia ?"
-        self.default_num_shots = 5
-        self.train_dataset = train_dataset
-        self.eval_dataset = eval_dataset
-        self.test_dataset = test_dataset
-        self.data_loader = DataLoader(
-            self.train_dataset, batch_size=self.default_num_shots, shuffle=True
-        )
-        self.eval_data_loader = DataLoader(
-            self.eval_dataset, batch_size=1, shuffle=False
-        )  # use this for speeded up evaluation
-        self.sample_optimizer = ExampleOptimizer(
-            self.train_dataset, self.default_num_shots
-        )
-        self.evaluator = ClassifierEvaluator(num_classes=self.num_classes)
-        self.to_sample_str = ToSampleStr()
-
-    def random_shots(self, shots: int) -> Sequence[str]:
-        samples = self.sample_optimizer.random_sample(shots)
-        samples_str = [self.to_sample_str(sample) for sample in samples]
-        return samples_str
-
-    def eval(self):
-        responses = []
-        targets = []
-        num_invalid = 0
-        for data in self.eval_dataset.select(range(20)):
-            print(f"data: {data}")
-            task_input = data["text"]
-            corse_label = data["coarse_label"]
-            print(f"task_input: {task_input}, corse_label: {corse_label}")
-            print(f"types: {type(task_input)}, {type(corse_label)}")
-
-            response = self.task(task_input)
-            if response == -1:
-                print(f"invalid response: {response}")
-                num_invalid += 1
-                continue
-            responses.append(response)
-            targets.append(int(corse_label))
-
-        # evaluate the responses
-        print(f"responses: {responses}, targets: {targets}")
-        print(f"num_invalid: {num_invalid}")
-        accuracy, macro_f1_score = self.evaluator.run(responses, targets)
-        return accuracy, macro_f1_score
-
-    def train(self, shots: int) -> None:
-        r"""
-        ICL with demonstrating examples, we might want to know the plot of the accuracy while using the few shots examples
-        """
-        samples = self.sample_optimizer.random_sample(shots, self.train_dataset)
-        samples_str = [self.to_sample_str(sample) for sample in samples]
-        state_dict = {
-            "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
-        }
-        self.task.load_state_dict(state_dict)
-        self.task.generator.print_prompt()
-        acc, macro_f1 = self.eval()
-        print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
-
-
 from dspy.teleprompt import BootstrapFewShot
 from use_cases.classification.task_dspy import CoT
 from typing import Callable
@@ -149,11 +47,17 @@ from typing import Callable
 # config = dict(max_bootstrapped_demos=4, max_labeled_demos=4)
 
 
+def parse_output(pred):
+    output = pred.class_index if pred and pred.class_index else -1
+    parsed_output = extract_class_label(output)
+    return parsed_output
+
+
 def eval_a_task(task: Callable, eval_dataset, evaluator):
     responses = []
     targets = []
     num_invalid = 0
-    for data in eval_dataset.select(range(10)):
+    for data in eval_dataset.select(range(0, 20)):
         task_input = data["text"]
         coarse_label = data["coarse_label"]
         response = task(task_input)
@@ -162,6 +66,7 @@ def eval_a_task(task: Callable, eval_dataset, evaluator):
         if response == -1:
             num_invalid += 1
             continue
+        response = parse_output(response)
         responses.append(response)
         targets.append(int(coarse_label))
     print(f"responses: {responses}, targets: {targets}")
@@ -170,15 +75,121 @@ def eval_a_task(task: Callable, eval_dataset, evaluator):
     return accuracy, macro_f1_score
 
 
+# dspy caching is error-prone, as the structure can change. The signature.
+from dspy.teleprompt import BootstrapFewShot, BootstrapFewShotWithRandomSearch
+from dspy.datasets.gsm8k import GSM8K, gsm8k_metric, parse_integer_answer
+from use_cases.classification.data import dataset as HFDataset
+
+# def acc_metric(gt, pred):
+
+# gsm8k = GSM8K()
+
+import random
+
+import tqdm
+from datasets import load_dataset
+
+
+# def acc_metric(gold, pred, trace=None):
+#     print(f"gold: {gold}, pred: {pred}")
+#     return int(parse_integer_answer(str(gold.answer))) == int(int(pred))
+
+
+def acc_metric(gold, pred, trace=None):
+    print(f"gold: {gold}, pred: {pred}")
+    return int(parse_integer_answer(str(gold.answer))) == int(
+        parse_integer_answer(str(pred.class_index))
+    )
+
+
+class TREC5k:
+    def __init__(self) -> None:
+        super().__init__()
+        self.do_shuffle = False
+
+        dataset = HFDataset
+        hf_official_train = dataset["train"]
+        hf_official_test = dataset["test"]
+        official_train = []
+        official_test = []
+
+        for example in tqdm.tqdm(hf_official_train):
+            question = example["text"]
+
+            answer = example["coarse_label"]
+
+            # gold_reasoning = " ".join(answer[:-2])
+            # answer = str(int(answer[-1].replace(",", "")))
+            gold_reasoning = None
+
+            official_train.append(
+                dict(question=question, gold_reasoning=gold_reasoning, answer=answer)
+            )
+
+        for example in tqdm.tqdm(hf_official_test):
+            question = example["text"]
+
+            answer = example["coarse_label"]
+
+            # gold_reasoning = " ".join(answer[:-2])
+            # answer = str(int(answer[-1].replace(",", "")))
+            gold_reasoning = None
+
+            official_test.append(
+                dict(question=question, gold_reasoning=gold_reasoning, answer=answer)
+            )
+
+        rng = random.Random(0)
+        rng.shuffle(official_train)
+
+        rng = random.Random(0)
+        rng.shuffle(official_test)
+
+        trainset = official_train[:200]
+        devset = official_train[200:500]
+        testset = official_test[:]
+
+        import dspy
+
+        trainset = [dspy.Example(**x).with_inputs("question") for x in trainset]
+        devset = [dspy.Example(**x).with_inputs("question") for x in devset]
+        testset = [dspy.Example(**x).with_inputs("question") for x in testset]
+
+        # print(f"Trainset size: {len(trainset)}")
+        # print(f"Devset size: {len(devset)}")
+        # print(f"Testset size: {len(testset)}")
+
+        self.train = trainset
+        self.dev = devset
+        self.test = testset
+
+
 class Trainer:
     def __init__(self, train_dataset, eval_dataset):
         self.task = CoT()
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
         self.evaluator = ClassifierEvaluator(num_classes=6)
+        self.train_example_set = TREC5k().train
 
-    def eval_baseline(self):
-        return eval_a_task(self.task, self.eval_dataset, self.evaluator)
+    def eval_baseline(self, task):
+        return eval_a_task(task, self.eval_dataset, self.evaluator)
+
+    def train(self):
+
+        # Set up the optimizer: we want to "bootstrap" (i.e., self-generate) 4-shot examples of our CoT program.
+        config = dict(
+            max_bootstrapped_demos=5, max_labeled_demos=5, num_candidate_programs=2
+        )
+        # Optimize! Use the `gsm8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.
+        teleprompter = BootstrapFewShotWithRandomSearch(metric=acc_metric, **config)
+
+        optimized_cot = teleprompter.compile(CoT(), trainset=self.train_example_set)
+        print(optimized_cot)
+        metrics = self.eval_baseline(optimized_cot)
+        print(metrics)
+        return metrics
+        # print(f"optimized_cot state: {optimized_cot.dump_state()}")
 
 
 if __name__ == "__main__":
@@ -193,5 +204,6 @@ if __name__ == "__main__":
     train_dataset = dataset["train"]
     eval_dataset = dataset["test"]
     trainer = Trainer(train_dataset=train_dataset, eval_dataset=eval_dataset)
-    metrics = trainer.eval_baseline()
-    print(metrics)
+    # metrics = trainer.eval_baseline(trainer.task)
+    trainer.train()
+    # print(metrics)

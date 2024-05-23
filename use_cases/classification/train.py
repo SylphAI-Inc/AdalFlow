@@ -58,6 +58,60 @@ class ExampleOptimizer(Component):
         #     samples.append(self.sampler.next())
 
 
+# its search and auto reasoning
+examples_str_dspy = r"""
+---
+
+Question: How many miles is it from NY to Austria ?
+
+Reasoning: Let's think step by step in order to produce the class_index. We see that the question is asking for a numeric value, specifically the distance in miles between two locations.
+
+Class Name: NUM
+
+Class Index: 5
+
+---
+
+Question: Where is Los Vegas ?
+
+Reasoning: Let's think step by step in order to produce the class_index. We see that the question is asking for the location of a place, which falls under the LOC class.
+
+Class Name: LOC
+
+Class Index: 4
+
+---
+
+Question: Who was Sherlock Holmes 's archenemy ?
+
+Reasoning: Let's think step by step in order to produce the class_index. We are looking for a specific person who is an archenemy of Sherlock Holmes, which falls under the category of human beings.
+
+Class Name: HUM
+
+Class Index: 3
+
+---
+
+Question: Who was Shakespeare 's Moorish general ?
+
+Reasoning: Let's think step by step in order to produce the class_index. We are looking for a specific person related to Shakespeare's works, so this question falls under the HUM class.
+
+Class Name: HUM
+
+Class Index: 3
+
+---
+
+Question: What type of exercise burns the most calories ?
+
+Reasoning: Let's think step by step in order to produce the class_index. We can see that the question is asking for a type of exercise, which falls under the category of a specific entity or concept related to physical activity.
+
+Class Name: Entity
+
+Class Index: 1
+"""
+
+
 # for this trainer, we will learn from pytorch lightning
 class TrecTrainer(Orchestrator):
     r"""
@@ -102,7 +156,7 @@ class TrecTrainer(Orchestrator):
         responses = []
         targets = []
         num_invalid = 0
-        for data in self.eval_dataset.select(range(10)):
+        for data in self.eval_dataset.select(range(20)):
             print(f"data: {data}")
             task_input = data["text"]
             corse_label = data["coarse_label"]
@@ -129,10 +183,11 @@ class TrecTrainer(Orchestrator):
         """
         samples = self.sample_optimizer.random_sample(shots, self.train_dataset)
         samples_str = [self.to_sample_str(sample) for sample in samples]
-        # state_dict = {
-        #     "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
-        # }
-        # self.task.load_state_dict(state_dict)
+        # samples_str = examples_str_dspy
+        state_dict = {
+            "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
+        }
+        self.task.load_state_dict(state_dict)
         self.task.generator.print_prompt()
         acc, macro_f1 = self.eval()
         print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
@@ -153,4 +208,4 @@ if __name__ == "__main__":
         num_classes=6, train_dataset=train_dataset, eval_dataset=eval_dataset
     )
     print(trainer)
-    trainer.train(20)
+    trainer.train(0)
