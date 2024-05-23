@@ -152,6 +152,16 @@ Here is how you customize a new prompt:
     prompt = Prompt(template=new_template)
 
 
+Prompt Engineering experience
+---------------------
+There is not robust prompt, and it is one of the most sensitive creatures in the AI world.
+Here are some tips:
+- Even the output format matters, the order of your output fields, the formating.
+Output yaml or json format can lead to different performance. We have better luck with yaml format.
+- Few-shot works so well in some case, but it can lead to regression in some cases.
+- It is not fun to be a prompt engineer! But what can we do for now.
+
+
 Resources:
 1. `Jinja2`:
 

@@ -50,32 +50,21 @@ The output should be formatted as a standard JSON object with three keys:
 """
 # {#"thought": "Your reasoning to classify the question to class_name",#}
 
+from core.data_classes import BaseDataClass
+
 
 @dataclasses.dataclass
-class OutputFormat:
+class OutputFormat(BaseDataClass):
     thought: str = dataclasses.field(
         metadata={
-            "description": "Your reasoning to classify the question to class_name",
+            "desc": "Your reasoning to classify the question to class_name",
         }
     )
+    class_name: str = dataclasses.field(metadata={"desc": "class_name"})
+
     class_index: int = dataclasses.field(
-        metadata={"description": "class_index in range[0, 5]"}
+        metadata={"desc": "class_index in range[0, 5]"}
     )
-    class_name: str = dataclasses.field(metadata={"description": "class_name"})
-
-    @classmethod
-    def to_yaml_signature(self) -> str:
-        """Generate a YAML signature based on field metadata descriptions."""
-        # Create a dictionary to hold the descriptions
-        metadata_dict = {}
-        # Iterate over the fields of the dataclass
-        for f in dataclasses.fields(self):
-            # Each field's metadata 'description' is used as the value
-            description = f.metadata.get("description", "No description provided")
-            metadata_dict[f.name] = description
-
-        # Convert the dictionary to a YAML string
-        return yaml.dump(metadata_dict, default_flow_style=False)
 
 
 output_example = OutputFormat(

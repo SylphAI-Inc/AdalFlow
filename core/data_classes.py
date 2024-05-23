@@ -6,12 +6,16 @@ We use dataclass which provides a decorator that automatically adds special meth
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union
 from collections import OrderedDict
-from dataclasses import dataclass, field, InitVar
+from dataclasses import dataclass, field, InitVar, fields, make_dataclass, MISSING
 from uuid import UUID
+from core.functional import get_data_class_schema
 
 
 from datetime import datetime
 import uuid
+import json
+import yaml
+import warnings
 
 from core.tokenizer import Tokenizer
 
@@ -241,3 +245,201 @@ class RetrieverOutput:
     doc_scores: Optional[List[float]] = None
     query: Optional[str] = None
     documents: Optional[List[Document]] = None
+
+
+def retriever_output_to_context_str(
+    retriever_output: Union[RetrieverOutput, List[RetrieverOutput]],
+    deduplicate: bool = False,
+) -> str:
+    r"""The retrieved documents from one or mulitple queries.
+    Deduplicate is especially helpful when you used query expansion.
+    """
+    """
+    How to combine your retrieved chunks into the context is highly dependent on your use case.
+    If you used query expansion, you might want to deduplicate the chunks.
+    """
+    chunks_to_use: List[Document] = []
+    context_str = ""
+    sep = " "
+    if isinstance(retriever_output, RetrieverOutput):
+        chunks_to_use = retriever_output.documents
+    else:
+        for output in retriever_output:
+            chunks_to_use.extend(output.documents)
+    if deduplicate:
+        unique_chunks_ids = set([chunk.id for chunk in chunks_to_use])
+        # id and if it is used, it will be True
+        used_chunk_in_context_str: Dict[Any, bool] = {
+            id: False for id in unique_chunks_ids
+        }
+        for chunk in chunks_to_use:
+            if not used_chunk_in_context_str[chunk.id]:
+                context_str += sep + chunk.text
+                used_chunk_in_context_str[chunk.id] = True
+    else:
+        context_str = sep.join([chunk.text for chunk in chunks_to_use])
+    return context_str
+
+
+@dataclass
+class BaseDataClass:
+    __doc__ = r"""Base class to define input and output data classes for components.
+
+    It creates string signature or schema from both the class and class instance.
+
+    Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
+
+    Better use schema with example signature (either yaml or json) depending on the use case.
+
+    Example usage:
+    ```
+    # Define a dataclass
+    @dataclass
+    class MyOutputs(BaseDataClass):
+        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
+        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
+    # Create json signature
+    print(MyOutputs.to_json_signature())
+    # Output:
+    # {
+    #     "age": "The age of the person",
+    #     "name": "The name of the person"
+    # }
+    # Create yaml signature
+    print(MyOutputs.to_yaml_signature())
+    # Output:
+    # age: The age of the person
+    # name: The name of the person
+
+    # Create a dataclass instance
+    my_instance = MyOutputs(age=25, name="John Doe")
+    # Create json example
+    print(my_instance.to_json_example())
+    # Output:
+    # {
+    #     "age": 25,
+    #     "name": "John Doe"
+    # }
+    # Create yaml signature
+    print(my_instance.to_yaml_example())
+    # Output:
+    # age: 25
+    # name: John Doe
+
+    ```
+    """
+
+    def __post_init__(self):
+        for f in fields(self):
+            if "desc" not in f.metadata:
+                warnings.warn(
+                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
+                )
+
+    def to_yaml_example(self):
+        return yaml.dump(self.__dict__, default_flow_style=False)
+
+    def to_json_example(self):
+        return json.dumps(self.__dict__, indent=4)
+
+    @classmethod
+    def _generate_description_dict(cls):
+        """Generate a description string for the class from desc in metadata."""
+        metadata_dict = {
+            f.name: f.metadata.get("desc", "No description provided")
+            for f in fields(cls)
+        }
+
+        for f in fields(cls):
+            metadata_dict[f.name] += f" ({f.type.__name__})"
+        for f in fields(cls):
+            if f.default is MISSING and f.default_factory is MISSING:
+                metadata_dict[f.name] += " (required)"
+            else:
+                metadata_dict[f.name] += " (optional)"
+        return metadata_dict
+
+    @classmethod
+    def to_yaml_signature(cls):
+        """Generate a YAML signature for the class from desc in metadata."""
+        # NOTE: we manually format the yaml string as the yaml.dump mess up the initiation order of the fields
+        # Which can impact the final model output
+        metadata_dict = cls._generate_description_dict()
+        yaml_content = []
+        for key, value in metadata_dict.items():
+            yaml_content.append(f"{key}: {value}")
+
+        # Join all parts with newlines to form the complete YAML string
+        yaml_output = "\n".join(yaml_content)
+        return yaml_output
+
+        # return yaml.dump(metadata_dict, default_flow_style=False)
+
+    @classmethod
+    def to_json_signature(cls):
+        """Generate a JSON signature for the class from desc in metadata."""
+        metadata_dict = cls._generate_description_dict()
+        # manually format the json string as the json.dump mess up the initiation order of the fields
+        # Which can impact the final model output
+        json_content = []
+        for key, value in metadata_dict.items():
+            json_content.append(f'"{key}": "{value}"')
+
+        # Join all parts with commas to form the complete JSON string
+        json_output = ",\n".join(json_content)
+        return "{\n" + json_output + "\n}"
+        # return json.dumps(metadata_dict, indent=4)
+
+    @classmethod
+    def get_data_class_schema(cls) -> Dict[str, Dict[str, Any]]:
+        """Generate a Json schema which is more detailed than the signature."""
+        return get_data_class_schema(cls)
+
+
+@dataclass
+class DynamicDataClassFactory:
+    __doc__ = r"""
+    This class is used to create a dynamic dataclass called `DynamicOutputs` from a dictionary.
+    The dictionary should have the following structure:
+    {
+        "field_name": {
+            "value": field_value,
+            "desc": "Field description",
+            "prefix": "Field prefix",
+        },
+        ...
+    }
+    Examples:
+
+    data = {
+        "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
+        "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+    }
+
+    DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
+    class_instance = DynamicOutputs()
+    print(class_instance)
+
+    # Output:
+    # BaseDataClass(age=30, name='John Doe')
+    """
+
+    @staticmethod
+    def create_from_dict(data: dict, base_class=BaseDataClass):
+        fields_spec = []
+        for key, value_dict in data.items():
+            field_type = type(value_dict["value"])
+            default_value = value_dict["value"]
+            metadata = {
+                "desc": value_dict.get("desc", "No description provided"),
+                "prefix": value_dict.get("prefix", ""),
+            }
+            fields_spec.append(
+                (key, field_type, field(default=default_value, metadata=metadata))
+            )
+
+        dynamic_class = make_dataclass(
+            "DynamicOutputs", fields_spec, bases=(base_class,)
+        )
+
+        return dynamic_class

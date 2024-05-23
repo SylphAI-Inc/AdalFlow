@@ -13,6 +13,7 @@ from core.component import Component
 from core.prompt_builder import Prompt
 from core.functional import get_data_class_schema
 from core.string_parser import YAMLParser, ListParser, JsonParser
+from core.data_classes import BaseDataClass
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
 # setup: Why couldn't the bicycle stand up by itself?
@@ -23,7 +24,7 @@ from core.string_parser import YAMLParser, ListParser, JsonParser
 logger = logging.getLogger(__name__)
 
 JSON_OUTPUT_FORMAT = r""""""
-YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following JSON schema:
+YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
 ```
 {{schema}}
 ```
@@ -109,36 +110,49 @@ class YAMLOutputParser(OutputParser):
 
     def __init__(
         self,
-        data_class_for_yaml: Type,
-        example: Type = None,
+        data_class: BaseDataClass,
+        example: BaseDataClass = None,
         yaml_output_format_template: str = YAML_OUTPUT_FORMAT,
         output_processors: Component = YAMLParser(),
     ):
         r"""
         Args:
-            data_class_for_yaml (Type): The dataclass to extract the schema for the YAML output.
+            data_class (Type): The dataclass to extract the schema for the YAML output.
             example (Type, optional): The example dataclass object to show in the prompt. Defaults to None.
             yaml_output_format_template (str, optional): The template for the YAML output format. Defaults to YAML_OUTPUT_FORMAT.
             output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YAMLParser().
         """
         super().__init__()
-        if not is_dataclass(data_class_for_yaml):
+        if not is_dataclass(data_class):
+            raise ValueError(f"Provided class is not a dataclass: {data_class}")
+
+        # ensure example is instance of data class and initiated
+        if example is not None and not isinstance(example, data_class):
             raise ValueError(
-                f"Provided class is not a dataclass: {data_class_for_yaml}"
+                f"Provided example is not an instance of the data class: {data_class}"
             )
-        self.data_class_for_yaml = data_class_for_yaml
+        self.data_class_for_yaml = data_class
         self.yaml_output_format_prompt = Prompt(template=yaml_output_format_template)
         self.output_processors = output_processors
         self.example = example
 
-    def format_instructions(self) -> str:
-        r"""Return the formatted instructions to use in prompt for the YAML output format."""
+    def format_instructions(self, schema_type: str = "yaml") -> str:
+        r"""Return the formatted instructions to use in prompt for the YAML output format.
+
+        Args:
+            schema_type (str, optional): The type of schema to show in the prompt. Defaults to "yaml" for less token usage.
+            You can also use "json" for JSON schema.
+        """
         # schema = get_data_class_schema(self.data_class_for_yaml)
-        schema = self.data_class_for_yaml.to_yaml_signature()
+        if schema_type == "json":
+            schema = self.data_class_for_yaml.to_json_signature()
+        else:
+            schema = self.data_class_for_yaml.to_yaml_signature()
         # convert example to string, convert data class to yaml string
         try:
-            example_dict = asdict(self.example)
-            example_str = yaml.dump(example_dict, default_flow_style=False)
+            # example_dict = asdict(self.example)
+            # example_str = yaml.dump(example_dict, default_flow_style=False)
+            example_str = self.example.to_yaml_example()
             logger.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:

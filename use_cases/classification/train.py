@@ -211,4 +211,4 @@ if __name__ == "__main__":
         num_classes=6, train_dataset=train_dataset, eval_dataset=eval_dataset
     )
     print(trainer)
-    trainer.train(5)
+    trainer.train(20)

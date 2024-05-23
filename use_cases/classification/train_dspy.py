@@ -164,7 +164,10 @@ class Trainer:
         self.train_example_set = TREC5k().train
 
     def eval_baseline(self, task):
-        return eval_a_task(task, self.eval_dataset, self.evaluator)
+        acc = eval_a_task(task, self.eval_dataset, self.evaluator)
+        print(f"acc: {acc}")
+        self.task.save("use_cases/classification/task_dspy.txt")
+        return acc
 
     def train(self):
 
@@ -200,6 +203,6 @@ if __name__ == "__main__":
     train_dataset = dataset["train"]
     eval_dataset = dataset["test"]
     trainer = Trainer(train_dataset=train_dataset, eval_dataset=eval_dataset)
-    # metrics = trainer.eval_baseline(trainer.task)
-    trainer.train()
+    metrics = trainer.eval_baseline(trainer.task)
+    # trainer.train()
     # print(metrics)

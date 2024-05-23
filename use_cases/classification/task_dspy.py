@@ -19,18 +19,22 @@ class TrecClassifier(Signature):
     4. LOC, Location
     5. NUM, Numeric value"""
 
-    question = InputField(
-        name="question", type=str, description="The question to classify"
-    )
+    question = InputField(prefix="question:", type=str, desc="The question to classify")
+    # context = InputField(
+    #     name="context",
+    #     type=str,
+    #     description="The context of the question",
+    #     default="",
+    # )
     class_name = OutputField(
-        name="class_name",
-        type=str,
-        description="class_name",
+        prefix="class_name:",
+        format=str,
+        desc="class_name",
     )
     class_index = OutputField(
-        name="class_index",
-        type=int,
-        description="class_index in range[0, 5]",
+        prefix="class_index:",
+        format=str,
+        desc="class_index in range[0, 5]",
     )
 
 
@@ -47,8 +51,16 @@ class CoT(dspy.Module):
 
 if __name__ == "__main__":
     # test one example
-    query = "How did serfdom develop in and then leave Russia ?"
-    trec_classifier = CoT()
-    print(trec_classifier)
-    response = trec_classifier(query)
-    print(response)
+    # query = "How did serfdom develop in and then leave Russia ?"
+    # trec_classifier = CoT()
+    # print(trec_classifier)
+    # response = trec_classifier(query)
+    # print(response)
+    test_example = {
+        "question": "How far is it from Denver to Aspen ?",
+        "class_name": "NUM",
+        "class_index": "5",
+    }
+
+    sig = TrecClassifier(**test_example)
+    print(sig)

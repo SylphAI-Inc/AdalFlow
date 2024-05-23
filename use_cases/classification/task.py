@@ -74,12 +74,13 @@ class TRECClassifier(Component):
             }
         ]
         yaml_parser = YAMLOutputParser(
-            data_class_for_yaml=OutputFormat,  # example=output_example
+            data_class=OutputFormat,  # example=output_example
         )
+        # output_str = OutputFormat.to_json_signature()
         output_str = yaml_parser.format_instructions()
         logger.debug(f"output_str: {output_str}")
         groq_model_kwargs = {
-            "model": "mixtral-8x7b-32768",  # "llama3-8b-8192",  # "llama3-8b-8192",
+            "model": "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,
@@ -87,7 +88,7 @@ class TRECClassifier(Component):
             "n": 1,
         }
         openai_model_kwargs = {
-            "model": "gpt-4-turbo",
+            "model": "gpt-3.5-turbo",
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,
@@ -113,8 +114,8 @@ class TRECClassifier(Component):
         }
 
         self.generator = Generator(
-            model_client=GoogleGenAIClient,
-            model_kwargs=google_model_kwargs,
+            model_client=GroqAPIClient,
+            model_kwargs=groq_model_kwargs,
             template=TEMPLATE,
             preset_prompt_kwargs={
                 "task_desc_str": task_desc_str,
