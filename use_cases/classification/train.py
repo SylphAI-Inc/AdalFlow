@@ -153,6 +153,9 @@ class TrecTrainer(Orchestrator):
         return samples_str
 
     def eval(self):
+        r"""
+        TODO: automatically tracking the average inference time
+        """
         responses = []
         targets = []
         num_invalid = 0
@@ -208,4 +211,4 @@ if __name__ == "__main__":
         num_classes=6, train_dataset=train_dataset, eval_dataset=eval_dataset
     )
     print(trainer)
-    trainer.train(0)
+    trainer.train(5)

@@ -1,0 +1,48 @@
+{
+  "prog": {
+    "lm": null,
+    "traces": [],
+    "train": [],
+    "demos": [
+      {
+        "augmented": true,
+        "question": "How many miles is it from NY to Austria ?",
+        "rationale": "produce the class_index. We see that the question is asking for a numeric value, specifically the distance in miles between two locations.",
+        "class_name": "NUM",
+        "class_index": "5"
+      },
+      {
+        "augmented": true,
+        "question": "Where is Los Vegas ?",
+        "rationale": "produce the class_index. We see that the question is asking for the location of a place, which falls under the LOC class.",
+        "class_name": "LOC",
+        "class_index": "4"
+      },
+      {
+        "augmented": true,
+        "question": "Who was Sherlock Holmes 's archenemy ?",
+        "rationale": "produce the class_index. We are looking for a specific person who is an archenemy of Sherlock Holmes, which falls under the category of human beings.",
+        "class_name": "HUM",
+        "class_index": "3"
+      },
+      {
+        "augmented": true,
+        "question": "Who was Shakespeare 's Moorish general ?",
+        "rationale": "produce the class_index. We are looking for a specific person related to Shakespeare's works, so this question falls under the HUM class.",
+        "class_name": "HUM",
+        "class_index": "3"
+      },
+      {
+        "augmented": true,
+        "question": "What type of exercise burns the most calories ?",
+        "rationale": "produce the class_index. We can see that the question is asking for a type of exercise, which falls under the category of a specific entity or concept related to physical activity.",
+        "class_name": "Entity",
+        "class_index": "1"
+      }
+    ],
+    "signature_instructions": "You are a classifier. Given a Question, you need to classify it into one of the following classes:\n    Format: class_index. class_name, class_description\n    0. ABBR, Abbreviation\n    1. ENTY, Entity\n    2. DESC, Description and abstract concept\n    3. HUM, Human being\n    4. LOC, Location\n    5. NUM, Numeric value",
+    "signature_prefix": "Class Index:",
+    "extended_signature_instructions": "You are a classifier. Given a Question, you need to classify it into one of the following classes:\n    Format: class_index. class_name, class_description\n    0. ABBR, Abbreviation\n    1. ENTY, Entity\n    2. DESC, Description and abstract concept\n    3. HUM, Human being\n    4. LOC, Location\n    5. NUM, Numeric value",
+    "extended_signature_prefix": "Class Index:"
+  }
+}

@@ -1,6 +1,11 @@
 from core.component import Component, Sequential
 from core.generator import Generator
-from components.api_client import GroqAPIClient, OpenAIClient
+from components.api_client import (
+    GroqAPIClient,
+    OpenAIClient,
+    GoogleGenAIClient,
+    AnthropicAPIClient,
+)
 from core.prompt_builder import Prompt
 from prompts.outputs import YAMLOutputParser
 from core.string_parser import JsonParser
@@ -73,17 +78,43 @@ class TRECClassifier(Component):
         )
         output_str = yaml_parser.format_instructions()
         logger.debug(f"output_str: {output_str}")
+        groq_model_kwargs = {
+            "model": "mixtral-8x7b-32768",  # "llama3-8b-8192",  # "llama3-8b-8192",
+            "temperature": 0.0,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "n": 1,
+        }
+        openai_model_kwargs = {
+            "model": "gpt-4-turbo",
+            "temperature": 0.0,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "n": 1,
+        }
+        google_model_kwargs = {
+            "model": "gemini-1.5-pro-latest",
+            "temperature": 0.0,
+            "top_p": 1,
+            # "frequency_penalty": 0,
+            # "presence_penalty": 0,
+            # "n": 1,
+        }
+        anthropic_model_kwargs = {
+            "model": "claude-3-opus-20240229",
+            "temperature": 0.0,
+            "top_p": 1,
+            # "frequency_penalty": 0,
+            # "presence_penalty": 0,
+            # "n": 1,
+            "max_tokens": 1024,
+        }
 
         self.generator = Generator(
-            model_client=OpenAIClient,
-            model_kwargs={
-                "model": "gpt-3.5-turbo",
-                "temperature": 0.0,
-                "top_p": 1,
-                "frequency_penalty": 0,
-                "presence_penalty": 0,
-                "n": 1,
-            },
+            model_client=GoogleGenAIClient,
+            model_kwargs=google_model_kwargs,
             template=TEMPLATE,
             preset_prompt_kwargs={
                 "task_desc_str": task_desc_str,

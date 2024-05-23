@@ -1,3 +1,13 @@
+LIGHTRAG_DEFAULT_PROMPT_ARGS = [
+    "task_desc_str",
+    "output_format_str",
+    "tools_str",
+    "examples_str",
+    "chat_history_str",
+    "context_str",
+    "steps_str",
+]
+
 DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}

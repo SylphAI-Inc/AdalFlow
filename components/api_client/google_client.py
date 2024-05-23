@@ -62,9 +62,9 @@ class GoogleGenAIClient(APIClient):
             assert isinstance(input, Sequence), "input must be a sequence of text"
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
-            prompt: str = f"{system_input}\n\nUser query: {input}\n You:"
+            # prompt: str = f"{system_input}\n\nUser query: {input}\n You:"
 
-            final_model_kwargs["prompt"] = prompt
+            final_model_kwargs["prompt"] = system_input
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs

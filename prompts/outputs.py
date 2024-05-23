@@ -117,6 +117,7 @@ class YAMLOutputParser(OutputParser):
         r"""
         Args:
             data_class_for_yaml (Type): The dataclass to extract the schema for the YAML output.
+            example (Type, optional): The example dataclass object to show in the prompt. Defaults to None.
             yaml_output_format_template (str, optional): The template for the YAML output format. Defaults to YAML_OUTPUT_FORMAT.
             output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YAMLParser().
         """

@@ -1,22 +1,13 @@
-from use_cases.classification.task import TRECClassifier
 from use_cases.classification.eval import ClassifierEvaluator
 from core.component import Component
 from use_cases.classification.data import (
-    TrecDataset,
-    ToSampleStr,
     dataset,
-    _COARSE_LABELS_DESC,
-    _COARSE_LABELS,
-    _FINE_LABELS,
     extract_class_label,
 )
-from torch.utils.data import DataLoader
 import random
-from use_cases.classification.task_dspy import TrecClassifier
 
 
-from typing import Any, Optional, Sequence, Dict
-from torch.utils.data.sampler import Sampler, SubsetRandomSampler, RandomSampler
+from typing import Sequence
 
 
 class ExampleOptimizer(Component):
@@ -179,13 +170,18 @@ class Trainer:
 
         # Set up the optimizer: we want to "bootstrap" (i.e., self-generate) 4-shot examples of our CoT program.
         config = dict(
-            max_bootstrapped_demos=5, max_labeled_demos=5, num_candidate_programs=2
+            max_bootstrapped_demos=5, max_labeled_demos=5  # , num_candidate_programs=2
         )
         # Optimize! Use the `gsm8k_metric` here. In general, the metric is going to tell the optimizer how well it's doing.
-        teleprompter = BootstrapFewShotWithRandomSearch(metric=acc_metric, **config)
+        teleprompter = BootstrapFewShot(metric=acc_metric, **config)
 
         optimized_cot = teleprompter.compile(CoT(), trainset=self.train_example_set)
         print(optimized_cot)
+        # get current path
+        import os
+
+        path = os.getcwd() + "/use_cases/classification/optimized_cot.txt"
+        optimized_cot.save(path)
         metrics = self.eval_baseline(optimized_cot)
         print(metrics)
         return metrics

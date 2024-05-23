@@ -39,10 +39,10 @@ class GroqAPIClient(APIClient):
                 "developer": "Meta",
                 "context_size": "8192",
             },
-            "llama2-70b-4096": {
-                "developer": "Meta",
-                "context_size": "4096",
-            },
+            # "llama2-70b-4096": {
+            #     "developer": "Meta",
+            #     "context_size": "4096",
+            # },
             "mixtral-8x7b-32768": {
                 "developer": "Mistral",
                 "context_size": "32768",
