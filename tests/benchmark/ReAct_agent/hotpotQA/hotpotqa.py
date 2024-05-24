@@ -254,13 +254,13 @@ print(f"gpt_4_turbo_6_shot: {gpt_4_turbo_6_shot}")
 """
 NOTE: llama3 time might not accurate because it has request limit error
 
-first 10 records in the dataset
+first 10 records in the paper's dev dataset(7400+):
 gpt_3_5_zero_shot: {'EM': 0.0, 'FM': 0.5, 'time': 46.83056600093842, 'Average step': 6.1}
 gpt_3_5_6_shot: {'EM': 0.0, 'FM': 0.2, 'time': 12.900165343284607, 'Average step': 6.0}
 llama3_zero_shot: {'EM': 0.0, 'FM': 0.4, 'time': 26.216207814216613, 'Average step': 6.1}
 llama3_6_shot: {'EM': 0.1, 'FM': 0.5, 'time': 18.405735325813293, 'Average step': 7.1}
 
-random 10
+first 10 questions in the randomly selected 100 questions
 gpt_3_5_zero_shot: {'EM': 0.0, 'FM': 0.3, 'time': 13.242103695869446, 'Average step': 6.1}
 gpt_3_5_6_shot: {'EM': 0.0, 'FM': 0.4, 'time': 11.547260642051697, 'Average step': 5.4}
 
@@ -273,7 +273,7 @@ gpt_4o_6_shot: {'EM': 0.4, 'FM': 0.7, 'time': 9, 'Average step': 3.7}
 gpt_4_turbo_zero_shot: {'EM': 0.3, 'FM': 0.8, 'time': 11.181010842323303, 'Average step': 3.4}
 gpt_4_turbo_6_shot: {'EM': 0.5, 'FM': 0.6, 'time': 11.961152362823487, 'Average step': 3.5}
 
-random 100 records
+randomly selected 100 records
 gpt_3_5_zero_shot: {'EM': 0.02, 'FM': 0.23, 'time': 16.584252796173097, 'Average step': 5.93}
 gpt_3_5_6_shot: {'EM': 0.02, 'FM': 0.09, 'time': 10.081220099925995, 'Average step': 6.78}
 """
