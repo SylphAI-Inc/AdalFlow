@@ -7,6 +7,11 @@ LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "context_str",
     "steps_str",
 ]
+LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
+    "task_desc_str",
+    # "output_format_str",
+    "examples_str",
+]
 
 DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
 {% if task_desc_str %}
