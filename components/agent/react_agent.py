@@ -19,6 +19,7 @@ to answer questions that cant be answered or better be answered by llm using its
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
+from copy import deepcopy
 
 
 from core.generator import Generator
@@ -166,7 +167,7 @@ class ReActAgent(Generator):
             model_client=model_client,
             model_kwargs=model_kwargs,
         )
-        self.tools = tools
+        self.tools = deepcopy(tools)
         self.max_steps = max_steps
 
         self.additional_llm_tool = Generator(
@@ -370,10 +371,19 @@ if __name__ == "__main__":
     """
     import time
 
-    average_time = 0
-    for query in queries:
-        t0 = time.time()
-        answer = agent(query)
-        average_time += time.time() - t0
-        print(f"Answer: {answer}")
-    print(f"Average time: {average_time / len(queries)}")
+    for i in range(3):
+        agent = ReActAgent(
+            tools=tools,
+            max_steps=5,
+            model_client=GroqAPIClient,
+            model_kwargs=llm_model_kwargs,
+        )
+    print(agent.tools)
+
+    # average_time = 0
+    # for query in queries:
+    #     t0 = time.time()
+    #     answer = agent(query)
+    #     average_time += time.time() - t0
+    #     print(f"Answer: {answer}")
+    # print(f"Average time: {average_time / len(queries)}")

@@ -10,7 +10,9 @@ TEMPLATE = r"""{# task desc #}
 {# example #}
 {% if examples_str %}
 <EXAMPLES>
+{#{% for example in examples_str %}#}
 {{examples_str}}
+{#{% endfor %}#}
 </EXAMPLES>
 {% endif %}
 {{input_label}}: {{input}}
@@ -28,7 +30,10 @@ OUTPUT_FORMAT_STR = r"""You will output only class_index.
 """
 
 EXAMPLES_STR = r"""Question: {{input}}
-class_name: {{output}} {%if description%}({{description}}){%endif%}, class_index: {{label}}
+class_name: {{output}} 
+{%if description%}({{description}}){%endif%}
+class_index: {{label}}
+--------
 """
 
 import dataclasses
@@ -54,6 +59,12 @@ from core.data_classes import BaseDataClass
 
 
 @dataclasses.dataclass
+class InputFormat(BaseDataClass):
+    # add the "prompt_arg" to represent the prompt argument that it should get matched to
+    question: str = dataclasses.field(metadata={"desc": "The question to classify"})
+
+
+@dataclasses.dataclass
 class OutputFormat(BaseDataClass):
     thought: str = dataclasses.field(
         metadata={
@@ -68,7 +79,9 @@ class OutputFormat(BaseDataClass):
 
 
 output_example = OutputFormat(
-    thought="Grand Coulee Dam dam is a location", class_index=4, class_name="Location"
+    thought="Grand Coulee Dam dam is a location",
+    class_index=4,
+    class_name="Location",
 )
 # output = get_data_class_schema(OutputFormat)
 # print(output)
