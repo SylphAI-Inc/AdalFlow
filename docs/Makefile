@@ -26,7 +26,9 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
+	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
+
 
 
 html: apidoc
