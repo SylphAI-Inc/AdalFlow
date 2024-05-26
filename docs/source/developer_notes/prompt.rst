@@ -105,7 +105,7 @@ The output would be:
 
 
 Prompt and Special Tokens context
----------------------
+---------------------------------------------------------------
 
 
 Each section other than `task_desc_str` is encapulated in a special token. Different model can have different special tokens. 

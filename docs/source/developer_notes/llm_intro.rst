@@ -1,5 +1,5 @@
 Introduction to LLM applications
-============
+====================================
 All language models are doing is text completion, which means you pass a input text(called "prompt") to the model, and the model will generate the rest of the text for you. The model is trained to predict the next word given the previous words, so it can generate text that is coherent and relevant to the prompt.
 However, most API providers such as OpenAI, Anthropic provide the model in Chat Completions API, which take a list of messages instead of a `single text` as input. Why is that? We will have our assumptions in the next section.
 
@@ -39,7 +39,7 @@ Different API providers may have different input format, e.g. Anthropic's system
     )
 
 Why do we need chat completion instead of the previous text completion?
----------------------
+------------------------------------------------------------------------------------
 There are generally three roles("system", "user", "assistant") in chat, and potentially more especially in multi-agent. 
 Behind the scene, when the API provider receives the messages, they will compose them into a single text using special tokens to denote different messages.
 If we follow `Llama3 special tokens <https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/>`_, the above anthropic example will be converted into text:

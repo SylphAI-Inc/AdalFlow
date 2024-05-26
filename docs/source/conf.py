@@ -68,16 +68,28 @@ exclude_patterns = ["tests", "test_*"]
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+# html_theme = 'alabaster'
+# html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+# html_theme = "furo"
+
+html_logo = "../../images/sylphAI-logo.jpg"
 
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
     "collapse_navigation": False,
-    "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
-    "navigation_depth": 4,  # Controls how many headers are shown in the sidebar
-    "includehidden": True,
-    "titles_only": False,
+    # "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+    "navigation_depth": 8,  # Controls how many headers are shown in the sidebar
+    # "includehidden": True,
+    # "titles_only": False,
+    "icon_links": [
+        {
+            "name": "Discord",
+            "url": "https://discord.gg/hmZWFEUd",
+            "icon": "fa-brands fa-discord",
+        },
+    ],
 }
 
 
@@ -87,16 +99,14 @@ html_theme_options = {
 html_static_path = ["_static"]
 
 
-def setup(app):
-    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
-
-
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
 # whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 add_module_names = False
 
 autodoc_docstring_signature = True
+autosummary_generate = True  # Tells Sphinx to generate summary pages
+
 
 # autodoc_default_options = {
 #     "autosummary-no-titles": True,
@@ -117,5 +127,11 @@ autodoc_default_options = {
     "show-inheritance": True,
     "private-members": False,  # Ensure this is True if you want to document private members
     "special-members": "__init__",  # Document special members like __init__
-    "autosectionlabel_prefix_document": True,
+    # "autosectionlabel_prefix_document": True,
 }
+
+autosectionlabel_prefix_document = True
+
+
+def setup(app):
+    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration

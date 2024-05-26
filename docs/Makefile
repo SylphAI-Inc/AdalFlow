@@ -29,6 +29,7 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../prompts --separate --force
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
+	@python $(SOURCEDIR)/remove_string.py
 
 
 html: apidoc

@@ -122,29 +122,33 @@ Dive deep into the design of the libraries
 =======================
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Community
 
-   community/lightrag_design_philosophy
-   community/contribution_guide
-   community/community
-
+   community/index
 
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Developer Notes
 
-   developer_notes/llm_intro.rst
-   developer_notes/prompt
-   developer_notes/component
-   developer_notes/api_client
-   developer_notes/generator
-   developer_notes/embedder
-   developer_notes/retriever
-   developer_notes/data_classes
+   developer_notes/index
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference
+
+   apis/core/core
+   apis/components/components
+   apis/prompts/prompts
+   apis/eval/eval
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Benchmarks
+   .. Manually add documents for the code in benchmarks
+
 
 
 .. toctree::
@@ -177,16 +181,43 @@ Use the library
 .. toctree::
    :glob:
    :maxdepth: 1
+   :caption: Resources
+   
+   resources/resources
+   resources/contributing
+
+
+Use the library
+=======================
+
+.. toctree::
+   :maxdepth: 2
    :caption: Get Started
 
-   get_started/installation
-   get_started/introduction
+   get_started/index
 
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Tutorials
 
-   tutorials/simpleQA
+   tutorials/index
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: API Reference
+
+   apis/core/core
+   apis/components/components
+
+
+.. toctree::
+   :glob:
+   :maxdepth: 1
+   :caption: Resources
+   
+   resources/resources
+   resources/contributing
 
