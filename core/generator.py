@@ -30,6 +30,9 @@ class Generator(Component):
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
+        trainable_params: Optional[
+            List[str]
+        ] = None,  # the trainable parameters in the prompt
         output_processors: Optional[Component] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
@@ -52,7 +55,9 @@ class Generator(Component):
         # init the model client
         self.model_client = model_client()
         self.system_prompt = Prompt(
-            template=template, preset_prompt_kwargs=preset_prompt_kwargs
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
+            trainable_params=trainable_params,
         )
 
         self.output_processors = output_processors

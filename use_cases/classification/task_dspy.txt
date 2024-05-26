@@ -5,8 +5,6 @@
     "train": [],
     "demos": [],
     "signature_instructions": "You are a classifier. Given a Question, you need to classify it into one of the following classes:\n    Format: class_index. class_name, class_description\n    0. ABBR, Abbreviation\n    1. ENTY, Entity\n    2. DESC, Description and abstract concept\n    3. HUM, Human being\n    4. LOC, Location\n    5. NUM, Numeric value",
-    "signature_prefix": "class_index:",
-    "extended_signature_instructions": "You are a classifier. Given a Question, you need to classify it into one of the following classes:\n    Format: class_index. class_name, class_description\n    0. ABBR, Abbreviation\n    1. ENTY, Entity\n    2. DESC, Description and abstract concept\n    3. HUM, Human being\n    4. LOC, Location\n    5. NUM, Numeric value",
-    "extended_signature_prefix": "class_index:"
+    "signature_prefix": "class_index:"
   }
 }

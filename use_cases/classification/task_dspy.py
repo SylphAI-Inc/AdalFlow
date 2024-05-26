@@ -49,6 +49,17 @@ class CoT(dspy.Module):
         return pred
 
 
+class BaseGenerator(dspy.Module):
+    def __init__(self):
+        super().__init__()
+        self.prog = dspy.Predict(signature=TrecClassifier)
+
+    def forward(self, question):
+        pred = self.prog(question=question)
+
+        return pred
+
+
 if __name__ == "__main__":
     # test one example
     # query = "How did serfdom develop in and then leave Russia ?"
@@ -64,3 +75,8 @@ if __name__ == "__main__":
 
     sig = TrecClassifier(**test_example)
     print(sig)
+
+    # test another example
+    base = BaseGenerator()
+    output = base("How far is it from Denver to Aspen ?")
+    print(output)

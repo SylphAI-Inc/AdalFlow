@@ -91,6 +91,27 @@ print(f"Train example: {dataset['train'][0]}")
 print(f"Test example: {dataset['test'][0]}")
 
 
+class SamplesToStr(Component):
+    def __init__(self):
+        super().__init__()
+        self.template = Prompt(template=EXAMPLES_STR)
+
+    def call_one(self, data: Dict[str, Any]) -> str:
+        assert "text" in data, "The data must have a 'text' field"
+        assert "coarse_label" in data, "The data must have a 'coarse_label' field"
+        example_str = self.template(
+            input=data["text"],
+            label=data["coarse_label"],
+            output=_COARSE_LABELS_DESC[data["coarse_label"]],
+            # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
+        )
+        # example_str = "*" * len(example_str)
+        return example_str
+
+    def call(self, samples: Sequence[Dict[str, Any]]) -> str:
+        return "\n".join([self.call_one(sample) for sample in samples])
+
+
 class ToSampleStr(Component):
     def __init__(self):
         super().__init__()

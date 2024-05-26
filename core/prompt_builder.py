@@ -73,7 +73,7 @@ class Prompt(Component):
         preset_prompt_kwargs: Optional[Dict] = {},  # preload the parameters
         trainable_params: Optional[
             str
-        ] = LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS,  # the variables in the prompt that is trainable, in default, all will be passed to an optimizer
+        ] = [],  # the variables in the prompt that is trainable, in default, all will be passed to an optimizer
     ):
 
         super().__init__()
@@ -94,6 +94,7 @@ class Prompt(Component):
         # ensure all trainable_paramers are in the prompt_variables
         # Start of the trainable parameters#
         # self.trainable_prompt_kwargs: Parameter = {}
+        # parameter should be always a key and a value. key should be global state
         self._trainable_prompt_kwargs: Dict[str, str] = {}
         for param in trainable_params:
             if param not in self.prompt_variables:
@@ -105,8 +106,14 @@ class Prompt(Component):
                     data = preset_prompt_kwargs[param]
                 else:
                     data = None
-                self._trainable_prompt_kwargs[param] = data
-        self.trainable_prompt_kwargs = Parameter(self._trainable_prompt_kwargs)
+                self._trainable_prompt_kwargs[param] = Parameter(key=param, data=data)
+
+                # self._trainable_prompt_kwargs[param] = Parameter(data)
+        self.trainable_prompt_kwargs = (
+            Parameter(key=None, data=self._trainable_prompt_kwargs)
+            if self._trainable_prompt_kwargs
+            else None
+        )
         # End of the trainable parameters#
 
         # an optimizer will optimize the trainable parameters, and
@@ -180,8 +187,8 @@ class Prompt(Component):
             s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
         if self.prompt_variables:
             s += f", prompt_variables: {self.prompt_variables}"
-        if self.trainable_prompt_kwargs:
-            s += f", trainable_prompt_kwargs: {self.trainable_prompt_kwargs}"
+        if self._trainable_prompt_kwargs:
+            s += f", trainable_prompt_kwargs: {self._trainable_prompt_kwargs}"
         return s
 
 
@@ -202,6 +209,8 @@ if __name__ == "__main__":
     print(f"named_params: {named_params}")
     for name, param in named_params:
         print(f"{name}: {param}")
+
+    print(f"prompt_variables: {prompt._trainable_prompt_kwargs}")
 
     # EXAMPLES_TEMPLATE = r"""
     # {% if examples %}

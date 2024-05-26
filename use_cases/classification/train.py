@@ -4,6 +4,7 @@ from core.component import Component
 from use_cases.classification.data import (
     TrecDataset,
     ToSampleStr,
+    SamplesToStr,
     dataset,
     _COARSE_LABELS_DESC,
     _COARSE_LABELS,
@@ -45,55 +46,54 @@ from typing import List, Sequence
 import math
 
 
-class ClassSampler(Component):
-    def __init__(self, dataset, num_classes: int, replacement: bool = False):
-        super().__init__()
-        self.dataset = dataset
-        # self.incides = [
-        #     i for i, data in enumerate(dataset) if data["class_index"] == class_index
-        # ]
-        num_classes = len(_COARSE_LABELS)
-        self.class_indices: List[List] = [[] for _ in range(num_classes)]
-        print(f"len of class_indices: {len(self.class_indices)}")
-        for i, data in enumerate(dataset):
-            self.class_indices[data["coarse_label"]].append(i)
-        self.replacement = replacement
+# class ClassSampler(Component):
+#     def __init__(self, dataset, num_classes: int):
+#         super().__init__()
+#         self.dataset = dataset
+#         # self.incides = [
+#         #     i for i, data in enumerate(dataset) if data["class_index"] == class_index
+#         # ]
+#         num_classes = len(_COARSE_LABELS)
+#         self.class_indices: List[List] = [[] for _ in range(num_classes)]
+#         print(f"len of class_indices: {len(self.class_indices)}")
+#         for i, data in enumerate(dataset):
+#             self.class_indices[data["coarse_label"]].append(i)
 
-    def sample(self, shots: int, class_index: int) -> Sequence[str]:
-        indices = random.sample(self.class_indices[class_index], shots)
-        return [self.dataset[i] for i in indices]
+#     def sample(self, shots: int, class_index: int) -> Sequence[str]:
+#         indices = random.sample(self.class_indices[class_index], shots)
+#         return [self.dataset[i] for i in indices]
 
 
-class ExampleOptimizer(Component):
-    def __init__(self, dataset, num_shots: int) -> None:
-        super().__init__()
-        self.dataset = dataset
-        self.num_classes = len(_COARSE_LABELS)
-        self.class_sampler = ClassSampler(self.dataset, self.num_classes)
+# class ExampleOptimizer(Component):
+#     def __init__(self, dataset, num_shots: int) -> None:
+#         super().__init__()
+#         self.dataset = dataset
+#         self.num_classes = len(_COARSE_LABELS)
+#         self.class_sampler = ClassSampler(self.dataset, self.num_classes)
 
-        # self.sampler = RandomSampler(self.dataset, replacement=False, num_samples=num_shots)
+#         # self.sampler = RandomSampler(self.dataset, replacement=False, num_samples=num_shots)
 
-    def random_sample(self, shots: int) -> Sequence[str]:
-        indices = random.sample(range(len(self.dataset)), shots)
-        return [self.dataset[i] for i in indices]
+#     def random_sample(self, shots: int) -> Sequence[str]:
+#         indices = random.sample(range(len(self.dataset)), shots)
+#         return [self.dataset[i] for i in indices]
 
-    def random_sample_class_balanced(self, shots: int) -> Sequence[str]:
-        samples = []
-        samples_per_class = math.ceil(shots / self.num_classes)
-        print(f"samples_per_class: {samples_per_class}")
-        for class_index in range(self.num_classes):
-            samples.extend(self.class_sampler.sample(samples_per_class, class_index))
-        if len(samples) > shots:
-            # randomly sample the remaining samples
-            samples = random.sample(samples, shots)
-        return samples
+#     def random_sample_class_balanced(self, shots: int) -> Sequence[str]:
+#         samples = []
+#         samples_per_class = math.ceil(shots / self.num_classes)
+#         print(f"samples_per_class: {samples_per_class}")
+#         for class_index in range(self.num_classes):
+#             samples.extend(self.class_sampler.sample(samples_per_class, class_index))
+#         if len(samples) > shots:
+#             # randomly sample the remaining samples
+#             samples = random.sample(samples, shots)
+#         return samples
 
-        # sampler = RandomSampler(self.dataset, replacement=False, num_samples=shots)
-        # iter_times = shots // len(self.dataset)
-        # samples = []
-        # # use sampler.next() to get the next sample
-        # for i in range(iter_times):
-        #     samples.append(self.sampler.next())
+# sampler = RandomSampler(self.dataset, replacement=False, num_samples=shots)
+# iter_times = shots // len(self.dataset)
+# samples = []
+# # use sampler.next() to get the next sample
+# for i in range(iter_times):
+#     samples.append(self.sampler.next())
 
 
 # its search and auto reasoning
@@ -534,6 +534,9 @@ class_name: Numeric value
 class_index: 5
 ---
 """
+from optimizer.optimizer import BootstrapFewShot
+from optimizer.sampler import RandomSampler, ClassSampler
+from typing import Tuple
 
 
 # for this trainer, we will learn from pytorch lightning
@@ -548,6 +551,7 @@ class TrecTrainer(Orchestrator):
         train_dataset,
         eval_dataset,
         test_dataset=None,
+        num_shots: int = 5,
     ) -> None:
         super().__init__()
         self.num_classes = num_classes
@@ -555,30 +559,50 @@ class TrecTrainer(Orchestrator):
             labels=_COARSE_LABELS, labels_desc=_COARSE_LABELS_DESC
         )
         self.example_input = "How did serfdom develop in and then leave Russia ?"
-        self.default_num_shots = 5
+        self.num_shots = 5
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
         self.test_dataset = test_dataset
         self.data_loader = DataLoader(
-            self.train_dataset, batch_size=self.default_num_shots, shuffle=True
+            self.train_dataset, batch_size=self.num_shots, shuffle=True
         )
         self.eval_data_loader = DataLoader(
             self.eval_dataset, batch_size=1, shuffle=False
         )  # use this for speeded up evaluation
-        self.sample_optimizer = ExampleOptimizer(
-            self.train_dataset, self.default_num_shots
-        )
+        # self.sample_optimizer = ExampleOptimizer(self.train_dataset, self.num_shots)
         self.evaluator = ClassifierEvaluator(num_classes=self.num_classes)
-        self.to_sample_str = ToSampleStr()
+        # self.to_sample_str = ToSampleStr()
+        self.samples_to_str = SamplesToStr()
 
-    def random_shots(self, shots: int, class_balanced: bool = True) -> Sequence[str]:
-        if class_balanced:
-            samples = self.sample_optimizer.random_sample_class_balanced(shots)
-        else:
-            samples = self.sample_optimizer.random_sample(shots)
-        # samples = self.sample_optimizer.random_sample(shots)
-        samples_str = [self.to_sample_str(sample) for sample in samples]
-        return samples_str
+        self.params = dict(self.task.generator.named_parameters())
+        print(f"params: {self.params}")
+
+        self.sampler = RandomSampler(
+            dataset=self.train_dataset, num_shots=self.num_shots
+        )
+        self.class_sampler = ClassSampler(
+            self.train_dataset,
+            self.num_classes,
+            get_data_key_fun=lambda x: x["coarse_label"],
+        )
+        self.few_shot_optimizer = BootstrapFewShot(
+            example_parameter=self.params["system_prompt.trainable_prompt_kwargs"],
+            train_dataset=self.train_dataset,
+            sampler=self.class_sampler,
+            output_processors=self.samples_to_str,
+        )
+
+        print(f"few_shot_optimizer: {self.few_shot_optimizer}")
+        print(f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}")
+
+    # def random_shots(self, shots: int, class_balanced: bool = True) -> Sequence[str]:
+    #     if class_balanced:
+    #         samples = self.sample_optimizer.random_sample_class_balanced(shots)
+    #     else:
+    #         samples = self.sample_optimizer.random_sample(shots)
+    #     # samples = self.sample_optimizer.random_sample(shots)
+    #     samples_str = [self.to_sample_str(sample) for sample in samples]
+    #     return samples_str
 
     def eval(self):
         r"""
@@ -608,23 +632,84 @@ class TrecTrainer(Orchestrator):
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
         return accuracy, macro_f1_score
 
+    def batch_eval(self, batch: Dict[str, Any]) -> Tuple[float, float]:
+        r"""
+        batch evaluation
+        """
+        responses = []
+        targets = []
+        num_invalid = 0
+        for text, corse_label in zip(batch["text"], batch["coarse_label"]):
+            # print(f"data: {data}")
+            task_input = text
+            # corse_label = data["coarse_label"]
+            print(f"task_input: {task_input}, corse_label: {corse_label}")
+            print(f"types: {type(task_input)}, {type(corse_label)}")
+
+            response = self.task(task_input)
+            if response == -1:
+                print(f"invalid response: {response}")
+                num_invalid += 1
+                continue
+            responses.append(response)
+            targets.append(int(corse_label))
+
+        # evaluate the responses
+        print(f"responses: {responses}, targets: {targets}")
+        print(f"num_invalid: {num_invalid}")
+        accuracy, macro_f1_score = self.evaluator.run(responses, targets)
+        return accuracy, macro_f1_score
+
     def train(self, shots: int) -> None:
         r"""
         ICL with demonstrating examples, we might want to know the plot of the accuracy while using the few shots examples
         """
         # samples = self.sample_optimizer.random_sample(shots, self.train_dataset)
-        samples_str = self.random_shots(shots, True)
+        # samples_str = self.random_shots(shots, True)
         # samples_str = [self.to_sample_str(sample) for sample in samples]
         # print(f"samples_str: {samples_str}")
-        samples_str = random_class_balanced_str_with_thought_space
-        print(f"samples_str: {samples_str}")
-        # return
-        state_dict = {
-            "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
-        }
-        self.task.load_state_dict(state_dict)
-        self.task.generator.print_prompt()
+        best_parameters = None
+        best_eval = None
+        best_score = 0
+        max_steps = 4
+        # for step in range(max_steps):
+        for i, train_batch in enumerate(self.data_loader):
+            if i >= max_steps:
+                break
+            print(f"step: {i}")
+            print(f"train_batch: {train_batch}")
+            # acc, macro_f1 = self.batch_eval(train_batch)
+            # return
+            samples_str = self.few_shot_optimizer.step(num_shots=shots)
+            print(f"samples_str: {samples_str}")
+            state_dict = {
+                "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
+            }
+            self.task.load_state_dict(state_dict)
+            acc, macro_f1 = self.batch_eval(train_batch)  # should do batch evaluation
+            print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
+            score = acc + macro_f1
+            if score > best_score:
+                best_score = score
+                best_eval = (acc, macro_f1)
+                best_parameters = state_dict
+                print(f"best_score: {best_score}")
+        print(f"best_parameters: {best_parameters}")
+        print(f"best_eval: {best_eval}")
+
+        # final evaluation
         acc, macro_f1 = self.eval()
+        print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
+
+        # samples_str = random_class_balanced_str_with_thought_space
+        # print(f"samples_str: {samples_str}")
+        # # return
+        # state_dict = {
+        #     "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
+        # }
+        # self.task.load_state_dict(state_dict)
+        # self.task.generator.print_prompt()
+        # acc, macro_f1 = self.eval()
         print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
 
 
@@ -642,5 +727,5 @@ if __name__ == "__main__":
     trainer = TrecTrainer(
         num_classes=6, train_dataset=train_dataset, eval_dataset=eval_dataset
     )
-    print(trainer)
+    # print(trainer)
     trainer.train(6)

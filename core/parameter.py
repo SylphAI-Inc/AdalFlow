@@ -15,9 +15,14 @@ class Parameter:
 
     """
 
-    def __init__(self, data: Any, requires_opt: bool = True):
+    def __init__(self, key: str, data: Any, requires_opt: bool = True):
         self.data = data
+        self.key = key
         self.requires_opt = requires_opt
+        print(f"data: {data}, requires_opt: {requires_opt}")
+
+    def update_value(self, data: Any):
+        self.data = data
 
     def __repr__(self):
-        return f"Parameter containing:\n{self.data}"
+        return f"Parameter: {self.data} with key: {self.key}"

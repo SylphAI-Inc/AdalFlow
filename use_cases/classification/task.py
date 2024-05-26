@@ -1,4 +1,4 @@
-from core.component import Component, Sequential
+from core.component import Component, Sequential, fun_to_component
 from core.generator import Generator
 from components.api_client import (
     GroqAPIClient,
@@ -126,7 +126,10 @@ class TRECClassifier(Component):
                 "output_format_str": output_str,  # OUTPUT_FORMAT_STR,
                 "input_label": "Question",
             },
-            output_processors=Sequential(yaml_parser, lambda x: x["class_index"]),
+            trainable_params=["examples_str"],
+            output_processors=Sequential(
+                yaml_parser, fun_to_component(lambda x: x["class_index"])
+            ),
             # output_processors=yaml_parser,
         )
 

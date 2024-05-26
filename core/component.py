@@ -42,6 +42,25 @@ def _addindent(s_, numSpaces):
     return s
 
 
+# def fun_to_component(fun):
+#     r"""Decorator to convert a function to a Component class."""
+#     class_name = fun.__name__.capitalize()
+
+#     class ComponentClass(Component):
+#         def __init__(self, *args, **kwargs):
+#             super().__init__()
+#             self.fun = fun
+
+#         def __call__(self, *args, **kwargs):
+#             return self.fun(*args, **kwargs)
+
+#         def _extra_repr(self) -> str:
+#             return super()._extra_repr() + f"fun={self.fun}"
+
+#     ComponentClass.__name__ = class_name
+#     return ComponentClass()
+
+
 def _call_unimplemented(self, *input: Any) -> None:
     r"""
     Define the call method for the component.
@@ -68,7 +87,7 @@ class Component:
     (2) All components can be running local or APIs. 'Component' can deal with API calls, so we need support retries and rate limits.
     """
 
-    _version: int = 0
+    _version: int = 0.1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
     _execution_graph: List[str] = []  # This will store the graph of execution.
@@ -131,7 +150,7 @@ class Component:
             >>> for param in model.parameters():
             >>>     print(param)
         """
-        for name, param in self.named_parameters():
+        for name, param in self.named_parameters(recurse=recursive):
             yield param
 
     def _named_members(
@@ -265,6 +284,19 @@ class Component:
         pass
 
     def add_component(self, name: str, component: Optional["Component"]) -> None:
+        r"Add a child component to the current component."
+        if not isinstance(component, Component) and component is not None:
+            raise TypeError(
+                f"component should be an instance of Component, but got {type(component)}"
+            )
+        if not isinstance(name, str):
+            raise TypeError(f"name should be a string, but got {type(name)}")
+        elif hasattr(self, name) and name not in self._components:
+            raise KeyError(f"attribute '{name}' already exists")
+        elif "." in name:
+            raise ValueError('component name can\'t contain "."')
+        elif name == "":
+            raise ValueError('component name can\'t be empty string ""')
         self._components[name] = component
 
     def register_subcomponent(
@@ -328,9 +360,21 @@ class Component:
                 if module is None:
                     continue
                 submodule_prefix = prefix + ("." if prefix else "") + name
+                print(f"module: {module}    ")
                 yield from module.named_components(
                     memo, submodule_prefix, remove_duplicate
                 )
+
+    def _save_to_state_dict(self, destination, prefix):
+        r"""Saves the state of the component to a dictionary.
+
+        Args:
+            destination (Dict[str, Any]): the dictionary to which the state is saved.
+            prefix (str): a prefix to add to the keys in the state_dict.
+        """
+        for name, param in self._parameters.items():
+            if param is not None:
+                destination[prefix + name] = param
 
     def state_dict(
         self, destination: Optional[Dict[str, Any]] = None, prefix: Optional[str] = ""
@@ -355,8 +399,13 @@ class Component:
             destination = OrderedDict()
             destination._metadata = OrderedDict()
         local_metadata = dict(version=self._version)
+        # to do when local data where be needed
         if hasattr(self, "_metadata"):
             destination._metadata[prefix[:-1]] = local_metadata
+
+        # save its own state
+        self._save_to_state_dict(destination, prefix=prefix)
+        # save the state of all subcomponents
         for name, component in self._components.items():
             if component is not None:
                 component.state_dict(
@@ -694,3 +743,18 @@ class ComponentDict(Component):
                 self[m[0]] = m[1]  # type: ignore[assignment]
 
     # remove forward alltogether to fallback on Module's _forward_unimplemented
+
+
+class FunComponent(Component):
+    def __init__(self, fun: Callable):
+        super().__init__()
+        self.fun = fun
+
+    def call(self, *args, **kwargs):
+        return self.fun(*args, **kwargs)
+
+
+def fun_to_component(fun):
+    r"""Decorator to convert a function to a Component class."""
+    class_name = fun.__name__.capitalize() + "Component"
+    return type(class_name, (FunComponent,), {})(fun)
