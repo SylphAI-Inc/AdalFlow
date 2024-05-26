@@ -13,7 +13,7 @@
 import os
 import sys
 
-# sys.path.insert(0, os.path.abspath("."))
+sys.path.insert(0, os.path.abspath('.'))  # Adds the directory containing conf.py to sys.path
 # sys.path.insert(0, os.path.abspath(".."))
 # sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../"))
@@ -66,24 +66,31 @@ exclude_patterns = ["tests", "test_*"]
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
+# html_theme = "furo"
+
+html_logo = "../../images/sylphAI-logo.jpg"
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
     "collapse_navigation": False,
-    "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
-    "navigation_depth": 4,  # Controls how many headers are shown in the sidebar
-    "includehidden": True,
-    "titles_only": False,
+    # "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+    "navigation_depth": 8,  # Controls how many headers are shown in the sidebar
+    # "includehidden": True,
+    # "titles_only": False,
+    "icon_links": [
+        {
+            "name": "Discord",
+            "url": "https://discord.gg/hmZWFEUd",
+            "icon": "fa-brands fa-discord",
+        },]
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-
-def setup(app):
-    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
 
 
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
@@ -92,6 +99,8 @@ def setup(app):
 add_module_names = False
 
 autodoc_docstring_signature = True
+autosummary_generate = True  # Tells Sphinx to generate summary pages
+
 
 # autodoc_default_options = {
 #     "autosummary-no-titles": True,
@@ -112,5 +121,9 @@ autodoc_default_options = {
     "show-inheritance": True,
     "private-members": False,  # Ensure this is True if you want to document private members
     "special-members": "__init__",  # Document special members like __init__
-    "autosectionlabel_prefix_document": True,
+    # "autosectionlabel_prefix_document": True,
 }
+
+autosectionlabel_prefix_document = True
+def setup(app):
+    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration

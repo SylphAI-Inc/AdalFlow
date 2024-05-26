@@ -18,60 +18,42 @@ What is LightRAG?
 LightRAG comes from the best of the AI research and engineering. Fundamentally, we ask ourselves: what kind of system that combines the best of research(such as LLM), engineering (such as 'jinja') to build the best applications? We are not a framework. We do not want you to directly install the package. We want you to carefully decide to take modules and structures from here to build your own library and applications. This is a cookbook organized uniquely for easy understanding: you can read the 1000 lines of code to see a typical RAG end-to-end without jumping between files and going through multi-level class inheritance. If we build our system expanding from light_rag.py, we as a community will share the same RAG languages, and share other building blocks and use cases easily without depending on a complex framework.
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Community
 
-   community/lightrag_design_philosophy
-   community/contribution_guide
-   community/community
-
+   community/index
 
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Developer Notes
 
-   developer_notes/llm_intro.rst
-   developer_notes/prompt
-   developer_notes/component
-   developer_notes/api_client
-   developer_notes/generator
-   developer_notes/embedder
-   developer_notes/retriever
-   developer_notes/data_classes
+   developer_notes/index
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Get Started
 
-   get_started/installation
-   get_started/introduction
+   get_started/index
 
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Tutorials
 
-   tutorials/simpleQA
+   tutorials/index
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: API Reference
 
-   apis/core/core
-   apis/components/components
+   apis/index
 
 
 .. toctree::
-   :glob:
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Resources
-   
-   resources/resources
-   resources/contributing
 
+   resources/index
