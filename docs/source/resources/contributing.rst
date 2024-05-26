@@ -74,6 +74,7 @@ The Sphinx build will show warnings but the docs will still be completed.
 If you have a module folder containing code, for example, ``components/``, please add the following line to the docs/Makefile in the ``apidoc:`` section.
 
 .. code-block:: bash
+    
     @sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force
 
 
