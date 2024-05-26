@@ -23,7 +23,7 @@ docs/build/
 docs/_build/
 docs/source/_templates
 docs/source/documents/
-docs/source/apis/*
+# docs/source/apis/*
 tests/log_test/*.log
 lib/
 li_test/
