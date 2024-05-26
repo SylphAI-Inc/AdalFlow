@@ -17,7 +17,7 @@ li_test/
 lib/
 logs/
 __pycache__/
-docs/source/
+# docs/source/
 llama3/
 docs/build/
 docs/_build/
