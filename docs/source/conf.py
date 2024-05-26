@@ -97,7 +97,7 @@ html_static_path = ["_static"]
 # whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 add_module_names = False
-
+autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True
 autosummary_generate = True  # Tells Sphinx to generate summary pages
 
@@ -124,6 +124,5 @@ autodoc_default_options = {
     # "autosectionlabel_prefix_document": True,
 }
 
-autosectionlabel_prefix_document = True
 def setup(app):
     app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
