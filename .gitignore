@@ -30,3 +30,5 @@ li_test/
 .mypy_cache/
 .pytest_cache/
 local_cache/
+*.txt
+*.pth

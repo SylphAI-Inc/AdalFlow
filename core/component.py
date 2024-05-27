@@ -12,7 +12,9 @@ from typing import (
     overload,
     Iterator,
     Mapping,
+    NamedTuple,
 )
+import itertools
 from collections import OrderedDict, abc as container_abcs
 import operator
 from itertools import islice
@@ -20,14 +22,19 @@ import networkx as nx
 from pyvis.network import Network
 
 import matplotlib.pyplot as plt
-import uuid
 
 from core.parameter import Parameter
 
 
-# TODO: design hooks.
-_global_pre_call_hooks: Dict[int, Callable] = OrderedDict()
-# __all__ = ["Component", "EmbedderOutput", "OpenAIEmbedder"]
+class _IncompatibleKeys(
+    namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
+):
+    def __repr__(self):
+        if not self.missing_keys and not self.unexpected_keys:
+            return "<All keys matched successfully>"
+        return super().__repr__()
+
+    __str__ = __repr__
 
 
 def _addindent(s_, numSpaces):
@@ -40,35 +47,6 @@ def _addindent(s_, numSpaces):
     s = "\n".join(s)
     s = first + "\n" + s
     return s
-
-
-# def fun_to_component(fun):
-#     r"""Decorator to convert a function to a Component class."""
-#     class_name = fun.__name__.capitalize()
-
-#     class ComponentClass(Component):
-#         def __init__(self, *args, **kwargs):
-#             super().__init__()
-#             self.fun = fun
-
-#         def __call__(self, *args, **kwargs):
-#             return self.fun(*args, **kwargs)
-
-#         def _extra_repr(self) -> str:
-#             return super()._extra_repr() + f"fun={self.fun}"
-
-#     ComponentClass.__name__ = class_name
-#     return ComponentClass()
-
-
-def _call_unimplemented(self, *input: Any) -> None:
-    r"""
-    Define the call method for the component.
-    Should be overriden by all subclasses.
-    """
-    raise NotImplementedError(
-        f'Component {type(self).__name__} is missing the required "call" method.'
-    )
 
 
 class Component:
@@ -412,6 +390,111 @@ class Component:
                     destination=destination, prefix=prefix + name + "."
                 )
         return destination
+
+    def _load_from_state_dict(
+        self,
+        state_dict: Mapping[str, Any],
+        prefix: str,
+        # local_metadata=None,
+        strict=True,
+        missing_keys: List[str] = [],
+        unexpected_keys: List[str] = [],
+        # error_msgs: List[str] = [],
+    ):
+        r"""Copies parameters from :attr:`state_dict` into this component but not its descendants.
+
+        This is called on every subcomponent"""
+        local_state = {k: v for k, v in self._parameters.items() if v is not None}
+        for name, param in local_state.items():
+            key = prefix + name
+            if key in state_dict:
+                input_param = state_dict[key]
+                if isinstance(input_param, Parameter):
+                    input_param = input_param.data
+                if input_param is not None:
+                    param.update_value(input_param)  # update the value of the parameter
+            elif strict:
+                missing_keys.append(key)
+
+        # deal with unexpected keys
+        if strict:
+            for key in state_dict.keys():
+                if key.startswith(prefix):
+                    input_name = key[len(prefix) :]
+                    input_name = input_name.split(".", 1)[0]
+                    if (
+                        input_name not in self._components
+                        and input_name not in local_state
+                    ):
+                        unexpected_keys.append(key)
+
+    def load_state_dict(self, state_dict: Mapping[str, Any], strict: bool = True):
+        r"""Copy parameters from :attr:`state_dict` into this component and its descendants.
+
+        If :attr:`strict` is ``True``, then
+        the keys of :attr:`state_dict` must exactly match the keys
+        returned by this component's :meth:`~state_dict` function.
+        """
+        if not isinstance(state_dict, Mapping):
+            raise TypeError(
+                f"state_dict should be a mapping, but got {type(state_dict)}"
+            )
+
+        missing_keys: List[str] = []
+        unexpected_keys: List[str] = []
+        error_msgs: List[str] = []
+        # metadata = getattr(state_dict, "_metadata", None)
+        state_dict = OrderedDict(
+            state_dict
+        )  # To prevent modification of the original state_dict
+        # if metadata is not None:
+        #     state_dict._metadata = metadata
+
+        def load(component: Component, local_state_dict: Mapping[str, Any], prefix=""):
+            component._load_from_state_dict(
+                local_state_dict,
+                prefix=prefix,
+                strict=strict,
+                missing_keys=missing_keys,
+                unexpected_keys=unexpected_keys,
+            )
+
+            for name, child in component._components.items():
+                if child is not None:
+                    child_prefix = prefix + name + "."
+                    child_state_dict = {
+                        k: v
+                        for k, v in local_state_dict.items()
+                        if k.startswith(child_prefix)
+                    }
+                    load(child, child_state_dict, prefix=child_prefix)
+
+        load(self, state_dict)
+        del load
+        if strict:
+            if len(unexpected_keys) > 0:
+                error_msgs.insert(
+                    0,
+                    "Unexpected key(s) in state_dict: {}. ".format(
+                        ", ".join(unexpected_keys)
+                    ),
+                )
+            if len(missing_keys) > 0:
+                error_msgs.insert(
+                    0,
+                    "Missing key(s) in state_dict: {}. ".format(
+                        ", ".join(missing_keys)
+                    ),
+                )
+        if len(error_msgs) > 0:
+            raise RuntimeError(
+                "Error(s) in loading state_dict for {}:\n\t{}".format(
+                    self.__class__.__name__, "\n\t".join(error_msgs)
+                )
+            )
+        return _IncompatibleKeys(
+            missing_keys=missing_keys, unexpected_keys=unexpected_keys
+        )
 
     def apply(self: "Component", fn: Callable[["Component", Any], None]) -> None:
         r"""

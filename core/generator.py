@@ -1,6 +1,8 @@
 from typing import Any, Dict, List, Optional, Tuple
+
 from core.data_classes import ModelType
 from core.component import Component
+from core.parameter import Parameter
 from core.prompt_builder import Prompt
 from core.functional import compose_model_kwargs
 from core.api_client import APIClient
@@ -32,7 +34,7 @@ class Generator(Component):
         preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
         trainable_params: Optional[
             List[str]
-        ] = None,  # the trainable parameters in the prompt
+        ] = [],  # the trainable parameters in the prompt
         output_processors: Optional[Component] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
@@ -57,21 +59,32 @@ class Generator(Component):
         self.system_prompt = Prompt(
             template=template,
             preset_prompt_kwargs=preset_prompt_kwargs,
-            trainable_params=trainable_params,
+            # trainable_params=trainable_params,
         )
+        # add trainable_params to generator
+        prompt_variables = self.system_prompt.get_prompt_variables()
+        for param in trainable_params:
+            if param not in prompt_variables:
+                raise ValueError(
+                    f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
+                )
+            # Create a Parameter object and assign it as an attribute with the same name as the value of param
+            setattr(self, param, Parameter(data=None))
+            # self.param = Parameter(data=None)
+        # end of trainable parameters
 
         self.output_processors = output_processors
 
     def train(self, *args, **kwargs):
         pass
 
-    def load_state_dict(self, state_dict: Dict):
-        r"""Load the state_dict for the generator component."""
-        if "preset_prompt_kwargs" in state_dict:
-            # update its prompt
-            self.system_prompt.update_preset_prompt_kwargs(
-                **state_dict["preset_prompt_kwargs"]
-            )
+    # def load_state_dict(self, state_dict: Dict):
+    #     r"""Load the state_dict for the generator component."""
+    #     if "preset_prompt_kwargs" in state_dict:
+    #         # update its prompt
+    #         self.system_prompt.update_preset_prompt_kwargs(
+    #             **state_dict["preset_prompt_kwargs"]
+    #         )
 
     def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
         """

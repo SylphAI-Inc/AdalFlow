@@ -72,7 +72,7 @@ class Prompt(Component):
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},  # preload the parameters
         trainable_params: Optional[
-            str
+            List[str]
         ] = [],  # the variables in the prompt that is trainable, in default, all will be passed to an optimizer
     ):
 

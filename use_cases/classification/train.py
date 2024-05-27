@@ -559,7 +559,7 @@ class TrecTrainer(Orchestrator):
             labels=_COARSE_LABELS, labels_desc=_COARSE_LABELS_DESC
         )
         self.example_input = "How did serfdom develop in and then leave Russia ?"
-        self.num_shots = 5
+        self.num_shots = 8
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
         self.test_dataset = test_dataset
