@@ -1,6 +1,6 @@
 {
     "generator.examples_str": {
-        "data": "Question: What does MSG stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What is a fear of touching ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: How do I start a web based business ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who stopped making diary entries on May 31 , 1669 , because he thought he was going blind ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What is the greatest hiking Web site ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: What is the current ticket fare from from Cairo to Barbados ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "data": "Question: What does the channel ESPN stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What is the name of Jamiroquai new album ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the difference between a board of directors and an advisory board ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who was the first host of Person to Person ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What country has the port of Haifa ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many American soldiers remain unaccounted from the Vietnam war ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
         "requires_opt": true
     }
 }

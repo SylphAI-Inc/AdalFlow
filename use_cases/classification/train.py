@@ -39,8 +39,8 @@ class Orchestrator(Component):
         return super()._extra_repr() + f"example_input={self._example_input}"
 
 
-from optimizer.optimizer import BootstrapFewShot
-from optimizer.sampler import RandomSampler, ClassSampler
+from optim.optimizer import BootstrapFewShot
+from optim.sampler import RandomSampler, ClassSampler, Sample
 from typing import Tuple
 
 
@@ -69,8 +69,10 @@ class TrecTrainer(Orchestrator):
         self.num_shots = num_shots
         self.batch_size = batch_size
         self.train_dataset = train_dataset
-        self.eval_dataset = eval_dataset.select(range(20))
-        self.test_dataset = train_dataset.select(range(20))
+        self.eval_dataset = eval_dataset
+        self.test_dataset = test_dataset
+        # self.eval_dataset = eval_dataset.select(range(20))
+        # self.test_dataset = train_dataset.select(range(20))
         self.data_loader = DataLoader(
             self.train_dataset, batch_size=self.batch_size, shuffle=True
         )
@@ -85,7 +87,7 @@ class TrecTrainer(Orchestrator):
         print(f"params: {self.params}")
 
         self.sampler = RandomSampler(
-            dataset=self.train_dataset, num_shots=self.num_shots
+            dataset=self.train_dataset, default_num_shots=self.num_shots
         )
         self.class_sampler = ClassSampler(
             self.train_dataset,
@@ -93,9 +95,9 @@ class TrecTrainer(Orchestrator):
             get_data_key_fun=lambda x: x["coarse_label"],
         )
         self.few_shot_optimizer = BootstrapFewShot(
-            parameter_dict=self.params,
-            # parameter=self.params["generator.examples_str"],
-            parameter_name="generator.examples_str",
+            # parameter_dict=self.params,
+            parameter=self.params["generator.examples_str"],
+            # parameter_name="generator.examples_str",
             # parameter_names=["generator.examples_str"],
             # train_dataset=self.train_dataset,
             sampler=self.class_sampler,
@@ -173,7 +175,7 @@ class TrecTrainer(Orchestrator):
         """
 
         best_parameters = None
-        max_steps = 3
+        max_steps = 4
         self.few_shot_optimizer.init()
         self.task.train()
         save(
@@ -183,7 +185,22 @@ class TrecTrainer(Orchestrator):
         acc, macro_f1 = self.eval()
         best_score = acc + macro_f1
 
+        print(f"Eval Accuracy Start: {acc}, F1: {macro_f1}, score: {best_score}")
+
+        acc_test, macro_f1_test = self.test()
+        print(
+            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}"
+        )
+        start_shots = 3
+
         # for step in range(max_steps):
+        def get_replace_shots(
+            start_shot: int, end_shot: int = 1, max_step=3, current_step=0
+        ):
+            # the number of thots will decrease from start_shot to end_shot
+            gradient = (end_shot - start_shot) / max_step
+            return int(start_shot - gradient * current_step)
+
         for i, train_batch in enumerate(self.data_loader):
             save(
                 self.task.state_dict(),
@@ -195,13 +212,20 @@ class TrecTrainer(Orchestrator):
                 break
             print(f"step: {i}")
             print(f"train_batch: {train_batch}")
+            replace_shots = get_replace_shots(
+                start_shots, end_shot=1, max_step=max_steps, current_step=i
+            )
 
-            self.few_shot_optimizer.propose(num_shots=3)  # random replace 1 sample
+            self.few_shot_optimizer.propose(
+                shots=replace_shots
+            )  # random replace half of samples
 
             acc1, macro_f1_1 = self.eval()  # self.batch_eval(train_batch)
 
             score_1 = acc1 + macro_f1_1
-            print(f"Eval Accuracy {i} 1: {acc1}, F1: {macro_f1_1}, score: {score_1}")
+            print(
+                f"Eval Accuracy {i} proposed: {acc1}, F1: {macro_f1_1}, score: {score_1}"
+            )
 
             # break
             if score_1 > best_score:
@@ -230,16 +254,32 @@ if __name__ == "__main__":
     # Example of setting logging to debug level
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
-    train_dataset = dataset["train"]
-    eval_dataset = dataset["test"]
+
+    org_train_dataset = dataset["train"].shuffle(seed=42)
+    len_train_dataset = len(org_train_dataset)
+    org_test_dataset = dataset["test"]
+
+    class_sampler = ClassSampler(
+        org_train_dataset.select(range(0, len_train_dataset // 2)),
+        num_classes=6,
+        get_data_key_fun=lambda x: x["coarse_label"],
+    )
+    eval_dataset_split = [sample.data for sample in class_sampler(24)]
+
+    train_dataset_split = org_train_dataset.select(
+        range(len_train_dataset // 2, len_train_dataset)
+    )
+    # train_dataset_split = org_train_dataset.select(range(20, len_train_dataset))
+    # eval_dataset_split = org_train_dataset.select(range(20))
+    test_dataset_split = org_test_dataset.select(range(20))
     num_shots = 6
     batch_size = 10
     trainer = TrecTrainer(
         num_classes=6,
-        train_dataset=train_dataset,
-        eval_dataset=eval_dataset,
+        train_dataset=train_dataset_split,  # use for few-shot sampling
+        eval_dataset=eval_dataset_split,  # evaluting during icl
+        test_dataset=test_dataset_split,  # the final testing
         num_shots=num_shots,
         batch_size=batch_size,
     )
-    # # print(trainer)
     trainer.train(shots=num_shots)

@@ -1,11 +1,9 @@
-from typing import Mapping, Any, Optional, List, Tuple, Callable
-import numpy as np
-import math
+from typing import List
 from copy import deepcopy
 
 from core.parameter import Parameter
 from core.component import Component
-from optimizer.sampler import ClassSampler
+from optim.sampler import Sampler, Sample
 
 
 class Optimizer:
@@ -16,15 +14,6 @@ class Optimizer:
         raise NotImplementedError("step method is not implemented")
 
 
-r"""
-We focus on error fixing, run a batch, get batch based accuracy.
-
-# pass the batch to the LLMOptimizer
-
-# sample a class from the batch.Let an llm to boostra
-"""
-
-
 class BootstrapFewShot(Optimizer):
     __doc__ = r"""BootstrapFewShot performs few-shot sampling used in few-shot ICL.
 
@@ -32,25 +21,26 @@ class BootstrapFewShot(Optimizer):
 
     def __init__(
         self,
-        parameter_dict: Mapping[str, Parameter],
-        parameter_name: str,
-        # parameter: Parameter,
-        sampler: Component,
+        # parameter_dict: Mapping[str, Parameter],
+        # parameter_name: str,
+        parameter: Parameter,
+        sampler: Sampler,
         output_processors: Component,
         num_shots: int,
     ):
         super().__init__()
-        self.example_parameter = parameter_dict[parameter_name]
+        self.example_parameter = parameter  # parameter_dict[parameter_name]
 
         # self.parameter_dict = parameter_dict
         self.sampler = sampler
-        self.current = []  # buffer to store the examples
-        self.proposed = []
+        self.current: List[Sample] = []  # buffer to store the examples
+        self.proposed: List[Sample] = []
         self.output_processors = output_processors
         self.num_shots = num_shots
         self.proposing = False
 
     def init(self):
+        r"""Initialize the parameters with the initial examples."""
         self.current = self.sampler(self.num_shots)
         self.proposed = deepcopy(self.current)
         examples = deepcopy(self.current)
@@ -58,16 +48,20 @@ class BootstrapFewShot(Optimizer):
             examples = self.output_processors(examples)
         self.example_parameter.update_value(examples)
 
-    def random_replace(self, num_shots: int):
+    def random_replace(self, shots: int):
         print(f"before random_replace: {self.current}")
-        self.proposed = self.sampler.random_replace(num_shots, deepcopy(self.current))
+        assert (
+            len(self.current) == self.num_shots
+        ), f"Ensure you have called init() first to setup the current examples before replacing a subset of them."
+        self.proposed = self.sampler.random_replace(shots, deepcopy(self.current))
         print(f"after random_replace: {self.proposed}")
 
-    def propose(self, num_shots: int):
+    def propose(self, shots: int):
         r"""
         Update parameter with the proposed examples.
         """
-        self.random_replace(num_shots)  # replace num_shots in the proposed
+        # TODO: the replaced shots as the step goes should decrease as it converges
+        self.random_replace(shots=shots)
         examples = deepcopy(self.proposed)
         if self.output_processors:
             examples = self.output_processors(examples)

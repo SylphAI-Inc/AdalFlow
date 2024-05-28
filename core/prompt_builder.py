@@ -34,7 +34,7 @@ def get_jinja2_environment():
         raise ValueError(f"Invalid Jinja2 environment: {e}")
 
 
-class Prompt:
+class Prompt(Component):
     __doc__ = r"""A component that renders a text string from a template using Jinja2 templates.
 
     In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template. 
@@ -72,6 +72,7 @@ class Prompt:
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},  # preload the parameters
     ):
+        super().__init__()
 
         self._template_string = template
         self.template: Template = None
@@ -156,8 +157,6 @@ class Prompt:
             s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
         if self.prompt_variables:
             s += f", prompt_variables: {self.prompt_variables}"
-        if self._trainable_prompt_kwargs:
-            s += f", trainable_prompt_kwargs: {self._trainable_prompt_kwargs}"
         return s
 
 

@@ -3,15 +3,15 @@
 
 from datasets import load_dataset, DatasetDict
 import torch
+from torch.utils.data import Dataset, DataLoader
 from typing import Dict, Sequence
-from torch.utils.data import DataLoader, Dataset
-from torchvision.datasets import CIFAR100
 
 from core.prompt_builder import Prompt
 from core.component import Component
 from typing import Any
 
 from use_cases.classification.prompt import EXAMPLES_STR
+from optim.sampler import Sample
 
 _COARSE_LABELS = [
     "ABBR",
@@ -96,7 +96,8 @@ class SamplesToStr(Component):
         super().__init__()
         self.template = Prompt(template=EXAMPLES_STR)
 
-    def call_one(self, data: Dict[str, Any]) -> str:
+    def call_one(self, sample: Sample) -> str:
+        data = sample.data
         assert "text" in data, "The data must have a 'text' field"
         assert "coarse_label" in data, "The data must have a 'coarse_label' field"
         example_str = self.template(
@@ -108,26 +109,27 @@ class SamplesToStr(Component):
         # example_str = "*" * len(example_str)
         return example_str
 
-    def call(self, samples: Sequence[Dict[str, Any]]) -> str:
+    def call(self, samples: Sequence[Sample]) -> str:
         return "\n".join([self.call_one(sample) for sample in samples])
 
 
-class ToSampleStr(Component):
-    def __init__(self):
-        super().__init__()
-        self.template = Prompt(template=EXAMPLES_STR)
+# class ToSampleStr(Component):
+#     def __init__(self):
+#         super().__init__()
+#         self.template = Prompt(template=EXAMPLES_STR)
 
-    def call(self, data: Dict[str, Any]) -> str:
-        assert "text" in data, "The data must have a 'text' field"
-        assert "coarse_label" in data, "The data must have a 'coarse_label' field"
-        example_str = self.template(
-            input=data["text"],
-            label=data["coarse_label"],
-            output=_COARSE_LABELS_DESC[data["coarse_label"]],
-            # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
-        )
-        # example_str = "*" * len(example_str)
-        return example_str
+#     def call(self, sample: Sample) -> str:
+#         data = sample.data
+#         assert "text" in data, "The data must have a 'text' field"
+#         assert "coarse_label" in data, "The data must have a 'coarse_label' field"
+#         example_str = self.template(
+#             input=data["text"],
+#             label=data["coarse_label"],
+#             output=_COARSE_LABELS_DESC[data["coarse_label"]],
+#             # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
+#         )
+#         # example_str = "*" * len(example_str)
+#         return example_str
 
 
 class TrecDataset(Dataset):
