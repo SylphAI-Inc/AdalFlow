@@ -23,5 +23,8 @@ class Parameter:
     def update_value(self, data: Any):
         self.data = data
 
+    def to_dict(self):
+        return {"data": self.data, "requires_opt": self.requires_opt}
+
     def __repr__(self):
         return f"Parameter: {self.data}"

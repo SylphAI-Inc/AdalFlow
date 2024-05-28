@@ -1,8 +1,8 @@
-from copy import deepcopy
+from typing import Mapping
+
+
 from core.parameter import Parameter
 from core.component import Component
-
-from optimizer.sampler import RandomSampler
 
 
 class Optimizer:
@@ -20,16 +20,20 @@ We focus on error fixing, run a batch, get batch based accuracy.
 
 
 class BootstrapFewShot(Optimizer):
+    __doc__ = r"""The optimizer simply performs few-shot sampling used in few-shot ICL.
+
+    It simply orchestrates a sampler and an output processor to generate examples."""
+
     def __init__(
         self,
-        example_parameter: Parameter,
-        train_dataset,
+        parameter_dict: Mapping[str, Parameter],
+        parameter_name: str,
         sampler: Component,
         output_processors: Component,
     ):
         super().__init__()
-        self.example_parameter = deepcopy(example_parameter)
-        self.train_dataset = train_dataset
+        self.example_parameter = parameter_dict[parameter_name]
+        self.parameter_dict = parameter_dict
         self.sampler = sampler
         self.output_processors = output_processors
 

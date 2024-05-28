@@ -1,0 +1,6 @@
+{
+    "generator.examples_str": {
+        "data": "Question: What does the channel ESPN stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What vehicles are raced in the Tour de France ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What does the name Kelly mean ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: What 's the name of Tom Sawyer 's aunt with whom he lives ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: Where is Guam ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many times has `` Louie , Louie '' been recorded ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "requires_opt": true
+    }
+}

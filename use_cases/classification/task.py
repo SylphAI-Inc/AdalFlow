@@ -133,18 +133,21 @@ class TRECClassifier(Component):
             # output_processors=yaml_parser,
         )
 
-    def load_state_dict(self, state_dict: Dict):
-        r"""
-        generator_state_dict = {
-        "preset_prompt_kwargs": {
-        "examples_str": "Examples: \n\n1. What is the capital of France? \n2. Who is the president of the United States?"
+    # def init_parameters(self):
+    #     self.generator.examples_str.update_value()
 
-        }
-        state_dict = {
-            "generator": {generator_state_dict}
-        }
-        """
-        self.generator.load_state_dict(state_dict["generator"])
+    # def load_state_dict(self, state_dict: Dict):
+    #     r"""
+    #     generator_state_dict = {
+    #     "preset_prompt_kwargs": {
+    #     "examples_str": "Examples: \n\n1. What is the capital of France? \n2. Who is the president of the United States?"
+
+    #     }
+    #     state_dict = {
+    #         "generator": {generator_state_dict}
+    #     }
+    #     """
+    #     self.generator.load_state_dict(state_dict["generator"])
 
     def call(self, query: str) -> str:
         str_response: Dict[str, Any] = self.generator.call(

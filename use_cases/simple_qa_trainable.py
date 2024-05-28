@@ -35,7 +35,7 @@ if __name__ == "__main__":
     print(simple_qa)
     simple_qa.init_parameters()
     states = simple_qa.state_dict()
-    print(f"states: {states}")
+    print(f"states: {states}")  # conv1.weight, conv1.bias, fc1.weight, fc1.bias
 
     simple_qa_2 = SimpleQA()
     states_before = simple_qa_2.state_dict()

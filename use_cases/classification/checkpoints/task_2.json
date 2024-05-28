@@ -1,0 +1,6 @@
+{
+    "generator.examples_str": {
+        "data": "Question: What does EKG stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What currency is used in Australia ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What was Suzy Parker doing to earn $1 , 000 in the early 1950 's ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who were the Yankee 's frequent enemies ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: Where is Webster University ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: When was the Parthenon built ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "requires_opt": true
+    }
+}
