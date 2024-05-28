@@ -57,6 +57,7 @@ class TrecTrainer(Orchestrator):
         eval_dataset,
         test_dataset=None,
         num_shots: int = 5,
+        batch_size: int = 6,
     ) -> None:
         super().__init__()
         self.num_classes = num_classes
@@ -65,20 +66,22 @@ class TrecTrainer(Orchestrator):
         )
 
         self.example_input = "How did serfdom develop in and then leave Russia ?"
-        self.num_shots = 8
+        self.num_shots = num_shots
+        self.batch_size = batch_size
         self.train_dataset = train_dataset
-        self.eval_dataset = eval_dataset
-        self.test_dataset = test_dataset
+        self.eval_dataset = eval_dataset.select(range(20))
+        self.test_dataset = train_dataset.select(range(20))
         self.data_loader = DataLoader(
-            self.train_dataset, batch_size=self.num_shots, shuffle=True
+            self.train_dataset, batch_size=self.batch_size, shuffle=True
         )
-        self.eval_data_loader = DataLoader(
-            self.eval_dataset, batch_size=1, shuffle=False
-        )  # use this for speeded up evaluation
+        # self.eval_data_loader = DataLoader(
+        #     self.eval_dataset, batch_size=batch_size, shuffle=False
+        # )  # use this for speeded up evaluation
         self.evaluator = ClassifierEvaluator(num_classes=self.num_classes)
         self.samples_to_str = SamplesToStr()
 
         self.params = dict(self.task.named_parameters())
+        # self.params = self.task.parameters()
         print(f"params: {self.params}")
 
         self.sampler = RandomSampler(
@@ -91,24 +94,28 @@ class TrecTrainer(Orchestrator):
         )
         self.few_shot_optimizer = BootstrapFewShot(
             parameter_dict=self.params,
+            # parameter=self.params["generator.examples_str"],
             parameter_name="generator.examples_str",
             # parameter_names=["generator.examples_str"],
             # train_dataset=self.train_dataset,
             sampler=self.class_sampler,
             output_processors=self.samples_to_str,
+            num_shots=self.num_shots,
         )
 
         print(f"few_shot_optimizer: {self.few_shot_optimizer}")
         print(f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}")
 
-    def eval(self):
+    def eval(self, dataset=None) -> Tuple[float, float]:
         r"""
         TODO: automatically tracking the average inference time
         """
         responses = []
         targets = []
         num_invalid = 0
-        for data in self.eval_dataset.select(range(20)):
+        if dataset is None:
+            dataset = self.eval_dataset
+        for data in dataset:
             print(f"data: {data}")
             task_input = data["text"]
             corse_label = data["coarse_label"]
@@ -128,6 +135,9 @@ class TrecTrainer(Orchestrator):
         print(f"num_invalid: {num_invalid}")
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
         return accuracy, macro_f1_score
+
+    def test(self):
+        return self.eval(self.test_dataset)
 
     def batch_eval(self, batch: Dict[str, Any]) -> Tuple[float, float]:
         r"""
@@ -163,53 +173,52 @@ class TrecTrainer(Orchestrator):
         """
 
         best_parameters = None
-        best_eval = None
-        best_score = 0
-        max_steps = 4
+        max_steps = 3
+        self.few_shot_optimizer.init()
+        self.task.train()
+        save(
+            self.task.state_dict(),
+            f"use_cases/classification/checkpoints/task_start",
+        )
+        acc, macro_f1 = self.eval()
+        best_score = acc + macro_f1
+
         # for step in range(max_steps):
         for i, train_batch in enumerate(self.data_loader):
-            if i >= max_steps:
-                break
-            print(f"step: {i}")
-            print(f"train_batch: {train_batch}")
-            self.few_shot_optimizer.step(num_shots=shots)
-            states = self.task.state_dict()
             save(
                 self.task.state_dict(),
                 f"use_cases/classification/checkpoints/task_{i}",
             )
-            # try load from the file
-            json_states, pickle_states = load(
-                f"use_cases/classification/checkpoints/task_{i}"
-            )
-            # pickle state is the same as states
-            self.task.load_state_dict(pickle_states)
-            acc, macro_f1 = self.batch_eval(train_batch)  # should do batch evaluation
-            print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
-            score = acc + macro_f1
+
+            if i >= max_steps:
+
+                break
+            print(f"step: {i}")
+            print(f"train_batch: {train_batch}")
+
+            self.few_shot_optimizer.propose(num_shots=3)  # random replace 1 sample
+
+            acc1, macro_f1_1 = self.eval()  # self.batch_eval(train_batch)
+
+            score_1 = acc1 + macro_f1_1
+            print(f"Eval Accuracy {i} 1: {acc1}, F1: {macro_f1_1}, score: {score_1}")
+
             # break
-            if score > best_score:
-                best_score = score
-                best_eval = (acc, macro_f1)
-                best_parameters = states
+            if score_1 > best_score:
+                best_score = score_1
+                # update the value
+                # self.few_shot_optimizer.update_parameter()
+                best_parameters = self.task.state_dict()
                 print(f"best_score: {best_score}")
-        print(f"best_parameters: {best_parameters}")
-        print(f"best_eval: {best_eval}")
+                print(f"best_parameters: {best_parameters}")
+            else:
+                self.few_shot_optimizer.reset_parameter()
+                print(f"reset_parameter")
 
-        # final evaluation
-        acc, macro_f1 = self.eval()
-        print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
-
-        # samples_str = random_class_balanced_str_with_thought_space
-        # print(f"samples_str: {samples_str}")
-        # # return
-        # state_dict = {
-        #     "generator": {"preset_prompt_kwargs": {"examples_str": samples_str}}
-        # }
-        # self.task.load_state_dict(state_dict)
-        # self.task.generator.print_prompt()
-        # acc, macro_f1 = self.eval()
-        print(f"Eval Accuracy: {acc}, F1: {macro_f1}")
+        # # final evaluation
+        acc, macro_f1 = self.test()
+        print(f"Test Accuracy: {acc}, F1: {macro_f1}")
+        print(f"best_score: {best_score}")
 
 
 if __name__ == "__main__":
@@ -223,8 +232,14 @@ if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
     train_dataset = dataset["train"]
     eval_dataset = dataset["test"]
+    num_shots = 6
+    batch_size = 10
     trainer = TrecTrainer(
-        num_classes=6, train_dataset=train_dataset, eval_dataset=eval_dataset
+        num_classes=6,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        num_shots=num_shots,
+        batch_size=batch_size,
     )
     # # print(trainer)
-    trainer.train(6)
+    trainer.train(shots=num_shots)

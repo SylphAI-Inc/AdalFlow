@@ -1,6 +1,6 @@
 {
     "generator.examples_str": {
-        "data": "Question: What is the abbreviated expression for the National Bureau of Investigation ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What three colors are on the French flag ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What are the benefits of home school ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who was the lyricist and who was the composer between Gilbert and Sullivan ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What country in 1998 had the most suicides regardless of population size ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How deep is a fathom ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "data": "Question: What does MSG stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: When it 's time to relax , what one beer stands clear ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: How do I start a web based business ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who stopped making diary entries on May 31 , 1669 , because he thought he was going blind ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What 's the longest river in Canada ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How deep is a fathom ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
         "requires_opt": true
     }
 }

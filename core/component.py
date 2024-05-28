@@ -81,7 +81,20 @@ class Component:
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
-        super().__setattr__("training", True)
+        super().__setattr__("training", False)
+
+    def train(self, mode: bool = True):
+        r"""Sets the component in training mode."""
+        if not isinstance(mode, bool):
+            raise ValueError("mode should be a boolean")
+        self.training = mode
+        for component in self.children():
+            component.train(mode)
+        return self
+
+    def eval(self):
+        r"""Sets the component in evaluation mode."""
+        return self.train(False)
 
     def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
         r"""Add a parameter to the component.

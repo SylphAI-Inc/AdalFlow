@@ -59,10 +59,10 @@ class Generator(Component):
         self.system_prompt = Prompt(
             template=template,
             preset_prompt_kwargs=preset_prompt_kwargs,
-            # trainable_params=trainable_params,
         )
         # add trainable_params to generator
         prompt_variables = self.system_prompt.get_prompt_variables()
+        self._trainable_params: List[str] = []
         for param in trainable_params:
             if param not in prompt_variables:
                 raise ValueError(
@@ -70,21 +70,10 @@ class Generator(Component):
                 )
             # Create a Parameter object and assign it as an attribute with the same name as the value of param
             setattr(self, param, Parameter(data=None))
-            # self.param = Parameter(data=None)
+            self._trainable_params.append(param)
         # end of trainable parameters
 
         self.output_processors = output_processors
-
-    def train(self, *args, **kwargs):
-        pass
-
-    # def load_state_dict(self, state_dict: Dict):
-    #     r"""Load the state_dict for the generator component."""
-    #     if "preset_prompt_kwargs" in state_dict:
-    #         # update its prompt
-    #         self.system_prompt.update_preset_prompt_kwargs(
-    #             **state_dict["preset_prompt_kwargs"]
-    #         )
 
     def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
         """
@@ -151,6 +140,15 @@ class Generator(Component):
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Call the model with the input(user_query) and model_kwargs."""
+
+        if self.training:
+            # add the parameters to the prompt_kwargs
+            # convert attributes to prompt_kwargs
+            trained_prmpt_kwargs = {
+                param: getattr(self, param).data for param in self.state_dict()
+            }
+            prompt_kwargs.update(trained_prmpt_kwargs)
+            print(f"prompt_kwargs: {prompt_kwargs}")
 
         api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
         # print(f"api_kwargs: {api_kwargs}")

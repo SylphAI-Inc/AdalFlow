@@ -1,6 +1,6 @@
 {
     "generator.examples_str": {
-        "data": "Question: What is RAM in the computer ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: To what does Microsoft 's Windows 3 owe its success ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: In Waugh 's `` A Handful of Dust , '' what does the mad old man force the hero to do every afternoon ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: What comedian was The Perfect Fool ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What country was A Terrible Beauty to Leon Uris ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: What was Thatcher 's approval rating after 10 years in power ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "data": "Question: What does MSG stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What is a fear of touching ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: How do I start a web based business ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who stopped making diary entries on May 31 , 1669 , because he thought he was going blind ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What is the greatest hiking Web site ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: What is the current ticket fare from from Cairo to Barbados ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
         "requires_opt": true
     }
 }

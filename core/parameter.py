@@ -21,6 +21,7 @@ class Parameter:
         print(f"data: {data}, requires_opt: {requires_opt}")
 
     def update_value(self, data: Any):
+        r"""Update the value in-place."""
         self.data = data
 
     def to_dict(self):

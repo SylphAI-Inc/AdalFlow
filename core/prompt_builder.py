@@ -34,7 +34,7 @@ def get_jinja2_environment():
         raise ValueError(f"Invalid Jinja2 environment: {e}")
 
 
-class Prompt(Component):
+class Prompt:
     __doc__ = r"""A component that renders a text string from a template using Jinja2 templates.
 
     In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template. 
@@ -71,12 +71,8 @@ class Prompt(Component):
         *,
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},  # preload the parameters
-        trainable_params: Optional[
-            List[str]
-        ] = [],  # the variables in the prompt that is trainable, in default, all will be passed to an optimizer
     ):
 
-        super().__init__()
         self._template_string = template
         self.template: Template = None
         try:
@@ -91,33 +87,6 @@ class Prompt(Component):
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
-        # ensure all trainable_paramers are in the prompt_variables
-        # Start of the trainable parameters#
-        # self.trainable_prompt_kwargs: Parameter = {}
-        # parameter should be always a key and a value. key should be global state
-        self._trainable_prompt_kwargs: Dict[str, str] = {}
-        for param in trainable_params:
-            if param not in self.prompt_variables:
-                logger.warning(
-                    f"trainable_param {param} is not in the prompt_variables."
-                )
-            else:
-                if param in preset_prompt_kwargs:
-                    data = preset_prompt_kwargs[param]
-                else:
-                    data = None
-                self._trainable_prompt_kwargs[param] = Parameter(key=param, data=data)
-
-                # self._trainable_prompt_kwargs[param] = Parameter(data)
-        self.trainable_prompt_kwargs = (
-            Parameter(key=None, data=self._trainable_prompt_kwargs)
-            if self._trainable_prompt_kwargs
-            else None
-        )
-        # End of the trainable parameters#
-
-        # an optimizer will optimize the trainable parameters, and
-        # when a component is in training, it will use the parameters to make predictions
         self.preset_prompt_kwargs = preset_prompt_kwargs
 
     def update_preset_prompt_kwargs(self, **kwargs):
