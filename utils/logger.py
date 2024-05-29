@@ -1,118 +1,150 @@
 """
-LLM application log is unique, as developers pay much attention to the input text, intermediate data flow and final output.
-This logging system aims to facilitate the developers check the application in a flexible way.
-It is easy to use while highly configurable.
+Colorize console logs to separate logs from prints 
 
-Reference: https://github.com/stanfordnlp/dspy/blob/main/dspy/utils/logging.py
+Windows users should use colorama for colored console output 
 """
 
 import logging
-import os
 import sys
-from typing import Optional
-import structlog
+from colorama import Fore, Style, init
+from typing import Dict, Union
+import os
 
+# Initialize Colorama, especially for windows users
+init(autoreset=True)
 
-# TODO:
-# 1. Add colors to the log console output: https://www.structlog.org/en/stable/console-output.html
-# 2. Wrap it with other functions/components
+# default color for messages at different level
+LOG_COLORS = {
+    'DEBUG': Fore.CYAN,
+    'INFO': Fore.GREEN,
+    'WARNING': Fore.YELLOW,
+    'ERROR': Fore.RED,
+    'CRITICAL': Fore.MAGENTA
+}
 
+# color map, from color string to colorama.Fore colors, easier to use, reduce friction
+COLOR_MAP = {color.lower(): getattr(Fore, color) for color in dir(Fore) if not color.startswith('_')}
 
-def setup_handler(handler: logging.Handler, log_level: str):
-    """
-    Setup the logging handler with the specified log level.
-    """
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - [%(pathname)s:%(lineno)d] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )  # add time and filename
-    handler.setFormatter(formatter)  # configure the formatter
-    handler.setLevel(log_level)  # set log levels to output
-
-
-def configure_logging(
-    logger: logging.Logger, log_level: str, method: str, file_name: str
-):
-    """
-    Configure the logging system with structured and output.
-    """
-    if method == "console":
-        renderer = structlog.dev.ConsoleRenderer()
-    elif method == "file":
-        # check if the path exists
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        renderer = structlog.processors.JSONRenderer()
-    else:
-        raise ValueError(f"Invalid method: {method}")
-
-    structlog.configure(
-        processors=[
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            renderer,
-        ],
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-    )
-
-    logger.setLevel(logging.getLevelName(log_level))
-    handler = (
-        logging.FileHandler(file_name)
-        if method == "file"
-        else logging.StreamHandler(sys.stdout)
-    )
-    setup_handler(handler, log_level)
-    logger.addHandler(handler)
-
-
-def get_logger(
-    logger_name: str = "AppLog",
-    method: str = "file",
-    file_name: Optional[str] = "./logs/app.log",
-    log_level: str = "INFO",
-):
-    """
-    Configures the logging system with structured and output.
-    method: str, default="file", options=["console", "file"]
-    file_name: str, default=None, the file name to store the logs
-    log_level: str, default="INFO", options=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
+class PatchedLogging:
+    r"""LightRAG's easy-to-customize logging system with colorized console output.
+    
     Example:
-
-    from utils.logger import get_logger
-    logger = get_logger(file_name="./logs/app.log")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f'response: {response}')
-
-    Then you can open ./logs/app.log and view the content.
+        .. code-block:: python
+        
+            from utils.logger import PatchedLogging
+            
+            # console output
+            # The colors you can choose: ['black', 'blue', 'cyan', 'green', 'lightblack_ex', 'lightblue_ex', 'lightcyan_ex', 'lightgreen_ex', 'lightmagenta_ex', 'lightred_ex', 'lightwhite_ex', 'lightyellow_ex', 'magenta', 'red', 'reset', 'white', 'yellow']
+            # log_level you can set: https://docs.python.org/3/library/logging.html#levels
+            logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
+            logger.info("This is an info message", color="Blue")
+            logger.info("This is an info message", color="green")
+            logger.warning("This is a warning message")
+            logger.error("This is an error message")
+            logger.debug("This is a debug message")
+            
+            # file output
+            logger = PatchedLogging.getLogger(output_type="file")
+            logger.info("This is an info message")
+            logger.warning("This is a warning message")
+            logger.error("This is an error message")
+            logger.debug("This is a debug message")
+    
+    You can use it to show system logs, execution states, and application input/output data flow.
+    
+    .. note::
+        * You can either use console output or file. For file output, make sure you set output_type="file".
+        * Log file doesn't support colors. Please don't add color parameters when your output type is file. 
+        * Please set up your own directory and filename for log files, the default path is ./logs/app.log
+        * OSError will be raised if your configured directory can't be created.
     """
-    logger = logging.getLogger(logger_name)
-    # create the logs directory if it does not exist
-    os.makedirs(os.path.dirname(file_name), exist_ok=True)
-    configure_logging(logger, log_level, method, file_name)
-    return logger
+    
+    def __init__(self) -> None:
+        pass
+    
+    @staticmethod
+    def getLogger(output_type:str = "console", dir:str = "./logs", filename:str = "app.log", log_level:int = logging.INFO, format: Union[str, None] = None) -> logging.Logger:
+        """Configure logger in one method
+
+        Args:
+            output_type (str, optional): _description_. Defaults to "console".
+            dir (str, optional): _description_. Defaults to "./logs".
+            filename (str, optional): _description_. Defaults to "app.log".
+            log_level (int, optional): _description_. Defaults to logging.INFO.
+            format (Union[str | None], optional): _description_. Defaults to None.
+
+        Returns:
+            logging.Logger: the configured logger
+        """
+        # set up logger with log level
+        logger = logging.getLogger(__name__)
+        logger.setLevel(log_level)  # default log level is INFO
+        
+        # Define default log format if none provided
+        if not format:
+            format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
+        # set up format
+        formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
+        
+        try:
+            # if handler not existing then set new
+            if output_type == "console" and not any(isinstance(handler, logging.StreamHandler) for handler in logger.handlers):
+                handler = logging.StreamHandler(sys.stdout)
+                
+            # if output in the console, then use stream handler, else check the file path(create if not exists) and use the file handler
+            elif output_type == "file" and not any(isinstance(h, logging.FileHandler) and h.baseFilename == os.path.join(dir, filename) for h in logger.handlers):
+                try:
+                    if not os.path.exists(dir):
+                        os.makedirs(dir, exist_ok=True)
+                except:
+                    raise OSError(f"Directory {dir} can't be created")
+                file_path = os.path.join(dir, filename)
+                handler = logging.FileHandler(file_path)
+
+        except Exception as e:
+            print(f"Failed to set up logging handlers: {e}")
+            raise
+        
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        
+        # Prevent logger from propagating messages to higher-level loggers -> prevent duplication
+        logger.propagate = False
+
+        def create_custom_log_method(level):
+            def custom_log_method(message, *args, color=None, **kwargs):
+                if output_type == "file" and color is not None:
+                    raise ValueError("Color is not supported in log files")
+                    
+                if output_type == "console":
+                    # Use default color if not provided, when the user input wrong color, the default is yellow
+                    color = COLOR_MAP.get(color.lower(), "\x1b[33m") if color is not None else LOG_COLORS.get(logging.getLevelName(level))
+                    message = color + message + Style.RESET_ALL
+                
+                logger.log(level, message, *args, **kwargs)
+            return custom_log_method
+
+        # Assign custom log methods with color support
+        for levelname, _ in LOG_COLORS.items():
+            level = getattr(logging, levelname)
+            setattr(logger, levelname.lower(), create_custom_log_method(level))
+
+        return logger
 
 
 if __name__ == "__main__":
-    from utils.logger import get_logger
-    from use_cases.simple_qa_groq import SimpleQA
+    # console output:
+    # print(f"Colors you can choose: {list(COLOR_MAP.keys())}")
+    logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
+    logger.info("This is an info message")
+    logger.info("This is an info message", color="Blue")
+    logger.warning("This is a warning message")
+    logger.error("This is an error message")
+    logger.debug("This is a debug message")
 
-    logger = get_logger(method="console")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f"response: {response}")
-    # log_settings = LogSettings(
-    #     output_type="str", method="file", file_name="./utils/test.log", log_level="INFO"
-    # )
-    # logger = (
-    #     log_settings.get_logger()
-    # )  # Explicitly get the configured logger from log_settings
-    # logger.info("hello this is logger")  # Log message to 'test.log'
-
-    # check ./utils/test.log to view the log
+    # # file output
+    # logger = PatchedLogging.getLogger(output_type="file")
+    # logger.info("This is an info message")
+    # logger.warning("This is a warning message")
+    # logger.error("This is an error message")
+    # logger.debug("This is a debug message")
