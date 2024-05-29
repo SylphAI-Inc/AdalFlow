@@ -51,9 +51,10 @@ class PatchedLogging:
             logger.debug("This is a debug message")
     
     .. note::
-        You can either use console output or file. Log file doesn't support colors. Please don't add color parameters when your output type is file. 
-        Please set up your own directory and filename for log files, the default path is ./logs/app.log
-        OSError will be raised if your configured directory can't be created.
+        * You can either use console output or file. For file output, make sure you set output_type="file".
+        * Log file doesn't support colors. Please don't add color parameters when your output type is file. 
+        * Please set up your own directory and filename for log files, the default path is ./logs/app.log
+        * OSError will be raised if your configured directory can't be created.
     """
     
     def __init__(self) -> None:
