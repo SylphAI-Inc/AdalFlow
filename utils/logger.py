@@ -70,7 +70,7 @@ class PatchedLogging:
     You can use it to show system logs, execution states, and application input/output data flow.
     
     .. note::
-        * You can either use console output or file. For file output, make sure you set ``output_type="file"``.
+        * You can either use console output or file.
         * Log file doesn't support colors. Please don't add color parameters when your output type is file. 
         * Please set up your own directory and filename for log files, the default path is ``./logs/app.log``.
         * OSError will be raised if your configured directory can't be created.
@@ -80,7 +80,7 @@ class PatchedLogging:
     #     pass
     
     @staticmethod
-    def getLogger(output_type:str = "console", dir:str = "./logs", filename:str = "app.log", log_level:int = logging.INFO, format: Union[str, None] = None) -> logging.Logger:
+    def getLogger(output_type:str = "console", dir:str = "./logs", filename:Union[str, None] = None, log_level:int = logging.INFO, format: Union[str, None] = None) -> logging.Logger:
         """Configure logger in one method
 
         Args:
@@ -102,6 +102,12 @@ class PatchedLogging:
             format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
         # set up format
         formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
+        
+        # if the user input a file name, then switch to file output
+        if filename is not None:
+            output_type = "file"
+        else:
+            filename = "app.log"
         
         try:
             # if handler not existing then set new
