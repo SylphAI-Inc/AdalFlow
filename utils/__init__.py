@@ -1,7 +1,4 @@
-from .logger import BaseLogger
-
-# Initialize and expose the logger instance
-default_logger = BaseLogger().logger
+from .logger import PatchedLogging
 
 # Expose the base_logger and BaseLogger for easier import
-__all__ = ['default_logger', 'BaseLogger']
+__all__ = ['PatchedLogging']
