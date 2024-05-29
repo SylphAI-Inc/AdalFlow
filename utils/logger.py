@@ -79,28 +79,37 @@ class PatchedLogging:
         # set up logger with log level
         logger = logging.getLogger(__name__)
         logger.setLevel(log_level)  # default log level is INFO
-
-        # if output in the console, then use stream handler, else check the file path(create if not exists) and use the file handler
-        if output_type == "console":
-            handler = logging.StreamHandler(sys.stdout)
-        else:
-            try:
-                if not os.path.exists(dir):
-                    os.makedirs(dir, exist_ok=True)
-            except:
-                raise OSError(f"Directory {dir} can't be created")
-            
-            file_path = os.path.join(dir, filename)
-            handler = logging.FileHandler(file_path)
         
-        # reset format
+        # Define default log format if none provided
         if not format:
             format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
-        
         # set up format
         formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
+        
+        try:
+            # if handler not existing then set new
+            if output_type == "console" and not any(isinstance(handler, logging.StreamHandler) for handler in logger.handlers):
+                handler = logging.StreamHandler(sys.stdout)
+                
+            # if output in the console, then use stream handler, else check the file path(create if not exists) and use the file handler
+            elif output_type == "file" and not any(isinstance(h, logging.FileHandler) and h.baseFilename == os.path.join(dir, filename) for h in logger.handlers):
+                try:
+                    if not os.path.exists(dir):
+                        os.makedirs(dir, exist_ok=True)
+                except:
+                    raise OSError(f"Directory {dir} can't be created")
+                file_path = os.path.join(dir, filename)
+                handler = logging.FileHandler(file_path)
+
+        except Exception as e:
+            print(f"Failed to set up logging handlers: {e}")
+            raise
+        
         handler.setFormatter(formatter)
         logger.addHandler(handler)
+        
+        # Prevent logger from propagating messages to higher-level loggers -> prevent duplication
+        logger.propagate = False
 
         def create_custom_log_method(level):
             def custom_log_method(message, *args, color=None, **kwargs):
@@ -127,8 +136,8 @@ if __name__ == "__main__":
     # console output:
     # print(f"Colors you can choose: {list(COLOR_MAP.keys())}")
     logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
+    logger.info("This is an info message")
     logger.info("This is an info message", color="Blue")
-    logger.info("This is an info message", color="green")
     logger.warning("This is a warning message")
     logger.error("This is an error message")
     logger.debug("This is a debug message")
