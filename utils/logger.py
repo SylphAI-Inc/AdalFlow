@@ -1,7 +1,6 @@
 """
-Colorize console logs to separate logs from prints 
-
-Windows users should use colorama for colored console output 
+Colorize console logs to separate logs from prints.
+Windows users should set up colorama for colored console output.
 """
 
 import logging
@@ -28,22 +27,36 @@ COLOR_MAP = {color.lower(): getattr(Fore, color) for color in dir(Fore) if not c
 class PatchedLogging:
     r"""LightRAG's easy-to-customize logging system with colorized console output.
     
+    LightRAG's logging features one-line configuration after importing. You can set up:
+
+    * colored console output that can be easily distinguished from printed strings.
+    * file output in target directory.
+    
+    **Allowed colors:** ['black', 'blue', 'cyan', 'green', 'lightblack_ex', 'lightblue_ex', 'lightcyan_ex', 'lightgreen_ex', 'lightmagenta_ex', 'lightred_ex', 'lightwhite_ex', 'lightyellow_ex', 'magenta', 'red', 'reset', 'white', 'yellow']
+    You may use different colors in different code component. 
+    
     Example:
+    
+        Console output setting
+        
         .. code-block:: python
         
             from utils.logger import PatchedLogging
             
-            # console output
-            # The colors you can choose: ['black', 'blue', 'cyan', 'green', 'lightblack_ex', 'lightblue_ex', 'lightcyan_ex', 'lightgreen_ex', 'lightmagenta_ex', 'lightred_ex', 'lightwhite_ex', 'lightyellow_ex', 'magenta', 'red', 'reset', 'white', 'yellow']
-            # log_level you can set: https://docs.python.org/3/library/logging.html#levels
             logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
             logger.info("This is an info message", color="Blue")
             logger.info("This is an info message", color="green")
             logger.warning("This is a warning message")
             logger.error("This is an error message")
             logger.debug("This is a debug message")
+        
+        
+        File output setting
+        
+        .. code-block:: python
+        
+            from utils.logger import PatchedLogging
             
-            # file output
             logger = PatchedLogging.getLogger(output_type="file")
             logger.info("This is an info message")
             logger.warning("This is a warning message")
@@ -53,25 +66,25 @@ class PatchedLogging:
     You can use it to show system logs, execution states, and application input/output data flow.
     
     .. note::
-        * You can either use console output or file. For file output, make sure you set output_type="file".
+        * You can either use console output or file. For file output, make sure you set ``output_type="file"``.
         * Log file doesn't support colors. Please don't add color parameters when your output type is file. 
-        * Please set up your own directory and filename for log files, the default path is ./logs/app.log
+        * Please set up your own directory and filename for log files, the default path is ``./logs/app.log``.
         * OSError will be raised if your configured directory can't be created.
     """
     
-    def __init__(self) -> None:
-        pass
+    # def __init__(self) -> None:
+    #     pass
     
     @staticmethod
     def getLogger(output_type:str = "console", dir:str = "./logs", filename:str = "app.log", log_level:int = logging.INFO, format: Union[str, None] = None) -> logging.Logger:
         """Configure logger in one method
 
         Args:
-            output_type (str, optional): _description_. Defaults to "console".
-            dir (str, optional): _description_. Defaults to "./logs".
-            filename (str, optional): _description_. Defaults to "app.log".
-            log_level (int, optional): _description_. Defaults to logging.INFO.
-            format (Union[str | None], optional): _description_. Defaults to None.
+            output_type (str, optional): output type, "console" or "file". Defaults to "console".
+            dir (str, optional): directory for the log file. Defaults to "./logs".
+            filename (str, optional): log file name. Defaults to "app.log".
+            log_level (int, optional): log_level, refer to: https://docs.python.org/3/library/logging.html#levels. Defaults to logging.INFO.
+            format (Union[str | None], optional): the format of each log message. 
 
         Returns:
             logging.Logger: the configured logger
