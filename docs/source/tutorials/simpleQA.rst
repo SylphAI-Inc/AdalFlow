@@ -1,4 +1,0 @@
-simpleQA
-=========
-
-to be done
