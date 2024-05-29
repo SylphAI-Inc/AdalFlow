@@ -37,7 +37,11 @@ class PatchedLogging:
             # The colors you can choose: ['black', 'blue', 'cyan', 'green', 'lightblack_ex', 'lightblue_ex', 'lightcyan_ex', 'lightgreen_ex', 'lightmagenta_ex', 'lightred_ex', 'lightwhite_ex', 'lightyellow_ex', 'magenta', 'red', 'reset', 'white', 'yellow']
             # log_level you can set: https://docs.python.org/3/library/logging.html#levels
             logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
-            logger.info('This is an info message', color="Blue")
+            logger.info("This is an info message", color="Blue")
+            logger.info("This is an info message", color="green")
+            logger.warning("This is a warning message")
+            logger.error("This is an error message")
+            logger.debug("This is a debug message")
             
             # file output
             logger = PatchedLogging.getLogger(output_type="file")
@@ -56,7 +60,7 @@ class PatchedLogging:
         pass
     
     @staticmethod
-    def getLogger(output_type:str = "console", dir:str = "./logs", filename:str = "app.log", log_level:int = logging.INFO, format: Union[str|None] = None) -> logging.Logger:
+    def getLogger(output_type:str = "console", dir:str = "./logs", filename:str = "app.log", log_level:int = logging.INFO, format: Union[str, None] = None) -> logging.Logger:
         """Configure logger in one method
 
         Args:
@@ -117,18 +121,18 @@ class PatchedLogging:
 
 
 if __name__ == "__main__":
-    ## console output:
+    # console output:
     # print(f"Colors you can choose: {list(COLOR_MAP.keys())}")
-    # logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
-    # logger.info("This is an info message", color="Blue")
-    # logger.info("This is an info message", color="green")
-    # logger.warning("This is a warning message")
-    # logger.error("This is an error message")
-    # logger.debug("This is a debug message")
-
-    # file output
-    logger = PatchedLogging.getLogger(output_type="file")
-    logger.info("This is an info message")
+    logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
+    logger.info("This is an info message", color="Blue")
+    logger.info("This is an info message", color="green")
     logger.warning("This is a warning message")
     logger.error("This is an error message")
     logger.debug("This is a debug message")
+
+    # # file output
+    # logger = PatchedLogging.getLogger(output_type="file")
+    # logger.info("This is an info message")
+    # logger.warning("This is a warning message")
+    # logger.error("This is an error message")
+    # logger.debug("This is a debug message")
