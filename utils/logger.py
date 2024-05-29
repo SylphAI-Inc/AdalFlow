@@ -46,6 +46,8 @@ class PatchedLogging:
             logger = PatchedLogging.getLogger(log_level=logging.DEBUG)
             logger.info("This is an info message", color="Blue")
             logger.info("This is an info message", color="green")
+            do_func()
+            print('something')
             logger.warning("This is a warning message")
             logger.error("This is an error message")
             logger.debug("This is a debug message")
@@ -59,6 +61,8 @@ class PatchedLogging:
             
             logger = PatchedLogging.getLogger(output_type="file")
             logger.info("This is an info message")
+            do_func()
+            print('something')
             logger.warning("This is a warning message")
             logger.error("This is an error message")
             logger.debug("This is a debug message")
