@@ -38,9 +38,4 @@ Retrievers
    :maxdepth: 1
 
    components.retriever
- 9 changes: 0 additions & 9 deletions9  
-docs/source/apis/components/modules.rst
-This file was deleted.
 
- 9 changes: 0 additions & 9 deletions9  
-docs/source/apis/core/core.api_client.rst
