@@ -51,6 +51,11 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
 
    apis/index
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Resources
+
+   utils/index
 
 .. toctree::
    :maxdepth: 2
