@@ -2,6 +2,7 @@
    sphinx-quickstart on Thu May  9 15:45:29 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
+   
 =======================
 LightRAG documentation
 =======================
