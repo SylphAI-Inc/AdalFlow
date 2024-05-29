@@ -212,6 +212,11 @@ Use the library
    apis/core/core
    apis/components/components
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Resources
+
+   utils/index
 
 .. toctree::
    :glob:
