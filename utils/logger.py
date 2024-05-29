@@ -50,6 +50,8 @@ class PatchedLogging:
             logger.error("This is an error message")
             logger.debug("This is a debug message")
     
+    You can use it to show system logs, execution states, and application input/output data flow.
+    
     .. note::
         * You can either use console output or file. For file output, make sure you set output_type="file".
         * Log file doesn't support colors. Please don't add color parameters when your output type is file. 
