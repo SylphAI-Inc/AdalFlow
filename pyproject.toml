@@ -28,6 +28,7 @@ faiss-cpu = "^1.8.0"
 torchviz = "^0.0.2"
 matplotlib = "^3.8.4"
 pydata-sphinx-theme = "0.15.2"
+colorama = "^0.4.6"
 
 
 [tool.poetry.group.test.dependencies]
