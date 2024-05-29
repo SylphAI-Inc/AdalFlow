@@ -25,7 +25,7 @@ if __name__ == "__main__":
     directories = [
         "./source/apis/core",
         "./source/apis/components",
-        "./source/utils"
+        "./source/apis/utils"
     ]
     for directory in directories:
         remove_unwanted_string(directory, 'module')
