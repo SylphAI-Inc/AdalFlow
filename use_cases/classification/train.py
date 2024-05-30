@@ -1,12 +1,16 @@
 from typing import Any, Dict, Tuple
 from utils import save, load
+
+from copy import deepcopy
 from torch.utils.data import DataLoader
 
-
+from components.api_client import GroqAPIClient
 from optim.optimizer import BootstrapFewShot
 from optim.sampler import RandomSampler, ClassSampler
+from optim.llm_augment import LLMAugmenter
 from use_cases.classification.task import TRECClassifier
 from use_cases.classification.eval import ClassifierEvaluator
+from use_cases.classification.prompt import InputFormat, OutputFormat
 from core.component import Component
 from use_cases.classification.data import (
     SamplesToStr,
@@ -71,16 +75,29 @@ class TrecTrainer(Orchestrator):
             self.train_dataset, batch_size=self.batch_size, shuffle=True
         )
 
+        model_client = self.task.generator.model_client
+        model_kwargs = deepcopy(self.task.generator.model_kwargs)
+        print(f"model_client: {model_client}")
+        print(f"model_kwargs: {model_kwargs}")
+        task_context_str = self.task.task_desc_str
+
+        # creating task template
+        self.example_augmenter = LLMAugmenter(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            task_context_str=task_context_str,
+        )
+
         self.evaluator = ClassifierEvaluator(num_classes=self.num_classes)
         self.samples_to_str = SamplesToStr()
 
         self.params = dict(self.task.named_parameters())
         print(f"params: {self.params}")
 
-        self.sampler = RandomSampler(
+        self.sampler = RandomSampler[Dict](
             dataset=self.train_dataset, default_num_shots=self.num_shots
         )
-        self.class_sampler = ClassSampler(
+        self.class_sampler = ClassSampler[Dict](
             self.train_dataset,
             self.num_classes,
             get_data_key_fun=lambda x: x["coarse_label"],
@@ -91,6 +108,18 @@ class TrecTrainer(Orchestrator):
             sampler=self.class_sampler,
             output_processors=self.samples_to_str,
             num_shots=self.num_shots,
+            llm_augmenter=self.example_augmenter,
+            task_input_dataclass=InputFormat,
+            task_output_dataclass=OutputFormat,
+        )
+        self.few_shot_optimizer_random = BootstrapFewShot(
+            parameter=self.params["generator.examples_str"],
+            sampler=self.sampler,
+            output_processors=self.samples_to_str,
+            num_shots=self.num_shots,
+            llm_augmenter=self.example_augmenter,
+            task_input_dataclass=InputFormat,
+            task_output_dataclass=OutputFormat,
         )
 
         print(f"few_shot_optimizer: {self.few_shot_optimizer}")
@@ -128,6 +157,8 @@ class TrecTrainer(Orchestrator):
         return accuracy, macro_f1_score, weights_per_class
 
     def test(self):
+        # print(f"test_dataset", self.test_dataset)
+        # sub_test_dataset = self.test_dataset.select(range(0, 1))
         return self.eval(self.test_dataset)
 
     def batch_eval(self, batch: Dict[str, Any]) -> Tuple[float, float]:
@@ -158,37 +189,184 @@ class TrecTrainer(Orchestrator):
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
         return accuracy, macro_f1_score
 
-    def train(self, shots: int) -> None:
+    def eval_zero_shot(self):
+        json_obj: Dict[str, Any] = {}
+        self.task.eval()  # not using any trained examples
+        acc, macro_f1, best_weights_per_class = self.eval()  # zero shot, 0.542
+        print(
+            f"Eval Accuracy Zero shot Start: {acc}, F1: {macro_f1}, score: {acc+macro_f1}, best_weights_per_class: {best_weights_per_class}"
+        )
+        acc_test, macro_f1_test, weights_per_class_test = self.test()
+        print(
+            f"Test Accuracy Zero shot Start: {acc_test}, F1: {macro_f1_test}, score: {acc_test +macro_f1_test }, weights_per_class: {weights_per_class_test}"
+        )
+        json_obj["zero_shot"] = {
+            "eval": {
+                "acc": acc,
+                "macro_f1": macro_f1,
+            },
+            "test": {
+                "acc": acc_test,
+                "macro_f1": macro_f1_test,
+            },
+        }
+        save(json_obj, f"use_cases/classification/zero_shot")
+
+    def eval_few_shot(self, shots: int, runs: int = 5):
+        r"""Get the max, min, mean, std of the few shot evaluation"""
+        # TODO: this can be moved to the optimizer
+        self.task.train()
+        accs = []
+        macro_f1s = []
+        optimizer = self.few_shot_optimizer_random
+
+        # get optimizer name
+        optimizer_name = (
+            optimizer.__class__.__name__ + optimizer.sampler.__class__.__name__
+        )
+        save_json: Dict[str, Any] = {
+            "optimizer": optimizer_name,
+            "shots": shots,
+            "runs": runs,
+        }
+        if shots is None:
+            shots = self.num_shots
+        for i in range(runs):  # TODO: add tqdm
+            optimizer.init(shots=shots)
+            acc, macro_f1, _ = self.test()
+            accs.append(acc)
+            macro_f1s.append(macro_f1)
+            save_json[f"run_{i}"] = {
+                "acc": acc,
+                "macro_f1": macro_f1,
+                "examples": optimizer.current,
+            }
+        print(f"accs: {accs}")
+        print(f"macro_f1s: {macro_f1s}")
+        # compute max, min, mean, std using numpy
+        import numpy as np
+
+        accs_np = np.array(accs)
+        macro_f1s_np = np.array(macro_f1s)
+        max_acc = np.max(accs_np)
+        min_acc = np.min(accs_np)
+        mean_acc = np.mean(accs_np)
+        std_acc = np.std(accs_np)
+        print(
+            f"max_acc: {max_acc}, min_acc: {min_acc}, mean_acc: {mean_acc}, std_acc: {std_acc}"
+        )
+        save_json["max_acc"] = max_acc
+        save_json["min_acc"] = min_acc
+        save_json["mean_acc"] = mean_acc
+        save_json["std_acc"] = std_acc
+
+        # macro f1
+        max_macro_f1 = np.max(macro_f1s_np)
+        min_macro_f1 = np.min(macro_f1s_np)
+        mean_macro_f1 = np.mean(macro_f1s_np)
+        std_macro_f1 = np.std(macro_f1s_np)
+        print(
+            f"max_macro_f1: {max_macro_f1}, min_macro_f1: {min_macro_f1}, mean_macro_f1: {mean_macro_f1}, std_macro_f1: {std_macro_f1}"
+        )
+        save_json["max_macro_f1"] = max_macro_f1
+        save_json["min_macro_f1"] = min_macro_f1
+        save_json["mean_macro_f1"] = mean_macro_f1
+        save_json["std_macro_f1"] = std_macro_f1
+
+        save(
+            save_json,
+            f"use_cases/classification/few_shot_init/{shots}_shots_{optimizer_name}_aug",
+        )
+
+    def train_random(self, shots: int) -> None:
+        r"""
+        ICL with random examples
+        Best 0.958, 0.95
+        """
+        best_parameters = None
+        max_steps = 5
+        # self.few_shot_optimizer.init()
+        self.task.train()
+
+        self.few_shot_optimizer_random.init()
+        save(
+            self.task.state_dict(),
+            f"use_cases/classification/checkpoints/task_start",
+        )
+
+        acc, macro_f1, best_weights_per_class = self.eval()
+        best_score = acc + macro_f1
+        print(f"Eval Accuracy Start: {acc}, F1: {macro_f1}, score: {best_score}")
+        acc_test, macro_f1_test, weights_per_class_test = self.test()
+        print(
+            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {acc_test, macro_f1_test}, weights_per_class: {weights_per_class_test}"
+        )
+        start_shots = 3
+
+        def get_replace_shots(
+            start_shot: int,
+            end_shot: int = 1,
+            max_step=3,
+            current_step=0,
+        ):
+            # the number of thots will decrease from start_shot to end_shot
+            gradient = float(start_shot - end_shot) / max_step
+            value = int(start_shot - gradient * current_step)
+            value = min(value, start_shot)
+            value = max(value, end_shot)
+
+            return value
+
+        for i, train_batch in enumerate(self.data_loader):
+            save(
+                self.task.state_dict(),
+                f"use_cases/classification/checkpoints/task_{i}",
+            )
+
+            if i >= max_steps:
+                break
+            print(f"step: {i}")
+            print(f"train_batch: {train_batch}")
+            self.few_shot_optimizer_random.propose(shots=shots)
+            acc1, macro_f1_1, _ = self.eval()
+            score_1 = acc1 + macro_f1_1
+            print(
+                f"Eval Accuracy {i} proposed: {acc1}, F1: {macro_f1_1}, score: {score_1}"
+            )
+
+            if score_1 > best_score:
+                best_score = score_1
+                best_parameters = self.task.state_dict()
+                self.few_shot_optimizer_random.update_parameter()
+                print(f"best_score: {best_score}")
+                print(f"best_parameters: {best_parameters}")
+                print(f"best_weights_per_class: {best_weights_per_class}")
+            else:
+                self.few_shot_optimizer_random.reset_parameter()
+                print(f"reset_parameter")
+
+        acc, macro_f1, weights_per_class = self.test()
+        print(
+            f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
+        )
+
+    def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
         r"""
         ICL with demonstrating examples, we might want to know the plot of the accuracy while using the few shots examples
         """
 
         best_parameters = None
-        max_steps = 20
-        # self.few_shot_optimizer.init()
         self.task.train()
+
+        self.few_shot_optimizer.init()
         save(
             self.task.state_dict(),
             f"use_cases/classification/checkpoints/task_start",
         )
-        acc, macro_f1, best_weights_per_class = self.eval()  # zero shot, 0.542
-        best_score = acc + macro_f1
-        print(
-            f"Eval Accuracy Zero shot Start: {acc}, F1: {macro_f1}, score: {best_score}, best_weights_per_class: {best_weights_per_class}"
-        )
-        acc_test, macro_f1_test, weights_per_class_test = self.test()
-        print(
-            f"Test Accuracy Zero shot Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}, weights_per_class: {weights_per_class_test}"
-        )
-        # compute weights per data point in training set
-        weights = [
-            best_weights_per_class[int(sample["coarse_label"])]
-            for sample in self.train_dataset
-        ]
-
-        self.few_shot_optimizer.init(weights=weights)
 
         acc, macro_f1, best_weights_per_class = self.eval()  # 6 shots, class_balanced
+
+        best_score = acc + macro_f1
 
         print(
             f"Eval Accuracy Start: {acc}, F1: {macro_f1}, score: {best_score}, best_weights_per_class: {best_weights_per_class}"
@@ -196,9 +374,8 @@ class TrecTrainer(Orchestrator):
 
         acc_test, macro_f1_test, weights_per_class_test = self.test()
         print(
-            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}, weights_per_class: {weights_per_class_test}"
+            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {acc_test, macro_f1_test}, weights_per_class: {weights_per_class_test}"
         )
-        start_shots = shots
 
         # this simulates the gradients, which will decrease the more steps we take
         # the samples to replace are weighted by the class weights
@@ -289,4 +466,6 @@ if __name__ == "__main__":
         num_shots=num_shots,
         batch_size=batch_size,
     )
-    trainer.train(shots=num_shots)
+    # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
+    # trainer.eval_zero_shot()
+    trainer.eval_few_shot(shots=num_shots, runs=5)

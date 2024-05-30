@@ -1,6 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 from copy import deepcopy
 
+from core.data_classes import BaseDataClass
 from core.parameter import Parameter
 from core.component import Component
 from optim.sampler import Sampler, Sample
@@ -25,6 +26,9 @@ class BootstrapFewShot(Optimizer):
         sampler: Sampler,
         output_processors: Component,
         num_shots: int,
+        llm_augmenter: Optional[Component] = None,
+        task_input_dataclass: Optional[BaseDataClass] = None,
+        task_output_dataclass: Optional[BaseDataClass] = None,
     ):
         super().__init__()
         self.example_parameter = parameter
@@ -33,11 +37,49 @@ class BootstrapFewShot(Optimizer):
         self.proposed: List[Sample] = []
         self.output_processors = output_processors
         self.num_shots = num_shots
+        self.llm_augmenter = llm_augmenter
+        self.task_input_dataclass = task_input_dataclass
+        self.task_output_dataclass = task_output_dataclass
+        if llm_augmenter is not None:
+            if task_input_dataclass is None or task_output_dataclass is None:
+                raise ValueError(
+                    "task_input_dataclass and task_output_dataclass must be provided when llm_augment is not None"
+                )
         # self.proposing = False
 
-    def init(self, weights: Optional[List[float]] = None):
+    def augment_samples(self, samples: List[Sample]) -> List[Sample]:
+        if self.llm_augmenter:  # TODO: better represent sample
+            augmented_samples: List[Sample] = []
+            for sample in samples:
+                sample_data = sample.data
+                input_obj = self.task_input_dataclass.load_from_dict(sample.data)
+                output_obj = self.task_output_dataclass.load_from_dict(sample.data)
+                augmented_output_obj: Dict = self.llm_augmenter(input_obj, output_obj)
+                # update the fields in the output_obj
+                for key, value in augmented_output_obj.items():
+                    if hasattr(output_obj, key):
+                        # update the field
+                        print(f"updating field: {key} with value: {value}")
+                        # output_obj.set_field_value(key, value)
+                        sample_data[key] = value
+
+                augmented_samples.append(Sample(index=sample.index, data=sample_data))
+            # print(f"augmented_samples: {augmented_samples}")
+            return augmented_samples
+
+        return samples
+
+    def reset(self):
+        self.current = []
+        self.proposed = []
+
+    def init(self, weights: Optional[List[float]] = None, shots: Optional[int] = None):
         r"""Initialize the parameters with the initial examples."""
-        self.current = self.sampler(self.num_shots, replace=False)
+        if shots is None:
+            shots = self.num_shots
+        self.current = self.sampler(shots, replace=False)
+        if self.llm_augmenter:
+            self.current = self.augment_samples(self.current)
         self.proposed = deepcopy(self.current)
         examples = deepcopy(self.current)
         if self.output_processors:
@@ -47,21 +89,20 @@ class BootstrapFewShot(Optimizer):
     def random_replace(
         self, shots: int, weights_per_class: Optional[List[float]] = None
     ):
-        print(f"before random_replace: {self.current}")
         assert (
             len(self.current) == self.num_shots
         ), f"Ensure you have called init() first to setup the current examples before replacing a subset of them."
         self.proposed = self.sampler.random_replace(
             shots, deepcopy(self.current), weights_per_class=weights_per_class
         )
-        print(f"after random_replace: {self.proposed}")
 
     def propose(self, shots: int, weights_per_class: Optional[List[float]] = None):
         r"""
         Update parameter with the proposed examples.
         """
-        # TODO: the replaced shots as the step goes should decrease as it converges
         self.random_replace(shots=shots, weights_per_class=weights_per_class)
+        if self.llm_augmenter:
+            self.proposed = self.augment_samples(self.proposed)
         examples = deepcopy(self.proposed)
         if self.output_processors:
             examples = self.output_processors(examples)

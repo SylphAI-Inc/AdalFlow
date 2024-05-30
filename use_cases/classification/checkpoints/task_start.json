@@ -1,6 +1,6 @@
 {
     "generator.examples_str": {
-        "data": null,
+        "data": "Question: What 's the abbreviation for limited partnership ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: How do you say `` eat the day '' in Latin ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What causes asthma ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who wrote the song , `` Stardust '' ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What city is sometimes called Gotham ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many names are there for Eskimo people ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
         "requires_opt": true
     }
 }

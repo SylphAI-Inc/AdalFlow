@@ -6,6 +6,8 @@ LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "chat_history_str",
     "context_str",
     "steps_str",
+    "input_str",
+    "output_str",
 ]
 LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "task_desc_str",
@@ -54,6 +56,16 @@ Answer user query.
 <STEPS>
 {{steps_str}}
 </STEPS>
+{% endif %}
+{% if input_str %}
+<Inputs>
+{{input_str}}
+</Inputs>
+{% endif %}
+{% if output_str %}
+<Outputs>
+{{output_str}}
+</Outputs>
 {% endif %}
 """
 """This is the default system prompt template used in the LightRAG.

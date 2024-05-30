@@ -33,6 +33,9 @@ class Sample(Generic[T_co]):
     index: int  # the initial index of the sample in the dataset
     data: T_co  # the data of the sample
 
+    def to_dict(self) -> Dict:
+        return {"index": self.index, "data": self.data}
+
 
 class Sampler(Generic[T_co]):
     def __init__(self, *args, **kwargs) -> None:
@@ -77,6 +80,7 @@ class RandomSampler(Sampler, Generic[T_co]):
         shots: int,
         samples: List[Sample[T_co]],
         replace: Optional[bool] = False,
+        weights_per_class: Optional[List[float]] = None,
     ) -> List[Sample[T_co]]:
         r"""
         Randomly replace num of shots in the samples.
@@ -146,7 +150,9 @@ class ClassSampler(Sampler, Generic[T_co]):
         default_num_shots: Optional[int] = None,
     ):
         super().__init__()
-        self.dataset = [Sample(index=i, data=x) for i, x in enumerate(dataset)]
+        self.dataset: List[Sample[T_co]] = [
+            Sample[T_co](index=i, data=x) for i, x in enumerate(dataset)
+        ]
         self.num_classes = num_classes
         if get_data_key_fun is None:
             raise ValueError("get_data_key_fun must be provided")

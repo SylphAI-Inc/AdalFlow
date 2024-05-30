@@ -1,0 +1,309 @@
+{
+    "optimizer": "BootstrapFewShotRandomSampler",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 463,
+                "data": {
+                    "text": "What cathedral was Thomas Becket murdered in ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "It is likely that Thomas Becket was murdered in Canterbury Cathedral, a famous location in England."
+                }
+            },
+            {
+                "index": 48,
+                "data": {
+                    "text": "Which infectious disease is the world 's deadliest ?",
+                    "coarse_label": 1,
+                    "fine_label": 7,
+                    "thought": "The question is asking about a specific disease that is deadly, so I think the classification is for an Entity because it is a named object that exists."
+                }
+            },
+            {
+                "index": 333,
+                "data": {
+                    "text": "What film did Lee Marvin win the 1965 best actor Oscar for ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "Lee Marvin won the 1965 best actor Oscar for his role in the film."
+                }
+            },
+            {
+                "index": 8,
+                "data": {
+                    "text": "What causes asthma ?",
+                    "coarse_label": 2,
+                    "fine_label": 27,
+                    "thought": "Asthma is a chronic respiratory disease characterized by repetitive episodes of wheezing breathlessness, chest tightness, and coughing, with widespread inflammation of the airways."
+                }
+            },
+            {
+                "index": 583,
+                "data": {
+                    "text": "What wrestling star became `` The Incredible Hulk '' ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "This refers to a famous wrestler who took on a fictional identity, a character known for his incredible strength and rage."
+                }
+            },
+            {
+                "index": 509,
+                "data": {
+                    "text": "How do you ask a total stranger out on a date ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question asks how to approach asking a stranger out on a date, which is a sensitive topic that requires careful consideration and social skills."
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 76,
+                "data": {
+                    "text": "Where did cable cars first roll down Clay Street in 1873 ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question asks about the origin of cable cars, and I think the answer is a specific location."
+                }
+            },
+            {
+                "index": 568,
+                "data": {
+                    "text": "What kind of organization is ` Last Chance for Animals ' ?",
+                    "coarse_label": 3,
+                    "fine_label": 28
+                }
+            },
+            {
+                "index": 469,
+                "data": {
+                    "text": "How can I easily remove red wine stains from t-shirts ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "How can I easily remove red wine stains from t-shirts? likely requires an action plan or a solution, indicating it's a Description and abstract concept."
+                }
+            },
+            {
+                "index": 349,
+                "data": {
+                    "text": "What causes headaches ?",
+                    "coarse_label": 2,
+                    "fine_label": 27,
+                    "thought": "What causes headaches is when there is a disturbance in the normal functioning of the brain."
+                }
+            },
+            {
+                "index": 21,
+                "data": {
+                    "text": "What is a fear of fish ?",
+                    "coarse_label": 1,
+                    "fine_label": 7
+                }
+            },
+            {
+                "index": 257,
+                "data": {
+                    "text": "How many fingers are used to draw a bow ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The number of fingers used to draw a bow is typically a fixed value, which makes it a numeric value."
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 595,
+                "data": {
+                    "text": "What 's the most common non-contagious disease in the world ?",
+                    "coarse_label": 1,
+                    "fine_label": 7,
+                    "thought": "The question is asking about the most common non-contagious disease in the world, which is likely to be a type of entities or concepts rather than an abstract concept or description."
+                }
+            },
+            {
+                "index": 257,
+                "data": {
+                    "text": "How many fingers are used to draw a bow ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The number of fingers used to draw a bow is typically a fixed value, which makes it a numeric value."
+                }
+            },
+            {
+                "index": 410,
+                "data": {
+                    "text": "What kind of car did Janis Joplin ask the Lord to buy her ?",
+                    "coarse_label": 1,
+                    "fine_label": 15
+                }
+            },
+            {
+                "index": 107,
+                "data": {
+                    "text": "What does the abbreviation IOC stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "I know the abbreviation IOC stands for International Olympic Committee."
+                }
+            },
+            {
+                "index": 517,
+                "data": {
+                    "text": "What year were the Olympic Games played in where Nadia Comaneci became popular ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is about a specific event in time, and the answer is a number indicating the year, which is typical of a numeric value."
+                }
+            },
+            {
+                "index": 355,
+                "data": {
+                    "text": "What was the longest war in U.S. history ?",
+                    "coarse_label": 1,
+                    "fine_label": 8,
+                    "thought": "The question asks about the longest war in U.S. history, which is likely referring to a specific conflict or event."
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 422,
+                "data": {
+                    "text": "What Boris Pasternak book sold 5 , 0 copies to become the fiction best-seller of 1958 ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The question is asking about a specific book written by Boris Pasternak, which is an entity, and it's interesting to note that the book became a fiction best-seller in 1958, with 5,000 copies sold."
+                }
+            },
+            {
+                "index": 472,
+                "data": {
+                    "text": "What actor has a tattoo on his right wrist reading Scotland Forever ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "Given the question is about an actor having a tattoo, it is likely about a human being, so I'm expecting a person as an answer."
+                }
+            },
+            {
+                "index": 83,
+                "data": {
+                    "text": "What color is an Arctic fox in winter ?",
+                    "coarse_label": 1,
+                    "fine_label": 4,
+                    "thought": "The Arctic fox is an entity that changes its color, and in winter, it turns white for camouflage, which is an interesting fact."
+                }
+            },
+            {
+                "index": 576,
+                "data": {
+                    "text": "How does Belle describe her life in Beauty and the Beast ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "Belle describes her life in Beauty and the Beast as a romance within a beastly castle, surrounded by enchantment and mystery."
+                }
+            },
+            {
+                "index": 321,
+                "data": {
+                    "text": "How do chickens have baby chicks ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "I know that chickens lay eggs and hatching eggs is how they have baby chicks, so this is about the process of reproduction in chickens."
+                }
+            },
+            {
+                "index": 370,
+                "data": {
+                    "text": "Who delivered his last newscast on March 6 , 1981 ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "I think this question is asking about a person who worked in the field of news."
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 376,
+                "data": {
+                    "text": "How many states have a `` lemon law '' for new automobiles ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question asks about the number of states with a specific law, indicating a numerical value is expected."
+                }
+            },
+            {
+                "index": 357,
+                "data": {
+                    "text": "What was the claim to fame of Explorer I , launched February 1 , 1958 ?",
+                    "coarse_label": 2,
+                    "fine_label": 27
+                }
+            },
+            {
+                "index": 166,
+                "data": {
+                    "text": "What are the world 's four oceans ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question asks about the four oceans, which is a geographic concept, and I know that the world's four oceans are Pacific, Atlantic, Indian, and Arctic."
+                }
+            },
+            {
+                "index": 540,
+                "data": {
+                    "text": "What does the name Jenna mean ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The name Jenna is of Hebrew origin and means 'God is gracious'."
+                }
+            },
+            {
+                "index": 199,
+                "data": {
+                    "text": "What is a pyrotechnic display ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "It is a spectacular display of colorful explosions in the sky, often seen at fireworks festivals."
+                }
+            },
+            {
+                "index": 523,
+                "data": {
+                    "text": "What school does Tom attend in Tom Brown 's School Days ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "thought": "The question is inquiring about the education institution attended by a character in a novel, so it's likely referring to a human being."
+                }
+            }
+        ]
+    },
+    "max_acc": 1.0,
+    "min_acc": 1.0,
+    "mean_acc": 1.0,
+    "std_acc": 0.0,
+    "max_macro_f1": 1.0,
+    "min_macro_f1": 1.0,
+    "mean_macro_f1": 1.0,
+    "std_macro_f1": 0.0
+}

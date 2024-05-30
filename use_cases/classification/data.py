@@ -14,8 +14,6 @@ from optim.sampler import Sample, ClassSampler
 from utils import save, load
 
 
-from use_cases.classification.prompt import EXAMPLES_STR
-
 _COARSE_LABELS = [
     "ABBR",
     "ENTY",
@@ -32,9 +30,19 @@ _COARSE_LABELS_DESC = [
     "Location",
     "Numeric value",
 ]
+EXAMPLES_STR = r"""Question: {{input}}
+{%if thought%}
+thought: {{thought}} 
+{%endif%}
+class_name: {{output}} 
+{%if description%}({{description}}){%endif%}
+class_index: {{label}}
+--------
+"""
 
 
 class SamplesToStr(Component):
+    # TODO: make the samples to only input and output data
     def __init__(self):
         super().__init__()
         self.template = Prompt(template=EXAMPLES_STR)
@@ -47,6 +55,7 @@ class SamplesToStr(Component):
             input=data["text"],
             label=data["coarse_label"],
             output=_COARSE_LABELS_DESC[data["coarse_label"]],
+            thought=data.get("thought", None),
         )
         return example_str
 
@@ -167,11 +176,20 @@ def prepare_datasets(path: str = "data"):
     print(f"count_by_class: {count_by_class}")
 
     # create the test dataset from the test dataset
-    test_size = eval_size
-    test_sampler = ClassSampler(
-        org_test_dataset, num_classes=6, get_data_key_fun=lambda x: x["coarse_label"]
+    # weights for the test dataset
+    labels = torch.tensor(org_test_dataset["coarse_label"])
+    class_weights = calculate_class_weights(labels)
+
+    test_size = eval_size * 4
+    # weighted sampling on the test dataset
+    test_dataset_split = sample_subset_dataset(
+        org_test_dataset, test_size, class_weights
     )
-    test_dataset_split = [sample.data for sample in test_sampler(test_size)]
+
+    # test_sampler = ClassSampler(
+    #     org_test_dataset, num_classes=6, get_data_key_fun=lambda x: x["coarse_label"]
+    # )
+    # test_dataset_split = [sample.data for sample in test_sampler(test_size)]
 
     print(
         f"train example: {train_dataset_split[0]}, type: {type(train_dataset_split[0])}"

@@ -27,7 +27,7 @@ class Generator(Component):
     def __init__(
         self,
         *,
-        model_client: APIClient,
+        model_client: APIClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
@@ -52,10 +52,10 @@ class Generator(Component):
         self.model_kwargs = model_kwargs
         if "model" not in model_kwargs:
             raise ValueError(
-                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
+                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
             )
         # init the model client
-        self.model_client = model_client()
+        self.model_client = model_client
         self.system_prompt = Prompt(
             template=template,
             preset_prompt_kwargs=preset_prompt_kwargs,
@@ -135,8 +135,10 @@ class Generator(Component):
 
     def call(
         self,
-        input: str,
-        prompt_kwargs: Optional[Dict] = {},
+        input: Optional[
+            str
+        ] = None,  # TODO: delete this field and use prompt_kwargs as input
+        prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Call the model with the input(user_query) and model_kwargs."""

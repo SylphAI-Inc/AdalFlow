@@ -16,6 +16,7 @@ import uuid
 import json
 import yaml
 import warnings
+import logging
 
 from core.tokenizer import Tokenizer
 
@@ -23,6 +24,8 @@ from core.tokenizer import Tokenizer
 #     Literal = typing.Literal
 # else:
 #     raise ImportError("Please upgrade to Python 3.10.1 or higher to use Literal")
+
+logger = logging.getLogger(__name__)
 
 
 class ModelType(Enum):
@@ -336,10 +339,30 @@ class BaseDataClass:
                     f"Field {f.name} is missing 'desc' in metadata", UserWarning
                 )
 
-    def to_yaml_example(self):
+    def set_field_value(self, field_name: str, value: Any):
+        r"""Set the value of a field in the dataclass instance."""
+        if field_name not in self.__dict__:  # check if the field exists
+            logging.warning(f"Field {field_name} does not exist in the dataclass")
+        setattr(self, field_name, value)
+
+    @classmethod
+    def load_from_dict(cls, data: Dict[str, Any]):
+        r"""
+        Create a dataclass instance from a dictionary.
+        """
+        valid_data: Dict[str, Any] = {}
+        for f in fields(cls):
+            if f.name in data:
+                valid_data[f.name] = data[f.name]
+        return cls(**valid_data)
+
+    def to_yaml(self):
         return yaml.dump(self.__dict__, default_flow_style=False)
 
-    def to_json_example(self):
+    def to_dict(self):
+        return self.__dict__
+
+    def to_json(self):
         return json.dumps(self.__dict__, indent=4)
 
     @classmethod

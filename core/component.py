@@ -96,6 +96,18 @@ class Component:
         r"""Sets the component in evaluation mode."""
         return self.train(False)
 
+    def __dir__(self):
+        r"""Useful to handle json serialization."""
+        component_attrs = dir(self.__class__)
+        attrs = list(self.__dict__.keys())
+        parameters = list(self._parameters.keys())
+        components = list(self._components.keys())
+        keys = component_attrs + attrs + parameters + components
+
+        # Elimiate attrs that are not legal python variable names
+        keys = [key for key in keys if not key[0].isdigit()]
+        return sorted(keys)
+
     def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
         r"""Add a parameter to the component.
 

@@ -1,0 +1,288 @@
+{
+    "optimizer": "BootstrapFewShot",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 216,
+                "data": {
+                    "text": "When were the Olympic Games in which Nadia Comaneci became popular played ?",
+                    "coarse_label": 5,
+                    "fine_label": 39
+                }
+            },
+            {
+                "index": 593,
+                "data": {
+                    "text": "Why did the Aztecs first think the Spanish were Gods ?",
+                    "coarse_label": 2,
+                    "fine_label": 27
+                }
+            },
+            {
+                "index": 182,
+                "data": {
+                    "text": "How many flavors does Baskin & Robbins offer ?",
+                    "coarse_label": 5,
+                    "fine_label": 38
+                }
+            },
+            {
+                "index": 521,
+                "data": {
+                    "text": "What is the federal minimum wage ?",
+                    "coarse_label": 5,
+                    "fine_label": 41
+                }
+            },
+            {
+                "index": 222,
+                "data": {
+                    "text": "Who wrote the book , `` Huckleberry Finn '' ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 172,
+                "data": {
+                    "text": "What is the origin of the word ` posh ' ?",
+                    "coarse_label": 2,
+                    "fine_label": 25
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 231,
+                "data": {
+                    "text": "Which country is the largest country in Latin America ?",
+                    "coarse_label": 4,
+                    "fine_label": 33
+                }
+            },
+            {
+                "index": 292,
+                "data": {
+                    "text": "Name a French fascist party .",
+                    "coarse_label": 3,
+                    "fine_label": 28
+                }
+            },
+            {
+                "index": 16,
+                "data": {
+                    "text": "What according to the Kinsey Institute , is the sexual preference of four percent of American males ?",
+                    "coarse_label": 2,
+                    "fine_label": 25
+                }
+            },
+            {
+                "index": 499,
+                "data": {
+                    "text": "What soft drink would provide me with the biggest intake of caffeine ?",
+                    "coarse_label": 1,
+                    "fine_label": 9
+                }
+            },
+            {
+                "index": 90,
+                "data": {
+                    "text": "When did Mount St. Helen last have a significant eruption ?",
+                    "coarse_label": 5,
+                    "fine_label": 39
+                }
+            },
+            {
+                "index": 96,
+                "data": {
+                    "text": "What is the most important nation in the world , historically ?",
+                    "coarse_label": 4,
+                    "fine_label": 33
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 344,
+                "data": {
+                    "text": "What are three ways in which wind is created on the earth ?",
+                    "coarse_label": 1,
+                    "fine_label": 20
+                }
+            },
+            {
+                "index": 46,
+                "data": {
+                    "text": "What are Cushman and Wakefield known for ?",
+                    "coarse_label": 2,
+                    "fine_label": 27
+                }
+            },
+            {
+                "index": 221,
+                "data": {
+                    "text": "Who was Tiny Tim 's father ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 162,
+                "data": {
+                    "text": "What do the letters D.C. stand for in Washington , D.C. ?",
+                    "coarse_label": 0,
+                    "fine_label": 1
+                }
+            },
+            {
+                "index": 433,
+                "data": {
+                    "text": "What 's the highest hand in straight poker ?",
+                    "coarse_label": 1,
+                    "fine_label": 13
+                }
+            },
+            {
+                "index": 529,
+                "data": {
+                    "text": "What is the acreage of the Chappellet vineyard ?",
+                    "coarse_label": 5,
+                    "fine_label": 48
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 515,
+                "data": {
+                    "text": "Which type of soda has the greatest amount of caffeine ?",
+                    "coarse_label": 1,
+                    "fine_label": 9
+                }
+            },
+            {
+                "index": 339,
+                "data": {
+                    "text": "What does INRI stand for when used on Jesus ' cross ?",
+                    "coarse_label": 0,
+                    "fine_label": 1
+                }
+            },
+            {
+                "index": 315,
+                "data": {
+                    "text": "What 's the tallest piece on a chessboard ?",
+                    "coarse_label": 1,
+                    "fine_label": 13
+                }
+            },
+            {
+                "index": 152,
+                "data": {
+                    "text": "What is `` Nine Inch Nails '' ?",
+                    "coarse_label": 2,
+                    "fine_label": 24
+                }
+            },
+            {
+                "index": 32,
+                "data": {
+                    "text": "What did the forward-thinking Simon Brothers Bakery of Chicago insert into bagels to boost business ?",
+                    "coarse_label": 1,
+                    "fine_label": 13
+                }
+            },
+            {
+                "index": 338,
+                "data": {
+                    "text": "What is LMDS ?",
+                    "coarse_label": 0,
+                    "fine_label": 1
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 187,
+                "data": {
+                    "text": "What is the difference between a generator and an alternator ?",
+                    "coarse_label": 2,
+                    "fine_label": 25
+                }
+            },
+            {
+                "index": 457,
+                "data": {
+                    "text": "What is a portal ?",
+                    "coarse_label": 2,
+                    "fine_label": 24
+                }
+            },
+            {
+                "index": 228,
+                "data": {
+                    "text": "What common livestock have the greatest variety of breeds ?",
+                    "coarse_label": 1,
+                    "fine_label": 2
+                }
+            },
+            {
+                "index": 202,
+                "data": {
+                    "text": "How do hermit crabs reproduce ?",
+                    "coarse_label": 2,
+                    "fine_label": 26
+                }
+            },
+            {
+                "index": 55,
+                "data": {
+                    "text": "What two vegetables are combined in succotash ?",
+                    "coarse_label": 1,
+                    "fine_label": 9
+                }
+            },
+            {
+                "index": 76,
+                "data": {
+                    "text": "Where did cable cars first roll down Clay Street in 1873 ?",
+                    "coarse_label": 4,
+                    "fine_label": 35
+                }
+            }
+        ]
+    },
+    "max_acc": 1.0,
+    "min_acc": 1.0,
+    "mean_acc": 1.0,
+    "std_acc": 0.0,
+    "max_macro_f1": 1.0,
+    "min_macro_f1": 1.0,
+    "mean_macro_f1": 1.0,
+    "std_macro_f1": 0.0
+}
+
+accs: [0.688, 0.771, 0.615, 0.823, 0.792] -> 21% increase, 0.75 mean
+macro_f1s: [0.659, 0.76, 0.61, 0.831, 0.776]
+max_acc: 0.823, min_acc: 0.615, mean_acc: 0.7378, std_acc: 0.07597210014209164
+max_macro_f1: 0.831, min_macro_f1: 0.61, mean_macro_f1: 0.7272000000000001, std_macro_f1: 0.08076979633501621

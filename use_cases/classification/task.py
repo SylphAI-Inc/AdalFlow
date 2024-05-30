@@ -56,7 +56,7 @@ class TRECClassifier(Component):
             template=CLASSIFICATION_TASK_DESC,
             preset_prompt_kwargs={"classes": labels_desc},
         )
-        task_desc_str = self.task_desc_prompt()
+        self.task_desc_str = self.task_desc_prompt()
 
         self.parameters = [
             {
@@ -65,7 +65,7 @@ class TRECClassifier(Component):
                     "model_client": GroqAPIClient,
                     "model_kwargs": {"model": "llama3-8b-8192", "temperature": 0.0},
                     "preset_prompt_kwargs": {
-                        "task_desc_str": task_desc_str,
+                        "task_desc_str": self.task_desc_str,
                         "output_format_str": OUTPUT_FORMAT_STR,
                     },
                 },
@@ -78,7 +78,7 @@ class TRECClassifier(Component):
         output_str = yaml_parser.format_instructions()
         logger.debug(f"output_str: {output_str}")
         groq_model_kwargs = {
-            "model": "gemma-7b-it",  # "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",
+            "model": "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192", #gemma-7b-it not good at following yaml format
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,
@@ -112,11 +112,11 @@ class TRECClassifier(Component):
         }
 
         self.generator = Generator(
-            model_client=GroqAPIClient,
+            model_client=GroqAPIClient(),
             model_kwargs=groq_model_kwargs,
             template=TEMPLATE,
             preset_prompt_kwargs={
-                "task_desc_str": task_desc_str,
+                "task_desc_str": self.task_desc_str,
                 # "output_format_str": Prompt(
                 #     template=OUTPUT_FORMAT_YAML_STR,
                 #     preset_prompt_kwargs={"include_thought": True},
@@ -133,19 +133,6 @@ class TRECClassifier(Component):
 
     # def init_parameters(self):
     #     self.generator.examples_str.update_value()
-
-    # def load_state_dict(self, state_dict: Dict):
-    #     r"""
-    #     generator_state_dict = {
-    #     "preset_prompt_kwargs": {
-    #     "examples_str": "Examples: \n\n1. What is the capital of France? \n2. Who is the president of the United States?"
-
-    #     }
-    #     state_dict = {
-    #         "generator": {generator_state_dict}
-    #     }
-    #     """
-    #     self.generator.load_state_dict(state_dict["generator"])
 
     def call(self, query: str) -> str:
         str_response: Dict[str, Any] = self.generator.call(

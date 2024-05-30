@@ -75,7 +75,7 @@ class GroqAPIClient(APIClient):
 
     def convert_input_to_api_kwargs(
         self,
-        input: Union[str],
+        input: Union[str],  # TODO: delete this
         system_input: Optional[Union[str]] = None,
         combined_model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
@@ -83,7 +83,7 @@ class GroqAPIClient(APIClient):
         final_model_kwargs = combined_model_kwargs.copy()
         if model_type == ModelType.LLM:
             # convert input to messages
-            assert isinstance(input, str), "input must be a string"
+            # assert isinstance(input, str), "input must be a string"
             messages: Sequence[Dict[str, str]] = []
             if system_input is not None and system_input != "":
                 messages.append({"role": "system", "content": system_input})
@@ -104,7 +104,9 @@ class GroqAPIClient(APIClient):
         max_time=5,
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        assert "model" in api_kwargs, "model must be specified"
+        assert (
+            "model" in api_kwargs
+        ), f"model must be specified in api_kwargs: {api_kwargs}"
         assert (
             api_kwargs["model"] in self.model_lists
         ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
