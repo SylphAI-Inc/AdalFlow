@@ -3,6 +3,28 @@ Core
 
 The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.
 
+Overview
+----------
+.. autosummary::
+
+   core.api_client
+   core.component
+   core.data_classes
+   core.data_components
+   core.db
+   core.default_prompt_template
+   core.prompt_builder
+   core.document_splitter
+   core.embedder
+   core.retriever
+   core.generator
+   core.functional
+   core.memory
+   core.string_parser
+   core.tokenizer
+   core.tool_helper
+
+
 API Client
 ----------
 .. toctree::

@@ -3,8 +3,13 @@ Utils
 
 Here is the content of our documentation project.
 
+Overview
+----------
+.. autosummary::
 
-Agents
+   utils.logger
+
+Logger
 ------
 .. toctree::
    :maxdepth: 1
