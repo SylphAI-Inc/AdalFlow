@@ -1,7 +1,7 @@
 A Guideline on LLM Evaluation
 ============
 
-Evaluating LLMs and their applications is crucial for understanding their capabilities and limitations. Overall, this evaluation is a complex and multifaceted process. Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_:
+Evaluating LLMs and their applications is crucial for understanding their capabilities and limitations. Overall, such evaluation is a complex and multifaceted process. Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_:
 
 * **What to evaluate**: the tasks and capabilities that LLMs are evaluated on.
 * **Where to evaluate**: the datasets and benchmarks that are used for evaluation.
@@ -24,10 +24,48 @@ For a more detailed and comprehensive description of the tasks and capabilities 
 
 Where to evaluate?
 ------------------------------------------
+Once we have decided what to evaluate, the next question is where to evaluate. The selection of datasets and benchmarks is important, as it determines the quality and relevance of the evaluation.
 
+To comprehensively assess the capabilities of LLMs, researchers typically utilize benchmarks and datasets that span a broad spectrum of tasks. For example, in the GPT-4 technical report [3]_, the authors employed a variety of general language benchmarks, such as MMLU [4]_, and academic exams, such as the SAT, GRE, and AP courses, to evaluate the diverse capabilities of GPT-4. Below are some commonly used datasets and benchmarks for evaluating LLMs.
+
+* *MMLU* [4]_, which evaluates the LLM's ability to perform a wide range of language understanding tasks.
+* *HumanEval* [5]_, which measures the LLM's capability in writing Python code.
+* `HELM <https://crfm.stanford.edu/helm/>`_, which evaluates LLMs across diverse aspects such as language understanding, generation, common-sense reasoning, and domain adaptation.
+* `Chatbot Arena <https://arena.lmsys.org/>`_, which is an open platform to evaluate LLMs through human voting.
+* `API-Bank <https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/api-bank>`_, which evaluates LLMs' ability to use external tools and APIs to perform tasks.
+
+ Please refer to the review papers [1]_,[2]_,[6]_ for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the `Hugging Face Datasets <https://huggingface.co/datasets>`_ library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.
+
+.. code-block:: python
+
+    from datasets import load_dataset
+    dataset = load_dataset(path="mmlu", name='abstract_algebra')
+    print(dataset)
 
 How to evaluate?
 ------------------------------------------
 
+The final question is how to evaluate. Evaluation methods can be divided into *automated evaluation* and *human evaluation* [1]_,[6]_. Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks. Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM on specific tasks. Here, we organize resources that provides metrics and protocols for automated evaluation.
+
+If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BERTScore, perplexity, etc for various tasks, you can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_. For instance, you can use the following code snippet to compute the BERTScore, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+
+.. code-block:: python
+
+    from datasets import load_dataset
+    bertscore = load_metric("bertscore")
+    generated_text = ["life is good", "aim for the stars"]
+    reference_text = ["life is great", "make it to the moon"]
+    results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
+    print(results)
+    {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
+
+.. TODO: add RAG example
+
+
 .. [1] Chang, Yupeng, et al. "A survey on evaluation of large language models." ACM Transactions on Intelligent Systems and Technology 15.3 (2024): 1-45.
 .. [2] Guo, Zishan, et al. "Evaluating large language models: A comprehensive survey." arXiv preprint arXiv:2310.19736 (2023).
+.. [3] Achiam, Josh, et al. "GPT-4 technical report." arXiv preprint arXiv:2303.08774 (2023).
+.. [4] Hendrycks, Dan, et al. "Measuring massive multitask language understanding." International Conference on Learning Representations. 2020.
+.. [5] Chen, Mark, et al. "Evaluating large language models trained on code." arXiv preprint arXiv:2107.03374 (2021).
+.. [6] Liu, Yang, et al. "Datasets for Large Language Models: A Comprehensive Survey." arXiv preprint arXiv:2402.18041 (2024).
+.. [7] Li, Minghao, et al. "API-Bank: A comprehensive benchmark for tool-augmented llms." The 2023 Conference on Empirical Methods in Natural Language Processing. 2023.
