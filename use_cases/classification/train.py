@@ -4,7 +4,7 @@ from utils import save, load
 from copy import deepcopy
 from torch.utils.data import DataLoader
 
-from components.api_client import GroqAPIClient
+from components.api_client import GroqAPIClient, OpenAIClient, GoogleGenAIClient
 from optim.optimizer import BootstrapFewShot
 from optim.sampler import RandomSampler, ClassSampler
 from optim.llm_augment import LLMAugmenter
@@ -76,7 +76,10 @@ class TrecTrainer(Orchestrator):
         )
 
         model_client = self.task.generator.model_client
+        model_client = OpenAIClient()
+
         model_kwargs = deepcopy(self.task.generator.model_kwargs)
+        model_kwargs = {"model": "gpt-4o"}
         print(f"model_client: {model_client}")
         print(f"model_kwargs: {model_kwargs}")
         task_context_str = self.task.task_desc_str
@@ -218,7 +221,7 @@ class TrecTrainer(Orchestrator):
         self.task.train()
         accs = []
         macro_f1s = []
-        optimizer = self.few_shot_optimizer_random
+        optimizer = self.few_shot_optimizer
 
         # get optimizer name
         optimizer_name = (
@@ -241,6 +244,7 @@ class TrecTrainer(Orchestrator):
                 "macro_f1": macro_f1,
                 "examples": optimizer.current,
             }
+            print(save_json[f"run_{i}"])
         print(f"accs: {accs}")
         print(f"macro_f1s: {macro_f1s}")
         # compute max, min, mean, std using numpy
@@ -275,7 +279,7 @@ class TrecTrainer(Orchestrator):
 
         save(
             save_json,
-            f"use_cases/classification/few_shot_init/{shots}_shots_{optimizer_name}_aug",
+            f"use_cases/classification/few_shot_init_1/{shots}_shots_{optimizer_name}_aug_gpt4o",
         )
 
     def train_random(self, shots: int) -> None:

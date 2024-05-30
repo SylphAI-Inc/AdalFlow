@@ -65,7 +65,7 @@ class SamplesToStr(Component):
 
 class TrecDataset(Dataset):
     r"""
-    Juse one example for customizing the dataset.
+    Juse one example for customizing the dataset. Not used in this use case.
     """
 
     def __init__(self, dataset: DatasetDict, split: str):
