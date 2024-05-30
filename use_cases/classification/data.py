@@ -1,17 +1,20 @@
 # https://huggingface.co/datasets/trec
 # labels: https://huggingface.co/datasets/trec/blob/main/trec.py
 
-from datasets import load_dataset, DatasetDict
+from datasets import load_dataset, DatasetDict, load_from_disk
+from datasets import Dataset as HFDataset
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
 import torch
-from torch.utils.data import Dataset, DataLoader
-from typing import Dict, Sequence
+from typing import Sequence, Dict
+import re
 
 from core.prompt_builder import Prompt
 from core.component import Component
-from typing import Any
+from optim.sampler import Sample, ClassSampler
+from utils import save, load
+
 
 from use_cases.classification.prompt import EXAMPLES_STR
-from optim.sampler import Sample
 
 _COARSE_LABELS = [
     "ABBR",
@@ -30,66 +33,6 @@ _COARSE_LABELS_DESC = [
     "Numeric value",
 ]
 
-_FINE_LABELS = [
-    "ABBR:abb",
-    "ABBR:exp",
-    "ENTY:animal",
-    "ENTY:body",
-    "ENTY:color",
-    "ENTY:cremat",
-    "ENTY:currency",
-    "ENTY:dismed",
-    "ENTY:event",
-    "ENTY:food",
-    "ENTY:instru",
-    "ENTY:lang",
-    "ENTY:letter",
-    "ENTY:other",
-    "ENTY:plant",
-    "ENTY:product",
-    "ENTY:religion",
-    "ENTY:sport",
-    "ENTY:substance",
-    "ENTY:symbol",
-    "ENTY:techmeth",
-    "ENTY:termeq",
-    "ENTY:veh",
-    "ENTY:word",
-    "DESC:def",
-    "DESC:desc",
-    "DESC:manner",
-    "DESC:reason",
-    "HUM:gr",
-    "HUM:ind",
-    "HUM:title",
-    "HUM:desc",
-    "LOC:city",
-    "LOC:country",
-    "LOC:mount",
-    "LOC:other",
-    "LOC:state",
-    "NUM:code",
-    "NUM:count",
-    "NUM:date",
-    "NUM:dist",
-    "NUM:money",
-    "NUM:ord",
-    "NUM:other",
-    "NUM:period",
-    "NUM:perc",
-    "NUM:speed",
-    "NUM:temp",
-    "NUM:volsize",
-    "NUM:weight",
-]
-
-
-dataset = load_dataset("trec")
-print(dataset)
-
-print(f"Train example: {dataset['train'][0]}")
-print(f"Test example: {dataset['test'][0]}")
-
 
 class SamplesToStr(Component):
     def __init__(self):
@@ -104,35 +47,18 @@ class SamplesToStr(Component):
             input=data["text"],
             label=data["coarse_label"],
             output=_COARSE_LABELS_DESC[data["coarse_label"]],
-            # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
         )
-        # example_str = "*" * len(example_str)
         return example_str
 
     def call(self, samples: Sequence[Sample]) -> str:
         return "\n".join([self.call_one(sample) for sample in samples])
 
 
-# class ToSampleStr(Component):
-#     def __init__(self):
-#         super().__init__()
-#         self.template = Prompt(template=EXAMPLES_STR)
-
-#     def call(self, sample: Sample) -> str:
-#         data = sample.data
-#         assert "text" in data, "The data must have a 'text' field"
-#         assert "coarse_label" in data, "The data must have a 'coarse_label' field"
-#         example_str = self.template(
-#             input=data["text"],
-#             label=data["coarse_label"],
-#             output=_COARSE_LABELS_DESC[data["coarse_label"]],
-#             # description=_COARSE_LABELS_DESC[int(data["coarse_label"])],
-#         )
-#         # example_str = "*" * len(example_str)
-#         return example_str
-
-
 class TrecDataset(Dataset):
+    r"""
+    Juse one example for customizing the dataset.
+    """
+
     def __init__(self, dataset: DatasetDict, split: str):
         """
         Args:
@@ -154,18 +80,8 @@ class TrecDataset(Dataset):
         return data
 
 
-# dataset = CIFAR100(transform=None, download=True)
-# data_loader = DataLoader(dataset["train"], batch_size=2, shuffle=True)
-# for batch in data_loader:
-#     print(batch)
-#     print(batch["text"], batch["coarse_label"], batch["fine_label"])
-#     break
-import re
-
-
 def extract_class_label(text: str) -> int:
     re_pattern = r"\d+"
-
     if isinstance(text, str):
         label_match = re.findall(re_pattern, text)
         if label_match:
@@ -175,3 +91,118 @@ def extract_class_label(text: str) -> int:
         return label
     else:
         return text
+
+
+def calculate_class_weights(labels: torch.Tensor) -> torch.Tensor:
+    # Count frequencies of each class
+    class_counts = torch.bincount(labels)
+    # Calculate weight for each class (inverse frequency)
+    class_weights = 1.0 / class_counts.float()
+    # Assign weight to each sample
+    sample_weights = class_weights[labels]
+    return sample_weights
+
+
+def sample_subset_dataset(
+    dataset: HFDataset, num_samples: int, sample_weights
+) -> HFDataset:
+    # Create a WeightedRandomSampler to get 400 samples
+    sampler = WeightedRandomSampler(
+        weights=sample_weights, num_samples=num_samples, replacement=False
+    )
+
+    # Extract indices from the sampler
+    indices = list(iter(sampler))
+    # Create a subset of the dataset
+    subset_dataset = dataset.select(indices)
+    return subset_dataset
+
+
+# make sure to run this only once to prepare a small set of train, eval, and test datasets and keep it fixed during different experiments.
+def prepare_datasets(path: str = "data"):
+    dataset = load_dataset("trec")
+    print(f"train: {len(dataset['train'])}, test: {len(dataset['test'])}")  # 5452, 500
+    print(f"train example: {dataset['train'][0]}")
+
+    num_classes = 6
+
+    # create eval dataset from the first half of the train datset, 4 samples per class
+    org_train_dataset = dataset["train"].shuffle(seed=42)
+    train_size = num_classes * 100
+    len_train_dataset = len(org_train_dataset)
+
+    org_test_dataset = dataset["test"]
+    eval_size = 4 * num_classes
+
+    class_sampler = ClassSampler(
+        org_train_dataset.select(
+            range(0, len_train_dataset // 3)
+        ),  # created huggingface dataset type
+        num_classes=num_classes,
+        get_data_key_fun=lambda x: x["coarse_label"],
+    )
+
+    eval_dataset_split = [sample.data for sample in class_sampler(eval_size)]
+
+    # use the second half of the train dataset as the train dataset
+    train_dataset_split = org_train_dataset.select(
+        range(len_train_dataset // 3, len_train_dataset)
+    )  # {4: 413, 5: 449, 1: 630, 2: 560, 3: 630, 0: 44}
+    labels = torch.tensor(train_dataset_split["coarse_label"])
+    class_weights = calculate_class_weights(labels)
+    print(f"class_weights: {class_weights}")
+
+    train_dataset_split = sample_subset_dataset(
+        train_dataset_split, train_size, class_weights
+    )
+    print(f"train example: {train_dataset_split[0]}")
+    print(f"train: {len(train_dataset_split)}, eval: {len(eval_dataset_split)}")
+
+    # get the count for each class
+    count_by_class: Dict[str, int] = {}
+    for sample in train_dataset_split:
+        label = sample["coarse_label"]
+        count_by_class[label] = count_by_class.get(label, 0) + 1
+
+    print(f"count_by_class: {count_by_class}")
+
+    # create the test dataset from the test dataset
+    test_size = eval_size
+    test_sampler = ClassSampler(
+        org_test_dataset, num_classes=6, get_data_key_fun=lambda x: x["coarse_label"]
+    )
+    test_dataset_split = [sample.data for sample in test_sampler(test_size)]
+
+    print(
+        f"train example: {train_dataset_split[0]}, type: {type(train_dataset_split[0])}"
+    )
+
+    # save the datasets in the data folder
+    train_dataset_split.save_to_disk(
+        f"{path}/train"
+    )  # TODO: update the dataset info to the new dataset
+
+    # use json to save for better readability
+    save(
+        eval_dataset_split,
+        f"{path}/eval",
+    )
+    save(
+        test_dataset_split,
+        f"{path}/test",
+    )
+
+
+def load_datasets(path: str = "data"):
+    train_dataset: HFDataset = load_from_disk(dataset_path=f"{path}/train")
+    eval_dataset = load(f"{path}/eval")[1]
+    test_dataset = load(f"{path}/test")[1]
+    print(f"train: {len(train_dataset)}")
+    print(f"eval: {len(eval_dataset)}")
+    print(f"test: {len(test_dataset)}")
+
+    return train_dataset, eval_dataset, test_dataset
+
+
+if __name__ == "__main__":
+    load_datasets()

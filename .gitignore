@@ -32,3 +32,4 @@ li_test/
 local_cache/
 *.txt
 *.pth
+data/

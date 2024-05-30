@@ -12,13 +12,11 @@ from core.string_parser import JsonParser
 
 from use_cases.classification.data import (
     _COARSE_LABELS,
-    _FINE_LABELS,
     _COARSE_LABELS_DESC,
 )
 from use_cases.classification.prompt import (
     CLASSIFICATION_TASK_DESC,
     OUTPUT_FORMAT_STR,
-    EXAMPLES_STR,
     TEMPLATE,
     OutputFormat,
     output_example,
@@ -80,7 +78,7 @@ class TRECClassifier(Component):
         output_str = yaml_parser.format_instructions()
         logger.debug(f"output_str: {output_str}")
         groq_model_kwargs = {
-            "model": "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",
+            "model": "gemma-7b-it",  # "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,

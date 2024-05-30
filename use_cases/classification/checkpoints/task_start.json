@@ -1,6 +1,6 @@
 {
     "generator.examples_str": {
-        "data": "Question: What does CNN stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What 's the most popular contact lens color ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the Motto for the State of Maryland ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who portrayed portly criminologist Carl Hyatt on Checkmate ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: Which city in Canada is the least-populated ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: When was the Battle of Hastings ?\nclass_name: Numeric value \nclass_index: 5\n--------\n",
+        "data": null,
         "requires_opt": true
     }
 }

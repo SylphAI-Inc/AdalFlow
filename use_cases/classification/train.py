@@ -1,19 +1,19 @@
+from typing import Any, Dict, Tuple
+from utils import save, load
+from torch.utils.data import DataLoader
+
+
+from optim.optimizer import BootstrapFewShot
+from optim.sampler import RandomSampler, ClassSampler
 from use_cases.classification.task import TRECClassifier
 from use_cases.classification.eval import ClassifierEvaluator
 from core.component import Component
 from use_cases.classification.data import (
     SamplesToStr,
-    dataset,
+    load_datasets,
     _COARSE_LABELS_DESC,
     _COARSE_LABELS,
 )
-from torch.utils.data import DataLoader
-import random
-
-
-from typing import Any, Optional, Sequence, Dict
-from torch.utils.data.sampler import Sampler, SubsetRandomSampler, RandomSampler
-from utils import save, load
 
 
 class Orchestrator(Component):
@@ -21,13 +21,13 @@ class Orchestrator(Component):
         super().__init__(*args, **kwargs)
         self._example_input = "What is the capital of France?"
 
-    @property
-    def example_input(self):
-        return "How did serfdom develop in and then leave Russia ?"
+    # @property
+    # def example_input(self):
+    #     return "How did serfdom develop in and then leave Russia ?"
 
-    @example_input.setter
-    def example_input(self, value):
-        self._example_input = value
+    # @example_input.setter
+    # def example_input(self, value):
+    #     self._example_input = value
 
     # def training_step(self, *args, **kwargs) -> None:
     #     raise NotImplementedError("training_step method is not implemented")
@@ -37,11 +37,6 @@ class Orchestrator(Component):
 
     def _extra_repr(self) -> str:
         return super()._extra_repr() + f"example_input={self._example_input}"
-
-
-from optim.optimizer import BootstrapFewShot
-from optim.sampler import RandomSampler, ClassSampler, Sample
-from typing import Tuple
 
 
 # for this trainer, we will learn from pytorch lightning
@@ -71,19 +66,15 @@ class TrecTrainer(Orchestrator):
         self.train_dataset = train_dataset
         self.eval_dataset = eval_dataset
         self.test_dataset = test_dataset
-        # self.eval_dataset = eval_dataset.select(range(20))
-        # self.test_dataset = train_dataset.select(range(20))
+
         self.data_loader = DataLoader(
             self.train_dataset, batch_size=self.batch_size, shuffle=True
         )
-        # self.eval_data_loader = DataLoader(
-        #     self.eval_dataset, batch_size=batch_size, shuffle=False
-        # )  # use this for speeded up evaluation
+
         self.evaluator = ClassifierEvaluator(num_classes=self.num_classes)
         self.samples_to_str = SamplesToStr()
 
         self.params = dict(self.task.named_parameters())
-        # self.params = self.task.parameters()
         print(f"params: {self.params}")
 
         self.sampler = RandomSampler(
@@ -94,12 +85,9 @@ class TrecTrainer(Orchestrator):
             self.num_classes,
             get_data_key_fun=lambda x: x["coarse_label"],
         )
+
         self.few_shot_optimizer = BootstrapFewShot(
-            # parameter_dict=self.params,
             parameter=self.params["generator.examples_str"],
-            # parameter_name="generator.examples_str",
-            # parameter_names=["generator.examples_str"],
-            # train_dataset=self.train_dataset,
             sampler=self.class_sampler,
             output_processors=self.samples_to_str,
             num_shots=self.num_shots,
@@ -136,7 +124,8 @@ class TrecTrainer(Orchestrator):
         print(f"responses: {responses}, targets: {targets}")
         print(f"num_invalid: {num_invalid}")
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
-        return accuracy, macro_f1_score
+        weights_per_class = self.evaluator.weights_per_class(responses, targets)
+        return accuracy, macro_f1_score, weights_per_class
 
     def test(self):
         return self.eval(self.test_dataset)
@@ -175,31 +164,57 @@ class TrecTrainer(Orchestrator):
         """
 
         best_parameters = None
-        max_steps = 4
-        self.few_shot_optimizer.init()
+        max_steps = 20
+        # self.few_shot_optimizer.init()
         self.task.train()
         save(
             self.task.state_dict(),
             f"use_cases/classification/checkpoints/task_start",
         )
-        acc, macro_f1 = self.eval()
+        acc, macro_f1, best_weights_per_class = self.eval()  # zero shot, 0.542
         best_score = acc + macro_f1
-
-        print(f"Eval Accuracy Start: {acc}, F1: {macro_f1}, score: {best_score}")
-
-        acc_test, macro_f1_test = self.test()
         print(
-            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}"
+            f"Eval Accuracy Zero shot Start: {acc}, F1: {macro_f1}, score: {best_score}, best_weights_per_class: {best_weights_per_class}"
         )
-        start_shots = 3
+        acc_test, macro_f1_test, weights_per_class_test = self.test()
+        print(
+            f"Test Accuracy Zero shot Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}, weights_per_class: {weights_per_class_test}"
+        )
+        # compute weights per data point in training set
+        weights = [
+            best_weights_per_class[int(sample["coarse_label"])]
+            for sample in self.train_dataset
+        ]
 
-        # for step in range(max_steps):
+        self.few_shot_optimizer.init(weights=weights)
+
+        acc, macro_f1, best_weights_per_class = self.eval()  # 6 shots, class_balanced
+
+        print(
+            f"Eval Accuracy Start: {acc}, F1: {macro_f1}, score: {best_score}, best_weights_per_class: {best_weights_per_class}"
+        )
+
+        acc_test, macro_f1_test, weights_per_class_test = self.test()
+        print(
+            f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {best_score}, weights_per_class: {weights_per_class_test}"
+        )
+        start_shots = shots
+
+        # this simulates the gradients, which will decrease the more steps we take
+        # the samples to replace are weighted by the class weights
         def get_replace_shots(
-            start_shot: int, end_shot: int = 1, max_step=3, current_step=0
+            start_shot: int,
+            end_shot: int = 1,
+            max_step=3,
+            current_step=0,
         ):
             # the number of thots will decrease from start_shot to end_shot
-            gradient = (end_shot - start_shot) / max_step
-            return int(start_shot - gradient * current_step)
+            gradient = float(start_shot - end_shot) / max_step
+            value = int(start_shot - gradient * current_step)
+            value = min(value, start_shot)
+            value = max(value, end_shot)
+
+            return value
 
         for i, train_batch in enumerate(self.data_loader):
             save(
@@ -217,10 +232,12 @@ class TrecTrainer(Orchestrator):
             )
 
             self.few_shot_optimizer.propose(
-                shots=replace_shots
+                shots=replace_shots, weights_per_class=best_weights_per_class
             )  # random replace half of samples
 
-            acc1, macro_f1_1 = self.eval()  # self.batch_eval(train_batch)
+            acc1, macro_f1_1, weights_per_class = (
+                self.eval()
+            )  # self.batch_eval(train_batch)
 
             score_1 = acc1 + macro_f1_1
             print(
@@ -230,18 +247,23 @@ class TrecTrainer(Orchestrator):
             # break
             if score_1 > best_score:
                 best_score = score_1
+                best_weights_per_class = weights_per_class
                 # update the value
                 # self.few_shot_optimizer.update_parameter()
                 best_parameters = self.task.state_dict()
+                self.few_shot_optimizer.update_parameter()
                 print(f"best_score: {best_score}")
                 print(f"best_parameters: {best_parameters}")
+                print(f"best_weights_per_class: {best_weights_per_class}")
             else:
                 self.few_shot_optimizer.reset_parameter()
                 print(f"reset_parameter")
 
         # # final evaluation
-        acc, macro_f1 = self.test()
-        print(f"Test Accuracy: {acc}, F1: {macro_f1}")
+        acc, macro_f1, weights_per_class = self.test()
+        print(
+            f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
+        )
         print(f"best_score: {best_score}")
 
 
@@ -255,30 +277,15 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
-    org_train_dataset = dataset["train"].shuffle(seed=42)
-    len_train_dataset = len(org_train_dataset)
-    org_test_dataset = dataset["test"]
-
-    class_sampler = ClassSampler(
-        org_train_dataset.select(range(0, len_train_dataset // 2)),
-        num_classes=6,
-        get_data_key_fun=lambda x: x["coarse_label"],
-    )
-    eval_dataset_split = [sample.data for sample in class_sampler(24)]
-
-    train_dataset_split = org_train_dataset.select(
-        range(len_train_dataset // 2, len_train_dataset)
-    )
-    # train_dataset_split = org_train_dataset.select(range(20, len_train_dataset))
-    # eval_dataset_split = org_train_dataset.select(range(20))
-    test_dataset_split = org_test_dataset.select(range(20))
+    train_dataset, eval_dataset, test_dataset = load_datasets()
+    # TODO: ensure each time the selected eval and test dataset and train dataset are the same
     num_shots = 6
     batch_size = 10
     trainer = TrecTrainer(
         num_classes=6,
-        train_dataset=train_dataset_split,  # use for few-shot sampling
-        eval_dataset=eval_dataset_split,  # evaluting during icl
-        test_dataset=test_dataset_split,  # the final testing
+        train_dataset=train_dataset,  # use for few-shot sampling
+        eval_dataset=eval_dataset,  # evaluting during icl
+        test_dataset=test_dataset,  # the final testing
         num_shots=num_shots,
         batch_size=batch_size,
     )

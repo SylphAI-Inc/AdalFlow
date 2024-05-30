@@ -191,21 +191,21 @@ def parse_function_call(
 
 
 if __name__ == "__main__":
-    test_input = (
-        '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}'
-    )
-    print(
-        extract_json_str(test_input, add_missing_right_brace=True)
-    )  # Expected to complete the JSON properly
+    # test_input = (
+    #     '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}'
+    # )
+    # print(
+    #     extract_json_str(test_input, add_missing_right_brace=True)
+    # )  # Expected to complete the JSON properly
 
-    test_input_2 = 'Some random text before {"key1": "value1"} and more after'
-    print(extract_json_str(test_input_2))  # Expected to extract {"key1": "value1"}
+    # test_input_2 = 'Some random text before {"key1": "value1"} and more after'
+    # print(extract_json_str(test_input_2))  # Expected to extract {"key1": "value1"}
 
-    test_input_3 = "No JSON here"
-    try:
-        print(extract_json_str(test_input_3))
-    except ValueError as e:
-        print(e)  # Expected to raise an error about no JSON object found
+    # test_input_3 = "No JSON here"
+    # try:
+    #     print(extract_json_str(test_input_3))
+    # except ValueError as e:
+    #     print(e)  # Expected to raise an error about no JSON object found
 
     # test list parser
     list_parser = ListParser()
