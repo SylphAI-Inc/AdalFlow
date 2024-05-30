@@ -86,7 +86,7 @@ def search(entity: str) -> str:
 
 def lookup(text: str, keyword: str) -> str:
     """
-        returns the next sentence containing keyword in the current passage.
+        returns the sentences containing keyword in the current passage.
     """
     sentences = text.split('.')
     matching_sentences = [sentence.strip() + '.' for sentence in sentences if keyword.lower() in sentence.lower()]
