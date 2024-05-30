@@ -3,6 +3,15 @@ Components
 
 The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.
 
+Overview
+----------
+.. autosummary::
+
+   components.agent
+   components.api_client
+   components.embedder
+   components.reasoning
+   components.retriever
 
 Agents
 ------
