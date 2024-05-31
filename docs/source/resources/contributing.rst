@@ -17,11 +17,11 @@ This section is about user-facing documentation.
 
 LightRAG uses `Sphinx <https://www.sphinx-doc.org/en/master/>`_ for documentation, leveraging both `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and Sphinx's `autodoc <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html>`_ feature to pull docstrings from code and organize them through ``.rst`` files. Our documentation is split into:
 
-Docstring Standard
+Souce Code Docstring Standard
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Sphinx automatically pulls docstrings from source code and uses them as the docs in API reference. For clarity and consistency, we have a standard for all the code contributors.
 
-Aligning with Pytorch, LightRAG uses the `Google style <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ for formatting docstrings `detailed styles <https://google.github.io/styleguide/pyguide.html>`_, emphasizing **docstring** and **type control** to guarantee the document and code quality.
+Aligning with Pytorch, LightRAG uses the `Google style with Sphinx <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ for formatting docstrings `(detailed styles) <https://google.github.io/styleguide/pyguide.html>`_, emphasizing **docstring** and **type control** to guarantee the document and code quality.
 
 
 Setup & Build Documentation
@@ -61,13 +61,9 @@ Install by ``poetry`` along with all other dependencies for LightRAG:
 
 This file (``docs/source/conf.py``) contains configurations used by Sphinx, including extensions, templates, HTML theme, and language settings.
 
-**index.rst**
-
-The main document that serves as the home page of the documentation site. It includes the ``toctree`` which organizes the structure of the documentation.
-
 **Source Code Doc-string** 
 
-Update doc-strings in your source code. Use `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ and limit lines to 80 characters for better readability in various environments. Documentation updates can be done directly in the source code or by editing ``.rst`` files.
+Follow `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ to update your source code docstrings. Limit lines to 80 characters for better readability in various environments. 
 
 **RST Files**: Directly edit ``.rst`` files for broader changes or new sections. Use the ``.. toctree::`` directive to link documents.
 
@@ -77,7 +73,7 @@ To shorten the doc generating process, please remove the files that is not inclu
 
 The Sphinx build will show warnings but the docs will still be completed.
 
-If you have a module folder containing code, for example, ``components/``, please add the following line to the docs/Makefile in the ``apidoc:`` section.
+If you have a module folder containing code, for example, ``components/``, please add the following line to the ``docs/Makefile`` in the ``apidoc:`` section.
 
 .. code-block:: bash
     
