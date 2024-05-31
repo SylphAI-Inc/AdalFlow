@@ -28,6 +28,7 @@ class AnthropicAPIClient(APIClient):
         self._api_key = api_key
         self.sync_client = self._init_sync_client()
         self.async_client = None  # only initialize if the async call is called
+        self.tested_llm_models = ["claude-3-opus-20240229"]
 
     def _init_sync_client(self):
         api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
@@ -57,6 +58,7 @@ class AnthropicAPIClient(APIClient):
             api_kwargs["messages"] = [
                 {"role": "user", "content": input},
             ]
+            # api_kwargs["messages"] = [{"role": "system", "content": system_input}]
             if system_input and system_input != "":
                 api_kwargs["system"] = system_input
         else:

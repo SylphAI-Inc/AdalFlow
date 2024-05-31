@@ -20,15 +20,30 @@ class SimpleQA(Component):
             ],  # 1 we need to clearly define which is trainable.
         )
 
+    def init_parameters(self):
+        self.generator.task_desc_str.update_value(
+            "You are a helpful assistant and with a great sense of humor."
+        )
+
     def call(self, query: str) -> str:
         return self.generator.call(input=query)
 
 
 if __name__ == "__main__":
+    # TODO: convert some of this code to pytest for states
     simple_qa = SimpleQA()
     print(simple_qa)
+    simple_qa.init_parameters()
     states = simple_qa.state_dict()
-    print(f"states: {states}")
+    print(f"states: {states}")  # conv1.weight, conv1.bias, fc1.weight, fc1.bias
+
+    simple_qa_2 = SimpleQA()
+    states_before = simple_qa_2.state_dict()
+    print(f"states_before: {states_before}")
+    simple_qa_2.load_state_dict(states)
+    states_2 = simple_qa_2.state_dict()
+    print(f"states_2: {states_2}")
+
     print("show the system prompt")
     simple_qa.generator.print_prompt()
     print("Answer:")

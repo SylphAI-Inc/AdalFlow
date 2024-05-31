@@ -74,7 +74,7 @@ class OpenAIClient(APIClient):
             messages: List[Dict[str, str]] = []
             if system_input is not None and system_input != "":
                 messages.append({"role": "system", "content": system_input})
-            messages.append({"role": "user", "content": input})
+            # messages.append({"role": "user", "content": input})
             assert isinstance(
                 messages, Sequence
             ), "input must be a sequence of messages"
@@ -98,6 +98,7 @@ class OpenAIClient(APIClient):
         """
         kwargs is the combined input and model_kwargs
         """
+        print(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:

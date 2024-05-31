@@ -9,7 +9,11 @@ intermediate step history from agents.
 Prompt template
 ---------------------
 
-Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 6 important sections. We leverage `jinjia2` template with 6 variables: `task_desc_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
+Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 7 important sections. We leverage `jinjia2` template for **programmable prompt** right along with string.
+
+The default template comes  with 7 variables: `task_desc_str`, `output_format_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`. 
+
+A jinjia2 template will rendered with :ref:`Prompt<core-prompt_builder>` class. If some fields being empty, that section will be empty in the final prompt string.
 
 .. code-block:: python
    :linenos:
@@ -52,6 +56,8 @@ Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 6 importan
 
 Across our library, here our advanced features: 
 
+- Various output formats where the `output_format_str` variable is used to pass the output format to the model.
+
 - Few-shot and Many-shots In-context Learning (ICL) where the `examples_str` variable is used to pass the examples to the model.
 
 - Tools/Function Calls where the `tools_str` variable is used to pass the tools to the model.
@@ -77,7 +83,7 @@ For example, your task is to instruct the llm to choose `top_k` from the given c
    :linenos:
 
    from core.prompt_builder import Prompt
-   
+
    task_desc_template = r"""
    Choose the top {{top_k}} from the following choices: {{choices}}
    """
@@ -144,6 +150,20 @@ Here is how you customize a new prompt:
 
 
     prompt = Prompt(template=new_template)
+
+
+Prompt Engineering experience
+---------------------
+There is not robust prompt, and it is one of the most sensitive creatures in the AI world.
+Here are some tips:
+- Even the output format matters, the order of your output fields, the formating.
+Output yaml or json format can lead to different performance. We have better luck with yaml format.
+- Few-shot works so well in some case, but it can lead to regression in some cases.
+- It is not fun to be a prompt engineer! But what can we do for now.
+
+
+Resources:
+1. `Jinja2`:
 
 
 

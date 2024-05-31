@@ -7,3 +7,20 @@
     color: #000000 !important; /* Sets text color to black */
 
 }
+.half-width {
+    width: 47%;
+    float: left;
+    padding: 2%;
+    box-sizing: border-box;
+}
+
+.code-comparison {
+    /* display: flex; */
+    width: 100%;
+    justify-content: space-between;
+}
+
+.caption-text {
+    font-size: 14px;  /* Sets the smallest font size */
+    color: gray;     /* Sets the color to gray */
+}
