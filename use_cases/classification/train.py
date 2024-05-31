@@ -487,6 +487,7 @@ if __name__ == "__main__":
         num_shots=num_shots,
         batch_size=batch_size,
     )
+    logger.info(f"trainer: {trainer}")
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
     # trainer.eval_zero_shot()
-    trainer.eval_few_shot(shots=num_shots, runs=5)
+    # trainer.eval_few_shot(shots=num_shots, runs=5)

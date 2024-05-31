@@ -124,7 +124,7 @@ class TRECClassifier(Component):
                 "output_format_str": output_str,  # OUTPUT_FORMAT_STR,
                 "input_label": "Question",
             },
-            trainable_params=["examples_str"],
+            trainable_params=["examples_str", "task_desc_str"],
             output_processors=Sequential(
                 yaml_parser, fun_to_component(lambda x: x["class_index"])
             ),
