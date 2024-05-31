@@ -1,2 +1,4 @@
 /few_shot_init_1/
 /checkpoints*/
+*train_dspy.py
+*_ypsd*
