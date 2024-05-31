@@ -41,7 +41,8 @@ mypy = "^1"
 datasets = ">=2.14.6, <=2.19.1"
 sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
-
+sphinx-design = "^0.6.0"
+pydata-sphinx-theme = "0.15.2"
 
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.1.16"
