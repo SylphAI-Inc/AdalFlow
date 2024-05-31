@@ -49,6 +49,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
+    "sphinx_design",
     # 'recommonmark',
     # 'myst_parser'
 ]
@@ -101,7 +102,7 @@ html_static_path = ["_static"]
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "LightRAG"
 # this will be the logo shown on the browser header
-html_favicon = "../../images/LightRAG-logo.jpg"
+html_favicon = "../../images/LightRAG-logo-circle.png"
 
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
 # whether module names are prefixed before object names in the documentation. This setting is particularly
@@ -132,6 +133,7 @@ autodoc_default_options = {
     "private-members": False,  # Ensure this is True if you want to document private members
     "special-members": "__init__",  # Document special members like __init__
     "inherited-members": True,
+    "exclude-members": "__init__",
     # "autosectionlabel_prefix_document": True,
 }
 
