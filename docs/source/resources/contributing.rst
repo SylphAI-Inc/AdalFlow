@@ -17,6 +17,12 @@ This section is about user-facing documentation.
 
 LightRAG uses `Sphinx <https://www.sphinx-doc.org/en/master/>`_ for documentation, leveraging both `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and Sphinx's `autodoc <https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html>`_ feature to pull docstrings from code and organize them through ``.rst`` files. Our documentation is split into:
 
+Docstring Standard
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sphinx automatically pulls docstrings from source code and uses them as the docs in API reference. For clarity and consistency, we have a standard for all the code contributors.
+
+Aligning with Pytorch, LightRAG uses the `Google style <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ for formatting docstrings `detailed styles <https://google.github.io/styleguide/pyguide.html>`_, emphasizing **docstring** and **type control** to guarantee the document and code quality.
+
 
 Setup & Build Documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
