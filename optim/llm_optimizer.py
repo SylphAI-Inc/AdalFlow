@@ -3,14 +3,17 @@ Implemented ORPO llm optimizer: https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+
+from core.data_classes import BaseDataClass
 
 from core.api_client import APIClient
 from core.generator import Generator
 from core.parameter import Parameter
 from optim.optimizer import Optimizer
 
+# TODO: add the responses and gts
 LLM_OPTIMIZER_TEMPLATE = r"""<SYS>
 Your task is to generate an new instruction that can score higher than all previous instructions.
 <HISTORY>
@@ -19,6 +22,12 @@ Below are some previous instructions and their scores, the higher the score the 
 - {{loop.index}}. 
 - text: {{instruction.text}} 
 - score: {{instruction.score}})
+{% if instruction.responses is defined %}
+- responses: {{instruction.responses}}
+{% endif %}
+{% if instruction.gts is defined %}
+- gts: {{instruction.gts}}
+{% endif %}
 ____
 {% endfor %}
 </HISTORY>
@@ -30,12 +39,19 @@ New Instruction:
 
 
 @dataclass
-class Instruction:
+class Instruction(BaseDataClass):
     # prefix will be the same as text
     text: str = field(metadata={"desc": "The instruction text"})
     score: float = field(
         metadata={"desc": "The score of the instruction, range from 0 to 1"}
     )
+    responses: Optional[List[str]] = field(
+        metadata={"desc": "The responses of using the instruction"}, default=None
+    )
+    gts: Optional[List[str]] = field(
+        metadata={"desc": "The ground truth of the task"}, default=None
+    )
+    # for classification, use the named labels instead of label index
 
 
 # TODO: combine few-shot with llm optimizer

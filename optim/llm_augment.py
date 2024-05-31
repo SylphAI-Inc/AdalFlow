@@ -3,6 +3,15 @@ Given the inputs and outputs, the llm augmenter will fill in any field that is m
 Better to use more performant models to fill in the missing values.
 """
 
+from core.prompt_builder import Prompt
+from typing import Dict, Any, Optional
+from core.api_client import APIClient
+from core.generator import Generator
+from core.component import Component
+from core.data_classes import BaseDataClass
+from core.string_parser import YAMLParser
+from prompts.outputs import YAML_OUTPUT_FORMAT
+
 LLM_AUGMENTER_TEMPLATE = r"""Given inputs and outputs, you will fill in any field that is missing value.
 - null or '' means the field is missing.
 - Understand the reasoning between inputs and outputs fields. If the 'thought/reasoning' field is null, you will fill in the reasoning 
@@ -33,15 +42,6 @@ thought: "I know the capital of France is Paris."
 </Outputs>
 Your answer:
 """
-
-from core.prompt_builder import Prompt
-from typing import Dict, Any, Optional
-from core.api_client import APIClient
-from core.generator import Generator
-from core.component import Component
-from core.data_classes import BaseDataClass
-from core.string_parser import YAMLParser
-from prompts.outputs import YAML_OUTPUT_FORMAT
 
 
 class LLMAugmenter(Component):

@@ -126,7 +126,17 @@ class TrecTrainer(Orchestrator):
         )
 
         print(f"few_shot_optimizer: {self.few_shot_optimizer}")
-        print(f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}")
+        print(
+            f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}",
+        )
+
+        from optim.llm_optimizer import LLMOptimizer
+
+        self.instruction_optimier = LLMOptimizer(
+            self.params["generator.task_desc_str"],
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+        )
 
     def eval(self, dataset=None) -> Tuple[float, float]:
         r"""
@@ -353,6 +363,13 @@ class TrecTrainer(Orchestrator):
         print(
             f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
         )
+
+    def train_instruction(self, max_steps: int = 5) -> None:
+
+        top_5_instructions = []
+        self.task.train()
+        for i, train_batch in enumerate(self.data_loader):
+            pass
 
     def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
         r"""
