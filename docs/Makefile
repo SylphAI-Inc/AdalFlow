@@ -25,7 +25,6 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../eval --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../utils --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../prompts --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../utils --separate --force
 	@echo "Inserting reference labels into RST files."

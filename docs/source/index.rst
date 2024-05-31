@@ -2,7 +2,6 @@
    sphinx-quickstart on Thu May  9 15:45:29 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
-
 =======================
 LightRAG documentation
 =======================
@@ -123,35 +122,25 @@ Dive deep into the design of the libraries
 =======================
 
 .. toctree::
-   :maxdepth: 2
+   :glob:
+   :maxdepth: 1
    :caption: Community
 
    community/index
 
-
 .. toctree::
-   :maxdepth: 2
+   :glob:
+   :maxdepth: 1
    :caption: Developer Notes
 
    developer_notes/index
-   developer_notes/llm_intro.rst
-   developer_notes/prompt
-   developer_notes/component
-   developer_notes/api_client
-   developer_notes/generator
-   developer_notes/embedder
-   developer_notes/retriever
-   developer_notes/data_classes
 
 
 .. toctree::
    :maxdepth: 1
    :caption: API Reference
 
-   apis/core/core
-   apis/components/components
-   apis/prompts/prompts
-   apis/eval/eval
+   apis/index
 
 .. toctree::
    :maxdepth: 1
@@ -164,8 +153,7 @@ Dive deep into the design of the libraries
    :maxdepth: 1
    :caption: Resources
    
-   resources/resources
-   resources/contributing
+   resources/index
 
 
 Use the library
@@ -174,72 +162,13 @@ Use the library
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: Get Started
-
-   get_started/installation
-   get_started/introduction
-
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Tutorials
-
-   tutorials/simpleQA
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API Reference
-
-   apis/core/core
-   apis/components/components
-   apis/prompts/prompts
-   apis/eval/eval
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Benchmarks
-   .. Manually add documents for the code in benchmarks
-
-
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :caption: Resources
-   
-   resources/resources
-   resources/contributing
-
-
-Use the library
-=======================
-
-
-.. toctree::
-   :maxdepth: 2
    :caption: Get Started
 
    get_started/index
 
 
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Tutorials
 
    tutorials/index
-
-
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
-   apis/index
-   
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Resources
-
-   resources/index
