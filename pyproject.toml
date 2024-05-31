@@ -65,6 +65,7 @@ lightning = "^2.2.4"
 dspy-ai = "^2.4.9"
 jupyter = "^1.0.0"
 ipykernel = "^6.29.4"
+colorama = "^0.4.6"
 
 
 [tool.ruff]
