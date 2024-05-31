@@ -1,5 +1,6 @@
 """
-Colorize console logs to separate logs from prints.
+LightRAG's log with colored console output.
+
 Windows users should set up colorama for colored console output.
 """
 
