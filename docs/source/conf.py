@@ -14,14 +14,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath('.'))  # Adds the directory containing conf.py to sys.path
-# sys.path.insert(0, os.path.abspath(".."))
-# sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../core"))
 sys.path.insert(0, os.path.abspath("../../components"))
-# sys.path.insert(0, os.path.abspath(".."))
-# sys.path.insert(0, os.path.abspath("../core"))
-# sys.path.insert(0, os.path.abspath("../components"))
 
 
 # -- Project information -----------------------------------------------------
@@ -65,11 +60,9 @@ exclude_patterns = ["tests", "test_*"]
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-# html_theme = 'alabaster'
-# html_theme = "sphinx_rtd_theme"
+
 html_theme = "pydata_sphinx_theme"
-# html_theme = "furo"
+
 
 html_logo = "../../images/sylphAI-logo.jpg"
 
@@ -106,18 +99,6 @@ autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True
 
 
-# autodoc_default_options = {
-#     "autosummary-no-titles": True,
-#     "autosummary-force-inline": True,
-#     "autosummary-nosignatures": True,
-#     "members": True,
-#     "private-members": False,  # (those starting with _).
-#     "special-members": False,  # (those starting and ending with __).
-#     "member-order": "bysource",
-#     "show-inheritance": True,
-#     # "undoc-members": True,
-#     "autosectionlabel_prefix_document": True,
-# }
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
