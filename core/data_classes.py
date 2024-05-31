@@ -426,15 +426,24 @@ class BaseDataClass:
 
 
 @dataclass
-class Output(BaseDataClass, Generic[T_co]):
+class GeneratorOutput(BaseDataClass, Generic[T_co]):
     """
-    The base class for all outputs.
+    The base class for generator class.
+    We ca not control its output 100%, so we use this to track the error_message and
+    allow the raw string output to be passed through.
     """
 
-    data: T_co = field(default=None, metadata={"desc": "The output data"})
+    data: T_co = field(
+        default=None,
+        metadata={"desc": "The final output data potentially after output parsers"},
+    )
     error_message: Optional[str] = field(
         default=None,
         metadata={"desc": "Error message if any"},
+    )
+    raw_response: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Raw response string"},
     )
 
 

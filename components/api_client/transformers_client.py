@@ -8,16 +8,26 @@ This file demonstrates how to
 (2) Convert this model inference component to LightRAG API client: TransformersClient
 """
 
-from core.api_client import APIClient
-from core.data_classes import ModelType
 from typing import Any, Dict, Union, List
 from functools import lru_cache
 import torch.nn.functional as F
 
+try:
+    import torch
+except ImportError:
+    raise ImportError("Please install torch with: pip install torch")
+from torch import Tensor
+
+try:
+    import transformers
+except ImportError:
+    raise ImportError("Please install transformers with: pip install transformers")
+from transformers import AutoTokenizer, AutoModel
+
+from core.api_client import APIClient
+from core.data_classes import ModelType
 
 from core.component import Component
-from transformers import AutoTokenizer, AutoModel
-from torch import Tensor
 
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
@@ -98,13 +108,13 @@ class TransformersClient(APIClient):
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         return self.sync_client(**api_kwargs)
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
         input: Any,
-        combined_model_kwargs: dict = {},
+        model_kwargs: dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
-        final_model_kwargs = combined_model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             final_model_kwargs["input"] = input
             return final_model_kwargs
@@ -131,7 +141,7 @@ if __name__ == "__main__":
             "model": "thenlper/gte-base",
             "mock": False,
         }
-        api_kwargs = transformer_client.convert_input_to_api_kwargs(
+        api_kwargs = transformer_client.convert_inputs_to_api_kwargs(
             input="Hello world",
             combined_model_kwargs=kwargs,
             model_type=ModelType.EMBEDDER,

@@ -1,6 +1,11 @@
 import os
-from typing import Dict, Sequence, Union, Optional, Any
+from typing import Dict, Sequence, Optional, Any
 import backoff
+
+try:
+    import groq
+except ImportError:
+    raise ImportError("Please install groq with: pip install groq")
 
 from groq import Groq, AsyncGroq
 from groq import (
@@ -10,7 +15,7 @@ from groq import (
     UnprocessableEntityError,
 )
 
-from core.api_client import APIClient
+from core.api_client import APIClient, API_INPUT_TYPE
 from core.data_classes import ModelType
 
 
@@ -73,21 +78,17 @@ class GroqAPIClient(APIClient):
         """
         return completion.choices[0].message.content
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Union[str],  # TODO: delete this
-        system_input: Optional[Union[str]] = None,
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
-        final_model_kwargs = combined_model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
-            # convert input to messages
-            # assert isinstance(input, str), "input must be a string"
             messages: Sequence[Dict[str, str]] = []
-            if system_input is not None and system_input != "":
-                messages.append({"role": "system", "content": system_input})
-            # messages.append({"role": "user", "content": input})
+            if input is not None and input != "":
+                messages.append({"role": "system", "content": input})
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")

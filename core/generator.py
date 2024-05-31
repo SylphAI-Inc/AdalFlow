@@ -125,9 +125,8 @@ class Generator(Component):
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
 
         # step 3: use model_client.combined_input_and_model_kwargs to get the api_kwargs
-        api_kwargs = self.model_client.convert_input_to_api_kwargs(
-            input=input,
-            system_input=system_prompt_str,
+        api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
+            input=system_prompt_str,
             combined_model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
