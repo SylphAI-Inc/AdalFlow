@@ -1,4 +1,3 @@
-from .logger import PatchedLogging
+from .serialization import *
 
-# Expose the base_logger and BaseLogger for easier import
-__all__ = ['PatchedLogging']
+__all__ = ["save", "load"]

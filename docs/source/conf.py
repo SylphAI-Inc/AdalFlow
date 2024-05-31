@@ -13,10 +13,11 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('.'))  # Adds the directory containing conf.py to sys.path
+
 sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../core"))
 sys.path.insert(0, os.path.abspath("../../components"))
+sys.path.insert(0, os.path.abspath("../../eval"))
 
 
 # -- Project information -----------------------------------------------------
@@ -46,6 +47,7 @@ extensions = [
     # 'recommonmark',
     # 'myst_parser'
 ]
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -69,7 +71,7 @@ html_logo = "../../images/sylphAI-logo.jpg"
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
     "collapse_navigation": False,
-    # "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+# "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
     "navigation_depth": 8,  # Controls how many headers are shown in the sidebar
     # "includehidden": True,
     # "titles_only": False,

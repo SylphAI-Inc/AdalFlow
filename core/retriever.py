@@ -1,7 +1,5 @@
-from typing import List, Optional, Union, Callable, Any, Sequence, Any
+from typing import List, Optional, Union, Callable, Any, Any
 
-import faiss
-import numpy as np
 
 from core.component import Component
 from core.data_classes import (
@@ -28,13 +26,10 @@ class Retriever(Component):
     def reset_index(self):
         raise NotImplementedError(f"reset_index is not implemented")
 
-    # def _get_inputs(self, documents: List[Any], input_field_map_func: Callable):
-    #     return [input_field_map_func(document) for document in documents]
-
     def build_index_from_documents(
         self,
         documents: RetrieverDocumentType,
-        input_field_map_func: Callable[[Any], Any] = lambda x: x.text,
+        **kwargs,
     ):
         r"""Built index from the `text` field of each document in the list of documents.
         input_field_map_func: a function that maps the document to the input field to be used for indexing
@@ -45,11 +40,17 @@ class Retriever(Component):
         )
 
     def retrieve(
-        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> Any:
+        self,
+        query_or_queries: RetrieverInputType,
+        top_k: Optional[int] = None,
+        **kwargs,
+    ) -> RetrieverOutputType:
         raise NotImplementedError(f"retrieve is not implemented")
 
     def __call__(
-        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> Any:
+        self,
+        query_or_queries: RetrieverInputType,
+        top_k: Optional[int] = None,
+        **kwargs,
+    ) -> RetrieverOutputType:
         raise NotImplementedError(f"__call__ is not implemented")

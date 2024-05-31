@@ -16,7 +16,11 @@ from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.db import LocalDocumentDB
 
-from core.functional import generate_component_key
+import os
+
+os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
+
+# from core.functional import generate_component_key
 
 from components.api_client import OpenAIClient
 from components.retriever import FAISSRetriever
@@ -36,7 +40,7 @@ class RAG(Component):
         self.text_splitter_settings = settings["text_splitter"]
 
         vectorizer = Embedder(
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             # batch_size=self.vectorizer_settings["batch_size"],
             model_kwargs=self.vectorizer_settings["model_kwargs"],
             output_processors=ToEmbedderResponse(),
@@ -54,7 +58,7 @@ class RAG(Component):
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )
-        self.data_transformer_key = generate_component_key(self.data_transformer)
+        self.data_transformer_key = self.data_transformer._get_name()
         # initialize retriever, which depends on the vectorizer too
         self.retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
@@ -83,7 +87,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient(),
+            model_client=OpenAIClient,
             model_kwargs=self.generator_model_kwargs,
             output_processors=JsonParser(),
         )
