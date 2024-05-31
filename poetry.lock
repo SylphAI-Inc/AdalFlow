@@ -4514,6 +4514,30 @@ lint = ["flake8 (>=3.5.0)", "importlib_metadata", "mypy (==1.9.0)", "pytest (>=6
 test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=6.0)", "setuptools (>=67.0)"]
 
 [[package]]
+name = "sphinx-design"
+version = "0.6.0"
+description = "A sphinx extension for designing beautiful, view size responsive web components."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "sphinx_design-0.6.0-py3-none-any.whl", hash = "sha256:e9bd07eecec82eb07ff72cb50fc3624e186b04f5661270bc7b62db86c7546e95"},
+    {file = "sphinx_design-0.6.0.tar.gz", hash = "sha256:ec8e3c5c59fed4049b3a5a2e209360feab31829346b5f6a0c7c342b894082192"},
+]
+
+[package.dependencies]
+sphinx = ">=5,<8"
+
+[package.extras]
+code-style = ["pre-commit (>=3,<4)"]
+rtd = ["myst-parser (>=1,<3)"]
+testing = ["defusedxml", "myst-parser (>=1,<3)", "pytest (>=7.1,<8.0)", "pytest-cov", "pytest-regressions"]
+theme-furo = ["furo (>=2024.5.4,<2024.6.0)"]
+theme-im = ["sphinx-immaterial (>=0.11.11,<0.12.0)"]
+theme-pydata = ["pydata-sphinx-theme (>=0.15.2,<0.16.0)"]
+theme-rtd = ["sphinx-rtd-theme (>=2.0,<3.0)"]
+theme-sbt = ["sphinx-book-theme (>=1.1,<2.0)"]
+
+[[package]]
 name = "sphinx-rtd-theme"
 version = "2.0.0"
 description = "Read the Docs theme for Sphinx"
@@ -5795,4 +5819,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "7ad46b844d6413a332e1a3022f0f8475b73f12a8b76f5a7bbf8e64018cdf10ec"
+content-hash = "4fcf3f0f0e6120436981ac321b4ce707bc7d2d6e956e64d94ffaf30aac855b18"
