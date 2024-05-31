@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../core"))
 sys.path.insert(0, os.path.abspath("../../components"))
 sys.path.insert(0, os.path.abspath("../../eval"))
+sys.path.insert(0, os.path.abspath("../../utils"))
 
 
 # -- Project information -----------------------------------------------------
@@ -66,7 +67,7 @@ exclude_patterns = ["tests", "test_*"]
 html_theme = "pydata_sphinx_theme"
 
 
-html_logo = "../../images/sylphAI-logo.jpg"
+html_logo = "../../images/LightRAG-doc-logo.jpeg"
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
