@@ -12,6 +12,7 @@ import ast
 from core.tool_helper import ToolOutput
 from core.component import Component
 import core.functional as F
+from core.data_classes import Output
 
 
 class ListParser(Component):
@@ -52,7 +53,7 @@ class JsonParser(Component):
         return json_obj
 
 
-YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
+YAML_PARSER_OUTPUT_TYPE = Output[Dict[str, Any]]
 
 
 class YAMLParser(Component):

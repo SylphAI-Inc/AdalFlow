@@ -174,7 +174,8 @@ class Generator(Component):
         logger.info(f"prompt_kwargs: {prompt_kwargs}")
         logger.info(f"model_kwargs: {model_kwargs}")
 
-        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
