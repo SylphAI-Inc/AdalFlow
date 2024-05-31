@@ -41,7 +41,8 @@ Install by ``pip``:
 
 .. code-block:: bash
 
-    pip install sphinx sphinx-rtd-theme
+    cd docs
+    pip install -r requirements.txt 
 
 Install by ``poetry`` along with all other dependencies for LightRAG:
 
@@ -63,7 +64,7 @@ This file (``docs/source/conf.py``) contains configurations used by Sphinx, incl
 
 **Source Code Doc-string** 
 
-Follow `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ to update your source code docstrings. Limit lines to 80 characters for better readability in various environments. 
+Follow `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ to update your source code docstrings. Limit lines to **80** characters for better readability in various environments. 
 
 **RST Files**: Directly edit ``.rst`` files for broader changes or new sections. Use the ``.. toctree::`` directive to link documents.
 
