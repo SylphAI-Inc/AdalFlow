@@ -60,6 +60,7 @@ class Generator(Component):
             template=template,
             preset_prompt_kwargs=preset_prompt_kwargs,
         )
+        self.preset_prompt_kwargs = preset_prompt_kwargs
         # add trainable_params to generator
         prompt_variables = self.system_prompt.get_prompt_variables()
         self._trainable_params: List[str] = []
@@ -69,7 +70,8 @@ class Generator(Component):
                     f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
                 )
             # Create a Parameter object and assign it as an attribute with the same name as the value of param
-            setattr(self, param, Parameter(data=None))
+            default_value = self.preset_prompt_kwargs.get(param, None)
+            setattr(self, param, Parameter(data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
 
@@ -112,9 +114,7 @@ class Generator(Component):
             response = self.output_processors(response)
         return response
 
-    def _pre_call(
-        self, input: str, prompt_kwargs: Dict, model_kwargs: Dict
-    ) -> Dict[str, Any]:
+    def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # step 1: render the system prompt
         system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
@@ -135,9 +135,6 @@ class Generator(Component):
 
     def call(
         self,
-        input: Optional[
-            str
-        ] = None,  # TODO: delete this field and use prompt_kwargs as input
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
@@ -152,7 +149,7 @@ class Generator(Component):
             prompt_kwargs.update(trained_prmpt_kwargs)
             print(f"prompt_kwargs: {prompt_kwargs}")
 
-        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
@@ -162,14 +159,13 @@ class Generator(Component):
 
     async def acall(
         self,
-        input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
         Note: watch out for the rate limit and the timeout.
         """
-        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
         )

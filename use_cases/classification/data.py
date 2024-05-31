@@ -141,7 +141,7 @@ def prepare_datasets(path: str = "data"):
     len_train_dataset = len(org_train_dataset)
 
     org_test_dataset = dataset["test"]
-    eval_size = 4 * num_classes
+    eval_size = 6 * num_classes
 
     class_sampler = ClassSampler(
         org_train_dataset.select(
@@ -211,7 +211,7 @@ def prepare_datasets(path: str = "data"):
     )
 
 
-def load_datasets(path: str = "data"):
+def load_datasets(path: str = "./data"):
     train_dataset: HFDataset = load_from_disk(dataset_path=f"{path}/train")
     eval_dataset = load(f"{path}/eval")[1]
     test_dataset = load(f"{path}/test")[1]

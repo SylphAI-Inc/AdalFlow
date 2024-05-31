@@ -76,6 +76,10 @@ class LLMOptimizer(Optimizer):
             template=LLM_OPTIMIZER_TEMPLATE,
         )
         self.instruction_history: List[Instruction] = []
+        if self.instruction_parameter.data is not None:
+            self.instruction_history.append(
+                Instruction(text=self.instruction_parameter.data, score="Unknown")
+            )
         self.proposed: str = None
         self.current: str = None
 

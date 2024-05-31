@@ -368,8 +368,25 @@ class TrecTrainer(Orchestrator):
 
         top_5_instructions = []
         self.task.train()
+        best_score: float = 0.0
         for i, train_batch in enumerate(self.data_loader):
-            pass
+            acc, f1 = self.batch_eval(train_batch)
+            score = (acc + f1) / 2.0
+            print(f"step: {i}")
+            print(f"score: {score}")
+            self.instruction_optimier.propose()
+            if score > best_score:
+                best_score = score
+                self.instruction_optimier.update_parameter(score)
+                print(f"best_score: {best_score}")
+            else:
+                self.instruction_optimier.reset_parameter()
+                print(f"reset_parameter")
+        # test the best instruction
+        acc, macro_f1, weights_per_class = self.test()
+        print(
+            f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
+        )
 
     def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
         r"""
@@ -470,10 +487,8 @@ if __name__ == "__main__":
     import sys
 
     # Configure logging to output to standard output (console)
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    # Example of setting logging to debug level
+    logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
 
     train_dataset, eval_dataset, test_dataset = load_datasets()
     # TODO: ensure each time the selected eval and test dataset and train dataset are the same
@@ -488,6 +503,7 @@ if __name__ == "__main__":
         batch_size=batch_size,
     )
     logger.info(f"trainer: {trainer}")
+    trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
     # trainer.eval_zero_shot()
     # trainer.eval_few_shot(shots=num_shots, runs=5)
