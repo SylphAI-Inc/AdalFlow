@@ -66,7 +66,7 @@ exclude_patterns = ["tests", "test_*"]
 html_theme = "pydata_sphinx_theme"
 
 
-html_logo = "../../images/sylphAI-logo.jpg"
+html_logo = "../../images/LightRAG-logo-doc.jpeg"
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
