@@ -1,0 +1,283 @@
+{
+    "optimizer": "BootstrapFewShot",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 412,
+                "data": {
+                    "text": "What is SAP ?",
+                    "coarse_label": 0,
+                    "fine_label": 1
+                }
+            },
+            {
+                "index": 562,
+                "data": {
+                    "text": "What significant battle was fought in Belgium in 1815 ?",
+                    "coarse_label": 1,
+                    "fine_label": 8
+                }
+            },
+            {
+                "index": 234,
+                "data": {
+                    "text": "What are equity securities ?",
+                    "coarse_label": 2,
+                    "fine_label": 24
+                }
+            },
+            {
+                "index": 14,
+                "data": {
+                    "text": "Who won the rugby world cup in ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 508,
+                "data": {
+                    "text": "What country has the most coastline ?",
+                    "coarse_label": 4,
+                    "fine_label": 33
+                }
+            },
+            {
+                "index": 449,
+                "data": {
+                    "text": "What are the dimensions of an ice hockey goal ?",
+                    "coarse_label": 5,
+                    "fine_label": 40
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 103,
+                "data": {
+                    "text": "What is the acronym for the National Bureau of Investigation ?",
+                    "coarse_label": 0,
+                    "fine_label": 0
+                }
+            },
+            {
+                "index": 267,
+                "data": {
+                    "text": "What medium is Stuart Hamblen the first singing cowboy in ?",
+                    "coarse_label": 1,
+                    "fine_label": 5
+                }
+            },
+            {
+                "index": 254,
+                "data": {
+                    "text": "What is the claim to fame of Agra , India ?",
+                    "coarse_label": 2,
+                    "fine_label": 27
+                }
+            },
+            {
+                "index": 235,
+                "data": {
+                    "text": "Which of the Seven Dwarfs comes first alphabetically ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 263,
+                "data": {
+                    "text": "What continent 's name appears on the upper left corner of a Budweiser label ?",
+                    "coarse_label": 4,
+                    "fine_label": 35
+                }
+            },
+            {
+                "index": 425,
+                "data": {
+                    "text": "How many teats does a female goat sport ?",
+                    "coarse_label": 5,
+                    "fine_label": 38
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 525,
+                "data": {
+                    "text": "What does the acronym CPR mean ?",
+                    "coarse_label": 0,
+                    "fine_label": 1
+                }
+            },
+            {
+                "index": 228,
+                "data": {
+                    "text": "What common livestock have the greatest variety of breeds ?",
+                    "coarse_label": 1,
+                    "fine_label": 2
+                }
+            },
+            {
+                "index": 88,
+                "data": {
+                    "text": "How do I get another city 's newspaper ?",
+                    "coarse_label": 2,
+                    "fine_label": 26
+                }
+            },
+            {
+                "index": 51,
+                "data": {
+                    "text": "What cheery fellow got the ZIP code 9971 from the U.S. Postal Service in 1963 ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 373,
+                "data": {
+                    "text": "What 's the capital of Taiwan ?",
+                    "coarse_label": 4,
+                    "fine_label": 32
+                }
+            },
+            {
+                "index": 70,
+                "data": {
+                    "text": "Approximately how much does a teaspoon of matter weigh in a black hole ?",
+                    "coarse_label": 5,
+                    "fine_label": 49
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 128,
+                "data": {
+                    "text": "What is the correct way to abbreviate cc. at the bottom of a business letter ?",
+                    "coarse_label": 0,
+                    "fine_label": 0
+                }
+            },
+            {
+                "index": 309,
+                "data": {
+                    "text": "What was the killer whale who died at Sea World of a fungal infection named ?",
+                    "coarse_label": 1,
+                    "fine_label": 2
+                }
+            },
+            {
+                "index": 549,
+                "data": {
+                    "text": "What is the English meaning of caliente ?",
+                    "coarse_label": 2,
+                    "fine_label": 24
+                }
+            },
+            {
+                "index": 323,
+                "data": {
+                    "text": "Who asked you to do the Loco-Motion with her in 1962 ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 49,
+                "data": {
+                    "text": "Where can I get a complete listing of showtimes in my area ?",
+                    "coarse_label": 4,
+                    "fine_label": 35
+                }
+            },
+            {
+                "index": 64,
+                "data": {
+                    "text": "How many counties are in Indiana ?",
+                    "coarse_label": 5,
+                    "fine_label": 38
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 1.0,
+        "macro_f1": 1.0,
+        "examples": [
+            {
+                "index": 92,
+                "data": {
+                    "text": "What is the abbreviation for Original Equipment Manufacturer ?",
+                    "coarse_label": 0,
+                    "fine_label": 0
+                }
+            },
+            {
+                "index": 23,
+                "data": {
+                    "text": "What beer 's name is translated as `` lion brew '' ?",
+                    "coarse_label": 1,
+                    "fine_label": 9
+                }
+            },
+            {
+                "index": 312,
+                "data": {
+                    "text": "What are binomial coefficients ?",
+                    "coarse_label": 2,
+                    "fine_label": 24
+                }
+            },
+            {
+                "index": 522,
+                "data": {
+                    "text": "Who is the actress Bette Davis once said she wished she looked like ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 508,
+                "data": {
+                    "text": "What country has the most coastline ?",
+                    "coarse_label": 4,
+                    "fine_label": 33
+                }
+            },
+            {
+                "index": 139,
+                "data": {
+                    "text": "What is the protection rate of using condoms ?",
+                    "coarse_label": 5,
+                    "fine_label": 43
+                }
+            }
+        ]
+    },
+    "max_acc": 1.0,
+    "min_acc": 1.0,
+    "mean_acc": 1.0,
+    "std_acc": 0.0,
+    "max_macro_f1": 1.0,
+    "min_macro_f1": 1.0,
+    "mean_macro_f1": 1.0,
+    "std_macro_f1": 0.0
+}

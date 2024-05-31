@@ -1,0 +1,2289 @@
+DatasetDict({
+    train: Dataset({
+        features: ['text', 'coarse_label', 'fine_label'],
+        num_rows: 5452
+    })
+    test: Dataset({
+        features: ['text', 'coarse_label', 'fine_label'],
+        num_rows: 500
+    })
+})
+Train example: {'text': 'How did serfdom develop in and then leave Russia ?', 'coarse_label': 2, 'fine_label': 26}
+Test example: {'text': 'How far is it from Denver to Aspen ?', 'coarse_label': 5, 'fine_label': 40}
+INFO:core.prompt_builder:Prompt has variables: ['classes']
+INFO:core.prompt_builder:Prompt has variables: ['schema', 'example']
+DEBUG:use_cases.classification.task:output_str: Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+DEBUG:httpx:load_ssl_context verify=True cert=None trust_env=True http2=False
+DEBUG:httpx:load_verify_locations cafile='/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/certifi/cacert.pem'
+INFO:core.prompt_builder:Prompt has variables: ['output_format_str', 'input_label', 'examples_str', 'task_desc_str', 'input']
+data: None, requires_opt: True
+Registered parameter examples_str with value Parameter: None
+INFO:core.prompt_builder:Prompt has variables: ['description', 'output', 'label', 'input']
+module: Prompt(
+  template: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+  Format: class_index. class_name, class_description
+  {% for class in classes %}
+  {{loop.index-1}}. {{class.label}}, {{class.desc}}
+  {% endfor %}
+  , preset_prompt_kwargs: {'classes': [{'label': 'ABBR', 'desc': 'Abbreviation'}, {'label': 'ENTY', 'desc': 'Entity'}, {'label': 'DESC', 'desc': 'Description and abstract concept'}, {'label': 'HUM', 'desc': 'Human being'}, {'label': 'LOC', 'desc': 'Location'}, {'label': 'NUM', 'desc': 'Numeric value'}]}, prompt_variables: ['classes']
+)    
+module: Generator(
+  model_kwargs={'model': 'llama3-8b-8192', 'temperature': 0.0, 'top_p': 1, 'frequency_penalty': 0, 'presence_penalty': 0, 'n': 1}, model_type=ModelType.LLM
+  (model_client): GroqAPIClient()
+  (system_prompt): Prompt(
+    template: {# task desc #}
+    {% if task_desc_str %}
+    {{task_desc_str}}
+    {% endif %}
+    {%if output_format_str %}
+    <OUTPUT_FORMAT>
+    {{output_format_str}}
+    </OUTPUT_FORMAT>
+    {% endif %}
+    {# example #}
+    {% if examples_str %}
+    <EXAMPLES>
+    {#{% for example in examples_str %}#}
+    {{examples_str}}
+    {#{% endfor %}#}
+    </EXAMPLES>
+    {% endif %}
+    {{input_label}}: {{input}}
+    Your output:
+    , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['output_format_str', 'input_label', 'examples_str', 'task_desc_str', 'input']
+  )
+  (output_processors): Sequential(
+    (0): YAMLOutputParser(
+      data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+      (yaml_output_format_prompt): Prompt(
+        template: Your output should be formatted as a standard YAML instance with the following schema:
+        ```
+        {{schema}}
+        ```
+        {% if example %}
+        Here is an example:
+        ```
+        {{example}}
+        ```
+        {% endif %}
+        
+        -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+        -Follow the YAML formatting conventions with an indent of 2 spaces. 
+        -Quote the string values properly.
+        , prompt_variables: ['schema', 'example']
+      )
+      (output_processors): YAMLParser()
+    )
+    (1): <lambda>Component()
+  )
+)    
+module: GroqAPIClient()    
+module: Prompt(
+  template: {# task desc #}
+  {% if task_desc_str %}
+  {{task_desc_str}}
+  {% endif %}
+  {%if output_format_str %}
+  <OUTPUT_FORMAT>
+  {{output_format_str}}
+  </OUTPUT_FORMAT>
+  {% endif %}
+  {# example #}
+  {% if examples_str %}
+  <EXAMPLES>
+  {#{% for example in examples_str %}#}
+  {{examples_str}}
+  {#{% endfor %}#}
+  </EXAMPLES>
+  {% endif %}
+  {{input_label}}: {{input}}
+  Your output:
+  , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['output_format_str', 'input_label', 'examples_str', 'task_desc_str', 'input']
+)    
+module: Sequential(
+  (0): YAMLOutputParser(
+    data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+    (yaml_output_format_prompt): Prompt(
+      template: Your output should be formatted as a standard YAML instance with the following schema:
+      ```
+      {{schema}}
+      ```
+      {% if example %}
+      Here is an example:
+      ```
+      {{example}}
+      ```
+      {% endif %}
+      
+      -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+      -Follow the YAML formatting conventions with an indent of 2 spaces. 
+      -Quote the string values properly.
+      , prompt_variables: ['schema', 'example']
+    )
+    (output_processors): YAMLParser()
+  )
+  (1): <lambda>Component()
+)    
+module: YAMLOutputParser(
+  data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+  (yaml_output_format_prompt): Prompt(
+    template: Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    {{schema}}
+    ```
+    {% if example %}
+    Here is an example:
+    ```
+    {{example}}
+    ```
+    {% endif %}
+    
+    -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+    -Follow the YAML formatting conventions with an indent of 2 spaces. 
+    -Quote the string values properly.
+    , prompt_variables: ['schema', 'example']
+  )
+  (output_processors): YAMLParser()
+)    
+module: Prompt(
+  template: Your output should be formatted as a standard YAML instance with the following schema:
+  ```
+  {{schema}}
+  ```
+  {% if example %}
+  Here is an example:
+  ```
+  {{example}}
+  ```
+  {% endif %}
+  
+  -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+  -Follow the YAML formatting conventions with an indent of 2 spaces. 
+  -Quote the string values properly.
+  , prompt_variables: ['schema', 'example']
+)    
+module: YAMLParser()    
+module: <lambda>Component()    
+params: {'generator.examples_str': Parameter: None}
+few_shot_optimizer: <optimizer.optimizer.BootstrapFewShot object at 0x17fb73550>
+few_shot_state_dict: None
+step: 0
+train_batch: {'text': ['What is the student population at the University of Massachusetts in Amherst ?', 'The second most popular sport worldwide is what ?', 'What is a word whose letters can be rearranged to form a different word ?', 'What was the target rate for M3 growth in 1992 ?', 'Who invented the Wonderbra ?', "What country 's northernmost city is Darwin ?"], 'coarse_label': tensor([5, 1, 1, 5, 3, 4]), 'fine_label': tensor([43, 17, 23, 45, 29, 33])}
+before random_replace: [{'text': 'What does NAFTA stand for ?', 'coarse_label': 0, 'fine_label': 1}, {'text': 'What does Knight Ridder publish ?', 'coarse_label': 1, 'fine_label': 5}, {'text': 'What is the cultural origin of the ceremony of potlatch ?', 'coarse_label': 2, 'fine_label': 25}, {'text': 'Who is the richest person in the world , without owning a business ?', 'coarse_label': 3, 'fine_label': 29}, {'text': "What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?", 'coarse_label': 4, 'fine_label': 36}, {'text': 'How many bends are there in a standard paper clip ?', 'coarse_label': 5, 'fine_label': 38}]
+after random_replace: [{'text': 'What does IQ stand for ?', 'coarse_label': 0, 'fine_label': 1}, {'text': 'What does Knight Ridder publish ?', 'coarse_label': 1, 'fine_label': 5}, {'text': 'What is the cultural origin of the ceremony of potlatch ?', 'coarse_label': 2, 'fine_label': 25}, {'text': 'Who is the richest person in the world , without owning a business ?', 'coarse_label': 3, 'fine_label': 29}, {'text': "What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?", 'coarse_label': 4, 'fine_label': 36}, {'text': 'How many bends are there in a standard paper clip ?', 'coarse_label': 5, 'fine_label': 38}]
+task_input: What is the student population at the University of Massachusetts in Amherst ?, corse_label: 5
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': 'What is the student population at the University of Massachusetts in Amherst ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is the student population at the University of Massachusetts in Amherst ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is the student population at the University of Massachusetts in Amherst ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.connection:connect_tcp.started host='api.groq.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x17fb48d90>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x17c6f1130> server_hostname='api.groq.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x17fb4a8d0>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:31 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14348'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'5m6.857s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyynmv9dfbdssan9rb5jd2b5'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Set-Cookie', b'__cf_bm=3idpEYI3g1RNJnEpuCYJPjWELdFqtqP1tL.W74bdW1Q-1716868771-1.0.1.1-47k4xL7FQTaii1Yh1iACTcO0.Q4RERDU76bGqLY_wZamexADkuxWNIdjDNI2gIvXcCKvKzZvqLcI89NBZZou0g; path=/; expires=Tue, 28-May-24 04:29:31 GMT; domain=.groq.com; HttpOnly; Secure; SameSite=None'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab551b59169651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the student population at a specific university, which is a specific piece of information that can be found in a database or a report.
+class_name: Entity
+class_index: 1
+task_input: The second most popular sport worldwide is what ?, corse_label: 1
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': 'The second most popular sport worldwide is what ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: The second most popular sport worldwide is what ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: The second most popular sport worldwide is what ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:31 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14347'), (b'x-ratelimit-remaining-tokens', b'29608'), (b'x-ratelimit-reset-requests', b'5m17.671999999s'), (b'x-ratelimit-reset-tokens', b'784ms'), (b'x-request-id', b'req_01hyynmvmhfv2b6bxx17b0p8hm'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab551d9ae89651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the second most popular sport worldwide, which is likely to be a descriptive answer.
+class_name: Description and abstract concept
+class_index: 2
+```
+task_input: What is a word whose letters can be rearranged to form a different word ?, corse_label: 1
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': 'What is a word whose letters can be rearranged to form a different word ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is a word whose letters can be rearranged to form a different word ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is a word whose letters can be rearranged to form a different word ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:32 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14346'), (b'x-ratelimit-remaining-tokens', b'29308'), (b'x-ratelimit-reset-requests', b'5m23.715999999s'), (b'x-ratelimit-reset-tokens', b'1.383s'), (b'x-request-id', b'req_01hyynmvxefz2a7zfgepvcya9y'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab551f6c439651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a word game, where the letters of a word can be rearranged to form a different word, which is a common concept in linguistics and wordplay.
+class_name: Description and abstract concept
+class_index: 2
+task_input: What was the target rate for M3 growth in 1992 ?, corse_label: 5
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': 'What was the target rate for M3 growth in 1992 ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What was the target rate for M3 growth in 1992 ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What was the target rate for M3 growth in 1992 ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:32 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14345'), (b'x-ratelimit-remaining-tokens', b'29056'), (b'x-ratelimit-reset-requests', b'5m29.582s'), (b'x-ratelimit-reset-tokens', b'1.888s'), (b'x-request-id', b'req_01hyynmwagfg3bqpnxrjzna2k2'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5521fe1e9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific target rate for M3 growth in 1992, which is a numeric value.
+class_name: NUM
+class_index: 5
+```
+task_input: Who invented the Wonderbra ?, corse_label: 3
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': 'Who invented the Wonderbra ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: Who invented the Wonderbra ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: Who invented the Wonderbra ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:32 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14344'), (b'x-ratelimit-remaining-tokens', b'28752'), (b'x-ratelimit-reset-requests', b'5m35.712999999s'), (b'x-ratelimit-reset-tokens', b'2.495s'), (b'x-request-id', b'req_01hyynmwkhfsvrpab91mrz2nm8'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5523cf7e9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question asks about the inventor of a specific product, which is a human being.
+class_name: HUM
+class_index: 3
+```
+task_input: What country 's northernmost city is Darwin ?, corse_label: 4
+types: <class 'str'>, <class 'torch.Tensor'>
+prompt_kwargs: {'input': "What country 's northernmost city is Darwin ?", 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What country 's northernmost city is Darwin ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What country 's northernmost city is Darwin ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:33 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14343'), (b'x-ratelimit-remaining-tokens', b'28480'), (b'x-ratelimit-reset-requests', b'5m41.68s'), (b'x-ratelimit-reset-tokens', b'3.04s'), (b'x-request-id', b'req_01hyynmwxkf35tvks2fvwfvanr'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5525d8d99651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the northernmost city in a country, which suggests a specific geographic location.
+class_name: Location
+class_index: 4
+responses: [1, 2, 2, 5, 3, 4], targets: [5, 1, 1, 5, 3, 4]
+num_invalid: 0
+Preds tensor: tensor([[0., 1., 0., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 0., 1., 0.]])
+Targets tensor: tensor([5, 1, 1, 5, 3, 4])
+Eval Accuracy 0 1: 0.5, F1: 0.533, score: 1.033
+best_score: 1.033
+best_parameters: OrderedDict([('generator.examples_str', Parameter: Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+)])
+data: {'text': 'How far is it from Denver to Aspen ?', 'coarse_label': 5, 'fine_label': 40}
+task_input: How far is it from Denver to Aspen ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'How far is it from Denver to Aspen ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: How far is it from Denver to Aspen ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: How far is it from Denver to Aspen ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:33 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14342'), (b'x-ratelimit-remaining-tokens', b'28211'), (b'x-ratelimit-reset-requests', b'5m47.662999999s'), (b'x-ratelimit-reset-tokens', b'3.577s'), (b'x-request-id', b'req_01hyynmx84f3fvvamss9xy5p2v'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5527ea6a9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a distance between two cities, which is a measurable value.
+class_name: "NUM"
+class_index: 5
+data: {'text': 'What county is Modesto , California in ?', 'coarse_label': 4, 'fine_label': 32}
+task_input: What county is Modesto , California in ?, corse_label: 4
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What county is Modesto , California in ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What county is Modesto , California in ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What county is Modesto , California in ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:33 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14341'), (b'x-ratelimit-remaining-tokens', b'27916'), (b'x-ratelimit-reset-requests', b'5m53.721999999s'), (b'x-ratelimit-reset-tokens', b'4.167s'), (b'x-request-id', b'req_01hyynmxgvfbnt7zkxt0k8me3f'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5529ac0e9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the location of Modesto, California.
+class_name: Location
+class_index: 4
+data: {'text': 'Who was Galileo ?', 'coarse_label': 3, 'fine_label': 31}
+task_input: Who was Galileo ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'Who was Galileo ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: Who was Galileo ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: Who was Galileo ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:34 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14340'), (b'x-ratelimit-remaining-tokens', b'27693'), (b'x-ratelimit-reset-requests', b'5m59.589s'), (b'x-ratelimit-reset-tokens', b'4.613s'), (b'x-request-id', b'req_01hyynmxxrfg39egzc10xvbq2b'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab552c3e2f9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a historical figure, Galileo, which is a human being.
+class_name: HUM
+class_index: 3
+```
+data: {'text': 'What is an atom ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is an atom ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What is an atom ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is an atom ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is an atom ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:34 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14339'), (b'x-ratelimit-remaining-tokens', b'27413'), (b'x-ratelimit-reset-requests', b'6m5.695s'), (b'x-ratelimit-reset-tokens', b'5.173s'), (b'x-request-id', b'req_01hyynmy79fp0v7mqw7rvezh4f'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab552e2fa89651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about the definition of an atom, which is a fundamental concept in physics and chemistry.
+class_name: Description and abstract concept
+class_index: 2
+```
+data: {'text': 'When did Hawaii become a state ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: When did Hawaii become a state ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'When did Hawaii become a state ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: When did Hawaii become a state ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: When did Hawaii become a state ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:34 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14338'), (b'x-ratelimit-remaining-tokens', b'27179'), (b'x-ratelimit-reset-requests', b'6m11.593s'), (b'x-ratelimit-reset-tokens', b'5.641s'), (b'x-request-id', b'req_01hyynmym2fz2sc81p588rwaw3'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5530b99e9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific event in history, which is a descriptive concept.
+class_name: DESC
+class_index: 2
+```
+data: {'text': 'How tall is the Sears Building ?', 'coarse_label': 5, 'fine_label': 40}
+task_input: How tall is the Sears Building ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'How tall is the Sears Building ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: How tall is the Sears Building ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: How tall is the Sears Building ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:35 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14337'), (b'x-ratelimit-remaining-tokens', b'26957'), (b'x-ratelimit-reset-requests', b'6m17.579s'), (b'x-ratelimit-reset-tokens', b'6.085s'), (b'x-request-id', b'req_01hyynmz17ej0v7vcrzm0mx6fw'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55334b819651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific measurement, which is typically a numeric value.
+class_name: NUM
+class_index: 5
+data: {'text': 'George Bush purchased a small interest in which baseball team ?', 'coarse_label': 3, 'fine_label': 28}
+task_input: George Bush purchased a small interest in which baseball team ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'George Bush purchased a small interest in which baseball team ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: George Bush purchased a small interest in which baseball team ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: George Bush purchased a small interest in which baseball team ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:35 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14336'), (b'x-ratelimit-remaining-tokens', b'26675'), (b'x-ratelimit-reset-requests', b'6m23.705999999s'), (b'x-ratelimit-reset-tokens', b'6.649s'), (b'x-request-id', b'req_01hyynmzafebktpvjn0bs3tdr2'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55352d229651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific transaction involving a public figure, which suggests that the entity being referred to is a sports team.
+class_name: Entity
+class_index: 1
+data: {'text': "What is Australia 's national flower ?", 'coarse_label': 1, 'fine_label': 14}
+task_input: What is Australia 's national flower ?, corse_label: 1
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': "What is Australia 's national flower ?", 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is Australia 's national flower ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is Australia 's national flower ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:35 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14335'), (b'x-ratelimit-remaining-tokens', b'26360'), (b'x-ratelimit-reset-requests', b'6m29.742s'), (b'x-ratelimit-reset-tokens', b'7.28s'), (b'x-request-id', b'req_01hyynmzjjebkvrky0zm73p51v'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5536ce939651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific characteristic of a country, which is typically represented by a symbol or emblem.
+class_name: "DESC"
+class_index: 2
+```
+data: {'text': 'Why does the moon turn orange ?', 'coarse_label': 2, 'fine_label': 27}
+task_input: Why does the moon turn orange ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'Why does the moon turn orange ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: Why does the moon turn orange ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: Why does the moon turn orange ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:35 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14334'), (b'x-ratelimit-remaining-tokens', b'26043'), (b'x-ratelimit-reset-requests', b'6m35.754s'), (b'x-ratelimit-reset-tokens', b'7.913s'), (b'x-request-id', b'req_01hyynmzt9e0wrdm9zw5nztwv6'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55385fde9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the moon's color, which is a physical phenomenon, and the answer is likely to be a descriptive explanation.
+class_name: Description and abstract concept
+class_index: 2
+data: {'text': 'What is autism ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is autism ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What is autism ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is autism ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is autism ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:36 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14333'), (b'x-ratelimit-remaining-tokens', b'25725'), (b'x-ratelimit-reset-requests', b'6m41.749s'), (b'x-ratelimit-reset-tokens', b'8.55s'), (b'x-request-id', b'req_01hyynn024frxtyehgza5zv9ga'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5539e9129651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific condition or disorder, which is typically described in a medical or psychological context.
+class_name: Description and abstract concept
+class_index: 2
+```
+data: {'text': 'What city had a world fair in 1900 ?', 'coarse_label': 4, 'fine_label': 32}
+task_input: What city had a world fair in 1900 ?, corse_label: 4
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What city had a world fair in 1900 ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What city had a world fair in 1900 ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What city had a world fair in 1900 ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:36 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14332'), (b'x-ratelimit-remaining-tokens', b'25416'), (b'x-ratelimit-reset-requests', b'6m47.742s'), (b'x-ratelimit-reset-tokens', b'9.168s'), (b'x-request-id', b'req_01hyynn0a7ekf98msfppd0eys5'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab553b8a479651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific event in the past, which is likely to be related to a city or location.
+class_name: Location
+class_index: 4
+data: {'text': "What person 's head is on a dime ?", 'coarse_label': 3, 'fine_label': 29}
+task_input: What person 's head is on a dime ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': "What person 's head is on a dime ?", 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What person 's head is on a dime ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What person 's head is on a dime ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:36 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14331'), (b'x-ratelimit-remaining-tokens', b'25129'), (b'x-ratelimit-reset-requests', b'6m53.69s'), (b'x-ratelimit-reset-tokens', b'9.741s'), (b'x-request-id', b'req_01hyynn0kzfbdt3bmatmsryv93'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab553d7ba59651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific person, and the answer is a human being.
+class_name: HUM
+class_index: 3
+```
+data: {'text': 'What is the average weight of a Yellow Labrador ?', 'coarse_label': 5, 'fine_label': 49}
+task_input: What is the average weight of a Yellow Labrador ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What is the average weight of a Yellow Labrador ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is the average weight of a Yellow Labrador ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is the average weight of a Yellow Labrador ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:37 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14330'), (b'x-ratelimit-remaining-tokens', b'24831'), (b'x-ratelimit-reset-requests', b'6m59.722999999s'), (b'x-ratelimit-reset-tokens', b'10.338s'), (b'x-request-id', b'req_01hyynn0wnf3fryd6kye30xcef'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab553f3d329651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific value related to a breed of dog, which is a numeric value.
+class_name: NUM
+class_index: 5
+```
+data: {'text': 'Who was the first man to fly across the Pacific Ocean ?', 'coarse_label': 3, 'fine_label': 29}
+task_input: Who was the first man to fly across the Pacific Ocean ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'Who was the first man to fly across the Pacific Ocean ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: Who was the first man to fly across the Pacific Ocean ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: Who was the first man to fly across the Pacific Ocean ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:37 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14329'), (b'x-ratelimit-remaining-tokens', b'24532'), (b'x-ratelimit-reset-requests', b'7m5.719999999s'), (b'x-ratelimit-reset-tokens', b'10.936s'), (b'x-request-id', b'req_01hyynn15eebzv13vjd0cbpzex'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5540fe889651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a historical event and the person who achieved it, which is a characteristic of a human being.
+class_name: HUM
+class_index: 3
+```
+data: {'text': 'When did Idaho become a state ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: When did Idaho become a state ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'When did Idaho become a state ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: When did Idaho become a state ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: When did Idaho become a state ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:37 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14328'), (b'x-ratelimit-remaining-tokens', b'24207'), (b'x-ratelimit-reset-requests', b'7m11.757s'), (b'x-ratelimit-reset-tokens', b'11.585s'), (b'x-request-id', b'req_01hyynn1d2ej0vfb6mdm6bz36f'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55428fcd9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific event in the past, which is a characteristic of an entity.
+class_name: ENTY
+class_index: 1
+data: {'text': 'What is the life expectancy for crickets ?', 'coarse_label': 5, 'fine_label': 43}
+task_input: What is the life expectancy for crickets ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What is the life expectancy for crickets ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is the life expectancy for crickets ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is the life expectancy for crickets ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:39 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14327'), (b'x-ratelimit-remaining-tokens', b'23890'), (b'x-ratelimit-reset-requests', b'7m17.764999999s'), (b'x-ratelimit-reset-tokens', b'12.219s'), (b'x-request-id', b'req_01hyynn1mfebm9zst040ka3vm2'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5543f8da9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the life expectancy of crickets, which is a specific piece of information that can be found in a scientific or biological context.
+class_name: Description and abstract concept
+class_index: 2
+```
+data: {'text': 'What metal has the highest melting point ?', 'coarse_label': 1, 'fine_label': 18}
+task_input: What metal has the highest melting point ?, corse_label: 1
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What metal has the highest melting point ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What metal has the highest melting point ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What metal has the highest melting point ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:39 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14326'), (b'x-ratelimit-remaining-tokens', b'24251'), (b'x-ratelimit-reset-requests', b'7m22.375999999s'), (b'x-ratelimit-reset-tokens', b'11.497s'), (b'x-request-id', b'req_01hyynn377ekfs3r8bsc74mf2r'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab554e29f89651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about the physical properties of a metal, which is a numeric value.
+class_name: NUM
+class_index: 5
+```
+data: {'text': 'Who developed the vaccination against polio ?', 'coarse_label': 3, 'fine_label': 29}
+task_input: Who developed the vaccination against polio ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'Who developed the vaccination against polio ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: Who developed the vaccination against polio ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: Who developed the vaccination against polio ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:39 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14325'), (b'x-ratelimit-remaining-tokens', b'24017'), (b'x-ratelimit-reset-requests', b'7m29.597s'), (b'x-ratelimit-reset-tokens', b'11.965s'), (b'x-request-id', b'req_01hyynn3kvfv2s405gjv21qt0z'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab5550abd99651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a person who developed a vaccination, which is a human being.
+class_name: HUM
+class_index: 3
+```
+data: {'text': 'What is epilepsy ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is epilepsy ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What is epilepsy ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What is epilepsy ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What is epilepsy ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:40 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14324'), (b'x-ratelimit-remaining-tokens', b'23735'), (b'x-ratelimit-reset-requests', b'7m35.694s'), (b'x-ratelimit-reset-tokens', b'12.53s'), (b'x-request-id', b'req_01hyynn3xefsw9rarhy6hpngq5'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55529dae9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a medical condition, which is a description and abstract concept.
+class_name: DESC
+class_index: 2
+```
+data: {'text': 'What year did the Titanic sink ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: What year did the Titanic sink ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What year did the Titanic sink ?', 'examples_str': "Question: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n"}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+<EXAMPLES>
+Question: What does NAFTA stand for ?
+class_name: Abbreviation 
+class_index: 0
+--------
+
+Question: What does Knight Ridder publish ?
+class_name: Entity 
+class_index: 1
+--------
+
+Question: What is the cultural origin of the ceremony of potlatch ?
+class_name: Description and abstract concept 
+class_index: 2
+--------
+
+Question: Who is the richest person in the world , without owning a business ?
+class_name: Human being 
+class_index: 3
+--------
+
+Question: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?
+class_name: Location 
+class_index: 4
+--------
+
+Question: How many bends are there in a standard paper clip ?
+class_name: Numeric value 
+class_index: 5
+--------
+
+</EXAMPLES>
+Question: What year did the Titanic sink ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\n<EXAMPLES>\nQuestion: What does NAFTA stand for ?\nclass_name: Abbreviation \nclass_index: 0\n--------\n\nQuestion: What does Knight Ridder publish ?\nclass_name: Entity \nclass_index: 1\n--------\n\nQuestion: What is the cultural origin of the ceremony of potlatch ?\nclass_name: Description and abstract concept \nclass_index: 2\n--------\n\nQuestion: Who is the richest person in the world , without owning a business ?\nclass_name: Human being \nclass_index: 3\n--------\n\nQuestion: What U.S. state boasts Stone Mountain , the world 's largest mass of exposed granite ?\nclass_name: Location \nclass_index: 4\n--------\n\nQuestion: How many bends are there in a standard paper clip ?\nclass_name: Numeric value \nclass_index: 5\n--------\n\n</EXAMPLES>\nQuestion: What year did the Titanic sink ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 03:59:40 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14323'), (b'x-ratelimit-remaining-tokens', b'23421'), (b'x-ratelimit-reset-requests', b'7m41.768999999s'), (b'x-ratelimit-reset-tokens', b'13.158s'), (b'x-request-id', b'req_01hyynn44pfbdrbz3rshfm9vmp'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ab55540edf9651-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific year, which is a numeric value.
+class_name: NUM
+class_index: 5
+responses: [5, 4, 3, 2, 2, 5, 1, 2, 2, 2, 4, 3, 5, 3, 1, 2, 5, 3, 2, 5], targets: [5, 4, 3, 2, 5, 5, 3, 1, 2, 2, 4, 3, 5, 3, 5, 5, 1, 3, 2, 5]
+num_invalid: 0
+Preds tensor: tensor([[0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 1., 0., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 1., 0., 0., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.]])
+Targets tensor: tensor([5, 4, 3, 2, 5, 5, 3, 1, 2, 2, 4, 3, 5, 3, 5, 5, 1, 3, 2, 5])
+Eval Accuracy: 0.7, F1: 0.657

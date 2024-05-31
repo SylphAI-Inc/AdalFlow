@@ -1,0 +1,225 @@
+train: 600
+eval: 24
+test: 24
+INFO:core.prompt_builder:Prompt has variables: ['classes']
+INFO:core.prompt_builder:Prompt has variables: ['schema', 'example']
+DEBUG:use_cases.classification.task:output_str: Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+DEBUG:httpx:load_ssl_context verify=True cert=None trust_env=True http2=False
+DEBUG:httpx:load_verify_locations cafile='/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/certifi/cacert.pem'
+INFO:core.prompt_builder:Prompt has variables: ['output_format_str', 'examples_str', 'task_desc_str', 'input', 'input_label']
+data: None, requires_opt: True
+Registered parameter examples_str with value Parameter: None
+INFO:core.prompt_builder:Prompt has variables: ['label', 'description', 'output', 'input']
+module: Prompt(
+  template: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+  Format: class_index. class_name, class_description
+  {% for class in classes %}
+  {{loop.index-1}}. {{class.label}}, {{class.desc}}
+  {% endfor %}
+  , preset_prompt_kwargs: {'classes': [{'label': 'ABBR', 'desc': 'Abbreviation'}, {'label': 'ENTY', 'desc': 'Entity'}, {'label': 'DESC', 'desc': 'Description and abstract concept'}, {'label': 'HUM', 'desc': 'Human being'}, {'label': 'LOC', 'desc': 'Location'}, {'label': 'NUM', 'desc': 'Numeric value'}]}, prompt_variables: ['classes']
+)    
+module: Generator(
+  model_kwargs={'model': 'llama3-8b-8192', 'temperature': 0.0, 'top_p': 1, 'frequency_penalty': 0, 'presence_penalty': 0, 'n': 1}, model_type=ModelType.LLM
+  (model_client): GroqAPIClient()
+  (system_prompt): Prompt(
+    template: {# task desc #}
+    {% if task_desc_str %}
+    {{task_desc_str}}
+    {% endif %}
+    {%if output_format_str %}
+    <OUTPUT_FORMAT>
+    {{output_format_str}}
+    </OUTPUT_FORMAT>
+    {% endif %}
+    {# example #}
+    {% if examples_str %}
+    <EXAMPLES>
+    {#{% for example in examples_str %}#}
+    {{examples_str}}
+    {#{% endfor %}#}
+    </EXAMPLES>
+    {% endif %}
+    {{input_label}}: {{input}}
+    Your output:
+    , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['output_format_str', 'examples_str', 'task_desc_str', 'input', 'input_label']
+  )
+  (output_processors): Sequential(
+    (0): YAMLOutputParser(
+      data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+      (yaml_output_format_prompt): Prompt(
+        template: Your output should be formatted as a standard YAML instance with the following schema:
+        ```
+        {{schema}}
+        ```
+        {% if example %}
+        Here is an example:
+        ```
+        {{example}}
+        ```
+        {% endif %}
+        
+        -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+        -Follow the YAML formatting conventions with an indent of 2 spaces. 
+        -Quote the string values properly.
+        , prompt_variables: ['schema', 'example']
+      )
+      (output_processors): YAMLParser()
+    )
+    (1): <lambda>Component()
+  )
+)    
+module: GroqAPIClient()    
+module: Prompt(
+  template: {# task desc #}
+  {% if task_desc_str %}
+  {{task_desc_str}}
+  {% endif %}
+  {%if output_format_str %}
+  <OUTPUT_FORMAT>
+  {{output_format_str}}
+  </OUTPUT_FORMAT>
+  {% endif %}
+  {# example #}
+  {% if examples_str %}
+  <EXAMPLES>
+  {#{% for example in examples_str %}#}
+  {{examples_str}}
+  {#{% endfor %}#}
+  </EXAMPLES>
+  {% endif %}
+  {{input_label}}: {{input}}
+  Your output:
+  , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['output_format_str', 'examples_str', 'task_desc_str', 'input', 'input_label']
+)    
+module: Sequential(
+  (0): YAMLOutputParser(
+    data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+    (yaml_output_format_prompt): Prompt(
+      template: Your output should be formatted as a standard YAML instance with the following schema:
+      ```
+      {{schema}}
+      ```
+      {% if example %}
+      Here is an example:
+      ```
+      {{example}}
+      ```
+      {% endif %}
+      
+      -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+      -Follow the YAML formatting conventions with an indent of 2 spaces. 
+      -Quote the string values properly.
+      , prompt_variables: ['schema', 'example']
+    )
+    (output_processors): YAMLParser()
+  )
+  (1): <lambda>Component()
+)    
+module: YAMLOutputParser(
+  data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+  (yaml_output_format_prompt): Prompt(
+    template: Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    {{schema}}
+    ```
+    {% if example %}
+    Here is an example:
+    ```
+    {{example}}
+    ```
+    {% endif %}
+    
+    -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+    -Follow the YAML formatting conventions with an indent of 2 spaces. 
+    -Quote the string values properly.
+    , prompt_variables: ['schema', 'example']
+  )
+  (output_processors): YAMLParser()
+)    
+module: Prompt(
+  template: Your output should be formatted as a standard YAML instance with the following schema:
+  ```
+  {{schema}}
+  ```
+  {% if example %}
+  Here is an example:
+  ```
+  {{example}}
+  ```
+  {% endif %}
+  
+  -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+  -Follow the YAML formatting conventions with an indent of 2 spaces. 
+  -Quote the string values properly.
+  , prompt_variables: ['schema', 'example']
+)    
+module: YAMLParser()    
+module: <lambda>Component()    
+params: {'generator.examples_str': Parameter: None}
+few_shot_optimizer: <optim.optimizer.BootstrapFewShot object at 0x14855f690>
+few_shot_state_dict: None
+data: {'text': 'What does pH stand for ?', 'coarse_label': 0, 'fine_label': 1}
+task_input: What does pH stand for ?, corse_label: 0
+types: <class 'str'>, <class 'int'>
+prompt_kwargs: {'input': 'What does pH stand for ?', 'examples_str': None}
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What does pH stand for ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What does pH stand for ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.connection:connect_tcp.started host='api.groq.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1486f4b10>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x1486ce840> server_hostname='api.groq.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1486f7ed0>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 400, b'Bad Request', [(b'Date', b'Wed, 29 May 2024 23:43:35 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'67'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'12832'), (b'x-ratelimit-remaining-tokens', b'29776'), (b'x-ratelimit-reset-requests', b'2h36m42.689999999s'), (b'x-ratelimit-reset-tokens', b'448ms'), (b'x-request-id', b'req_01hz3bsnpzevys9cge8x5y9g0n'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Set-Cookie', b'__cf_bm=wtA32xXkIG9e6woeWP1ZVmclMoInuVPjFFYxr0YYtTc-1717026215-1.0.1.1-mhq2gX2ykeETG8wVepdtKb_SqJ084XfpW35qtqOOww.tFi97UUNbJSCufJ_mS_36lSurQ9tBqdDiZKHpYwhS2g; path=/; expires=Thu, 30-May-24 00:13:35 GMT; domain=.groq.com; HttpOnly; Secure; SameSite=None'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88ba58f7a83267d9-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 400 Bad Request"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "400 Bad Request"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '400 Bad Request' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400
+DEBUG:groq._base_client:Not retrying
+DEBUG:groq._base_client:Re-raising status error

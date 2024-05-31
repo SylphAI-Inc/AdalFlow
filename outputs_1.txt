@@ -1,0 +1,1766 @@
+DatasetDict({
+    train: Dataset({
+        features: ['text', 'coarse_label', 'fine_label'],
+        num_rows: 5452
+    })
+    test: Dataset({
+        features: ['text', 'coarse_label', 'fine_label'],
+        num_rows: 500
+    })
+})
+Train example: {'text': 'How did serfdom develop in and then leave Russia ?', 'coarse_label': 2, 'fine_label': 26}
+Test example: {'text': 'How far is it from Denver to Aspen ?', 'coarse_label': 5, 'fine_label': 40}
+INFO:core.prompt_builder:Prompt has variables: ['classes']
+INFO:core.prompt_builder:Prompt has variables: ['schema', 'example']
+DEBUG:use_cases.classification.task:output_str: Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+DEBUG:httpx:load_ssl_context verify=True cert=None trust_env=True http2=False
+DEBUG:httpx:load_verify_locations cafile='/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/certifi/cacert.pem'
+INFO:core.prompt_builder:Prompt has variables: ['input_label', 'input', 'task_desc_str', 'output_format_str', 'examples_str']
+data: None, requires_opt: True
+Registered parameter examples_str with value Parameter: None
+INFO:core.prompt_builder:Prompt has variables: ['description', 'output', 'input', 'label']
+module: Prompt(
+  template: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+  Format: class_index. class_name, class_description
+  {% for class in classes %}
+  {{loop.index-1}}. {{class.label}}, {{class.desc}}
+  {% endfor %}
+  , preset_prompt_kwargs: {'classes': [{'label': 'ABBR', 'desc': 'Abbreviation'}, {'label': 'ENTY', 'desc': 'Entity'}, {'label': 'DESC', 'desc': 'Description and abstract concept'}, {'label': 'HUM', 'desc': 'Human being'}, {'label': 'LOC', 'desc': 'Location'}, {'label': 'NUM', 'desc': 'Numeric value'}]}, prompt_variables: ['classes']
+)    
+module: Generator(
+  model_kwargs={'model': 'llama3-8b-8192', 'temperature': 0.0, 'top_p': 1, 'frequency_penalty': 0, 'presence_penalty': 0, 'n': 1}, model_type=ModelType.LLM
+  (model_client): GroqAPIClient()
+  (system_prompt): Prompt(
+    template: {# task desc #}
+    {% if task_desc_str %}
+    {{task_desc_str}}
+    {% endif %}
+    {%if output_format_str %}
+    <OUTPUT_FORMAT>
+    {{output_format_str}}
+    </OUTPUT_FORMAT>
+    {% endif %}
+    {# example #}
+    {% if examples_str %}
+    <EXAMPLES>
+    {#{% for example in examples_str %}#}
+    {{examples_str}}
+    {#{% endfor %}#}
+    </EXAMPLES>
+    {% endif %}
+    {{input_label}}: {{input}}
+    Your output:
+    , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['input_label', 'input', 'task_desc_str', 'output_format_str', 'examples_str']
+  )
+  (output_processors): Sequential(
+    (0): YAMLOutputParser(
+      data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+      (yaml_output_format_prompt): Prompt(
+        template: Your output should be formatted as a standard YAML instance with the following schema:
+        ```
+        {{schema}}
+        ```
+        {% if example %}
+        Here is an example:
+        ```
+        {{example}}
+        ```
+        {% endif %}
+        
+        -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+        -Follow the YAML formatting conventions with an indent of 2 spaces. 
+        -Quote the string values properly.
+        , prompt_variables: ['schema', 'example']
+      )
+      (output_processors): YAMLParser()
+    )
+    (1): <lambda>Component()
+  )
+)    
+module: GroqAPIClient()    
+module: Prompt(
+  template: {# task desc #}
+  {% if task_desc_str %}
+  {{task_desc_str}}
+  {% endif %}
+  {%if output_format_str %}
+  <OUTPUT_FORMAT>
+  {{output_format_str}}
+  </OUTPUT_FORMAT>
+  {% endif %}
+  {# example #}
+  {% if examples_str %}
+  <EXAMPLES>
+  {#{% for example in examples_str %}#}
+  {{examples_str}}
+  {#{% endfor %}#}
+  </EXAMPLES>
+  {% endif %}
+  {{input_label}}: {{input}}
+  Your output:
+  , preset_prompt_kwargs: {'task_desc_str': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n', 'output_format_str': 'Your output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n', 'input_label': 'Question'}, prompt_variables: ['input_label', 'input', 'task_desc_str', 'output_format_str', 'examples_str']
+)    
+module: Sequential(
+  (0): YAMLOutputParser(
+    data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+    (yaml_output_format_prompt): Prompt(
+      template: Your output should be formatted as a standard YAML instance with the following schema:
+      ```
+      {{schema}}
+      ```
+      {% if example %}
+      Here is an example:
+      ```
+      {{example}}
+      ```
+      {% endif %}
+      
+      -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+      -Follow the YAML formatting conventions with an indent of 2 spaces. 
+      -Quote the string values properly.
+      , prompt_variables: ['schema', 'example']
+    )
+    (output_processors): YAMLParser()
+  )
+  (1): <lambda>Component()
+)    
+module: YAMLOutputParser(
+  data_class_for_yaml=<class 'use_cases.classification.prompt.OutputFormat'>
+  (yaml_output_format_prompt): Prompt(
+    template: Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    {{schema}}
+    ```
+    {% if example %}
+    Here is an example:
+    ```
+    {{example}}
+    ```
+    {% endif %}
+    
+    -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+    -Follow the YAML formatting conventions with an indent of 2 spaces. 
+    -Quote the string values properly.
+    , prompt_variables: ['schema', 'example']
+  )
+  (output_processors): YAMLParser()
+)    
+module: Prompt(
+  template: Your output should be formatted as a standard YAML instance with the following schema:
+  ```
+  {{schema}}
+  ```
+  {% if example %}
+  Here is an example:
+  ```
+  {{example}}
+  ```
+  {% endif %}
+  
+  -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+  -Follow the YAML formatting conventions with an indent of 2 spaces. 
+  -Quote the string values properly.
+  , prompt_variables: ['schema', 'example']
+)    
+module: YAMLParser()    
+module: <lambda>Component()    
+params: {'generator.examples_str': Parameter: None}
+few_shot_optimizer: <optimizer.optimizer.BootstrapFewShot object at 0x169c7bbd0>
+few_shot_state_dict: {'example_parameter': Parameter: None}
+step: 0
+train_batch: {'text': ['What was the name of the daughter of the Virginia chief Powhatan that married John Rolfe ?', "Which Rockefeller was sometimes called `` JDR3 '' ?", 'In order from the top , the four stripes on a can of Pepsi are what colors ?', 'How many people are there in the world ?', 'What does A&W of root beer fame stand for ?', 'Who was the star of Leave It to Beaver ?', "What is Supergirl 's secret identity ?", 'What is the size of the largest akita ?'], 'coarse_label': tensor([3, 3, 1, 5, 0, 3, 3, 5]), 'fine_label': tensor([29, 29,  4, 38,  1, 29, 29, 48])}
+samples_per_class: 1
+task_input: What was the name of the daughter of the Virginia chief Powhatan that married John Rolfe ?, corse_label: 3
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What was the name of the daughter of the Virginia chief Powhatan that married John Rolfe ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What was the name of the daughter of the Virginia chief Powhatan that married John Rolfe ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.connection:connect_tcp.started host='api.groq.com' port=443 local_address=None timeout=5.0 socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x169c7b750>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x169ac9c70> server_hostname='api.groq.com' timeout=5.0
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x169c60990>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:40 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14381'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'1m52.047999999s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybph3nff9azn3x0w0vef1x'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Set-Cookie', b'__cf_bm=rJlIbxkmx7gBdZmzBB.sReuLJB0RMzexnYsG7hhtwEg-1716858340-1.0.1.1-pEIPZM1MX3xk40H5Bhhe_sWzvGrxmSQk7k_sD4CJTpbaVvmdNnU.oPCqwS.V0a6COSLOBrFYYOt2MmveSRn92Q; path=/; expires=Tue, 28-May-24 01:35:40 GMT; domain=.groq.com; HttpOnly; Secure; SameSite=None'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5673cb4b97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific historical figure, specifically the daughter of a Native American chief, which suggests it falls under the category of Entity.
+class_name: HUM
+class_index: 3
+task_input: Which Rockefeller was sometimes called `` JDR3 '' ?, corse_label: 3
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Which Rockefeller was sometimes called `` JDR3 '' ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Which Rockefeller was sometimes called `` JDR3 '' ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:40 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14380'), (b'x-ratelimit-remaining-tokens', b'29748'), (b'x-ratelimit-reset-requests', b'1m59.741s'), (b'x-ratelimit-reset-tokens', b'504ms'), (b'x-request-id', b'req_01hyybphbsfvs9k5wxr7vhaf56'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56757c1797fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a specific person, John D. Rockefeller III, who was sometimes referred to as "JDR3".
+class_name: HUM
+class_index: 3
+task_input: In order from the top , the four stripes on a can of Pepsi are what colors ?, corse_label: 1
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: In order from the top , the four stripes on a can of Pepsi are what colors ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: In order from the top , the four stripes on a can of Pepsi are what colors ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:41 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14379'), (b'x-ratelimit-remaining-tokens', b'29588'), (b'x-ratelimit-reset-requests', b'2m5.769999999s'), (b'x-ratelimit-reset-tokens', b'824ms'), (b'x-request-id', b'req_01hyybphk1ekpbmrvn1q08237f'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5676ecc897fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the colors of the stripes on a can of Pepsi, which is a specific description of a brand's packaging.
+class_name: DESC
+class_index: 2
+task_input: How many people are there in the world ?, corse_label: 5
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: How many people are there in the world ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: How many people are there in the world ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:41 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14378'), (b'x-ratelimit-remaining-tokens', b'29427'), (b'x-ratelimit-reset-requests', b'2m11.756s'), (b'x-ratelimit-reset-tokens', b'1.145s'), (b'x-request-id', b'req_01hyybphtme21b50jehmtae7m3'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56786d8797fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a numeric value, specifically the number of people in the world.
+class_name: NUM
+class_index: 5
+task_input: What does A&W of root beer fame stand for ?, corse_label: 0
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What does A&W of root beer fame stand for ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What does A&W of root beer fame stand for ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:41 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14377'), (b'x-ratelimit-remaining-tokens', b'29263'), (b'x-ratelimit-reset-requests', b'2m17.799s'), (b'x-ratelimit-reset-tokens', b'1.473s'), (b'x-request-id', b'req_01hyybpj10e21a36avgvms3x16'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5679ae1c97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the meaning of A&W, which is a well-known brand of root beer.
+class_name: ABBR
+class_index: 0
+task_input: Who was the star of Leave It to Beaver ?, corse_label: 3
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Who was the star of Leave It to Beaver ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who was the star of Leave It to Beaver ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:41 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14376'), (b'x-ratelimit-remaining-tokens', b'29101'), (b'x-ratelimit-reset-requests', b'2m23.780999999s'), (b'x-ratelimit-reset-tokens', b'1.798s'), (b'x-request-id', b'req_01hyybpj7wfvs9fkh2j7mtn5qs'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa567b1ed297fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a person who played a role in a TV show, which is a classic example of a Human being.
+class_name: HUM
+class_index: 3
+task_input: What is Supergirl 's secret identity ?, corse_label: 3
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is Supergirl 's secret identity ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is Supergirl 's secret identity ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:42 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14375'), (b'x-ratelimit-remaining-tokens', b'28932'), (b'x-ratelimit-reset-requests', b'2m29.788s'), (b'x-ratelimit-reset-tokens', b'2.134999999s'), (b'x-request-id', b'req_01hyybpjeffvv9jrbc61y5qnrk'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa567c5f9997fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a fictional character, Supergirl, and asks about her secret identity, which is a characteristic of a human being.
+class_name: HUM
+class_index: 3
+task_input: What is the size of the largest akita ?, corse_label: 5
+types: <class 'str'>, <class 'torch.Tensor'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is the size of the largest akita ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is the size of the largest akita ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:42 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14374'), (b'x-ratelimit-remaining-tokens', b'28769'), (b'x-ratelimit-reset-requests', b'2m35.772999999s'), (b'x-ratelimit-reset-tokens', b'2.462s'), (b'x-request-id', b'req_01hyybpjnje389ap4gsrk6gjvh'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa567dc84797fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific numeric value, which is the size of the largest Akita.
+class_name: NUM
+class_index: 5
+responses: [3, 3, 2, 5, 0, 3, 3, 5], targets: [3, 3, 1, 5, 0, 3, 3, 5]
+num_invalid: 0
+Preds tensor: tensor([[0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [1., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 0., 0., 1.]])
+Targets tensor: tensor([3, 3, 1, 5, 0, 3, 3, 5])
+Eval Accuracy: 0.875, F1: 0.6
+best_parameters: None
+best_eval: None
+data: {'text': 'How far is it from Denver to Aspen ?', 'coarse_label': 5, 'fine_label': 40}
+task_input: How far is it from Denver to Aspen ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: How far is it from Denver to Aspen ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: How far is it from Denver to Aspen ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:42 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14373'), (b'x-ratelimit-remaining-tokens', b'28660'), (b'x-ratelimit-reset-requests', b'2m41.682s'), (b'x-ratelimit-reset-tokens', b'2.68s'), (b'x-request-id', b'req_01hyybpjzkf8wbt9zva5gj7v3w'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa567fd97197fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the distance between two locations, which is a common query for a mapping or navigation service.
+class_name: LOC
+class_index: 4
+data: {'text': 'What county is Modesto , California in ?', 'coarse_label': 4, 'fine_label': 32}
+task_input: What county is Modesto , California in ?, corse_label: 4
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What county is Modesto , California in ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What county is Modesto , California in ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:42 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14372'), (b'x-ratelimit-remaining-tokens', b'28541'), (b'x-ratelimit-reset-requests', b'2m47.699s'), (b'x-ratelimit-reset-tokens', b'2.918s'), (b'x-request-id', b'req_01hyybpk92fvsbhzr3kzzhsr1m'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5681aa9d97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about the location of Modesto, California, which is Stanislaus County.
+class_name: LOC
+class_index: 4
+data: {'text': 'Who was Galileo ?', 'coarse_label': 3, 'fine_label': 31}
+task_input: Who was Galileo ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Who was Galileo ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who was Galileo ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:43 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14371'), (b'x-ratelimit-remaining-tokens', b'28423'), (b'x-ratelimit-reset-requests', b'2m53.703s'), (b'x-ratelimit-reset-tokens', b'3.154s'), (b'x-request-id', b'req_01hyybpkjce389qv23d005ysws'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56839bbd97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific person, Galileo, who is a human being.
+class_name: HUM
+class_index: 3
+data: {'text': 'What is an atom ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is an atom ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is an atom ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is an atom ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:43 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14370'), (b'x-ratelimit-remaining-tokens', b'28314'), (b'x-ratelimit-reset-requests', b'2m59.694s'), (b'x-ratelimit-reset-tokens', b'3.371s'), (b'x-request-id', b'req_01hyybpkvzfvsbavfh49ef97d4'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56857cd997fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a fundamental concept in physics, which is a type of abstract concept.
+class_name: DESC
+class_index: 2
+data: {'text': 'When did Hawaii become a state ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: When did Hawaii become a state ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: When did Hawaii become a state ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: When did Hawaii become a state ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:43 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14369'), (b'x-ratelimit-remaining-tokens', b'28164'), (b'x-ratelimit-reset-requests', b'3m5.774999999s'), (b'x-ratelimit-reset-tokens', b'3.671s'), (b'x-request-id', b'req_01hyybpm31e38994cj4xp94xms'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5686ed9697fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific event in history, which is a numeric value.
+class_name: NUM
+class_index: 5
+data: {'text': 'How tall is the Sears Building ?', 'coarse_label': 5, 'fine_label': 40}
+task_input: How tall is the Sears Building ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: How tall is the Sears Building ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: How tall is the Sears Building ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:43 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14368'), (b'x-ratelimit-remaining-tokens', b'28011'), (b'x-ratelimit-reset-requests', b'3m11.783999999s'), (b'x-ratelimit-reset-tokens', b'3.978s'), (b'x-request-id', b'req_01hyybpm9tfvv9ck84tbbsz5p1'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56884e3c97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific measurement, which is a numeric value.
+class_name: LOC
+class_index: 4
+data: {'text': 'George Bush purchased a small interest in which baseball team ?', 'coarse_label': 3, 'fine_label': 28}
+task_input: George Bush purchased a small interest in which baseball team ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: George Bush purchased a small interest in which baseball team ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: George Bush purchased a small interest in which baseball team ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:44 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14367'), (b'x-ratelimit-remaining-tokens', b'27871'), (b'x-ratelimit-reset-requests', b'3m17.759999999s'), (b'x-ratelimit-reset-tokens', b'4.258s'), (b'x-request-id', b'req_01hyybpmhbfvv8khp6yk44p9pm'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5689cf0597fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a specific person (George Bush) and a specific team, which is a characteristic of the HUM class.
+class_name: HUM
+class_index: 3
+data: {'text': "What is Australia 's national flower ?", 'coarse_label': 1, 'fine_label': 14}
+task_input: What is Australia 's national flower ?, corse_label: 1
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is Australia 's national flower ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is Australia 's national flower ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:44 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14366'), (b'x-ratelimit-remaining-tokens', b'27702'), (b'x-ratelimit-reset-requests', b'3m23.786s'), (b'x-ratelimit-reset-tokens', b'4.595s'), (b'x-request-id', b'req_01hyybpmr2fvv9r1cffpnhharg'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa568b1fca97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific location (Australia) and a specific type of entity (national flower), which is typically a descriptive concept.
+class_name: DESC
+class_index: 2
+data: {'text': 'Why does the moon turn orange ?', 'coarse_label': 2, 'fine_label': 27}
+task_input: Why does the moon turn orange ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Why does the moon turn orange ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Why does the moon turn orange ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:44 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14366'), (b'x-ratelimit-remaining-tokens', b'27540'), (b'x-ratelimit-reset-requests', b'3m23.787s'), (b'x-ratelimit-reset-tokens', b'4.92s'), (b'x-request-id', b'req_01hyybpmyrec6vd5nh19vj59aj'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa568c689397fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Why does the moon turn orange ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:46 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14365'), (b'x-ratelimit-remaining-tokens', b'28571'), (b'x-ratelimit-reset-requests', b'3m27.715s'), (b'x-ratelimit-reset-tokens', b'2.858s'), (b'x-request-id', b'req_01hyybppzge38td5rrpnyzkrtz'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56996fcd97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is about the moon's color, which is a physical phenomenon, so it's related to a location (LOC).
+class_name: "LOC"
+class_index: 4
+data: {'text': 'What is autism ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is autism ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is autism ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is autism ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:46 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14365'), (b'x-ratelimit-remaining-tokens', b'28411'), (b'x-ratelimit-reset-requests', b'3m29.789s'), (b'x-ratelimit-reset-tokens', b'3.178s'), (b'x-request-id', b'req_01hyybpq65ec7813dte2js05zg'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa569ab89c97fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is autism ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:48 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14364'), (b'x-ratelimit-remaining-tokens', b'29438'), (b'x-ratelimit-reset-requests', b'3m33.723999999s'), (b'x-ratelimit-reset-tokens', b'1.123s'), (b'x-request-id', b'req_01hyybps6nfvvvsb8x2fmmhmvq'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56a798ad97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific condition or disorder, which is typically described as an abstract concept.
+class_name: DESC
+class_index: 2
+data: {'text': 'What city had a world fair in 1900 ?', 'coarse_label': 4, 'fine_label': 32}
+task_input: What city had a world fair in 1900 ?, corse_label: 4
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What city had a world fair in 1900 ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What city had a world fair in 1900 ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:48 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14364'), (b'x-ratelimit-remaining-tokens', b'29294'), (b'x-ratelimit-reset-requests', b'3m35.773999999s'), (b'x-ratelimit-reset-tokens', b'1.411s'), (b'x-request-id', b'req_01hyybpsdrfgwrecve9t7deq9c'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56a9097097fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What city had a world fair in 1900 ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:51 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14363'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'3m39.703s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybpvefec798ndwx4vknpyf'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56b5fa0b97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking about a specific location that hosted a world fair in a particular year, which suggests it's a location-based question.
+class_name: LOC
+class_index: 4
+data: {'text': "What person 's head is on a dime ?", 'coarse_label': 3, 'fine_label': 29}
+task_input: What person 's head is on a dime ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What person 's head is on a dime ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What person 's head is on a dime ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:51 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14363'), (b'x-ratelimit-remaining-tokens', b'29758'), (b'x-ratelimit-reset-requests', b'3m41.758s'), (b'x-ratelimit-reset-tokens', b'484ms'), (b'x-request-id', b'req_01hyybpvp2fgwt0pa0gvz88ey0'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56b77b8697fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': "You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What person 's head is on a dime ?\nYour output:"}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:53 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14362'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'3m45.702s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybpxpaec7bd9e88tdwh74t'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56c45b4297fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a common idiomatic expression, and the answer is a human being, Abraham Lincoln.
+class_name: HUM
+class_index: 3
+data: {'text': 'What is the average weight of a Yellow Labrador ?', 'coarse_label': 5, 'fine_label': 49}
+task_input: What is the average weight of a Yellow Labrador ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is the average weight of a Yellow Labrador ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is the average weight of a Yellow Labrador ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:53 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14362'), (b'x-ratelimit-remaining-tokens', b'29758'), (b'x-ratelimit-reset-requests', b'3m47.788s'), (b'x-ratelimit-reset-tokens', b'483ms'), (b'x-request-id', b'req_01hyybpxwzfgwsc8xcreqpk2x7'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56c5ac0497fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is the average weight of a Yellow Labrador ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:55 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14361'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'3m51.732999999s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybpzx6evjtsssf47y1jrp5'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56d28b7897fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking for a numeric value, specifically the average weight of a Yellow Labrador, which is a type of numeric value.
+class_name: NUM
+class_index: 5
+data: {'text': 'Who was the first man to fly across the Pacific Ocean ?', 'coarse_label': 3, 'fine_label': 29}
+task_input: Who was the first man to fly across the Pacific Ocean ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Who was the first man to fly across the Pacific Ocean ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who was the first man to fly across the Pacific Ocean ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:55 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14361'), (b'x-ratelimit-remaining-tokens', b'29757'), (b'x-ratelimit-reset-requests', b'3m53.762999999s'), (b'x-ratelimit-reset-tokens', b'486ms'), (b'x-request-id', b'req_01hyybq04keztt5gchhw95cqd6'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56d3fc3e97fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who was the first man to fly across the Pacific Ocean ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:05:58 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14360'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'3m57.688999999s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybq25bfbaryh1z2p0h7c6g'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56e0fbef97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a specific event in history, involving a human being, and a location.
+class_name: HUM
+class_index: 3
+data: {'text': 'When did Idaho become a state ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: When did Idaho become a state ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: When did Idaho become a state ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: When did Idaho become a state ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:05:58 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14360'), (b'x-ratelimit-remaining-tokens', b'29799'), (b'x-ratelimit-reset-requests', b'3m59.682s'), (b'x-ratelimit-reset-tokens', b'402ms'), (b'x-request-id', b'req_01hyybq2fcfgx8ygxvm1v1jsq7'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56e2fd3d97fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: When did Idaho become a state ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:00 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14359'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m3.620999999s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybq4fqekdb23hhdsc6xzs0'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56efddd997fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a specific event in history, which is related to a location (Idaho), so it's likely asking about a date.
+class_name: LOC
+class_index: 4
+data: {'text': 'What is the life expectancy for crickets ?', 'coarse_label': 5, 'fine_label': 43}
+task_input: What is the life expectancy for crickets ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is the life expectancy for crickets ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is the life expectancy for crickets ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:06:00 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14359'), (b'x-ratelimit-remaining-tokens', b'29752'), (b'x-ratelimit-reset-requests', b'4m5.788s'), (b'x-ratelimit-reset-tokens', b'495ms'), (b'x-request-id', b'req_01hyybq4peeztv1b09zt65c4f3'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56f12ea897fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is the life expectancy for crickets ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:02 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14358'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m9.721s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybq6q1ezv9kwvhqevezds1'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56fe1f1c97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a numeric value, which is the life expectancy for crickets, so it's likely to be a numerical value.
+class_name: NUM
+class_index: 5
+data: {'text': 'What metal has the highest melting point ?', 'coarse_label': 1, 'fine_label': 18}
+task_input: What metal has the highest melting point ?, corse_label: 1
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What metal has the highest melting point ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What metal has the highest melting point ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:06:02 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14358'), (b'x-ratelimit-remaining-tokens', b'29756'), (b'x-ratelimit-reset-requests', b'4m11.783999999s'), (b'x-ratelimit-reset-tokens', b'487ms'), (b'x-request-id', b'req_01hyybq6xtekq9sac3w9cyet9w'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa56ff7fde97fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What metal has the highest melting point ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:05 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14357'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m15.719s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybq8ybevk9pf26y5epmsse'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa570c583097fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a specific property of a metal, which is a physical characteristic, and the answer is likely to be a specific metal with a high melting point.
+class_name: NUM
+class_index: 5
+data: {'text': 'Who developed the vaccination against polio ?', 'coarse_label': 3, 'fine_label': 29}
+task_input: Who developed the vaccination against polio ?, corse_label: 3
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: Who developed the vaccination against polio ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who developed the vaccination against polio ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:06:05 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14357'), (b'x-ratelimit-remaining-tokens', b'29750'), (b'x-ratelimit-reset-requests', b'4m17.778999999s'), (b'x-ratelimit-reset-tokens', b'499ms'), (b'x-request-id', b'req_01hyybq959ezv9nnyj2xtet3jm'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa570db8f597fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: Who developed the vaccination against polio ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:07 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14356'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m21.65s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybqb5kf5wrv24t1qn7wwmq'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa571aafab97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is about a specific person who developed a vaccination against polio, which is a notable achievement in the field of medicine.
+class_name: HUM
+class_index: 3
+data: {'text': 'What is epilepsy ?', 'coarse_label': 2, 'fine_label': 24}
+task_input: What is epilepsy ?, corse_label: 2
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What is epilepsy ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is epilepsy ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:06:07 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14356'), (b'x-ratelimit-remaining-tokens', b'29756'), (b'x-ratelimit-reset-requests', b'4m23.752s'), (b'x-ratelimit-reset-tokens', b'487ms'), (b'x-request-id', b'req_01hyybqbfkf5wrwjpb8wjrjsq7'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa571c98b597fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What is epilepsy ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:09 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14355'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m27.687999999s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybqdg3e22t43jh4b81a0t2'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5729886e97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: This question is asking about a medical condition, which is an abstract concept, so it falls under the category of Description and abstract concept.
+class_name: DESC
+class_index: 2
+```
+data: {'text': 'What year did the Titanic sink ?', 'coarse_label': 5, 'fine_label': 39}
+task_input: What year did the Titanic sink ?, corse_label: 5
+types: <class 'str'>, <class 'int'>
+system_prompt_str: You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+0. ABBR, Abbreviation
+1. ENTY, Entity
+2. DESC, Description and abstract concept
+3. HUM, Human being
+4. LOC, Location
+5. NUM, Numeric value
+
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard YAML instance with the following schema:
+```
+thought: Your reasoning to classify the question to class_name (str) (required)
+class_name: class_name (str) (required)
+class_index: class_index in range[0, 5] (int) (required)
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Quote the string values properly.
+
+</OUTPUT_FORMAT>
+Question: What year did the Titanic sink ?
+Your output:
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What year did the Titanic sink ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 429, b'Too Many Requests', [(b'Date', b'Tue, 28 May 2024 01:06:09 GMT'), (b'Content-Type', b'application/json'), (b'Content-Length', b'326'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'retry-after', b'2'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14355'), (b'x-ratelimit-remaining-tokens', b'29784'), (b'x-ratelimit-reset-requests', b'4m29.714999999s'), (b'x-ratelimit-reset-tokens', b'431ms'), (b'x-request-id', b'req_01hyybqds1evnt6x8j7gn2c3av'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa572b49a497fa-SJC')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "429 Too Many Requests"
+DEBUG:groq._base_client:Encountered httpx.HTTPStatusError
+Traceback (most recent call last):
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/groq/_base_client.py", line 966, in _request
+    response.raise_for_status()
+  File "/Users/liyin/Documents/test/LightRAG/.venv/lib/python3.11/site-packages/httpx/_models.py", line 761, in raise_for_status
+    raise HTTPStatusError(message, request=request, response=self)
+httpx.HTTPStatusError: Client error '429 Too Many Requests' for url 'https://api.groq.com/openai/v1/chat/completions'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/429
+DEBUG:groq._base_client:Retrying due to status code 429
+DEBUG:groq._base_client:1 retry left
+INFO:groq._base_client:Retrying request to /openai/v1/chat/completions in 2.000000 seconds
+DEBUG:groq._base_client:Request options: {'method': 'post', 'url': '/openai/v1/chat/completions', 'files': None, 'json_data': {'messages': [{'role': 'system', 'content': 'You are a classifier. Given a Question, you need to classify it into one of the following classes:\nFormat: class_index. class_name, class_description\n0. ABBR, Abbreviation\n1. ENTY, Entity\n2. DESC, Description and abstract concept\n3. HUM, Human being\n4. LOC, Location\n5. NUM, Numeric value\n\n<OUTPUT_FORMAT>\nYour output should be formatted as a standard YAML instance with the following schema:\n```\nthought: Your reasoning to classify the question to class_name (str) (required)\nclass_name: class_name (str) (required)\nclass_index: class_index in range[0, 5] (int) (required)\n```\n\n-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!\n-Follow the YAML formatting conventions with an indent of 2 spaces. \n-Quote the string values properly.\n\n</OUTPUT_FORMAT>\nQuestion: What year did the Titanic sink ?\nYour output:'}], 'model': 'llama3-8b-8192', 'frequency_penalty': 0, 'n': 1, 'presence_penalty': 0, 'temperature': 0.0, 'top_p': 1}}
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Date', b'Tue, 28 May 2024 01:06:12 GMT'), (b'Content-Type', b'application/json'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'private, max-age=0, no-store, no-cache, must-revalidate'), (b'vary', b'Origin'), (b'x-ratelimit-limit-requests', b'14400'), (b'x-ratelimit-limit-tokens', b'30000'), (b'x-ratelimit-remaining-requests', b'14354'), (b'x-ratelimit-remaining-tokens', b'29995'), (b'x-ratelimit-reset-requests', b'4m33.647s'), (b'x-ratelimit-reset-tokens', b'10ms'), (b'x-request-id', b'req_01hyybqfsnf8xtn3jaen3fhdq6'), (b'via', b'1.1 google'), (b'alt-svc', b'h3=":443"; ma=86400'), (b'CF-Cache-Status', b'DYNAMIC'), (b'Server', b'cloudflare'), (b'CF-RAY', b'88aa5738391e97fa-SJC'), (b'Content-Encoding', b'gzip')])
+INFO:httpx:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:groq._base_client:HTTP Request: POST https://api.groq.com/openai/v1/chat/completions "200 OK"
+Raw response: 
+```
+thought: The question is asking for a specific date, which is a numeric value.
+class_name: NUM
+class_index: 5
+responses: [4, 4, 3, 2, 5, 4, 3, 2, 4, 2, 4, 3, 5, 3, 4, 5, 5, 3, 2, 5], targets: [5, 4, 3, 2, 5, 5, 3, 1, 2, 2, 4, 3, 5, 3, 5, 5, 1, 3, 2, 5]
+num_invalid: 0
+Preds tensor: tensor([[0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 0., 0., 1., 0.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 0., 0., 1.],
+        [0., 0., 0., 1., 0., 0.],
+        [0., 0., 1., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 1.]])
+Targets tensor: tensor([5, 4, 3, 2, 5, 5, 3, 1, 2, 2, 4, 3, 5, 3, 5, 5, 1, 3, 2, 5])
+Eval Accuracy: 0.7, F1: 0.583
+Eval Accuracy: 0.7, F1: 0.583

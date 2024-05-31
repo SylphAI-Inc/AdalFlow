@@ -1,0 +1,310 @@
+{
+    "optimizer": "BootstrapFewShotRandomSampler",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 0.656,
+        "macro_f1": 0.659,
+        "examples": [
+            {
+                "index": 280,
+                "data": {
+                    "text": "What is being done about the millennium bug ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking about the measures taken to address the Y2K bug, a widely discussed issue in the late 1990s."
+                }
+            },
+            {
+                "index": 509,
+                "data": {
+                    "text": "How do you ask a total stranger out on a date ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question is about asking someone out on a date, and the thought is about how to approach the situation in a respectful and polite manner."
+                }
+            },
+            {
+                "index": 13,
+                "data": {
+                    "text": "What does NN O `` mean when used as a prefix in Irish surnames ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "NN is an abbreviation for 'Not Nguyen' and is commonly used as a prefix in Irish surnames."
+                }
+            },
+            {
+                "index": 557,
+                "data": {
+                    "text": "What well-known actor is the father of star Alan Alda ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about a well-known actor who is the father of Alan Alda, so the answer is likely an actor."
+                }
+            },
+            {
+                "index": 56,
+                "data": {
+                    "text": "What is RAM in the computer ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "I think the question is asking about a common abbreviation in computers."
+                }
+            },
+            {
+                "index": 593,
+                "data": {
+                    "text": "Why did the Aztecs first think the Spanish were Gods ?",
+                    "coarse_label": 2,
+                    "fine_label": 27,
+                    "thought": "I think the Aztecs believed the Spanish were gods because they arrived suddenly with shining metal and powerful technology, which must have seemed like divine intervention to them at that time."
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 0.771,
+        "macro_f1": 0.76,
+        "examples": [
+            {
+                "index": 487,
+                "data": {
+                    "text": "What six-foot temperance advocate wielded her hatchet on saloons ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about a person who was known for wielding a hatchet on saloons. My answer is human being because the character mentioned is a person."
+                }
+            },
+            {
+                "index": 127,
+                "data": {
+                    "text": "What is a conifer ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "A conifer is a type of plant that produces cones and has needle-like leaves."
+                }
+            },
+            {
+                "index": 277,
+                "data": {
+                    "text": "What were popular songs and types of songs in the 1920s ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The 1920s refers to a specific time period in history."
+                }
+            },
+            {
+                "index": 139,
+                "data": {
+                    "text": "What is the protection rate of using condoms ?",
+                    "coarse_label": 5,
+                    "fine_label": 43,
+                    "thought": "The question asks about the protection rate of using condoms, which is a percentage value, hence it falls under the category of a numeric value."
+                }
+            },
+            {
+                "index": 92,
+                "data": {
+                    "text": "What is the abbreviation for Original Equipment Manufacturer ?",
+                    "coarse_label": 0,
+                    "fine_label": 0,
+                    "thought": "I know an abbreviation is being asked for and the answer is probably 'OEM' for Original Equipment Manufacturer."
+                }
+            },
+            {
+                "index": 551,
+                "data": {
+                    "text": "What is meant by `` capital market '' ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "A capital market is a term used to describe a financial market where investments in securities, bonds, and other financial instruments are traded. It's a platform where companies raise capital by issuing stocks and bonds."
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 0.594,
+        "macro_f1": 0.605,
+        "examples": [
+            {
+                "index": 222,
+                "data": {
+                    "text": "Who wrote the book , `` Huckleberry Finn '' ?",
+                    "coarse_label": 3,
+                    "fine_label": 29
+                }
+            },
+            {
+                "index": 51,
+                "data": {
+                    "text": "What cheery fellow got the ZIP code 9971 from the U.S. Postal Service in 1963 ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The ZIP code 9971 was given to a cheery fellow by the U.S. Postal Service in 1963."
+                }
+            },
+            {
+                "index": 386,
+                "data": {
+                    "text": "Name the On Stage character whose face was never seen .",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "I recognize the character's profile describing a famous On Stage character whose face was never seen, hence this individual is a Human being."
+                }
+            },
+            {
+                "index": 65,
+                "data": {
+                    "text": "What is ethology ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "Ethology is the scientific study of the behavior and behavior habits of animals."
+                }
+            },
+            {
+                "index": 403,
+                "data": {
+                    "text": "What is a fear of thunder ?",
+                    "coarse_label": 1,
+                    "fine_label": 7,
+                    "thought": "A fear of thunder is an entity that is a type of phobia."
+                }
+            },
+            {
+                "index": 299,
+                "data": {
+                    "text": "Who is Prince Naseem Hamed ?",
+                    "coarse_label": 3,
+                    "fine_label": 31
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 0.677,
+        "macro_f1": 0.657,
+        "examples": [
+            {
+                "index": 269,
+                "data": {
+                    "text": "What is Jane Goodall famous for ?",
+                    "coarse_label": 2,
+                    "fine_label": 27,
+                    "thought": "The question asks about Jane Goodall's profession or significance."
+                }
+            },
+            {
+                "index": 368,
+                "data": {
+                    "text": "Why are there letters on the telephone ? Why are there no Q or Z ?",
+                    "coarse_label": 2,
+                    "fine_label": 27,
+                    "thought": "The question is inquiring about the absence of certain letters on a telephone, leading me to conclude that the class_index is indeed 2, which is Description and abstract concept since it's discussing a concept rather than a specific object."
+                }
+            },
+            {
+                "index": 223,
+                "data": {
+                    "text": "How do microwaves work ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "Microwaves use non-ionizing radiation to heat or cook food."
+                }
+            },
+            {
+                "index": 499,
+                "data": {
+                    "text": "What soft drink would provide me with the biggest intake of caffeine ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "The question is asking about the caffeine content of a soft drink, so I'm going to think about what drinks are commonly known for their high caffeine content."
+                }
+            },
+            {
+                "index": 318,
+                "data": {
+                    "text": "When does the average teenager first have intercourse ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "It's likely that the age is expressed as a numeric value, such as 15-17, but not the exact number to avoid sensitivity."
+                }
+            },
+            {
+                "index": 123,
+                "data": {
+                    "text": "Who is Henry Butler ?",
+                    "coarse_label": 3,
+                    "fine_label": 31,
+                    "thought": "Henry Butler is a well-known individual, therefore I classified it as a Human being."
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 0.74,
+        "macro_f1": 0.739,
+        "examples": [
+            {
+                "index": 348,
+                "data": {
+                    "text": "How can I find a list of celebrities ' real names ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question is asking about a list of celebrities' real names, which is a description and abstract concept."
+                }
+            },
+            {
+                "index": 275,
+                "data": {
+                    "text": "What is the chromosome number of an elephant ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "Since the question is about the chromosome number of an elephant, it's likely a numerical value, which is typically associated with the class index 5, Numeric value."
+                }
+            },
+            {
+                "index": 589,
+                "data": {
+                    "text": "What qualifications are there for individuals donating blood ?",
+                    "coarse_label": 2,
+                    "fine_label": 25,
+                    "thought": "The question is asking about the qualifications for individuals donating blood, which implies that we need to consider the necessary requirements or criteria for blood donation."
+                }
+            },
+            {
+                "index": 35,
+                "data": {
+                    "text": "Where can I get information about cystic fibrosis ?",
+                    "coarse_label": 4,
+                    "fine_label": 35
+                }
+            },
+            {
+                "index": 139,
+                "data": {
+                    "text": "What is the protection rate of using condoms ?",
+                    "coarse_label": 5,
+                    "fine_label": 43,
+                    "thought": "The question asks about the protection rate of using condoms, which is a percentage value, hence it falls under the category of a numeric value."
+                }
+            },
+            {
+                "index": 59,
+                "data": {
+                    "text": "What is the size of Argentina ?",
+                    "coarse_label": 5,
+                    "fine_label": 48,
+                    "thought": "The question asks about the size of a country, which is likely to be a numerical value."
+                }
+            }
+        ]
+    },
+    "max_acc": 0.771,
+    "min_acc": 0.594,
+    "mean_acc": 0.6876,
+    "std_acc": 0.06256708399789782,
+    "max_macro_f1": 0.76,
+    "min_macro_f1": 0.605,
+    "mean_macro_f1": 0.6839999999999999,
+    "std_macro_f1": 0.05726429952422364
+}

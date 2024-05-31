@@ -1,0 +1,315 @@
+{
+    "optimizer": "BootstrapFewShotRandomSampler",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 0.708,
+        "macro_f1": 0.717,
+        "examples": [
+            {
+                "index": 13,
+                "data": {
+                    "text": "What does NN O `` mean when used as a prefix in Irish surnames ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking about the meaning of 'O' when used as a prefix in Irish surnames, which pertains to abbreviations and meanings of terms."
+                }
+            },
+            {
+                "index": 306,
+                "data": {
+                    "text": "When was the G7 group of nations formed ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific date or year, which is a numeric value."
+                }
+            },
+            {
+                "index": 81,
+                "data": {
+                    "text": "What did Vasco da Gama discover ?",
+                    "coarse_label": 1,
+                    "fine_label": 13,
+                    "thought": "The question asks about a notable discovery made by Vasco da Gama, which relates to an entity or object in historical context."
+                }
+            },
+            {
+                "index": 597,
+                "data": {
+                    "text": "How close a cousin was Franklin D. to Theodore Roosevelt ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question seeks an explanation or description of the familial relationship between Franklin D. and Theodore Roosevelt."
+                }
+            },
+            {
+                "index": 363,
+                "data": {
+                    "text": "What London street is the home of British journalism ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question refers to a specific street in London, which is a location."
+                }
+            },
+            {
+                "index": 150,
+                "data": {
+                    "text": "What four U.S. states have active volcanoes ?",
+                    "coarse_label": 4,
+                    "fine_label": 36,
+                    "thought": "The question is asking about specific U.S. states, which are geographic locations."
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 0.729,
+        "macro_f1": 0.74,
+        "examples": [
+            {
+                "index": 12,
+                "data": {
+                    "text": "What Japanese manufacturer is known for both its pianos and its motorcycles ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "class_index": 1,
+                    "class_name": "ENTY",
+                    "thought": "The question is asking about a Japanese manufacturer, which is an entity."
+                }
+            },
+            {
+                "index": 314,
+                "data": {
+                    "text": "In what medium is Stuart Hamblen considered to be the first singing cowboy ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The question asks about Stuart Hamblen and his recognized status, which classifies it as seeking information about an entity."
+                }
+            },
+            {
+                "index": 431,
+                "data": {
+                    "text": "Who was the first animal into space ?",
+                    "coarse_label": 1,
+                    "fine_label": 2,
+                    "thought": "The question is asking for a specific entity, which in this case is the first animal in space."
+                }
+            },
+            {
+                "index": 89,
+                "data": {
+                    "text": "What are the unemployment statistics for the years 1965 and 1990 ?",
+                    "coarse_label": 5,
+                    "fine_label": 43,
+                    "thought": "The question is asking for statistical data, specifically unemployment rates, for the years 1965 and 1990. These are numeric values."
+                }
+            },
+            {
+                "index": 252,
+                "data": {
+                    "text": "Who thought he 'd never see a poem lovely as a tree ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about a person (who), which classifies it under Human being."
+                }
+            },
+            {
+                "index": 339,
+                "data": {
+                    "text": "What does INRI stand for when used on Jesus ' cross ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "INRI is an abbreviation used on Jesus' cross."
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 0.667,
+        "macro_f1": 0.657,
+        "examples": [
+            {
+                "index": 325,
+                "data": {
+                    "text": "How much money does the Sultan of Brunei have ?",
+                    "coarse_label": 5,
+                    "fine_label": 41,
+                    "thought": "The question is asking for the amount of money, which requires a numeric value."
+                }
+            },
+            {
+                "index": 209,
+                "data": {
+                    "text": "What does EKG stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the full form of an abbreviation, meaning it falls under the ABBR class."
+                }
+            },
+            {
+                "index": 54,
+                "data": {
+                    "text": "What George Harrison tune sounded too much like He 's So Fine by The Chiffons ?",
+                    "coarse_label": 1,
+                    "fine_label": 5,
+                    "thought": "The question is asking for the name of a specific song, which falls under the category of an entity."
+                }
+            },
+            {
+                "index": 374,
+                "data": {
+                    "text": "What is the origin of the proverb `` A stitch in time saves nine '' ?",
+                    "coarse_label": 2,
+                    "fine_label": 25,
+                    "thought": "The question is asking for the origin, which seeks an explanation or background information about the proverb."
+                }
+            },
+            {
+                "index": 255,
+                "data": {
+                    "text": "What Indian tribe is F Troop perpetually doing battle with ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "thought": "The question is asking about a particular group of people, which in this context refers to a tribe."
+                }
+            },
+            {
+                "index": 389,
+                "data": {
+                    "text": "What is a Mexican hairless ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for an explanation or a description of what a Mexican hairless is."
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 0.76,
+        "macro_f1": 0.753,
+        "examples": [
+            {
+                "index": 184,
+                "data": {
+                    "text": "Where can one find Mozambique ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "Mozambique is a country, so the question is asking about a location."
+                }
+            },
+            {
+                "index": 122,
+                "data": {
+                    "text": "Who is the superstar in rent-a-cars ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking about a person, which fits the category of Human being."
+                }
+            },
+            {
+                "index": 75,
+                "data": {
+                    "text": "What was the Great Britain population from 1699-172 ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a population figure over a specific historical period, which is a numeric value."
+                }
+            },
+            {
+                "index": 156,
+                "data": {
+                    "text": "What 's the American dollar equivalent for 8 pounds in the U.K. ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a numeric conversion between currencies (pounds to U.S. dollars), which falls under the numeric value category."
+                }
+            },
+            {
+                "index": 258,
+                "data": {
+                    "text": "Name the Ranger who was always after Yogi Bear .",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The Ranger who was always after Yogi Bear is a human character in the Yogi Bear series."
+                }
+            },
+            {
+                "index": 444,
+                "data": {
+                    "text": "What fraction of a beaver 's life is spent swimming ?",
+                    "coarse_label": 5,
+                    "fine_label": 45,
+                    "thought": "The question is asking for a numeric value that represents the fraction of a beaver's life spent swimming."
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 0.812,
+        "macro_f1": 0.806,
+        "examples": [
+            {
+                "index": 589,
+                "data": {
+                    "text": "What qualifications are there for individuals donating blood ?",
+                    "coarse_label": 2,
+                    "fine_label": 25,
+                    "thought": "The question is asking for a description or explanation of the qualifications required for donating blood."
+                }
+            },
+            {
+                "index": 579,
+                "data": {
+                    "text": "What does the `` c '' stand for in the equation E=mc2 ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the meaning of a letter in an equation, which is seeking an abbreviation."
+                }
+            },
+            {
+                "index": 182,
+                "data": {
+                    "text": "How many flavors does Baskin & Robbins offer ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question asks for a numeric value regarding the number of flavors offered by Baskin & Robbins."
+                }
+            },
+            {
+                "index": 448,
+                "data": {
+                    "text": "What is the world 's highest peak ?",
+                    "coarse_label": 4,
+                    "fine_label": 34,
+                    "thought": "The question is inquiring about the highest peak in the world, which is a location."
+                }
+            },
+            {
+                "index": 484,
+                "data": {
+                    "text": "Where was Christopher Columbus born ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "Christopher Columbus was born in a specific location, which makes this question about a place."
+                }
+            },
+            {
+                "index": 380,
+                "data": {
+                    "text": "Where did guinea pigs originate ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for the origin of guinea pigs, which pertains to a specific place or location."
+                }
+            }
+        ]
+    },
+    "max_acc": 0.812,
+    "min_acc": 0.667,
+    "mean_acc": 0.7352000000000001,
+    "std_acc": 0.048872896374166336,
+    "max_macro_f1": 0.806,
+    "min_macro_f1": 0.657,
+    "mean_macro_f1": 0.7346,
+    "std_macro_f1": 0.048574067155221834
+}

@@ -1,0 +1,115 @@
+{
+  "builder_name": "trec",
+  "citation": "@inproceedings{li-roth-2002-learning,\n    title = \"Learning Question Classifiers\",\n    author = \"Li, Xin  and\n      Roth, Dan\",\n    booktitle = \"{COLING} 2002: The 19th International Conference on Computational Linguistics\",\n    year = \"2002\",\n    url = \"https://www.aclweb.org/anthology/C02-1150\",\n}\n@inproceedings{hovy-etal-2001-toward,\n    title = \"Toward Semantics-Based Answer Pinpointing\",\n    author = \"Hovy, Eduard  and\n      Gerber, Laurie  and\n      Hermjakob, Ulf  and\n      Lin, Chin-Yew  and\n      Ravichandran, Deepak\",\n    booktitle = \"Proceedings of the First International Conference on Human Language Technology Research\",\n    year = \"2001\",\n    url = \"https://www.aclweb.org/anthology/H01-1069\",\n}\n",
+  "config_name": "default",
+  "dataset_name": "trec",
+  "dataset_size": 413065,
+  "description": "The Text REtrieval Conference (TREC) Question Classification dataset contains 5500 labeled questions in training set and another 500 for test set.\n\nThe dataset has 6 coarse class labels and 50 fine class labels. Average length of each sentence is 10, vocabulary size of 8700.\n\nData are collected from four sources: 4,500 English questions published by USC (Hovy et al., 2001), about 500 manually constructed questions for a few rare classes, 894 TREC 8 and TREC 9 questions, and also 500 questions from TREC 10 which serves as the test set. These questions were manually labeled.\n",
+  "download_checksums": {
+    "https://cogcomp.seas.upenn.edu/Data/QA/QC/train_5500.label": {
+      "num_bytes": 335858,
+      "checksum": null
+    },
+    "https://cogcomp.seas.upenn.edu/Data/QA/QC/TREC_10.label": {
+      "num_bytes": 23354,
+      "checksum": null
+    }
+  },
+  "download_size": 359212,
+  "features": {
+    "text": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "coarse_label": {
+      "names": [
+        "ABBR",
+        "ENTY",
+        "DESC",
+        "HUM",
+        "LOC",
+        "NUM"
+      ],
+      "_type": "ClassLabel"
+    },
+    "fine_label": {
+      "names": [
+        "ABBR:abb",
+        "ABBR:exp",
+        "ENTY:animal",
+        "ENTY:body",
+        "ENTY:color",
+        "ENTY:cremat",
+        "ENTY:currency",
+        "ENTY:dismed",
+        "ENTY:event",
+        "ENTY:food",
+        "ENTY:instru",
+        "ENTY:lang",
+        "ENTY:letter",
+        "ENTY:other",
+        "ENTY:plant",
+        "ENTY:product",
+        "ENTY:religion",
+        "ENTY:sport",
+        "ENTY:substance",
+        "ENTY:symbol",
+        "ENTY:techmeth",
+        "ENTY:termeq",
+        "ENTY:veh",
+        "ENTY:word",
+        "DESC:def",
+        "DESC:desc",
+        "DESC:manner",
+        "DESC:reason",
+        "HUM:gr",
+        "HUM:ind",
+        "HUM:title",
+        "HUM:desc",
+        "LOC:city",
+        "LOC:country",
+        "LOC:mount",
+        "LOC:other",
+        "LOC:state",
+        "NUM:code",
+        "NUM:count",
+        "NUM:date",
+        "NUM:dist",
+        "NUM:money",
+        "NUM:ord",
+        "NUM:other",
+        "NUM:period",
+        "NUM:perc",
+        "NUM:speed",
+        "NUM:temp",
+        "NUM:volsize",
+        "NUM:weight"
+      ],
+      "_type": "ClassLabel"
+    }
+  },
+  "homepage": "https://cogcomp.seas.upenn.edu/Data/QA/QC/",
+  "license": "",
+  "size_in_bytes": 772277,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 385086,
+      "num_examples": 5452,
+      "dataset_name": "trec"
+    },
+    "test": {
+      "name": "test",
+      "num_bytes": 27979,
+      "num_examples": 500,
+      "dataset_name": "trec"
+    }
+  },
+  "version": {
+    "version_str": "2.0.0",
+    "description": "Fine label contains 50 classes instead of 47.",
+    "major": 2,
+    "minor": 0,
+    "patch": 0
+  }
+}

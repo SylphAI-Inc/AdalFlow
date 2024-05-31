@@ -1,0 +1,313 @@
+{
+    "optimizer": "BootstrapFewShotClassSampler",
+    "shots": 6,
+    "runs": 5,
+    "run_0": {
+        "acc": 0.781,
+        "macro_f1": 0.757,
+        "examples": [
+            {
+                "index": 346,
+                "data": {
+                    "text": "What does Ms. , Miss , and Mrs. stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the meanings of the abbreviations Ms., Miss, and Mrs., which falls under the classification of abbreviations."
+                }
+            },
+            {
+                "index": 498,
+                "data": {
+                    "text": "What is the organizational structure of the New Delhi Indira Gandhi airport ?",
+                    "coarse_label": 1,
+                    "fine_label": 13,
+                    "thought": "The question is asking about the organizational structure, which refers to an entity."
+                }
+            },
+            {
+                "index": 321,
+                "data": {
+                    "text": "How do chickens have baby chicks ?",
+                    "coarse_label": 2,
+                    "fine_label": 26,
+                    "thought": "The question is asking for an explanation or description of how chickens reproduce and have baby chicks."
+                }
+            },
+            {
+                "index": 159,
+                "data": {
+                    "text": "Name a South African diamond producer ?",
+                    "coarse_label": 3,
+                    "fine_label": 28,
+                    "thought": "The question is asking for the name of a person who is a South African diamond producer."
+                }
+            },
+            {
+                "index": 53,
+                "data": {
+                    "text": "Kosovo is a province of what country ?",
+                    "coarse_label": 4,
+                    "fine_label": 36,
+                    "thought": "The question is asking about a geographic relationship between Kosovo and a country, which pertains to a location."
+                }
+            },
+            {
+                "index": 453,
+                "data": {
+                    "text": "In what year was the Berlin Wall erected ?",
+                    "coarse_label": 5,
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific year, which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_1": {
+        "acc": 0.812,
+        "macro_f1": 0.814,
+        "examples": [
+            {
+                "index": 158,
+                "data": {
+                    "text": "What does IOC stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "IOC is typically an abbreviation, and the question is asking for the full form."
+                }
+            },
+            {
+                "index": 185,
+                "data": {
+                    "text": "What kind of nuts are used in marzipan ?",
+                    "coarse_label": 1,
+                    "fine_label": 9,
+                    "thought": "Marzipan is a confection made primarily of sugar and almond meal, hence the question is about an entity."
+                }
+            },
+            {
+                "index": 419,
+                "data": {
+                    "text": "What are shooting stars ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question asks for an explanation or description of what shooting stars are, hence it falls under the Description and abstract concept category."
+                }
+            },
+            {
+                "index": 61,
+                "data": {
+                    "text": "Who portrayed Vincent Van Gogh in Lust for Life ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question is asking for a person who portrayed a character in a movie, which points to a human being."
+                }
+            },
+            {
+                "index": 117,
+                "data": {
+                    "text": "Where is the Bulls basketball team based ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for the geographic location where the Bulls basketball team is based, which pertains to a place or location."
+                }
+            },
+            {
+                "index": 63,
+                "data": {
+                    "text": "How many questions do you have on your database ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a numerical amount, which fits the class 'Numeric value'."
+                }
+            }
+        ]
+    },
+    "run_2": {
+        "acc": 0.698,
+        "macro_f1": 0.708,
+        "examples": [
+            {
+                "index": 135,
+                "data": {
+                    "text": "What does BMW stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "BMW is an acronym for Bayerische Motoren Werke, so it falls under the Abbreviation category."
+                }
+            },
+            {
+                "index": 4,
+                "data": {
+                    "text": "What was organized as a Confederate veterans ' social club in Pulaski , in Tennessee , in 1866 ?",
+                    "coarse_label": 1,
+                    "fine_label": 8,
+                    "thought": "The question is asking about a specific entity that was organized, making it fall under the category of 'Entity'."
+                }
+            },
+            {
+                "index": 389,
+                "data": {
+                    "text": "What is a Mexican hairless ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for a description of 'a Mexican hairless', which indicates it wants an explanation or understanding of the concept."
+                }
+            },
+            {
+                "index": 408,
+                "data": {
+                    "text": "What is the last name of Lucy and Linus from the Peanut 's comic strip ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question asks about the last name of Lucy and Linus, who are characters in the comic strip 'Peanuts.' Their last name is 'van Pelt,' and this indicates a human classification."
+                }
+            },
+            {
+                "index": 553,
+                "data": {
+                    "text": "What is the web address at which I can find the e-mail address of a member of the US House of Representatives ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for a specific web address (a location on the internet) where one can find contact information."
+                }
+            },
+            {
+                "index": 31,
+                "data": {
+                    "text": "How many years ago did Led Zeppelin release its last album ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question asks about the number of years ago, which is a numeric value."
+                }
+            }
+        ]
+    },
+    "run_3": {
+        "acc": 0.76,
+        "macro_f1": 0.76,
+        "examples": [
+            {
+                "index": 446,
+                "data": {
+                    "text": "What does RCA stand for ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question is asking for the meaning of an abbreviation."
+                }
+            },
+            {
+                "index": 270,
+                "data": {
+                    "text": "What was George Washington afraid of ?",
+                    "coarse_label": 1,
+                    "fine_label": 13,
+                    "thought": "The question asks about something specific related to George Washington, indicating an entity."
+                }
+            },
+            {
+                "index": 127,
+                "data": {
+                    "text": "What is a conifer ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for a description or explanation of what a conifer is, which falls under the category of Description and abstract concept."
+                }
+            },
+            {
+                "index": 181,
+                "data": {
+                    "text": "What was the name of the first Watergate special prosecutor , later fired by Nixon ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question asks for the name of a person who was the first Watergate special prosecutor and was later fired by Nixon."
+                }
+            },
+            {
+                "index": 553,
+                "data": {
+                    "text": "What is the web address at which I can find the e-mail address of a member of the US House of Representatives ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "The question is asking for a specific web address (a location on the internet) where one can find contact information."
+                }
+            },
+            {
+                "index": 182,
+                "data": {
+                    "text": "How many flavors does Baskin & Robbins offer ?",
+                    "coarse_label": 5,
+                    "fine_label": 38,
+                    "thought": "The question is asking for a numerical quantity, specifically the number of flavors offered by Baskin & Robbins."
+                }
+            }
+        ]
+    },
+    "run_4": {
+        "acc": 0.76,
+        "macro_f1": 0.773,
+        "examples": [
+            {
+                "index": 20,
+                "data": {
+                    "text": "CNN is the abbreviation for what ?",
+                    "coarse_label": 0,
+                    "fine_label": 1,
+                    "thought": "The question asks for what CNN stands for, and CNN is an abbreviation."
+                }
+            },
+            {
+                "index": 410,
+                "data": {
+                    "text": "What kind of car did Janis Joplin ask the Lord to buy her ?",
+                    "coarse_label": 1,
+                    "fine_label": 15,
+                    "thought": "The question is asking about a specific type of car, which is a kind of entity."
+                }
+            },
+            {
+                "index": 283,
+                "data": {
+                    "text": "What does palindromic mean ?",
+                    "coarse_label": 2,
+                    "fine_label": 24,
+                    "thought": "The question is asking for the meaning or definition of the term 'palindromic', which corresponds to the classification 'Description and abstract concept'."
+                }
+            },
+            {
+                "index": 282,
+                "data": {
+                    "text": "What character in The Beverly Hillbillies has the given names Daisy Moses ?",
+                    "coarse_label": 3,
+                    "fine_label": 29,
+                    "thought": "The question asks about a character from The Beverly Hillbillies with the given names Daisy Moses. This character is a specific human being."
+                }
+            },
+            {
+                "index": 155,
+                "data": {
+                    "text": "Where is the Keck telescope ?",
+                    "coarse_label": 4,
+                    "fine_label": 35,
+                    "thought": "Keck is a known observatory with telescopes located in a specific place, making it a question about location."
+                }
+            },
+            {
+                "index": 70,
+                "data": {
+                    "text": "Approximately how much does a teaspoon of matter weigh in a black hole ?",
+                    "coarse_label": 5,
+                    "fine_label": 49,
+                    "thought": "The question is asking for a numeric value related to the weight of a teaspoon of matter in a black hole."
+                }
+            }
+        ]
+    },
+    "max_acc": 0.812,
+    "min_acc": 0.698,
+    "mean_acc": 0.7622,
+    "std_acc": 0.03732237934537404,
+    "max_macro_f1": 0.814,
+    "min_macro_f1": 0.708,
+    "mean_macro_f1": 0.7624,
+    "std_macro_f1": 0.03396822044205436
+}
