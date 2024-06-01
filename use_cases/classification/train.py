@@ -343,6 +343,7 @@ class TrecTrainer(Component):
 
     def train_instruction(self, max_steps: int = 5) -> None:
         # better to provide a manual instruction
+        # TODO: how to save the states.
         top_5_instructions = []
         self.task.train()
         best_score: float = 0.0
@@ -367,6 +368,16 @@ class TrecTrainer(Component):
         acc, macro_f1, weights_per_class = self.test()
         print(
             f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
+        )
+        # save the best instruction
+        save(
+            self.task.state_dict(),
+            f"use_cases/classification/checkpoints/task_instruction/state_dict",
+        )
+        # save all instructions history from the optimizer
+        save(
+            self.instruction_optimier.instruction_history,
+            f"use_cases/classification/checkpoints/task_instruction/instruction_history",
         )
 
     def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
@@ -484,7 +495,7 @@ if __name__ == "__main__":
         batch_size=batch_size,
     )
     logger.info(f"trainer: {trainer}")
-    trainer.train_instruction(max_steps=1)
+    # trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
-    # trainer.eval_zero_shot()
+    trainer.eval_zero_shot()
     # trainer.eval_few_shot(shots=num_shots, runs=5)

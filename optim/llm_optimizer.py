@@ -1,5 +1,5 @@
 r"""
-Implemented ORPO llm optimizer: https://arxiv.org/abs/2309.03409
+Based and optimized from ORPO llm optimizer: https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
@@ -18,7 +18,7 @@ LLM_OPTIMIZER_TEMPLATE = r"""<SYS>
 Your task is to generate an new instruction that can score higher than all previous instructions.
 {# manual_instruction #}
 {%if manual_instruction %}
-You start with a manual instruction:
+Here is the starter instruction:
 <MANUAL_INS>
 {{manual_instruction}}
 </MANUAL_INS>
@@ -27,7 +27,7 @@ You start with a manual instruction:
 {# history #}
 {% if instructions %}
 <HISTORY_INS>
-Below are some previous instructions and their scores, the higher the score the better the instruction:
+Below are some of your previous instructions and their scores, the higher the score the better the instruction:
 {% for instruction in instructions %}
 - {{loop.index}}. 
 - text: {{instruction.text}} 
@@ -46,7 +46,7 @@ ____
 {# More task specification #}
 - Your new instruction should be different from all previous instructions.
 - It should be clear, concise, and effective.
-- Do not change core information provided in the manual instruction.
+- Do not change core information provided in the starter instruction.
 </SYS>
 New Instruction:
 """
@@ -71,7 +71,11 @@ class Instruction(BaseDataClass):
 # TODO: combine few-shot with llm optimizer
 # TODO: support multi processors and multiple proposals at the same time
 class LLMOptimizer(Optimizer):
-    __doc__ = r"""manage a history of instructions with the top_k best scores."""
+    __doc__ = r"""Default LLM optimizer for task instruction.
+
+    User should always provide a starter instruction which provides the source of truth for the task.
+    The optimizer will generate new instructions that can score higher than all previous instructions.
+    """
 
     def __init__(
         self,
@@ -90,13 +94,13 @@ class LLMOptimizer(Optimizer):
             template=LLM_OPTIMIZER_TEMPLATE,
         )
         self.instruction_history: List[Instruction] = []
-        self.manual_instruction: str = None
+        self.starter_instruction: str = None
         if self.instruction_parameter.data is not None:
-            self.manual_instruction = self.instruction_parameter.data
+            self.starter_instruction = self.instruction_parameter.data
         self.proposed: str = None
         self.current: str = None
         self.prompt_kwargs = {
-            "manual_instruction": self.manual_instruction,  # or say starter_instruction
+            "starter_instruction": self.starter_instruction,
             "instructions": self.instruction_history,
         }
 
