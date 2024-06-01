@@ -46,8 +46,8 @@ COLOR_MAP = {
 }
 
 
-# TODO: what if users set up two logger in the same script with the same name, will it cause any issue?
-# TODO: does it make sense when both enable_console and enable_file are False?
+# NOTE: what if users set up two logger in the same script with the same name, we dont config the logger again, but we add the handler again, is it a problem?
+# NOTE: When both console and file are false, the logger should not have any handlers.
 def get_default_logger(
     name: str = "default",
     filename: str = "./logs/app.log",
@@ -74,7 +74,7 @@ def get_default_logger(
         .. code-block:: python
 
             from utils.logger import get_default_logger
-            logger = get_default_logger(level="DEBUG") # set level = debug
+            logger = get_default_logger(name=__name__, level="DEBUG") # set level = debug
             logger.info("This is an info message")
             logger.warning("This is a warning message")
 
@@ -144,15 +144,15 @@ def printc(text: str, color: str = "cyan"):
 
     Args:
         text (str): Text to be printed.
-        color (Optional[str], optional): Color of the text. Options:
+        color (str): Color of the text. Defaults to "cyan". Options:
         'black', 'blue', 'cyan', 'green', 'magenta', 'red', 'white', 'yellow'. Defaults to "cyan".
 
     Example:
         .. code-block:: python
 
             from utils.logger import colored_print
-            colored_print("hello", color="green")
-            colored_print("hello")
+            printc("hello", color="green")
+            printc("hello")
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     function_name, script_name, line_number = get_current_script_and_line()
@@ -161,18 +161,3 @@ def printc(text: str, color: str = "cyan"):
         f"{color_code}{timestamp} - [{script_name}:{line_number}:{function_name}] - {text}\033[0m"
     )
     # \033[0m means reset, not impacting the next print texts
-
-
-if __name__ == "__main__":
-
-    print(f"logger name: {__name__}")
-    logger = get_default_logger(name=__name__, level="DEBUG")
-
-    def test_logger(logger):
-        logger.info("This is an info message")
-        logger.warning("This is a warning message")
-        printc("hello world", color="green")
-        printc("hello world")
-        printc(logger.name)
-
-    test_logger(logger)
