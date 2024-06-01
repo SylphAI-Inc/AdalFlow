@@ -1,118 +1,165 @@
 """
-LLM application log is unique, as developers pay much attention to the input text, intermediate data flow and final output.
-This logging system aims to facilitate the developers check the application in a flexible way.
-It is easy to use while highly configurable.
+LightRAG's easy-to-customize logging system with colorized console output.
 
-Reference: https://github.com/stanfordnlp/dspy/blob/main/dspy/utils/logging.py
+On Windows versions prior to Windows 10, the Command Prompt and PowerShell do not support ANSI color codes. You would need to use third-party libraries like colorama to enable ANSI color support.
+Please add the following colorama setting at the beginning of your code:
+
+Installation:
+
+.. code-block:: bash
+
+    pip install colorama
+
+Initialization:
+
+.. code-block:: python
+
+    import colorama
+    colorama.init(autoreset=True)
 """
 
 import logging
-import os
 import sys
-from typing import Optional
-import structlog
+from typing import List, Optional
+import inspect
+import os
+from datetime import datetime
 
+# create default configuration for the logging, and still allow users to provide more of their own configuration on top of this
+# (1) enable both console and file output
+# (2) set up the default format: "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
+# The format is: time, log level, filename(where the log is from), line number, function name, message
+# set up default date format: "%Y-%m-%d %H:%M:%S"
+# (3) set up the default log level: INFO
+# (4) offer a colored print to help debug with timestamp and path
 
-# TODO:
-# 1. Add colors to the log console output: https://www.structlog.org/en/stable/console-output.html
-# 2. Wrap it with other functions/components
+# Define log levels within the class
+LOG_LEVELS = {
+    "DEBUG": logging.DEBUG,
+    "INFO": logging.INFO,
+    "WARNING": logging.WARNING,
+    "ERROR": logging.ERROR,
+    "CRITICAL": logging.CRITICAL,
+}
+    
+# color map, from color string to colorama.Fore colors, easier to use, reduce friction
+COLOR_MAP = {
+    "black": "\x1b[30m", "blue": "\x1b[34m", "cyan": "\x1b[36m", "green": "\x1b[32m", 
+    "magenta": "\x1b[35m", "red": "\x1b[31m",  "white": "\x1b[37m", "yellow": "\x1b[33m"
+}
 
+# Helper function to get log level from string
+def get_level(level: str) -> int:
+    """Return the logging level constant based on a string."""
+    return LOG_LEVELS.get(level.upper(), logging.INFO)
 
-def setup_handler(handler: logging.Handler, log_level: str):
-    """
-    Setup the logging handler with the specified log level.
-    """
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - [%(pathname)s:%(lineno)d] - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )  # add time and filename
-    handler.setFormatter(formatter)  # configure the formatter
-    handler.setLevel(log_level)  # set log levels to output
+def get_default_logger(
+    name: str = "default",
+    filename: str = "./logs/app.log",
+    level: str = "INFO",
+    enable_console: bool = True,
+    enable_file: bool = True,
+) -> logging.Logger:
+    r"""LightRAG's easy-to-customize logging system.
 
+    LightRAG's logging features one-line configuration. We wrapped the format, the log level and handlers. 
+    Users only need least effort to set up the logger but can still do their own configuration on top of the logger.
 
-def configure_logging(
-    logger: logging.Logger, log_level: str, method: str, file_name: str
-):
-    """
-    Configure the logging system with structured and output.
-    """
-    if method == "console":
-        renderer = structlog.dev.ConsoleRenderer()
-    elif method == "file":
-        # check if the path exists
-        os.makedirs(os.path.dirname(file_name), exist_ok=True)
-        renderer = structlog.processors.JSONRenderer()
-    else:
-        raise ValueError(f"Invalid method: {method}")
-
-    structlog.configure(
-        processors=[
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            renderer,
-        ],
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-    )
-
-    logger.setLevel(logging.getLevelName(log_level))
-    handler = (
-        logging.FileHandler(file_name)
-        if method == "file"
-        else logging.StreamHandler(sys.stdout)
-    )
-    setup_handler(handler, log_level)
-    logger.addHandler(handler)
-
-
-def get_logger(
-    logger_name: str = "AppLog",
-    method: str = "file",
-    file_name: Optional[str] = "./logs/app.log",
-    log_level: str = "INFO",
-):
-    """
-    Configures the logging system with structured and output.
-    method: str, default="file", options=["console", "file"]
-    file_name: str, default=None, the file name to store the logs
-    log_level: str, default="INFO", options=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-
+    Args:
+        name (str, optional): Name of the logger. Defaults to "default".
+        filename (str, optional): Name of the output log file. Defaults to "./logs/app.log".
+        level (str, optional): Log level. Defaults to "INFO".
+        enable_console (bool, optional): Control the console output. Defaults to True.
+        enable_file (bool, optional): Control the file output. Defaults to True.
+        
     Example:
+        .. code-block:: python
 
-    from utils.logger import get_logger
-    logger = get_logger(file_name="./logs/app.log")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f'response: {response}')
-
-    Then you can open ./logs/app.log and view the content.
+            from utils.logger import get_default_logger
+            logger = get_default_logger(level="DEBUG") # set level = debug
+            logger.info("This is an info message")
+            logger.warning("This is a warning message")
+            
+    Returns:
+        logging.Logger: A configured logger, following the same logic with Python default logger, you can add more configuration such as add Handler to it.
     """
-    logger = logging.getLogger(logger_name)
-    # create the logs directory if it does not exist
-    os.makedirs(os.path.dirname(file_name), exist_ok=True)
-    configure_logging(logger, log_level, method, file_name)
+    logger = logging.getLogger(name=name)
+    level = get_level(level)
+    logger.setLevel(level)
+
+    # Enable default formatter
+    format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
+    formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
+
+    # Set up the handler
+    handlers: List[logging.Handler] = []
+    if enable_console:
+        handler = logging.StreamHandler(sys.stdout)
+        handlers.append(handler)
+    if enable_file:
+        file_path: str = os.path.dirname(filename)
+        os.makedirs(file_path, exist_ok=True)
+        handler = logging.FileHandler(filename=filename, mode="a")
+        handlers.append(handler)
+
+    for handler in handlers:
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+    
+    # prevent duplication in the root logger
+    logger.propagate = False
+
     return logger
 
 
+def get_current_script_and_line():
+    """helper function to get function, script, line
+
+    Returns:
+        function_name (str): the name of the function that is calling.
+        script_name (str): the name of the script that is calling.
+        line_number (str): the line number of the code that is calling.
+    """
+    caller_frame = inspect.stack()[2]
+    file_path, line_number, function_name = caller_frame.filename, caller_frame.lineno, caller_frame.function
+    script_name = os.path.basename(file_path)
+    
+    return function_name, script_name, line_number
+
+
+def colored_print(text: str, color: Optional[str] = "cyan") -> None:
+    """LightRAG's colored print for debugging.
+    
+    LightRAG's customized print with colored text, position of code block the print is set, and current timestamp.
+
+    Args:
+        text (str): Text to be printed.
+        color (Optional[str], optional): Supported colors to apply with texts:
+        'black', 'blue', 'cyan', 'green', 'magenta', 'red', 'white', 'yellow'. Defaults to "cyan".
+    
+    Example:
+        .. code-block:: python
+
+            from utils.logger import colored_print
+            colored_print("hello", color="green")
+            colored_print("hello")
+            
+    Returns:
+        None
+    """
+    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    function_name, script_name, line_number = get_current_script_and_line()
+    color_code = COLOR_MAP.get(color, COLOR_MAP["cyan"])
+    print(f"{color_code}{timestamp} - [{script_name}:{line_number}:{function_name}] - {text}\033[0m") 
+    # \033[0m means reset, not impacting the next print texts
+
 if __name__ == "__main__":
-    from utils.logger import get_logger
-    from use_cases.simple_qa_groq import SimpleQA
-
-    logger = get_logger(method="console")  # Retrieve the configured logger
-    simple_qa = SimpleQA()
-    logger.info(simple_qa)
-    response = simple_qa.call("What is the capital of France?")
-    logger.info(f"response: {response}")
-    # log_settings = LogSettings(
-    #     output_type="str", method="file", file_name="./utils/test.log", log_level="INFO"
-    # )
-    # logger = (
-    #     log_settings.get_logger()
-    # )  # Explicitly get the configured logger from log_settings
-    # logger.info("hello this is logger")  # Log message to 'test.log'
-
-    # check ./utils/test.log to view the log
+    import logging
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    baselogger = logging.getLogger(__name__)
+    baselogger.info("this is base logger")
+    logger = get_default_logger(level="DEBUG")
+    logger.info("This is an info message")
+    logger.warning("This is a warning message")
+    colored_print("hello world", color="green")
+    colored_print("hello world")
