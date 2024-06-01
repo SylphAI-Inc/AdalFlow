@@ -1,8 +1,6 @@
 Utils
 =============================
 
-Here is the content of our documentation project.
-
 Overview
 ----------
 .. autosummary::
