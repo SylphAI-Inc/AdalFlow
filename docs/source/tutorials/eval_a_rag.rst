@@ -25,6 +25,7 @@ Let's walk through the code to evaluate a RAG pipeline step by step.
 We import the necessary dependencies for our evaluation script. These include modules for loading datasets, constructing a RAG pipeline, and evaluating the performance of the RAG pipeline.
 
 .. code-block::
+    :linenos:
 
     import yaml
 
@@ -48,6 +49,7 @@ We import the necessary dependencies for our evaluation script. These include mo
 We load the configuration settings from `a YAML file <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/configs/rag_hotpotqa.yaml>`_. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.
 
 .. code-block::
+    :linenos:
 
     with open("./configs/rag_hotpotqa.yaml", "r") as file:
         settings = yaml.safe_load(file)
@@ -56,6 +58,7 @@ We load the configuration settings from `a YAML file <https://github.com/SylphAI
 In this tutorial, we use the `HotpotQA dataset <https://huggingface.co/datasets/hotpot_qa>`_ as an example. Each data sample in HotpotQA has *question*, *answer*, *context* and *supporting_facts* selected from the whole context. We load the HotpotQA dataset using the :obj:`load_dataset` function from the `datasets <https://huggingface.co/docs/datasets>`_ module. We select a subset of the dataset as an example for evaluation purposes.
 
 .. code-block::
+    :linenos:
 
     dataset = load_dataset(path="hotpot_qa", name="fullwiki")
     dataset = dataset["train"].select(range(5))
@@ -64,6 +67,7 @@ In this tutorial, we use the `HotpotQA dataset <https://huggingface.co/datasets/
 For each sample in the dataset, we create a list of documents to retrieve from according to its corresponding *context* in the dataset. Each document has a title and a list of sentences. We use the :obj:`Document` class from the :obj:`core.data_classes` module to represent each document.
 
 .. code-block::
+    :linenos:
 
     for data in dataset:
         num_docs = len(data["context"]["title"])
@@ -79,6 +83,7 @@ For each sample in the dataset, we create a list of documents to retrieve from a
 We initialize the RAG pipeline by creating an instance of the :obj:`RAG` class with the loaded configuration settings. We then build the index using the document list created in the previous step.
 
 .. code-block::
+    :linenos:
 
     for data in dataset:
         # following the previous code snippet
@@ -91,6 +96,7 @@ For each sample in the dataset, we retrieve the context and generate the answer 
 To get the ground truth context string from the *supporting_facts* filed in HotpotQA. We have implemented a :obj:`get_supporting_sentences` function, which extract the supporting sentences from the context based on the *supporting_facts*. This function is specific to the HotpotQA dataset, which is available in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py>`_.
 
 .. code-block::
+    :linenos:
 
     all_questions = []
     all_retrieved_context = []
@@ -120,6 +126,7 @@ To get the ground truth context string from the *supporting_facts* filed in Hotp
 We first evaluate the performance of the retriever component of the RAG pipeline. We compute the average recall and context relevance for each query using the :class:`RetrieverEvaluator <eval.evaluators.RetrieverEvaluator>` class.
 
 .. code-block::
+    :linenos:
 
     retriever_evaluator = RetrieverEvaluator()
     avg_recall, recall_list = retriever_evaluator.compute_recall(
@@ -134,6 +141,7 @@ We first evaluate the performance of the retriever component of the RAG pipeline
 Next, we evaluate the performance of the generator component of the RAG pipeline. We compute the average exact match accuracy for each query using the :class:`AnswerMacthEvaluator <eval.evaluators.AnswerMacthEvaluator>` class.
 
 .. code-block::
+    :linenos:
 
     generator_evaluator = AnswerMacthEvaluator(type="fuzzy_match")
     answer_match_acc, match_acc_list = generator_evaluator.compute_match_acc(
@@ -146,6 +154,7 @@ Finally, we evaluate the performance of the generator component of the RAG pipel
 Note that :obj:`task_desc_str` and :obj:`judgement_query` can be customized.
 
 .. code-block::
+    :linenos:
 
     llm_evaluator = Generator(
         model_client=OpenAIClient(),

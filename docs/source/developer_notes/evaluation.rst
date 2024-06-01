@@ -34,22 +34,28 @@ To comprehensively assess the capabilities of LLMs, researchers typically utiliz
 * `Chatbot Arena <https://arena.lmsys.org/>`_, which is an open platform to evaluate LLMs through human voting.
 * `API-Bank <https://github.com/AlibabaResearch/DAMO-ConvAI/tree/main/api-bank>`_, which evaluates LLMs' ability to use external tools and APIs to perform tasks.
 
-Please refer to the review papers [1]_, [2]_, [6]_ for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the `Hugging Face Datasets <https://huggingface.co/datasets>`_ library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.
+Please refer to the review papers (*Chang et al.* [1]_, *Guo et al.* [2]_, and *Liu et al.* [6]_) for a more comprehensive overview of the datasets and benchmarks used in LLM evaluations. Additionally, a lot of datasets are readily accessible via the `Hugging Face Datasets <https://huggingface.co/datasets>`_ library. For instance, the MMLU dataset can be easily loaded from the Hub using the following code snippet.
 
 .. code-block:: python
+    :linenos:
 
     from datasets import load_dataset
-    dataset = load_dataset(path="mmlu", name='abstract_algebra')
-    print(dataset)
+    dataset = load_dataset(path="cais/mmlu", name='abstract_algebra')
+    print(dataset["test"])
+    # Dataset({
+    # features: ['question', 'subject', 'choices', 'answer'],
+    # num_rows: 100
+    # })
 
 How to evaluate?
 ------------------------------------------
 
-The final question is how to evaluate. Evaluation methods can be divided into *automated evaluation* and *human evaluation* [1]_, [6]_. Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks. Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM on specific tasks. Here, we recommend a few evaluation methods for LLMs.
+The final question is how to evaluate. Evaluation methods can be divided into *automated evaluation* and *human evaluation* (*Chang et al.* [1]_ and *Liu et al.* [6]_). Automated evaluation typically involves using metrics such as accuracy and BERTScore or employing an LLM as the judge, to quantitatively assess the performance of LLMs on specific tasks. Human evaluation, on the other hand, involves human in the loop to evaluate the quality of the generated text or the performance of the LLM. Here, we recommend a few automated evaluation methods that can be used to evaluate LLMs and their applications.
 
-If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BERTScore, perplexity, etc for LLMs and LLM applications, you can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_. For instance, you can use the following code snippet to compute the BERTScore, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
+If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BERTScore, perplexity, etc for LLMs and LLM applications, you can check out the metrics provided by `Hugging Face Metrics <https://huggingface.co/metrics>`_ or `TorchMetrics <https://lightning.ai/docs/torchmetrics>`_. For instance, to compute the BERTScore, you can use the corresponding metric function provided by Hugging Face, which uses the pre-trained contextual embeddings from BERT and matched words in generated text and reference text by cosine similarity.
 
 .. code-block:: python
+    :linenos:
 
     from datasets import load_dataset
     bertscore = load_metric("bertscore")
@@ -57,20 +63,37 @@ If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BE
     reference_text = ["life is great", "make it to the moon"]
     results = bertscore.compute(predictions=generated_text, references=reference_text, model_type="distilbert-base-uncased")
     print(results)
-    {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
+    # {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
 
 If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in LightRAG to assess both the quality of the retrieved context and the quality of the final generated answer.
 
-- :class:`RetrieverEvaluator <eval.evaluators.RetrieverEvaluator>`: This evaluator is used to evaluate the performance of the retriever component of the RAG pipeline. It has the following metric functions:
-    - :obj:`compute_recall`: This function computes the recall of the retriever. It is defined as the number of relevant documents retrieved by the retriever divided by the total number of relevant documents in the knowledge base.
-    - :obj:`compute_context_relevance`: This function computes the relevance of the retrieved context. It is defined as the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
-- :class:`AnswerMacthEvaluator <eval.evaluators.AnswerMacthEvaluator>`: This evaluator is used to evaluate the performance of the generator component of the RAG pipeline. It has the following metric functions:
-    - :obj:`compute_match_acc (if type is 'exact_match')`: This function computes the exact match accuracy of the generated answer. It is defined as the number of generated answers that exactly match the ground truth answer divided by the total number of generated answers.
-    - :obj:`compute_match_acc (if type is 'fuzzy_match')`: This function computes the fuzzy match accuracy of the generated answer. It is defined as the number of generated answers that contain the ground truth answer divided by the total number of generated answers.
-- :class:`LLMasJudge <eval.evaluators.LLMasJudge>`: This evaluator uses an LLM to get the judgement of the predicted answer for a list of questions. The task description and the judgement query of the LLM judge can be customized.
-    - :obj:`compute_judgement`: This function computes the judgement of the predicted answer. It is defined as the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
+- :class:`RetrieverEvaluator <eval.evaluators.RetrieverEvaluator>`: This evaluator is used to evaluate the performance of the retriever component of the RAG pipeline. It has metric functions to compute the recall and context relevance of the retriever.
+- :class:`AnswerMacthEvaluator <eval.evaluators.AnswerMacthEvaluator>`: This evaluator is used to evaluate the performance of the generator component of the RAG pipeline. It has metric functions to compute the exact match and fuzzy match accuracy of the generated answer.
+- :class:`LLMasJudge <eval.evaluators.LLMasJudge>`: This evaluator uses an LLM to get the judgement of the predicted answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It has a metric function to compute the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
 
-Please refer to the tutorial on `Evaluating a RAG Pipeline <>`_ for more details on how to use these evaluators. For more metrics for evaluating RAG pipelines, you can check out the `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ library, which also has a set of metrics for evaluating RAG pipelines.
+For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.
+
+.. code-block:: python
+    :linenos:
+
+    from eval.evaluators import RetrieverEvaluator
+    retrieved_context = "Apple is founded before Google." # Retrieved context
+    gt_context = ["Apple is founded in 1976.",
+                  "Google is founded in 1998.",
+                  "Apple is founded before Google."] # Ground truth context
+    retriever_evaluator = RetrieverEvaluator() # Initialize the RetrieverEvaluator
+    recall = retriever_evaluator.compute_recall_single_query(
+        retrieved_context, gt_context
+    ) # Compute the recall of the retriever
+    relevance = retriever_evaluator.compute_context_relevance_single_query(
+        retrieved_context, gt_context
+    ) # Compute the relevance of the retriever
+    print(f"Recall: {recall}, Relevance: {relevance}")
+    # Recall: 0.3333333333333333, Relevance: 1.0
+
+For a more detailed instructions on how to use these evaluators to evaluate RAG pipelines, you can refer to the tutorial on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`, where we provide a step-by-step guide on how to use these evaluators to evaluate a RAG pipeline on HotpotQA dataset.
+
+If you intent to use metrics that are not available in the LightRAG library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 
 
 .. [1] Chang, Yupeng, et al. "A survey on evaluation of large language models." ACM Transactions on Intelligent Systems and Technology 15.3 (2024): 1-45.
