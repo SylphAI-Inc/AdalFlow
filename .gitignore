@@ -30,3 +30,12 @@ li_test/
 .mypy_cache/
 .pytest_cache/
 local_cache/
+custom.log
+docs/
+lightrag.log
+log/
+phoenix.csv
+test.log
+test0528.log
+tests/*
+traces.txt
