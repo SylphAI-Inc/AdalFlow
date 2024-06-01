@@ -1,5 +1,5 @@
 from .serialization import *
-from .logger import PatchedLogging
+from .logger import get_default_logger, colored_print
 
 
-__all__ = ["save", "load", "PatchedLogging"]
+__all__ = ["save", "load", "get_default_logger", "colored_print"]
