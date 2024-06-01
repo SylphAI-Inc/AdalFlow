@@ -1,3 +1,5 @@
+"""This contains different evaluators and their associated metrics."""
+
 from typing import List, Union, Tuple
 from core.tokenizer import Tokenizer
 from core.generator import Generator
@@ -24,22 +26,28 @@ You:
 
 class AnswerMacthEvaluator:
     r"""
-    Evaluator for evaluating the match between predicted answer and ground truth answer.
-    Args:
-        type (str): Type of matching evaluation. Can be "exact_match" or "fuzzy_match". "exact_match" requires the predicted answer to be exactly the same as the ground truth answer. "fuzzy_match" requires the predicted answer to contain the ground truth answer.
+    Evaluator for evaluating the match between predicted and ground truth answer.
     """
 
     def __init__(self, type: str = "exact_match"):
+        r"""
+        Initialize a new instance of AnswerMacthEvaluator.
+
+        Args:
+            type (str): Type of matching evaluation. Can be "exact_match" or "fuzzy_match". "exact_match" requires the predicted answer to be exactly the same as the ground truth answer. "fuzzy_match" requires the predicted answer to contain the ground truth answer.
+        """
         self.type = type
 
     def compute_match_acc_single_query(self, pred_answer: str, gt_answer: str) -> float:
         r"""
         Compute the match accuracy of the predicted answer for a single query.
+
         Args:
-            pred_answer (str): Predicted answer string
-            gt_answer (str): Ground truth answer string
+            pred_answer (str): Predicted answer string.
+            gt_answer (str): Ground truth answer string.
+
         Returns:
-            float: Match accuracy
+            float: Match accuracy.
         """
         if self.type == "exact_match":
             return 1.0 if pred_answer == gt_answer else 0.0
@@ -53,12 +61,15 @@ class AnswerMacthEvaluator:
     ) -> Tuple[float, List[float]]:
         r"""
         Compute the match accuracy of the predicted answer for a list of queries.
+
         Args:
-            all_pred_answer (List[str]): List of predicted answer strings
-            all_gt_answer (List[str]): List of ground truth answer strings
+            all_pred_answer (List[str]): List of predicted answer strings.
+            all_gt_answer (List[str]): List of ground truth answer strings.
+
         Returns:
-            float: Average match accuracy
-            List[float]: Match accuracy values for each query
+            tuple:
+                - float: Average match accuracy.
+                - List[float]: Match accuracy values for each query.
         """
         match_acc_list = []
         for pred_answer, gt_answer in zip(all_pred_answer, all_gt_answer):
@@ -74,6 +85,9 @@ class RetrieverEvaluator:
     """
 
     def __init__(self):
+        r"""
+        Initialize a new instance of RetrieverEvaluator.
+        """
         pass
 
     def compute_recall_single_query(
@@ -81,11 +95,13 @@ class RetrieverEvaluator:
     ) -> float:
         r"""
         Compute the recall of the retrieved context for a single query.
+
         Args:
-            retrieved_context (str): Retrieved context string
-            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against
+            retrieved_context (str): Retrieved context string.
+            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against.
+
         Returns:
-            float: Recall value
+            float: Recall value.
         """
         if isinstance(gt_context, str):
             gt_context = [gt_context]
@@ -102,12 +118,15 @@ class RetrieverEvaluator:
     ) -> Tuple[float, List[float]]:
         r"""
         Compute the recall of the retrieved context for a list of queries. The recall is the ratio of the number of relevant context strings in the retrieved context to the total number of relevant context strings.
+
         Args:
-            all_retrieved_context (List[str]): List of retrieved context strings
-            all_gt_context (Union[List[str], List[List[str]]]: List of ground truth context strings and each of them can be a string or a list of strings
+            all_retrieved_context (List[str]): List of retrieved context strings.
+            all_gt_context (Union[List[str], List[List[str]]]: List of ground truth context strings and each of them can be a string or a list of strings.
+
         Returns:
-            float: Average recall value
-            List[float]: Recall values for each query
+            tuple:
+                - float: Average recall value.
+                - List[float]: Recall values for each query.
         """
         recall_list = []
         for retrieved_context, gt_context in zip(all_retrieved_context, all_gt_context):
@@ -121,11 +140,13 @@ class RetrieverEvaluator:
     ) -> float:
         r"""
         Compute the context relevance of the retrieved context for a single query. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
+
         Args:
-            retrieved_context (str): Retrieved context string
-            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against
+            retrieved_context (str): Retrieved context string.
+            gt_context (Union[str, List[str]]): Context string or list of context strings to compare against.
+
         Returns:
-            float: Context relevance value
+            float: Context relevance value.
         """
         if isinstance(gt_context, str):
             gt_context = [gt_context]
@@ -143,12 +164,15 @@ class RetrieverEvaluator:
     ) -> Tuple[float, List[float]]:
         r"""
         Compute the context relevance of the retrieved context for a list of queries. The context relevance is the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.
+
         Args:
-            all_retrieved_context (List[str]): List of retrieved context strings
-            all_gt_context (Union[List[str], List[List[str]]]): List of ground truth context strings and each of them can be a string or a list of strings
+            all_retrieved_context (List[str]): List of retrieved context strings.
+            all_gt_context (Union[List[str], List[List[str]]]): List of ground truth context strings and each of them can be a string or a list of strings.
+
         Returns:
-            float: Average context relevance value
-            List[float]: Context relevance values for each query
+            tuple:
+                - float: Average context relevance value.
+                - List[float]: Context relevance values for each query.
         """
         context_relevance_list = []
         for retrieved_context, gt_context in zip(all_retrieved_context, all_gt_context):
@@ -166,12 +190,15 @@ class RetrieverEvaluator:
 class LLMasJudge:
     r"""
     LLM as judge for evaluating the performance of a LLM.
-
-    Args:
-        llm_evaluator (Generator): LLM model to be used as judge
     """
 
     def __init__(self, llm_evaluator: Generator):
+        r"""
+        Initialize a new instance of LLMasJudge.
+
+        Args:
+            llm_evaluator (Generator): LLM model to be used as judge.
+        """
         self.llm_evaluator = llm_evaluator
 
     def compute_judgement_single_question(
@@ -179,13 +206,15 @@ class LLMasJudge:
     ) -> bool:
         r"""
         Get the judgement of the predicted answer for a single question.
+
         Args:
-            question (str): Question string
-            pred_answer (str): Predicted answer string
-            gt_answer (str): Ground truth answer string
-            judgement_query (str): judgement query string
+            question (str): Question string.
+            pred_answer (str): Predicted answer string.
+            gt_answer (str): Ground truth answer string.
+            judgement_query (str): judgement query string.
+
         Returns:
-            bool: Judgement result
+            bool: Judgement result.
         """
         judgement = self.llm_evaluator(
             input=judgement_query,
@@ -206,13 +235,15 @@ class LLMasJudge:
     ) -> List[bool]:
         r"""
         Get the judgement of the predicted answer for a list of questions.
+
         Args:
-            all_questions (List[str]): List of question strings
-            all_pred_answer (List[str]): List of predicted answer strings
-            all_gt_answer (List[str]): List of ground truth answer strings
-            judgement_query (str): judgement query string
+            all_questions (List[str]): List of question strings.
+            all_pred_answer (List[str]): List of predicted answer strings.
+            all_gt_answer (List[str]): List of ground truth answer strings.
+            judgement_query (str): judgement query string.
+
         Returns:
-            List[bool]: Judgement results
+            List[bool]: Judgement results.
         """
         judgement_list = []
         for question, pred_answer, gt_answer in zip(
