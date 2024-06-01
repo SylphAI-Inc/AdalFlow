@@ -1,5 +1,6 @@
 from typing import Any, Dict, List, Optional
 from copy import deepcopy
+import logging
 
 from core.data_classes import ModelType, GeneratorOutput
 from core.component import Component
@@ -12,6 +13,8 @@ from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 GeneratorInputType = str
 GeneratorOutputType = GeneratorOutput
+
+logger = logging.getLogger(__name__)
 
 
 # NOTE: currently generator cannot be used in Sequential due to specialized output data type
@@ -157,13 +160,17 @@ class Generator(Component):
                 param: getattr(self, param).data for param in self.state_dict()
             }
             prompt_kwargs.update(trained_prmpt_kwargs)
-            print(f"prompt_kwargs: {prompt_kwargs}")
+
+        logger.info(f"prompt_kwargs: {prompt_kwargs}")
+        logger.info(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(completion)
+
+        logger.info(f"output: {output}")
         return output
 
     async def acall(

@@ -342,18 +342,19 @@ class TrecTrainer(Component):
         )
 
     def train_instruction(self, max_steps: int = 5) -> None:
-
+        # better to provide a manual instruction
         top_5_instructions = []
         self.task.train()
         best_score: float = 0.0
         for i, train_batch in enumerate(self.data_loader):
             if i >= max_steps:
                 break
+
+            self.instruction_optimier.propose()
             acc, f1 = self.batch_eval(train_batch)
             score = (acc + f1) / 2.0
             print(f"step: {i}")
             print(f"score: {score}")
-            self.instruction_optimier.propose()
             if score > best_score:
                 best_score = score
                 self.instruction_optimier.update_parameter(score)
@@ -467,7 +468,7 @@ if __name__ == "__main__":
     import sys
 
     # Configure logging to output to standard output (console)
-    logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logger = logging.getLogger()
 
     train_dataset, eval_dataset, test_dataset = load_datasets()

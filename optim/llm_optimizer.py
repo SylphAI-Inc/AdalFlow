@@ -16,7 +16,17 @@ from optim.optimizer import Optimizer
 # TODO: add the responses and gts
 LLM_OPTIMIZER_TEMPLATE = r"""<SYS>
 Your task is to generate an new instruction that can score higher than all previous instructions.
-<HISTORY>
+{# manual_instruction #}
+{%if manual_instruction %}
+You start with a manual instruction:
+<MANUAL_INS>
+{{manual_instruction}}
+</MANUAL_INS>
+{% endif %}
+
+{# history #}
+{% if instructions %}
+<HISTORY_INS>
 Below are some previous instructions and their scores, the higher the score the better the instruction:
 {% for instruction in instructions %}
 - {{loop.index}}. 
@@ -30,9 +40,13 @@ Below are some previous instructions and their scores, the higher the score the 
 {% endif %}
 ____
 {% endfor %}
-</HISTORY>
+</HISTORY_INS>
+{% endif %}
+
+{# More task specification #}
 - Your new instruction should be different from all previous instructions.
 - It should be clear, concise, and effective.
+- Do not change core information provided in the manual instruction.
 </SYS>
 New Instruction:
 """
@@ -76,22 +90,26 @@ class LLMOptimizer(Optimizer):
             template=LLM_OPTIMIZER_TEMPLATE,
         )
         self.instruction_history: List[Instruction] = []
+        self.manual_instruction: str = None
         if self.instruction_parameter.data is not None:
-            self.instruction_history.append(
-                Instruction(text=self.instruction_parameter.data, score="Unknown")
-            )
+            self.manual_instruction = self.instruction_parameter.data
         self.proposed: str = None
         self.current: str = None
+        self.prompt_kwargs = {
+            "manual_instruction": self.manual_instruction,  # or say starter_instruction
+            "instructions": self.instruction_history,
+        }
 
     def reset(self):
         self.instruction_history = []
 
     def propose(self):
         r"""Propose a new instruction using the generator."""
-        prompt_kwargs = {"instructions": self.instruction_history}
         max_run: int = 5
         for _ in range(max_run):
-            instruction: GeneratorOutput = self.generator(prompt_kwargs=prompt_kwargs)
+            instruction: GeneratorOutput = self.generator(
+                prompt_kwargs=self.prompt_kwargs
+            )
             if instruction.data is not None:
                 instruction = instruction.data
                 break
