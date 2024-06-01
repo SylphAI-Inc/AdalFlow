@@ -23,6 +23,13 @@ class GroqAPIClient(APIClient):
     __doc__ = r"""A component wrapper for the Groq API client.
 
     Visit https://console.groq.com/docs/ for more api details.
+    Check https://console.groq.com/docs/models for the available models.
+    
+    Tested Groq models: 4/22/2024
+    - llama3-8b-8192
+    - llama3-70b-8192
+    - mixtral-8x7b-32768
+    - gemma-7b-it
     """
 
     def __init__(self, api_key: Optional[str] = None):
@@ -34,29 +41,7 @@ class GroqAPIClient(APIClient):
         super().__init__()
         self._api_key = api_key
         self._init_sync_client()
-        # https://console.groq.com/docs/models, 4/22/2024
-        self.model_lists = {
-            "llama3-8b-8192": {
-                "developer": "Meta",
-                "context_size": "8192",
-            },
-            "llama3-70b-8192": {
-                "developer": "Meta",
-                "context_size": "8192",
-            },
-            # "llama2-70b-4096": {
-            #     "developer": "Meta",
-            #     "context_size": "4096",
-            # },
-            "mixtral-8x7b-32768": {
-                "developer": "Mistral",
-                "context_size": "32768",
-            },
-            "gemma-7b-it": {
-                "developer": "Google",
-                "context_size": "8192",
-            },
-        }
+
         self.async_client = None  # only initialize if the async call is called
 
     def _init_sync_client(self):
@@ -73,8 +58,7 @@ class GroqAPIClient(APIClient):
 
     def parse_chat_completion(self, completion: Any) -> str:
         """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        # TODO: standardize the completion
+        Parse the completion to a string output.
         """
         return completion.choices[0].message.content
 
@@ -108,9 +92,6 @@ class GroqAPIClient(APIClient):
         assert (
             "model" in api_kwargs
         ), f"model must be specified in api_kwargs: {api_kwargs}"
-        assert (
-            api_kwargs["model"] in self.model_lists
-        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
             completion = self.sync_client.chat.completions.create(**api_kwargs)
             return completion
@@ -133,9 +114,6 @@ class GroqAPIClient(APIClient):
         if self.async_client is None:
             self._init_async_client()
         assert "model" in api_kwargs, "model must be specified"
-        assert (
-            api_kwargs["model"] in self.model_lists
-        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
             completion = await self.async_client.chat.completions.create(**api_kwargs)
             return completion

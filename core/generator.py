@@ -21,10 +21,13 @@ logger = logging.getLogger(__name__)
 # TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
 class Generator(Component):
     """
-    An orchestrator component that combines the system Prompt and the API client to process user input queries, and to generate responses.
-    Additionally, it allows you to pass the output_processors to further parse the output from the model. Thus the arguments are almost a combination of that of Prompt and APIClient.
+    An user-facing orchestration component for LLM prediction.
 
-    It takes the user query as input in string format, and returns the response or processed response.
+    By orchestrating the following three components along with their required arguments,
+    it enables any LLM prediction with required task output format.
+    - Prompt
+    - Model client
+    - Output processors
     """
 
     model_type: ModelType = ModelType.LLM
@@ -33,15 +36,19 @@ class Generator(Component):
     def __init__(
         self,
         *,
+        name: str = "Generator",  # a unique and identifiable name to trace all change of prompt template
+        # args for the model
         model_client: APIClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
-        preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
-        trainable_params: Optional[
-            List[str]
-        ] = [],  # the trainable parameters in the prompt
+        preset_prompt_kwargs: Optional[Dict] = None,
+        # args for the output processing
         output_processors: Optional[Component] = None,
+        # args for the trainable parameters
+        trainable_params: Optional[List[str]] = [],
+        # control tracing
+        trace: bool = True,  # do the essential and default tracing
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -55,18 +62,23 @@ class Generator(Component):
         """
         super().__init__()
 
+        self.preset_prompt_kwargs = preset_prompt_kwargs
+        self.system_prompt = Prompt(
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
+        )
+
         self.model_kwargs = model_kwargs
         if "model" not in model_kwargs:
             raise ValueError(
                 f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
             )
+
         # init the model client
         self.model_client = model_client
-        self.system_prompt = Prompt(
-            template=template,
-            preset_prompt_kwargs=preset_prompt_kwargs,
-        )
-        self.preset_prompt_kwargs = preset_prompt_kwargs
+
+        self.output_processors = output_processors
+
         # add trainable_params to generator
         prompt_variables = self.system_prompt.get_prompt_variables()
         self._trainable_params: List[str] = []
@@ -81,17 +93,15 @@ class Generator(Component):
             self._trainable_params.append(param)
         # end of trainable parameters
 
-        self.output_processors = output_processors
+    # def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
+    #     """
+    #     This combines the default lm input using Prompt, and the passed input. history, steps, etc.
+    #     It builds the final chat input to the model.
 
-    def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
-        """
-        This combines the default lm input using Prompt, and the passed input. history, steps, etc.
-        It builds the final chat input to the model.
-
-        As
-        """
-        prompt_text = self.system_prompt.call(**kwargs)
-        return prompt_text
+    #     As
+    #     """
+    #     prompt_text = self.system_prompt.call(**kwargs)
+    #     return prompt_text
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
@@ -99,7 +109,7 @@ class Generator(Component):
         Combine the default model, model_kwargs with the passed model_kwargs.
         Example:
         model_kwargs = {"temperature": 0.5, "model": "gpt-3.5-turbo"}
-        self.model_kwargs = {"model": "gpt-3.5"}
+        self.model_kwargs = {"model": "gpt-3.5-turbo"}
         combine_kwargs(model_kwargs) => {"temperature": 0.5, "model": "gpt-3.5-turbo"}
 
         """
@@ -156,10 +166,10 @@ class Generator(Component):
         if self.training:
             # add the parameters to the prompt_kwargs
             # convert attributes to prompt_kwargs
-            trained_prmpt_kwargs = {
+            trained_prompt_kwargs = {
                 param: getattr(self, param).data for param in self.state_dict()
             }
-            prompt_kwargs.update(trained_prmpt_kwargs)
+            prompt_kwargs.update(trained_prompt_kwargs)
 
         logger.info(f"prompt_kwargs: {prompt_kwargs}")
         logger.info(f"model_kwargs: {model_kwargs}")
