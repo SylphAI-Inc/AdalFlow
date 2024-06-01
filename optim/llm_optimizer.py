@@ -5,6 +5,7 @@ Source code: https://github.com/google-deepmind/opro
 
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
+from copy import deepcopy
 
 from core.data_classes import BaseDataClass
 
@@ -16,12 +17,12 @@ from optim.optimizer import Optimizer
 # TODO: add the responses and gts
 LLM_OPTIMIZER_TEMPLATE = r"""<SYS>
 Your task is to generate an new instruction that can score higher than all previous instructions.
-{# manual_instruction #}
-{%if manual_instruction %}
+{# starter instruction #}
+{%if starter_instruction %}
+<STARTER_INS>
 Here is the starter instruction:
-<MANUAL_INS>
-{{manual_instruction}}
-</MANUAL_INS>
+{{starter_instruction}}
+</STARTER_INS>
 {% endif %}
 
 {# history #}
@@ -86,19 +87,19 @@ class LLMOptimizer(Optimizer):
         r"""Initialize the generator with the model client and the model kwargs."""
         super().__init__()
         self.instruction_parameter = parameter
-        # overwrite temperature to 1
-        model_kwargs["temperature"] = 1
+        # Ensure the temperature is at least 1
+        model_kwargs["temperature"] = max(1, model_kwargs.get("temperature", 1))
         self.generator = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
             template=LLM_OPTIMIZER_TEMPLATE,
         )
         self.instruction_history: List[Instruction] = []
-        self.starter_instruction: str = None
+        self.starter_instruction: Optional[str] = None
         if self.instruction_parameter.data is not None:
             self.starter_instruction = self.instruction_parameter.data
-        self.proposed: str = None
-        self.current: str = None
+        self.proposed: Optional[str] = None
+        self.current: Optional[str] = None
         self.prompt_kwargs = {
             "starter_instruction": self.starter_instruction,
             "instructions": self.instruction_history,
@@ -123,10 +124,11 @@ class LLMOptimizer(Optimizer):
 
     def update_parameter(self, score: float):
         r"""Load the proposed instruction to the current instruction to complete the optimization step."""
-        self.current = self.proposed
+        self.current = deepcopy(self.proposed)
         self.proposed = None
-        self.instruction_history.append(Instruction(text=self.current, score=score))
-        self.instruction_parameter.update_value(self.current)
+        if self.current is not None:
+            self.instruction_history.append(Instruction(text=self.current, score=score))
+            self.instruction_parameter.update_value(self.current)
 
     def reset_parameter(self):
         r"""The proposed is not leading to a better instruction, reset the parameter."""
