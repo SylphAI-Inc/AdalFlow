@@ -40,5 +40,4 @@ test0528.log
 tests/*
 traces.txt
 *.log
-/docs/
-/tests/
+docs/*
