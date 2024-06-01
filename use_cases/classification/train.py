@@ -8,10 +8,12 @@ from components.api_client import GroqAPIClient, OpenAIClient, GoogleGenAIClient
 from optim.optimizer import BootstrapFewShot
 from optim.sampler import RandomSampler, ClassSampler
 from optim.llm_augment import LLMAugmenter
-from use_cases.classification.task import TRECClassifier
-from use_cases.classification.eval import ClassifierEvaluator
-from use_cases.classification.prompt import InputFormat, OutputFormat
+from optim.llm_optimizer import LLMOptimizer
+
 from core.component import Component
+
+from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
+from use_cases.classification.eval import ClassifierEvaluator
 from use_cases.classification.data import (
     SamplesToStr,
     load_datasets,
@@ -20,31 +22,8 @@ from use_cases.classification.data import (
 )
 
 
-class Orchestrator(Component):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self._example_input = "What is the capital of France?"
-
-    # @property
-    # def example_input(self):
-    #     return "How did serfdom develop in and then leave Russia ?"
-
-    # @example_input.setter
-    # def example_input(self, value):
-    #     self._example_input = value
-
-    # def training_step(self, *args, **kwargs) -> None:
-    #     raise NotImplementedError("training_step method is not implemented")
-
-    def train(self, *args, **kwargs) -> None:
-        raise NotImplementedError("train method is not implemented")
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"example_input={self._example_input}"
-
-
 # for this trainer, we will learn from pytorch lightning
-class TrecTrainer(Orchestrator):
+class TrecTrainer(Component):
     r"""
     data loader which is random shuffed already, and the batch can be used as the # samples
     """
@@ -129,8 +108,6 @@ class TrecTrainer(Orchestrator):
         print(
             f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}",
         )
-
-        from optim.llm_optimizer import LLMOptimizer
 
         self.instruction_optimier = LLMOptimizer(
             self.params["generator.task_desc_str"],
@@ -370,6 +347,8 @@ class TrecTrainer(Orchestrator):
         self.task.train()
         best_score: float = 0.0
         for i, train_batch in enumerate(self.data_loader):
+            if i >= max_steps:
+                break
             acc, f1 = self.batch_eval(train_batch)
             score = (acc + f1) / 2.0
             print(f"step: {i}")
@@ -379,6 +358,7 @@ class TrecTrainer(Orchestrator):
                 best_score = score
                 self.instruction_optimier.update_parameter(score)
                 print(f"best_score: {best_score}")
+                print(f"best_parameters: {self.params['generator.task_desc_str']}")
             else:
                 self.instruction_optimier.reset_parameter()
                 print(f"reset_parameter")

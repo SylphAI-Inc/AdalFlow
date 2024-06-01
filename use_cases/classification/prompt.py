@@ -65,10 +65,10 @@ The output should be formatted as a standard JSON object with three keys:
 #         return super().load_from_dict(data)
 
 
-output_example = OutputFormat(
-    thought="Grand Coulee Dam dam is a location",
-    class_index=4,
-    class_name="Location",
-)
+# output_example = OutputFormat(
+#     thought="Grand Coulee Dam dam is a location",
+#     class_index=4,
+#     class_name="Location",
+# )
 # output = get_data_class_schema(OutputFormat)
 # print(output)

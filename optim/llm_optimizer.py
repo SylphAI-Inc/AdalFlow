@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from core.data_classes import BaseDataClass
 
 from core.api_client import APIClient
-from core.generator import Generator
+from core.generator import Generator, GeneratorOutput
 from core.parameter import Parameter
 from optim.optimizer import Optimizer
 
@@ -89,7 +89,13 @@ class LLMOptimizer(Optimizer):
     def propose(self):
         r"""Propose a new instruction using the generator."""
         prompt_kwargs = {"instructions": self.instruction_history}
-        instruction = self.generator(prompt_kwargs=prompt_kwargs)
+        max_run: int = 5
+        for _ in range(max_run):
+            instruction: GeneratorOutput = self.generator(prompt_kwargs=prompt_kwargs)
+            if instruction.data is not None:
+                instruction = instruction.data
+                break
+
         self.proposed = instruction
         self.instruction_parameter.update_value(instruction)
 

@@ -1,6 +1,7 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
+from copy import deepcopy
 
-from core.data_classes import ModelType
+from core.data_classes import ModelType, GeneratorOutput
 from core.component import Component
 from core.parameter import Parameter
 from core.prompt_builder import Prompt
@@ -10,9 +11,11 @@ from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 GeneratorInputType = str
-GeneratorOutputType = Any
+GeneratorOutputType = GeneratorOutput
 
 
+# NOTE: currently generator cannot be used in Sequential due to specialized output data type
+# TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
 class Generator(Component):
     """
     An orchestrator component that combines the system Prompt and the API client to process user input queries, and to generate responses.
@@ -108,18 +111,26 @@ class Generator(Component):
 
     def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
-        response = self.model_client.parse_chat_completion(completion)
-        print(f"Raw response: \n{response}")
+        try:
+            response = self.model_client.parse_chat_completion(completion)
+        except Exception as e:
+            response = str(completion)
+            return GeneratorOutput(raw_response=response, error_message=str(e))
+
+        output: GeneratorOutputType = GeneratorOutput(raw_response=response)
+        response = deepcopy(response)
         if self.output_processors:
-            response = self.output_processors(response)
-        return response
+            try:
+                response = self.output_processors(response)
+            except Exception as e:
+                output.error_message = str(e)
+        output.data = response
+        return output
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # step 1: render the system prompt
         system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
-
-        print(f"system_prompt_str: {system_prompt_str}")
 
         # step 2: combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
@@ -127,7 +138,7 @@ class Generator(Component):
         # step 3: use model_client.combined_input_and_model_kwargs to get the api_kwargs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=system_prompt_str,
-            combined_model_kwargs=composed_model_kwargs,
+            model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
         return api_kwargs
@@ -149,7 +160,6 @@ class Generator(Component):
             print(f"prompt_kwargs: {prompt_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )

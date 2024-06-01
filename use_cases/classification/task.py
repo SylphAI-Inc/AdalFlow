@@ -78,7 +78,6 @@ class OutputFormat(BaseDataClass):
         }
     )
     class_name: str = field(metadata={"desc": "class_name"})
-
     class_index: int = field(metadata={"desc": "class_index in range[0, 5]"})
 
     @classmethod
@@ -196,9 +195,16 @@ class TRECClassifier(Component):
     #     self.generator.examples_str.update_value()
 
     def call(self, query: str) -> str:
-        str_response: Dict[str, Any] = self.generator.call(
-            prompt_kwargs={"input": query}
-        )
+        output = self.generator.call(prompt_kwargs={"input": query})
+        if output.data is not None and output.error_message is None:
+            response = output.data
+        else:
+            print(f"error_message: {output.error_message}")
+            print(f"raw_response: {output.raw_response}")
+            print(f"response: {output.data}")
+            return output.error_message
+
+        print(f"response: {response}")
 
         # use re to find the first integer in the response, can be multiple digits
         re_pattern = r"\d+"
@@ -212,7 +218,7 @@ class TRECClassifier(Component):
 
         # class_name = self.labels[label]
 
-        label = str_response
+        label = response
         if isinstance(label, str):
             label_match = re.findall(re_pattern, label)
             if label_match:

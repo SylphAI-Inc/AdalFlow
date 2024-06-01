@@ -12,7 +12,6 @@ import ast
 from core.tool_helper import ToolOutput
 from core.component import Component
 import core.functional as F
-from core.data_classes import Output
 
 
 class ListParser(Component):
@@ -53,7 +52,7 @@ class JsonParser(Component):
         return json_obj
 
 
-YAML_PARSER_OUTPUT_TYPE = Output[Dict[str, Any]]
+YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
 class YAMLParser(Component):
@@ -75,15 +74,9 @@ class YAMLParser(Component):
         try:
             yaml_str = F.extract_yaml_str(input)
             yaml_obj = F.parse_yaml_str_to_obj(yaml_str)
-            output = Output(data=yaml_obj)
-            return output
+            return yaml_obj
         except Exception as e:
-            return Output(error=str(e))
-            # track the error message
-
-        # yaml_str = F.extract_yaml_str(input)
-        # json_object = F.parse_yaml_str_to_obj(yaml_str)
-        # return json_object
+            raise ValueError(f"Error: {e}")
 
 
 ############################################################################################################
