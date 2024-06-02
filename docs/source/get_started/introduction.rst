@@ -15,7 +15,7 @@ What is LightRAG?
 
 LightRAG comes from the best of the AI research and engineering.
 Fundamentally, we ask ourselves: what kind of system that combines the
-best of research(such as LLM), engineering (such as ‘jinja’) to build
+best of research (such as LLM), engineering (such as ‘jinja’) to build
 the best applications? We are not a framework. We do not want you to
 directly install the package. We want you to carefully decide to take
 modules and structures from here to build your own library and

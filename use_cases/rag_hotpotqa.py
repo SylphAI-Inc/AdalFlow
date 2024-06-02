@@ -9,7 +9,7 @@ from core.data_classes import Document
 
 from core.string_parser import JsonParser
 from core.component import Sequential
-from eval.evaluator import (
+from eval.evaluators import (
     RetrieverEvaluator,
     AnswerMacthEvaluator,
     LLMasJudge,
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     )
     print(f"Answer match accuracy: {answer_match_acc}")
     print(f"Match accuracy for each query: {match_acc_list}")
-    # Evaluate the generator using LLM as judge. We use GPT-4 as the judge here.
+    # Evaluate the generator using LLM as judge.
     # The task description and the judgement query can be customized.
     llm_evaluator = Generator(
         model_client=OpenAIClient,

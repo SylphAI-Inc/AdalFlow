@@ -11,4 +11,4 @@ To start with LightRAG, please follow the steps:
 
 4. (For contributors only) Install pre-commit into your git hooks using ``pre-commit install``, which will automatically check the code standard on every commit.
 
-5. Now you should run any file in the repo.
+5. Now you should be able to run any file in the repo.
