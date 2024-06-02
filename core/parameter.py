@@ -39,11 +39,11 @@ class Parameter(Generic[T]):
             data
         )  # Dynamically determine the type from the data provided
 
-        # Initial type check to ensure that the data matches the type specified by T if T is explicit
-        if not isinstance(data, self.data_type):
-            raise TypeError(
-                f"Expected data type {self.data_type.__name__}, got {type(data).__name__}"
-            )
+        # # Initial type check to ensure that the data matches the type specified by T if T is explicit
+        # if not isinstance(data, self.data_type):
+        #     raise TypeError(
+        #         f"Expected data type {self.data_type.__name__}, got {type(data).__name__}"
+        #     )
 
         self.requires_opt = requires_opt
 

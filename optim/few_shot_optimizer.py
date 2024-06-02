@@ -17,10 +17,10 @@ class BootstrapFewShot(Optimizer):
         self,
         parameter: Parameter,
         sampler: Sampler,
-        output_processors: Component,
         num_shots: int,
         llm_augmenter: Optional[Component] = None,
         task_input_dataclass: Optional[BaseDataClass] = None,
+        output_processors: Optional[Component] = None,
         task_output_dataclass: Optional[BaseDataClass] = None,
     ):
         super().__init__()

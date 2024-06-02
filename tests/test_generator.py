@@ -8,6 +8,7 @@ from core.data_classes import GeneratorOutput
 from core.generator import Generator
 from components.api_client import OpenAIClient
 from tracing.generator_logger import GeneratorLogger
+import utils.setup_env
 
 
 class TestGenerator(IsolatedAsyncioTestCase):
