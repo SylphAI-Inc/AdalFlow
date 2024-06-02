@@ -33,3 +33,4 @@ local_cache/
 *.txt
 *.pth
 data/
+traces/

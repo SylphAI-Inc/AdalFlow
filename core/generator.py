@@ -47,8 +47,6 @@ class Generator(Component):
         output_processors: Optional[Component] = None,
         # args for the trainable parameters
         trainable_params: Optional[List[str]] = [],
-        # control tracing
-        trace: bool = True,  # do the essential and default tracing
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -62,17 +60,13 @@ class Generator(Component):
         """
         super().__init__()
 
-        self.preset_prompt_kwargs = preset_prompt_kwargs
-        self.system_prompt = Prompt(
-            template=template,
-            preset_prompt_kwargs=preset_prompt_kwargs,
-        )
+        self._init_prompt(template, preset_prompt_kwargs)
 
         self.model_kwargs = model_kwargs
-        if "model" not in model_kwargs:
-            raise ValueError(
-                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
-            )
+        # if "model" not in model_kwargs:
+        #     raise ValueError(
+        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
+        #     )
 
         # init the model client
         self.model_client = model_client
@@ -92,6 +86,15 @@ class Generator(Component):
             setattr(self, param, Parameter(data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
+
+    def _init_prompt(self, template: str, preset_prompt_kwargs: Dict):
+        r"""Initialize the prompt with the template and preset_prompt_kwargs."""
+        self.template = template
+        self.preset_prompt_kwargs = preset_prompt_kwargs
+        self.system_prompt = Prompt(
+            template=template, preset_prompt_kwargs=preset_prompt_kwargs
+        )
+        # return Prompt(template=template, preset_prompt_kwargs=preset_prompt_kwargs)
 
     # def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
     #     """

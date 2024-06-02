@@ -4,6 +4,28 @@ import os
 import pickle
 
 
+def serialize(obj: Mapping[str, Any]) -> str:
+    """Serialize the object to a json string.
+
+    Args:
+        obj (Mapping[str, Any]): The object to be serialized.
+
+    Returns:
+        str: The serialized object in json format.
+    """
+
+    def default(o):
+        if hasattr(o, "to_dict"):
+            return (
+                o.to_dict()
+            )  # use custom to_dict method if it exists, dataclass can be handled automatically from __dict__
+        raise TypeError(
+            f"Object of type {o.__class__.__name__} is not JSON serializable"
+        )
+
+    return json.dumps(obj, indent=4, default=default)
+
+
 # TODO: make this more clear
 def save(obj: Mapping[str, Any], f: str = "task") -> None:
     __doc__ = r"""Save the object to a json file.
@@ -61,29 +83,17 @@ def load(f: str = "task") -> Optional[Mapping[str, Any]]:
     return json_obj, pickle_obj
 
 
-if __name__ == "__main__":
-    import json
+# if __name__ == "__main__":
+#     import json
 
-    def serialize(obj):
-        # Directly serialize with json.dumps if the object is of a basic type
-        if isinstance(obj, (dict, list, str, bool, int, float, type(None))):
-            return json.dumps(obj)
-        elif hasattr(obj, "__dict__"):
-            # Serialize objects by converting their __dict__ attribute
-            return json.dumps({k: serialize(v) for k, v in obj.__dict__.items()})
-        else:
-            raise TypeError(
-                f"Object of type {obj.__class__.__name__} is not JSON serializable"
-            )
+#     # Example usage:
+#     from dataclasses import dataclass
 
-    # Example usage:
-    from dataclasses import dataclass
+#     @dataclass
+#     class Product:
+#         name: str
+#         price: float
+#         in_stock: bool
 
-    @dataclass
-    class Product:
-        name: str
-        price: float
-        in_stock: bool
-
-    product = Product("Widget", 19.99, True)
-    print(serialize(product))
+#     product = Product("Widget", 19.99, True)
+#     print(serialize(product))
