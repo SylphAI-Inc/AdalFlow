@@ -62,11 +62,6 @@ class Generator(Component):
         self._init_prompt(template, preset_prompt_kwargs)
 
         self.model_kwargs = model_kwargs
-        # if "model" not in model_kwargs:
-        #     raise ValueError(
-        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
-        #     )
-
         # init the model client
         self.model_client = model_client
 

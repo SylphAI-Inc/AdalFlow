@@ -68,9 +68,9 @@ class Component:
     _version: int = 0.1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
-    _execution_graph: List[str] = []  # This will store the graph of execution.
-    _graph = nx.DiGraph()
-    _last_called = None  # Tracks the last component called
+    # _execution_graph: List[str] = []  # This will store the graph of execution.
+    # _graph = nx.DiGraph()
+    # _last_called = None  # Tracks the last component called
     _parameters: Dict[str, Optional[Parameter]]
     training: bool
 
@@ -97,7 +97,10 @@ class Component:
         return self.train(False)
 
     def __dir__(self):
-        r"""Useful to handle json serialization."""
+        r"""Useful to handle json serialization.
+
+        Use dir() to get the list of attributes of the component.
+        """
         component_attrs = dir(self.__class__)
         attrs = list(self.__dict__.keys())
         parameters = list(self._parameters.keys())
@@ -107,6 +110,32 @@ class Component:
         # Elimiate attrs that are not legal python variable names
         keys = [key for key in keys if not key[0].isdigit()]
         return sorted(keys)
+
+    def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
+        r"""Converts the component to a dictionary object.
+        This is helpful for serialization and it provides more states of the component than state_dict.
+        """
+        exclude = exclude or []
+        result = {}
+        for key, value in self.__dict__.items():
+            if key not in exclude:
+                if isinstance(value, dict):
+                    # Sorting dictionary by keys
+                    result[key] = {k: v for k, v in sorted(value.items())}
+                elif isinstance(value, list):
+                    # Sorting lists directly if they contain sortable elements
+                    try:
+                        sorted_list = sorted(value)
+                    except TypeError:
+                        # If elements are not comparable, leave as is
+                        sorted_list = value
+                    result[key] = sorted_list
+                elif hasattr(value, "to_dict"):
+                    # If the object has a to_dict method, use it
+                    result[key] = value.to_dict()
+                else:
+                    result[key] = value
+        return result
 
     def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
         r"""Add a parameter to the component.
@@ -137,7 +166,6 @@ class Component:
             )
         else:
             self._parameters[name] = param
-        print(f"Registered parameter {name} with value {param}")
 
     def parameters(self, recursive: bool = True) -> Iterable[Parameter]:
         r"""Returns an iterator over module parameters.
@@ -218,64 +246,58 @@ class Component:
         )
         yield from gen
 
-    @staticmethod
-    def visualize_graph_html(filename="graph.html"):
-        nt = Network(directed=True)
-        nt.from_nx(Component._graph)
-        for edge in nt.edges:
-            edge["title"] = edge["label"]
-            edge["value"] = (
-                10  # You can adjust the 'value' to set the width of the edges
-            )
-        nt.show_buttons(
-            filter_=["physics"]
-        )  # Optional: Show interactive buttons to adjust physics and other settings
-        nt.show(
-            filename, notebook=False
-        )  # Make sure to set notebook=False for non-notebook environments
+    # @staticmethod
+    # def visualize_graph_html(filename="graph.html"):
+    #     nt = Network(directed=True)
+    #     nt.from_nx(Component._graph)
+    #     for edge in nt.edges:
+    #         edge["title"] = edge["label"]
+    #         edge["value"] = (
+    #             10  # You can adjust the 'value' to set the width of the edges
+    #         )
+    #     nt.show_buttons(
+    #         filter_=["physics"]
+    #     )  # Optional: Show interactive buttons to adjust physics and other settings
+    #     nt.show(
+    #         filename, notebook=False
+    #     )  # Make sure to set notebook=False for non-notebook environments
 
-    @staticmethod
-    def visualize_graph():
-        pos = nx.spring_layout(Component._graph)
-        nx.draw(
-            Component._graph,
-            pos,
-            with_labels=True,
-            node_color="lightblue",
-            node_size=2000,
-            edge_color="gray",
-            linewidths=1,
-            font_size=15,
-        )
-        plt.show()
+    # @staticmethod
+    # def visualize_graph():
+    #     pos = nx.spring_layout(Component._graph)
+    #     nx.draw(
+    #         Component._graph,
+    #         pos,
+    #         with_labels=True,
+    #         node_color="lightblue",
+    #         node_size=2000,
+    #         edge_color="gray",
+    #         linewidths=1,
+    #         font_size=15,
+    #     )
+    #     plt.show()
 
     # TODO: do we need to disable this format of calling instead use call and acall extensively?
     def __call__(self, *args, **kwargs):
         r"""In default, we use sync call."""
         # Register the edge if this call follows another component's call
-        component_name = self._get_name()
-        input_repr = repr(args) + " " + repr(kwargs)
+        # component_name = self._get_name()
+        # input_repr = repr(args) + " " + repr(kwargs)
 
-        if Component._last_called is not None:
-            Component._graph.add_edge(
-                Component._last_called, component_name, label=input_repr[0:50]
-            )
+        # if Component._last_called is not None:
+        #     Component._graph.add_edge(
+        #         Component._last_called, component_name, label=input_repr[0:50]
+        #     )
 
-        Component._last_called = component_name
-        # Component._last_called_input = input_repr[0:50]
-        # Update last called to current component
-        # Default to sync call
-        # Log input and the function
-        # being called
-        self._execution_graph.append(
-            f"{self._get_name()} called with input {input_repr}"
-        )
+        # Component._last_called = component_name
+
+        # self._execution_graph.append(
+        #     f"{self._get_name()} called with input {input_repr}"
+        # )
         output = self.call(*args, **kwargs)
         # Log output
-        self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
+        # self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
         return output
-
-    # call: Callable[..., Any] = _call_unimplemented
 
     def call(self, *args, **kwargs):
         raise NotImplementedError(
@@ -521,15 +543,15 @@ class Component:
             missing_keys=missing_keys, unexpected_keys=unexpected_keys
         )
 
-    def apply(self: "Component", fn: Callable[["Component", Any], None]) -> None:
-        r"""
-        Applies a function to all subcomponents.
-        # TODO: in what situation we need function apply?
-        """
-        for name, component in self.children():
-            component.apply(fn)
-        fn(self)
-        return self
+    # def apply(self: "Component", fn: Callable[["Component", Any], None]) -> None:
+    #     r"""
+    #     Applies a function to all subcomponents.
+    #     # TODO: in what situation we need function apply?
+    #     """
+    #     for name, component in self.children():
+    #         component.apply(fn)
+    #     fn(self)
+    #     return self
 
     def __setattr__(self, name: str, value: Any) -> None:
         def remove_from(*dicts_or_sets):
@@ -578,8 +600,6 @@ class Component:
             components = self.__dict__.get("_components")
             if name in components:
                 return components[name]
-        # else:
-        #     super().__getattr__(name)
 
         raise AttributeError(
             f"'{type(self).__name__}' object has no attribute '{name}'"

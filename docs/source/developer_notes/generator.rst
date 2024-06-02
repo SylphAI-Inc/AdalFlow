@@ -16,6 +16,15 @@ We in particular created an output data class to track raw string response along
 
 Tracing
 ^^^^^^^
+We provide two tracing methods to help you develop and improve the Generator:
+1. Trace the history change(states) on prompt during your development process. Developers typical go through a long process of prompt optimization and it is frustrating
+to lose track of the prompt changes when your current change actually makes the performance much worse.
+.. code-block:: python
+    from lightrag.generator import Generator
+    generator = Generator()
+    generator.trace_error_messages()
+2. Trace all failed LLM predictions for further improvement.
+
 
 Training
 ^^^^^^^^

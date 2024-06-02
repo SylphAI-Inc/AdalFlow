@@ -159,40 +159,14 @@ class Prompt(Component):
             s += f", prompt_variables: {self.prompt_variables}"
         return s
 
-    # def to_dict(self) -> Dict[str, Any]:
-    #     r"""Get the dictionary representation of the Prompt object."""
-    #     return {
-    #         "template": self._template_string,
-    #         "preset_prompt_kwargs": self.preset_prompt_kwargs,
-    #         "prompt_variables": self.prompt_variables,
-    #     }
-    # TODO: move this to the base class
     def to_dict(self) -> Dict[str, Any]:
         """
         Get the dictionary representation of all the Prompt object's attributes, with sorting applied to
         dictionary keys and list elements to ensure consistent ordering.
         """
         exclude = ["template"]
-        result = {}
-        for key, value in self.__dict__.items():
-            if key not in exclude:
-                if isinstance(value, dict):
-                    # Sorting dictionary by keys
-                    result[key] = {k: v for k, v in sorted(value.items())}
-                elif isinstance(value, list):
-                    # Sorting lists directly if they contain sortable elements
-                    try:
-                        sorted_list = sorted(value)
-                    except TypeError:
-                        # If elements are not comparable, leave as is
-                        sorted_list = value
-                    result[key] = sorted_list
-                elif hasattr(value, "to_dict"):
-                    # If the object has a to_dict method, use it
-                    result[key] = value.to_dict()
-                else:
-                    result[key] = value
-        return result
+        output = super().to_dict(exclude=exclude)
+        return output
 
 
 if __name__ == "__main__":
