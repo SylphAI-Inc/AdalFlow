@@ -1,25 +1,35 @@
 import pytest
+from typing import List
 
+from core.component import fun_to_component
 from core.parameter import Parameter
-from optim.optimizer import BootstrapFewShot
+from optim.few_shot_optimizer import BootstrapFewShot
 from optim.sampler import ClassSampler, RandomSampler
 
 
 class TestBootstrapFewShotRandomSampler:
 
     def setup_method(self):
+        r"""
+        Test the optimizer before the output processor which converts result to a string
+        """
         self.num_shots = 10
         self.sampler = RandomSampler(
             dataset=self.mock_dataset(), default_num_shots=self.num_shots
         )
         self.optimizer = BootstrapFewShot(
-            # parameter_dict={"test_examples_str": self.parameter},
-            # parameter_name="test_examples_str",
             parameter=self.mock_parameter_obj(),
             sampler=self.sampler,
-            output_processors=None,
             num_shots=self.num_shots,
+            output_processors=None,
         )
+
+    def mock_output_processors(self):
+        # return str no matter what
+        def mock_output_processor(x):
+            return "final_output"
+
+        return fun_to_component(mock_output_processor)
 
     def mock_dataset(self):
         self.num_classes = 10
@@ -29,7 +39,7 @@ class TestBootstrapFewShotRandomSampler:
         return item["label"]
 
     def mock_parameter_obj(self):
-        return Parameter("test_examples_str", "test_value")
+        return Parameter[List](["test_example_str"])
 
     def test_initialization(self):
         assert self.optimizer.num_shots == self.num_shots

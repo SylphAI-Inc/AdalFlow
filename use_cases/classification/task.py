@@ -1,3 +1,11 @@
+from typing import Dict, Any
+from dataclasses import dataclass, field
+
+import utils.setup_env
+import re
+
+import logging
+
 from core.component import Component, Sequential, fun_to_component
 from core.generator import Generator
 from components.api_client import (
@@ -14,23 +22,74 @@ from use_cases.classification.data import (
     _COARSE_LABELS,
     _COARSE_LABELS_DESC,
 )
-from use_cases.classification.prompt import (
-    CLASSIFICATION_TASK_DESC,
-    OUTPUT_FORMAT_STR,
-    TEMPLATE,
-    OutputFormat,
-    output_example,
-    OUTPUT_FORMAT_YAML_STR,
-)
-
-from typing import Dict, Any
-
-import utils.setup_env
-import re
-
-import logging
 
 logger = logging.getLogger(__name__)
+
+CLASSIFICATION_TASK_DESC = r"""You are a classifier. Given a Question, you need to classify it into one of the following classes:
+Format: class_index. class_name, class_description
+{% for class in classes %}
+{{loop.index-1}}. {{class.label}}, {{class.desc}}
+{% endfor %}
+"""
+
+TEMPLATE = r"""{# task desc #}
+{% if task_desc_str %}
+{{task_desc_str}}
+{% endif %}
+{%if output_format_str %}
+<OUTPUT_FORMAT>
+{{output_format_str}}
+</OUTPUT_FORMAT>
+{% endif %}
+{# example #}
+{% if examples_str %}
+<EXAMPLES>
+{#{% for example in examples_str %}#}
+{{examples_str}}
+{#{% endfor %}#}
+</EXAMPLES>
+{% endif %}
+{{input_label}}: {{input}}
+Your output:
+"""
+
+from core.data_classes import BaseDataClass
+from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
+
+
+@dataclass
+class InputFormat(BaseDataClass):
+    # add the "prompt_arg" to represent the prompt argument that it should get matched to
+    question: str = field(metadata={"desc": "The question to classify"})
+
+    @classmethod
+    def load_from_dict(cls, data: Dict[str, Any]):
+        # customize to convert data item from a dataset into input data object
+        # "text" -> "question"
+        data = {"question": data["text"]}
+        return super().load_from_dict(data)
+
+
+@dataclass
+class OutputFormat(BaseDataClass):
+    thought: str = field(
+        metadata={
+            "desc": "Your reasoning to classify the question to class_name",
+        }
+    )
+    class_name: str = field(metadata={"desc": "class_name"})
+    class_index: int = field(metadata={"desc": "class_index in range[0, 5]"})
+
+    @classmethod
+    def load_from_dict(cls, data: Dict[str, Any]):
+        # customize to convert data item from a dataset into output data object
+        # "label" -> "class_index"
+        data = {
+            "thought": None,
+            "class_index": data["coarse_label"],
+            "class_name": _COARSE_LABELS_DESC[data["coarse_label"]],
+        }
+        return super().load_from_dict(data)
 
 
 class TRECClassifier(Component):
@@ -58,19 +117,19 @@ class TRECClassifier(Component):
         )
         self.task_desc_str = self.task_desc_prompt()
 
-        self.parameters = [
-            {
-                "component": Generator,
-                "args": {
-                    "model_client": GroqAPIClient,
-                    "model_kwargs": {"model": "llama3-8b-8192", "temperature": 0.0},
-                    "preset_prompt_kwargs": {
-                        "task_desc_str": self.task_desc_str,
-                        "output_format_str": OUTPUT_FORMAT_STR,
-                    },
-                },
-            }
-        ]
+        # self.parameters = [
+        #     {
+        #         "component": Generator,
+        #         "args": {
+        #             "model_client": GroqAPIClient,
+        #             "model_kwargs": {"model": "llama3-8b-8192", "temperature": 0.0},
+        #             "preset_prompt_kwargs": {
+        #                 "task_desc_str": self.task_desc_str,
+        #                 # "output_format_str": OUTPUT_FORMAT_STR,
+        #             },
+        #         },
+        #     }
+        # ]
         yaml_parser = YAMLOutputParser(
             data_class=OutputFormat,  # example=output_example
         )
@@ -111,33 +170,41 @@ class TRECClassifier(Component):
             "max_tokens": 1024,
         }
 
+        def format_class_label(x: Dict[str, Any]) -> int:
+            label = int(x["class_index"])
+            if label >= self.num_classes:
+                label = -1
+            return label
+
         self.generator = Generator(
             model_client=GroqAPIClient(),
             model_kwargs=groq_model_kwargs,
             template=TEMPLATE,
             preset_prompt_kwargs={
                 "task_desc_str": self.task_desc_str,
-                # "output_format_str": Prompt(
-                #     template=OUTPUT_FORMAT_YAML_STR,
-                #     preset_prompt_kwargs={"include_thought": True},
-                # )(),
-                "output_format_str": output_str,  # OUTPUT_FORMAT_STR,
+                "output_format_str": output_str,
                 "input_label": "Question",
             },
-            trainable_params=["examples_str"],
+            trainable_params=["examples_str", "task_desc_str"],
             output_processors=Sequential(
-                yaml_parser, fun_to_component(lambda x: x["class_index"])
+                yaml_parser, fun_to_component(format_class_label)
             ),
-            # output_processors=yaml_parser,
         )
 
     # def init_parameters(self):
     #     self.generator.examples_str.update_value()
 
     def call(self, query: str) -> str:
-        str_response: Dict[str, Any] = self.generator.call(
-            input=query, prompt_kwargs={"input": query}
-        )
+        output = self.generator.call(prompt_kwargs={"input": query})
+        if output.data is not None and output.error_message is None:
+            response = output.data
+        else:
+            print(f"error_message: {output.error_message}")
+            print(f"raw_response: {output.raw_response}")
+            print(f"response: {output.data}")
+            return output.error_message
+
+        print(f"response: {response}")
 
         # use re to find the first integer in the response, can be multiple digits
         re_pattern = r"\d+"
@@ -151,7 +218,7 @@ class TRECClassifier(Component):
 
         # class_name = self.labels[label]
 
-        label = str_response
+        label = response
         if isinstance(label, str):
             label_match = re.findall(re_pattern, label)
             if label_match:

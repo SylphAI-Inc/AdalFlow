@@ -1,6 +1,11 @@
 import os
-from typing import Dict, Sequence, Union, Optional, Any
+from typing import Dict, Sequence, Optional, Any
 import backoff
+
+try:
+    import groq
+except ImportError:
+    raise ImportError("Please install groq with: pip install groq")
 
 from groq import Groq, AsyncGroq
 from groq import (
@@ -10,7 +15,7 @@ from groq import (
     UnprocessableEntityError,
 )
 
-from core.api_client import APIClient
+from core.api_client import APIClient, API_INPUT_TYPE
 from core.data_classes import ModelType
 
 
@@ -18,6 +23,13 @@ class GroqAPIClient(APIClient):
     __doc__ = r"""A component wrapper for the Groq API client.
 
     Visit https://console.groq.com/docs/ for more api details.
+    Check https://console.groq.com/docs/models for the available models.
+    
+    Tested Groq models: 4/22/2024
+    - llama3-8b-8192
+    - llama3-70b-8192
+    - mixtral-8x7b-32768
+    - gemma-7b-it
     """
 
     def __init__(self, api_key: Optional[str] = None):
@@ -29,29 +41,7 @@ class GroqAPIClient(APIClient):
         super().__init__()
         self._api_key = api_key
         self._init_sync_client()
-        # https://console.groq.com/docs/models, 4/22/2024
-        self.model_lists = {
-            "llama3-8b-8192": {
-                "developer": "Meta",
-                "context_size": "8192",
-            },
-            "llama3-70b-8192": {
-                "developer": "Meta",
-                "context_size": "8192",
-            },
-            # "llama2-70b-4096": {
-            #     "developer": "Meta",
-            #     "context_size": "4096",
-            # },
-            "mixtral-8x7b-32768": {
-                "developer": "Mistral",
-                "context_size": "32768",
-            },
-            "gemma-7b-it": {
-                "developer": "Google",
-                "context_size": "8192",
-            },
-        }
+
         self.async_client = None  # only initialize if the async call is called
 
     def _init_sync_client(self):
@@ -68,26 +58,21 @@ class GroqAPIClient(APIClient):
 
     def parse_chat_completion(self, completion: Any) -> str:
         """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        # TODO: standardize the completion
+        Parse the completion to a string output.
         """
         return completion.choices[0].message.content
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Union[str],  # TODO: delete this
-        system_input: Optional[Union[str]] = None,
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
-        final_model_kwargs = combined_model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
-            # convert input to messages
-            # assert isinstance(input, str), "input must be a string"
             messages: Sequence[Dict[str, str]] = []
-            if system_input is not None and system_input != "":
-                messages.append({"role": "system", "content": system_input})
-            # messages.append({"role": "user", "content": input})
+            if input is not None and input != "":
+                messages.append({"role": "system", "content": input})
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
@@ -107,9 +92,6 @@ class GroqAPIClient(APIClient):
         assert (
             "model" in api_kwargs
         ), f"model must be specified in api_kwargs: {api_kwargs}"
-        assert (
-            api_kwargs["model"] in self.model_lists
-        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
             completion = self.sync_client.chat.completions.create(**api_kwargs)
             return completion
@@ -132,9 +114,6 @@ class GroqAPIClient(APIClient):
         if self.async_client is None:
             self._init_async_client()
         assert "model" in api_kwargs, "model must be specified"
-        assert (
-            api_kwargs["model"] in self.model_lists
-        ), f"model {api_kwargs['model']} not in the list of available models: {self.model_lists}"
         if model_type == ModelType.LLM:
             completion = await self.async_client.chat.completions.create(**api_kwargs)
             return completion

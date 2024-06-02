@@ -4,7 +4,7 @@ We use dataclass which provides a decorator that automatically adds special meth
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional, Union, Generic, TypeVar
 from collections import OrderedDict
 from dataclasses import dataclass, field, InitVar, fields, make_dataclass, MISSING
 from uuid import UUID
@@ -26,6 +26,8 @@ from core.tokenizer import Tokenizer
 #     raise ImportError("Please upgrade to Python 3.10.1 or higher to use Literal")
 
 logger = logging.getLogger(__name__)
+
+T_co = TypeVar("T_co", covariant=True)
 
 
 class ModelType(Enum):
@@ -284,6 +286,9 @@ def retriever_output_to_context_str(
     return context_str
 
 
+# TODO: this can be used as a base class for all data classes
+
+
 @dataclass
 class BaseDataClass:
     __doc__ = r"""Base class to define input and output data classes for components.
@@ -332,12 +337,13 @@ class BaseDataClass:
     ```
     """
 
-    def __post_init__(self):
-        for f in fields(self):
-            if "desc" not in f.metadata:
-                warnings.warn(
-                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
-                )
+    # def __post_init__(self):
+    #     # TODO: use desription in the field
+    #     for f in fields(self):
+    #         if "desc" not in f.metadata:
+    #             warnings.warn(
+    #                 f"Field {f.name} is missing 'desc' in metadata", UserWarning
+    #             )
 
     def set_field_value(self, field_name: str, value: Any):
         r"""Set the value of a field in the dataclass instance."""
@@ -417,6 +423,28 @@ class BaseDataClass:
     def get_data_class_schema(cls) -> Dict[str, Dict[str, Any]]:
         """Generate a Json schema which is more detailed than the signature."""
         return get_data_class_schema(cls)
+
+
+@dataclass
+class GeneratorOutput(BaseDataClass, Generic[T_co]):
+    __doc__ = r"""
+    The output data class for the Generator component.
+    We ca not control its output 100%, so we use this to track the error_message and
+    allow the raw string output to be passed through.
+    """
+
+    data: T_co = field(
+        default=None,
+        metadata={"desc": "The final output data potentially after output parsers"},
+    )
+    error_message: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Error message if any"},
+    )
+    raw_response: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Raw response string"},
+    )
 
 
 @dataclass

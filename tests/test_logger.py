@@ -1,7 +1,7 @@
 import pytest
 
 import logging
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 from utils import get_default_logger, printc
 
 
@@ -25,7 +25,6 @@ class TestGetDefaultLogger:
         mock_file_handler = mocker.patch(
             "logging.FileHandler", return_value=MagicMock(spec=logging.FileHandler)
         )
-        from utils import get_default_logger
 
         logger = get_default_logger(
             name="test_file_logging_only", enable_console=False, enable_file=True

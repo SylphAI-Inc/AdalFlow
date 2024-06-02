@@ -8,10 +8,12 @@ from components.api_client import GroqAPIClient, OpenAIClient, GoogleGenAIClient
 from optim.optimizer import BootstrapFewShot
 from optim.sampler import RandomSampler, ClassSampler
 from optim.llm_augment import LLMAugmenter
-from use_cases.classification.task import TRECClassifier
-from use_cases.classification.eval import ClassifierEvaluator
-from use_cases.classification.prompt import InputFormat, OutputFormat
+from optim.llm_optimizer import LLMOptimizer
+
 from core.component import Component
+
+from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
+from use_cases.classification.eval import ClassifierEvaluator
 from use_cases.classification.data import (
     SamplesToStr,
     load_datasets,
@@ -20,31 +22,8 @@ from use_cases.classification.data import (
 )
 
 
-class Orchestrator(Component):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self._example_input = "What is the capital of France?"
-
-    # @property
-    # def example_input(self):
-    #     return "How did serfdom develop in and then leave Russia ?"
-
-    # @example_input.setter
-    # def example_input(self, value):
-    #     self._example_input = value
-
-    # def training_step(self, *args, **kwargs) -> None:
-    #     raise NotImplementedError("training_step method is not implemented")
-
-    def train(self, *args, **kwargs) -> None:
-        raise NotImplementedError("train method is not implemented")
-
-    def _extra_repr(self) -> str:
-        return super()._extra_repr() + f"example_input={self._example_input}"
-
-
 # for this trainer, we will learn from pytorch lightning
-class TrecTrainer(Orchestrator):
+class TrecTrainer(Component):
     r"""
     data loader which is random shuffed already, and the batch can be used as the # samples
     """
@@ -129,8 +108,6 @@ class TrecTrainer(Orchestrator):
         print(
             f"few_shot_state_dict: {self.few_shot_optimizer.state_dict()}",
         )
-
-        from optim.llm_optimizer import LLMOptimizer
 
         self.instruction_optimier = LLMOptimizer(
             self.params["generator.task_desc_str"],
@@ -365,11 +342,43 @@ class TrecTrainer(Orchestrator):
         )
 
     def train_instruction(self, max_steps: int = 5) -> None:
-
+        # better to provide a manual instruction
+        # TODO: how to save the states.
         top_5_instructions = []
         self.task.train()
+        best_score: float = 0.0
         for i, train_batch in enumerate(self.data_loader):
-            pass
+            if i >= max_steps:
+                break
+
+            self.instruction_optimier.propose()
+            acc, f1 = self.batch_eval(train_batch)
+            score = (acc + f1) / 2.0
+            print(f"step: {i}")
+            print(f"score: {score}")
+            if score > best_score:
+                best_score = score
+                self.instruction_optimier.update_parameter(score)
+                print(f"best_score: {best_score}")
+                print(f"best_parameters: {self.params['generator.task_desc_str']}")
+            else:
+                self.instruction_optimier.reset_parameter()
+                print(f"reset_parameter")
+        # test the best instruction
+        acc, macro_f1, weights_per_class = self.test()
+        print(
+            f"Test Accuracy: {acc}, F1: {macro_f1}, weights_per_class: {weights_per_class}"
+        )
+        # save the best instruction
+        save(
+            self.task.state_dict(),
+            f"use_cases/classification/checkpoints/task_instruction/state_dict",
+        )
+        # save all instructions history from the optimizer
+        save(
+            self.instruction_optimier.instruction_history,
+            f"use_cases/classification/checkpoints/task_instruction/instruction_history",
+        )
 
     def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
         r"""
@@ -470,10 +479,8 @@ if __name__ == "__main__":
     import sys
 
     # Configure logging to output to standard output (console)
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    # Example of setting logging to debug level
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
 
     train_dataset, eval_dataset, test_dataset = load_datasets()
     # TODO: ensure each time the selected eval and test dataset and train dataset are the same
@@ -487,6 +494,8 @@ if __name__ == "__main__":
         num_shots=num_shots,
         batch_size=batch_size,
     )
+    logger.info(f"trainer: {trainer}")
+    # trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
     # trainer.eval_zero_shot()
     trainer.eval_few_shot(shots=num_shots, runs=5)

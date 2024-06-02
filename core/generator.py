@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
+from copy import deepcopy
+import logging
 
-from core.data_classes import ModelType
+from core.data_classes import ModelType, GeneratorOutput
 from core.component import Component
 from core.parameter import Parameter
 from core.prompt_builder import Prompt
@@ -10,15 +12,22 @@ from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 GeneratorInputType = str
-GeneratorOutputType = Any
+GeneratorOutputType = GeneratorOutput
+
+logger = logging.getLogger(__name__)
 
 
+# NOTE: currently generator cannot be used in Sequential due to specialized output data type
+# TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
 class Generator(Component):
     """
-    An orchestrator component that combines the system Prompt and the API client to process user input queries, and to generate responses.
-    Additionally, it allows you to pass the output_processors to further parse the output from the model. Thus the arguments are almost a combination of that of Prompt and APIClient.
+    An user-facing orchestration component for LLM prediction.
 
-    It takes the user query as input in string format, and returns the response or processed response.
+    By orchestrating the following three components along with their required arguments,
+    it enables any LLM prediction with required task output format.
+    - Prompt
+    - Model client
+    - Output processors
     """
 
     model_type: ModelType = ModelType.LLM
@@ -27,15 +36,16 @@ class Generator(Component):
     def __init__(
         self,
         *,
+        # args for the model
         model_client: APIClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
-        preset_prompt_kwargs: Optional[Dict] = None,  # manage the prompt kwargs
-        trainable_params: Optional[
-            List[str]
-        ] = [],  # the trainable parameters in the prompt
+        preset_prompt_kwargs: Optional[Dict] = None,
+        # args for the output processing
         output_processors: Optional[Component] = None,
+        # args for the trainable parameters
+        trainable_params: Optional[List[str]] = [],
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -49,17 +59,19 @@ class Generator(Component):
         """
         super().__init__()
 
+        self._init_prompt(template, preset_prompt_kwargs)
+
         self.model_kwargs = model_kwargs
-        if "model" not in model_kwargs:
-            raise ValueError(
-                f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
-            )
+        # if "model" not in model_kwargs:
+        #     raise ValueError(
+        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
+        #     )
+
         # init the model client
         self.model_client = model_client
-        self.system_prompt = Prompt(
-            template=template,
-            preset_prompt_kwargs=preset_prompt_kwargs,
-        )
+
+        self.output_processors = output_processors
+
         # add trainable_params to generator
         prompt_variables = self.system_prompt.get_prompt_variables()
         self._trainable_params: List[str] = []
@@ -69,21 +81,29 @@ class Generator(Component):
                     f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
                 )
             # Create a Parameter object and assign it as an attribute with the same name as the value of param
-            setattr(self, param, Parameter(data=None))
+            default_value = self.preset_prompt_kwargs.get(param, None)
+            setattr(self, param, Parameter(data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
 
-        self.output_processors = output_processors
+    def _init_prompt(self, template: str, preset_prompt_kwargs: Dict):
+        r"""Initialize the prompt with the template and preset_prompt_kwargs."""
+        self.template = template
+        self.preset_prompt_kwargs = preset_prompt_kwargs
+        self.system_prompt = Prompt(
+            template=template, preset_prompt_kwargs=preset_prompt_kwargs
+        )
+        # return Prompt(template=template, preset_prompt_kwargs=preset_prompt_kwargs)
 
-    def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
-        """
-        This combines the default lm input using Prompt, and the passed input. history, steps, etc.
-        It builds the final chat input to the model.
+    # def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
+    #     """
+    #     This combines the default lm input using Prompt, and the passed input. history, steps, etc.
+    #     It builds the final chat input to the model.
 
-        As
-        """
-        prompt_text = self.system_prompt.call(**kwargs)
-        return prompt_text
+    #     As
+    #     """
+    #     prompt_text = self.system_prompt.call(**kwargs)
+    #     return prompt_text
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
@@ -91,7 +111,7 @@ class Generator(Component):
         Combine the default model, model_kwargs with the passed model_kwargs.
         Example:
         model_kwargs = {"temperature": 0.5, "model": "gpt-3.5-turbo"}
-        self.model_kwargs = {"model": "gpt-3.5"}
+        self.model_kwargs = {"model": "gpt-3.5-turbo"}
         combine_kwargs(model_kwargs) => {"temperature": 0.5, "model": "gpt-3.5-turbo"}
 
         """
@@ -106,38 +126,40 @@ class Generator(Component):
 
     def _post_call(self, completion: Any) -> GeneratorOutputType:
         r"""Parse the completion and process the output."""
-        response = self.model_client.parse_chat_completion(completion)
-        print(f"Raw response: \n{response}")
-        if self.output_processors:
-            response = self.output_processors(response)
-        return response
+        try:
+            response = self.model_client.parse_chat_completion(completion)
+        except Exception as e:
+            response = str(completion)
+            return GeneratorOutput(raw_response=response, error_message=str(e))
 
-    def _pre_call(
-        self, input: str, prompt_kwargs: Dict, model_kwargs: Dict
-    ) -> Dict[str, Any]:
+        output: GeneratorOutputType = GeneratorOutput(raw_response=response)
+        response = deepcopy(response)
+        if self.output_processors:
+            try:
+                response = self.output_processors(response)
+            except Exception as e:
+                output.error_message = str(e)
+        output.data = response
+        return output
+
+    def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # step 1: render the system prompt
         system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
-
-        print(f"system_prompt_str: {system_prompt_str}")
 
         # step 2: combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
 
         # step 3: use model_client.combined_input_and_model_kwargs to get the api_kwargs
-        api_kwargs = self.model_client.convert_input_to_api_kwargs(
-            input=input,
-            system_input=system_prompt_str,
-            combined_model_kwargs=composed_model_kwargs,
+        api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
+            input=system_prompt_str,
+            model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
         return api_kwargs
 
     def call(
         self,
-        input: Optional[
-            str
-        ] = None,  # TODO: delete this field and use prompt_kwargs as input
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
@@ -146,30 +168,33 @@ class Generator(Component):
         if self.training:
             # add the parameters to the prompt_kwargs
             # convert attributes to prompt_kwargs
-            trained_prmpt_kwargs = {
+            trained_prompt_kwargs = {
                 param: getattr(self, param).data for param in self.state_dict()
             }
-            prompt_kwargs.update(trained_prmpt_kwargs)
-            print(f"prompt_kwargs: {prompt_kwargs}")
+            prompt_kwargs.update(trained_prompt_kwargs)
 
-        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        logger.info(f"prompt_kwargs: {prompt_kwargs}")
+        logger.info(f"model_kwargs: {model_kwargs}")
+
+        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(completion)
+
+        logger.info(f"output: {output}")
         return output
 
     async def acall(
         self,
-        input: str,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
         Note: watch out for the rate limit and the timeout.
         """
-        api_kwargs = self._pre_call(input, prompt_kwargs, model_kwargs)
+        api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
         )

@@ -18,11 +18,16 @@ It does four things:
 Check the subclasses in `components/api_client/` directory for the functional API clients we have.
 """
 
-from typing import Any, Dict, Union, Optional
+from typing import Any, Dict, Union, Sequence
 
 
 from core.component import Component
 from core.data_classes import ModelType
+
+
+API_INPUT_TYPE = Union[
+    str, Sequence[str]
+]  # str/Sequence for llm and str/sequence/list for embeddings
 
 
 class APIClient(Component):
@@ -65,17 +70,20 @@ class APIClient(Component):
         r"""Subclass use this to call the API with the async client."""
         pass
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Any,  # user input
-        system_input: Optional[
-            Union[str]
-        ] = None,  # system input that llm will use to generate the response
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
         Bridge the Component's standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.
+
+        Args:
+            input (API_INPUT_TYPE): user input
+            model_kwargs (Dict): model kwargs
+            model_type (ModelType): model type
+
         """
         raise NotImplementedError(
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
@@ -99,14 +107,6 @@ class APIClient(Component):
 
     def _track_usage(self, **kwargs):
         pass
-
-    # TODO: implement the error process later. Customized error handling per api provider
-    # def _backoff_on_exception(self, exception, max_time=5):
-    #     return backoff.on_exception(
-    #         backoff.expo,
-    #         exception,
-    #         max_time=max_time,
-    #     )
 
     def __call__(self, *args, **kwargs):
         return super().__call__(*args, **kwargs)

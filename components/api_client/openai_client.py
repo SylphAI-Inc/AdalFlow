@@ -1,9 +1,12 @@
 import os
-from core.api_client import APIClient
-from typing import Dict, Sequence, Union, Optional, List
-from core.data_classes import ModelType
+from typing import Dict, Sequence, Optional, List
+
+try:
+    import openai
+except ImportError:
+    raise ImportError("Please install openai with: pip install openai")
+
 from openai import OpenAI, AsyncOpenAI
-import backoff
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -11,8 +14,12 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-
 from openai.types import Completion
+
+from core.api_client import APIClient, API_INPUT_TYPE
+from core.data_classes import ModelType
+
+import backoff
 
 
 class OpenAIClient(APIClient):
@@ -51,18 +58,17 @@ class OpenAIClient(APIClient):
         """
         return completion.choices[0].message.content
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Union[str, Sequence],
-        system_input: Optional[Union[str]] = None,
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,  # user input
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
         Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
         Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format
         """
-        final_model_kwargs = combined_model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
                 input = [input]
@@ -72,9 +78,8 @@ class OpenAIClient(APIClient):
         elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
-            if system_input is not None and system_input != "":
-                messages.append({"role": "system", "content": system_input})
-            # messages.append({"role": "user", "content": input})
+            if input is not None and input != "":
+                messages.append({"role": "system", "content": input})
             assert isinstance(
                 messages, Sequence
             ), "input must be a sequence of messages"

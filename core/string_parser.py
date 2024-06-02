@@ -71,9 +71,12 @@ class YAMLParser(Component):
 
     def call(self, input: str) -> YAML_PARSER_OUTPUT_TYPE:
         input = input.strip()
-        yaml_str = F.extract_yaml_str(input)
-        json_object = F.parse_yaml_str_to_obj(yaml_str)
-        return json_object
+        try:
+            yaml_str = F.extract_yaml_str(input)
+            yaml_obj = F.parse_yaml_str_to_obj(yaml_str)
+            return yaml_obj
+        except Exception as e:
+            raise ValueError(f"Error: {e}")
 
 
 ############################################################################################################
