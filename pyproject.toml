@@ -44,6 +44,7 @@ sphinx-rtd-theme = "^2.0.0"
 pydata-sphinx-theme = "0.15.2"
 sphinx-design = "^0.6.0"
 
+
 [tool.poetry.group.dev.dependencies]
 langchain = "^0.1.16"
 llama-index = "^0.10.30"
