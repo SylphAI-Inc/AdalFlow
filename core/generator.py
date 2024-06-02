@@ -36,7 +36,6 @@ class Generator(Component):
     def __init__(
         self,
         *,
-        name: str = "Generator",  # a unique and identifiable name to trace all change of prompt template
         # args for the model
         model_client: APIClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
