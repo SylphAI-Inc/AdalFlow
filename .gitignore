@@ -34,3 +34,4 @@ local_cache/
 *.pth
 data/
 traces/
+*.log
