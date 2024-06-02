@@ -14,16 +14,10 @@ import os
 import sys
 
 
-# sys.path.insert(0, os.path.abspath("."))
-# sys.path.insert(0, os.path.abspath(".."))
-# sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../core"))
 sys.path.insert(0, os.path.abspath("../../components"))
 sys.path.insert(0, os.path.abspath("../../eval"))
-# sys.path.insert(0, os.path.abspath(".."))
-# sys.path.insert(0, os.path.abspath("../core"))
-# sys.path.insert(0, os.path.abspath("../components"))
 
 
 # -- Project information -----------------------------------------------------
@@ -49,6 +43,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
+    "sphinx_design"
     # 'recommonmark',
     # 'myst_parser'
 ]
@@ -67,49 +62,45 @@ exclude_patterns = ["tests", "test_*"]
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-html_theme = "sphinx_rtd_theme"
 
+html_theme = "pydata_sphinx_theme"
+
+
+html_logo = "../../images/LightRAG-logo-doc.jpeg"
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
     "collapse_navigation": False,
-    "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
-    "navigation_depth": 4,  # Controls how many headers are shown in the sidebar
-    "includehidden": True,
-    "titles_only": False,
+# "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+    "navigation_depth": 8,  # Controls how many headers are shown in the sidebar
+    # "includehidden": True,
+    # "titles_only": False,
+    "icon_links": [
+        {
+            "name": "Discord",
+            "url": "https://discord.gg/hmZWFEUd",
+            "icon": "fa-brands fa-discord",
+        },]
 }
-
-
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-
-def setup(app):
-    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
-
+# A shorter title for the navigation bar.  Default is the same as html_title.
+html_short_title = "LightRAG"
+# this will be the logo shown on the browser header
+html_favicon = "../../images/LightRAG-logo-circle.png"
 
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
 # whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
+autosummary_generate = True  # Tells Sphinx to generate summary pages
 add_module_names = False
-
+autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True
 
-# autodoc_default_options = {
-#     "autosummary-no-titles": True,
-#     "autosummary-force-inline": True,
-#     "autosummary-nosignatures": True,
-#     "members": True,
-#     "private-members": False,  # (those starting with _).
-#     "special-members": False,  # (those starting and ending with __).
-#     "member-order": "bysource",
-#     "show-inheritance": True,
-#     # "undoc-members": True,
-#     "autosectionlabel_prefix_document": True,
-# }
+
 autodoc_default_options = {
     "members": True,
     "undoc-members": True,
@@ -117,5 +108,10 @@ autodoc_default_options = {
     "show-inheritance": True,
     "private-members": False,  # Ensure this is True if you want to document private members
     "special-members": "__init__",  # Document special members like __init__
-    "autosectionlabel_prefix_document": True,
+    'inherited-members': True,
+    'exclude-members': '__init__'
+    # "autosectionlabel_prefix_document": True,
 }
+
+def setup(app):
+    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration

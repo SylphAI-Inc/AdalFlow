@@ -17,13 +17,13 @@ li_test/
 lib/
 logs/
 __pycache__/
-docs/source/
+# docs/source/
 llama3/
 docs/build/
 docs/_build/
 docs/source/_templates
 docs/source/documents/
-docs/source/apis/*
+# docs/source/apis/*
 tests/log_test/*.log
 lib/
 li_test/

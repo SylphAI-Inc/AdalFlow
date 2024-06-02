@@ -3,7 +3,7 @@ import os
 
 def add_reference_labels(directory: str):
     for filename in os.listdir(directory):
-        if filename.endswith(".rst"):
+        if filename.endswith(".rst") and "index" not in filename:
             filepath = os.path.join(directory, filename)
             with open(filepath, "r+") as file:
                 content = file.read()
@@ -19,3 +19,4 @@ if __name__ == "__main__":
     add_reference_labels("./source/apis/components")
     add_reference_labels("./source/apis/eval")
     add_reference_labels("./source/apis/prompts")
+    add_reference_labels("./source/apis/utils")
