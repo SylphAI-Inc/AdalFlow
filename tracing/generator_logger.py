@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
-from core.generator import Generator
+from core.generator import Generator, GeneratorOutput
 from core.data_classes import BaseDataClass
 from utils import serialize
 
@@ -19,15 +19,23 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class GeneratorRecord(BaseDataClass):
+class GeneratorStatesRecord(BaseDataClass):
     prompt_states: Dict[str, Any] = field(default_factory=dict)
     time_stamp: str = field(default_factory=str)
 
-    def __eq__(self, other: "GeneratorRecord"):
+    def __eq__(self, other: "GeneratorStatesRecord"):
         return serialize(self.prompt_states) == serialize(other.prompt_states)
 
-    def __ne__(self, other: "GeneratorRecord"):
+    def __ne__(self, other: "GeneratorStatesRecord"):
         return not self.__eq__(other)
+
+
+@dataclass
+class GeneratorCallRecord(BaseDataClass):
+    prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
+    model_kwargs: Dict[str, Any] = field(default_factory=dict)
+    output: GeneratorOutput = field(default_factory=GeneratorOutput)
+    time_stamp: str = field(default_factory=str)
 
 
 class GeneratorLogger:
@@ -47,7 +55,7 @@ class GeneratorLogger:
 
         # self.generator_state = generator  # TODO: make this a generator state
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
-        self._trace_map: Dict[str, List[GeneratorRecord]] = (
+        self._trace_map: Dict[str, List[GeneratorStatesRecord]] = (
             {}  # generator_name: [prompt_states]
         )
         if os.path.exists(self.filename):
@@ -63,7 +71,7 @@ class GeneratorLogger:
 
             if name not in self._trace_map:
                 self._trace_map[name] = [
-                    GeneratorRecord(
+                    GeneratorStatesRecord(
                         prompt_states=prompt_states,
                         time_stamp=datetime.now().isoformat(),
                     )
@@ -72,7 +80,7 @@ class GeneratorLogger:
             else:
                 # compare the last record with the new record
                 last_record = self._trace_map[name][-1]
-                new_prompt_record = GeneratorRecord(
+                new_prompt_record = GeneratorStatesRecord(
                     prompt_states=prompt_states, time_stamp=datetime.now().isoformat()
                 )
 
@@ -101,5 +109,5 @@ class GeneratorLogger:
             # convert each dict record to PromptRecord
             for name, records in self._trace_map.items():
                 self._trace_map[name] = [
-                    GeneratorRecord.load_from_dict(record) for record in records
+                    GeneratorStatesRecord.load_from_dict(record) for record in records
                 ]

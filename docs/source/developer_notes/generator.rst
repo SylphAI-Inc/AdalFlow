@@ -19,17 +19,32 @@ Tracing
 We provide two tracing methods to help you develop and improve the Generator:
 1. Trace the history change(states) on prompt during your development process. Developers typical go through a long process of prompt optimization and it is frustrating
 to lose track of the prompt changes when your current change actually makes the performance much worse.
+
+We created a `GeneratorLogger` to handle the logging and saving into json files. To further simplify developers's process,
+we provides a class decorator `trace_generator` where a single line of code can be added to any of your task component which
+has attributes of `Generator` type automatically.
+
 .. code-block:: python
-    from lightrag.generator import Generator
-    generator = Generator()
-    generator.trace_error_messages()
+    from tracing import trace_generator
+    from core.component import component
+
+    @trace_generator()
+    class SimpleQA(component):
+        def __init__(self):
+            super().__init__()
+            self.generator = Generator(...)
+            self.generator_2 = Generator(...)
+        def call(...):
+
+    
 2. Trace all failed LLM predictions for further improvement.
+
+
+Refer `use_cases/tracing` for more details.
 
 
 Training
 ^^^^^^^^
-1. Trace the error messages
-2. Trace the state_dict of the model. 
 
 
 

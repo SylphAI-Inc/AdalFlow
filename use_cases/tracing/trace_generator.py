@@ -7,7 +7,7 @@ from tracing.decorators import trace_generator
 import utils.setup_env
 
 
-@trace_generator(name="simple_qa", attribute="generator", filepath="./traces/")
+@trace_generator()
 class SimpleQA(Component):
     def __init__(self):
         super().__init__()
@@ -15,7 +15,7 @@ class SimpleQA(Component):
             model_client=GroqAPIClient(),
             model_kwargs={"model": "llama3-8b-8192"},
             preset_prompt_kwargs={
-                "task_desc_str": "You are a helpful assistant and with a great sense of humor."
+                "task_desc_str": "You are a helpful assistant and with a great sense of humor. Second edition.",
             },
             trainable_params=[
                 "task_desc_str"
@@ -31,10 +31,7 @@ if __name__ == "__main__":
     print(simple_qa)
     states = simple_qa.state_dict()  # only prameters
     print(f"states: {states}")
-    all_attributes = simple_qa.generator.to_dict()
-    print(f"all_attributes: {all_attributes}")
-    all_keys = dir(simple_qa.generator)
-    print(f"all_keys: {all_keys}")
+
     print("show the system prompt")
     simple_qa.generator.print_prompt()
     print("Answer:")

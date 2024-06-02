@@ -17,6 +17,7 @@ from components.api_client import (
 from core.prompt_builder import Prompt
 from prompts.outputs import YAMLOutputParser
 from core.string_parser import JsonParser
+from tracing import trace_generator
 
 from use_cases.classification.data import (
     _COARSE_LABELS,
@@ -92,6 +93,7 @@ class OutputFormat(BaseDataClass):
         return super().load_from_dict(data)
 
 
+@trace_generator()
 class TRECClassifier(Component):
     r"""
     Optimizing goal is the examples_str in the prompt
