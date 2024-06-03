@@ -25,6 +25,6 @@
     color: gray;     /* Sets the color to gray */
 }
 .bd-links__title {
-    /* remove the "section navigation string"*/
+    /* remove the "section navigation" string*/
     display: none;
 }
