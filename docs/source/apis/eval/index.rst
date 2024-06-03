@@ -5,11 +5,11 @@ Overview
 ----------
 .. autosummary::
 
-   eval.evaluator
+   eval.evaluators
 
 Evaluator
 ------
 .. toctree::
    :maxdepth: 1
 
-   eval.evaluator
+   eval.evaluators

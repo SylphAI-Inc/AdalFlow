@@ -6,30 +6,30 @@ Welcome to the LightRAG API reference! This section provides detailed documentat
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Components
+   :caption: Components
 
    components/index
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Core
+   :caption: Core
 
    core/index
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Prompts
+   :caption: Prompts
 
    prompts/index
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Evaluation
+   :caption: Evaluation
 
    eval/index
 
 .. toctree::
    :maxdepth: 2
-   :caption: API Utils
+   :caption: Utils
 
    utils/index
