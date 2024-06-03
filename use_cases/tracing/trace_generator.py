@@ -37,12 +37,8 @@ class SimpleQA(Component):
 if __name__ == "__main__":
     from utils import enable_library_logging, get_logger
 
-    # import logging
-
-    # logging.basicConfig(level=logging.INFO)
-
-    enable_library_logging(enable_file=False)
-    log = get_logger(__name__)
+    enable_library_logging(enable_file=False, level="DEBUG")
+    log = get_logger(__name__, level="INFO")
     simple_qa = SimpleQA()
     log.info(simple_qa)
     states = simple_qa.state_dict()  # only prameters

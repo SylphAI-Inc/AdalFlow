@@ -125,6 +125,34 @@ def trace_generator_call(
         original_init = cls.__init__
         class_name = cls.__name__
 
+        def _wrap_generator(
+            generator_name: str,
+            generator: Generator,
+            error_only: bool,
+            logger: GeneratorCallLogger,
+        ):
+            r"""Wrap the call method of the generator to log the call."""
+            original_call = generator.call
+
+            @functools.wraps(original_call)
+            def wrapped_call(*args, **kwargs):
+                output = original_call(*args, **kwargs)
+                try:
+                    if (
+                        error_only and output.error_message is not None
+                    ) or not error_only:
+                        logger.log_call(
+                            name=generator_name,
+                            model_kwargs=kwargs.get("model_kwargs", {}),
+                            prompt_kwargs=kwargs.get("prompt_kwargs", {}),
+                            output=output,
+                        )
+                except Exception as e:
+                    log.error(f"Error logging generator call for {generator_name}: {e}")
+                return output
+
+            return wrapped_call
+
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
             original_init(self, *args, **kwargs)
@@ -148,6 +176,7 @@ def trace_generator_call(
                 self.generator_call_logger.generator_names_to_files
             )
 
+            # Wrap each generator (with attr_name as the generator name)
             for attr_name in effective_attributes:
                 target_generator = getattr(self, attr_name, None)
                 if target_generator is None:
@@ -162,32 +191,18 @@ def trace_generator_call(
                     self.generator_call_logger.register_generator(attr_name)
                     filename = self.generator_call_logger.get_location(attr_name)
                     log.info(f"Registered generator {attr_name} with file {filename}")
+                # Wrap the call method of the target generator
                 if target_generator and hasattr(target_generator, "call"):
-                    original_call = target_generator.call  # TODO: support acall
-
-                    @functools.wraps(original_call)
-                    def wrapped_call(*args, **kwargs):
-                        output: GeneratorOutputType = original_call(*args, **kwargs)
-                        try:
-                            if error_only and output.error_message is not None:
-                                self.generator_call_logger.log_call(
-                                    name=attr_name,
-                                    model_kwargs=kwargs.get("model_kwargs", {}),
-                                    prompt_kwargs=kwargs.get("prompt_kwargs", {}),
-                                    output=output,
-                                )
-                            if not error_only:
-                                self.generator_call_logger.log_call(
-                                    name=attr_name,
-                                    model_kwargs=kwargs.get("model_kwargs", {}),
-                                    prompt_kwargs=kwargs.get("prompt_kwargs", {}),
-                                    output=output,
-                                )
-                        except Exception as e:
-                            log.error(f"Error logging generator call: {e}")
-                        return output
-
-                    setattr(target_generator, "call", wrapped_call)
+                    setattr(
+                        target_generator,
+                        "call",
+                        _wrap_generator(
+                            generator_name=attr_name,
+                            generator=target_generator,
+                            error_only=error_only,
+                            logger=self.generator_call_logger,
+                        ),
+                    )
 
         cls.__init__ = new_init
         return cls

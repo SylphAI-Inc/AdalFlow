@@ -51,7 +51,6 @@ log = logging.getLogger(__name__)
 # NOTE: what if users set up two logger in the same script with the same name, we dont config the logger again, but we add the handler again, is it a problem?
 # NOTE: When both console and file are false, the logger should not have any handlers.
 def get_default_log_config(
-    # name: str = "default",
     level: str = "INFO",
     filename: str = "./logs/app.log",
     enable_console: bool = True,
