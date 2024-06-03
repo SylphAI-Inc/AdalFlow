@@ -15,3 +15,4 @@ Here is the content of our documentation project.
    generator
    prompt
    retriever
+   evaluation
