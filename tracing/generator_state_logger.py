@@ -1,7 +1,3 @@
-"""
-(1) for generator, we track all different prompts and their corresponding arguments
-"""
-
 from typing import Dict, Any, List, Optional, Union
 import os
 import logging
