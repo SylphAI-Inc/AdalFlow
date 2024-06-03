@@ -291,7 +291,9 @@ def retriever_output_to_context_str(
 
 @dataclass
 class BaseDataClass:
-    __doc__ = r"""Base class to define input and output data classes for components.
+    __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
+
+    Especially to LLM prompt.
 
     It creates string signature or schema from both the class and class instance.
 
