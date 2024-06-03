@@ -16,11 +16,18 @@ class SimpleQA(Component):
             model_client=GroqAPIClient(),
             model_kwargs={"model": "llama3-8b-8192"},
             preset_prompt_kwargs={
-                "task_desc_str": "You are a helpful assistant and with a great sense of humor.",
+                "task_desc_str": "You are a helpful assistant and with a great sense of humor. changes",
             },
             trainable_params=[
                 "task_desc_str"
             ],  # 1 we need to clearly define which is trainable.
+        )
+        self.generator2 = Generator(
+            model_client=GroqAPIClient(),
+            model_kwargs={"model": "llama3-8b-8192"},
+            preset_prompt_kwargs={
+                "task_desc_str": "You are the second generator.",
+            },
         )
 
     def call(self, query: str) -> str:
@@ -28,8 +35,16 @@ class SimpleQA(Component):
 
 
 if __name__ == "__main__":
+    from utils import enable_library_logging, get_logger
+
+    # import logging
+
+    # logging.basicConfig(level=logging.INFO)
+
+    enable_library_logging(enable_file=False)
+    log = get_logger(__name__)
     simple_qa = SimpleQA()
-    print(simple_qa)
+    log.info(simple_qa)
     states = simple_qa.state_dict()  # only prameters
     print(f"states: {states}")
 

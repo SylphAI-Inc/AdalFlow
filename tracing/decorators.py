@@ -60,12 +60,12 @@ def trace_generator_states(
 
             # create the logger in the current component
             if not hasattr(self, "generator_logger"):
-                print("Creating generator logger")
+                log.debug(f"Creating generator states logger for {class_name}")
                 self.generator_logger = GeneratorStatesLogger(filename=final_file)
 
             # Dynamically get the attribute to be logged if it exists.
             for attribute in effective_attributes:
-                print(f"Tracing generator in {class_name}")
+                log.debug(f"Tracing generator in {class_name}")
                 target = getattr(self, attribute, None)
                 generator_name = attribute
 
@@ -82,7 +82,6 @@ def trace_generator_states(
                     continue
 
                 # log the prompt states of the target generator
-                print(f"Logging prompt states of {generator_name}")
                 self.generator_logger.log_prompt(target, generator_name)
 
         cls.__init__ = new_init
@@ -96,7 +95,7 @@ def trace_generator_call(
     filepath: Optional[str] = "./traces/",
     error_only: bool = True,
 ):
-    __doc__ = r"""Decorator to trace failed generator predictions in a task component.
+    __doc__ = r"""Decorator to trace generator predictions in a task component, especially failed ones.
 
     This decorator is a wrapper around the generator call method. It logs the generator call by
     reading its GeneratorOutput and logs the call if the output is an error.
@@ -129,7 +128,6 @@ def trace_generator_call(
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
             original_init(self, *args, **kwargs)
-            # Ensure directory exists
             if not os.path.exists(filepath):
                 os.makedirs(filepath, exist_ok=True)
 
@@ -151,8 +149,8 @@ def trace_generator_call(
             )
 
             for attr_name in effective_attributes:
-                generator = getattr(self, attr_name, None)
-                if generator is None:
+                target_generator = getattr(self, attr_name, None)
+                if target_generator is None:
                     warnings.warn(
                         f"Attribute {attr_name} not found in {class_name}. Skipping tracing."
                     )
@@ -164,8 +162,8 @@ def trace_generator_call(
                     self.generator_call_logger.register_generator(attr_name)
                     filename = self.generator_call_logger.get_location(attr_name)
                     log.info(f"Registered generator {attr_name} with file {filename}")
-                if generator and hasattr(generator, "call"):
-                    original_call = generator.call  # TODO: support acall
+                if target_generator and hasattr(target_generator, "call"):
+                    original_call = target_generator.call  # TODO: support acall
 
                     @functools.wraps(original_call)
                     def wrapped_call(*args, **kwargs):
@@ -189,7 +187,7 @@ def trace_generator_call(
                             log.error(f"Error logging generator call: {e}")
                         return output
 
-                    setattr(generator, "call", wrapped_call)
+                    setattr(target_generator, "call", wrapped_call)
 
         cls.__init__ = new_init
         return cls
