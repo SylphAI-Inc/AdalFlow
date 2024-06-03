@@ -1,11 +1,11 @@
 import functools
 import os
 import warnings
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 import logging
 
-from core.generator import Generator
-from tracing.generator_logger import GeneratorLogger
+from core.generator import Generator, GeneratorOutputType
+from tracing import GeneratorStatesLogger, GeneratorCallLogger
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,6 @@ def trace_generator(
         >>> # now you will see log files in the ./traces/ with a filename like TestGenerator_generator_trace.json
         >>> # If you update the template or the preset_prompt_kwargs, it will be logged in the file.
     """
-    assert issubclass(Generator, Generator), "Currently only support Generator class"
 
     def decorator(cls):
         original_init = cls.__init__
@@ -62,7 +61,7 @@ def trace_generator(
             # create the logger in the current component
             if not hasattr(self, "generator_logger"):
                 print("Creating generator logger")
-                self.generator_logger = GeneratorLogger(filename=final_file)
+                self.generator_logger = GeneratorStatesLogger(filename=final_file)
 
             # Dynamically get the attribute to be logged if it exists.
             for attribute in effective_attributes:
@@ -85,6 +84,72 @@ def trace_generator(
                 # log the prompt states of the target generator
                 print(f"Logging prompt states of {generator_name}")
                 self.generator_logger.log_prompt(target, generator_name)
+
+        cls.__init__ = new_init
+        return cls
+
+    return decorator
+
+
+def trace_generator_error_call(
+    attributes: Optional[List[str]] = None, filepath: Optional[str] = "./traces/"
+):
+    __doc__ = r"""Decorator to trace failed generator predictions in a task component.
+
+    This decorator is a wrapper around the generator call method. It logs the generator call by
+    reading its GeneratorOutput and logs the call if the output is an error.
+    """
+
+    def decorator(cls):
+        original_init = cls.__init__
+        class_name = cls.__name__
+
+        @functools.wraps(original_init)
+        def new_init(self, *args, **kwargs):
+            original_init(self, *args, **kwargs)
+            # Ensure directory exists
+            if not os.path.exists(filepath):
+                os.makedirs(filepath, exist_ok=True)
+
+            # Find generator attributes
+            effective_attributes = attributes or [
+                attr
+                for attr in dir(self)
+                if isinstance(getattr(self, attr, None), Generator)
+            ]
+            generator_names_to_files: Dict[str, str] = {}
+            # create the logger in the current component
+            if not hasattr(self, "generator_call_logger"):
+                self.generator_call_logger = GeneratorCallLogger(dir=filepath)
+
+            generator_names_to_files = (
+                self.generator_call_logger.generator_names_to_files
+            )
+
+            for attr_name in effective_attributes:
+                generator = getattr(self, attr_name, None)
+
+                # handle the file registration
+                if attr_name not in generator_names_to_files:
+                    self.generator_call_logger.register_generator(attr_name)
+                if generator and hasattr(generator, "call"):
+                    original_call = generator.call  # TODO: support acall
+
+                    @functools.wraps(original_call)
+                    def wrapped_call(*args, **kwargs):
+                        output: GeneratorOutputType = original_call(*args, **kwargs)
+                        try:
+                            if output.error_message is not None:
+                                self.generator_call_logger.log_call(
+                                    name=attr_name,
+                                    model_kwargs=kwargs.get("model_kwargs", {}),
+                                    prompt_kwargs=kwargs.get("prompt_kwargs", {}),
+                                    output=output,
+                                )
+                        except Exception as e:
+                            logger.error(f"Error logging generator call: {e}")
+
+                    setattr(generator, "call", wrapped_call)
 
         cls.__init__ = new_init
         return cls

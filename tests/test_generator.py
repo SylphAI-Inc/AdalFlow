@@ -7,7 +7,7 @@ import os
 from core.data_classes import GeneratorOutput
 from core.generator import Generator
 from components.api_client import OpenAIClient
-from tracing.generator_logger import GeneratorLogger
+from tracing import GeneratorStatesLogger
 import utils.setup_env
 
 
@@ -48,7 +48,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         # prompt_kwargs = {"input_str": "Hello, world!"}
         # model_kwargs = {"model": "gpt-3.5-turbo"}
         generator = Generator(model_client=self.mock_api_client)
-        prompt_logger = GeneratorLogger(filename=self.prompt_filename)
+        prompt_logger = GeneratorStatesLogger(filename=self.prompt_filename)
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         # Check if the prompt is logged
         self.assertTrue("Test Generator" in prompt_logger._trace_map)
@@ -56,7 +56,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
 
     def test_generator_prompt_update(self):
         generator = Generator(model_client=self.mock_api_client)
-        prompt_logger = GeneratorLogger(filename=self.prompt_filename)
+        prompt_logger = GeneratorStatesLogger(filename=self.prompt_filename)
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         self.assertTrue("Test Generator" in prompt_logger._trace_map)
 

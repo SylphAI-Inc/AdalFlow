@@ -2,7 +2,7 @@
 (1) for generator, we track all different prompts and their corresponding arguments
 """
 
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional, Union
 import os
 import logging
 
@@ -11,11 +11,12 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
-from core.generator import Generator, GeneratorOutput
+from core.generator import Generator
 from core.data_classes import BaseDataClass
 from utils import serialize
 
-logger = logging.getLogger(__name__)
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -23,35 +24,30 @@ class GeneratorStatesRecord(BaseDataClass):
     prompt_states: Dict[str, Any] = field(default_factory=dict)
     time_stamp: str = field(default_factory=str)
 
-    def __eq__(self, other: "GeneratorStatesRecord"):
+    def __eq__(self, other: Any):
+        if not isinstance(other, GeneratorStatesRecord):
+            return NotImplemented
         return serialize(self.prompt_states) == serialize(other.prompt_states)
 
-    def __ne__(self, other: "GeneratorStatesRecord"):
-        return not self.__eq__(other)
 
-
-@dataclass
-class GeneratorCallRecord(BaseDataClass):
-    prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
-    model_kwargs: Dict[str, Any] = field(default_factory=dict)
-    output: GeneratorOutput = field(default_factory=GeneratorOutput)
-    time_stamp: str = field(default_factory=str)
-
-
-class GeneratorLogger:
+class GeneratorStatesLogger:
     __doc__ = r"""Log the generator states especially the prompt states update history to a file.
 
     Each generator should has its unique and identifiable name to be logged.
     One file can log multiple generators' states.
 
     We use _trace_map to store the states and track any changes and updates and save it to a file.
+
+    Args:
+        filename(str, optional): The file path to save the trace. Default is "./traces/generator_state_trace.json"
     """
+    _generator_names: set = set()
 
     def __init__(
         self,
-        filename: str = "./traces/generator_trace.json",
+        filename: Optional[str] = None,
     ):
-        self.filename = filename
+        self.filename = filename or "./traces/generator_state_trace.json"
 
         # self.generator_state = generator  # TODO: make this a generator state
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
@@ -61,8 +57,18 @@ class GeneratorLogger:
         if os.path.exists(self.filename):
             self.load()
 
+    @property
+    def log_location(self):
+        return self.filename
+
+    @property
+    def list_all_geneartors(self):
+        return self._generator_names
+
     def log_prompt(self, generator: Generator, name: str):
         r"""Log the prompt states of the generator with the given name."""
+        self._generator_names.add(name)
+
         prompt_states: Dict = (
             generator.system_prompt.to_dict()
         )  # TODO: log all states of the generator instead of just the prompt

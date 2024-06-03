@@ -2044,6 +2044,20 @@ files = [
 ]
 
 [[package]]
+name = "jsonlines"
+version = "4.0.0"
+description = "Library with helpers for the jsonlines file format"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "jsonlines-4.0.0-py3-none-any.whl", hash = "sha256:185b334ff2ca5a91362993f42e83588a360cf95ce4b71a73548502bda52a7c55"},
+    {file = "jsonlines-4.0.0.tar.gz", hash = "sha256:0c6d2c09117550c089995247f605ae4cf77dd1533041d366351f6f298822ea74"},
+]
+
+[package.dependencies]
+attrs = ">=19.2.0"
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 description = "Apply JSON-Patches (RFC 6902)"
@@ -6909,4 +6923,4 @@ test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-it
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "0120531f7eb639a8e74db0076b11099b5a04e1a66a13d80ca8aa9d9a58476694"
+content-hash = "d59338bafd59953197226616bd6738a14820bef314b98084f84cca6ae0676729"

@@ -36,6 +36,58 @@ has attributes of `Generator` type automatically.
             self.generator_2 = Generator(...)
         def call(...):
 
+Here is an example log file:
+.. code-block:: json
+    {
+        "generator": [
+            {
+                "prompt_states": {
+                    "_components": {},
+                    "_parameters": {},
+                    "training": false,
+                    "_template_string": "{# task desc #}\n{% if task_desc_str %}\n{{task_desc_str}}\n{% else %}\nAnswer user query.\n{% endif %}\n{# output format #}\n{% if output_format_str %}\n<OUTPUT_FORMAT>\n{{output_format_str}}\n</OUTPUT_FORMAT>\n{% endif %}\n{# tools #}\n{% if tools_str %}\n<TOOLS>\n{{tools_str}}\n</TOOLS>\n{% endif %}\n{# example #}\n{% if examples_str %}\n<EXAMPLES>\n{{examples_str}}\n</EXAMPLES>\n{% endif %}\n{# chat history #}\n{% if chat_history_str %}\n<CHAT_HISTORY>\n{{chat_history_str}}\n</CHAT_HISTORY>\n{% endif %}\n{#contex#}\n{% if context_str %}\n<CONTEXT>\n{{context_str}}\n</CONTEXT>\n{% endif %}\n{# steps #}\n{% if steps_str %}\n<STEPS>\n{{steps_str}}\n</STEPS>\n{% endif %}\n{% if input_str %}\n<Inputs>\n{{input_str}}\n</Inputs>\n{% endif %}\n{% if output_str %}\n<Outputs>\n{{output_str}}\n</Outputs>\n{% endif %}\n",
+                    "prompt_variables": [
+                        "chat_history_str",
+                        "context_str",
+                        "examples_str",
+                        "input_str",
+                        "output_format_str",
+                        "output_str",
+                        "steps_str",
+                        "task_desc_str",
+                        "tools_str"
+                    ],
+                    "preset_prompt_kwargs": {
+                        "task_desc_str": "You are a helpful assistant and with a great sense of humor."
+                    }
+                },
+                "time_stamp": "2024-06-02T15:55:21.765794"
+            },
+            {
+                "prompt_states": {
+                    "_components": {},
+                    "_parameters": {},
+                    "training": false,
+                    "_template_string": "{# task desc #}\n{% if task_desc_str %}\n{{task_desc_str}}\n{% else %}\nAnswer user query.\n{% endif %}\n{# output format #}\n{% if output_format_str %}\n<OUTPUT_FORMAT>\n{{output_format_str}}\n</OUTPUT_FORMAT>\n{% endif %}\n{# tools #}\n{% if tools_str %}\n<TOOLS>\n{{tools_str}}\n</TOOLS>\n{% endif %}\n{# example #}\n{% if examples_str %}\n<EXAMPLES>\n{{examples_str}}\n</EXAMPLES>\n{% endif %}\n{# chat history #}\n{% if chat_history_str %}\n<CHAT_HISTORY>\n{{chat_history_str}}\n</CHAT_HISTORY>\n{% endif %}\n{#contex#}\n{% if context_str %}\n<CONTEXT>\n{{context_str}}\n</CONTEXT>\n{% endif %}\n{# steps #}\n{% if steps_str %}\n<STEPS>\n{{steps_str}}\n</STEPS>\n{% endif %}\n{% if input_str %}\n<Inputs>\n{{input_str}}\n</Inputs>\n{% endif %}\n{% if output_str %}\n<Outputs>\n{{output_str}}\n</Outputs>\n{% endif %}\n",
+                    "prompt_variables": [
+                        "chat_history_str",
+                        "context_str",
+                        "examples_str",
+                        "input_str",
+                        "output_format_str",
+                        "output_str",
+                        "steps_str",
+                        "task_desc_str",
+                        "tools_str"
+                    ],
+                    "preset_prompt_kwargs": {
+                        "task_desc_str": "You are a helpful assistant and with a great sense of humor. Second edition."
+                    }
+                },
+                "time_stamp": "2024-06-02T15:56:37.756148"
+            }
+        ]
+    }
     
 2. Trace all failed LLM predictions for further improvement.
 
