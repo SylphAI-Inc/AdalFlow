@@ -24,3 +24,7 @@
     font-size: 14px;  /* Sets the smallest font size */
     color: gray;     /* Sets the color to gray */
 }
+.bd-links__title {
+    /* remove the "section navigation string"*/
+    display: none;
+}
