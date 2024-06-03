@@ -2,12 +2,13 @@ from core.generator import Generator
 from core.component import Component
 
 from components.api_client import GroqAPIClient
-from tracing.decorators import trace_generator
+from tracing.decorators import trace_generator_states, trace_generator_call
 
 import utils.setup_env
 
 
-@trace_generator()
+@trace_generator_states()
+@trace_generator_call(error_only=False)
 class SimpleQA(Component):
     def __init__(self):
         super().__init__()
@@ -15,7 +16,7 @@ class SimpleQA(Component):
             model_client=GroqAPIClient(),
             model_kwargs={"model": "llama3-8b-8192"},
             preset_prompt_kwargs={
-                "task_desc_str": "You are a helpful assistant and with a great sense of humor. Second edition.",
+                "task_desc_str": "You are a helpful assistant and with a great sense of humor.",
             },
             trainable_params=[
                 "task_desc_str"
@@ -34,5 +35,7 @@ if __name__ == "__main__":
 
     print("show the system prompt")
     simple_qa.generator.print_prompt()
+    records = simple_qa.generator_call_logger.load("generator")
+    print(f"records: {records}")
     print("Answer:")
     print(simple_qa.call("What is the capital of France?"))

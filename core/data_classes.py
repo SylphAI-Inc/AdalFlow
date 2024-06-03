@@ -366,7 +366,36 @@ class BaseDataClass:
         return yaml.dump(self.__dict__, default_flow_style=False)
 
     def to_dict(self):
-        return self.__dict__
+        # Create a dictionary representation of each attribute
+        result = {}
+        for key, value in self.__dict__.items():
+            if hasattr(value, "to_dict") and callable(getattr(value, "to_dict")):
+                # If the attribute has a to_dict method, use it
+                result[key] = value.to_dict()
+            elif isinstance(value, list):
+                # Special handling for lists
+                result[key] = [
+                    (
+                        v.to_dict()
+                        if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+                        else v
+                    )
+                    for v in value
+                ]
+            elif isinstance(value, dict):
+                # Special handling for dictionaries
+                result[key] = {
+                    k: (
+                        v.to_dict()
+                        if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+                        else v
+                    )
+                    for k, v in value.items()
+                }
+            else:
+                # Use the attribute as is if it's not another custom object
+                result[key] = value
+        return result
 
     def to_json(self):
         return json.dumps(self.__dict__, indent=4)

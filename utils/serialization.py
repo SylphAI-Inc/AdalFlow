@@ -8,6 +8,14 @@ from typing import Mapping, Any, Optional, List, Dict
 log = logging.getLogger(__name__)
 
 
+def default(o):
+    if hasattr(o, "to_dict"):
+        return (
+            o.to_dict()
+        )  # use custom to_dict method if it exists, dataclass can be handled automatically from __dict__
+    raise TypeError(f"Object of type {o.__class__.__name__} is not JSON serializable")
+
+
 def serialize(obj: Mapping[str, Any]) -> str:
     """Serialize the object to a json string.
 
@@ -17,15 +25,6 @@ def serialize(obj: Mapping[str, Any]) -> str:
     Returns:
         str: The serialized object in json format.
     """
-
-    def default(o):
-        if hasattr(o, "to_dict"):
-            return (
-                o.to_dict()
-            )  # use custom to_dict method if it exists, dataclass can be handled automatically from __dict__
-        raise TypeError(
-            f"Object of type {o.__class__.__name__} is not JSON serializable"
-        )
 
     return json.dumps(obj, indent=4, default=default)
 
@@ -38,15 +37,6 @@ def save(obj: Mapping[str, Any], f: str = "task") -> None:
     - task.json: the object itself with Parameter serialized to dict
     - task.pickle: the object itself with Parameter as is
     """
-
-    def default(o):
-        if hasattr(o, "to_dict"):
-            return (
-                o.to_dict()
-            )  # use custom to_dict method if it exists, dataclass can be handled automatically from __dict__
-        raise TypeError(
-            f"Object of type {o.__class__.__name__} is not JSON serializable"
-        )
 
     # save the object to a json file
     json_f = f"{f}.json"

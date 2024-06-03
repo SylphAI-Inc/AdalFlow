@@ -7,10 +7,10 @@ import logging
 from core.generator import Generator, GeneratorOutputType
 from tracing import GeneratorStatesLogger, GeneratorCallLogger
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
-def trace_generator(
+def trace_generator_states(
     attributes: Optional[List[str]] = None,  # list of attributes
     filepath: Optional[str] = "./traces/",
     filename: Optional[str] = None,
@@ -45,7 +45,7 @@ def trace_generator(
         final_filename = filename or f"{class_name}_generator_trace.json"
         final_file = os.path.join(filepath, final_filename)
 
-        logger.info(f"Tracing generator in {class_name} to {final_file}")
+        log.info(f"Tracing generator in {class_name} to {final_file}")
 
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
@@ -91,13 +91,35 @@ def trace_generator(
     return decorator
 
 
-def trace_generator_error_call(
-    attributes: Optional[List[str]] = None, filepath: Optional[str] = "./traces/"
+def trace_generator_call(
+    attributes: Optional[List[str]] = None,
+    filepath: Optional[str] = "./traces/",
+    error_only: bool = True,
 ):
     __doc__ = r"""Decorator to trace failed generator predictions in a task component.
 
     This decorator is a wrapper around the generator call method. It logs the generator call by
     reading its GeneratorOutput and logs the call if the output is an error.
+
+    Args:
+        attributes (List[str]): The list of attributes that point to the generator objects.
+        filepath (str): The path to the directory where the trace file will be saved.
+        error_only (bool): If True, only log the calls that have an error. Default is True.
+
+    Examples:
+        >>> @trace_generator_call()
+        >>> class TestGenerator:
+        >>>     def __init__(self):
+        >>>         preset_prompt_kwargs = {"input_str": "world"}
+        >>>         self.generator = Generator(
+        >>>             model_client=OpenAIClient(),
+        >>>             template=template,
+        >>>             preset_prompt_kwargs=preset_prompt_kwargs,
+        >>>         )
+        >>> # now you will see ./traces/TestGenerator dir being created.
+        >>> # If the generator call has an error, it will be logged in the error file generator_call.jsonl
+
+    You can access the logger via TestGenerator.generator_call_logger if you want to access call records in the code.
     """
 
     def decorator(cls):
@@ -120,7 +142,9 @@ def trace_generator_error_call(
             generator_names_to_files: Dict[str, str] = {}
             # create the logger in the current component
             if not hasattr(self, "generator_call_logger"):
-                self.generator_call_logger = GeneratorCallLogger(dir=filepath)
+                self.generator_call_logger = GeneratorCallLogger(
+                    dir=filepath, project_name=class_name
+                )
 
             generator_names_to_files = (
                 self.generator_call_logger.generator_names_to_files
@@ -128,10 +152,18 @@ def trace_generator_error_call(
 
             for attr_name in effective_attributes:
                 generator = getattr(self, attr_name, None)
+                if generator is None:
+                    warnings.warn(
+                        f"Attribute {attr_name} not found in {class_name}. Skipping tracing."
+                    )
+                    continue
 
                 # handle the file registration
                 if attr_name not in generator_names_to_files:
+
                     self.generator_call_logger.register_generator(attr_name)
+                    filename = self.generator_call_logger.get_location(attr_name)
+                    log.info(f"Registered generator {attr_name} with file {filename}")
                 if generator and hasattr(generator, "call"):
                     original_call = generator.call  # TODO: support acall
 
@@ -139,7 +171,14 @@ def trace_generator_error_call(
                     def wrapped_call(*args, **kwargs):
                         output: GeneratorOutputType = original_call(*args, **kwargs)
                         try:
-                            if output.error_message is not None:
+                            if error_only and output.error_message is not None:
+                                self.generator_call_logger.log_call(
+                                    name=attr_name,
+                                    model_kwargs=kwargs.get("model_kwargs", {}),
+                                    prompt_kwargs=kwargs.get("prompt_kwargs", {}),
+                                    output=output,
+                                )
+                            if not error_only:
                                 self.generator_call_logger.log_call(
                                     name=attr_name,
                                     model_kwargs=kwargs.get("model_kwargs", {}),
@@ -147,7 +186,8 @@ def trace_generator_error_call(
                                     output=output,
                                 )
                         except Exception as e:
-                            logger.error(f"Error logging generator call: {e}")
+                            log.error(f"Error logging generator call: {e}")
+                        return output
 
                     setattr(generator, "call", wrapped_call)
 
