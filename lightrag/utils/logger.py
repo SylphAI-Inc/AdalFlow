@@ -20,7 +20,7 @@ Initialization:
 
 import logging
 import sys
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import inspect
 import os
 from datetime import datetime
@@ -52,7 +52,7 @@ log = logging.getLogger(__name__)
 # NOTE: When both console and file are false, the logger should not have any handlers.
 def get_default_log_config(
     level: str = "INFO",
-    filename: str = "./logs/app.log",
+    filepath: str = "./logs/app.log",
     enable_console: bool = True,
     enable_file: bool = True,
 ) -> logging.Logger:
@@ -104,9 +104,9 @@ def get_default_log_config(
     if enable_console:
         handlers.append(logging.StreamHandler(sys.stdout))
     if enable_file:
-        file_path: str = os.path.dirname(filename)
+        file_path: str = os.path.dirname(filepath)
         os.makedirs(file_path, exist_ok=True)
-        handler = logging.FileHandler(filename=filename, mode="a")
+        handler = logging.FileHandler(filename=filepath, mode="a")
         handlers.append(handler)
 
     for h in handlers:
@@ -128,7 +128,9 @@ def enable_library_logging(
     level: str = "INFO",
     enable_console: bool = True,
     enable_file: bool = False,
-    filename: str = "./logs/app.log",
+    # filename: str = "./logs/app.log",
+    save_dir: Optional[str] = None,
+    filename: Optional[str] = None,
 ) -> None:
     r"""Config the library logging.
 
@@ -137,12 +139,23 @@ def enable_library_logging(
     2. Set up the default format: "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s".
     The format is: time, log level, filename(where the log is from), line number, function name, message.
     3. Set up the default date format: "%Y-%m-%d %H:%M:%S".
+
+    Args:
+        level str: Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        enable_console bool: Control the console output. Defaults to True.
+        enable_file bool: Control the file output. Defaults to False.
+        filename str: Name of the output log file. Defaults to "./logs/app.log".
+
     """
+    save_dir = save_dir or "./logs"
+    os.makedirs(save_dir, exist_ok=True)
+    filename = filename or f"app.log"
+    filepath = os.path.join(save_dir, filename)
     default_config = get_default_log_config(
         level=level,
         enable_console=enable_console,
         enable_file=enable_file,
-        filename=filename,
+        filepath=filepath,
     )
     logging.basicConfig(level=default_config[0], handlers=default_config[1])
 
@@ -150,14 +163,21 @@ def enable_library_logging(
 def get_logger(
     name: str,
     level: str = "INFO",
-    filename: str = "./logs/app.log",
+    # filename: str = "./logs/app.log",
+    save_dir: Optional[str] = None,
+    filename: Optional[str] = None,
     enable_console: bool = True,
     enable_file: bool = True,
 ) -> logging.Logger:
 
+    save_dir = save_dir or "./logs"
+    os.makedirs(save_dir, exist_ok=True)
+    filename = filename or f"app.log"
+    filepath = os.path.join(save_dir, filename)
+
     config = get_default_log_config(
         level=level,
-        filename=filename,
+        filepath=filepath,
         enable_console=enable_console,
         enable_file=enable_file,
     )
