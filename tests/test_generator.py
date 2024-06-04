@@ -1,13 +1,13 @@
 import pytest
-import asyncio
 from unittest import IsolatedAsyncioTestCase
-from unittest.mock import MagicMock, patch, AsyncMock, Mock
+from unittest.mock import patch, Mock
 import os
+import shutil
 
 from core.data_classes import GeneratorOutput
 from core.generator import Generator
 from components.api_client import OpenAIClient
-from tracing import GeneratorStatesLogger
+from tracing import GeneratorStateLogger
 import utils.setup_env
 
 
@@ -25,14 +25,17 @@ class TestGenerator(IsolatedAsyncioTestCase):
             self.mock_api_client = mock_api_client
 
             self.generator = Generator(model_client=mock_api_client)
-            self.prompt_filename = "./tests/log/prompt_logger_test.json"
+            self.save_dir = "./tests/log"
+            self.project_name = "TestGenerator"
+            self.filename = "prompt_logger_test.json"
 
     def _clean_up(self):
-        try:
-            os.remove(self.prompt_filename)
-            os.rmdir("./tests/log")
-        except FileNotFoundError:
-            pass
+        dir_path = os.path.join(self.save_dir, self.project_name)
+
+        # Use shutil.rmtree to remove the directory recursively
+        shutil.rmtree(
+            dir_path, ignore_errors=True
+        )  # ignore_errors will prevent throwing an error if the directory doesn't exist
 
     def test_generator_call(self):
         prompt_kwargs = {"input_str": "Hello, world!"}
@@ -48,7 +51,11 @@ class TestGenerator(IsolatedAsyncioTestCase):
         # prompt_kwargs = {"input_str": "Hello, world!"}
         # model_kwargs = {"model": "gpt-3.5-turbo"}
         generator = Generator(model_client=self.mock_api_client)
-        prompt_logger = GeneratorStatesLogger(filename=self.prompt_filename)
+        prompt_logger = GeneratorStateLogger(
+            save_dir=self.save_dir,
+            project_name=self.project_name,
+            filename=self.filename,
+        )
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         # Check if the prompt is logged
         self.assertTrue("Test Generator" in prompt_logger._trace_map)
@@ -56,7 +63,11 @@ class TestGenerator(IsolatedAsyncioTestCase):
 
     def test_generator_prompt_update(self):
         generator = Generator(model_client=self.mock_api_client)
-        prompt_logger = GeneratorStatesLogger(filename=self.prompt_filename)
+        prompt_logger = GeneratorStateLogger(
+            save_dir=self.save_dir,
+            project_name=self.project_name,
+            filename=self.filename,
+        )
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         self.assertTrue("Test Generator" in prompt_logger._trace_map)
 

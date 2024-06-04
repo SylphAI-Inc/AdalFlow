@@ -1,18 +1,19 @@
 import functools
 import os
 import warnings
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 import logging
 
-from core.generator import Generator, GeneratorOutputType
-from tracing import GeneratorStatesLogger, GeneratorCallLogger
+from core.generator import Generator
+from tracing import GeneratorStateLogger, GeneratorCallLogger
 
 log = logging.getLogger(__name__)
 
 
 def trace_generator_states(
-    attributes: Optional[List[str]] = None,  # list of attributes
-    filepath: Optional[str] = "./traces/",
+    attributes: Optional[List[str]] = None,  # list of attributes of type Generator
+    save_dir: Optional[str] = "./traces/",
+    project_name: Optional[str] = None,
     filename: Optional[str] = None,
 ):
     __doc__ = r"""Decorator to trace generators in a task component.
@@ -21,9 +22,10 @@ def trace_generator_states(
     You can use it on any component that has attributes pointing to a generator object.
 
     Args:
-        attributes (List[str]): The list of attributes that point to the generator objects.
-        filepath (str): The path to the directory where the trace file will be saved.
-        filename (str): The name of the trace file. If not provided, it will be "{class_name}_generator_trace.json".
+        attributes (List[str], Optional): The list of attributes that point to the generator objects. 
+            If not provided, it will automatically detect the attributes that are instances of Generator.
+        filepath (str, Optional): The path to the directory where the trace file will be saved. Default is "./traces/".
+        filename (str, Optional): The name of the trace file. If not provided, it will be "{class_name}_generator_trace.json".
 
     Examples:
         >>> @trace_generator()
@@ -42,10 +44,11 @@ def trace_generator_states(
     def decorator(cls):
         original_init = cls.__init__
         class_name = cls.__name__
-        final_filename = filename or f"{class_name}_generator_trace.json"
-        final_file = os.path.join(filepath, final_filename)
+        logger_project_name = project_name or class_name
+        # final_filename = filename or f"{class_name}_generator_trace.json"
+        # final_file = os.path.join(filepath, final_filename)
 
-        log.info(f"Tracing generator in {class_name} to {final_file}")
+        # log.info(f"Tracing generator in {class_name} to {final_file}")
 
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
@@ -61,7 +64,9 @@ def trace_generator_states(
             # create the logger in the current component
             if not hasattr(self, "generator_logger"):
                 log.debug(f"Creating generator states logger for {class_name}")
-                self.generator_logger = GeneratorStatesLogger(filename=final_file)
+                self.generator_logger = GeneratorStateLogger(
+                    save_dir=save_dir, project_name=logger_project_name
+                )
 
             # Dynamically get the attribute to be logged if it exists.
             for attribute in effective_attributes:
@@ -156,8 +161,6 @@ def trace_generator_call(
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
             original_init(self, *args, **kwargs)
-            if not os.path.exists(filepath):
-                os.makedirs(filepath, exist_ok=True)
 
             # Find generator attributes
             effective_attributes = attributes or [
@@ -169,7 +172,7 @@ def trace_generator_call(
             # create the logger in the current component
             if not hasattr(self, "generator_call_logger"):
                 self.generator_call_logger = GeneratorCallLogger(
-                    dir=filepath, project_name=class_name
+                    save_dir=filepath, project_name=class_name
                 )
 
             generator_names_to_files = (
@@ -189,7 +192,7 @@ def trace_generator_call(
                 if attr_name not in generator_names_to_files:
 
                     self.generator_call_logger.register_generator(attr_name)
-                    filename = self.generator_call_logger.get_location(attr_name)
+                    filename = self.generator_call_logger.get_log_location(attr_name)
                     log.info(f"Registered generator {attr_name} with file {filename}")
                 # Wrap the call method of the target generator
                 if target_generator and hasattr(target_generator, "call"):

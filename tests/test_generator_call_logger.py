@@ -1,4 +1,5 @@
 import unittest
+import os
 from unittest.mock import patch, mock_open
 from core.generator import GeneratorOutput
 
@@ -7,22 +8,36 @@ from tracing import GeneratorCallLogger
 
 class TestGeneratorCallLogger(unittest.TestCase):
     def setUp(self):
-        # This mock will cover os.makedirs in all methods used during the tests
-        patcher = patch("os.makedirs")
-        self.addCleanup(patcher.stop)  # Ensure that patcher is stopped after test
-        self.mock_makedirs = patcher.start()
+        # # This mock will cover os.makedirs in all methods used during the tests
+        # patcher = patch("os.makedirs")
+        # self.addCleanup(patcher.stop)  # Ensure that patcher is stopped after test
+        # self.mock_makedirs = patcher.start()
 
-        self.logger = GeneratorCallLogger(dir="./fake/dir/")
+        # Patch 'os.makedirs' for all instance methods
+        patcher_makedirs = patch("os.makedirs")
+        self.mock_makedirs = patcher_makedirs.start()
+        self.addCleanup(patcher_makedirs.stop)
+
+        # Patch 'open' to avoid filesystem access
+        patcher_open = patch("builtins.open", mock_open())
+        self.mock_open = patcher_open.start()
+        self.addCleanup(patcher_open.stop)
+
+        self.save_dir = "./fake/dir/"
+        self.project_name = "TestGeneratorCallLogger"
+
+        self.logger = GeneratorCallLogger(
+            save_dir=self.save_dir, project_name=self.project_name
+        )
 
         self.sample_output = GeneratorOutput(data="test data", error_message=None)
 
-    @patch("os.makedirs")
-    def test_register_generator(self, mock_makedirs):
+    def test_register_generator(self):
         self.logger.register_generator("test_gen")
         self.assertIn("test_gen", self.logger.generator_names_to_files)
         self.assertEqual(
             self.logger.generator_names_to_files["test_gen"],
-            "./fake/dir/test_gen.jsonl",
+            os.path.join(self.save_dir, self.project_name, "test_gen_call.jsonl"),
         )
 
         # Test re-registering
@@ -30,20 +45,18 @@ class TestGeneratorCallLogger(unittest.TestCase):
             self.logger.register_generator("test_gen")
             self.assertIn("already registered", log.output[0])
 
-    @patch("os.path.exists", return_value=True)
-    @patch("builtins.open", new_callable=mock_open)
     @patch("json.dump")
-    def test_log_call(self, mock_json_dump, mock_open, mock_exists):
+    def test_log_call(self, mock_json_dump):
         self.logger.register_generator("test_gen")
         self.logger.log_call(
             "test_gen", {"model": "test"}, {"input": "test"}, self.sample_output
         )
 
+        file = self.logger.generator_names_to_files["test_gen"]
+
         # Ensure file write operations
         # Assert that open was called with the correct parameters
-        mock_open.assert_called_with(
-            "./fake/dir/test_gen.jsonl", mode="at", encoding="utf-8"
-        )
+        self.mock_open.assert_called_with(file, mode="at", encoding="utf-8")
 
     @patch("os.path.exists", return_value=True)
     @patch(
