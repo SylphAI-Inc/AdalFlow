@@ -96,6 +96,7 @@ html_favicon = "../../images/LightRAG-logo-circle.png"
 # whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 autosummary_generate = True  # Tells Sphinx to generate summary pages
+autosummary_imported_members = False  # Consider turning this off if not necessary
 add_module_names = False
 autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True

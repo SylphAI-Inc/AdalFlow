@@ -458,14 +458,16 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        ...
+        
     }
+    
     Examples:
-
-    data = {
-        "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
-        "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
-    }
+        .. code-block:: python
+        
+            data = {
+                "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
+                "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+            }
 
     DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
     class_instance = DynamicOutputs()
