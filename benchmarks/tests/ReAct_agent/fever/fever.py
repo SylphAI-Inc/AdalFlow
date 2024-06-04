@@ -12,8 +12,8 @@ from components.agent.react_agent import ReActAgent
 from core.tool_helper import FunctionTool
 from components.api_client import GroqAPIClient
 import time
-from tests.benchmark.ReAct_agent.hotpotQA.tools import search, lookup, normalize_answer
-from eval.evaluator import AnswerMacthEvaluator
+from benchmarks.tests.ReAct_agent.hotpotQA.tools import search, lookup, normalize_answer
+from eval.evaluators import AnswerMacthEvaluator
 import logging
 import json
 from typing import List, Union, Callable, Optional, Any, Dict
@@ -282,22 +282,28 @@ print(f"gpt_4o_3_shot: {gpt_4o_3_shot}")
 
 """
 NOTE: llama3 time might not accurate because it has request limit error
+random 10 questions
+
+lightRAG:
 gpt_3_5_zero_shot: {'N': 10, 'EM': 0.0, 'FM': 0.0, 'time': 12.529078555107116}
 gpt_3_5_3_shot: {'N': 10, 'EM': 0.3, 'FM': 0.4, 'time': 7.47766683101654}
+
 gpt_4o_zero_shot: {'N': 10, 'EM': 0.7, 'FM': 0.7, 'time': 5.547899603843689}
-gpt_4_turbo_zero_shot: {'N': 10, 'EM': 0.6, 'FM': 0.6, 'time': 14.762795424461364}
 gpt_4o_3_shot: {'N': 10, 'EM': 0.7, 'FM': 0.7, 'time': 5.411731863021851}
+
+gpt_4_turbo_zero_shot: {'N': 10, 'EM': 0.6, 'FM': 0.6, 'time': 14.762795424461364}
 gpt_4_turbo_3_shot: {'N': 10, 'EM': 0.7, 'FM': 0.7, 'time': 11.741541314125062}
+
 llama3_zero_shot: {'N': 10, 'EM': 0.4, 'FM': 0.4, 'time': 45.428342413902286}
 llama3_3_shot: {'N': 10, 'EM': 0.6, 'FM': 0.6, 'time': 42.95352940559387}
 
 paper:
-gpt3.5
-zero_shot: 0 10 0.0 11.41517460346222
-3 shot: 3 10 0.3 3.8097436904907225
-4o few shot: 6 10 0.6 8.16726279258728
-4o zero shot: 0 10 0.0 35.91357259750366
-4-turbo 3 shot: 8 10 0.8 7.756631708145141
-4 turbo zero shot: 0 10 0.0 36.0502730846405
+gpt3_5_zero_shot: 0 10 0.0 11.41517460346222
+gpt3_5_3_shot: 3 10 0.3 3.8097436904907225
 
+gpt_4o_zero_shot: 0 10 0.0 35.91357259750366
+gpt_4o_3 shot: 6 10 0.6 8.16726279258728
+
+gpt_4_turbo_zero_shot: 0 10 0.0 36.0502730846405
+gpt_4_turbo_3_shot: 8 10 0.8 7.756631708145141
 """
