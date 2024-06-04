@@ -31,23 +31,17 @@ def remove_file(directory: str):
         print(f"No files to remove in {directory}")
         
     # remove api files to avoid showing duplicated section
-    autosummary_directory = os.path.join(directory, '_autosummary')
-    autosummary_files = []
+    target_files = ['components.api_client.openai_client.rst', 'components.retriever.faiss_retriever.rst', 'components.reasoning.chain_of_thought.rst', 'components.api_client.groq_client.rst', 'components.retriever.bm25_retriever.rst', 'components.api_client.google_client.rst', 'components.api_client.transformers_client.rst', 'components.retriever.llm_retriever.rst', 'components.agent.react_agent.rst', 'components.api_client.anthropic_client.rst']
     try:
-        for filename in os.listdir(autosummary_directory):
-            if filename.endswith(".rst"):
-                # filepath = os.path.join(autosummary_directory, filename)
-                autosummary_files.append(filename)
-        
         for filename in os.listdir(directory):
-            if filename.endswith(".rst"):
+            if filename in target_files:
                 filepath = os.path.join(directory, filename)
-                if filename in autosummary_files: # if it is duplicated in autosummary, remove it
-                    os.remove(filepath)
-                    print(f"{filepath} is removed")
+                os.remove(filepath)
+                print(f"{filepath} is removed")
     except:
-        print(f"{directory}/_autosummary not existing")
-
+        print(f"{filepath} not existing")
+            
+    
 remove_file("./source/apis/components")
 remove_file("./source/apis/core")
 remove_file("./source/apis/eval")
