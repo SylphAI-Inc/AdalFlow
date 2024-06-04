@@ -107,9 +107,9 @@ autodoc_default_options = {
     "member-order": "bysource",
     "show-inheritance": True,
     "private-members": False,  # Ensure this is True if you want to document private members
-    "special-members": "__init__",  # Document special members like __init__
-    'inherited-members': True,
-    'exclude-members': '__init__'
+    # "special-members": "__init__",  # Document special members like __init__
+    "inherited-members": False,
+    "exclude-members": "__init__"
     # "autosectionlabel_prefix_document": True,
 }
 
