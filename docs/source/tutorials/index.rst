@@ -8,4 +8,4 @@ Here is the content of our documentation project.
 .. toctree::
    :maxdepth: 2
 
-   simpleQA
+   eval_a_rag.rst
