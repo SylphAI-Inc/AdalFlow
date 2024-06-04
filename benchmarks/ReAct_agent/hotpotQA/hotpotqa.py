@@ -12,7 +12,7 @@ from components.agent.react_agent import ReActAgent
 from core.tool_helper import FunctionTool
 from components.api_client import GroqAPIClient
 import time
-from benchmarks.ReAct_agent.hotpotQA.tools import search, lookup, normalize_answer
+from benchmarks.ReAct_agent.utils.tools import search, lookup, normalize_answer
 from eval.evaluators import AnswerMacthEvaluator
 import logging
 import json
