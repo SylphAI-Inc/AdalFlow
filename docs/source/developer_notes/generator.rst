@@ -10,7 +10,7 @@ It orchestrates the following components along with their required arguments:
 
 - Output processors
 
-By switching out the model client, you can call any LLM model on your prompt.
+By switching out the model client, you can call any LLM model on your prompt, either API or local.
 
 GeneratorOutput
 ^^^^^^^^^^^^^^^
