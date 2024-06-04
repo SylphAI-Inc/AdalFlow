@@ -22,11 +22,11 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../core --separate --force --templatedir=$(SOURCEDIR)/_templates
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force --templatedir=$(SOURCEDIR)/_templates
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../eval --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../prompts --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../utils --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../eval --separate --force --templatedir=$(SOURCEDIR)/_templates
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../prompts --separate --force --templatedir=$(SOURCEDIR)/_templates
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../utils --separate --force --templatedir=$(SOURCEDIR)/_templates
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
