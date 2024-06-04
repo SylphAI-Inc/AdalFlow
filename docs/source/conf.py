@@ -20,6 +20,7 @@ sys.path.insert(0, os.path.abspath("../../components"))
 sys.path.insert(0, os.path.abspath("../../eval"))
 sys.path.insert(0, os.path.abspath("../../prompts"))
 sys.path.insert(0, os.path.abspath("../../utils"))
+sys.path.insert(0, os.path.abspath("../../tracing"))
 
 
 # -- Project information -----------------------------------------------------
@@ -45,7 +46,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
-    "sphinx_design"
+    "sphinx_design",
     # 'recommonmark',
     # 'myst_parser'
 ]
@@ -73,7 +74,7 @@ html_logo = "../../images/LightRAG-logo-doc.jpeg"
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
     "collapse_navigation": False,
-# "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
+    # "sticky_navigation": True,  # Ensures the sidebar stays at the top of the page
     "navigation_depth": 8,  # Controls how many headers are shown in the sidebar
     # "includehidden": True,
     # "titles_only": False,
@@ -116,6 +117,7 @@ autodoc_default_options = {
     "exclude-members": "__init__"
     # "autosectionlabel_prefix_document": True,
 }
+
 
 def setup(app):
     app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration

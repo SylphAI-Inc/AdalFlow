@@ -31,6 +31,7 @@ faiss-cpu = "^1.8.0"
 torchviz = "^0.0.2"
 matplotlib = "^3.8.4"
 colorama = "^0.4.6"
+jsonlines = "^4.0.0"
 
 
 [tool.poetry.group.test.dependencies]

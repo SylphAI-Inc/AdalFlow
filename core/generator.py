@@ -62,11 +62,6 @@ class Generator(Component):
         self._init_prompt(template, preset_prompt_kwargs)
 
         self.model_kwargs = model_kwargs
-        # if "model" not in model_kwargs:
-        #     raise ValueError(
-        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs: {model_kwargs}"
-        #     )
-
         # init the model client
         self.model_client = model_client
 
@@ -177,7 +172,6 @@ class Generator(Component):
         logger.info(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        # print(f"api_kwargs: {api_kwargs}")
         completion = self.model_client.call(
             api_kwargs=api_kwargs, model_type=self.model_type
         )

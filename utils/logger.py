@@ -45,13 +45,14 @@ COLOR_MAP = {
     "yellow": "\x1b[33m",
 }
 
+log = logging.getLogger(__name__)
+
 
 # NOTE: what if users set up two logger in the same script with the same name, we dont config the logger again, but we add the handler again, is it a problem?
 # NOTE: When both console and file are false, the logger should not have any handlers.
-def get_default_logger(
-    name: str = "default",
-    filename: str = "./logs/app.log",
+def get_default_log_config(
     level: str = "INFO",
+    filename: str = "./logs/app.log",
     enable_console: bool = True,
     enable_file: bool = True,
 ) -> logging.Logger:
@@ -86,15 +87,15 @@ def get_default_logger(
         """Return the logging level constant based on a string."""
         return LOG_LEVELS.get(level.upper(), logging.INFO)
 
-    logger = logging.getLogger(name=name)
-    # follow the default logger behavior, if the logger already has handlers, we skip the configuration
-    if logger.handlers:
+    # 1. create the logger the library developers want to use
+    # logger = logging.getLogger(name=name)
 
-        return logger
+    # if logger.handlers:
+    # log.info(f"Logger {name} already has handlers, skip the configuration.")
 
-    logger.setLevel(get_level(level))
+    # return logger
 
-    # Enable default formatter
+    # 2. Config the default format and style
     format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
     formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
 
@@ -110,11 +111,61 @@ def get_default_logger(
 
     for h in handlers:
         h.setFormatter(formatter)
-        logger.addHandler(h)
+        # logger.addHandler(h)
 
     # prevent duplication in the root logger
-    logger.propagate = False
+    # logger.propagate = False
+    # print(
+    #     f"Logger {name} is configured with level {level}, console: {enable_console}, file: {enable_file}"
+    # )
 
+    # 3. Enable a global config that will enable the library logs to be shown
+    # logging.basicConfig(level=get_level(level), handlers=handlers)
+    return get_level(level), handlers  # logger
+
+
+def enable_library_logging(
+    level: str = "INFO",
+    enable_console: bool = True,
+    enable_file: bool = False,
+    filename: str = "./logs/app.log",
+) -> None:
+    r"""Config the library logging.
+
+    We config logging with the following default settings:
+    1. Enable console output, and disable file output.
+    2. Set up the default format: "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s".
+    The format is: time, log level, filename(where the log is from), line number, function name, message.
+    3. Set up the default date format: "%Y-%m-%d %H:%M:%S".
+    """
+    default_config = get_default_log_config(
+        level=level,
+        enable_console=enable_console,
+        enable_file=enable_file,
+        filename=filename,
+    )
+    logging.basicConfig(level=default_config[0], handlers=default_config[1])
+
+
+def get_logger(
+    name: str,
+    level: str = "INFO",
+    filename: str = "./logs/app.log",
+    enable_console: bool = True,
+    enable_file: bool = True,
+) -> logging.Logger:
+
+    config = get_default_log_config(
+        level=level,
+        filename=filename,
+        enable_console=enable_console,
+        enable_file=enable_file,
+    )
+    logger = logging.getLogger(name)
+    logger.setLevel(config[0])
+    for handler in config[1]:
+        logger.addHandler(handler)
+    logger.propagate = False
     return logger
 
 
