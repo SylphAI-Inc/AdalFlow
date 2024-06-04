@@ -1,7 +1,7 @@
 import os
 
 
-def remove_duplication(directory: str):
+def remove_file(directory: str):
     """Remove duplicated files.
     
     During the automatic generation, some files are not used or duplicated, including:
@@ -48,10 +48,10 @@ def remove_duplication(directory: str):
     except:
         print(f"{directory}/_autosummary not existing")
 
-remove_duplication("./source/apis/components")
-remove_duplication("./source/apis/core")
-remove_duplication("./source/apis/eval")
-remove_duplication("./source/apis/prompts")
-remove_duplication("./source/apis/utils")
+remove_file("./source/apis/components")
+remove_file("./source/apis/core")
+remove_file("./source/apis/eval")
+remove_file("./source/apis/prompts")
+remove_file("./source/apis/utils")
                 
             
