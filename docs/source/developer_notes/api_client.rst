@@ -1,5 +1,5 @@
 abstract class APIClient
-============
+====================================
 This abstract class is to define ways for each API provider to communicate with LightRAG components. This
 includes cloud API provider and local API provider where you can wrap a `huggingface transformer model` as an API client.
 
