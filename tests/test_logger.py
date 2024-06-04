@@ -2,7 +2,7 @@ import pytest
 
 import logging
 from unittest.mock import MagicMock
-from utils import get_default_logger, printc
+from utils import get_logger, printc
 
 
 class TestGetDefaultLogger:
@@ -12,7 +12,7 @@ class TestGetDefaultLogger:
             "logging.StreamHandler", return_value=MagicMock(spec=logging.StreamHandler)
         )
 
-        logger = get_default_logger(
+        logger = get_logger(
             name="test_console_logging_only", enable_file=False, enable_console=True
         )
 
@@ -26,7 +26,7 @@ class TestGetDefaultLogger:
             "logging.FileHandler", return_value=MagicMock(spec=logging.FileHandler)
         )
 
-        logger = get_default_logger(
+        logger = get_logger(
             name="test_file_logging_only", enable_console=False, enable_file=True
         )
 
@@ -43,14 +43,14 @@ class TestGetDefaultLogger:
             "logging.FileHandler", return_value=MagicMock(spec=logging.FileHandler)
         )
 
-        logger = get_default_logger(name="test_both_console_and_file_logging")
+        logger = get_logger(name="test_both_console_and_file_logging")
 
         assert logger.hasHandlers()
         assert len(logger.handlers) == 2  # Both handlers should be added
 
     def test_no_logging(self, mocker):
         mocker.patch("os.makedirs")
-        logger = get_default_logger(
+        logger = get_logger(
             name="test_no_logging", enable_console=False, enable_file=False
         )
 

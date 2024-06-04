@@ -27,6 +27,7 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../eval --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../prompts --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../utils --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../tracing --separate --force
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"

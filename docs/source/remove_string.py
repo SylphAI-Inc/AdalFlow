@@ -1,5 +1,6 @@
 import os
 
+
 def remove_unwanted_string(directory: str, target_string: str):
     """
     Removes the specified string from the end of titles in .rst files within the specified directory.
@@ -20,6 +21,7 @@ def remove_unwanted_string(directory: str, target_string: str):
                         line = line.replace(target_string, "")
                     file.write(line)
 
+
 if __name__ == "__main__":
     # Specify the directory or directories you want to process
     directories = [
@@ -28,9 +30,9 @@ if __name__ == "__main__":
         "./source/apis/utils",
         "./source/apis/prompts",
         "./source/apis/eval",
+        "./source/apis/tracing",
     ]
     for directory in directories:
-        remove_unwanted_string(directory, 'module')
-        remove_unwanted_string(directory, 'package')
-        remove_unwanted_string(directory, 'Module contents')
-        
+        remove_unwanted_string(directory, "module")
+        remove_unwanted_string(directory, "package")
+        remove_unwanted_string(directory, "Module contents")
