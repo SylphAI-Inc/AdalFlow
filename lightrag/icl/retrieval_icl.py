@@ -1,15 +1,15 @@
 from typing import List
 
-from core.data_classes import Document
-from core.retriever import Retriever
-from core.embedder import Embedder
-from core.data_components import (
+from lightrag.core.data_classes import Document
+from lightrag.core.retriever import Retriever
+from lightrag.core.embedder import Embedder
+from lightrag.core.data_components import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
-from core.db import LocalDocumentDB
-from core.component import Component, Sequential
-from core.document_splitter import DocumentSplitter
+from lightrag.core.db import LocalDocumentDB
+from lightrag.core.component import Component, Sequential
+from lightrag.core.document_splitter import DocumentSplitter
 
 
 class RetrievalICL(Component):

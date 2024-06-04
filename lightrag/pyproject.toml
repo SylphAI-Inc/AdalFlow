@@ -9,6 +9,7 @@ packages = [
     { include = "utils", from = "." },
     { include = "tracing", from = "." },
     { include = "optim", from = "." },
+    { include = "icl", from = "." },
 ]
 version = "0.1.0"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
