@@ -60,6 +60,54 @@
 
 .. _evaluators:
 
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
+.. _evaluators:
+
 LightRAG.eval
 =========================
 

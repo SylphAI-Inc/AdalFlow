@@ -7,6 +7,7 @@ Here is the content of our documentation project.
 .. toctree::
    :maxdepth: 2
 
+   lightrag_design_philosophy
    llm_intro
    api_client
    component
