@@ -1,2 +1,2 @@
-abstract class Retriever
+Retriever
 ============

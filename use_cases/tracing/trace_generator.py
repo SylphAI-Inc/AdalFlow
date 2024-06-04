@@ -31,7 +31,7 @@ class SimpleQA(Component):
         )
 
     def call(self, query: str) -> str:
-        return self.generator.call(prompt_kwargs={"input_str": query})
+        return self.generator2.call(prompt_kwargs={"input_str": query})
 
 
 if __name__ == "__main__":
