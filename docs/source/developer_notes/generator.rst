@@ -32,7 +32,7 @@ It will automatically track any attributes of type `Generator`.
 .. code-block:: python
 
     from tracing import trace_generator_states
-    from core import Component
+    from core import Component, Generator
 
     @trace_generator_states()
     class SimpleQA(Component):
