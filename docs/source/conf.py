@@ -18,6 +18,8 @@ sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../core"))
 sys.path.insert(0, os.path.abspath("../../components"))
 sys.path.insert(0, os.path.abspath("../../eval"))
+sys.path.insert(0, os.path.abspath("../../prompts"))
+sys.path.insert(0, os.path.abspath("../../utils"))
 
 
 # -- Project information -----------------------------------------------------
@@ -80,7 +82,8 @@ html_theme_options = {
             "name": "Discord",
             "url": "https://discord.gg/hmZWFEUd",
             "icon": "fa-brands fa-discord",
-        },]
+        },],
+    # "navigation_with_keys": True
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
