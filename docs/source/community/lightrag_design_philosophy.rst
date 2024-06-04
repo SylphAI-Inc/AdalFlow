@@ -1,2 +1,0 @@
-LightRAG Design Philosophy
-============

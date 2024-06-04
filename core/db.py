@@ -10,7 +10,7 @@ from typing import List, Optional, Callable
 from core.component import Component
 from core.data_classes import Document
 
-from core.functional import generate_component_key, generate_readable_key_for_function
+from core.functional import generate_readable_key_for_function
 
 """
 Why do we need a localDocumentDB as the product db is always in the cloud?
@@ -73,7 +73,7 @@ class LocalDocumentDB:
     ) -> List[Document]:
         """Transform the documents using the transformer, the transformed documents will be used to build index."""
         if key is None:
-            key = generate_component_key(transformer)
+            key = transformer._get_name() + "_transformed"
         documents_to_use = documents.copy() if documents else self.documents.copy()
         self.transformed_documents[key] = transformer(documents_to_use)
         return key

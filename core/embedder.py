@@ -1,11 +1,11 @@
 from typing import Optional, Any, Dict, Union, Sequence
-from core.data_classes import ModelType
-from core.api_client import APIClient
 
+from core.data_classes import ModelType
+from core.api_client import APIClient, API_INPUT_TYPE
 from core.component import Component
 import core.functional as F
 
-EmbedderInputType = Union[str, Sequence[str]]
+EmbedderInputType = API_INPUT_TYPE
 EmbedderOutputType = Any
 
 
@@ -46,9 +46,9 @@ class Embedder(Component):
         # step 1: combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
         # step 2: convert the input to the api_kwargs
-        api_kwargs = self.model_client.convert_input_to_api_kwargs(
+        api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=input,
-            combined_model_kwargs=composed_model_kwargs,
+            model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
         print(f"api_kwargs {api_kwargs}")

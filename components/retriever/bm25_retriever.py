@@ -1,20 +1,41 @@
-r"""
-https://github.com/Inspirateur/Fast-BM25/blob/main/fast_bm25.py
+r""" Implementation based on : https://en.wikipedia.org/wiki/Okapi_BM25
+TODO: Trotmam et al, Improvements to BM25 and Language Models Examined
+Retrieval is highly dependent on the database.
 
-It needs to tokenize the entire corpus and calculate the inverse document frequency (IDF) for each term.
+db-> transformer -> (index) should be a pair
+LocalDocumentDB:  [Local Document RAG]
+(1) algorithm, (2) index, build_index_from_documents (3) retrieve (top_k, query)
+
+What algorithm will do for LocalDocumentDB:
+(1) Build_index_from_documents (2) retrieval initialization (3) retrieve (top_k, query), potentially with score.
+
+InMemoryRetriever: (Component)
+(1) load_documents (2) build_index_from_documents (3) retrieve (top_k, query)
+
+PostgresDB:
+(1) sql_query for retrieval (2) pg_vector for retrieval (3) retrieve (top_k, query)
+
+MemoryDB:
+(1) chat_history (2) provide different retrieval methods, allow specify retrievel method at init.
+
+Generator:
+(1) prompt
+(2) api_client (model)
+(3) output_processors
+
+Retriever
+(1) 
 """
 
-from typing import List, Dict, Tuple, Optional, Callable, Union, Any
+from typing import List, Dict, Tuple, Optional, Callable, Union
 import collections
 import heapq
 import math
-import pickle
 import sys
 
 from multiprocessing import Pool, cpu_count
 from functools import partial
 
-from core.component import Component
 from core.tokenizer import Tokenizer
 from core.data_classes import RetrieverOutput, RetrieverOutput
 from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
@@ -24,15 +45,15 @@ PARAM_K1 = 1.5
 PARAM_B = 0.75
 IDF_CUTOFF = 0
 
-split_function_by_word = lambda x: x.split()
+split_text_by_word_fn = lambda x: x.split()
 
 
-def split_function_by_token(tokenizer: Tokenizer, x: str) -> List[str]:
+def split_text_by_token_fn(tokenizer: Tokenizer, x: str) -> List[str]:
     return tokenizer(x)
 
 
 class InMemoryBM25Retriever(Retriever):
-    """Fast Implementation of Best Matching 25 ranking function.
+    __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
     Build index from List[str] where the str is from Document
 
     IDF(q_i)= log(N/ DF) = log(N/n(q_i) + 0.5)/(n(q_i) + 0.5) + 1, to avoid division by zero and to diminish the weight of terms that occur very frequently in the document set and increase the weight of terms that occur rarely.
@@ -64,7 +85,7 @@ class InMemoryBM25Retriever(Retriever):
         b: float = PARAM_B,
         alpha: float = IDF_CUTOFF,
         split_function: Optional[Callable] = partial(
-            split_function_by_token, Tokenizer()
+            split_text_by_token_fn, Tokenizer()
         ),
     ):
         """

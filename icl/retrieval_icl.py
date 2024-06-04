@@ -10,7 +10,6 @@ from core.data_components import (
 from core.db import LocalDocumentDB
 from core.component import Component, Sequential
 from core.document_splitter import DocumentSplitter
-from core.functional import generate_component_key
 
 
 class RetrievalICL(Component):
@@ -34,7 +33,7 @@ class RetrievalICL(Component):
                 vectorizer=self.vectorizer,
             ),
         )
-        self.data_transformer_key = generate_component_key(self.data_transformer)
+        self.data_transformer_key = self.data_transformer._get_name()
         self.db = db
 
     def build_index(self, documents: List[Document]):

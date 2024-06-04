@@ -1,6 +1,11 @@
 import os
 from typing import Dict, Optional, Sequence, Union
-import anthropic
+
+try:
+    import anthropic
+except ImportError:
+    raise ImportError("Please install anthropic with: pip install anthropic")
+
 from anthropic import (
     RateLimitError,
     APITimeoutError,
@@ -12,7 +17,7 @@ from anthropic.types import Message
 import backoff
 
 
-from core.api_client import APIClient
+from core.api_client import APIClient, API_INPUT_TYPE
 from core.data_classes import ModelType
 
 
@@ -28,6 +33,7 @@ class AnthropicAPIClient(APIClient):
         self._api_key = api_key
         self.sync_client = self._init_sync_client()
         self.async_client = None  # only initialize if the async call is called
+        self.tested_llm_models = ["claude-3-opus-20240229"]
 
     def _init_sync_client(self):
         api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
@@ -45,20 +51,19 @@ class AnthropicAPIClient(APIClient):
         print(f"completion: {completion}")
         return completion.content[0].text
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Union[str, Sequence],
-        system_input: Optional[Union[str]] = None,
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
-        api_kwargs = combined_model_kwargs.copy()
+        api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
             api_kwargs["messages"] = [
                 {"role": "user", "content": input},
             ]
-            if system_input and system_input != "":
-                api_kwargs["system"] = system_input
+            if input and input != "":
+                api_kwargs["system"] = input
         else:
             raise ValueError(f"Model type {model_type} not supported")
         return api_kwargs

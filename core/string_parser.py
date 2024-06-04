@@ -7,9 +7,7 @@ LLM applications requires lots of string processing. Such as the text output nee
 We design this these string_parser modules to be generic to any input text without differentiating them as input text or output text.
 """
 
-import re
 from typing import Any, Dict, List, Tuple
-import json
 import ast
 from core.tool_helper import ToolOutput
 from core.component import Component
@@ -27,10 +25,13 @@ class ListParser(Component):
         super().__init__()
         self.add_missing_right_bracket = add_missing_right_bracket
 
-    def __call__(self, text: str) -> List[Any]:
-        list_str = F.extract_list_str(text, self.add_missing_right_bracket)
+    def __call__(self, input: str) -> List[Any]:
+        list_str = F.extract_list_str(input, self.add_missing_right_bracket)
         list_obj = F.parse_json_str_to_obj(list_str)
         return list_obj
+
+
+JASON_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
 class JsonParser(Component):
@@ -44,11 +45,38 @@ class JsonParser(Component):
         super().__init__()
         self.add_missing_right_brace = add_missing_right_brace
 
-    def __call__(self, text: str) -> Dict[str, Any]:
-        text = text.strip()
-        json_str = F.extract_json_str(text, self.add_missing_right_brace)
+    def call(self, input: str) -> JASON_PARSER_OUTPUT_TYPE:
+        input = input.strip()
+        json_str = F.extract_json_str(input, self.add_missing_right_brace)
         json_obj = F.parse_json_str_to_obj(json_str)
         return json_obj
+
+
+YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
+
+
+class YAMLParser(Component):
+    __doc__ = r"""A text parser for extracting YAML strings and parsing them into a JSON object.
+
+    Examples:
+        >>> yaml_parser = YAMLParser()
+        >>> yaml_str = "```yaml\nkey: value\n```"
+        >>> yaml_obj = yaml_parser(yaml_str)
+        >>> print(yaml_obj)
+        {'key': 'value'}
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def call(self, input: str) -> YAML_PARSER_OUTPUT_TYPE:
+        input = input.strip()
+        try:
+            yaml_str = F.extract_yaml_str(input)
+            yaml_obj = F.parse_yaml_str_to_obj(yaml_str)
+            return yaml_obj
+        except Exception as e:
+            raise ValueError(f"Error: {e}")
 
 
 ############################################################################################################
@@ -166,21 +194,21 @@ def parse_function_call(
 
 
 if __name__ == "__main__":
-    test_input = (
-        '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}'
-    )
-    print(
-        extract_json_str(test_input, add_missing_right_brace=True)
-    )  # Expected to complete the JSON properly
+    # test_input = (
+    #     '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}'
+    # )
+    # print(
+    #     extract_json_str(test_input, add_missing_right_brace=True)
+    # )  # Expected to complete the JSON properly
 
-    test_input_2 = 'Some random text before {"key1": "value1"} and more after'
-    print(extract_json_str(test_input_2))  # Expected to extract {"key1": "value1"}
+    # test_input_2 = 'Some random text before {"key1": "value1"} and more after'
+    # print(extract_json_str(test_input_2))  # Expected to extract {"key1": "value1"}
 
-    test_input_3 = "No JSON here"
-    try:
-        print(extract_json_str(test_input_3))
-    except ValueError as e:
-        print(e)  # Expected to raise an error about no JSON object found
+    # test_input_3 = "No JSON here"
+    # try:
+    #     print(extract_json_str(test_input_3))
+    # except ValueError as e:
+    #     print(e)  # Expected to raise an error about no JSON object found
 
     # test list parser
     list_parser = ListParser()

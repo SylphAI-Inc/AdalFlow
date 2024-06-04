@@ -9,7 +9,7 @@ from core.data_classes import Document
 
 from core.string_parser import JsonParser
 from core.component import Sequential
-from eval.evaluator import (
+from eval.evaluators import (
     RetrieverEvaluator,
     AnswerMacthEvaluator,
     LLMasJudge,
@@ -42,14 +42,19 @@ def get_supporting_sentences(
 
 if __name__ == "__main__":
     # NOTE: for the ouput of this following code, check text_lightrag.txt
-    with open("./configs/rag_hotpotqa.yaml", "r") as file:
+    with open("./use_cases/configs/rag_hotpotqa.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
 
     # Load the dataset and select the first 5 as the showcase
+    # 300 M.
     # More info about the HotpotQA dataset can be found at https://huggingface.co/datasets/hotpot_qa
+    # where is the downloaded data saved?
     dataset = load_dataset(path="hotpot_qa", name="fullwiki")
-    dataset = dataset["train"].select(range(5))
+    print(f"len of eval: {len(dataset['test'])}")
+    print(f"example: {dataset['test'][1]}")
+    # exit()
+    dataset = dataset["train"].select(range(1))
 
     all_questions = []
     all_retrieved_context = []
@@ -114,12 +119,12 @@ if __name__ == "__main__":
     )
     print(f"Answer match accuracy: {answer_match_acc}")
     print(f"Match accuracy for each query: {match_acc_list}")
-    # Evaluate the generator using LLM as judge. We use GPT-4 as the judge here.
+    # Evaluate the generator using LLM as judge.
     # The task description and the judgement query can be customized.
     llm_evaluator = Generator(
-        model_client=OpenAIClient(),
-        prompt=Prompt(DEFAULT_LLM_EVALUATOR_PROMPT),
-        output_processors=Sequential(JsonParser()),
+        model_client=OpenAIClient,
+        template=DEFAULT_LLM_EVALUATOR_PROMPT,
+        output_processors=JsonParser(),
         preset_prompt_kwargs={
             "task_desc_str": r"""
                 You are a helpful assistant.

@@ -79,13 +79,9 @@ class ToolMetadata(ABC):
         return self.name
 
 
-##############################################
-# Helper functions
-##############################################
 def get_fun_schema(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
-    """
-    Get a schema for a function.
-    Example:
+    r"""Get the schema of a function.
+    Examples:
     def example_function(x: int, y: str = "default") -> int:
         return x
     schema = get_fun_schema("example_function", example_function)
@@ -134,6 +130,10 @@ def get_fun_schema(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
 ##############################################
 # FunctionTool
 ##############################################
+import dataclasses
+
+
+@dataclasses.dataclass
 class FunctionTool:
     """
     There is almost no need to customize a FunctionTool, but you can do so if you want to.
@@ -164,6 +164,12 @@ class FunctionTool:
             raise ValueError("At least one of fn or async_fn must be provided")
 
         self._metadata = metadata
+
+    def __repr__(self) -> str:
+        return f"FunctionTool({self.metadata.name})"
+
+    def __str__(self) -> str:
+        return f"FunctionTool({self.metadata.name})"
 
     @classmethod
     def from_defaults(

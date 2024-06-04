@@ -1,6 +1,5 @@
 import os
-from core.api_client import APIClient
-from typing import Dict, Sequence, Union, Optional
+from typing import Dict, Sequence, Optional
 from core.data_classes import ModelType
 import backoff
 
@@ -14,6 +13,8 @@ try:
     from google.generativeai.types import GenerateContentResponse
 except ImportError:
     raise ImportError("Please install google-generativeai to use GoogleGenAIClient")
+
+from core.api_client import APIClient, API_INPUT_TYPE
 
 
 class GoogleGenAIClient(APIClient):
@@ -43,18 +44,17 @@ class GoogleGenAIClient(APIClient):
         """
         return completion.text
 
-    def convert_input_to_api_kwargs(
+    def convert_inputs_to_api_kwargs(
         self,
-        input: Union[str, Sequence],
-        system_input: Optional[Union[str]] = None,
-        combined_model_kwargs: Dict = {},
+        input: API_INPUT_TYPE = None,
+        model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
         Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
         Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format
         """
-        final_model_kwargs = combined_model_kwargs.copy()
+        final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
                 input = [input]
@@ -62,9 +62,8 @@ class GoogleGenAIClient(APIClient):
             assert isinstance(input, Sequence), "input must be a sequence of text"
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
-            prompt: str = f"{system_input}\n\nUser query: {input}\n You:"
 
-            final_model_kwargs["prompt"] = prompt
+            final_model_kwargs["prompt"] = input
         else:
             raise ValueError(f"model_type {model_type} is not supported")
         return final_model_kwargs
