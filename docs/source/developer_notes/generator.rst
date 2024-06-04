@@ -21,20 +21,20 @@ Tracing
 ^^^^^^^
 We provide two tracing methods to help you develop and improve the Generator:
 
-1. Trace the history change(states) on prompt during your development process. Developers typical go through a long process of prompt optimization and it is frustrating
+1. Trace the history change(states) on prompt during your development process. Developers typically go through a long process of prompt optimization and it is frustrating
 to lose track of the prompt changes when your current change actually makes the performance much worse.
 
-We created a `GeneratorLogger` to handle the logging and saving into json files. To further simplify developers's process,
-we provides a class decorator `trace_generator` where a single line of code can be added to any of your task component which
-has attributes of `Generator` type automatically.
+We created a `GeneratorStateLogger` to handle the logging and saving into json files. To further simplify developers's process,
+we provides a class decorator `trace_generator_states` where a single line of code can be added to any of your task component. 
+It will automatically track any attributes of type `Generator`.
 
 .. code-block:: python
 
     from tracing import trace_generator_states
-    from core.component import component
+    from core import Component
 
     @trace_generator_states()
-    class SimpleQA(component):
+    class SimpleQA(Component):
         def __init__(self):
             super().__init__()
             self.generator = Generator(...)
@@ -148,7 +148,7 @@ Adding the second decorator to the above example:
 
     @trace_generator_call()
     @trace_generator_states()
-    class SimpleQA(component):
+    class SimpleQA(Component):
         def __init__(self):
             super().__init__()
             self.generator = Generator(...)

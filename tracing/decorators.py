@@ -65,7 +65,9 @@ def trace_generator_states(
             if not hasattr(self, "generator_logger"):
                 log.debug(f"Creating generator states logger for {class_name}")
                 self.generator_logger = GeneratorStateLogger(
-                    save_dir=save_dir, project_name=logger_project_name
+                    save_dir=save_dir,
+                    project_name=logger_project_name,
+                    filename=filename,
                 )
 
             # Dynamically get the attribute to be logged if it exists.
