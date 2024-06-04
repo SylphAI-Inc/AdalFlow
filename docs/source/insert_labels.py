@@ -19,12 +19,8 @@ def add_reference_labels(directory: str):
 if __name__ == "__main__":
     # Specify the directories you want to process
     add_reference_labels("./source/apis/core")
-    add_reference_labels("./source/apis/core/_autosummary")
     add_reference_labels("./source/apis/components")
-    add_reference_labels("./source/apis/components/_autosummary")
+    add_reference_labels("./source/apis/components/_autosummary") # add label to component autosummary
     add_reference_labels("./source/apis/eval")
-    add_reference_labels("./source/apis/eval/_autosummary")
     add_reference_labels("./source/apis/prompts")
-    add_reference_labels("./source/apis/prompts/_autosummary")
     add_reference_labels("./source/apis/utils")
-    add_reference_labels("./source/apis/utils/_autosummary")
