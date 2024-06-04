@@ -10,20 +10,20 @@ from typing import (
     Set,
     Union,
     overload,
-    Iterator,
     Mapping,
-    NamedTuple,
 )
-import itertools
-from collections import OrderedDict, abc as container_abcs
+from collections import OrderedDict
 import operator
 from itertools import islice
-import networkx as nx
-from pyvis.network import Network
 
-import matplotlib.pyplot as plt
 
 from core.parameter import Parameter
+
+# import networkx as nx
+# from pyvis.network import Network
+
+# import matplotlib.pyplot as plt
+# import itertools
 
 
 class _IncompatibleKeys(
@@ -734,146 +734,13 @@ class Sequential(Component):
         return input
 
 
-class ComponentDict(Component):
-    r"""
-    We directly used the code in PyTorch's ModuleDict.
-    See its design here: /torch/nn/modules/container.py
-
-    Holds submodules in a dictionary.
-
-    :class:`~torch.nn.ModuleDict` can be indexed like a regular Python dictionary,
-    but modules it contains are properly registered, and will be visible by all
-    :class:`~torch.nn.Module` methods.
-
-    :class:`~torch.nn.ModuleDict` is an **ordered** dictionary that respects
-
-    * the order of insertion, and
-
-    * in :meth:`~torch.nn.ModuleDict.update`, the order of the merged
-      ``OrderedDict``, ``dict`` (started from Python 3.6) or another
-      :class:`~torch.nn.ModuleDict` (the argument to
-      :meth:`~torch.nn.ModuleDict.update`).
-
-    Note that :meth:`~torch.nn.ModuleDict.update` with other unordered mapping
-    types (e.g., Python's plain ``dict`` before Python version 3.6) does not
-    preserve the order of the merged mapping.
+class FunComponent(Component):
+    __doc__ = r"""Component that wraps a function.
 
     Args:
-        modules (iterable, optional): a mapping (dictionary) of (string: module)
-            or an iterable of key-value pairs of type (string, module)
-
-    Example::
-
-        class MyModule(nn.Module):
-            def __init__(self):
-                super().__init__()
-                self.choices = nn.ModuleDict({
-                        'conv': nn.Conv2d(10, 10, 3),
-                        'pool': nn.MaxPool2d(3)
-                })
-                self.activations = nn.ModuleDict([
-                        ['lrelu', nn.LeakyReLU()],
-                        ['prelu', nn.PReLU()]
-                ])
-
-            def forward(self, x, choice, act):
-                x = self.choices[choice](x)
-                x = self.activations[act](x)
-                return x
+        fun (Callable): The function to be wrapped.
     """
 
-    _components: Dict[str, Component]  # type: ignore[assignment]
-
-    def __init__(self, modules: Optional[Mapping[str, Component]] = None) -> None:
-        super().__init__()
-        if modules is not None:
-            self.update(modules)
-
-    def __getitem__(self, key: str) -> Component:
-        return self._components[key]
-
-    def __setitem__(self, key: str, component: Component) -> None:
-        self.add_component(key, component)
-
-    def __delitem__(self, key: str) -> None:
-        del self._components[key]
-
-    def __len__(self) -> int:
-        return len(self._components)
-
-    def __iter__(self) -> Iterator[str]:
-        return iter(self._components)
-
-    def __contains__(self, key: str) -> bool:
-        return key in self._components
-
-    def clear(self) -> None:
-        """Remove all items from the ModuleDict."""
-        self._components.clear()
-
-    def pop(self, key: str) -> Component:
-        r"""Remove key from the ModuleDict and return its module.
-
-        Args:
-            key (str): key to pop from the ModuleDict
-        """
-        v = self[key]
-        del self[key]
-        return v
-
-    def keys(self) -> Iterable[str]:
-        r"""Return an iterable of the ModuleDict keys."""
-        return self._components.keys()
-
-    def items(self) -> Iterable[Tuple[str, Component]]:
-        r"""Return an iterable of the ModuleDict key/value pairs."""
-        return self._components.items()
-
-    def values(self) -> Iterable[Component]:
-        r"""Return an iterable of the ModuleDict values."""
-        return self._components.values()
-
-    def update(self, components: Mapping[str, Component]) -> None:
-        r"""Update the :class:`~torch.nn.ModuleDict` with key-value pairs from a mapping, overwriting existing keys.
-
-        .. note::
-            If :attr:`modules` is an ``OrderedDict``, a :class:`~torch.nn.ModuleDict`, or
-            an iterable of key-value pairs, the order of new elements in it is preserved.
-
-        Args:
-            modules (iterable): a mapping (dictionary) from string to :class:`~torch.nn.Module`,
-                or an iterable of key-value pairs of type (string, :class:`~torch.nn.Module`)
-        """
-        if not isinstance(components, container_abcs.Iterable):
-            raise TypeError(
-                "ModuleDict.update should be called with an "
-                "iterable of key/value pairs, but got " + type(components).__name__
-            )
-
-        if isinstance(components, (OrderedDict, ComponentDict, container_abcs.Mapping)):
-            for key, module in components.items():
-                self[key] = module
-        else:
-            # modules here can be a list with two items
-            for j, m in enumerate(components):
-                if not isinstance(m, container_abcs.Iterable):
-                    raise TypeError(
-                        "ModuleDict update sequence element "
-                        "#" + str(j) + " should be Iterable; is" + type(m).__name__
-                    )
-                if not len(m) == 2:
-                    raise ValueError(
-                        "ModuleDict update sequence element "
-                        "#" + str(j) + " has length " + str(len(m)) + "; 2 is required"
-                    )
-                # modules can be Mapping (what it's typed at), or a list: [(name1, module1), (name2, module2)]
-                # that's too cumbersome to type correctly with overloads, so we add an ignore here
-                self[m[0]] = m[1]  # type: ignore[assignment]
-
-    # remove forward alltogether to fallback on Module's _forward_unimplemented
-
-
-class FunComponent(Component):
     def __init__(self, fun: Callable):
         super().__init__()
         self.fun = fun
@@ -882,7 +749,173 @@ class FunComponent(Component):
         return self.fun(*args, **kwargs)
 
 
-def fun_to_component(fun):
-    r"""Decorator to convert a function to a Component class."""
-    class_name = fun.__name__.capitalize() + "Component"
+def fun_to_component(fun) -> FunComponent:
+    __doc__ = r"""Helper function to convert a function into a Component with
+    its own class name.
+    
+    Can be used as both a decorator and a function.
+
+    Args:
+        fun (Callable): The function to be wrapped.
+    Returns:
+        FunComponent: The component that wraps the function.
+
+    Examples:
+    1. As a decorator:
+        >>> @fun_to_component
+        >>> def my_function(x):
+        >>>     return x + 1
+        >>> # is equivalent to
+        >>> class MyFunctionComponent(FunComponent):
+        >>>     def __init__(self):
+        >>>         super().__init__(my_function)
+    
+    2. As a function:
+        >>> my_function_component = fun_to_component(my_function)
+    """
+
+    # Split the function name by underscores, capitalize each part, and join them back together
+    class_name = (
+        "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
+    )
     return type(class_name, (FunComponent,), {})(fun)
+
+
+# TODO: not used yet, will further investigate dict mode
+# class ComponentDict(Component):
+#     r"""
+#     We directly used the code in PyTorch's ModuleDict.
+#     See its design here: /torch/nn/modules/container.py
+
+#     Holds submodules in a dictionary.
+
+#     :class:`~torch.nn.ModuleDict` can be indexed like a regular Python dictionary,
+#     but modules it contains are properly registered, and will be visible by all
+#     :class:`~torch.nn.Module` methods.
+
+#     :class:`~torch.nn.ModuleDict` is an **ordered** dictionary that respects
+
+#     * the order of insertion, and
+
+#     * in :meth:`~torch.nn.ModuleDict.update`, the order of the merged
+#       ``OrderedDict``, ``dict`` (started from Python 3.6) or another
+#       :class:`~torch.nn.ModuleDict` (the argument to
+#       :meth:`~torch.nn.ModuleDict.update`).
+
+#     Note that :meth:`~torch.nn.ModuleDict.update` with other unordered mapping
+#     types (e.g., Python's plain ``dict`` before Python version 3.6) does not
+#     preserve the order of the merged mapping.
+
+#     Args:
+#         modules (iterable, optional): a mapping (dictionary) of (string: module)
+#             or an iterable of key-value pairs of type (string, module)
+
+#     Example::
+
+#         class MyModule(nn.Module):
+#             def __init__(self):
+#                 super().__init__()
+#                 self.choices = nn.ModuleDict({
+#                         'conv': nn.Conv2d(10, 10, 3),
+#                         'pool': nn.MaxPool2d(3)
+#                 })
+#                 self.activations = nn.ModuleDict([
+#                         ['lrelu', nn.LeakyReLU()],
+#                         ['prelu', nn.PReLU()]
+#                 ])
+
+#             def forward(self, x, choice, act):
+#                 x = self.choices[choice](x)
+#                 x = self.activations[act](x)
+#                 return x
+#     """
+
+#     _components: Dict[str, Component]  # type: ignore[assignment]
+
+#     def __init__(self, modules: Optional[Mapping[str, Component]] = None) -> None:
+#         super().__init__()
+#         if modules is not None:
+#             self.update(modules)
+
+#     def __getitem__(self, key: str) -> Component:
+#         return self._components[key]
+
+#     def __setitem__(self, key: str, component: Component) -> None:
+#         self.add_component(key, component)
+
+#     def __delitem__(self, key: str) -> None:
+#         del self._components[key]
+
+#     def __len__(self) -> int:
+#         return len(self._components)
+
+#     def __iter__(self) -> Iterator[str]:
+#         return iter(self._components)
+
+#     def __contains__(self, key: str) -> bool:
+#         return key in self._components
+
+#     def clear(self) -> None:
+#         """Remove all items from the ModuleDict."""
+#         self._components.clear()
+
+#     def pop(self, key: str) -> Component:
+#         r"""Remove key from the ModuleDict and return its module.
+
+#         Args:
+#             key (str): key to pop from the ModuleDict
+#         """
+#         v = self[key]
+#         del self[key]
+#         return v
+
+#     def keys(self) -> Iterable[str]:
+#         r"""Return an iterable of the ModuleDict keys."""
+#         return self._components.keys()
+
+#     def items(self) -> Iterable[Tuple[str, Component]]:
+#         r"""Return an iterable of the ModuleDict key/value pairs."""
+#         return self._components.items()
+
+#     def values(self) -> Iterable[Component]:
+#         r"""Return an iterable of the ModuleDict values."""
+#         return self._components.values()
+
+#     def update(self, components: Mapping[str, Component]) -> None:
+#         r"""Update the :class:`~torch.nn.ModuleDict` with key-value pairs from a mapping, overwriting existing keys.
+
+#         .. note::
+#             If :attr:`modules` is an ``OrderedDict``, a :class:`~torch.nn.ModuleDict`, or
+#             an iterable of key-value pairs, the order of new elements in it is preserved.
+
+#         Args:
+#             modules (iterable): a mapping (dictionary) from string to :class:`~torch.nn.Module`,
+#                 or an iterable of key-value pairs of type (string, :class:`~torch.nn.Module`)
+#         """
+#         if not isinstance(components, container_abcs.Iterable):
+#             raise TypeError(
+#                 "ModuleDict.update should be called with an "
+#                 "iterable of key/value pairs, but got " + type(components).__name__
+#             )
+
+#         if isinstance(components, (OrderedDict, ComponentDict, container_abcs.Mapping)):
+#             for key, module in components.items():
+#                 self[key] = module
+#         else:
+#             # modules here can be a list with two items
+#             for j, m in enumerate(components):
+#                 if not isinstance(m, container_abcs.Iterable):
+#                     raise TypeError(
+#                         "ModuleDict update sequence element "
+#                         "#" + str(j) + " should be Iterable; is" + type(m).__name__
+#                     )
+#                 if not len(m) == 2:
+#                     raise ValueError(
+#                         "ModuleDict update sequence element "
+#                         "#" + str(j) + " has length " + str(len(m)) + "; 2 is required"
+#                     )
+#                 # modules can be Mapping (what it's typed at), or a list: [(name1, module1), (name2, module2)]
+#                 # that's too cumbersome to type correctly with overloads, so we add an ignore here
+#                 self[m[0]] = m[1]  # type: ignore[assignment]
+
+#     # remove forward alltogether to fallback on Module's _forward_unimplemented

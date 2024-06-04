@@ -99,7 +99,7 @@ def trace_generator_states(
 
 def trace_generator_call(
     attributes: Optional[List[str]] = None,
-    filepath: Optional[str] = "./traces/",
+    save_dir: Optional[str] = "./traces/",
     error_only: bool = True,
 ):
     __doc__ = r"""Decorator to trace generator predictions in a task component, especially failed ones.
@@ -109,7 +109,7 @@ def trace_generator_call(
 
     Args:
         attributes (List[str]): The list of attributes that point to the generator objects.
-        filepath (str): The path to the directory where the trace file will be saved.
+        save_dir (str): The path to the directory where the trace file will be saved.
         error_only (bool): If True, only log the calls that have an error. Default is True.
 
     Examples:
@@ -174,7 +174,7 @@ def trace_generator_call(
             # create the logger in the current component
             if not hasattr(self, "generator_call_logger"):
                 self.generator_call_logger = GeneratorCallLogger(
-                    save_dir=filepath, project_name=class_name
+                    save_dir=save_dir, project_name=class_name
                 )
 
             generator_names_to_files = (

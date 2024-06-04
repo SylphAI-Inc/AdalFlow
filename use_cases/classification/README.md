@@ -6,7 +6,15 @@ We compare (1) classifier + llm-synthetic data, (2) classifier + ground truth da
 
 And finally you will have a classifier, cheaper and faster to run and perform the same or even better than the original llm task pipeline.
 ## Task pipeline(Model)
+`task.py` along with `config`
+
+In class `TrecClassifier`'s `call` method. Beside of the standard output processing such as `YAMLOutputParser`, we see we add additional **task-specific processing** in case the llm is not following the standard output format (which should be failed predictions).
+
+### Prompt Template
 ## Manual prompt engineering [ICL]
 ## Auto promot engineering [ICL]
+`train.py` is where we do APE for the In-context-learning.
+
+We wrap the zero-shot and few-shot eval in a ICL trainer.
 ## Optimizing it with model finetuning using TorchTune [Optional]
 Not necessary as for a classification any LLM is an over-kill.
