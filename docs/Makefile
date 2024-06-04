@@ -32,7 +32,6 @@ apidoc:
 	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
 	@echo "Removing duplicated files"
-	@sleep 3  # Gives a slight delay to ensure filesystem is ready
 	@python $(SOURCEDIR)/remove_files.py
 
 
