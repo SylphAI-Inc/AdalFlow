@@ -2,7 +2,8 @@ import pytest
 
 import logging
 from unittest.mock import MagicMock
-from utils import get_logger, printc
+
+from lightrag.utils import get_logger, printc
 
 
 class TestGetDefaultLogger:

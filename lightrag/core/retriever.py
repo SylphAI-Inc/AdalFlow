@@ -1,8 +1,8 @@
 from typing import List, Optional, Union, Callable, Any, Any
 
 
-from core.component import Component
-from core.data_classes import (
+from lightrag.core.component import Component
+from lightrag.core.data_classes import (
     RetrieverOutput,
 )
 

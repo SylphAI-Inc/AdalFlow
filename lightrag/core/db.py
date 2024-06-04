@@ -7,10 +7,11 @@ use some functional components in lightrag to process the data.
 """
 
 from typing import List, Optional, Callable
-from core.component import Component
-from core.data_classes import Document
 
-from core.functional import generate_readable_key_for_function
+from lightrag.core.component import Component
+from lightrag.core.data_classes import Document
+
+from lightrag.core.functional import generate_readable_key_for_function
 
 """
 Why do we need a localDocumentDB as the product db is always in the cloud?

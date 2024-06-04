@@ -1,5 +1,6 @@
 import pytest
-from core.parameter import Parameter
+
+from lightrag.core.parameter import Parameter
 
 
 class TestParameter:

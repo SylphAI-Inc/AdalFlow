@@ -24,10 +24,10 @@ except ImportError:
     raise ImportError("Please install transformers with: pip install transformers")
 from transformers import AutoTokenizer, AutoModel
 
-from core.api_client import APIClient
-from core.data_classes import ModelType
+from lightrag.core.api_client import APIClient
+from lightrag.core.data_classes import ModelType
 
-from core.component import Component
+from lightrag.core.component import Component
 
 
 def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:

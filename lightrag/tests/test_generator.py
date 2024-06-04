@@ -4,11 +4,11 @@ from unittest.mock import patch, Mock
 import os
 import shutil
 
-from core.data_classes import GeneratorOutput
-from core.generator import Generator
-from components.api_client import OpenAIClient
-from tracing import GeneratorStateLogger
-import utils.setup_env
+from lightrag.core.data_classes import GeneratorOutput
+from lightrag.core.generator import Generator
+from lightrag.components.api_client import OpenAIClient
+from lightrag.tracing import GeneratorStateLogger
+import lightrag.utils.setup_env
 
 
 class TestGenerator(IsolatedAsyncioTestCase):

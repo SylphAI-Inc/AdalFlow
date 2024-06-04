@@ -1,9 +1,9 @@
 from typing import Optional, Any, Dict, Union, Sequence
 
-from core.data_classes import ModelType
-from core.api_client import APIClient, API_INPUT_TYPE
-from core.component import Component
-import core.functional as F
+from lightrag.core.data_classes import ModelType
+from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.component import Component
+import lightrag.core.functional as F
 
 EmbedderInputType = API_INPUT_TYPE
 EmbedderOutputType = Any

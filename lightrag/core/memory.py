@@ -9,8 +9,13 @@ When memory becomes too large, we need to (1) compress (2) RAG to retrieve the m
 In this case, we only manage the memory for the current session.
 """
 
-from core.component import Component
-from core.data_classes import DialogSession, DialogTurn, UserQuery, AssistantResponse
+from lightrag.core.component import Component
+from lightrag.core.data_classes import (
+    DialogSession,
+    DialogTurn,
+    UserQuery,
+    AssistantResponse,
+)
 
 
 class Memory(Component):

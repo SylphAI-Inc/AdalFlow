@@ -5,12 +5,12 @@ Better to use more performant models to fill in the missing values.
 
 from typing import Dict, Any, Optional
 
-from core.api_client import APIClient
-from core.generator import Generator
-from core.component import Component
-from core.data_classes import BaseDataClass
-from core.string_parser import YAMLParser
-from prompts.outputs import YAML_OUTPUT_FORMAT
+from lightrag.core.api_client import APIClient
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
+from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.string_parser import YAMLParser
+from lightrag.prompts.outputs import YAML_OUTPUT_FORMAT
 
 LLM_AUGMENTER_TEMPLATE = r"""Given inputs and outputs, you will fill in any field that is missing value.
 - null or '' means the field is missing.

@@ -7,12 +7,12 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from copy import deepcopy
 
-from core.data_classes import BaseDataClass
+from lightrag.core.data_classes import BaseDataClass
 
-from core.api_client import APIClient
-from core.generator import Generator, GeneratorOutput
-from core.parameter import Parameter
-from optim.optimizer import Optimizer
+from lightrag.core.api_client import APIClient
+from lightrag.core.generator import Generator, GeneratorOutput
+from lightrag.core.parameter import Parameter
+from lightrag.optim.optimizer import Optimizer
 
 # TODO: add the responses and gts
 LLM_OPTIMIZER_TEMPLATE = r"""<SYS>

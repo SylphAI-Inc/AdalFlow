@@ -17,8 +17,8 @@ from anthropic.types import Message
 import backoff
 
 
-from core.api_client import APIClient, API_INPUT_TYPE
-from core.data_classes import ModelType
+from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.data_classes import ModelType
 
 
 class AnthropicAPIClient(APIClient):

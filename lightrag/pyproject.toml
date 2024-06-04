@@ -8,6 +8,7 @@ packages = [
     { include = "eval", from = "." },
     { include = "utils", from = "." },
     { include = "tracing", from = "." },
+    { include = "optim", from = "." },
 ]
 version = "0.1.0"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
@@ -50,29 +51,6 @@ sphinx = "^7.3.7"
 sphinx-rtd-theme = "^2.0.0"
 pydata-sphinx-theme = "0.15.2"
 sphinx-design = "^0.6.0"
-
-
-[tool.poetry.group.dev.dependencies]
-langchain = "^0.1.16"
-llama-index = "^0.10.30"
-pre-commit = "^3.7.0"
-litellm = "^1.35.34"
-haystack-ai = "^2.0.1"
-torchvision = "^0.18.0"
-torch = "^2.3.0"
-langsmith = "^0.1.56"
-langchain-openai = "^0.1.6"
-pyvis = "^0.3.2"
-llama-index-llms-ollama = "^0.1.3"
-anthropic = "^0.26.0"
-google-generativeai = "^0.5.4"
-transformers = "^4.41.0"
-torchmetrics = "^1.4.0.post0"
-lightning = "^2.2.4"
-dspy-ai = "^2.4.9"
-jupyter = "^1.0.0"
-ipykernel = "^6.29.4"
-colorama = "^0.4.6"
 
 
 [tool.ruff]

@@ -8,10 +8,10 @@ import torch
 from typing import Sequence, Dict
 import re
 
-from core.prompt_builder import Prompt
-from core.component import Component
-from optim.sampler import Sample, ClassSampler
-from utils import save, load
+from lightrag.core.prompt_builder import Prompt
+from lightrag.core.component import Component
+from lightrag.optim.sampler import Sample, ClassSampler
+from lightrag.utils import save, load
 
 
 _COARSE_LABELS = [

@@ -17,7 +17,7 @@ import operator
 from itertools import islice
 
 
-from core.parameter import Parameter
+from lightrag.core.parameter import Parameter
 
 # import networkx as nx
 # from pyvis.network import Network

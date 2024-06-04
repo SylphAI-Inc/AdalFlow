@@ -16,8 +16,8 @@ from openai import (
 )
 from openai.types import Completion
 
-from core.api_client import APIClient, API_INPUT_TYPE
-from core.data_classes import ModelType
+from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.data_classes import ModelType
 
 import backoff
 

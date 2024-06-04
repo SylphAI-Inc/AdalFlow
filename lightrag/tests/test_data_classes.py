@@ -1,7 +1,12 @@
 import pytest
 from uuid import uuid4
 
-from core.data_classes import UserQuery, AssistantResponse, DialogTurn, DialogSession
+from lightrag.core.data_classes import (
+    UserQuery,
+    AssistantResponse,
+    DialogTurn,
+    DialogSession,
+)
 
 
 def test_user_query_creation():

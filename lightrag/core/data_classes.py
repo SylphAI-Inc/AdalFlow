@@ -8,7 +8,6 @@ from typing import List, Dict, Any, Optional, Union, Generic, TypeVar
 from collections import OrderedDict
 from dataclasses import dataclass, field, InitVar, fields, make_dataclass, MISSING
 from uuid import UUID
-from core.functional import get_data_class_schema
 
 
 from datetime import datetime
@@ -18,7 +17,9 @@ import yaml
 import warnings
 import logging
 
-from core.tokenizer import Tokenizer
+from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.functional import get_data_class_schema
+
 
 # if sys.version_info >= (3, 10, 1):
 #     Literal = typing.Literal

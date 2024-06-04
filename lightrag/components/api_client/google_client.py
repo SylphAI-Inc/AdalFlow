@@ -1,6 +1,5 @@
 import os
 from typing import Dict, Sequence, Optional
-from core.data_classes import ModelType
 import backoff
 
 try:
@@ -14,7 +13,8 @@ try:
 except ImportError:
     raise ImportError("Please install google-generativeai to use GoogleGenAIClient")
 
-from core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.data_classes import ModelType
 
 
 class GoogleGenAIClient(APIClient):

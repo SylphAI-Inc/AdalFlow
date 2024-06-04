@@ -9,11 +9,11 @@ from typing import Dict, Any, Type
 import yaml
 import logging
 
-from core.component import Component
-from core.prompt_builder import Prompt
-from core.functional import get_data_class_schema
-from core.string_parser import YAMLParser, ListParser, JsonParser
-from core.data_classes import BaseDataClass
+from lightrag.core.component import Component
+from lightrag.core.prompt_builder import Prompt
+from lightrag.core.functional import get_data_class_schema
+from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
+from lightrag.core.data_classes import BaseDataClass
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
 # setup: Why couldn't the bicycle stand up by itself?

@@ -1,7 +1,8 @@
 import tiktoken
 
 from typing import List
-from core.component import Component
+
+from lightrag.core.component import Component
 
 
 class Tokenizer(Component):

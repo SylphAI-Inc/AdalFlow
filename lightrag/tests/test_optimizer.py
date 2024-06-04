@@ -1,10 +1,10 @@
 import pytest
 from typing import List
 
-from core.component import fun_to_component
-from core.parameter import Parameter
-from optim.few_shot_optimizer import BootstrapFewShot
-from optim.sampler import ClassSampler, RandomSampler
+from lightrag.core.component import fun_to_component
+from lightrag.core.parameter import Parameter
+from lightrag.optim.few_shot_optimizer import BootstrapFewShot
+from lightrag.optim.sampler import ClassSampler, RandomSampler
 
 
 class TestBootstrapFewShotRandomSampler:

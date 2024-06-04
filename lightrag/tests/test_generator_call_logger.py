@@ -1,9 +1,10 @@
 import unittest
 import os
 from unittest.mock import patch, mock_open
-from core.generator import GeneratorOutput
 
-from tracing import GeneratorCallLogger
+from lightrag.core.generator import GeneratorOutput
+
+from lightrag.tracing import GeneratorCallLogger
 
 
 class TestGeneratorCallLogger(unittest.TestCase):

@@ -7,15 +7,15 @@ import dataclasses
 from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence, Union
 
 
-from core.component import Component
-from core.data_classes import (
+from lightrag.core.component import Component
+from lightrag.core.data_classes import (
     EmbedderResponse,
     Embedding,
     Usage,
     Document,
     RetrieverOutput,
 )
-import core.functional as F
+import lightrag.core.functional as F
 
 
 T = TypeVar("T")

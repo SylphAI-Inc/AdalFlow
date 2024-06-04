@@ -7,13 +7,12 @@ import logging
 
 from functools import lru_cache
 
-from core.component import Component
+from lightrag.core.component import Component
 
-from core.default_prompt_template import (
+from lightrag.core.default_prompt_template import (
     DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
     LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS,
 )
-from core.parameter import Parameter
 
 logger = logging.getLogger(__name__)
 

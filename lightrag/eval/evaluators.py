@@ -1,8 +1,9 @@
 """This contains different evaluators and their associated metrics."""
 
 from typing import List, Union, Tuple
-from core.tokenizer import Tokenizer
-from core.generator import Generator
+
+from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.generator import Generator
 
 
 DEFAULT_LLM_EVALUATOR_PROMPT = r"""

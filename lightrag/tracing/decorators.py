@@ -4,8 +4,8 @@ import warnings
 from typing import List, Optional, Dict
 import logging
 
-from core.generator import Generator
-from tracing import GeneratorStateLogger, GeneratorCallLogger
+from lightrag.core.generator import Generator
+from lightrag.tracing import GeneratorStateLogger, GeneratorCallLogger
 
 log = logging.getLogger(__name__)
 

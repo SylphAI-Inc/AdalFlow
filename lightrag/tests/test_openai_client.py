@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, AsyncMock
-from core.data_classes import ModelType
-from components.api_client import OpenAIClient
+
+from lightrag.core.data_classes import ModelType
+from lightrag.components.api_client import OpenAIClient
 
 
 def getenv_side_effect(key):

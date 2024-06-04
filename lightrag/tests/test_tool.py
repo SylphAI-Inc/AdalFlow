@@ -1,7 +1,7 @@
 import pytest
 from dataclasses import dataclass
 
-from core.tool_helper import FunctionTool, ToolMetadata, ToolOutput
+from lightrag.core.tool_helper import FunctionTool, ToolMetadata, ToolOutput
 
 
 @dataclass

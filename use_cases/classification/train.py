@@ -5,7 +5,7 @@ from copy import deepcopy
 from torch.utils.data import DataLoader
 
 from components.api_client import GroqAPIClient, OpenAIClient, GoogleGenAIClient
-from optim.optimizer import BootstrapFewShot
+from optim import BootstrapFewShot
 from optim.sampler import RandomSampler, ClassSampler
 from optim.llm_augment import LLMAugmenter
 from optim.llm_optimizer import LLMOptimizer
@@ -43,7 +43,7 @@ class TrecTrainer(Component):
             labels=_COARSE_LABELS, labels_desc=_COARSE_LABELS_DESC
         )
 
-        self.example_input = "How did serfdom develop in and then leave Russia ?"
+        # self.example_input = "How did serfdom develop in and then leave Russia ?"
         self.num_shots = num_shots
         self.batch_size = batch_size
         self.train_dataset = train_dataset
@@ -497,5 +497,5 @@ if __name__ == "__main__":
     logger.info(f"trainer: {trainer}")
     # trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
-    # trainer.eval_zero_shot()
-    trainer.eval_few_shot(shots=num_shots, runs=5)
+    trainer.eval_zero_shot()
+    # trainer.eval_few_shot(shots=num_shots, runs=5)

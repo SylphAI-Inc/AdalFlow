@@ -7,9 +7,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
-from core.generator import Generator
-from core.data_classes import BaseDataClass
-from utils import serialize
+from lightrag.core.generator import Generator
+from lightrag.core.data_classes import BaseDataClass
+from lightrag.utils import serialize
 
 
 log = logging.getLogger(__name__)

@@ -21,8 +21,8 @@ Check the subclasses in `components/api_client/` directory for the functional AP
 from typing import Any, Dict, Union, Sequence
 
 
-from core.component import Component
-from core.data_classes import ModelType
+from lightrag.core.component import Component
+from lightrag.core.data_classes import ModelType
 
 
 API_INPUT_TYPE = Union[

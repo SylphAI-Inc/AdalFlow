@@ -2,13 +2,13 @@ from typing import Any, Dict, List, Optional
 from copy import deepcopy
 import logging
 
-from core.data_classes import ModelType, GeneratorOutput
-from core.component import Component
-from core.parameter import Parameter
-from core.prompt_builder import Prompt
-from core.functional import compose_model_kwargs
-from core.api_client import APIClient
-from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from lightrag.core.data_classes import ModelType, GeneratorOutput
+from lightrag.core.component import Component
+from lightrag.core.parameter import Parameter
+from lightrag.core.prompt_builder import Prompt
+from lightrag.core.functional import compose_model_kwargs
+from lightrag.core.api_client import APIClient
+from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 GeneratorInputType = str

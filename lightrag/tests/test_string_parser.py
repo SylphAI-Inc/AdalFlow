@@ -1,8 +1,8 @@
-from core.string_parser import (
+from lightrag.core.string_parser import (
     JsonParser,
 )
 
-from core.functional import (
+from lightrag.core.functional import (
     extract_json_str,
     fix_json_missing_commas,
     fix_json_escaped_single_quotes,

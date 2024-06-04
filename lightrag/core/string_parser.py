@@ -9,9 +9,10 @@ We design this these string_parser modules to be generic to any input text witho
 
 from typing import Any, Dict, List, Tuple
 import ast
-from core.tool_helper import ToolOutput
-from core.component import Component
-import core.functional as F
+
+from lightrag.core.tool_helper import ToolOutput
+from lightrag.core.component import Component
+import lightrag.core.functional as F
 
 
 class ListParser(Component):
