@@ -16,6 +16,7 @@ GeneratorOutput
 ^^^^^^^^^^^^^^^
 Different from all other components, we can not alway enforce LLM to output the right format.
 We in particular created an output data class to track raw string response along its parsed task response and error messages for any failured LLM predictions.
+It is in developers' hands to process the output accordingly.
 
 Tracing
 ^^^^^^^

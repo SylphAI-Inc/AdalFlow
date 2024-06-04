@@ -1,19 +1,22 @@
 Developer Notes
 =============================
 
-Here is the content of our documentation project.
+Learn more on our over all design phisolophy, and how we designed each core part within the LightRAG library.
+
 
 
 .. toctree::
    :maxdepth: 2
 
    lightrag_design_philosophy
+
    llm_intro
    api_client
    component
-   data_classes
-   embedder
-   generator
    prompt
+   data_classes
+   generator
+   embedder
    retriever
+   optimizer
    evaluation
