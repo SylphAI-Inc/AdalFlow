@@ -73,6 +73,8 @@ Example to get signiture and schema from an instance:
 
 .. code-block:: python
 
+    from core.data_classes import BaseDataClass
+    from dataclasses import dataclass, field
     # Define a dataclass
     @dataclass
     class MyOutputs(BaseDataClass):
@@ -118,6 +120,9 @@ Developers can use ``BaseDataClass`` not only to format the input or output, but
 Example to get structured instance examples(``yaml`` or ``json``):
 
 .. code-block:: python
+
+    from core.data_classes import BaseDataClass
+    from dataclasses import dataclass, field
 
     @dataclass
     class MyOutputs(BaseDataClass):
