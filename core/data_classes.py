@@ -324,14 +324,14 @@ class BaseDataClass:
     # Create a dataclass instance
     my_instance = MyOutputs(age=25, name="John Doe")
     # Create json example
-    print(my_instance.to_json_example())
+    print(my_instance.to_json())
     # Output:
     # {
     #     "age": 25,
     #     "name": "John Doe"
     # }
     # Create yaml signature
-    print(my_instance.to_yaml_example())
+    print(my_instance.to_yaml())
     # Output:
     # age: 25
     # name: John Doe
