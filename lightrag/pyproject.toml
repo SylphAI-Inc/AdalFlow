@@ -29,14 +29,13 @@ python = ">=3.11, <4.0"
 python-dotenv = "^1.0.1"
 backoff = "^2.2.1"
 jinja2 = "^3.1.3"
+jsonlines = "^4.0.0"
 # TODO: decide if we need people to install faiss, or openai, or groq separately
 openai = "^1.12.0"
-groq = "^0.5.0"       # should only be installed if groq client is used
+groq = "^0.5.0"      # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
-torchviz = "^0.0.2"
-matplotlib = "^3.8.4"
-colorama = "^0.4.6"
-jsonlines = "^4.0.0"
+# matplotlib = "^3.8.4"
+# colorama = "^0.4.6"
 
 
 [tool.poetry.group.test.dependencies]
