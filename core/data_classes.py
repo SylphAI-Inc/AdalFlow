@@ -460,7 +460,7 @@ class BaseDataClass:
 class GeneratorOutput(BaseDataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
-    We ca not control its output 100%, so we use this to track the error_message and
+    We can not control its output 100%, so we use this to track the error_message and
     allow the raw string output to be passed through.
     """
 
