@@ -177,10 +177,7 @@ Example:
 
     from core.data_classes import BaseDataClass
     from dataclasses import dataclass, field
-    from dotenv import load_dotenv
     from core.prompt_builder import Prompt
-
-    load_dotenv()  # take environment variables from .env.
 
     # define a dataclass formatting the data
     @dataclass
