@@ -139,13 +139,13 @@ class Generator(Component):
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
-        # step 1: render the system prompt
+        # 1. render the system prompt from the template
         system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
 
-        # step 2: combine the model_kwargs with the default model_kwargs
+        # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
 
-        # step 3: use model_client.combined_input_and_model_kwargs to get the api_kwargs
+        # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=system_prompt_str,
             model_kwargs=composed_model_kwargs,
@@ -158,7 +158,10 @@ class Generator(Component):
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
-        r"""Call the model with the input(user_query) and model_kwargs."""
+        r"""
+        Call the model_client by formatting prompt from the prompt_kwargs,
+        and passing the combined model_kwargs to the model client.
+        """
 
         if self.training:
             # add the parameters to the prompt_kwargs

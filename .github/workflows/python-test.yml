@@ -24,18 +24,22 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-
-      - name: Install dependencies
+              - name: Install dependencies
         run: |
+          cd lightrag
           poetry config virtualenvs.create false
           poetry install
 
       - name: Run tests with pytest
-        run: poetry run pytest
+        run: |
+          cd lightrag
+          poetry run pytest
 
       - name: Upload pytest results as an artifact (optional)
         uses: actions/upload-artifact@v3 # Updated to the latest version
         if: always() # Always run this step to ensure test results are saved even if previous steps fail
         with:
           name: pytest-results
-          path: .pytest_cache
+          path: lightrag/.pytest_cache
+
+
