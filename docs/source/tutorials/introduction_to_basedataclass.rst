@@ -1,18 +1,20 @@
 Introduction to BaseDataClass
 =======================================
 
-In this tutorial, we will discuss how to use BaseDataClass to streamline the data handling, serialization and description in LightRAG.
+In this tutorial, we will discuss how to use ``BaseDataClass`` to streamline the data handling, serialization and description in LightRAG.
 
-What should you concern about the data flow in your LLM applications?
+`OpenAI's cookbook <https://cookbook.openai.com/articles/techniques_to_improve_reliability>`_ emphasizes that LLM works better when operating **structured** and **consistent** data. 
+To solve this, ``LightRAG`` provides ``BaseDataClass`` for developers to manage data with control and flexibility, including:
 
-* **Data Format:** `OpenAI's cookbook <https://cookbook.openai.com/articles/techniques_to_improve_reliability>`_ emphasizes that LLM works better when operating **structured** and **consistent** data. 
+* getting structured dataclass/instance metadata(`signature` or `schema`)
+* formatting class instance to ``yaml``, ``dict`` or ``json``
+* loading data from dictionary
 
-* **Token Counts:** The number of input/output tokens matter a lot to the project budget as each token costs money. Long prompts often generate slow and less accurate responses. Meanwhile, the model context window, although getting longer during iteration, is still limited. Therefore, it is important to comsume tokens efficiently.
- 
-To address these concerns, ``LightRAG`` provides ``BaseDataClass`` for developers to manage data with control and flexibility.
-Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``LightRAG`` is the base class accross all **dataclasses**. 
+Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``LightRAG`` is the base class across all **dataclasses**. 
+``BaseDataClass`` offers to create `signature` or `schema` from both classeses and instances. It will also generate structured instances data. Developers can use ``BaseDataClass`` to easily define and describe dataclasses that handle the data input or output in LLM applications, keeping data consistent and structured.
+In the following tutorial, we will investigate the functionality of ``BaseDataClass`` with examples.
 
-``BaseDataClass`` offers to create `signature` or `schema` from both classeses and instances. ``BaseDataClass`` can also help developers generate structured instances data.
+**1. Create Signature and Schema**
 
 * **Signature:** Signature has simpler content and structure and hence more token efficient than schema. ``LightRAG`` supports ``json`` and ``yaml`` formating. 
 
@@ -64,6 +66,9 @@ Example to get signature and schema from a dataclass:
                 'name': {'type': 'str', 'description': '', 'required': True}
             }
 
+As `signature` and `schema` are well-structured, developers can use them to instruct the model the output data format.
+
+Besides creating `signature` and `schema` for classes, ``BaseDataClass`` works for single instances as well.
 Example to get signiture and schema from an instance:
 
 .. code-block:: python
@@ -107,8 +112,10 @@ Example to get signiture and schema from an instance:
                 'name': {'type': 'str', 'description': '', 'required': True}
             }
 
+**2. Format Instances**
 
-Example to get structured output of instance(``yaml`` or ``json``):
+Developers can use ``BaseDataClass`` not only to format the input or output, but also to format examples during tasks such as few-shot prompting.
+Example to get structured instance examples(``yaml`` or ``json``):
 
 .. code-block:: python
 
@@ -143,16 +150,74 @@ Example to get structured output of instance(``yaml`` or ``json``):
             age: 25
             name: John Doe
 
-
-For detailed methods, please check :class:`core.data_classes.BaseDataClass`.
-The examples demonstrate how ``BaseDataClass`` works for describing dataclasses and structure instance to ``yaml`` and ``json`` output. 
+The examples demonstrate how ``BaseDataClass`` works for describing dataclasses and formatting instance to ``yaml`` and ``json``. 
 Developers should select schema or signature depends on the use case.
 
-With ``BaseDataClass``, developers can define data classes, use signatures for efficient token usage, and structure input/intermediate data/output.
+**3. Load Data from Dictionary**
+
+If developers want to load data from a dictionary to a certain data class, they can run:
+``loaded_example = MyOutputs.load_from_dict({"age":10, "name":"Harry"})``.
+
+(For details, please refer to :class:`core.data_classes.BaseDataClass`.)
+
+
+**4. Implement with Other Components**
 
 What's more, developers can use the dataclasses to interact with the ``Prompt`` and ``Generator`` classes, enhancing the consistency and structure of the application data flow.
+(``LightRAG`` uses ``jinja2`` for prompt template, make sure you've checked ``jinja2`` template tutorial before reading the example.)
 
+Example:
 
+.. code-block:: python
 
+    from core.data_classes import BaseDataClass
+    from dataclasses import dataclass, field
+    from dotenv import load_dotenv
+    from core.prompt_builder import Prompt
 
+    load_dotenv()  # take environment variables from .env.
 
+    # define a dataclass formatting the data
+    @dataclass
+    class JokeOutput(BaseDataClass):
+        setup: str = field(metadata={"desc": "question to set up a joke"}, default="")
+        punchline: str = field(metadata={"desc": "answer to resolve the joke"}, default="")
+
+    # initialize an example
+    joke_example = JokeOutput(
+        setup="Why did the scarecrow win an award?",
+        punchline="Because he was outstanding in his field.",
+    )
+
+    OUTPUT_FORMAT = r"""
+    Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    {{schema}}
+    ```
+    {% if example %}
+    Here is an example:
+    ```
+    {{example}}
+    ```
+    {% endif %}
+    """
+
+    prompt_template = Prompt(template=OUTPUT_FORMAT)
+    prompt = prompt_template(schema=JokeOutput.to_yaml_signature(), example=joke_example.to_yaml())
+
+    print(prompt)
+
+    # Your output should be formatted as a standard YAML instance with the following schema:
+    # ```
+    # setup: question to set up a joke (str) (optional)
+    # punchline: answer to resolve the joke (str) (optional)
+    # ```
+    # Here is an example:
+    # ```
+    # punchline: Because he was outstanding in his field.
+    # setup: Why did the scarecrow win an award?
+    # ```
+
+**5. Summary**
+
+In this tutorial, we've covered how to use ``BaseDataClass`` to create structured dataclass/instance `signature` and `schema`, format instance, load data from dictionary to the dataclass, and implement the ``BaseDataClass`` with other components.
