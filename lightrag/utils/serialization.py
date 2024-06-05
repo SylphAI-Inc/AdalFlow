@@ -41,31 +41,6 @@ def serialize(obj: Mapping[str, Any]) -> str:
     return json.dumps(obj, indent=4, default=default)
 
 
-# TODO: make this more clear
-def save(obj: Mapping[str, Any], f: str = "task") -> None:
-    __doc__ = """Save the object to a json file.
-
-    We save two versions of the object:
-    - task.json: the object itself with Parameter serialized to dict
-    - task.pickle: the object itself with Parameter as is
-    """
-
-    # save the object to a json file
-    json_f = f"{f}.json"
-
-    os.makedirs(os.path.dirname(json_f) or ".", exist_ok=True)
-    with open(json_f, "w") as file:
-        # serialize the object with the default function
-        # serialized_obj = serialize(obj)
-        # file.write(serialized_obj, indent=4)
-        json.dump(obj, file, indent=4, default=default)
-
-    # save the object to a pickle file
-    pickle_f = f"{f}.pickle"
-    with open(pickle_f, "wb") as file:
-        pickle.dump(obj, file)
-
-
 def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
     __doc__ = """Save the object to a json file.
 
@@ -76,7 +51,8 @@ def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
     try:
         with open(f, "w") as file:
-            json.dump(obj, file, indent=4, default=default)
+            serialized_obj = serialize(obj)
+            file.write(serialized_obj)
     except IOError as e:
         raise IOError(f"Error saving object to JSON file {f}: {e}")
 

@@ -190,7 +190,7 @@ class TrecTrainer(Component):
         return accuracy, macro_f1_score
 
     def eval_zero_shot(self, save_path: str = None):
-        save_path = save_path or "use_cases/classification/evals/zero_shot"
+        save_path = save_path or "use_cases/classification/evals/zero_shot.json"
         json_obj: Dict[str, Any] = {}
         self.task.eval()  # not using any trained examples
         acc, macro_f1, best_weights_per_class = self.eval()  # zero shot, 0.542
