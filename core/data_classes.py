@@ -323,7 +323,7 @@ class BaseDataClass:
 
     # Create a dataclass instance
     my_instance = MyOutputs(age=25, name="John Doe")
-    # Create json example
+    # Create json signature
     print(my_instance.to_json())
     # Output:
     # {
