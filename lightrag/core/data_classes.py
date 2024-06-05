@@ -6,7 +6,15 @@ We use dataclass which provides a decorator that automatically adds special meth
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union, Generic, TypeVar
 from collections import OrderedDict
-from dataclasses import dataclass, field, InitVar, fields, make_dataclass, MISSING
+from dataclasses import (
+    dataclass,
+    field,
+    InitVar,
+    fields,
+    make_dataclass,
+    MISSING,
+    asdict,
+)
 from uuid import UUID
 
 
@@ -340,13 +348,13 @@ class BaseDataClass:
     ```
     """
 
-    # def __post_init__(self):
-    #     # TODO: use desription in the field
-    #     for f in fields(self):
-    #         if "desc" not in f.metadata:
-    #             warnings.warn(
-    #                 f"Field {f.name} is missing 'desc' in metadata", UserWarning
-    #             )
+    def __post_init__(self):
+        # TODO: use desription in the field
+        for f in fields(self):
+            if "desc" not in f.metadata:
+                warnings.warn(
+                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
+                )
 
     def set_field_value(self, field_name: str, value: Any):
         r"""Set the value of a field in the dataclass instance."""
@@ -365,47 +373,9 @@ class BaseDataClass:
                 valid_data[f.name] = data[f.name]
         return cls(**valid_data)
 
-    def to_yaml(self):
-        return yaml.dump(self.__dict__, default_flow_style=False)
-
-    def to_dict(self):
-        # Create a dictionary representation of each attribute
-        result = {}
-        for key, value in self.__dict__.items():
-            if hasattr(value, "to_dict") and callable(getattr(value, "to_dict")):
-                # If the attribute has a to_dict method, use it
-                result[key] = value.to_dict()
-            elif isinstance(value, list):
-                # Special handling for lists
-                result[key] = [
-                    (
-                        v.to_dict()
-                        if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-                        else v
-                    )
-                    for v in value
-                ]
-            elif isinstance(value, dict):
-                # Special handling for dictionaries
-                result[key] = {
-                    k: (
-                        v.to_dict()
-                        if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-                        else v
-                    )
-                    for k, v in value.items()
-                }
-            else:
-                # Use the attribute as is if it's not another custom object
-                result[key] = value
-        return result
-
-    def to_json(self):
-        return json.dumps(self.__dict__, indent=4)
-
     @classmethod
     def _generate_description_dict(cls):
-        """Generate a description string for the class from desc in metadata."""
+        r"""Generate a description string for the class from desc in metadata."""
         metadata_dict = {
             f.name: f.metadata.get("desc", "No description provided")
             for f in fields(cls)
@@ -422,7 +392,10 @@ class BaseDataClass:
 
     @classmethod
     def to_yaml_signature(cls):
-        """Generate a YAML signature for the class from desc in metadata."""
+        r"""Generate a YAML signature for the class from desc in metadata.
+
+        Used mostly as LLM prompt to describe the output data format.
+        """
         # NOTE: we manually format the yaml string as the yaml.dump mess up the initiation order of the fields
         # Which can impact the final model output
         metadata_dict = cls._generate_description_dict()
@@ -438,7 +411,10 @@ class BaseDataClass:
 
     @classmethod
     def to_json_signature(cls):
-        """Generate a JSON signature for the class from desc in metadata."""
+        """Generate a JSON signature for the class from desc in metadata.
+
+        Used mostly as LLM prompt to describe the output data format.
+        """
         metadata_dict = cls._generate_description_dict()
         # manually format the json string as the json.dump mess up the initiation order of the fields
         # Which can impact the final model output
@@ -450,6 +426,76 @@ class BaseDataClass:
         json_output = ",\n".join(json_content)
         return "{\n" + json_output + "\n}"
         # return json.dumps(metadata_dict, indent=4)
+
+    # TODO: make sure the order is kept
+    def to_yaml(self):
+        r"""Convert the dataclass instance to a YAML string.
+
+        Used mostly as LLM prompt to describe an example of the output data.
+        """
+        return yaml.dump(self.__dict__, default_flow_style=False)
+
+    # TODO: make sure the order is kept
+    def to_json(self):
+        r"""Convert the dataclass instance to a JSON string.
+
+        Used mostly as LLM prompt to describe an example of the output data.
+        """
+        return json.dumps(self.__dict__, indent=4)
+
+    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
+        """Converts the dataclass instance to a dictionary, optionally excluding specified fields.
+
+        Args:
+            exclude (Optional[List[str]]): A list of field names to exclude from the resulting dictionary.
+
+        Returns:
+            dict: The dataclass as a dictionary with specified fields excluded.
+        """
+        if exclude is None:
+            exclude = []
+
+        # Prepare the set of field names to exclude
+        exclude_set = set(exclude)
+
+        # Use asdict but filter out the excluded fields
+        return {
+            f.name: getattr(self, f.name)
+            for f in fields(self)
+            if f.name not in exclude_set
+        }
+
+    # def to_dict(self):
+    #     # Create a dictionary representation of each attribute
+    #     result = {}
+    #     for key, value in self.__dict__.items():
+    #         if hasattr(value, "to_dict") and callable(getattr(value, "to_dict")):
+    #             # If the attribute has a to_dict method, use it
+    #             result[key] = value.to_dict()
+    #         elif isinstance(value, list):
+    #             # Special handling for lists
+    #             result[key] = [
+    #                 (
+    #                     v.to_dict()
+    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+    #                     else v
+    #                 )
+    #                 for v in value
+    #             ]
+    #         elif isinstance(value, dict):
+    #             # Special handling for dictionaries
+    #             result[key] = {
+    #                 k: (
+    #                     v.to_dict()
+    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
+    #                     else v
+    #                 )
+    #                 for k, v in value.items()
+    #             }
+    #         else:
+    #             # Use the attribute as is if it's not another custom object
+    #             result[key] = value
+    #     return result
 
     @classmethod
     def get_data_class_schema(cls) -> Dict[str, Dict[str, Any]]:

@@ -1,16 +1,21 @@
 from typing import Any, Dict, Tuple
-from utils import save, load
-
+import tqdm
 from copy import deepcopy
 from torch.utils.data import DataLoader
 
-from components.api_client import GroqAPIClient, OpenAIClient, GoogleGenAIClient
-from optim import BootstrapFewShot
-from optim.sampler import RandomSampler, ClassSampler
-from optim.llm_augment import LLMAugmenter
-from optim.llm_optimizer import LLMOptimizer
+from lightrag.components.api_client import (
+    GroqAPIClient,
+    OpenAIClient,
+    GoogleGenAIClient,
+)
+from lightrag.optim import BootstrapFewShot
+from lightrag.optim.sampler import RandomSampler, ClassSampler
+from lightrag.optim.llm_augment import LLMAugmenter
+from lightrag.optim.llm_optimizer import LLMOptimizer
 
-from core.component import Component
+from lightrag.core.component import Component
+from lightrag.utils import save, load, save_json, load_json
+
 
 from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
 from use_cases.classification.eval import ClassifierEvaluator
@@ -124,24 +129,29 @@ class TrecTrainer(Component):
         num_invalid = 0
         if dataset is None:
             dataset = self.eval_dataset
-        for data in dataset:
-            print(f"data: {data}")
-            task_input = data["text"]
-            corse_label = data["coarse_label"]
-            print(f"task_input: {task_input}, corse_label: {corse_label}")
-            print(f"types: {type(task_input)}, {type(corse_label)}")
 
-            response = self.task(task_input)
+        # OR use dataloader
+        subset = dataset.select(range(0, 10))
+        for text, coarse_label in tqdm.tqdm(
+            zip(subset["text"], subset["coarse_label"])
+        ):
+            log.info(f"data: text: {text}, coarse_label: {coarse_label}")
+            # task_input = data["text"]
+            # corse_label = data["coarse_label"]
+            # print(f"task_input: {task_input}, corse_label: {corse_label}")
+            # print(f"types: {type(task_input)}, {type(corse_label)}")
+
+            response = self.task(text)
             if response == -1:
-                print(f"invalid response: {response}")
+                log.error(f"invalid response: {response}")
                 num_invalid += 1
                 continue
             responses.append(response)
-            targets.append(int(corse_label))
+            targets.append(int(coarse_label))
 
         # evaluate the responses
-        print(f"responses: {responses}, targets: {targets}")
-        print(f"num_invalid: {num_invalid}")
+        log.info(f"responses: {responses}, targets: {targets}")
+        log.info(f"num_invalid: {num_invalid}")
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
         weights_per_class = self.evaluator.weights_per_class(responses, targets)
         return accuracy, macro_f1_score, weights_per_class
@@ -179,15 +189,16 @@ class TrecTrainer(Component):
         accuracy, macro_f1_score = self.evaluator.run(responses, targets)
         return accuracy, macro_f1_score
 
-    def eval_zero_shot(self):
+    def eval_zero_shot(self, save_path: str = None):
+        save_path = save_path or "use_cases/classification/evals/zero_shot"
         json_obj: Dict[str, Any] = {}
         self.task.eval()  # not using any trained examples
         acc, macro_f1, best_weights_per_class = self.eval()  # zero shot, 0.542
-        print(
+        log.info(
             f"Eval Accuracy Zero shot Start: {acc}, F1: {macro_f1}, score: {acc+macro_f1}, best_weights_per_class: {best_weights_per_class}"
         )
         acc_test, macro_f1_test, weights_per_class_test = self.test()
-        print(
+        log.info(
             f"Test Accuracy Zero shot Start: {acc_test}, F1: {macro_f1_test}, score: {acc_test +macro_f1_test }, weights_per_class: {weights_per_class_test}"
         )
         json_obj["zero_shot"] = {
@@ -200,7 +211,7 @@ class TrecTrainer(Component):
                 "macro_f1": macro_f1_test,
             },
         }
-        save(json_obj, f"use_cases/classification/zero_shot")
+        save_json(json_obj, save_path)
 
     def eval_few_shot(self, shots: int, runs: int = 5):
         r"""Get the max, min, mean, std of the few shot evaluation"""
@@ -475,12 +486,10 @@ class TrecTrainer(Component):
 
 
 if __name__ == "__main__":
-    import logging
     import sys
 
-    # Configure logging to output to standard output (console)
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-    logger = logging.getLogger()
+    from use_cases.classification.config_log import log
+    from lightrag.utils import save_json
 
     train_dataset, eval_dataset, test_dataset = load_datasets()
     # TODO: ensure each time the selected eval and test dataset and train dataset are the same
@@ -494,7 +503,16 @@ if __name__ == "__main__":
         num_shots=num_shots,
         batch_size=batch_size,
     )
-    logger.info(f"trainer: {trainer}")
+
+    # save the most detailed trainer states
+    # When your dataset is small, this json file can be used to help you visualize datasets
+    # and to debug components
+    save_json(
+        trainer.to_dict(),
+        f"use_cases/classification/traces/trainer_states.json",
+    )
+    # or log a str representation, mostly just the structure of the trainer
+    log.info(f"trainer: {trainer}")
     # trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
     trainer.eval_zero_shot()

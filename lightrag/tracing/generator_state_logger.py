@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional
 import os
 import logging
 

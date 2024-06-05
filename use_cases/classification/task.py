@@ -227,7 +227,5 @@ if __name__ == "__main__":
     query = "How did serfdom develop in and then leave Russia ?"
     trec_classifier = TRECClassifier(labels=_COARSE_LABELS)
     log.info(trec_classifier)
-    # trec_classifier.generator.print_prompt()
     label = trec_classifier.call(query)
     log.info(f"label: {label}")
-    # print(f"label: {label}")

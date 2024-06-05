@@ -135,7 +135,7 @@ def prepare_datasets(path: str = "data"):
 
     num_classes = 6
 
-    # create eval dataset from the first half of the train datset, 4 samples per class
+    # (1) create eval dataset from the first 1/3 of the train datset, 6 samples per class
     org_train_dataset = dataset["train"].shuffle(seed=42)
     train_size = num_classes * 100
     len_train_dataset = len(org_train_dataset)
@@ -152,8 +152,10 @@ def prepare_datasets(path: str = "data"):
     )
 
     eval_dataset_split = [sample.data for sample in class_sampler(eval_size)]
+    # convert this back to huggingface dataset
+    eval_dataset_split = HFDataset.from_list(eval_dataset_split)
 
-    # use the second half of the train dataset as the train dataset
+    # (2) create train dataset from the last 2/3 of the train dataset, 100 samples per class
     train_dataset_split = org_train_dataset.select(
         range(len_train_dataset // 3, len_train_dataset)
     )  # {4: 413, 5: 449, 1: 630, 2: 560, 3: 630, 0: 44}

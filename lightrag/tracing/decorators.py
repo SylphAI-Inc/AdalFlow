@@ -1,5 +1,4 @@
 import functools
-import os
 import warnings
 from typing import List, Optional, Dict
 import logging
@@ -72,7 +71,7 @@ def trace_generator_states(
 
             # Dynamically get the attribute to be logged if it exists.
             for attribute in effective_attributes:
-                log.debug(f"Tracing generator in {class_name}")
+                log.debug(f"Tracing generator states in {class_name}")
                 target = getattr(self, attribute, None)
                 generator_name = attribute
 
