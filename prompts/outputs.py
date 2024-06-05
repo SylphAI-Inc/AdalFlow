@@ -144,7 +144,7 @@ class YAMLOutputParser(OutputParser):
             You can also use "json" for JSON schema.
         """
         # schema = get_data_class_schema(self.data_class_for_yaml)
-        if schema_type == "json":
+        if schema_type == "json": # better use "signiture" instead of schema to avoid confusion
             schema = self.data_class_for_yaml.to_json_signature()
         else:
             schema = self.data_class_for_yaml.to_yaml_signature()
@@ -152,7 +152,7 @@ class YAMLOutputParser(OutputParser):
         try:
             # example_dict = asdict(self.example)
             # example_str = yaml.dump(example_dict, default_flow_style=False)
-            example_str = self.example.to_yaml_example()
+            example_str = self.example.to_yaml()
             logger.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
