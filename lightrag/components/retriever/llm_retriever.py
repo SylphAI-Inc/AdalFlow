@@ -1,13 +1,12 @@
-from typing import List, Optional, Any, Callable, Dict, Union
-from jinja2 import Template
+from typing import List, Optional, Any, Dict
 
-from core.component import Component
-from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
-from core.generator import Generator
-from core.api_client import APIClient
-from core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-from core.string_parser import ListParser
-from core.prompt_builder import Prompt
+from lightrag.core.component import Component
+from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
+from lightrag.core.generator import Generator
+from lightrag.core.api_client import APIClient
+from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from lightrag.core.string_parser import ListParser
+from lightrag.core.prompt_builder import Prompt
 
 DEFAULT_LLM_AS_RETRIEVER_TASK_DESC = """Your are a retriever. Given a list of documents in the context, \
 you will retrieve a list of {{top_k}} incices(int) of the documents that are most relevant to the query. You will output a list as follows:

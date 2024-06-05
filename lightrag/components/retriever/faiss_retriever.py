@@ -1,9 +1,16 @@
 from typing import List, Optional, Sequence, Union
-import faiss
 
-import numpy as np
-from core.component import Component
-from core.retriever import Retriever, RetrieverOutput, RetrieverOutputType
+try:
+    import faiss
+except ImportError:
+    raise ImportError("Please install faiss with: pip install faiss")
+try:
+    import numpy as np
+except ImportError:
+    raise ImportError("Please install numpy with: pip install numpy")
+
+from lightrag.core.component import Component
+from lightrag.core.retriever import Retriever, RetrieverOutput, RetrieverOutputType
 
 
 FAISSRetrieverDocumentType = Sequence[List[float]]  # embeddings

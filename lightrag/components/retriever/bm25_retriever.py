@@ -36,9 +36,9 @@ import sys
 from multiprocessing import Pool, cpu_count
 from functools import partial
 
-from core.tokenizer import Tokenizer
-from core.data_classes import RetrieverOutput, RetrieverOutput
-from core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
+from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.data_classes import RetrieverOutput, RetrieverOutput
+from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 
 
 PARAM_K1 = 1.5
