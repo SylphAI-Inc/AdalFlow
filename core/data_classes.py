@@ -302,41 +302,42 @@ class BaseDataClass:
     Better use schema with example signature (either yaml or json) depending on the use case.
 
     Example usage:
-    ```
-    # Define a dataclass
-    @dataclass
-    class MyOutputs(BaseDataClass):
-        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
-        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-    # Create json signature
-    print(MyOutputs.to_json_signature())
-    # Output:
-    # {
-    #     "age": "The age of the person",
-    #     "name": "The name of the person"
-    # }
-    # Create yaml signature
-    print(MyOutputs.to_yaml_signature())
-    # Output:
-    # age: The age of the person
-    # name: The name of the person
+    
+    .. code-block:: python
+    
+        # Define a dataclass
+        @dataclass
+        class MyOutputs(BaseDataClass):
+            age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
+            name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
+        # Create json signature
+        print(MyOutputs.to_json_signature())
+        # Output:
+        # {
+        #     "age": "The age of the person",
+        #     "name": "The name of the person"
+        # }
+        # Create yaml signature
+        print(MyOutputs.to_yaml_signature())
+        # Output:
+        # age: The age of the person
+        # name: The name of the person
 
-    # Create a dataclass instance
-    my_instance = MyOutputs(age=25, name="John Doe")
-    # Create json signature
-    print(my_instance.to_json_signature())
-    # Output:
-    # {
-    #     "age": 25,
-    #     "name": "John Doe"
-    # }
-    # Create yaml signature
-    print(my_instance.to_yaml_signature())
-    # Output:
-    # age: 25
-    # name: John Doe
+        # Create a dataclass instance
+        my_instance = MyOutputs(age=25, name="John Doe")
+        # Create json signature
+        print(my_instance.to_json_signature())
+        # Output:
+        # {
+        #     "age": 25,
+        #     "name": "John Doe"
+        # }
+        # Create yaml signature
+        print(my_instance.to_yaml_signature())
+        # Output:
+        # age: 25
+        # name: John Doe
 
-    ```
     """
 
     # def __post_init__(self):
