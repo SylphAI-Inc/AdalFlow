@@ -13,12 +13,13 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath("../"))
-# need to insert the paths
-for dir in os.walk('../../lightrag'):
-  sys.path.insert(0, dir[0])
-#   print(dir[0])
+# sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(0, os.path.abspath("../../lightrag"))
+# # need to insert the paths
+# for dir in os.walk('../../lightrag'):
+#   sys.path.insert(0, dir[0])
+# #   print(dir[0])
 
 import lightrag
 import lightrag.components
