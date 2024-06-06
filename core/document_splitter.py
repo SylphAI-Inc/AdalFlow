@@ -1,6 +1,6 @@
 """
 Here is for us to prepare the documents for retrieve the context.
-LlamaIndex having DocumentStore. We just want you wrap your data here and define a retrive method. 
+LlamaIndex having DocumentStore. We just want you wrap your data here and define a retrieve method. 
 It highly depends on the product environment and can go beyond the scope of this library.
 
 But these are shared:
@@ -10,7 +10,7 @@ But these are shared:
 * Openup the db for context retrieval
 """
 
-# TODO: (1) TextSplitters
+# TODO: (1) TextSplitters, JSON/HTML Splitter
 from copy import deepcopy
 from typing import List, Literal
 
