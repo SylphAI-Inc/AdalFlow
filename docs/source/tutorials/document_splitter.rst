@@ -1,7 +1,7 @@
-Document Splitter
+Retriever
 ===================
 
-In this tutorial, we will explain ``LightRAG's DocumentSplitter`` and show you how to implement it in your LLM applications.
+In this tutorial, we will explain each component in ``LightRAG's Retriever`` and show you how to implement it in your LLM applications.
 
 LLMs develop fast, but they have limitations.
 
@@ -15,6 +15,9 @@ The common solution for Retrieval is to chunk the documents into smaller context
 Besides RAG, Retrieval can be used in simpler use case such as few shot example Retrieval.
 
 ``LightRAG`` aims to find the optimal way to pass the task-requiring data into LLMs.
+
+1. Document Splitter
+----------------------
 
 ``LightRAG's DocumentSplitter`` splits a list of documents(:class:`core.data_classes.Document`) into a list of text documents with shorter texts. 
 Each :class:`core.data_classes.Document` object is a text container with optional metadata and vector representation.
