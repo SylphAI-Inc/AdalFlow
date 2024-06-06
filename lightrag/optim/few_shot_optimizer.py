@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict
 from copy import deepcopy
 
-from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 from lightrag.core.parameter import Parameter
 from lightrag.core.component import Component
 from lightrag.optim.sampler import Sampler, Sample

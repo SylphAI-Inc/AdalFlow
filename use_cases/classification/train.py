@@ -1,4 +1,4 @@
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, Tuple, List
 import tqdm
 from copy import deepcopy
 from torch.utils.data import DataLoader
@@ -14,7 +14,7 @@ from lightrag.optim.llm_augment import LLMAugmenter
 from lightrag.optim.llm_optimizer import LLMOptimizer
 
 from lightrag.core.component import Component
-from lightrag.utils import save, load, save_json, load_json
+from lightrag.utils import save, load, save_json, load_json, save_json_from_dict
 
 
 from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
@@ -131,6 +131,7 @@ class TrecTrainer(Component):
             dataset = self.eval_dataset
 
         # OR use dataloader
+        print(f"dataset: {dataset}")
         subset = dataset.select(range(0, 10))
         for text, coarse_label in tqdm.tqdm(
             zip(subset["text"], subset["coarse_label"])
@@ -157,8 +158,6 @@ class TrecTrainer(Component):
         return accuracy, macro_f1_score, weights_per_class
 
     def test(self):
-        # print(f"test_dataset", self.test_dataset)
-        # sub_test_dataset = self.test_dataset.select(range(0, 1))
         return self.eval(self.test_dataset)
 
     def batch_eval(self, batch: Dict[str, Any]) -> Tuple[float, float]:
@@ -213,72 +212,114 @@ class TrecTrainer(Component):
         }
         save_json(json_obj, save_path)
 
-    def eval_few_shot(self, shots: int, runs: int = 5):
+    def eval_few_shot(self, shots: int, runs: int = 5, save_path: str = None):
         r"""Get the max, min, mean, std of the few shot evaluation"""
         # TODO: this can be moved to the optimizer
+        save_path = save_path or "use_cases/classification/evals/few_shot.json"
+
+        def compute_max_min_mean_std(values: List[float]):
+            import numpy as np
+
+            values_np = np.array(values)
+            max_value = np.max(values_np)
+            min_value = np.min(values_np)
+            mean_value = np.mean(values_np)
+            std_value = np.std(values_np)
+            return max_value, min_value, mean_value, std_value
+
         self.task.train()
         accs = []
         macro_f1s = []
+
+        accs_eval = []
+        macro_f1s_eval = []
         optimizer = self.few_shot_optimizer
 
         # get optimizer name
         optimizer_name = (
             optimizer.__class__.__name__ + optimizer.sampler.__class__.__name__
         )
-        save_json: Dict[str, Any] = {
+        result: Dict[str, Any] = {
             "optimizer": optimizer_name,
             "shots": shots,
             "runs": runs,
         }
         if shots is None:
             shots = self.num_shots
-        for i in range(runs):  # TODO: add tqdm
+        for i in tqdm.tqdm(range(runs)):
             optimizer.init(shots=shots)
+            log.info(f"run: {i}, eval")
+            acc_eval, macro_f1_eval, _ = self.eval()
+            log.info(f"run: {i}, test")
             acc, macro_f1, _ = self.test()
             accs.append(acc)
             macro_f1s.append(macro_f1)
-            save_json[f"run_{i}"] = {
+            accs_eval.append(acc_eval)
+            macro_f1s_eval.append(macro_f1_eval)
+            result[f"run_test_{i}"] = {
                 "acc": acc,
                 "macro_f1": macro_f1,
                 "examples": optimizer.current,
             }
-            print(save_json[f"run_{i}"])
-        print(f"accs: {accs}")
-        print(f"macro_f1s: {macro_f1s}")
-        # compute max, min, mean, std using numpy
-        import numpy as np
+            result[f"run_eval_{i}"] = {
+                "acc": acc_eval,
+                "macro_f1": macro_f1_eval,
+                "examples": optimizer.current,
+            }
+            log.info(result[f"run_test_{i}"])
+            log.info(result[f"run_eval_{i}"])
 
-        accs_np = np.array(accs)
-        macro_f1s_np = np.array(macro_f1s)
-        max_acc = np.max(accs_np)
-        min_acc = np.min(accs_np)
-        mean_acc = np.mean(accs_np)
-        std_acc = np.std(accs_np)
-        print(
-            f"max_acc: {max_acc}, min_acc: {min_acc}, mean_acc: {mean_acc}, std_acc: {std_acc}"
+        max_acc, min_acc, mean_acc, std_acc = compute_max_min_mean_std(accs)
+        max_acc_eval, min_acc_eval, mean_acc_eval, std_acc_eval = (
+            compute_max_min_mean_std(accs_eval)
         )
-        save_json["max_acc"] = max_acc
-        save_json["min_acc"] = min_acc
-        save_json["mean_acc"] = mean_acc
-        save_json["std_acc"] = std_acc
+        log.info(
+            f"test: max_acc: {max_acc}, min_acc: {min_acc}, mean_acc: {mean_acc}, std_acc: {std_acc}"
+        )
+        log.info(
+            f"eval: max_acc: {max_acc_eval}, min_acc: {min_acc_eval}, mean_acc: {mean_acc_eval}, std_acc: {std_acc_eval}"
+        )
+
+        result["test_acc"] = {
+            "max_acc": max_acc,
+            "min_acc": min_acc,
+            "mean_acc": mean_acc,
+            "std_acc": std_acc,
+        }
+        result["eval_acc"] = {
+            "max_acc": max_acc_eval,
+            "min_acc": min_acc_eval,
+            "mean_acc": mean_acc_eval,
+            "std_acc": std_acc_eval,
+        }
 
         # macro f1
-        max_macro_f1 = np.max(macro_f1s_np)
-        min_macro_f1 = np.min(macro_f1s_np)
-        mean_macro_f1 = np.mean(macro_f1s_np)
-        std_macro_f1 = np.std(macro_f1s_np)
-        print(
-            f"max_macro_f1: {max_macro_f1}, min_macro_f1: {min_macro_f1}, mean_macro_f1: {mean_macro_f1}, std_macro_f1: {std_macro_f1}"
+        max_macro_f1, min_macro_f1, mean_macro_f1, std_macro_f1 = (
+            compute_max_min_mean_std(macro_f1s)
         )
-        save_json["max_macro_f1"] = max_macro_f1
-        save_json["min_macro_f1"] = min_macro_f1
-        save_json["mean_macro_f1"] = mean_macro_f1
-        save_json["std_macro_f1"] = std_macro_f1
+        max_macro_f1_eval, min_macro_f1_eval, mean_macro_f1_eval, std_macro_f1_eval = (
+            compute_max_min_mean_std(macro_f1s_eval)
+        )
+        log.info(
+            f"test: max_macro_f1: {max_macro_f1}, min_macro_f1: {min_macro_f1}, mean_macro_f1: {mean_macro_f1}, std_macro_f1: {std_macro_f1}"
+        )
+        log.info(
+            f"eval: max_macro_f1: {max_macro_f1_eval}, min_macro_f1: {min_macro_f1_eval}, mean_macro_f1: {mean_macro_f1_eval}, std_macro_f1: {std_macro_f1_eval}"
+        )
+        result["test_macro_f1"] = {
+            "max_macro_f1": max_macro_f1,
+            "min_macro_f1": min_macro_f1,
+            "mean_macro_f1": mean_macro_f1,
+            "std_macro_f1": std_macro_f1,
+        }
+        result["eval_macro_f1"] = {
+            "max_macro_f1": max_macro_f1_eval,
+            "min_macro_f1": min_macro_f1_eval,
+            "mean_macro_f1": mean_macro_f1_eval,
+            "std_macro_f1": std_macro_f1_eval,
+        }
 
-        save(
-            save_json,
-            f"use_cases/classification/few_shot_init_1/{shots}_shots_{optimizer_name}_aug_gpt4o",
-        )
+        save_json(result, save_path)
 
     def train_random(self, shots: int) -> None:
         r"""
@@ -511,9 +552,10 @@ if __name__ == "__main__":
         trainer.to_dict(),
         f"use_cases/classification/traces/trainer_states.json",
     )
+    log.info(f"trainer to dict: {trainer.to_dict()}")
     # or log a str representation, mostly just the structure of the trainer
     log.info(f"trainer: {trainer}")
     # trainer.train_instruction(max_steps=1)
     # trainer.train(shots=num_shots, max_steps=20, start_shots=6)
-    trainer.eval_zero_shot()
-    # trainer.eval_few_shot(shots=num_shots, runs=5)
+    # trainer.eval_zero_shot()
+    trainer.eval_few_shot(shots=num_shots, runs=5)

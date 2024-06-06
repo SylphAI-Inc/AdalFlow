@@ -1,4 +1,4 @@
-from typing import List, Optional, Union, Callable, Any, Any
+from typing import List, Optional, Union, Any
 
 
 from lightrag.core.component import Component

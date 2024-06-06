@@ -1,4 +1,4 @@
-from typing import Optional, Any, Dict, Union, Sequence
+from typing import Optional, Any, Dict
 
 from lightrag.core.data_classes import ModelType
 from lightrag.core.api_client import APIClient, API_INPUT_TYPE

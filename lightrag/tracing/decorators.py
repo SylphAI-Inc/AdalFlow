@@ -144,9 +144,8 @@ def trace_generator_call(
             def wrapped_call(*args, **kwargs):
                 output = original_call(*args, **kwargs)
                 try:
-                    if (
-                        error_only and output.error_message is not None
-                    ) or not error_only:
+                    if (error_only and output.error is not None) or not error_only:
+                        log.debug(f"Logging generator call for {generator_name}")
                         logger.log_call(
                             name=generator_name,
                             model_kwargs=kwargs.get("model_kwargs", {}),

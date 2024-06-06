@@ -1,4 +1,5 @@
 source/apis/components/components*
+source/apis/components/_autosummary*
 source/apis/components/modules*
 source/apis/core/core*
 source/apis/core/modules*

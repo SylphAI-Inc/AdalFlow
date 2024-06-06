@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from copy import deepcopy
 
-from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 
 from lightrag.core.api_client import APIClient
 from lightrag.core.generator import Generator, GeneratorOutput

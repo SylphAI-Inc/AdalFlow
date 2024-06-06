@@ -4,7 +4,7 @@ It is commonly used as output_processors.
 
 from copy import deepcopy
 import dataclasses
-from typing import Any, Dict, List, Type, TypeVar, Optional, Sequence, Union
+from typing import Any, Dict, List, Type, TypeVar, Sequence, Union
 
 
 from lightrag.core.component import Component

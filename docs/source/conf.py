@@ -22,6 +22,7 @@ sys.path.insert(0, os.path.abspath("../../lightrag"))
 # #   print(dir[0])
 
 import lightrag
+
 import lightrag.components
 import lightrag.core
 import lightrag.eval
@@ -53,6 +54,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
     "sphinx_design",
+    "sphinx.builders.changes",
     # 'recommonmark',
     # 'myst_parser'
 ]
@@ -63,7 +65,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["tests", "test_*"]
+exclude_patterns = ["lightrag/tests", "test_*"]
 
 # exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.module.rst', '**/tests/*', '**/test_*.py', '*test.rst']
 
@@ -89,7 +91,8 @@ html_theme_options = {
             "name": "Discord",
             "url": "https://discord.gg/hmZWFEUd",
             "icon": "fa-brands fa-discord",
-        },],
+        },
+    ],
     # "navigation_with_keys": True
 }
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -120,7 +123,7 @@ autodoc_default_options = {
     "private-members": False,  # Ensure this is True if you want to document private members
     # "special-members": "__init__",  # Document special members like __init__
     "inherited-members": False,
-    "exclude-members": "__init__"
+    "exclude-members": "__init__",
     # "autosectionlabel_prefix_document": True,
 }
 

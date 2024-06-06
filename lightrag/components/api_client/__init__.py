@@ -1,3 +1,5 @@
+r"""Allow the users to install the required API client packages separately."""
+
 try:
     from .openai_client import *
 except ImportError:
@@ -18,7 +20,3 @@ try:
     from .google_client import *
 except ImportError:
     pass
-# from .groq_client import *
-# from .anthropic_client import *
-# from .transformers_client import *
-# from .google_client import *

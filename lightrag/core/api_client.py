@@ -22,7 +22,7 @@ from typing import Any, Dict, Union, Sequence
 
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import ModelType
+from lightrag.core.types import ModelType
 
 
 API_INPUT_TYPE = Union[
