@@ -245,7 +245,7 @@ class Document:
 
     def __repr__(self) -> str:
         # TODO: repr only those non empty fields
-        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text}, estimated_num_tokens={self.estimated_num_tokens})"
+        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:50]}, estimated_num_tokens={self.estimated_num_tokens})"
 
     def __str__(self):
         return self.__repr__()
@@ -346,7 +346,6 @@ class BaseDataClass:
         # Output:
         # age: 25
         # name: John Doe
-
     """
 
     def __post_init__(self):
@@ -541,6 +540,7 @@ class DynamicDataClassFactory:
     }
     
     Examples:
+    
         .. code-block:: python
         
             data = {
