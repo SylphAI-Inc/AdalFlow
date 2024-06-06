@@ -76,9 +76,13 @@ class TestGenerator(IsolatedAsyncioTestCase):
         generator = Generator(
             model_client=self.mock_api_client, preset_prompt_kwargs=preset_prompt_kwargs
         )
+
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
+        print(
+            f"""preset_prompt_kwargs: {prompt_logger._trace_map["Test Generator"][-1].prompt_states}"""
+        )
         self.assertEqual(
-            prompt_logger._trace_map["Test Generator"][1].prompt_states[
+            prompt_logger._trace_map["Test Generator"][1].prompt_states["data"][
                 "preset_prompt_kwargs"
             ]["input_str"],
             "Hello, updated world!",
@@ -89,7 +93,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         generator = Generator(model_client=self.mock_api_client, template=template)
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         self.assertEqual(
-            prompt_logger._trace_map["Test Generator"][2].prompt_states[
+            prompt_logger._trace_map["Test Generator"][2].prompt_states["data"][
                 "_template_string"
             ],
             "Hello, {{ input_str }}!",

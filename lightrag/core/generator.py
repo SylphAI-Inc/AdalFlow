@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from copy import deepcopy
 import logging
 
@@ -14,11 +14,12 @@ from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 GeneratorInputType = str
 GeneratorOutputType = GeneratorOutput
 
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 # NOTE: currently generator cannot be used in Sequential due to specialized output data type
 # TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
+# TODO: create a dummpy model client for testing the generator
 class Generator(Component):
     """
     An user-facing orchestration component for LLM prediction.
@@ -77,7 +78,7 @@ class Generator(Component):
                 )
             # Create a Parameter object and assign it as an attribute with the same name as the value of param
             default_value = self.preset_prompt_kwargs.get(param, None)
-            setattr(self, param, Parameter(data=default_value))
+            setattr(self, param, Parameter[Union[str, None]](data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
 
@@ -120,20 +121,23 @@ class Generator(Component):
         return s
 
     def _post_call(self, completion: Any) -> GeneratorOutputType:
-        r"""Parse the completion and process the output."""
+        r"""Get string completion and process it with the output_processors."""
         try:
             response = self.model_client.parse_chat_completion(completion)
         except Exception as e:
+            log.error(f"Error parsing the completion: {e}")
             response = str(completion)
-            return GeneratorOutput(raw_response=response, error_message=str(e))
+            return GeneratorOutput(raw_response=response, error=str(e))
 
+        # parse the raw string response
         output: GeneratorOutputType = GeneratorOutput(raw_response=response)
         response = deepcopy(response)
         if self.output_processors:
             try:
                 response = self.output_processors(response)
             except Exception as e:
-                output.error_message = str(e)
+                log.error(f"Error processing the output: {e}")
+                output.error = str(e)
         output.data = response
         return output
 
@@ -171,8 +175,8 @@ class Generator(Component):
             }
             prompt_kwargs.update(trained_prompt_kwargs)
 
-        logger.info(f"prompt_kwargs: {prompt_kwargs}")
-        logger.info(f"model_kwargs: {model_kwargs}")
+        log.info(f"prompt_kwargs: {prompt_kwargs}")
+        log.info(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = self.model_client.call(
@@ -180,7 +184,7 @@ class Generator(Component):
         )
         output = self._post_call(completion)
 
-        logger.info(f"output: {output}")
+        log.info(f"output: {output}")
         return output
 
     async def acall(

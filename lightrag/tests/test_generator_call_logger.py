@@ -31,7 +31,7 @@ class TestGeneratorCallLogger(unittest.TestCase):
             save_dir=self.save_dir, project_name=self.project_name
         )
 
-        self.sample_output = GeneratorOutput(data="test data", error_message=None)
+        self.sample_output = GeneratorOutput(data="test data", error=None)
 
     def test_register_generator(self):
         self.logger.register_generator("test_gen")

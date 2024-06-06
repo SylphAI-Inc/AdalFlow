@@ -11,7 +11,6 @@ import logging
 
 from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
-from lightrag.core.functional import get_data_class_schema
 from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
 from lightrag.core.data_classes import BaseDataClass
 
@@ -143,16 +142,13 @@ class YAMLOutputParser(OutputParser):
             schema_type (str, optional): The type of schema to show in the prompt. Defaults to "yaml" for less token usage.
             You can also use "json" for JSON schema.
         """
-        # schema = get_data_class_schema(self.data_class_for_yaml)
         if schema_type == "json":
             schema = self.data_class_for_yaml.to_json_signature()
         else:
             schema = self.data_class_for_yaml.to_yaml_signature()
         # convert example to string, convert data class to yaml string
         try:
-            # example_dict = asdict(self.example)
-            # example_str = yaml.dump(example_dict, default_flow_style=False)
-            example_str = self.example.to_yaml_example()
+            example_str = self.example.to_yaml()
             logger.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:

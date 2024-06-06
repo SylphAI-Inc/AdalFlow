@@ -199,12 +199,12 @@ class TRECClassifier(Component):
     def call(self, query: str) -> str:
         re_pattern = r"\d+"
         output = self.generator.call(prompt_kwargs={"input": query})
-        if output.data is not None and output.error_message is None:
+        if output.data is not None and output.error is None:
             response = output.data
             return response
 
         else:
-            log.info(f"error_message: {output.error_message}")
+            log.info(f"error_message: {output.error}")
             log.info(f"raw_response: {output.raw_response}")
             log.info(f"response: {output.data}")
             # Additional processing in case it is not predicting a number but a string

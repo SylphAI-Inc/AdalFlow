@@ -47,15 +47,15 @@ class Parameter(Generic[T]):
 
         self.requires_opt = requires_opt
 
-    def _check_data_type(self, new_data: T):
-        if not isinstance(new_data, self.data_type):
-            raise TypeError(
-                f"Expected data type {self.data_type.__name__}, got {type(new_data).__name__}"
-            )
+    # def _check_data_type(self, new_data: T):
+    #     if not isinstance(new_data, self.data_type):
+    #         raise TypeError(
+    #             f"Expected data type {self.data_type.__name__}, got {type(new_data).__name__}"
+    #         )
 
     def update_value(self, data: T):
         r"""Update the value in-place."""
-        self._check_data_type(data)
+        # self._check_data_type(data)
         self.data = data
 
     def to_dict(self):

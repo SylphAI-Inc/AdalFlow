@@ -4,7 +4,7 @@ We use dataclass which provides a decorator that automatically adds special meth
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Generic, TypeVar
+from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Type
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -13,7 +13,7 @@ from dataclasses import (
     fields,
     make_dataclass,
     MISSING,
-    asdict,
+    is_dataclass,
 )
 from uuid import UUID
 
@@ -26,17 +26,197 @@ import warnings
 import logging
 
 from lightrag.core.tokenizer import Tokenizer
-from lightrag.core.functional import get_data_class_schema
 
-
-# if sys.version_info >= (3, 10, 1):
-#     Literal = typing.Literal
-# else:
-#     raise ImportError("Please upgrade to Python 3.10.1 or higher to use Literal")
 
 logger = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
+
+
+@dataclass
+class BaseDataClass:
+    __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
+
+    Especially to LLM prompt.
+
+    We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
+    transparency and to keep the order of the fields when get serialized.
+
+    It creates string signature or schema from both the class and class instance.
+
+    Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
+
+    Better use schema with example signature (either yaml or json) depending on the use case.
+
+    Example usage:
+    ```
+    # Define a dataclass
+    @dataclass
+    class MyOutputs(BaseDataClass):
+        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
+        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
+    # Create json signature
+    print(MyOutputs.to_json_signature())
+    # Output:
+    # {
+    #     "age": "The age of the person",
+    #     "name": "The name of the person"
+    # }
+    # Create yaml signature
+    print(MyOutputs.to_yaml_signature())
+    # Output:
+    # age: The age of the person
+    # name: The name of the person
+
+    # Create a dataclass instance
+    my_instance = MyOutputs(age=25, name="John Doe")
+    # Create json example
+    print(my_instance.to_json_example())
+    # Output:
+    # {
+    #     "age": 25,
+    #     "name": "John Doe"
+    # }
+    # Create yaml signature
+    print(my_instance.to_yaml_example())
+    # Output:
+    # age: 25
+    # name: John Doe
+
+    ```
+    """
+
+    def __post_init__(self):
+        # TODO: use desription in the field
+        for f in fields(self):
+            if "desc" not in f.metadata:
+                warnings.warn(
+                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
+                )
+
+    def set_field_value(self, field_name: str, value: Any):
+        r"""Set the value of a field in the dataclass instance."""
+        if field_name not in self.__dict__:  # check if the field exists
+            logging.warning(f"Field {field_name} does not exist in the dataclass")
+        setattr(self, field_name, value)
+
+    @classmethod
+    def load_from_dict(cls, data: Dict[str, Any]):
+        r"""
+        Create a dataclass instance from a dictionary.
+        """
+        valid_data: Dict[str, Any] = {}
+        for f in fields(cls):
+            if f.name in data:
+                valid_data[f.name] = data[f.name]
+        return cls(**valid_data)
+
+    @classmethod
+    def _generate_description_dict(cls):
+        r"""Generate a description string for the class from desc in metadata."""
+        metadata_dict = {
+            f.name: f.metadata.get("desc", "No description provided")
+            for f in fields(cls)
+        }
+
+        for f in fields(cls):
+            metadata_dict[f.name] += f" ({f.type.__name__})"
+        for f in fields(cls):
+            if f.default is MISSING and f.default_factory is MISSING:
+                metadata_dict[f.name] += " (required)"
+            else:
+                metadata_dict[f.name] += " (optional)"
+        return metadata_dict
+
+    @classmethod
+    def to_yaml_signature(cls):
+        r"""Generate a YAML signature for the class from desc in metadata.
+
+        Used mostly as LLM prompt to describe the output data format.
+        """
+        # NOTE: we manually format the yaml string as the yaml.dump mess up the initiation order of the fields
+        # Which can impact the final model output
+        metadata_dict = cls._generate_description_dict()
+        yaml_content = []
+        for key, value in metadata_dict.items():
+            yaml_content.append(f"{key}: {value}")
+
+        # Join all parts with newlines to form the complete YAML string
+        yaml_output = "\n".join(yaml_content)
+        return yaml_output
+
+        # return yaml.dump(metadata_dict, default_flow_style=False)
+
+    @classmethod
+    def to_json_signature(cls):
+        """Generate a JSON signature for the class from desc in metadata.
+
+        Used mostly as LLM prompt to describe the output data format.
+        """
+        metadata_dict = cls._generate_description_dict()
+        # manually format the json string as the json.dump mess up the initiation order of the fields
+        # Which can impact the final model output
+        json_content = []
+        for key, value in metadata_dict.items():
+            json_content.append(f'"{key}": "{value}"')
+
+        # Join all parts with commas to form the complete JSON string
+        json_output = ",\n".join(json_content)
+        return "{\n" + json_output + "\n}"
+        # return json.dumps(metadata_dict, indent=4)
+
+    # TODO: make sure the order is kept
+    def to_yaml(self):
+        r"""Convert the dataclass instance to a YAML string.
+
+        Used mostly as LLM prompt to describe an example of the output data.
+        """
+        return yaml.dump(self.__dict__, default_flow_style=False)
+
+    # TODO: make sure the order is kept
+    def to_json(self):
+        r"""Convert the dataclass instance to a JSON string.
+
+        Used mostly as LLM prompt to describe an example of the output data.
+        """
+        return json.dumps(self.__dict__, indent=4)
+
+    @classmethod
+    def to_dict_class(cls, exclude: Optional[List[str]] = None) -> dict:
+        """Converts the dataclass to a dictionary, optionally excluding specified fields.
+
+        Use this to save states of the instance in serialization, not advised to use in LLM prompt.
+        """
+        return cls.get_data_class_schema(exclude)
+
+    # TODO: maybe worth to support recursive to_dict for nested dataclasses
+    # Can consider when we find the nested dataclass needs
+    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
+        """Converts the dataclass to a dictionary, optionally excluding specified fields.
+
+        Use this to save states of the instance in serialization, not advised to use in LLM prompt.
+        """
+        # valid that it is called on a class instance not a class
+        if not is_dataclass(self):
+            raise ValueError("to_dict() called on a class type, not an instance.")
+        if exclude is None:
+            exclude = []
+        exclude_set = set(exclude)
+
+        data = {
+            field.name: getattr(self, field.name)
+            for field in fields(self)
+            if field.name not in exclude_set
+        }
+
+        return data
+
+    @classmethod
+    def get_data_class_schema(
+        cls, exclude: Optional[List[str]] = None
+    ) -> Dict[str, Dict[str, Any]]:
+        """Generate a Json schema which is more detailed than the signature."""
+        return _get_data_class_schema(cls, exclude)
 
 
 class ModelType(Enum):
@@ -295,212 +475,38 @@ def retriever_output_to_context_str(
     return context_str
 
 
-# TODO: this can be used as a base class for all data classes
+def _get_data_class_schema(
+    data_class: Type, exclude: Optional[List[str]] = None
+) -> Dict[str, Dict[str, Any]]:
+    r"""Helper function to get the schema of a BaseDataClass in type of Dict."""
+    from dataclasses import fields, is_dataclass, MISSING
 
-
-@dataclass
-class BaseDataClass:
-    __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
-
-    Especially to LLM prompt.
-
-    It creates string signature or schema from both the class and class instance.
-
-    Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
-
-    Better use schema with example signature (either yaml or json) depending on the use case.
-
-    Example usage:
-    ```
-    # Define a dataclass
-    @dataclass
-    class MyOutputs(BaseDataClass):
-        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
-        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-    # Create json signature
-    print(MyOutputs.to_json_signature())
-    # Output:
-    # {
-    #     "age": "The age of the person",
-    #     "name": "The name of the person"
-    # }
-    # Create yaml signature
-    print(MyOutputs.to_yaml_signature())
-    # Output:
-    # age: The age of the person
-    # name: The name of the person
-
-    # Create a dataclass instance
-    my_instance = MyOutputs(age=25, name="John Doe")
-    # Create json example
-    print(my_instance.to_json_example())
-    # Output:
-    # {
-    #     "age": 25,
-    #     "name": "John Doe"
-    # }
-    # Create yaml signature
-    print(my_instance.to_yaml_example())
-    # Output:
-    # age: 25
-    # name: John Doe
-
-    ```
-    """
-
-    def __post_init__(self):
-        # TODO: use desription in the field
-        for f in fields(self):
-            if "desc" not in f.metadata:
-                warnings.warn(
-                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
-                )
-
-    def set_field_value(self, field_name: str, value: Any):
-        r"""Set the value of a field in the dataclass instance."""
-        if field_name not in self.__dict__:  # check if the field exists
-            logging.warning(f"Field {field_name} does not exist in the dataclass")
-        setattr(self, field_name, value)
-
-    @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]):
-        r"""
-        Create a dataclass instance from a dictionary.
-        """
-        valid_data: Dict[str, Any] = {}
-        for f in fields(cls):
-            if f.name in data:
-                valid_data[f.name] = data[f.name]
-        return cls(**valid_data)
-
-    @classmethod
-    def _generate_description_dict(cls):
-        r"""Generate a description string for the class from desc in metadata."""
-        metadata_dict = {
-            f.name: f.metadata.get("desc", "No description provided")
-            for f in fields(cls)
+    if not is_dataclass(data_class):
+        raise ValueError("Provided class is not a dataclass")
+    schema = {}
+    if exclude is None:
+        exclude = []
+    for f in fields(data_class):
+        field_info = {
+            "type": f.type.__name__,
+            "desc": f.metadata.get("desc", ""),
         }
+        if f.name in exclude:
+            continue
 
-        for f in fields(cls):
-            metadata_dict[f.name] += f" ({f.type.__name__})"
-        for f in fields(cls):
-            if f.default is MISSING and f.default_factory is MISSING:
-                metadata_dict[f.name] += " (required)"
-            else:
-                metadata_dict[f.name] += " (optional)"
-        return metadata_dict
+        # Determine if the field is required or optional
+        if f.default is MISSING and f.default_factory is MISSING:
+            field_info["required"] = True
+        else:
+            field_info["required"] = False
+            if f.default is not MISSING:
+                field_info["default"] = f.default
+            elif f.default_factory is not MISSING:
+                field_info["default"] = f.default_factory()
 
-    @classmethod
-    def to_yaml_signature(cls):
-        r"""Generate a YAML signature for the class from desc in metadata.
+        schema[f.name] = field_info
 
-        Used mostly as LLM prompt to describe the output data format.
-        """
-        # NOTE: we manually format the yaml string as the yaml.dump mess up the initiation order of the fields
-        # Which can impact the final model output
-        metadata_dict = cls._generate_description_dict()
-        yaml_content = []
-        for key, value in metadata_dict.items():
-            yaml_content.append(f"{key}: {value}")
-
-        # Join all parts with newlines to form the complete YAML string
-        yaml_output = "\n".join(yaml_content)
-        return yaml_output
-
-        # return yaml.dump(metadata_dict, default_flow_style=False)
-
-    @classmethod
-    def to_json_signature(cls):
-        """Generate a JSON signature for the class from desc in metadata.
-
-        Used mostly as LLM prompt to describe the output data format.
-        """
-        metadata_dict = cls._generate_description_dict()
-        # manually format the json string as the json.dump mess up the initiation order of the fields
-        # Which can impact the final model output
-        json_content = []
-        for key, value in metadata_dict.items():
-            json_content.append(f'"{key}": "{value}"')
-
-        # Join all parts with commas to form the complete JSON string
-        json_output = ",\n".join(json_content)
-        return "{\n" + json_output + "\n}"
-        # return json.dumps(metadata_dict, indent=4)
-
-    # TODO: make sure the order is kept
-    def to_yaml(self):
-        r"""Convert the dataclass instance to a YAML string.
-
-        Used mostly as LLM prompt to describe an example of the output data.
-        """
-        return yaml.dump(self.__dict__, default_flow_style=False)
-
-    # TODO: make sure the order is kept
-    def to_json(self):
-        r"""Convert the dataclass instance to a JSON string.
-
-        Used mostly as LLM prompt to describe an example of the output data.
-        """
-        return json.dumps(self.__dict__, indent=4)
-
-    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """Converts the dataclass instance to a dictionary, optionally excluding specified fields.
-
-        Args:
-            exclude (Optional[List[str]]): A list of field names to exclude from the resulting dictionary.
-
-        Returns:
-            dict: The dataclass as a dictionary with specified fields excluded.
-        """
-        if exclude is None:
-            exclude = []
-
-        # Prepare the set of field names to exclude
-        exclude_set = set(exclude)
-
-        # Use asdict but filter out the excluded fields
-        return {
-            f.name: getattr(self, f.name)
-            for f in fields(self)
-            if f.name not in exclude_set
-        }
-
-    # def to_dict(self):
-    #     # Create a dictionary representation of each attribute
-    #     result = {}
-    #     for key, value in self.__dict__.items():
-    #         if hasattr(value, "to_dict") and callable(getattr(value, "to_dict")):
-    #             # If the attribute has a to_dict method, use it
-    #             result[key] = value.to_dict()
-    #         elif isinstance(value, list):
-    #             # Special handling for lists
-    #             result[key] = [
-    #                 (
-    #                     v.to_dict()
-    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-    #                     else v
-    #                 )
-    #                 for v in value
-    #             ]
-    #         elif isinstance(value, dict):
-    #             # Special handling for dictionaries
-    #             result[key] = {
-    #                 k: (
-    #                     v.to_dict()
-    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-    #                     else v
-    #                 )
-    #                 for k, v in value.items()
-    #             }
-    #         else:
-    #             # Use the attribute as is if it's not another custom object
-    #             result[key] = value
-    #     return result
-
-    @classmethod
-    def get_data_class_schema(cls) -> Dict[str, Dict[str, Any]]:
-        """Generate a Json schema which is more detailed than the signature."""
-        return get_data_class_schema(cls)
+    return schema
 
 
 @dataclass
@@ -515,7 +521,7 @@ class GeneratorOutput(BaseDataClass, Generic[T_co]):
         default=None,
         metadata={"desc": "The final output data potentially after output parsers"},
     )
-    error_message: Optional[str] = field(
+    error: Optional[str] = field(
         default=None,
         metadata={"desc": "Error message if any"},
     )
