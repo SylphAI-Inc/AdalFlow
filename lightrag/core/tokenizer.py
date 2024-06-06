@@ -1,5 +1,4 @@
 import tiktoken
-
 from typing import List
 
 from lightrag.core.component import Component

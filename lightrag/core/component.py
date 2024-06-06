@@ -11,19 +11,23 @@ from typing import (
     Union,
     overload,
     Mapping,
+    TypeVar,
 )
 from collections import OrderedDict
 import operator
 from itertools import islice
+import logging
 
 
 from lightrag.core.parameter import Parameter
+from lightrag.utils.serialization import default
 
 # import networkx as nx
 # from pyvis.network import Network
 
 # import matplotlib.pyplot as plt
 # import itertools
+log = logging.getLogger(__name__)
 
 
 class _IncompatibleKeys(
@@ -65,7 +69,7 @@ class Component:
     (2) All components can be running local or APIs. 'Component' can deal with API calls, so we need support retries and rate limits.
     """
 
-    _version: int = 0.1  # Version of the component
+    _version: int = 1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
     # _execution_graph: List[str] = []  # This will store the graph of execution.
@@ -111,31 +115,85 @@ class Component:
         keys = [key for key in keys if not key[0].isdigit()]
         return sorted(keys)
 
+    # TODO: test it
+    # def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
+    #     r"""Converts the component to a dictionary object.
+    #     This is helpful for serialization and it provides more states of the component than state_dict.
+    #     """
+    #     exclude = exclude or []
+    #     result = {}
+    #     for key, value in self.__dict__.items():
+    #         if key not in exclude:
+    #             if isinstance(value, dict):
+    #                 # Sorting dictionary by keys
+    #                 result[key] = {k: v for k, v in sorted(value.items())}
+    #             elif isinstance(value, list):
+    #                 # Sorting lists directly if they contain sortable elements
+    #                 try:
+    #                     sorted_list = sorted(value)
+    #                 except TypeError:
+    #                     # If elements are not comparable, leave as is
+    #                     sorted_list = value
+    #                 result[key] = sorted_list
+    #                 # elif hasattr(value, "to_dict"):
+    #                 #     try:
+    #                 #         # If the object has a to_dict method, use it
+    #                 #         result[key] = value.to_dict()
+    #                 #     except Exception as e:
+    #                 #         log.error(
+    #                 #             f"Error calling to_dict for {key} and value {value}: {e}"
+    #                 #         )
+    #                 #         result[key] = {"type": type(value).__name__, "data": str(value)}
+    #             else:
+    #                 result[key] = value
+    #     return result
+
+    # TODO: try a pickle version and be able to recreate the component
+    # TODO: can potentially use named_components and named_parameters.
     def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
-        r"""Converts the component to a dictionary object.
-        This is helpful for serialization and it provides more states of the component than state_dict.
+        """Converts the component to a dictionary object for serialization, including more states of the component than state_dict.
+
+        Each data if of format: {"type": type, "data": data}
         """
         exclude = exclude or []
-        result = {}
+        result: Dict[str, Any] = {
+            "type": type(self).__name__,
+            "data": {},
+        }  # Add the type of the component
+        data_dict = result["data"]
         for key, value in self.__dict__.items():
             if key not in exclude:
-                if isinstance(value, dict):
-                    # Sorting dictionary by keys
-                    result[key] = {k: v for k, v in sorted(value.items())}
-                elif isinstance(value, list):
-                    # Sorting lists directly if they contain sortable elements
-                    try:
-                        sorted_list = sorted(value)
-                    except TypeError:
-                        # If elements are not comparable, leave as is
-                        sorted_list = value
-                    result[key] = sorted_list
-                elif hasattr(value, "to_dict"):
-                    # If the object has a to_dict method, use it
-                    result[key] = value.to_dict()
-                else:
-                    result[key] = value
+                data_dict[key] = self._process_value(value)
+
         return result
+
+    def _process_value(self, value):
+        """Process values recursively for serialization."""
+        if isinstance(value, dict):
+            # Recurse into dictionaries
+            return {k: self._process_value(v) for k, v in sorted(value.items())}
+        elif isinstance(value, list):
+            # Recursively process list items
+            try:
+                return sorted(self._process_value(v) for v in value)
+            except TypeError:
+                # If elements are not comparable, process them without sorting
+                return [self._process_value(v) for v in value]
+        elif hasattr(value, "to_dict"):
+            # Check if the object has a to_dict method
+            return self._attempt_to_dict(value)
+        else:
+            return value
+
+    def _attempt_to_dict(self, obj):
+        """Attempt to call to_dict on an object, handling both instances and class types."""
+        try:
+            # call our customized json serializer
+            return default(obj)
+        except Exception as e:
+            log.error(f"Error calling to_dict for object {obj}: {e}")
+            # Fallback to a simpler representation
+            return {"type": type(obj).__name__, "data": str(obj)}
 
     def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
         r"""Add a parameter to the component.
@@ -171,8 +229,8 @@ class Component:
         r"""Returns an iterator over module parameters.
 
         Args:
-            recursive (bool): if True, then yields parameters of this module and all submodules.
-                Otherwise, yields only parameters that are direct members of this module.
+            recursive (bool): if True, then yields parameters of this component and all subcomponents.
+                Otherwise, yields only parameters that are direct members of this component.
 
         Yields:
             Parameter: module parameter
@@ -181,23 +239,23 @@ class Component:
             >>> for param in model.parameters():
             >>>     print(param)
         """
-        for name, param in self.named_parameters(recurse=recursive):
+        for name, param in self.named_parameters(recursive=recursive):
             yield param
 
     def _named_members(
         self,
         get_members_fn,
         prefix: str = "",
-        recurse: bool = True,
+        recursive: bool = True,
         remove_duplicate: bool = True,
     ):
-        r"""Helper method for yielding various names + members of the module.
+        r"""Helper method for yielding various names + members of the component.
 
         Args:
-            get_members_fn (Callable): callable to extract the members from the module.
+            get_members_fn (Callable): callable to extract the members from the component.
             prefix (str): prefix to prepend to all parameter names.
-            recurse (bool): if True, then yields parameters of this module and all submodules.
-                Otherwise, yields only parameters that are direct members of this module.
+            recursive (bool): if True, then yields parameters of this component and all subcomponents.
+                Otherwise, yields only parameters that are direct members of this component.
 
         Yields:
             Tuple[str, Any]: Tuple containing the name and member
@@ -207,28 +265,31 @@ class Component:
             >>>     print(name, param)
         """
         memo = set()
-        components = self.named_components(
-            prefix=prefix, remove_duplicate=remove_duplicate
+        components = (
+            self.named_components(prefix=prefix, remove_duplicate=remove_duplicate)
+            if recursive
+            else [(prefix, self)]
         )
         for component_prefix, component in components:
             members = get_members_fn(component)
             for k, v in members:
                 if v is None or v in memo:
                     continue
-                memo.add(v)
+                if remove_duplicate:
+                    memo.add(v)
                 name = component_prefix + ("." if component_prefix else "") + k
                 yield name, v
 
     def named_parameters(
-        self, prefix: str = "", recurse: bool = True, remove_duplicate: bool = True
+        self, prefix: str = "", recursive: bool = True, remove_duplicate: bool = True
     ) -> Iterable[Tuple[str, Parameter]]:
-        r"""Returns an iterator over module parameters, yielding both the name of the parameter as well as the parameter itself.
+        r"""Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.
 
         Args:
             prefix (str): prefix to prepend to all parameter names.
-            recursive (bool): if True, then yields parameters of this module and all submodules.
-                Otherwise, yields only parameters that are direct members of this module.
-                are direct members of this module.
+            recursive (bool): if True, then yields parameters of this component and all subcomponents.
+                Otherwise, yields only parameters that are direct members of this component.
+                are direct members of this component.
             remove_duplicate (bool): if True, then yields only unique parameters.
 
         Yields:
@@ -239,9 +300,9 @@ class Component:
             >>>     print(name, param)
         """
         gen = self._named_members(
-            lambda componnet: componnet._parameters.items(),
+            lambda component: component._parameters.items(),
             prefix=prefix,
-            recurse=recurse,
+            recursive=recursive,
             remove_duplicate=remove_duplicate,
         )
         yield from gen
@@ -324,9 +385,7 @@ class Component:
             raise ValueError('component name can\'t be empty string ""')
         self._components[name] = component
 
-    def register_subcomponent(
-        self, name: str, component: Optional["Component"]
-    ) -> None:
+    def register_component(self, name: str, component: Optional["Component"]) -> None:
         r"""
         Alias for add_component
         """
@@ -337,7 +396,7 @@ class Component:
 
     def named_children(self) -> Iterable[Tuple[str, "Component"]]:
         r"""
-        Returns an iterator over immediate children modules.
+        Returns an iterator over immediate children components.
         """
         memo = set()
         for name, component in self._components.items():
@@ -347,7 +406,7 @@ class Component:
 
     def children(self) -> Iterable["Component"]:
         r"""
-        Returns an iterator over immediate children modules.
+        Returns an iterator over immediate children components.
         """
         for name, component in self.named_children():
             yield component
@@ -367,6 +426,7 @@ class Component:
     ):
         r"""Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself.
 
+        This can be used to represent the state of the component in a dictionary format.
         Args:
             memo (Optional[Set["Component"]]): a memo to store the set of components already added to the result
             prefix (str): a prefix to prepend to all component names
@@ -374,6 +434,19 @@ class Component:
 
         Yields:
             Tuple[str, "Component"]: Tuple containing the name and component
+
+        Example:
+            >>> qa = Generator(template="User {{input}}", model_client=GroqAPIClient(), model_kwargs={"model": "llama3-8b-8192"})
+            >>> for idx, c in enumerate(qa.named_components()):
+            ...     print(f"{idx} -> {c}")
+
+            0 -> ('', Generator(
+            model_kwargs={'model': 'llama3-8b-8192'}, model_type=ModelType.LLM
+            (system_prompt): Prompt(template: User: {{input}}, prompt_variables: ['input'])
+            (model_client): GroqAPIClient()
+            ))
+            1 -> ('system_prompt', Prompt(template: User: {{input}}, prompt_variables: ['input']))
+            2 -> ('model_client', GroqAPIClient())
         """
         if memo is None:
             memo = set()
@@ -381,13 +454,12 @@ class Component:
             if remove_duplicate:
                 memo.add(self)
             yield prefix, self
-            for name, module in self._components.items():
-                if module is None:
+            for name, component in self._components.items():
+                if component is None:
                     continue
-                submodule_prefix = prefix + ("." if prefix else "") + name
-                print(f"module: {module}    ")
-                yield from module.named_components(
-                    memo, submodule_prefix, remove_duplicate
+                subcomponent_prefix = prefix + ("." if prefix else "") + name
+                yield from component.named_components(
+                    memo, subcomponent_prefix, remove_duplicate
                 )
 
     def _save_to_state_dict(self, destination, prefix):
@@ -401,6 +473,7 @@ class Component:
             if param is not None:
                 destination[prefix + name] = param
 
+    # TODO: test it + add example
     def state_dict(
         self, destination: Optional[Dict[str, Any]] = None, prefix: Optional[str] = ""
     ) -> Dict[str, Any]:
@@ -409,7 +482,8 @@ class Component:
         Parameters are included for now.
 
         ..note:
-            The returned object is a shallow copy. It cantains references to the original data.
+            The returned object is a shallow copy. It cantains references
+            to the component's parameters and subcomponents.
         Args:
             destination (Dict[str, Any]): If provided, the state of component will be copied into it.
             And the same object is returned.
@@ -422,20 +496,18 @@ class Component:
         """
         if destination is None:
             destination = OrderedDict()
-            destination._metadata = OrderedDict()
+            destination._metadata = OrderedDict()  # type: ignore[attr-defined]
         local_metadata = dict(version=self._version)
         # to do when local data where be needed
-        if hasattr(self, "_metadata"):
-            destination._metadata[prefix[:-1]] = local_metadata
+        if hasattr(destination, "_metadata"):
+            destination._metadata[prefix[:-1]] = local_metadata  # type: ignore[index]
 
         # save its own state
         self._save_to_state_dict(destination, prefix=prefix)
         # save the state of all subcomponents
         for name, component in self._components.items():
             if component is not None:
-                component.state_dict(
-                    destination=destination, prefix=prefix + name + "."
-                )
+                component.state_dict(destination=destination, prefix=f"{prefix}{name}.")
         return destination
 
     def _load_from_state_dict(
@@ -593,11 +665,11 @@ class Component:
 
     def __getattr__(self, name: str) -> Any:
         if "_parameters" in self.__dict__:
-            parameters = self.__dict__.get("_parameters")
+            parameters = self.__dict__["_parameters"]
             if name in parameters:
                 return parameters[name]
         if "_components" in self.__dict__:
-            components = self.__dict__.get("_components")
+            components = self.__dict__["_components"]
             if name in components:
                 return components[name]
 
@@ -650,6 +722,9 @@ class Component:
         return main_str
 
 
+T = TypeVar("T", bound=Component)
+
+
 class Sequential(Component):
     r"""A sequential container. Components will be added to it in the order they are passed to the constructor.
 
@@ -673,7 +748,7 @@ class Sequential(Component):
             for idx, module in enumerate(args):
                 self.add_component(str(idx), module)
 
-    def _get_item_by_idx(self, iterator, idx) -> Component:  # type: ignore[misc, type-var]
+    def _get_item_by_idx(self, iterator, idx) -> T:  # type: ignore[misc, type-var]
         """Get the idx-th item of the iterator."""
         size = len(self)
         idx = operator.index(idx)
@@ -705,6 +780,9 @@ class Sequential(Component):
             list(zip(str_indices, self._components.values()))
         )
 
+    def __iter__(self) -> Iterable[Component]:
+        return iter(self._components.values())
+
     def __len__(self) -> int:
         return len(self._components)
 
@@ -714,19 +792,19 @@ class Sequential(Component):
         self.add_component(str(idx), component)
         return self
 
-    def __add__(self, other) -> "Sequential":
-        if not isinstance(other, Sequential):
-            ret = Sequential()
-            for layer in self:
-                ret.append(layer)
-            for layer in other:
-                ret.append(layer)
-            return ret
-        else:
-            raise ValueError(
-                "add operator supports only objects "
-                f"of Sequential class, but {str(type(other))} is given."
-            )
+    # def __add__(self, other) -> "Sequential":
+    #     if not isinstance(other, Sequential):
+    #         ret = Sequential()
+    #         for layer in self:
+    #             ret.append(layer)
+    #         for layer in other:
+    #             ret.append(layer)
+    #         return ret
+    #     else:
+    #         raise ValueError(
+    #             "add operator supports only objects "
+    #             f"of Sequential class, but {str(type(other))} is given."
+    #         )
 
     def call(self, input: Any) -> Any:
         for component in self._components.values():

@@ -97,10 +97,12 @@ class OutputFormat(BaseDataClass):
         return super().load_from_dict(data)
 
 
-@trace_generator_states(save_dir=os.path.join(get_script_dir(), "traces"))
-@trace_generator_call(
-    save_dir=os.path.join(get_script_dir(), "traces"), error_only=True
-)
+def get_tracing_path():
+    return os.path.join(get_script_dir(), "traces")
+
+
+@trace_generator_states(save_dir=get_tracing_path())
+@trace_generator_call(save_dir=get_tracing_path(), error_only=True)
 class TRECClassifier(Component):
     r"""
     Optimizing goal is the examples_str in the prompt
@@ -199,16 +201,17 @@ class TRECClassifier(Component):
     def call(self, query: str) -> str:
         re_pattern = r"\d+"
         output = self.generator.call(prompt_kwargs={"input": query})
-        if output.data is not None and output.error_message is None:
+        if output.data is not None and output.error is None:
             response = output.data
             return response
 
         else:
-            log.info(f"error_message: {output.error_message}")
-            log.info(f"raw_response: {output.raw_response}")
-            log.info(f"response: {output.data}")
+            log.error(f"query: {query} failed to classify")
+            log.error(f"error_message: {output.error}")
+            log.error(f"raw_response: {output.raw_response}")
+            log.error(f"response: {output.data}")
             # Additional processing in case it is not predicting a number but a string
-            label = response
+            label = output.raw_response
             if isinstance(label, str):
                 label_match = re.findall(re_pattern, label)
                 if label_match:
@@ -217,7 +220,7 @@ class TRECClassifier(Component):
                     label = -1
                 return label
             else:
-                return label
+                return -1
 
 
 if __name__ == "__main__":

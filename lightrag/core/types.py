@@ -1,10 +1,9 @@
 """
 The data classes used to support core components.
-We use dataclass which provides a decorator that automatically adds special methods to classes, such as __init__, __repr__, and __eq__, among others:
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Generic, TypeVar
+from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Type
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -13,7 +12,7 @@ from dataclasses import (
     fields,
     make_dataclass,
     MISSING,
-    asdict,
+    is_dataclass,
 )
 from uuid import UUID
 
@@ -25,14 +24,10 @@ import yaml
 import warnings
 import logging
 
-from lightrag.core.tokenizer import Tokenizer
-from lightrag.core.functional import get_data_class_schema
+from lightrag.core.base_data_class import BaseDataClass
 
+# from lightrag.core.tokenizer import Tokenizer
 
-# if sys.version_info >= (3, 10, 1):
-#     Literal = typing.Literal
-# else:
-#     raise ImportError("Please upgrade to Python 3.10.1 or higher to use Literal")
 
 logger = logging.getLogger(__name__)
 
@@ -228,8 +223,9 @@ class Document:
 
     def __post_init__(self):
         if self.estimated_num_tokens is None and self.text:
-            tokenizer = Tokenizer()
-            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+            pass
+            # tokenizer = Tokenizer()
+            # self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
     @staticmethod
     def from_dict(doc: Dict):
@@ -295,227 +291,26 @@ def retriever_output_to_context_str(
     return context_str
 
 
-# TODO: this can be used as a base class for all data classes
-
-
-@dataclass
-class BaseDataClass:
-    __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
-
-    Especially to LLM prompt.
-
-    It creates string signature or schema from both the class and class instance.
-
-    Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
-
-    Better use schema with example signature (either yaml or json) depending on the use case.
-
-    Example usage:
-    
-    .. code-block:: python
-    
-        # Define a dataclass
-        @dataclass
-        class MyOutputs(BaseDataClass):
-            age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
-            name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-        # Create json signature
-        print(MyOutputs.to_json_signature())
-        # Output:
-        # {
-        #     "age": "The age of the person",
-        #     "name": "The name of the person"
-        # }
-        # Create yaml signature
-        print(MyOutputs.to_yaml_signature())
-        # Output:
-        # age: The age of the person
-        # name: The name of the person
-
-        # Create a dataclass instance
-        my_instance = MyOutputs(age=25, name="John Doe")
-        # Create json signature
-        print(my_instance.to_json_signature())
-        # Output:
-        # {
-        #     "age": 25,
-        #     "name": "John Doe"
-        # }
-        # Create yaml signature
-        print(my_instance.to_yaml_signature())
-        # Output:
-        # age: 25
-        # name: John Doe
-    """
-
-    def __post_init__(self):
-        # TODO: use desription in the field
-        for f in fields(self):
-            if "desc" not in f.metadata:
-                warnings.warn(
-                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
-                )
-
-    def set_field_value(self, field_name: str, value: Any):
-        r"""Set the value of a field in the dataclass instance."""
-        if field_name not in self.__dict__:  # check if the field exists
-            logging.warning(f"Field {field_name} does not exist in the dataclass")
-        setattr(self, field_name, value)
-
-    @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]):
-        r"""
-        Create a dataclass instance from a dictionary.
-        """
-        valid_data: Dict[str, Any] = {}
-        for f in fields(cls):
-            if f.name in data:
-                valid_data[f.name] = data[f.name]
-        return cls(**valid_data)
-
-    @classmethod
-    def _generate_description_dict(cls):
-        r"""Generate a description string for the class from desc in metadata."""
-        metadata_dict = {
-            f.name: f.metadata.get("desc", "No description provided")
-            for f in fields(cls)
-        }
-
-        for f in fields(cls):
-            metadata_dict[f.name] += f" ({f.type.__name__})"
-        for f in fields(cls):
-            if f.default is MISSING and f.default_factory is MISSING:
-                metadata_dict[f.name] += " (required)"
-            else:
-                metadata_dict[f.name] += " (optional)"
-        return metadata_dict
-
-    @classmethod
-    def to_yaml_signature(cls):
-        r"""Generate a YAML signature for the class from desc in metadata.
-
-        Used mostly as LLM prompt to describe the output data format.
-        """
-        # NOTE: we manually format the yaml string as the yaml.dump mess up the initiation order of the fields
-        # Which can impact the final model output
-        metadata_dict = cls._generate_description_dict()
-        yaml_content = []
-        for key, value in metadata_dict.items():
-            yaml_content.append(f"{key}: {value}")
-
-        # Join all parts with newlines to form the complete YAML string
-        yaml_output = "\n".join(yaml_content)
-        return yaml_output
-
-        # return yaml.dump(metadata_dict, default_flow_style=False)
-
-    @classmethod
-    def to_json_signature(cls):
-        """Generate a JSON signature for the class from desc in metadata.
-
-        Used mostly as LLM prompt to describe the output data format.
-        """
-        metadata_dict = cls._generate_description_dict()
-        # manually format the json string as the json.dump mess up the initiation order of the fields
-        # Which can impact the final model output
-        json_content = []
-        for key, value in metadata_dict.items():
-            json_content.append(f'"{key}": "{value}"')
-
-        # Join all parts with commas to form the complete JSON string
-        json_output = ",\n".join(json_content)
-        return "{\n" + json_output + "\n}"
-        # return json.dumps(metadata_dict, indent=4)
-
-    # TODO: make sure the order is kept
-    def to_yaml(self):
-        r"""Convert the dataclass instance to a YAML string.
-
-        Used mostly as LLM prompt to describe an example of the output data.
-        """
-        return yaml.dump(self.__dict__, default_flow_style=False)
-
-    # TODO: make sure the order is kept
-    def to_json(self):
-        r"""Convert the dataclass instance to a JSON string.
-
-        Used mostly as LLM prompt to describe an example of the output data.
-        """
-        return json.dumps(self.__dict__, indent=4)
-
-    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """Converts the dataclass instance to a dictionary, optionally excluding specified fields.
-
-        Args:
-            exclude (Optional[List[str]]): A list of field names to exclude from the resulting dictionary.
-
-        Returns:
-            dict: The dataclass as a dictionary with specified fields excluded.
-        """
-        if exclude is None:
-            exclude = []
-
-        # Prepare the set of field names to exclude
-        exclude_set = set(exclude)
-
-        # Use asdict but filter out the excluded fields
-        return {
-            f.name: getattr(self, f.name)
-            for f in fields(self)
-            if f.name not in exclude_set
-        }
-
-    # def to_dict(self):
-    #     # Create a dictionary representation of each attribute
-    #     result = {}
-    #     for key, value in self.__dict__.items():
-    #         if hasattr(value, "to_dict") and callable(getattr(value, "to_dict")):
-    #             # If the attribute has a to_dict method, use it
-    #             result[key] = value.to_dict()
-    #         elif isinstance(value, list):
-    #             # Special handling for lists
-    #             result[key] = [
-    #                 (
-    #                     v.to_dict()
-    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-    #                     else v
-    #                 )
-    #                 for v in value
-    #             ]
-    #         elif isinstance(value, dict):
-    #             # Special handling for dictionaries
-    #             result[key] = {
-    #                 k: (
-    #                     v.to_dict()
-    #                     if hasattr(v, "to_dict") and callable(getattr(v, "to_dict"))
-    #                     else v
-    #                 )
-    #                 for k, v in value.items()
-    #             }
-    #         else:
-    #             # Use the attribute as is if it's not another custom object
-    #             result[key] = value
-    #     return result
-
-    @classmethod
-    def get_data_class_schema(cls) -> Dict[str, Dict[str, Any]]:
-        """Generate a Json schema which is more detailed than the signature."""
-        return get_data_class_schema(cls)
-
-
 @dataclass
 class GeneratorOutput(BaseDataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
     We can not control its output 100%, so we use this to track the error_message and
     allow the raw string output to be passed through.
+
+    (1) When model predict and output processors are both without error,
+    we have data as the final output, error as None.
+    (2) When either model predict or output processors have error,
+    we have data as None, error as the error message.
+    
+    Raw_response will depends on the model predict.
     """
 
     data: T_co = field(
         default=None,
         metadata={"desc": "The final output data potentially after output parsers"},
     )
-    error_message: Optional[str] = field(
+    error: Optional[str] = field(
         default=None,
         metadata={"desc": "Error message if any"},
     )

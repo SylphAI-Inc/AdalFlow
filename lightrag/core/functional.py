@@ -2,7 +2,7 @@
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, List, Union, Any, Callable, Type
+from typing import Dict, Any, Callable, Type
 import re
 import json
 
@@ -247,33 +247,3 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
                 )
             except NameError as exc:
                 raise ImportError("Please pip install PyYAML.") from exc
-
-
-#####################
-# data classes
-#####################
-def get_data_class_schema(data_class: Type) -> Dict[str, Dict[str, Any]]:
-    from dataclasses import fields, is_dataclass, MISSING
-
-    if not is_dataclass(data_class):
-        raise ValueError("Provided class is not a dataclass")
-    schema = {}
-    for f in fields(data_class):
-        field_info = {
-            "type": f.type.__name__,
-            "description": f.metadata.get("description", ""),
-        }
-
-        # Determine if the field is required or optional
-        if f.default is MISSING and f.default_factory is MISSING:
-            field_info["required"] = True
-        else:
-            field_info["required"] = False
-            if f.default is not MISSING:
-                field_info["default"] = f.default
-            elif f.default_factory is not MISSING:
-                field_info["default"] = f.default_factory()
-
-        schema[f.name] = field_info
-
-    return schema

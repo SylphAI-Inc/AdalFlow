@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 
 from lightrag.core.generator import GeneratorOutput
-from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 from lightrag.utils import append_to_jsonl, load_jsonl
 
 

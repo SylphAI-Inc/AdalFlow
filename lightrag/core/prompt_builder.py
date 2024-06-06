@@ -3,16 +3,10 @@ from jinja2 import Template, Environment
 import jinja2
 from typing import Dict, Any, Optional, List
 import logging
-
-
 from functools import lru_cache
 
 from lightrag.core.component import Component
-
-from lightrag.core.default_prompt_template import (
-    DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
-    LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS,
-)
+from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 logger = logging.getLogger(__name__)
 

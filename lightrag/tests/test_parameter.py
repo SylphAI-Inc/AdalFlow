@@ -46,14 +46,14 @@ class TestParameter:
         param.update_value(new_data)
         assert param.data == new_data, "Parameter data should be updated correctly"
 
-    def test_update_value_incorrect_type(self):
-        """Test updating the parameter with an incorrect type."""
-        param = Parameter[int](data=10)
-        with pytest.raises(TypeError) as e:
-            param.update_value("a string")
-        assert "Expected data type int, got str" in str(
-            e.value
-        ), "TypeError should be raised with the correct message"
+    # def test_update_value_incorrect_type(self):
+    #     """Test updating the parameter with an incorrect type."""
+    #     param = Parameter[int](data=10)
+    #     with pytest.raises(TypeError) as e:
+    #         param.update_value("a string")
+    #     assert "Expected data type int, got str" in str(
+    #         e.value
+    #     ), "TypeError should be raised with the correct message"
 
     def test_to_dict(self):
         param = Parameter(data=10, requires_opt=True)

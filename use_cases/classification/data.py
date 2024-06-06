@@ -1,17 +1,22 @@
 # https://huggingface.co/datasets/trec
 # labels: https://huggingface.co/datasets/trec/blob/main/trec.py
+from typing import Sequence, Dict
+import re
+import os
+
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
+import torch
 
 from datasets import load_dataset, DatasetDict, load_from_disk
 from datasets import Dataset as HFDataset
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-import torch
-from typing import Sequence, Dict
-import re
+
 
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.component import Component
 from lightrag.optim.sampler import Sample, ClassSampler
 from lightrag.utils import save, load
+
+from .utils import get_script_dir
 
 
 _COARSE_LABELS = [
@@ -128,7 +133,8 @@ def sample_subset_dataset(
 
 
 # make sure to run this only once to prepare a small set of train, eval, and test datasets and keep it fixed during different experiments.
-def prepare_datasets(path: str = "data"):
+def prepare_datasets(path: str = None):
+    path = os.path.join(get_script_dir(), "data") or path
     dataset = load_dataset("trec")
     print(f"train: {len(dataset['train'])}, test: {len(dataset['test'])}")  # 5452, 500
     print(f"train example: {dataset['train'][0]}")
@@ -203,6 +209,7 @@ def prepare_datasets(path: str = "data"):
     )  # TODO: update the dataset info to the new dataset
 
     # use json to save for better readability
+    # along with pickle for easy loading
     save(
         eval_dataset_split,
         f"{path}/eval",
@@ -213,7 +220,8 @@ def prepare_datasets(path: str = "data"):
     )
 
 
-def load_datasets(path: str = "./data"):
+def load_datasets(path: str = None):
+    path = os.path.join(get_script_dir(), "data") or path
     train_dataset: HFDataset = load_from_disk(dataset_path=f"{path}/train")
     eval_dataset = load(f"{path}/eval")[1]
     test_dataset = load(f"{path}/test")[1]
