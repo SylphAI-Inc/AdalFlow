@@ -4,22 +4,22 @@ import yaml
 
 from datasets import load_dataset
 
-from core.generator import Generator
-from core.data_classes import Document
+from lightrag.core.generator import Generator
+from lightrag.core.types import Document
 
-from core.string_parser import JsonParser
-from core.component import Sequential
-from eval.evaluators import (
+from lightrag.core.string_parser import JsonParser
+from lightrag.core.component import Sequential
+from lightrag.eval.evaluators import (
     RetrieverEvaluator,
     AnswerMacthEvaluator,
     LLMasJudge,
     DEFAULT_LLM_EVALUATOR_PROMPT,
 )
-from core.prompt_builder import Prompt
+from lightrag.core.prompt_builder import Prompt
 
 from use_cases.rag import RAG
 
-from components.api_client import OpenAIClient
+from lightrag.components.model_client import OpenAIClient
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)

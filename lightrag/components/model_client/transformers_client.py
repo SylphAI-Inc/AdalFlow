@@ -20,9 +20,10 @@ from torch import Tensor
 
 try:
     import transformers
+    from transformers import AutoTokenizer, AutoModel
+
 except ImportError:
     raise ImportError("Please install transformers with: pip install transformers")
-from transformers import AutoTokenizer, AutoModel
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType

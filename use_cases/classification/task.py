@@ -9,7 +9,7 @@ import logging
 
 from lightrag.core.component import Component, Sequential, fun_to_component
 from lightrag.core.generator import Generator, GeneratorOutput
-from lightrag.components.api_client import (
+from lightrag.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,

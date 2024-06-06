@@ -1,9 +1,9 @@
 import asyncio
 from typing import List, Any
 
-from core.embedder import Embedder
-from core.component import Component
-from components.api_client import OpenAIClient
+from lightrag.core.embedder import Embedder
+from lightrag.core.component import Component
+from lightrag.components.model_client import OpenAIClient
 
 import utils.setup_env
 
@@ -20,7 +20,7 @@ class SimpleEmbedder(Component):
             "dimensions": 256,
             "encoding_format": "float",
         }
-        self.embedder = Embedder(model_client=OpenAIClient, model_kwargs=model_kwargs)
+        self.embedder = Embedder(model_client=OpenAIClient(), model_kwargs=model_kwargs)
 
     def call(self, queries: List[str]) -> Any:
         return self.embedder(input=queries)

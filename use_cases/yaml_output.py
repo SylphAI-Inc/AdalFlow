@@ -1,13 +1,13 @@
 from dataclasses import dataclass, field
 
-from core.component import Component
-from core.generator import Generator
-from components.api_client import GroqAPIClient, OpenAIClient
-from prompts.outputs import YAMLOutputParser, ListOutputParser
+from lightrag.core.component import Component
+from lightrag.core.generator import Generator
+from lightrag.components.model_client import GroqAPIClient, OpenAIClient
+from lightrag.prompts.outputs import YAMLOutputParser, ListOutputParser
 
 
 from dataclasses import fields
-from core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 
 
 @dataclass

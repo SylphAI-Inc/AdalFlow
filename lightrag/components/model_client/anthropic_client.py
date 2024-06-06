@@ -3,17 +3,18 @@ from typing import Dict, Optional, Sequence, Union
 
 try:
     import anthropic
+    from anthropic import (
+        RateLimitError,
+        APITimeoutError,
+        InternalServerError,
+        UnprocessableEntityError,
+        BadRequestError,
+    )
+    from anthropic.types import Message
 except ImportError:
     raise ImportError("Please install anthropic with: pip install anthropic")
 
-from anthropic import (
-    RateLimitError,
-    APITimeoutError,
-    InternalServerError,
-    UnprocessableEntityError,
-    BadRequestError,
-)
-from anthropic.types import Message
+
 import backoff
 
 

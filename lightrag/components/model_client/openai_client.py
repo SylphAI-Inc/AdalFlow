@@ -3,18 +3,18 @@ from typing import Dict, Sequence, Optional, List
 
 try:
     import openai
+    from openai import OpenAI, AsyncOpenAI
+    from openai import (
+        APITimeoutError,
+        InternalServerError,
+        RateLimitError,
+        UnprocessableEntityError,
+        BadRequestError,
+    )
+    from openai.types import Completion
 except ImportError:
     raise ImportError("Please install openai with: pip install openai")
 
-from openai import OpenAI, AsyncOpenAI
-from openai import (
-    APITimeoutError,
-    InternalServerError,
-    RateLimitError,
-    UnprocessableEntityError,
-    BadRequestError,
-)
-from openai.types import Completion
 
 from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.types import ModelType

@@ -41,7 +41,7 @@ class Generator(Component):
         model_client: ModelClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
-        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
+        template: Optional[str] = None,
         preset_prompt_kwargs: Optional[Dict] = None,
         # args for the output processing
         output_processors: Optional[Component] = None,
@@ -59,6 +59,8 @@ class Generator(Component):
         But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
         """
         super().__init__()
+
+        template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
         self._init_prompt(template, preset_prompt_kwargs)
 
