@@ -13,11 +13,11 @@ try:
 except ImportError:
     raise ImportError("Please install google-generativeai to use GoogleGenAIClient")
 
-from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.types import ModelType
 
 
-class GoogleGenAIClient(APIClient):
+class GoogleGenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Google GenAI API client.
 
     Visit https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference for more api details.

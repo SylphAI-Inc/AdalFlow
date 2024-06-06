@@ -2,9 +2,7 @@ from typing import List, Optional, Union, Any
 
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import (
-    RetrieverOutput,
-)
+from lightrag.core.types import RetrieverOutput
 
 RetrieverInputType = Union[str, List[str]]  # query
 RetrieverDocumentType = Any  # Documents

@@ -1,5 +1,5 @@
 """
-The data classes used to support core components.
+Functional data classes to support functional components like Generator, Retriever, and Assistant.
 """
 
 from enum import Enum, auto
@@ -26,7 +26,7 @@ import logging
 
 from lightrag.core.base_data_class import BaseDataClass
 
-# from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.tokenizer import Tokenizer
 
 
 logger = logging.getLogger(__name__)
@@ -223,9 +223,8 @@ class Document:
 
     def __post_init__(self):
         if self.estimated_num_tokens is None and self.text:
-            pass
-            # tokenizer = Tokenizer()
-            # self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+            tokenizer = Tokenizer()
+            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
     @staticmethod
     def from_dict(doc: Dict):

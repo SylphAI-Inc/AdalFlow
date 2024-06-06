@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Type, TypeVar, Sequence, Union
 
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import (
+from lightrag.core.types import (
     EmbedderResponse,
     Embedding,
     Usage,

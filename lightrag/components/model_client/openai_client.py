@@ -16,13 +16,13 @@ from openai import (
 )
 from openai.types import Completion
 
-from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.types import ModelType
 
 import backoff
 
 
-class OpenAIClient(APIClient):
+class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
     
     Visit https://platform.openai.com/docs/introduction for more api details.

@@ -17,11 +17,11 @@ from anthropic.types import Message
 import backoff
 
 
-from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.types import ModelType
 
 
-class AnthropicAPIClient(APIClient):
+class AnthropicAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Anthropic API client.
 
     Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.

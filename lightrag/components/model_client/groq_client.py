@@ -15,11 +15,11 @@ from groq import (
     UnprocessableEntityError,
 )
 
-from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.types import ModelType
 
 
-class GroqAPIClient(APIClient):
+class GroqAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Groq API client.
 
     Visit https://console.groq.com/docs/ for more api details.
