@@ -8,7 +8,7 @@ Overview
    eval.evaluators
 
 Evaluator
-------
+----------
 .. toctree::
    :maxdepth: 1
 

@@ -16,7 +16,7 @@ Tasks
    prompts.tasks
 
 Outputs
-------
+--------
 .. toctree::
    :maxdepth: 1
 

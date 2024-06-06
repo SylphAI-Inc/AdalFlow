@@ -1,5 +1,5 @@
 LightRAG Design Philosophy
-============
+====================================
 
 We aggressively focus on problem solving.
 

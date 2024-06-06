@@ -311,41 +311,41 @@ class BaseDataClass:
     Better use schema with example signature (either yaml or json) depending on the use case.
 
     Example usage:
-    ```
-    # Define a dataclass
-    @dataclass
-    class MyOutputs(BaseDataClass):
-        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
-        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-    # Create json signature
-    print(MyOutputs.to_json_signature())
-    # Output:
-    # {
-    #     "age": "The age of the person",
-    #     "name": "The name of the person"
-    # }
-    # Create yaml signature
-    print(MyOutputs.to_yaml_signature())
-    # Output:
-    # age: The age of the person
-    # name: The name of the person
+    
+    .. code-block:: python
+    
+        # Define a dataclass
+        @dataclass
+        class MyOutputs(BaseDataClass):
+            age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
+            name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
+        # Create json signature
+        print(MyOutputs.to_json_signature())
+        # Output:
+        # {
+        #     "age": "The age of the person",
+        #     "name": "The name of the person"
+        # }
+        # Create yaml signature
+        print(MyOutputs.to_yaml_signature())
+        # Output:
+        # age: The age of the person
+        # name: The name of the person
 
-    # Create a dataclass instance
-    my_instance = MyOutputs(age=25, name="John Doe")
-    # Create json example
-    print(my_instance.to_json_example())
-    # Output:
-    # {
-    #     "age": 25,
-    #     "name": "John Doe"
-    # }
-    # Create yaml signature
-    print(my_instance.to_yaml_example())
-    # Output:
-    # age: 25
-    # name: John Doe
-
-    ```
+        # Create a dataclass instance
+        my_instance = MyOutputs(age=25, name="John Doe")
+        # Create json signature
+        print(my_instance.to_json_signature())
+        # Output:
+        # {
+        #     "age": 25,
+        #     "name": "John Doe"
+        # }
+        # Create yaml signature
+        print(my_instance.to_yaml_signature())
+        # Output:
+        # age: 25
+        # name: John Doe
     """
 
     def __post_init__(self):
@@ -507,7 +507,7 @@ class BaseDataClass:
 class GeneratorOutput(BaseDataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
-    We ca not control its output 100%, so we use this to track the error_message and
+    We can not control its output 100%, so we use this to track the error_message and
     allow the raw string output to be passed through.
     """
 
@@ -536,14 +536,17 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        ...
+        
     }
+    
     Examples:
-
-    data = {
-        "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
-        "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
-    }
+    
+        .. code-block:: python
+        
+            data = {
+                "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
+                "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+            }
 
     DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
     class_instance = DynamicOutputs()
