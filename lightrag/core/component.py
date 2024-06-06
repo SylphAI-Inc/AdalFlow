@@ -11,6 +11,7 @@ from typing import (
     Union,
     overload,
     Mapping,
+    TypeVar,
 )
 from collections import OrderedDict
 import operator
@@ -68,7 +69,7 @@ class Component:
     (2) All components can be running local or APIs. 'Component' can deal with API calls, so we need support retries and rate limits.
     """
 
-    _version: int = 0.1  # Version of the component
+    _version: int = 1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
     # _execution_graph: List[str] = []  # This will store the graph of execution.
@@ -155,12 +156,14 @@ class Component:
         Each data if of format: {"type": type, "data": data}
         """
         exclude = exclude or []
-        result = {"type": type(self).__name__}  # Add the type of the component
-        result["data"] = {}
-
+        result: Dict[str, Any] = {
+            "type": type(self).__name__,
+            "data": {},
+        }  # Add the type of the component
+        data_dict = result["data"]
         for key, value in self.__dict__.items():
             if key not in exclude:
-                result["data"][key] = self._process_value(value)
+                data_dict[key] = self._process_value(value)
 
         return result
 
@@ -470,7 +473,7 @@ class Component:
             if param is not None:
                 destination[prefix + name] = param
 
-    # TODO: test it
+    # TODO: test it + add example
     def state_dict(
         self, destination: Optional[Dict[str, Any]] = None, prefix: Optional[str] = ""
     ) -> Dict[str, Any]:
@@ -479,7 +482,8 @@ class Component:
         Parameters are included for now.
 
         ..note:
-            The returned object is a shallow copy. It cantains references to the original data.
+            The returned object is a shallow copy. It cantains references
+            to the component's parameters and subcomponents.
         Args:
             destination (Dict[str, Any]): If provided, the state of component will be copied into it.
             And the same object is returned.
@@ -492,20 +496,18 @@ class Component:
         """
         if destination is None:
             destination = OrderedDict()
-            destination._metadata = OrderedDict()
+            destination._metadata = OrderedDict()  # type: ignore[attr-defined]
         local_metadata = dict(version=self._version)
         # to do when local data where be needed
-        if hasattr(self, "_metadata"):
-            destination._metadata[prefix[:-1]] = local_metadata
+        if hasattr(destination, "_metadata"):
+            destination._metadata[prefix[:-1]] = local_metadata  # type: ignore[index]
 
         # save its own state
         self._save_to_state_dict(destination, prefix=prefix)
         # save the state of all subcomponents
         for name, component in self._components.items():
             if component is not None:
-                component.state_dict(
-                    destination=destination, prefix=prefix + name + "."
-                )
+                component.state_dict(destination=destination, prefix=f"{prefix}{name}.")
         return destination
 
     def _load_from_state_dict(
@@ -663,11 +665,11 @@ class Component:
 
     def __getattr__(self, name: str) -> Any:
         if "_parameters" in self.__dict__:
-            parameters = self.__dict__.get("_parameters")
+            parameters = self.__dict__["_parameters"]
             if name in parameters:
                 return parameters[name]
         if "_components" in self.__dict__:
-            components = self.__dict__.get("_components")
+            components = self.__dict__["_components"]
             if name in components:
                 return components[name]
 
@@ -720,6 +722,9 @@ class Component:
         return main_str
 
 
+T = TypeVar("T", bound=Component)
+
+
 class Sequential(Component):
     r"""A sequential container. Components will be added to it in the order they are passed to the constructor.
 
@@ -743,7 +748,7 @@ class Sequential(Component):
             for idx, module in enumerate(args):
                 self.add_component(str(idx), module)
 
-    def _get_item_by_idx(self, iterator, idx) -> Component:  # type: ignore[misc, type-var]
+    def _get_item_by_idx(self, iterator, idx) -> T:  # type: ignore[misc, type-var]
         """Get the idx-th item of the iterator."""
         size = len(self)
         idx = operator.index(idx)
@@ -775,6 +780,9 @@ class Sequential(Component):
             list(zip(str_indices, self._components.values()))
         )
 
+    def __iter__(self) -> Iterable[Component]:
+        return iter(self._components.values())
+
     def __len__(self) -> int:
         return len(self._components)
 
@@ -784,19 +792,19 @@ class Sequential(Component):
         self.add_component(str(idx), component)
         return self
 
-    def __add__(self, other) -> "Sequential":
-        if not isinstance(other, Sequential):
-            ret = Sequential()
-            for layer in self:
-                ret.append(layer)
-            for layer in other:
-                ret.append(layer)
-            return ret
-        else:
-            raise ValueError(
-                "add operator supports only objects "
-                f"of Sequential class, but {str(type(other))} is given."
-            )
+    # def __add__(self, other) -> "Sequential":
+    #     if not isinstance(other, Sequential):
+    #         ret = Sequential()
+    #         for layer in self:
+    #             ret.append(layer)
+    #         for layer in other:
+    #             ret.append(layer)
+    #         return ret
+    #     else:
+    #         raise ValueError(
+    #             "add operator supports only objects "
+    #             f"of Sequential class, but {str(type(other))} is given."
+    #         )
 
     def call(self, input: Any) -> Any:
         for component in self._components.values():
