@@ -39,7 +39,6 @@ def _get_data_class_schema(
     data_class: Type, exclude: Optional[List[str]] = None
 ) -> Dict[str, Dict[str, Any]]:
     r"""Helper function to get the schema of a BaseDataClass in type of Dict."""
-    from dataclasses import fields, is_dataclass, MISSING
 
     if not is_dataclass(data_class):
         raise ValueError("Provided class is not a dataclass")
@@ -86,8 +85,10 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
     signature = {}
     for field_name, field_info in schema.items():
         field_signature = field_info.get("desc", "")
-        if not field_signature:
-            field_signature = f"{field_name} ({field_info['type']})"
+        # add type to the signature
+        if field_info["type"]:
+            field_signature += f" ({field_info['type']})"
+
         if field_info["required"]:
             field_signature += " (required)"
         else:

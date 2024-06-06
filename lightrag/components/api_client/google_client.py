@@ -14,7 +14,7 @@ except ImportError:
     raise ImportError("Please install google-generativeai to use GoogleGenAIClient")
 
 from lightrag.core.api_client import APIClient, API_INPUT_TYPE
-from lightrag.core.data_classes import ModelType
+from lightrag.core.types import ModelType
 
 
 class GoogleGenAIClient(APIClient):

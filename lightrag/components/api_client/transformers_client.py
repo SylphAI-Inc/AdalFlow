@@ -25,7 +25,7 @@ except ImportError:
 from transformers import AutoTokenizer, AutoModel
 
 from lightrag.core.api_client import APIClient
-from lightrag.core.data_classes import ModelType
+from lightrag.core.types import ModelType
 
 from lightrag.core.component import Component
 
