@@ -204,11 +204,12 @@ class TRECClassifier(Component):
             return response
 
         else:
-            log.info(f"error_message: {output.error}")
-            log.info(f"raw_response: {output.raw_response}")
-            log.info(f"response: {output.data}")
+            log.error(f"query: {query} failed to classify")
+            log.error(f"error_message: {output.error}")
+            log.error(f"raw_response: {output.raw_response}")
+            log.error(f"response: {output.data}")
             # Additional processing in case it is not predicting a number but a string
-            label = response
+            label = output.raw_response
             if isinstance(label, str):
                 label_match = re.findall(re_pattern, label)
                 if label_match:
@@ -217,7 +218,7 @@ class TRECClassifier(Component):
                     label = -1
                 return label
             else:
-                return label
+                return -1
 
 
 if __name__ == "__main__":

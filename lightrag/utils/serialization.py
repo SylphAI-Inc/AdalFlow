@@ -235,6 +235,8 @@ def load_jsonl(f: str = None) -> List[Dict[str, Any]]:
 def append_to_jsonl(f: str, data: Dict[str, Any]) -> None:
     __doc__ = r"""Append data to a jsonl file.
 
+    Used by the trace_generator_call decorator to log the generator calls.
+
     Args:
         f (str): The file name.
         data (Dict[str, Any]): The data to be appended.
@@ -246,7 +248,10 @@ def append_to_jsonl(f: str, data: Dict[str, Any]) -> None:
     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
     try:
         with jsonlines.open(f, mode="a") as writer:
-            writer.write(data)
+            # call serialize to serialize the object
+            serialized_data = to_dict(data)
+            writer.write(serialized_data)
+            # writer.write(data)
     except Exception as e:
         log.error(f"Error appending data to jsonl file {f}: {e}")
 

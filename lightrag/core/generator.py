@@ -135,10 +135,11 @@ class Generator(Component):
         if self.output_processors:
             try:
                 response = self.output_processors(response)
+                output.data = response
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
                 output.error = str(e)
-        output.data = response
+
         return output
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:

@@ -515,6 +515,13 @@ class GeneratorOutput(BaseDataClass, Generic[T_co]):
     The output data class for the Generator component.
     We ca not control its output 100%, so we use this to track the error_message and
     allow the raw string output to be passed through.
+
+    (1) When model predict and output processors are both without error,
+    we have data as the final output, error as None.
+    (2) When either model predict or output processors have error,
+    we have data as None, error as the error message.
+    
+    Raw_response will depends on the model predict.
     """
 
     data: T_co = field(

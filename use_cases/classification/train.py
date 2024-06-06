@@ -131,6 +131,7 @@ class TrecTrainer(Component):
             dataset = self.eval_dataset
 
         # OR use dataloader
+        print(f"dataset: {dataset}")
         subset = dataset.select(range(0, 10))
         for text, coarse_label in tqdm.tqdm(
             zip(subset["text"], subset["coarse_label"])
@@ -157,9 +158,7 @@ class TrecTrainer(Component):
         return accuracy, macro_f1_score, weights_per_class
 
     def test(self):
-        # print(f"test_dataset", self.test_dataset)
-        sub_test_dataset = self.test_dataset.select(range(0, 1))
-        return self.eval(sub_test_dataset)
+        return self.eval(self.test_dataset)
 
     def batch_eval(self, batch: Dict[str, Any]) -> Tuple[float, float]:
         r"""
@@ -249,7 +248,9 @@ class TrecTrainer(Component):
             shots = self.num_shots
         for i in tqdm.tqdm(range(runs)):
             optimizer.init(shots=shots)
+            log.info(f"run: {i}, eval")
             acc_eval, macro_f1_eval, _ = self.eval()
+            log.info(f"run: {i}, test")
             acc, macro_f1, _ = self.test()
             accs.append(acc)
             macro_f1s.append(macro_f1)
