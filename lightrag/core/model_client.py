@@ -30,7 +30,7 @@ API_INPUT_TYPE = Union[
 ]  # str/Sequence for llm and str/sequence/list for embeddings
 
 
-class APIClient(Component):
+class ModelClient(Component):
     __doc__ = r"""The abstract class for all API clients.
 
     This interface is designed to bridge the gap between LightRAG components inputs and model APIs.

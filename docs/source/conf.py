@@ -14,7 +14,7 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(0, os.path.abspath("../lightrag"))
 # sys.path.insert(0, os.path.abspath("../../"))
 # need to insert the paths
 for dir in os.walk("../lightrag"):
@@ -44,7 +44,7 @@ author = "SylphAI"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
+    # "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
@@ -54,7 +54,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
     "sphinx_design",
-    "sphinx.builders.changes",
+    # "sphinx.builders.changes",
     # 'recommonmark',
     # 'myst_parser'
 ]
@@ -65,7 +65,7 @@ templates_path = ["_templates"]
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["lightrag/tests", "test_*"]
+exclude_patterns = ["lightrag/tests", "test_*", "../li_test"]
 
 # exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**.module.rst', '**/tests/*', '**/test_*.py', '*test.rst']
 

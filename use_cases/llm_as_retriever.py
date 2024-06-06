@@ -1,7 +1,7 @@
-from core.data_classes import Document
+from lightrag.core.types import Document
 
-from components.retriever import LLMRetriever
-from components.api_client import OpenAIClient
+from lightrag.components.retriever import LLMRetriever
+from lightrag.components.model_client import OpenAIClient
 
 import utils.setup_env
 

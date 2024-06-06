@@ -2,19 +2,19 @@ from typing import Any, List, Optional
 import dotenv
 import yaml
 
-from core.generator import Generator
-from core.embedder import Embedder
-from core.data_components import (
+from lightrag.core.generator import Generator
+from lightrag.core.embedder import Embedder
+from lightrag.core.data_components import (
     ToEmbedderResponse,
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
-from core.data_classes import Document
+from lightrag.core.types import Document
 
-from core.document_splitter import DocumentSplitter
-from core.string_parser import JsonParser
-from core.component import Component, Sequential
-from core.db import LocalDocumentDB
+from lightrag.core.document_splitter import DocumentSplitter
+from lightrag.core.string_parser import JsonParser
+from lightrag.core.component import Component, Sequential
+from lightrag.core.db import LocalDocumentDB
 
 import os
 
@@ -22,8 +22,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 # from core.functional import generate_component_key
 
-from components.api_client import OpenAIClient
-from components.retriever import FAISSRetriever
+from lightrag.components.model_client import OpenAIClient
+from lightrag.components.retriever import FAISSRetriever
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)

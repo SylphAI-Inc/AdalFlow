@@ -3,163 +3,163 @@
     "shots": 6,
     "runs": 5,
     "run_test_0": {
-        "acc": 0.4,
-        "macro_f1": 0.444,
+        "acc": 0.556,
+        "macro_f1": 0.5,
         "examples": [
             {
-                "index": 272,
+                "index": 358,
                 "data": {
-                    "text": "What is BPH ?",
+                    "text": "What is the abbreviation for micro ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "BPH stands for Benign Prostatic Hyperplasia, which is an abbreviation."
+                    "fine_label": 0,
+                    "thought": "The question is asking for an abbreviation, which fits into the ABBR class."
                 }
             },
             {
-                "index": 298,
+                "index": 373,
                 "data": {
-                    "text": "What 1942 espionage movie reunited director John Huston with Maltese Falconers Humphrey Bogart , Mary Astor , and Sidney Greenstreet ?",
+                    "text": "What cocktail inspired John Doxat to write the book Stirred-Not Shaken ?",
                     "coarse_label": 1,
-                    "fine_label": 5,
-                    "thought": "The question is about a specific movie and its cast and director, which classifies it as an entity."
+                    "fine_label": 9,
+                    "thought": "The question is asking about a specific cocktail that inspired an author, which makes it fall under the 'Entity' category."
                 }
             },
             {
-                "index": 369,
+                "index": 284,
                 "data": {
-                    "text": "Why was Washington , DC originally called District of Columbia ?",
+                    "text": "What are the distinct physical characterstics of the Arabian horse ?",
                     "coarse_label": 2,
-                    "fine_label": 27,
-                    "thought": "The question is seeking information about the background or reasoning behind the name 'District of Columbia', which is a description."
+                    "fine_label": 25,
+                    "thought": "The question is asking for details about physical characteristics, which falls under the 'Description and abstract concept' category."
                 }
             },
             {
-                "index": 456,
+                "index": 276,
                 "data": {
-                    "text": "Who is the Pope ?",
+                    "text": "Who was the inventor of silly putty ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The Pope is a human being who is the leader of the Catholic Church."
+                    "thought": "The question is asking for a person, hence categorized under human being."
                 }
             },
             {
-                "index": 91,
+                "index": 511,
                 "data": {
-                    "text": "Where did Ty Cobb grow up ?",
+                    "text": "Where is the Rose Bowl played ?",
                     "coarse_label": 4,
                     "fine_label": 35,
-                    "thought": "The question 'Where did Ty Cobb grow up?' is asking for a specific location."
+                    "thought": "The question is asking for the location of the Rose Bowl, which is a place."
                 }
             },
             {
-                "index": 518,
+                "index": 285,
                 "data": {
-                    "text": "How many were in attendance at the Last Supper ?",
+                    "text": "What amount of money did the Philippine ex-dictator Marcos steal from the treasury ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question asks for a numeric value regarding the number of people in attendance."
+                    "fine_label": 41,
+                    "thought": "The question asks for a specific amount of money which is a numeric value."
                 }
             }
         ]
     },
     "run_eval_0": {
-        "acc": 0.778,
-        "macro_f1": 0.474,
+        "acc": 0.7,
+        "macro_f1": 0.525,
         "examples": [
             {
-                "index": 272,
+                "index": 358,
                 "data": {
-                    "text": "What is BPH ?",
+                    "text": "What is the abbreviation for micro ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "BPH stands for Benign Prostatic Hyperplasia, which is an abbreviation."
+                    "fine_label": 0,
+                    "thought": "The question is asking for an abbreviation, which fits into the ABBR class."
                 }
             },
             {
-                "index": 298,
+                "index": 373,
                 "data": {
-                    "text": "What 1942 espionage movie reunited director John Huston with Maltese Falconers Humphrey Bogart , Mary Astor , and Sidney Greenstreet ?",
+                    "text": "What cocktail inspired John Doxat to write the book Stirred-Not Shaken ?",
                     "coarse_label": 1,
-                    "fine_label": 5,
-                    "thought": "The question is about a specific movie and its cast and director, which classifies it as an entity."
+                    "fine_label": 9,
+                    "thought": "The question is asking about a specific cocktail that inspired an author, which makes it fall under the 'Entity' category."
                 }
             },
             {
-                "index": 369,
+                "index": 284,
                 "data": {
-                    "text": "Why was Washington , DC originally called District of Columbia ?",
+                    "text": "What are the distinct physical characterstics of the Arabian horse ?",
                     "coarse_label": 2,
-                    "fine_label": 27,
-                    "thought": "The question is seeking information about the background or reasoning behind the name 'District of Columbia', which is a description."
+                    "fine_label": 25,
+                    "thought": "The question is asking for details about physical characteristics, which falls under the 'Description and abstract concept' category."
                 }
             },
             {
-                "index": 456,
+                "index": 276,
                 "data": {
-                    "text": "Who is the Pope ?",
+                    "text": "Who was the inventor of silly putty ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The Pope is a human being who is the leader of the Catholic Church."
+                    "thought": "The question is asking for a person, hence categorized under human being."
                 }
             },
             {
-                "index": 91,
+                "index": 511,
                 "data": {
-                    "text": "Where did Ty Cobb grow up ?",
+                    "text": "Where is the Rose Bowl played ?",
                     "coarse_label": 4,
                     "fine_label": 35,
-                    "thought": "The question 'Where did Ty Cobb grow up?' is asking for a specific location."
+                    "thought": "The question is asking for the location of the Rose Bowl, which is a place."
                 }
             },
             {
-                "index": 518,
+                "index": 285,
                 "data": {
-                    "text": "How many were in attendance at the Last Supper ?",
+                    "text": "What amount of money did the Philippine ex-dictator Marcos steal from the treasury ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question asks for a numeric value regarding the number of people in attendance."
+                    "fine_label": 41,
+                    "thought": "The question asks for a specific amount of money which is a numeric value."
                 }
             }
         ]
     },
     "run_test_1": {
-        "acc": 0.2,
-        "macro_f1": 0.278,
+        "acc": 0.4,
+        "macro_f1": 0.411,
         "examples": [
             {
-                "index": 336,
+                "index": 454,
                 "data": {
-                    "text": "What is a `` USB '' port on a computer ?",
+                    "text": "What does the `` c '' stand for in the equation E=mc2 ?",
                     "coarse_label": 0,
                     "fine_label": 1,
-                    "thought": "The term 'USB' is an abbreviation for 'Universal Serial Bus,' which fits the question asking about what a USB port is."
+                    "thought": "The question is asking for the meaning or stands for the term 'c' in the equation E=mc2, which falls under abbreviation."
                 }
             },
             {
-                "index": 394,
+                "index": 267,
                 "data": {
-                    "text": "What are the shortest and the longest songs ever produced ?",
+                    "text": "What do chefs call The Master Spice ?",
                     "coarse_label": 1,
-                    "fine_label": 5,
-                    "thought": "The question is asking about specific songs, which are entities."
+                    "fine_label": 9,
+                    "thought": "The question is asking for what chefs refer to as 'The Master Spice,' which is seeking a specific entity."
                 }
             },
             {
-                "index": 599,
+                "index": 469,
                 "data": {
-                    "text": "What features of the African elephant are larger than those of the Indian elephant ?",
+                    "text": "How do you recognize anorexia ?",
                     "coarse_label": 2,
-                    "fine_label": 25,
-                    "thought": "The question asks for a description or comparison of the features between African and Indian elephants."
+                    "fine_label": 26,
+                    "thought": "The question is asking for an explanation or abstract concept regarding the recognition of anorexia."
                 }
             },
             {
-                "index": 32,
+                "index": 342,
                 "data": {
-                    "text": "Name of heroine in `` Scruples '' ?",
+                    "text": "Who invented the vacuum cleaner ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The question is asking for the name of a heroine, which refers to a human individual."
+                    "thought": "The question is inquiring about the individual responsible for inventing the vacuum cleaner, which pertains to a human being."
                 }
             },
             {
@@ -168,58 +168,58 @@
                     "text": "What city is served by McCarren Airport ?",
                     "coarse_label": 4,
                     "fine_label": 32,
-                    "thought": "The question is asking for a specific city, which is a location."
+                    "thought": "McCarren Airport is a specific place, so it's associated with a location."
                 }
             },
             {
-                "index": 78,
+                "index": 21,
                 "data": {
-                    "text": "How many children under 18 are victims of some sort of Physical Abuse each year ?",
+                    "text": "When did humans first begin to write history seriously ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question asks for a numeric value regarding the number of children under 18 who are victims of physical abuse each year."
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which is a numeric value."
                 }
             }
         ]
     },
     "run_eval_1": {
-        "acc": 0.7,
-        "macro_f1": 0.6,
+        "acc": 0.6,
+        "macro_f1": 0.39,
         "examples": [
             {
-                "index": 336,
+                "index": 454,
                 "data": {
-                    "text": "What is a `` USB '' port on a computer ?",
+                    "text": "What does the `` c '' stand for in the equation E=mc2 ?",
                     "coarse_label": 0,
                     "fine_label": 1,
-                    "thought": "The term 'USB' is an abbreviation for 'Universal Serial Bus,' which fits the question asking about what a USB port is."
+                    "thought": "The question is asking for the meaning or stands for the term 'c' in the equation E=mc2, which falls under abbreviation."
                 }
             },
             {
-                "index": 394,
+                "index": 267,
                 "data": {
-                    "text": "What are the shortest and the longest songs ever produced ?",
+                    "text": "What do chefs call The Master Spice ?",
                     "coarse_label": 1,
-                    "fine_label": 5,
-                    "thought": "The question is asking about specific songs, which are entities."
+                    "fine_label": 9,
+                    "thought": "The question is asking for what chefs refer to as 'The Master Spice,' which is seeking a specific entity."
                 }
             },
             {
-                "index": 599,
+                "index": 469,
                 "data": {
-                    "text": "What features of the African elephant are larger than those of the Indian elephant ?",
+                    "text": "How do you recognize anorexia ?",
                     "coarse_label": 2,
-                    "fine_label": 25,
-                    "thought": "The question asks for a description or comparison of the features between African and Indian elephants."
+                    "fine_label": 26,
+                    "thought": "The question is asking for an explanation or abstract concept regarding the recognition of anorexia."
                 }
             },
             {
-                "index": 32,
+                "index": 342,
                 "data": {
-                    "text": "Name of heroine in `` Scruples '' ?",
+                    "text": "Who invented the vacuum cleaner ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The question is asking for the name of a heroine, which refers to a human individual."
+                    "thought": "The question is inquiring about the individual responsible for inventing the vacuum cleaner, which pertains to a human being."
                 }
             },
             {
@@ -228,402 +228,402 @@
                     "text": "What city is served by McCarren Airport ?",
                     "coarse_label": 4,
                     "fine_label": 32,
-                    "thought": "The question is asking for a specific city, which is a location."
+                    "thought": "McCarren Airport is a specific place, so it's associated with a location."
                 }
             },
             {
-                "index": 78,
+                "index": 21,
                 "data": {
-                    "text": "How many children under 18 are victims of some sort of Physical Abuse each year ?",
+                    "text": "When did humans first begin to write history seriously ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question asks for a numeric value regarding the number of children under 18 who are victims of physical abuse each year."
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which is a numeric value."
                 }
             }
         ]
     },
     "run_test_2": {
         "acc": 0.5,
-        "macro_f1": 0.467,
+        "macro_f1": 0.407,
         "examples": [
             {
-                "index": 66,
+                "index": 189,
                 "data": {
-                    "text": "What do the letters ZIP stand for in the phrase `` ZIP code '' ?",
+                    "text": "What is the acronym for the National Bureau of Investigation ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "The question asks for the meaning of the abbreviation 'ZIP' in 'ZIP code'."
+                    "fine_label": 0,
+                    "thought": "The question asks for the acronym of an organization, which falls under the abbreviation category."
                 }
             },
             {
-                "index": 235,
+                "index": 594,
                 "data": {
-                    "text": "What color were their horses ?",
+                    "text": "What is a fear of slime ?",
                     "coarse_label": 1,
-                    "fine_label": 4,
-                    "thought": "The question is asking about the color, which is a characteristic of an entity."
+                    "fine_label": 7,
+                    "thought": "The question is asking about the name of a specific phobia, which classifies it under entities."
                 }
             },
             {
-                "index": 229,
+                "index": 475,
                 "data": {
-                    "text": "What is D.B. Cooper known for ?",
+                    "text": "What is a courier ?",
                     "coarse_label": 2,
-                    "fine_label": 27,
-                    "thought": "D.B. Cooper is known for hijacking a plane and stealing ransom money."
+                    "fine_label": 24,
+                    "thought": "The question is asking for a definition or explanation, indicating it falls under the 'Description and abstract concept' class."
                 }
             },
             {
-                "index": 537,
+                "index": 445,
                 "data": {
-                    "text": "What Spanish artist painted Crucifixion ?",
+                    "text": "What is the name of the firm that makes Spumante ?",
                     "coarse_label": 3,
-                    "fine_label": 29,
-                    "thought": "The question is asking about a specific Spanish artist who painted a certain artwork, which identifies a human being."
+                    "fine_label": 28,
+                    "thought": "The firm that makes Spumante is an entity, not a human being."
                 }
             },
             {
-                "index": 263,
+                "index": 498,
                 "data": {
-                    "text": "What desert has the highest sand dunes ?",
+                    "text": "What country 's capital was formed when Pesth and Buda merged ?",
                     "coarse_label": 4,
-                    "fine_label": 35,
-                    "thought": "The question is asking about a specific location, which in this case is a desert."
+                    "fine_label": 33,
+                    "thought": "The question is asking about a capital, which is a specific location, formed by the merging of Pesth and Buda, hence it refers to a location."
                 }
             },
             {
-                "index": 397,
+                "index": 271,
                 "data": {
-                    "text": "What is the population in India ?",
+                    "text": "When did the Carolingian period begin ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question is asking for the population, which is a numeric value."
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which relates to a numeric value."
                 }
             }
         ]
     },
     "run_eval_2": {
-        "acc": 0.7,
-        "macro_f1": 0.441,
+        "acc": 0.5,
+        "macro_f1": 0.227,
         "examples": [
             {
-                "index": 66,
+                "index": 189,
                 "data": {
-                    "text": "What do the letters ZIP stand for in the phrase `` ZIP code '' ?",
+                    "text": "What is the acronym for the National Bureau of Investigation ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "The question asks for the meaning of the abbreviation 'ZIP' in 'ZIP code'."
+                    "fine_label": 0,
+                    "thought": "The question asks for the acronym of an organization, which falls under the abbreviation category."
                 }
             },
             {
-                "index": 235,
+                "index": 594,
                 "data": {
-                    "text": "What color were their horses ?",
+                    "text": "What is a fear of slime ?",
                     "coarse_label": 1,
-                    "fine_label": 4,
-                    "thought": "The question is asking about the color, which is a characteristic of an entity."
+                    "fine_label": 7,
+                    "thought": "The question is asking about the name of a specific phobia, which classifies it under entities."
                 }
             },
             {
-                "index": 229,
+                "index": 475,
                 "data": {
-                    "text": "What is D.B. Cooper known for ?",
+                    "text": "What is a courier ?",
                     "coarse_label": 2,
-                    "fine_label": 27,
-                    "thought": "D.B. Cooper is known for hijacking a plane and stealing ransom money."
+                    "fine_label": 24,
+                    "thought": "The question is asking for a definition or explanation, indicating it falls under the 'Description and abstract concept' class."
                 }
             },
             {
-                "index": 537,
+                "index": 445,
                 "data": {
-                    "text": "What Spanish artist painted Crucifixion ?",
+                    "text": "What is the name of the firm that makes Spumante ?",
                     "coarse_label": 3,
-                    "fine_label": 29,
-                    "thought": "The question is asking about a specific Spanish artist who painted a certain artwork, which identifies a human being."
+                    "fine_label": 28,
+                    "thought": "The firm that makes Spumante is an entity, not a human being."
                 }
             },
             {
-                "index": 263,
+                "index": 498,
                 "data": {
-                    "text": "What desert has the highest sand dunes ?",
+                    "text": "What country 's capital was formed when Pesth and Buda merged ?",
                     "coarse_label": 4,
-                    "fine_label": 35,
-                    "thought": "The question is asking about a specific location, which in this case is a desert."
+                    "fine_label": 33,
+                    "thought": "The question is asking about a capital, which is a specific location, formed by the merging of Pesth and Buda, hence it refers to a location."
                 }
             },
             {
-                "index": 397,
+                "index": 271,
                 "data": {
-                    "text": "What is the population in India ?",
+                    "text": "When did the Carolingian period begin ?",
                     "coarse_label": 5,
-                    "fine_label": 38,
-                    "thought": "The question is asking for the population, which is a numeric value."
+                    "fine_label": 39,
+                    "thought": "The question is asking for a specific time period, which relates to a numeric value."
                 }
             }
         ]
     },
     "run_test_3": {
-        "acc": 0.5,
-        "macro_f1": 0.556,
+        "acc": 0.4,
+        "macro_f1": 0.444,
         "examples": [
             {
-                "index": 156,
+                "index": 439,
                 "data": {
-                    "text": "CPR is the abbreviation for what ?",
+                    "text": "What is DSL ?",
                     "coarse_label": 0,
                     "fine_label": 1,
-                    "thought": "The question is asking for the full form of an abbreviation, which is what 'Abbreviation' class encompasses."
+                    "thought": "DSL is an abbreviation, and the question asks for its meaning or definition."
                 }
             },
             {
-                "index": 442,
+                "index": 365,
                 "data": {
-                    "text": "What product did William Horlick discover and produce ?",
+                    "text": "What movie tour of the Roman empire features the admonition : `` Row well and live '' ?",
                     "coarse_label": 1,
-                    "fine_label": 15,
-                    "thought": "The question is asking about a specific product, classifying it under Entity."
+                    "fine_label": 5,
+                    "thought": "The question asks about a specific movie, which is a type of entity."
                 }
             },
             {
-                "index": 206,
+                "index": 11,
                 "data": {
-                    "text": "What did Lenny Bruce say that got him arrested ?",
+                    "text": "What does Venus Retrograde mean ?",
                     "coarse_label": 2,
-                    "fine_label": 25,
-                    "thought": "The question is asking for a description of what Lenny Bruce said, which fits the 'Description and abstract concept' category."
+                    "fine_label": 24,
+                    "thought": "The question is asking for an explanation or meaning of 'Venus Retrograde,' which classifies it as a description or abstract concept."
                 }
             },
             {
-                "index": 111,
+                "index": 10,
                 "data": {
-                    "text": "Who is Shirley MacLaine ?",
+                    "text": "What detective lives on Punchbowl Hill and has 11 children ?",
                     "coarse_label": 3,
-                    "fine_label": 31,
-                    "thought": "The question asks about a specific person, Shirley MacLaine, indicating it refers to a human being."
+                    "fine_label": 29,
+                    "thought": "The question is about a specific detective who is a human character, hence it falls under Human being."
                 }
             },
             {
-                "index": 511,
+                "index": 531,
                 "data": {
-                    "text": "Where is the Rose Bowl played ?",
+                    "text": "What Mediterranean island is home to the first Club Med ?",
                     "coarse_label": 4,
                     "fine_label": 35,
-                    "thought": "The question asks about the location where the Rose Bowl is played."
+                    "thought": "The question asks for a specific geographic location, which belongs to the class 'Location'."
                 }
             },
             {
-                "index": 550,
+                "index": 122,
                 "data": {
-                    "text": "What number of American soldiers remain unaccounted from the Vietnam war ?",
+                    "text": "How many months does it take the moon to revolve around the Earth ?",
                     "coarse_label": 5,
-                    "fine_label": 43,
-                    "thought": "The question asks for a specific numeric value related to the number of unaccounted American soldiers from the Vietnam war."
+                    "fine_label": 38,
+                    "thought": "The question seeks a numeric value regarding the time it takes for the moon to complete its orbit around the Earth."
                 }
             }
         ]
     },
     "run_eval_3": {
-        "acc": 0.667,
-        "macro_f1": 0.47,
+        "acc": 0.7,
+        "macro_f1": 0.419,
         "examples": [
             {
-                "index": 156,
+                "index": 439,
                 "data": {
-                    "text": "CPR is the abbreviation for what ?",
+                    "text": "What is DSL ?",
                     "coarse_label": 0,
                     "fine_label": 1,
-                    "thought": "The question is asking for the full form of an abbreviation, which is what 'Abbreviation' class encompasses."
+                    "thought": "DSL is an abbreviation, and the question asks for its meaning or definition."
                 }
             },
             {
-                "index": 442,
+                "index": 365,
                 "data": {
-                    "text": "What product did William Horlick discover and produce ?",
+                    "text": "What movie tour of the Roman empire features the admonition : `` Row well and live '' ?",
                     "coarse_label": 1,
-                    "fine_label": 15,
-                    "thought": "The question is asking about a specific product, classifying it under Entity."
+                    "fine_label": 5,
+                    "thought": "The question asks about a specific movie, which is a type of entity."
                 }
             },
             {
-                "index": 206,
+                "index": 11,
                 "data": {
-                    "text": "What did Lenny Bruce say that got him arrested ?",
+                    "text": "What does Venus Retrograde mean ?",
                     "coarse_label": 2,
-                    "fine_label": 25,
-                    "thought": "The question is asking for a description of what Lenny Bruce said, which fits the 'Description and abstract concept' category."
+                    "fine_label": 24,
+                    "thought": "The question is asking for an explanation or meaning of 'Venus Retrograde,' which classifies it as a description or abstract concept."
                 }
             },
             {
-                "index": 111,
+                "index": 10,
                 "data": {
-                    "text": "Who is Shirley MacLaine ?",
+                    "text": "What detective lives on Punchbowl Hill and has 11 children ?",
                     "coarse_label": 3,
-                    "fine_label": 31,
-                    "thought": "The question asks about a specific person, Shirley MacLaine, indicating it refers to a human being."
+                    "fine_label": 29,
+                    "thought": "The question is about a specific detective who is a human character, hence it falls under Human being."
                 }
             },
             {
-                "index": 511,
+                "index": 531,
                 "data": {
-                    "text": "Where is the Rose Bowl played ?",
+                    "text": "What Mediterranean island is home to the first Club Med ?",
                     "coarse_label": 4,
                     "fine_label": 35,
-                    "thought": "The question asks about the location where the Rose Bowl is played."
+                    "thought": "The question asks for a specific geographic location, which belongs to the class 'Location'."
                 }
             },
             {
-                "index": 550,
+                "index": 122,
                 "data": {
-                    "text": "What number of American soldiers remain unaccounted from the Vietnam war ?",
+                    "text": "How many months does it take the moon to revolve around the Earth ?",
                     "coarse_label": 5,
-                    "fine_label": 43,
-                    "thought": "The question asks for a specific numeric value related to the number of unaccounted American soldiers from the Vietnam war."
+                    "fine_label": 38,
+                    "thought": "The question seeks a numeric value regarding the time it takes for the moon to complete its orbit around the Earth."
                 }
             }
         ]
     },
     "run_test_4": {
-        "acc": 0.556,
-        "macro_f1": 0.611,
+        "acc": 0.4,
+        "macro_f1": 0.411,
         "examples": [
             {
-                "index": 304,
+                "index": 383,
                 "data": {
-                    "text": "What is SAP ?",
+                    "text": "What is the correct way to abbreviate cc. at the bottom of a business letter ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "SAP is an abbreviation for a software company and a type of business software."
+                    "fine_label": 0,
+                    "thought": "The question is asking about the correct way to abbreviate 'cc.' which indicates it falls under the abbreviation category."
                 }
             },
             {
-                "index": 582,
+                "index": 433,
                 "data": {
-                    "text": "What sport is Chris Jogis a top player of ?",
+                    "text": "What are different products of petroleum ?",
                     "coarse_label": 1,
-                    "fine_label": 17,
-                    "thought": "Chris Jogis is known for his achievements in a specific sport, so this question asks about an entity."
+                    "fine_label": 15,
+                    "thought": "The question is asking for different items (products of petroleum), which are entities."
                 }
             },
             {
-                "index": 427,
+                "index": 144,
                 "data": {
-                    "text": "How do you get silly putty out of fabric ?",
+                    "text": "What is the definition of the term `` weapons system '' ?",
                     "coarse_label": 2,
-                    "fine_label": 26,
-                    "thought": "The question is asking for a method or explanation of how to remove silly putty from fabric, which fits into the Description and abstract concept category."
+                    "fine_label": 24,
+                    "thought": "The question is asking for the definition of a term, which is a request for a description or abstract concept."
                 }
             },
             {
-                "index": 291,
+                "index": 269,
                 "data": {
-                    "text": "Who wrote the Farmer 's Almanac ?",
+                    "text": "Who made the first gas engine ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The question asks for the author, which refers to a human being."
+                    "thought": "The question is asking about the person who invented the first gas engine, which relates to a human being."
                 }
             },
             {
-                "index": 371,
+                "index": 349,
                 "data": {
-                    "text": "Where can I get a photograph of professor Randolph Quirk ?",
+                    "text": "What two countries are linked by the Brenner Pass ?",
                     "coarse_label": 4,
-                    "fine_label": 35,
-                    "thought": "The question asks for a place where a photograph can be obtained, which pertains to a location."
+                    "fine_label": 33,
+                    "thought": "I know that the Brenner Pass is a mountain pass that links two countries geographically."
                 }
             },
             {
-                "index": 213,
+                "index": 36,
                 "data": {
-                    "text": "When was the battle of the Somme fought ?",
+                    "text": "How many bones are in the human hand ?",
                     "coarse_label": 5,
-                    "fine_label": 39,
-                    "thought": "The question asks for a specific date or time when the battle occurred, which is a numeric value."
+                    "fine_label": 38,
+                    "thought": "The question is asking for a specific number, indicating it's looking for a numeric value."
                 }
             }
         ]
     },
     "run_eval_4": {
-        "acc": 0.6,
-        "macro_f1": 0.308,
+        "acc": 0.5,
+        "macro_f1": 0.192,
         "examples": [
             {
-                "index": 304,
+                "index": 383,
                 "data": {
-                    "text": "What is SAP ?",
+                    "text": "What is the correct way to abbreviate cc. at the bottom of a business letter ?",
                     "coarse_label": 0,
-                    "fine_label": 1,
-                    "thought": "SAP is an abbreviation for a software company and a type of business software."
+                    "fine_label": 0,
+                    "thought": "The question is asking about the correct way to abbreviate 'cc.' which indicates it falls under the abbreviation category."
                 }
             },
             {
-                "index": 582,
+                "index": 433,
                 "data": {
-                    "text": "What sport is Chris Jogis a top player of ?",
+                    "text": "What are different products of petroleum ?",
                     "coarse_label": 1,
-                    "fine_label": 17,
-                    "thought": "Chris Jogis is known for his achievements in a specific sport, so this question asks about an entity."
+                    "fine_label": 15,
+                    "thought": "The question is asking for different items (products of petroleum), which are entities."
                 }
             },
             {
-                "index": 427,
+                "index": 144,
                 "data": {
-                    "text": "How do you get silly putty out of fabric ?",
+                    "text": "What is the definition of the term `` weapons system '' ?",
                     "coarse_label": 2,
-                    "fine_label": 26,
-                    "thought": "The question is asking for a method or explanation of how to remove silly putty from fabric, which fits into the Description and abstract concept category."
+                    "fine_label": 24,
+                    "thought": "The question is asking for the definition of a term, which is a request for a description or abstract concept."
                 }
             },
             {
-                "index": 291,
+                "index": 269,
                 "data": {
-                    "text": "Who wrote the Farmer 's Almanac ?",
+                    "text": "Who made the first gas engine ?",
                     "coarse_label": 3,
                     "fine_label": 29,
-                    "thought": "The question asks for the author, which refers to a human being."
+                    "thought": "The question is asking about the person who invented the first gas engine, which relates to a human being."
                 }
             },
             {
-                "index": 371,
+                "index": 349,
                 "data": {
-                    "text": "Where can I get a photograph of professor Randolph Quirk ?",
+                    "text": "What two countries are linked by the Brenner Pass ?",
                     "coarse_label": 4,
-                    "fine_label": 35,
-                    "thought": "The question asks for a place where a photograph can be obtained, which pertains to a location."
+                    "fine_label": 33,
+                    "thought": "I know that the Brenner Pass is a mountain pass that links two countries geographically."
                 }
             },
             {
-                "index": 213,
+                "index": 36,
                 "data": {
-                    "text": "When was the battle of the Somme fought ?",
+                    "text": "How many bones are in the human hand ?",
                     "coarse_label": 5,
-                    "fine_label": 39,
-                    "thought": "The question asks for a specific date or time when the battle occurred, which is a numeric value."
+                    "fine_label": 38,
+                    "thought": "The question is asking for a specific number, indicating it's looking for a numeric value."
                 }
             }
         ]
     },
     "test_acc": {
         "max_acc": 0.556,
-        "min_acc": 0.2,
-        "mean_acc": 0.4312,
-        "std_acc": 0.12607045649159837
+        "min_acc": 0.4,
+        "mean_acc": 0.45119999999999993,
+        "std_acc": 0.06515949662175116
     },
     "eval_acc": {
-        "max_acc": 0.778,
-        "min_acc": 0.6,
-        "mean_acc": 0.689,
-        "std_acc": 0.05756387756223517
+        "max_acc": 0.7,
+        "min_acc": 0.5,
+        "mean_acc": 0.6,
+        "std_acc": 0.08944271909999157
     },
     "test_macro_f1": {
-        "max_macro_f1": 0.611,
-        "min_macro_f1": 0.278,
-        "mean_macro_f1": 0.47119999999999995,
-        "std_macro_f1": 0.11385850868512198
+        "max_macro_f1": 0.5,
+        "min_macro_f1": 0.407,
+        "mean_macro_f1": 0.4346,
+        "std_macro_f1": 0.035330440133120346
     },
     "eval_macro_f1": {
-        "max_macro_f1": 0.6,
-        "min_macro_f1": 0.308,
-        "mean_macro_f1": 0.45859999999999995,
-        "std_macro_f1": 0.09311412352591844
+        "max_macro_f1": 0.525,
+        "min_macro_f1": 0.192,
+        "mean_macro_f1": 0.3506,
+        "std_macro_f1": 0.12415893040776406
     }
 }

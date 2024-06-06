@@ -1,4 +1,7 @@
-Generator - The Center of it All 
+Generator 
+=========
+The Center of it All 
+~~~~~~~~~~~~~~~~~~~~~~~
 ===================================
 Generator is the most essential functional component in LightRAG. 
 It is a user-facing orchestration component for LLM prediction.

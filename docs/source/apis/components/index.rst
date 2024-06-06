@@ -8,7 +8,7 @@ Overview
 .. autosummary::
 
    components.agent
-   components.api_client
+   components.model_client
    components.embedder
    components.reasoning
    components.retriever
@@ -25,7 +25,7 @@ API Clients
 .. toctree::
    :maxdepth: 1
 
-   components.api_client
+   components.model_client
 
 Embedders
 ---------

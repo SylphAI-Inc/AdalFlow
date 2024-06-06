@@ -10,7 +10,7 @@ In this case, we only manage the memory for the current session.
 """
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import (
+from lightrag.core.types import (
     DialogSession,
     DialogTurn,
     UserQuery,

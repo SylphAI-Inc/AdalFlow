@@ -11,6 +11,7 @@ except ImportError:
 
 from lightrag.core.component import Component
 from lightrag.core.retriever import Retriever, RetrieverOutput, RetrieverOutputType
+from lightrag.core.types import RetrieverOutput
 
 
 FAISSRetrieverDocumentType = Sequence[List[float]]  # embeddings

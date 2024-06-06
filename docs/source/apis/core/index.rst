@@ -7,9 +7,9 @@ Overview
 ----------
 .. autosummary::
 
-   core.api_client
+   core.model_client
    core.component
-   core.data_classes
+   core.base_data_class
    core.data_components
    core.db
    core.default_prompt_template
@@ -26,14 +26,14 @@ Overview
    core.tool_helper
 
 
-API Client
+Model Client
 ----------
 .. toctree::
    :maxdepth: 1
 
-   core.api_client
+   core.model_client
 
-Component Base
+Component
 --------------
 .. toctree::
    :maxdepth: 1
@@ -45,11 +45,12 @@ Data Handling
 .. toctree::
    :maxdepth: 1
 
-   core.data_classes
+   core.base_data_class
+   core.types
    core.data_components
    core.db
 
-Prompts and Templates
+Prompt and Template
 ---------------------
 .. toctree::
    :maxdepth: 1

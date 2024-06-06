@@ -1,7 +1,7 @@
-from core.generator import Generator
-from core.component import Component
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
 
-from components.api_client import GroqAPIClient
+from lightrag.components.model_client import GroqAPIClient
 
 import utils.setup_env
 

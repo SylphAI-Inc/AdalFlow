@@ -3,7 +3,7 @@ from typing import List, Optional, Any, Dict
 from lightrag.core.component import Component
 from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 from lightrag.core.generator import Generator
-from lightrag.core.api_client import APIClient
+from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.core.string_parser import ListParser
 from lightrag.core.prompt_builder import Prompt
@@ -28,7 +28,7 @@ class LLMRetriever(Retriever):
         *,
         top_k: Optional[int] = 1,
         # the genearator kwargs
-        model_client: APIClient,
+        model_client: ModelClient,
         model_kwargs: Dict[str, Any] = {},
         template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
         preset_prompt_kwargs: Optional[Dict] = {},

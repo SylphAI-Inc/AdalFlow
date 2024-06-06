@@ -27,7 +27,7 @@ from core.component import Component
 from core.tool_helper import FunctionTool, AsyncCallable
 from core.string_parser import JsonParser, parse_function_call
 
-from core.api_client import APIClient
+from core.model_client import ModelClient
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
@@ -157,7 +157,7 @@ class ReActAgent(Generator):
             Dict
         ] = {},  # you can pass examples here, additionally leverage few-shot or many-shots ICL.
         output_processors: Optional[Component] = JsonParser(),
-        model_client: APIClient,
+        model_client: ModelClient,
         model_kwargs: Optional[Dict] = {},
     ):
         super().__init__(

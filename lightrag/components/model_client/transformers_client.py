@@ -20,12 +20,13 @@ from torch import Tensor
 
 try:
     import transformers
+    from transformers import AutoTokenizer, AutoModel
+
 except ImportError:
     raise ImportError("Please install transformers with: pip install transformers")
-from transformers import AutoTokenizer, AutoModel
 
-from lightrag.core.api_client import APIClient
-from lightrag.core.data_classes import ModelType
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType
 
 from lightrag.core.component import Component
 
@@ -90,7 +91,7 @@ class TransformerEmbedder(Component):
             raise ValueError(f"model {model_name} is not supported")
 
 
-class TransformersClient(APIClient):
+class TransformersClient(ModelClient):
     def __init__(self) -> None:
         super().__init__()
         self.provider = "Transformers"

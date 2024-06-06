@@ -9,7 +9,7 @@ import logging
 
 from lightrag.core.component import Component, Sequential, fun_to_component
 from lightrag.core.generator import Generator, GeneratorOutput
-from lightrag.components.api_client import (
+from lightrag.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,
@@ -27,7 +27,7 @@ from use_cases.classification.data import (
 )
 
 
-from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
 from use_cases.classification.utils import get_script_dir
 from use_cases.classification.config_log import log

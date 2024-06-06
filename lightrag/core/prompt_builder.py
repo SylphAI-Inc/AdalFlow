@@ -62,12 +62,12 @@ class Prompt(Component):
     def __init__(
         self,
         *,
-        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
-        preset_prompt_kwargs: Optional[Dict] = {},  # preload the parameters
+        template: Optional[str] = None,
+        preset_prompt_kwargs: Optional[Dict] = {},
     ):
         super().__init__()
 
-        self._template_string = template
+        self._template_string = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
         self.template: Template = None
         try:
             env = get_jinja2_environment()

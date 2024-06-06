@@ -1,4 +1,4 @@
-Data classes
+DataClass
 ============
 
 BaseDataClass
