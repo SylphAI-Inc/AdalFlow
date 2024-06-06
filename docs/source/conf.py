@@ -13,15 +13,20 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath("../"))
+# need to insert the paths
+for dir in os.walk('../../lightrag'):
+  sys.path.insert(0, dir[0])
+#   print(dir[0])
 
-sys.path.insert(0, os.path.abspath("../../"))
-sys.path.insert(0, os.path.abspath("../../core"))
-sys.path.insert(0, os.path.abspath("../../components"))
-sys.path.insert(0, os.path.abspath("../../eval"))
-sys.path.insert(0, os.path.abspath("../../prompts"))
-sys.path.insert(0, os.path.abspath("../../utils"))
-sys.path.insert(0, os.path.abspath("../../tracing"))
-
+import lightrag
+import lightrag.components
+import lightrag.core
+import lightrag.eval
+import lightrag.prompts
+import lightrag.utils
+import lightrag.tracing
 
 # -- Project information -----------------------------------------------------
 

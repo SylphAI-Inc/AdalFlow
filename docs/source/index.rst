@@ -141,7 +141,7 @@ Intermediate Users
 
 
 Dive deep into the design of the libraries
-=======================
+==============================================
 
 
 .. toctree::

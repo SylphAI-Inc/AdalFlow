@@ -47,5 +47,6 @@ remove_file("./source/apis/core")
 remove_file("./source/apis/eval")
 remove_file("./source/apis/prompts")
 remove_file("./source/apis/utils")
+remove_file("./source/apis/tracing")
                 
             
