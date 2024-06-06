@@ -13,15 +13,20 @@
 import os
 import sys
 
+sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath("../"))
+# need to insert the paths
+for dir in os.walk('../../lightrag'):
+  sys.path.insert(0, dir[0])
+#   print(dir[0])
 
-sys.path.insert(0, os.path.abspath("../../"))
-sys.path.insert(0, os.path.abspath("../../core"))
-sys.path.insert(0, os.path.abspath("../../components"))
-sys.path.insert(0, os.path.abspath("../../eval"))
-sys.path.insert(0, os.path.abspath("../../prompts"))
-sys.path.insert(0, os.path.abspath("../../utils"))
-sys.path.insert(0, os.path.abspath("../../tracing"))
-
+import lightrag
+import lightrag.components
+import lightrag.core
+import lightrag.eval
+import lightrag.prompts
+import lightrag.utils
+import lightrag.tracing
 
 # -- Project information -----------------------------------------------------
 
@@ -83,8 +88,8 @@ html_theme_options = {
             "name": "Discord",
             "url": "https://discord.gg/hmZWFEUd",
             "icon": "fa-brands fa-discord",
-        },
-    ],
+        },],
+    # "navigation_with_keys": True
 }
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -100,6 +105,7 @@ html_favicon = "../../images/LightRAG-logo-circle.png"
 # whether module names are prefixed before object names in the documentation. This setting is particularly
 # relevant when documenting Python modules and their contents, such as classes, functions, and methods.
 autosummary_generate = True  # Tells Sphinx to generate summary pages
+autosummary_imported_members = False  # Consider turning this off if not necessary
 add_module_names = False
 autosectionlabel_prefix_document = True
 autodoc_docstring_signature = True
@@ -111,9 +117,9 @@ autodoc_default_options = {
     "member-order": "bysource",
     "show-inheritance": True,
     "private-members": False,  # Ensure this is True if you want to document private members
-    "special-members": "__init__",  # Document special members like __init__
-    "inherited-members": True,
-    "exclude-members": "__init__",
+    # "special-members": "__init__",  # Document special members like __init__
+    "inherited-members": False,
+    "exclude-members": "__init__"
     # "autosectionlabel_prefix_document": True,
 }
 

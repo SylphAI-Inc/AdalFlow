@@ -292,7 +292,7 @@ def retriever_output_to_context_str(
 class GeneratorOutput(BaseDataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
-    We ca not control its output 100%, so we use this to track the error_message and
+    We can not control its output 100%, so we use this to track the error_message and
     allow the raw string output to be passed through.
 
     (1) When model predict and output processors are both without error,
@@ -328,14 +328,17 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        ...
+        
     }
+    
     Examples:
-
-    data = {
-        "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
-        "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
-    }
+    
+        .. code-block:: python
+        
+            data = {
+                "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
+                "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+            }
 
     DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
     class_instance = DynamicOutputs()

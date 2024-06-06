@@ -21,7 +21,7 @@ __pycache__/
 llama3/
 docs/build/
 docs/_build/
-docs/source/_templates
+# docs/source/_templates
 docs/source/documents/
 # docs/source/apis/*
 tests/log_test/*.log

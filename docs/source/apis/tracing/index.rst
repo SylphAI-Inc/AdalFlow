@@ -14,12 +14,12 @@ Decorators
 .. toctree::
    :maxdepth: 1
 
-    tracing.decorators
+   tracing.decorators
 
 Loggers
 --------------
 .. toctree::
    :maxdepth: 1
 
-    tracing.generator_state_logger
-    tracing.generator_call_logger
+   tracing.generator_state_logger
+   tracing.generator_call_logger

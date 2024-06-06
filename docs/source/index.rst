@@ -110,8 +110,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
 **LightRAG documentation is divided into two parts:**
 
-* **Developer Documentation**: This documentation explains how LightRAG is designed in more depth and is especially useful
- for developers who want to contribute to LightRAG.
+* **Developer Documentation**: This documentation explains how LightRAG is designed in more depth and is especially useful for developers who want to contribute to LightRAG.
 
 * **User Documentation**: This documentation is for users who want to use LightRAG to build their applications.
 
@@ -142,7 +141,7 @@ Intermediate Users
 
 
 Dive deep into the design of the libraries
-=======================
+==============================================
 
 
 .. toctree::
@@ -159,10 +158,13 @@ Dive deep into the design of the libraries
 
    apis/index
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Benchmarks
-   .. Manually add documents for the code in benchmarks
+.. todo::
+
+   .. toctree::
+      :maxdepth: 1
+      :caption: Benchmarks
+
+      Manually add documents for the code in benchmarks
 
 
 ..    :glob:

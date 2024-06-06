@@ -8,4 +8,6 @@ Here is for tutorials.
 .. toctree::
    :maxdepth: 2
 
-   simpleQA
+   eval_a_rag
+   introduction_to_basedataclass
+   document_splitter

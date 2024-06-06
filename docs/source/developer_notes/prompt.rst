@@ -105,7 +105,7 @@ The output would be:
 
 
 Prompt and Special Tokens context
----------------------
+----------------------------------
 
 
 Each section other than `task_desc_str` is encapulated in a special token. Different model can have different special tokens. 
@@ -153,7 +153,7 @@ Here is how you customize a new prompt:
 
 
 Prompt Engineering experience
----------------------
+-------------------------------
 There is not robust prompt, and it is one of the most sensitive creatures in the AI world.
 Here are some tips:
 - Even the output format matters, the order of your output fields, the formating.
