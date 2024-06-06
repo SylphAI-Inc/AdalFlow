@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional, Union
 from copy import deepcopy
 import logging
 
-from lightrag.core.data_classes import ModelType, GeneratorOutput
+from lightrag.core.types import ModelType, GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.core.parameter import Parameter
 from lightrag.core.prompt_builder import Prompt

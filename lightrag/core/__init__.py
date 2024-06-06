@@ -1,7 +1,8 @@
 from .component import Component
 from .parameter import Parameter
-from .data_classes import BaseDataClass
-from .generator import Generator, GeneratorOutput
+from .base_data_class import BaseDataClass, required_field
+from .types import GeneratorOutput
+from .generator import Generator
 from .prompt_builder import Prompt
 
 __all__ = [
@@ -11,4 +12,5 @@ __all__ = [
     "GeneratorOutput",
     "Prompt",
     "Parameter",
+    "required_field",
 ]

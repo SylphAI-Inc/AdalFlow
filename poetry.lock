@@ -748,6 +748,28 @@ marshmallow = ">=3.18.0,<4.0.0"
 typing-inspect = ">=0.4.0,<1"
 
 [[package]]
+name = "dataclasses-jsonschema"
+version = "2.16.0"
+description = "JSON schema generation from dataclasses"
+optional = false
+python-versions = "*"
+files = [
+    {file = "dataclasses-jsonschema-2.16.0.tar.gz", hash = "sha256:effb0c73db30a537a962da75c4f35b94a5b1b7c1b17806b1ef74aed8e0aa2768"},
+    {file = "dataclasses_jsonschema-2.16.0-py3-none-any.whl", hash = "sha256:d203d6a16c990f7d09eae58c97ffaaea1e45ecb7a033d312e61e4c7836a741bf"},
+]
+
+[package.dependencies]
+jsonschema = "*"
+python-dateutil = "*"
+
+[package.extras]
+apispec = ["apispec"]
+fast-dateparsing = ["ciso8601"]
+fast-uuid = ["fastuuid"]
+fast-validation = ["fastjsonschema"]
+test = ["apispec-webframeworks", "apispec[yaml]", "black (==22.8.0)", "flake8", "flask", "isort", "mypy", "pytest", "pytest-ordering", "tox", "tox-gh-actions", "types-python-dateutil"]
+
+[[package]]
 name = "datasets"
 version = "2.14.7"
 description = "HuggingFace community-driven open-source library of datasets"
@@ -6840,4 +6862,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "96b0598c9bcb86a488035732759848c73f8cc5e4b51e25f9f6c002e0dd6c8705"
+content-hash = "a7f21bffca6b94e9837bf7b440798f2a8cd68ea74b03bcdb6ca3838bef18147a"

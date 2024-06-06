@@ -97,10 +97,12 @@ class OutputFormat(BaseDataClass):
         return super().load_from_dict(data)
 
 
-@trace_generator_states(save_dir=os.path.join(get_script_dir(), "traces"))
-@trace_generator_call(
-    save_dir=os.path.join(get_script_dir(), "traces"), error_only=True
-)
+def get_tracing_path():
+    return os.path.join(get_script_dir(), "traces")
+
+
+@trace_generator_states(save_dir=get_tracing_path())
+@trace_generator_call(save_dir=get_tracing_path(), error_only=True)
 class TRECClassifier(Component):
     r"""
     Optimizing goal is the examples_str in the prompt
