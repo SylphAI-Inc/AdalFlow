@@ -1,7 +1,7 @@
 import pytest
 from uuid import uuid4
 
-from lightrag.core.data_classes import (
+from lightrag.core.types import (
     UserQuery,
     AssistantResponse,
     DialogTurn,

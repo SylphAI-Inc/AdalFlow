@@ -9,7 +9,7 @@ import logging
 from lightrag.core.api_client import APIClient
 from lightrag.core import Generator, GeneratorOutput
 from lightrag.core.component import Component
-from lightrag.core.data_classes import BaseDataClass
+from lightrag.core.base_data_class import BaseDataClass
 from lightrag.core.string_parser import YAMLParser
 from lightrag.prompts.outputs import YAML_OUTPUT_FORMAT
 

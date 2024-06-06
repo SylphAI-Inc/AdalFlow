@@ -96,9 +96,6 @@ packages = [{ include = "../docs", from = "." }]
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
 lightrag = { path = "../lightrag", develop = true }
-pydata-sphinx-theme = "^0.15.3"
-sphinx = "^7.3.7"
-sphinx-design = "^0.6.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -99,6 +99,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
 lightrag = { path = "./lightrag", develop = true }
+sphinx = "^7.3.7"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -123,6 +124,10 @@ jupyter = "^1.0.0"
 ipykernel = "^6.29.4"
 colorama = "^0.4.6"
 dataclasses-jsonschema = "^2.16.0"
+
+[tool.poetry.group.doc.dependencies]
+pydata-sphinx-theme = "^0.15.3"
+sphinx-design = "^0.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
