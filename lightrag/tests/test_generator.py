@@ -7,8 +7,7 @@ import shutil
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.generator import Generator
 
-# from lightrag.components.api_client import OpenAIClient
-from lightrag.core.api_client import APIClient
+from lightrag.core.model_client import ModelClient
 from lightrag.tracing import GeneratorStateLogger
 import lightrag.utils.setup_env
 
@@ -16,8 +15,8 @@ import lightrag.utils.setup_env
 class TestGenerator(IsolatedAsyncioTestCase):
     def setUp(self):
         # Assuming that OpenAIClient is correctly mocked and passed to Generator
-        with patch("core.api_client.APIClient", spec=APIClient) as MockAPI:
-            mock_api_client = Mock(APIClient)
+        with patch("core.model_client.ModelClient", spec=ModelClient) as MockAPI:
+            mock_api_client = Mock(ModelClient)
             MockAPI.return_value = mock_api_client
             mock_api_client.call.return_value = "Generated text response"
 
