@@ -2,12 +2,12 @@
 We just need to very basic generator that can be used to generate text from a prompt.
 """
 
-from core.generator import Generator
-from core.component import Component
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
 
-from components.api_client import AnthropicAPIClient
+from lightrag.components.api_client import AnthropicAPIClient
 
-import utils.setup_env
+import lightrag.utils.setup_env
 
 
 class SimpleQA(Component):

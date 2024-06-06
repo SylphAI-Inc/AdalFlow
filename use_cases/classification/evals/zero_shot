@@ -1,0 +1,12 @@
+{
+    "zero_shot": {
+        "eval": {
+            "acc": 0.6,
+            "macro_f1": 0.39
+        },
+        "test": {
+            "acc": 0.6,
+            "macro_f1": 0.54
+        }
+    }
+}

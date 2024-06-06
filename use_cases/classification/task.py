@@ -1,30 +1,37 @@
 from typing import Dict, Any
 from dataclasses import dataclass, field
+import os
 
-import utils.setup_env
+from lightrag.utils import setup_env
 import re
 
 import logging
 
-from core.component import Component, Sequential, fun_to_component
-from core.generator import Generator
-from components.api_client import (
+from lightrag.core.component import Component, Sequential, fun_to_component
+from lightrag.core.generator import Generator, GeneratorOutput
+from lightrag.components.api_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,
     AnthropicAPIClient,
 )
-from core.prompt_builder import Prompt
-from prompts.outputs import YAMLOutputParser
-from core.string_parser import JsonParser
-from tracing import trace_generator_states, trace_generator_call
+from lightrag.core.prompt_builder import Prompt
+from lightrag.prompts.outputs import YAMLOutputParser
+from lightrag.core.string_parser import JsonParser
+
+from lightrag.tracing import trace_generator_states, trace_generator_call
 
 from use_cases.classification.data import (
     _COARSE_LABELS,
     _COARSE_LABELS_DESC,
 )
 
-logger = logging.getLogger(__name__)
+
+from lightrag.core.data_classes import BaseDataClass
+from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
+from use_cases.classification.utils import get_script_dir
+from use_cases.classification.config_log import log
+
 
 CLASSIFICATION_TASK_DESC = r"""You are a classifier. Given a Question, you need to classify it into one of the following classes:
 Format: class_index. class_name, class_description
@@ -50,12 +57,9 @@ TEMPLATE = r"""{# task desc #}
 {#{% endfor %}#}
 </EXAMPLES>
 {% endif %}
-{{input_label}}: {{input}}
+{{input_label}}: {{input}} {# input_label is the prompt argument #}
 Your output:
 """
-
-from core.data_classes import BaseDataClass
-from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
 
 
 @dataclass
@@ -93,8 +97,10 @@ class OutputFormat(BaseDataClass):
         return super().load_from_dict(data)
 
 
-@trace_generator_states()
-@trace_generator_call(error_only=True)
+@trace_generator_states(save_dir=os.path.join(get_script_dir(), "traces"))
+@trace_generator_call(
+    save_dir=os.path.join(get_script_dir(), "traces"), error_only=True
+)
 class TRECClassifier(Component):
     r"""
     Optimizing goal is the examples_str in the prompt
@@ -138,9 +144,9 @@ class TRECClassifier(Component):
         )
         # output_str = OutputFormat.to_json_signature()
         output_str = yaml_parser.format_instructions()
-        logger.debug(f"output_str: {output_str}")
+        log.debug(f"output_str: {output_str}")
         groq_model_kwargs = {
-            "model": "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192", #gemma-7b-it not good at following yaml format
+            "model": "gemma-7b-it",  # "llama3-8b-8192",  # "llama3-8b-8192",  # "llama3-8b-8192", #gemma-7b-it not good at following yaml format
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,
@@ -159,20 +165,15 @@ class TRECClassifier(Component):
             "model": "gemini-1.5-pro-latest",
             "temperature": 0.0,
             "top_p": 1,
-            # "frequency_penalty": 0,
-            # "presence_penalty": 0,
-            # "n": 1,
         }
         anthropic_model_kwargs = {
             "model": "claude-3-opus-20240229",
             "temperature": 0.0,
             "top_p": 1,
-            # "frequency_penalty": 0,
-            # "presence_penalty": 0,
-            # "n": 1,
             "max_tokens": 1024,
         }
 
+        @fun_to_component
         def format_class_label(x: Dict[str, Any]) -> int:
             label = int(x["class_index"])
             if label >= self.num_classes:
@@ -189,53 +190,42 @@ class TRECClassifier(Component):
                 "input_label": "Question",
             },
             trainable_params=["examples_str", "task_desc_str"],
-            output_processors=Sequential(
-                yaml_parser, fun_to_component(format_class_label)
-            ),
+            output_processors=Sequential(yaml_parser, format_class_label),
         )
 
     # def init_parameters(self):
     #     self.generator.examples_str.update_value()
 
     def call(self, query: str) -> str:
+        re_pattern = r"\d+"
         output = self.generator.call(prompt_kwargs={"input": query})
         if output.data is not None and output.error_message is None:
             response = output.data
+            return response
+
         else:
-            print(f"error_message: {output.error_message}")
-            print(f"raw_response: {output.raw_response}")
-            print(f"response: {output.data}")
-            return output.error_message
-
-        print(f"response: {response}")
-
-        # use re to find the first integer in the response, can be multiple digits
-        re_pattern = r"\d+"
-        # label = re.findall(re_pattern, str_response)
-        # if label:
-        #     label = int(label[0])
-        # else:
-        #     label = -1
-        # if label >= self.num_classes:
-        #     label = -1
-
-        # class_name = self.labels[label]
-
-        label = response
-        if isinstance(label, str):
-            label_match = re.findall(re_pattern, label)
-            if label_match:
-                label = int(label_match[0])
+            log.info(f"error_message: {output.error_message}")
+            log.info(f"raw_response: {output.raw_response}")
+            log.info(f"response: {output.data}")
+            # Additional processing in case it is not predicting a number but a string
+            label = response
+            if isinstance(label, str):
+                label_match = re.findall(re_pattern, label)
+                if label_match:
+                    label = int(label_match[0])
+                else:
+                    label = -1
+                return label
             else:
-                label = -1
-        return label
+                return label
 
 
 if __name__ == "__main__":
-    # test one example
+
+    log.info("Start TRECClassifier")
+
     query = "How did serfdom develop in and then leave Russia ?"
     trec_classifier = TRECClassifier(labels=_COARSE_LABELS)
-    print(trec_classifier)
-    trec_classifier.generator.print_prompt()
+    log.info(trec_classifier)
     label = trec_classifier.call(query)
-    print(f"label: {label}")
+    log.info(f"label: {label}")
