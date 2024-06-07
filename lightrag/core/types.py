@@ -24,7 +24,7 @@ import yaml
 import warnings
 import logging
 
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 
 from lightrag.core.tokenizer import Tokenizer
 
@@ -291,7 +291,7 @@ def retriever_output_to_context_str(
 
 
 @dataclass
-class GeneratorOutput(BaseDataClass, Generic[T_co]):
+class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
     We can not control its output 100%, so we use this to track the error_message and
@@ -347,11 +347,11 @@ class DynamicDataClassFactory:
     print(class_instance)
 
     # Output:
-    # BaseDataClass(age=30, name='John Doe')
+    # DataClass(age=30, name='John Doe')
     """
 
     @staticmethod
-    def create_from_dict(data: dict, base_class=BaseDataClass):
+    def create_from_dict(data: dict, base_class=DataClass):
         fields_spec = []
         for key, value_dict in data.items():
             field_type = type(value_dict["value"])

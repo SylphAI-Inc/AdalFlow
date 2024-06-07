@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 
 from lightrag.core.generator import GeneratorOutput
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 from lightrag.utils import append_to_jsonl, load_jsonl
 
 
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class GeneratorCallRecord(BaseDataClass):
+class GeneratorCallRecord(DataClass):
     prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
     model_kwargs: Dict[str, Any] = field(default_factory=dict)
     output: GeneratorOutput = field(default_factory=GeneratorOutput)

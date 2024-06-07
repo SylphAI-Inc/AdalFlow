@@ -1,4 +1,7 @@
 /* custom.css */
+:root {
+    --pst-font-size-base: 17px;
+}
 .wy-nav-content {
     max-width: 1000px; /* Adjust the width of the main content area */
 }

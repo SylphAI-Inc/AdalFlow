@@ -38,7 +38,7 @@ def required_field(name):
 def _get_data_class_schema(
     data_class: Type, exclude: Optional[List[str]] = None
 ) -> Dict[str, Dict[str, Any]]:
-    r"""Helper function to get the schema of a BaseDataClass in type of Dict."""
+    r"""Helper function to get the schema of a DataClass in type of Dict."""
 
     if not is_dataclass(data_class):
         raise ValueError("Provided class is not a dataclass")
@@ -98,7 +98,7 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
 
 
 @dataclass
-class BaseDataClass:
+class DataClass:
     __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
 
     Especially to LLM prompt.
@@ -108,9 +108,9 @@ class BaseDataClass:
 
     It creates string `signature` or `schema` for both the class type and the class instance.
 
-    Schema is a standard way to describe the data structure in Json string.
+    - `Schema` is a standard way to describe the data structure in Json string.
 
-    Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
+    - Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
 
     Better use schema with example signature (either yaml or json) depending on the use case.
 
@@ -118,7 +118,7 @@ class BaseDataClass:
     ```
     # Define a dataclass
     @dataclass
-    class MyOutputs(BaseDataClass):
+    class MyOutputs(DataClass):
         age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
         name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
     # Create json signature
@@ -211,7 +211,7 @@ class BaseDataClass:
         Example:
 
         >>> @dataclass
-        >>> class MyOutputs(BaseDataClass):
+        >>> class MyOutputs(DataClass):
         >>>    age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
         >>>    name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
 
@@ -356,11 +356,11 @@ class DynamicDataClassFactory:
     print(class_instance)
 
     # Output:
-    # BaseDataClass(age=30, name='John Doe')
+    # DataClass(age=30, name='John Doe')
     """
 
     @staticmethod
-    def create_from_dict(data: dict, base_class=BaseDataClass):
+    def create_from_dict(data: dict, base_class=DataClass):
         fields_spec = []
         for key, value_dict in data.items():
             field_type = type(value_dict["value"])

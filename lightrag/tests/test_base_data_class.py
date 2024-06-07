@@ -1,11 +1,11 @@
 import unittest
-from lightrag.core import BaseDataClass
+from lightrag.core import DataClass
 from dataclasses import field, MISSING, dataclass
 
 
-# Assuming BaseDataClass is in your_module and correctly imported
+# Assuming DataClass is in your_module and correctly imported
 @dataclass
-class MyOutputs(BaseDataClass):
+class MyOutputs(DataClass):
     age: int = field(
         default=MISSING, metadata={"desc": "The age of the person", "prefix": "Age:"}
     )

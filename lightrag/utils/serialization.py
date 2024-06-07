@@ -37,7 +37,7 @@ def default(o: Any) -> Union[Dict[str, Any], str]:
     """
     seralized_obj = {}
 
-    # 1. Handle the case like Component, BaseDataClass where we have to_dict and to_dict_class
+    # 1. Handle the case like Component, DataClass where we have to_dict and to_dict_class
     obj_type = check_object(o)
     if obj_type == ObjectTypes.CLASS:
         log.debug(f"Object {o} is a class with name {o.__name__}")
