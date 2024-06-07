@@ -87,8 +87,6 @@ class OutputFormat(BaseDataClass):
 
     @classmethod
     def load_from_dict(cls, data: Dict[str, Any]):
-        # customize to convert data item from a dataset into output data object
-        # "label" -> "class_index"
         data = {
             "thought": None,
             "class_index": data["coarse_label"],

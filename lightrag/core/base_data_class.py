@@ -180,11 +180,17 @@ class DataClass:
         return cls(**valid_data)
 
     @classmethod
-    def get_data_class_schema(
+    def to_data_class_schema(
         cls, exclude: Optional[List[str]] = None
     ) -> Dict[str, Dict[str, Any]]:
         """Generate a Json schema which is more detailed than the signature."""
         return _get_data_class_schema(cls, exclude)
+
+    @classmethod
+    def to_data_class_schema_str(cls, exclude: Optional[List[str]] = None) -> str:
+        """Generate a Json schema which is more detailed than the signature."""
+        schema = cls.to_data_class_schema(exclude)
+        return json.dumps(schema, indent=4)
 
     @classmethod
     def to_yaml_signature(cls, exclude: Optional[List[str]] = None) -> str:
@@ -194,7 +200,7 @@ class DataClass:
         """
         # NOTE: we manually format the yaml string as the yaml.dump will always sort the keys
         # Which can impact the final model output
-        schema = cls.get_data_class_schema(exclude)
+        schema = cls.to_data_class_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
         yaml_content = []
         for key, value in signature_dict.items():
@@ -206,7 +212,7 @@ class DataClass:
 
     @classmethod
     def to_json_signature(cls, exclude: Optional[List[str]] = None) -> str:
-        r"""Generate a JSON `signature`(json string) for the class from desc in metadata.
+        """Generate a JSON `signature`(json string) for the class from desc in metadata.
 
         Used mostly as LLM prompt to describe the output data format.
 
@@ -224,22 +230,23 @@ class DataClass:
         >>> #    "name": "The name of the person (str) (required)"
         >>> #}'
         """
-        schema = cls.get_data_class_schema(exclude)
+        schema = cls.to_data_class_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
-        # manually format the json string as the json.dump will always sort the keys
-        # Which can impact the final model output
-        json_content = []
-        for key, value in signature_dict.items():
-            json_content.append(f'"{key}": "{value}"')
+        # # manually format the json string as the json.dump will always sort the keys
+        # # Which can impact the final model output
+        # json_content = []
+        # for key, value in signature_dict.items():
+        #     json_content.append(f'"{key}": "{value}"')
 
-        # Join all parts with commas to form the complete JSON string
-        json_output = ",\n".join(json_content)
-        return "{\n" + json_output + "\n}"
-        # return json.dumps(metadata_dict, indent=4)
+        # # Join all parts with commas to form the complete JSON string
+        # json_output = ",\n".join(json_content)
+        # # return "{\n" + json_output + "\n}"
+        return json.dumps(signature_dict, indent=4)
 
     def to_yaml(self, exclude: Optional[List[str]] = None) -> str:
         """
         Convert the dataclass instance to a YAML string.
+
         Manually formats each field to ensure proper YAML output without unwanted characters.
 
         You can load it back to yaml object with:
@@ -274,6 +281,7 @@ class DataClass:
     def to_json(self, exclude: Optional[List[str]] = None) -> str:
         """
         Convert the dataclass instance to a JSON string.
+
         Manually formats each field to ensure proper JSON output without unwanted characters.
 
         You can load it back to json object with:
@@ -303,20 +311,21 @@ class DataClass:
 
     @classmethod
     def to_dict_class(cls, exclude: Optional[List[str]] = None) -> dict:
-        """Converts the dataclass to a dictionary, optionally excluding specified fields.
+        """More of an internal used class method for serialization.
 
-        Use this to save states of the instance in serialization, not advised to use in LLM prompt.
+        Converts the dataclass to a dictionary, optionally excluding specified fields.
+        Use this to save states of the class in serialization, not advised to use in LLM prompt.
         """
-        return cls.get_data_class_schema(exclude)
+        return cls.to_data_class_schema(exclude)
 
     # TODO: maybe worth to support recursive to_dict for nested dataclasses
     # Can consider when we find the nested dataclass needs
     def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """Converts the dataclass to a dictionary, optionally excluding specified fields.
+        """More of an internal method used for serialization.
 
-        Use this to save states of the instance in serialization, not advised to use in LLM prompt.
+        Converts the dataclass to a dictionary, optionally excluding specified fields.
+        Use this to save states of the instance, not advised to use in LLM prompt.
         """
-        # valid that it is called on a class instance not a class
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
         if exclude is None:
@@ -332,7 +341,9 @@ class DataClass:
         return data
 
 
-# Reserved for Agent to automatically create a dataclass and to manipulate the code
+"""Reserved for Agent to automatically create a dataclass and to manipulate the code"""
+
+
 @dataclass
 class DynamicDataClassFactory:
     __doc__ = r"""
