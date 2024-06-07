@@ -1,4 +1,5 @@
 /* custom.css */
+
 .wy-nav-content {
     max-width: 1000px; /* Adjust the width of the main content area */
 }
@@ -7,18 +8,10 @@
     color: #000000 !important; /* Sets text color to black */
 
 }
-.half-width {
-    width: 47%;
-    float: left;
-    padding: 2%;
-    box-sizing: border-box;
-}
-
-.code-comparison {
-    /* display: flex; */
-    width: 100%;
-    justify-content: space-between;
-}
+:root {
+    /* Use softer blue from bootstrap's default info color */
+    --pst-color-info: 23, 162, 184;
+  }
 
 .caption-text {
     font-size: 14px;  /* Sets the smallest font size */
@@ -28,3 +21,49 @@
     /* remove the "section navigation" string*/
     display: none;
 }
+
+table {
+    width: auto; /* Override fit-content which breaks Styler user guide ipynb */
+  }
+  
+  /* Main index page overview cards */
+  
+  .intro-card {
+    padding: 30px 10px 20px 10px;
+  }
+  
+  .intro-card .sd-card-img-top {
+    margin: 10px;
+    height: 52px;
+    background: none !important;
+  }
+  
+  .intro-card .sd-card-title {
+    color: var(--pst-color-primary);
+    font-size: var(--pst-font-size-h5);
+    padding: 1rem 0rem 0.5rem 0rem;
+  }
+  
+  .intro-card .sd-card-footer {
+    border: none !important;
+  }
+  
+  .intro-card .sd-card-footer p.sd-card-text {
+    max-width: 220px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .intro-card .sd-btn-secondary {
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+  }
+  
+  .intro-card .sd-btn-secondary:hover {
+    background-color: #5a6268 !important;
+    border-color: #545b62 !important;
+  }
+  
+  .card, .card img {
+    background-color: var(--pst-color-background);
+  }

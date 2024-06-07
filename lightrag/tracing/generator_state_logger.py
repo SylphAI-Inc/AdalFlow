@@ -8,7 +8,7 @@ from datetime import datetime
 import json
 
 from lightrag.core.generator import Generator
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 from lightrag.utils import serialize
 
 
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class GeneratorStatesRecord(BaseDataClass):
+class GeneratorStatesRecord(DataClass):
     prompt_states: Dict[str, Any] = field(default_factory=dict)
     time_stamp: str = field(default_factory=str)
 
