@@ -2,7 +2,7 @@
 
 from typing import List
 from lightrag.core.generator import Generator
-from lightrag.components.api_client import OpenAIClient
+from lightrag.components.model_client import OpenAIClient
 
 
 DEFAULT_LLM_EVALUATOR_PROMPT = r"""
@@ -18,23 +18,20 @@ Ground truth answer: {{gt_answer}}
 {# predicted answer #}
 Predicted answer: {{pred_answer}}
 {# judgement question #}
-Judgement question: {{query_str}}
+Judgement question: {{input}}
 {# assistant response #}
 You:
 """
 
 DEFAULT_LLM_EVALUATOR = Generator(
-    model_client=OpenAIClient,
+    model_client=OpenAIClient(),
     model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False},
     template=DEFAULT_LLM_EVALUATOR_PROMPT,
     preset_prompt_kwargs={
         "task_desc_str": r"""
             You are a helpful assistant.
             Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
-            Output True or False according to the judgement query following this JSON format:
-            {
-                "judgement": True
-            }
+            Output True or False according to the judgement query.
             """
     },
 )
@@ -64,20 +61,26 @@ class LLMasJudge:
             question (str): Question string.
             pred_answer (str): Predicted answer string.
             gt_answer (str): Ground truth answer string.
-            judgement_query (str): judgement query string.
+            judgement_query (str): Judgement query string.
 
         Returns:
             bool: Judgement result.
         """
-        judgement = self.llm_evaluator(
-            input=judgement_query,
+        output = self.llm_evaluator(
             prompt_kwargs={
+                "input": judgement_query,
                 "question_str": question,
                 "gt_answer": gt_answer,
                 "pred_answer": pred_answer,
             },
         )
-        return judgement["judgement"]
+        judgement = output.raw_response
+        if judgement == "True":
+            return True
+        elif judgement == "False":
+            return False
+        else:
+            raise ValueError(f"Invalid judgement: {judgement}")
 
     def compute_judgement(
         self,
@@ -93,7 +96,7 @@ class LLMasJudge:
             all_questions (List[str]): List of question strings.
             all_pred_answer (List[str]): List of predicted answer strings.
             all_gt_answer (List[str]): List of ground truth answer strings.
-            judgement_query (str): judgement query string.
+            judgement_query (str): Judgement query string.
 
         Returns:
             List[bool]: Judgement results.

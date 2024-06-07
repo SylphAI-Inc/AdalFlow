@@ -20,9 +20,13 @@ def test_answer_match_evaluator():
 
 
 def test_llm_as_judge():
-    all_questions = ["question1", "question2", "question3"]
-    all_pred_answer = ["positive", "negative", "this is neutral"]
-    all_gt_answer = ["positive", "positive", "neutral"]
+    all_questions = [
+        "Is Beijing in China?",
+        "Is Apple founded before Google?",
+        "Is earth flat?",
+    ]
+    all_pred_answer = ["Yes", "Yes, Appled is founded before Google", "Yes"]
+    all_gt_answer = ["Yes", "Yes", "No"]
     judgement_query = (
         "For the question, does the predicted answer contain the ground truth answer?"
     )
@@ -31,4 +35,4 @@ def test_llm_as_judge():
         all_questions, all_pred_answer, all_gt_answer, judgement_query
     )
     assert avg_judgement == 2 / 3
-    assert judgement_list == [1.0, 0.0, 1.0]
+    assert judgement_list == [True, True, False]
