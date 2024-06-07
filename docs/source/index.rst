@@ -130,19 +130,8 @@ New Users
    
 
 
-Intermediate Users
+Tutorials - How each part works
 =======================
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Level up
-
-   tutorials/index
-
-
-Dive deep into the design of the libraries
-==============================================
-
 
 .. toctree::
    :glob:
@@ -150,6 +139,19 @@ Dive deep into the design of the libraries
    :caption: Developer Notes
 
    developer_notes/index
+
+
+
+
+Use Cases - How different parts are used to build various LLM applications
+==============================================
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Level up
+
+   tutorials/index
 
 
 .. toctree::

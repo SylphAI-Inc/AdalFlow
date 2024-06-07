@@ -1,6 +1,11 @@
 DataClass
 ============
 
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library. 
 The data in particular is a multi-dimensional matrix such as such as weights, biases, and even inputs and predictions.
 In LLM applications, you can think of the data as a freeform data class with various fields and types of data.
@@ -254,8 +259,9 @@ Here is a real-world example:
             }
             return super().load_from_dict(data)
 
-
-
+.. note::
+    
+    If you are looking for data types we used to support each component or any other class like `Optimizer`, you can check out the :ref:`core.types<core-types>` file.
 
 
 
