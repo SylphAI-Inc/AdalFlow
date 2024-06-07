@@ -1,4 +1,5 @@
 from lightrag.eval.answer_match_evaluator import AnswerMatchEvaluator
+from lightrag.eval.retriever_evaluator import RetrieverEvaluator
 from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
 
 
@@ -17,6 +18,33 @@ def test_answer_match_evaluator():
     )
     assert answer_match_acc == 1.0
     assert match_acc_list == [1.0, 1.0, 1.0]
+
+
+def test_retriever_evaluator():
+    all_retrieved_context = [
+        "Apple is founded before Google.",
+        "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
+    ]
+    all_gt_context = [
+        [
+            "Apple is founded in 1976.",
+            "Google is founded in 1998.",
+            "Apple is founded before Google.",
+        ],
+        ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
+    ]
+    retriever_evaluator = RetrieverEvaluator()
+    avg_recall, recall_list = retriever_evaluator.compute_recall(
+        all_retrieved_context, all_gt_context
+    )
+    assert avg_recall == 2 / 3
+    assert recall_list == [1 / 3, 1.0]
+    avg_relevance, relevance_list = retriever_evaluator.compute_context_relevance(
+        all_retrieved_context, all_gt_context
+    )
+    assert 0.8 < avg_relevance < 0.81
+    assert relevance_list[0] == 1.0
+    assert 0.6 < relevance_list[1] < 0.61
 
 
 def test_llm_as_judge():
