@@ -1,11 +1,23 @@
 DataClass
 ============
 
-BaseDataClass
--------------
-(BaseDataClass or just DataClass)
+In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library. 
+The data in particular is a multi-dimensional matrix such as such as weights, biases, and even inputs and predictions.
+In LLM applications, you can think of the data as a freeform data class with various fields and types of data.
+For instance:
 
-In PyTorch, 'Tensor' is the data container for all data as it is specifically designed for numerical data and can be used to communicate with 
+.. code-block:: python
+
+    from dataclasses import dataclass
+
+    @dataclass
+    class TrecData:
+        question: str
+        label: int
+
+It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `HuggingFace` ``Dataset``.
+
+ for all data as it is specifically designed for numerical data and can be used to communicate with 
 `Module` and `Optimizer` class via wrapped into `Parameter` class.
 
 In LLM applications, this is challenging as all types of data, text, list, dict, yaml, json etc, they can all

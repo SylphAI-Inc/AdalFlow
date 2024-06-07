@@ -1,5 +1,5 @@
 """
-The data classes used to support core components.
+The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
 from typing import List, Dict, Any, Optional, TypeVar, Type
@@ -99,7 +99,9 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
 
 @dataclass
 class DataClass:
-    __doc__ = r"""Base class designed to streamline the handling, serialization, and description of data within our applications.
+    __doc__ = r"""The base data class for almost all data types that interact with LLMs.
+     
+       designed to streamline the handling, serialization, and description of data within our applications.
 
     Especially to LLM prompt.
 

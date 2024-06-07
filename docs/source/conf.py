@@ -54,6 +54,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinx.ext.autosectionlabel",
     "sphinx_design",
+    "sphinx_copybutton",
     # "sphinx.builders.changes",
     # 'recommonmark',
     # 'myst_parser'
