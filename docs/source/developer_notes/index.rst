@@ -23,7 +23,7 @@ TODO:
 With generator being in the center, all things are built around it via the prompt.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    lightrag_design_philosophy
 
@@ -35,7 +35,7 @@ Core Components - Generator
 Model cliens are for both
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    api_client
    component
@@ -50,7 +50,7 @@ Model cliens are for both
 Core Components - Retriever  (Enhance Generator to be more factual and less hallucination)
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    embedder
    retriever
@@ -61,7 +61,7 @@ Core Components - Agent (Enhance Generator with tools, planning, and reasoning)
 tools and execturos, react and how react relates to generator.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    model
 
@@ -72,7 +72,7 @@ Like enhance its memoty! etc
 Datasets and Evaulation 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    evaluation
 

@@ -2,7 +2,7 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, TypeVar, Type
+from typing import List, Dict, Any, Optional, TypeVar, Type, Tuple
 from dataclasses import (
     dataclass,
     field,
@@ -97,6 +97,44 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
     return signature
 
 
+class DataClassMeta(type):
+    r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
+
+    Args:
+        cls: The class object being created.
+            It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
+            <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
+        name: the name of the class
+        bases: A tuple of the base classes from which the class inherits.
+        dct: The dictionary of attributes and methods of the class.
+    """
+
+    def __init__(
+        cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
+    ) -> None:
+        super(DataClassMeta, cls).__init__(name, bases, dct)
+        # __name__ is lightrag.core.base_data_class, will always be the base class
+        # print("DataClassMeta init, class:", cls)
+        # print(
+        #     f"cls.__module__ = {cls.__module__}, __name__ = {__name__}, {cls.__module__ != __name__}"
+        # )
+        # print(f"{cls.__module__} is_dataclass(cls) = {is_dataclass(cls)} ")
+        if (
+            not is_dataclass(cls)
+            and cls.__module__ != __name__  # and bases != (object,)
+        ):  # Avoid decorating DataClass itself.
+            # print(f"dataclas : {cls}")
+            dataclass(cls)
+
+
+# TODO: we want the child class to work either with or without dataclass decorator,
+# using metaclass with DataClassMeta works if both base and child does not have dataclass decorator
+# but if the child has dataclass decorator, it will not work.
+# class DataClass(metaclass=DataClassMeta):
+# class OutputDataClass(DataClass):
+# before we do more tests, we keep the base and child class manually decorated with dataclass
+
+
 @dataclass
 class DataClass:
     __doc__ = r"""The base data class for almost all data types that interact with LLMs.
@@ -119,6 +157,8 @@ class DataClass:
     Example usage:
     ```
     # Define a dataclass
+    from dataclasses import field, dataclass
+    from lightrag.core.base_data_class import DataClass
     @dataclass
     class MyOutputs(DataClass):
         age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})

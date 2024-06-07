@@ -117,39 +117,34 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 We encourage all users to at least skim through the developer documentation. Different from "PyTorch" where a normal user does not have to customize a building module for neural network, 
 LLM applications have much bigger scope and varies even more to different product environments, so developers customizing components on their own is much more common.
 
-New Users
-=======================
+
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: Get Started
+   :caption: New Users
 
 
    get_started/index
    
 
 
-Tutorials - How each part works
-=======================
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: Developer Notes
+   :caption: Tutorials - How each part works
 
    developer_notes/index
 
 
 
 
-Use Cases - How different parts are used to build various LLM applications
-==============================================
 
 
 .. toctree::
    :maxdepth: 1
-   :caption: Level up
+   :caption: Use Cases - How different parts are used to build various LLM applications
 
    tutorials/index
 
@@ -175,8 +170,7 @@ Use Cases - How different parts are used to build various LLM applications
    
 ..    resources/index
 
-For Contributors
-=======================
+
 .. toctree::
    :glob:
    :maxdepth: 1
