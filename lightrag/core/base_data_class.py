@@ -439,7 +439,7 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        ...
+        
     }
 
     Examples:

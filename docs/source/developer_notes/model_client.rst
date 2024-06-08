@@ -70,4 +70,4 @@ The `call` method is used to make a synchronous call to the API. The subclass mo
         r"""Subclass use this to call the API with the async client."""
         pass
 
-**See how each API provider has implemented these classes in the `components.api_client` section.**
+**See how each API provider has implemented these classes in the `components.model_client` section.**

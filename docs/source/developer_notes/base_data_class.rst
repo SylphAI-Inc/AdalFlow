@@ -177,7 +177,7 @@ The yaml signature output will be:
 All of the above methods support `exclude` parameter to exclude some fields from the output.
 
 Data Instance or say Example
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To better demonstrate either the data format or provide examples seen in few-shot In-context learning, 
 we provide two methods: `to_json` and `to_yaml` to convert the data instance to json or yaml string.
 
