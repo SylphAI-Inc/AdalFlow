@@ -23,7 +23,7 @@ help:
 
 apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/core --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/components --separate --force 
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates	
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/eval --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../lightrag/prompts --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/utils --separate --force
@@ -32,8 +32,8 @@ apidoc:
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
-	# @echo "Removing duplicated files"
-	# @python $(SOURCEDIR)/remove_files.py
+	@echo "Removing duplicated files"
+	@python $(SOURCEDIR)/remove_files.py
 
 
 

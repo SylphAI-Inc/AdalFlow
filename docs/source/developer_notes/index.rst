@@ -11,10 +11,10 @@ Learn more on our over all design phisolophy, and how we designed each core part
    lightrag_design_philosophy
 
    llm_intro
-   api_client
+   model_client
    component
    prompt
-   data_classes
+   base_data_class
    generator
    embedder
    retriever

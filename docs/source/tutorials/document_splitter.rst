@@ -21,7 +21,7 @@ The common solution for Retrieval is to chunk the documents into smaller context
 The DocumentSplitter in LightRAG is designed to preprocess text by splitting long documents into smaller chunks. 
 This improves the performance of embedding models and ensures they operate within their maximum context length limits. 
 
-``LightRAG's DocumentSplitter`` splits a list of documents (:obj:`core.data_classes.Document`) into a list of shorter documents.
+``LightRAG's DocumentSplitter`` splits a list of documents (:obj:`core.base_data_class.Document`) into a list of shorter documents.
 The document object to manage id, document content,optional meta data, document's embedding vectors, etc.
 Instead of maintaining the complex relationship between parent, child, previous, and next documents, ``LightRAG`` mainly manages the related documents with ``parent_doc_id`` (id of the Document where the chunk is from) and ``order`` (order of the chunked document in the original document).
 
@@ -69,7 +69,7 @@ Now let's see the code example. First, import the components.
 .. code:: python
 
     from core.document_splitter import DocumentSplitter
-    from core.data_classes import Document
+    from core.base_data_class import Document
 
 Then, configure the splitter settings.
 
@@ -139,7 +139,7 @@ First, import the packages and set up the environment.
 .. code-block:: python
 
     from lightrag.core.embedder import Embedder
-    from lightrag.components.api_client import OpenAIClient
+    from lightrag.components.model_client import OpenAIClient
     from lightrag.core.data_components import ToEmbedderResponse, ToEmbeddings
     from lightrag.core.types import Document
     from lightrag.core.document_splitter import DocumentSplitter
@@ -209,6 +209,7 @@ Now, create the embedder. ``LightRAG`` uses ``Embedder`` to configure the embedd
 Finally, check the results.
 
 .. code-block:: python
+
     # show the embedding for each splitted doc
     embeddings = to_embeddings(splitted_docs)
     for embedding in embeddings:
