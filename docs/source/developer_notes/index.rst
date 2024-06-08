@@ -49,7 +49,7 @@ Components can be easily chained togehter via `Sequential` for now.
    :maxdepth: 1
 
    component
-   data_classes
+   base_data_class
 
 
 In the core, lies our ``Generator``.
