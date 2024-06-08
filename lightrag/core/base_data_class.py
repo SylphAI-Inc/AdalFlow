@@ -3,6 +3,7 @@ The role of the base data class in LightRAG for LLM applications is like `Tensor
 """
 
 from typing import List, Dict, Any, Optional, TypeVar, Type, Tuple
+import enum
 from dataclasses import (
     dataclass,
     field,
@@ -21,6 +22,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
+
+
+class DataclassFormatType(enum.Enum):
+    r"""The format type for the dataclass schema."""
+
+    SCHEMA = "schema"
+    SIGNATURE_YAML = "signature_yaml"
+    SIGNATURE_JSON = "signature_json"
+    EXAMPLE_YAML = "example_yaml"
+    EXAMPLE_JSON = "example_json"
 
 
 def required_field(name):
@@ -220,6 +231,37 @@ class DataClass:
             if f.name in data:
                 valid_data[f.name] = data[f.name]
         return cls(**valid_data)
+
+    @classmethod
+    def format_str(cls: "DataClass", format_type: DataclassFormatType) -> str:
+        """Generate formatted output based on the type of operation and class/instance context.
+
+        Args:
+            format_type (DataclassFormatType): Specifies the format and type (schema, signature, example).
+
+        Returns:
+            str: A string representing the formatted output.
+        """
+        if not is_dataclass(cls):
+            raise ValueError(f"{cls.__name__} must be a dataclass to use format_str.")
+
+        # Check the type of format required and whether it's called on an instance or class
+        if format_type == DataclassFormatType.SIGNATURE_JSON:
+            return cls.to_json_signature()
+        elif format_type == DataclassFormatType.SIGNATURE_YAML:
+            return cls.to_yaml_signature()
+        elif format_type == DataclassFormatType.EXAMPLE_JSON:
+            if isinstance(cls, type):
+                raise ValueError("EXAMPLE_JSON requires an instance of the dataclass.")
+            return cls.to_json()
+        elif format_type == DataclassFormatType.EXAMPLE_YAML:
+            if isinstance(cls, type):
+                raise ValueError("EXAMPLE_YAML requires an instance of the dataclass.")
+            return cls.to_yaml()
+        elif format_type == DataclassFormatType.SCHEMA:
+            return cls.to_data_class_schema_str()
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
 
     @classmethod
     def to_data_class_schema(
