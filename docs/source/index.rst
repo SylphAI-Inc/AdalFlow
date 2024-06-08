@@ -68,7 +68,6 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
 
 
-
 **Why LightRAG?**
 
 
