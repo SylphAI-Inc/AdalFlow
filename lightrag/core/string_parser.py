@@ -16,10 +16,15 @@ import lightrag.core.functional as F
 
 
 class ListParser(Component):
-    """
-    A text parser for extracting list strings from text to list object.
-    NOTE: ensure only pass one list string in the text.
-    You can use `extract_list_str` to extract the first list string from the text.
+    __doc__ = r"""To extract list strings from text and parse them into a list object.
+
+    Examples:
+
+    .. code-block:: python
+
+        list_parser = ListParser()
+        test_input_4 = 'Some random text before ["item1", "item2"] and more after'
+        print(list_parser(test_input_4))  # Expected to extract ["item1", "item2"]
     """
 
     def __init__(self, add_missing_right_bracket: bool = True):
@@ -27,19 +32,29 @@ class ListParser(Component):
         self.add_missing_right_bracket = add_missing_right_bracket
 
     def __call__(self, input: str) -> List[Any]:
-        list_str = F.extract_list_str(input, self.add_missing_right_bracket)
-        list_obj = F.parse_json_str_to_obj(list_str)
-        return list_obj
+        input = input.strip()
+        try:
+            list_str = F.extract_list_str(input, self.add_missing_right_bracket)
+            list_obj = F.parse_json_str_to_obj(list_str)
+            return list_obj
+        except Exception as e:
+            raise ValueError(f"Error: {e}")
 
 
 JASON_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
 class JsonParser(Component):
-    """
-    A text parser for extracting JSON strings from text to json object.
-    NOTE: ensure only pass one json string in the text.
-    You can use `extract_json_str` to extract the first json string from the text.
+    __doc__ = r"""To extract JSON strings from text and parse them into a JSON object.
+
+    Examples:
+
+    .. code-block:: python
+
+        json_parser = JsonParser()
+        json_str = "```json\n{\"key\": \"value\"}\n```"
+        json_obj = json_parser(json_str)
+        print(json_obj)  # Expected to extract {"key": "value"}
     """
 
     def __init__(self, add_missing_right_brace: bool = True):
@@ -48,23 +63,28 @@ class JsonParser(Component):
 
     def call(self, input: str) -> JASON_PARSER_OUTPUT_TYPE:
         input = input.strip()
-        json_str = F.extract_json_str(input, self.add_missing_right_brace)
-        json_obj = F.parse_json_str_to_obj(json_str)
-        return json_obj
+        try:
+            json_str = F.extract_json_str(input, self.add_missing_right_brace)
+            json_obj = F.parse_json_str_to_obj(json_str)
+            return json_obj
+        except Exception as e:
+            raise ValueError(f"Error: {e}")
 
 
 YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
 class YAMLParser(Component):
-    __doc__ = r"""A text parser for extracting YAML strings and parsing them into a JSON object.
+    __doc__ = r"""To extract YAML strings from text and parse them into a YAML object.
 
     Examples:
-        >>> yaml_parser = YAMLParser()
-        >>> yaml_str = "```yaml\nkey: value\n```"
-        >>> yaml_obj = yaml_parser(yaml_str)
-        >>> print(yaml_obj)
-        {'key': 'value'}
+
+    .. code-block:: python
+
+        yaml_parser = YAMLParser()
+        yaml_str = "```yaml\nkey: value\n```"
+        yaml_obj = yaml_parser(yaml_str)
+        print(yaml_obj)  # Expected to extract {"key": "value"}
     """
 
     def __init__(self):
@@ -192,26 +212,3 @@ def parse_function_call(
         return func_name, args, keywords
     else:
         raise ValueError("Provided string is not a function call.")
-
-
-if __name__ == "__main__":
-    # test_input = (
-    #     '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}'
-    # )
-    # print(
-    #     extract_json_str(test_input, add_missing_right_brace=True)
-    # )  # Expected to complete the JSON properly
-
-    # test_input_2 = 'Some random text before {"key1": "value1"} and more after'
-    # print(extract_json_str(test_input_2))  # Expected to extract {"key1": "value1"}
-
-    # test_input_3 = "No JSON here"
-    # try:
-    #     print(extract_json_str(test_input_3))
-    # except ValueError as e:
-    #     print(e)  # Expected to raise an error about no JSON object found
-
-    # test list parser
-    list_parser = ListParser()
-    test_input_4 = 'Some random text before ["item1", "item2"] and more after'
-    print(list_parser(test_input_4))  # Expected to extract ["item1", "item2"]

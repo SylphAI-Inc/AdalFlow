@@ -231,6 +231,10 @@ class JsonOutputParser(OutputParser):
     def call(self, input: str) -> Any:
         return self.output_processors(input)
 
+    def _extra_repr(self) -> str:
+        s = f"data_class_for_json={self.data_class_for_json}"
+        return s
+
 
 class ListOutputParser(OutputParser):
     def __init__(self, list_output_format_template: str = LIST_OUTPUT_FORMAT):

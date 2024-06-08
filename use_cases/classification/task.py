@@ -16,7 +16,7 @@ from lightrag.components.model_client import (
     AnthropicAPIClient,
 )
 from lightrag.core.prompt_builder import Prompt
-from lightrag.prompts.outputs import YAMLOutputParser
+from lightrag.components.output_parsers import YAMLOutputParser
 from lightrag.core.string_parser import JsonParser
 
 from lightrag.tracing import trace_generator_states, trace_generator_call

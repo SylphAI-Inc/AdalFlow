@@ -45,12 +45,14 @@ Data Handling
 .. toctree::
    :maxdepth: 1
 
-   core.base_data_class
+   core.base_data_class   
    core.types
+
+
    core.data_components
    core.db
 
-Prompt and Template
+Prompts and Templates
 ---------------------
 .. toctree::
    :maxdepth: 1
