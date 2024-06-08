@@ -12,8 +12,7 @@ from lightrag.core.component import Component
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.string_parser import YAMLParser
 
-# from lightrag.prompts.outputs import YAML_OUTPUT_FORMAT
-from lightrag.components.output_parsers import YAMLOutputParser, YAML_OUTPUT_FORMAT
+from lightrag.components.output_parsers import YAML_OUTPUT_FORMAT
 
 log = logging.getLogger(__name__)
 

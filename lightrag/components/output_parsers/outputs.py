@@ -6,7 +6,6 @@ as user query can impact the output. Test your code well!
 
 from dataclasses import is_dataclass
 from typing import Dict, Any, Optional
-import yaml
 import logging
 
 from lightrag.core.component import Component
