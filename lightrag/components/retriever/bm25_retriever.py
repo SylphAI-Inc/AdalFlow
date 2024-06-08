@@ -20,7 +20,7 @@ MemoryDB:
 
 Generator:
 (1) prompt
-(2) api_client (model)
+(2) model_client (model)
 (3) output_processors
 
 Retriever

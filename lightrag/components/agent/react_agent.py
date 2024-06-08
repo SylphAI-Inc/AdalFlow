@@ -309,7 +309,7 @@ class ReActAgent(Generator):
 
 
 if __name__ == "__main__":
-    from components.api_client import GroqAPIClient
+    from components.model_client import GroqAPIClient
     import utils.setup_env
 
     def multiply(a: int, b: int) -> int:
