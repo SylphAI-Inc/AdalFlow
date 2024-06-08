@@ -82,6 +82,7 @@ With generator being in the center, all things are built around it via the promp
 tools and execturos, react and how react relates to generator.
 
 Core functional:
+
 - string_parser (parse the output string to structured data)
 - tool_helper (provide tools to interact with the generator)
 - memory (store the history of the conversation)
