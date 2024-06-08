@@ -1,5 +1,5 @@
 """
-The data classes used to support core components.
+Functional data classes to support functional components like Generator, Retriever, and Assistant.
 """
 
 from enum import Enum, auto
@@ -24,9 +24,9 @@ import yaml
 import warnings
 import logging
 
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 
-# from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.tokenizer import Tokenizer
 
 
 logger = logging.getLogger(__name__)
@@ -223,9 +223,8 @@ class Document:
 
     def __post_init__(self):
         if self.estimated_num_tokens is None and self.text:
-            pass
-            # tokenizer = Tokenizer()
-            # self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+            tokenizer = Tokenizer()
+            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
     @staticmethod
     def from_dict(doc: Dict):
@@ -292,7 +291,7 @@ def retriever_output_to_context_str(
 
 
 @dataclass
-class GeneratorOutput(BaseDataClass, Generic[T_co]):
+class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
     We can not control its output 100%, so we use this to track the error_message and
@@ -348,11 +347,11 @@ class DynamicDataClassFactory:
     print(class_instance)
 
     # Output:
-    # BaseDataClass(age=30, name='John Doe')
+    # DataClass(age=30, name='John Doe')
     """
 
     @staticmethod
-    def create_from_dict(data: dict, base_class=BaseDataClass):
+    def create_from_dict(data: dict, base_class=DataClass):
         fields_spec = []
         for key, value_dict in data.items():
             field_type = type(value_dict["value"])

@@ -7,9 +7,9 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 from copy import deepcopy
 
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 
-from lightrag.core.api_client import APIClient
+from lightrag.core.model_client import ModelClient
 from lightrag.core.generator import Generator, GeneratorOutput
 from lightrag.core.parameter import Parameter
 from lightrag.optim.optimizer import Optimizer
@@ -54,7 +54,7 @@ New Instruction:
 
 
 @dataclass
-class Instruction(BaseDataClass):
+class Instruction(DataClass):
     # prefix will be the same as text
     text: str = field(metadata={"desc": "The instruction text"})
     score: float = field(
@@ -81,7 +81,7 @@ class LLMOptimizer(Optimizer):
     def __init__(
         self,
         parameter: Parameter,
-        model_client: APIClient,
+        model_client: ModelClient,
         model_kwargs: Dict[str, Any],
     ):
         r"""Initialize the generator with the model client and the model kwargs."""

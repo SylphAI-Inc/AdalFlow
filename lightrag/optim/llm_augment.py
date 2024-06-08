@@ -6,10 +6,10 @@ Better to use more performant models to fill in the missing values.
 from typing import Dict, Any, Optional
 import logging
 
-from lightrag.core.api_client import APIClient
+from lightrag.core.model_client import ModelClient
 from lightrag.core import Generator, GeneratorOutput
 from lightrag.core.component import Component
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 from lightrag.core.string_parser import YAMLParser
 from lightrag.prompts.outputs import YAML_OUTPUT_FORMAT
 
@@ -52,7 +52,7 @@ class LLMAugmenter(Component):
 
     def __init__(
         self,
-        model_client: APIClient,
+        model_client: ModelClient,
         model_kwargs: Dict[str, Any],
         task_context_str: Optional[str] = None,
     ):
@@ -73,7 +73,7 @@ class LLMAugmenter(Component):
 
     # TODO: return GeneratorOutput directly
     def call(
-        self, input_data_obj: BaseDataClass, output_data_obj: BaseDataClass
+        self, input_data_obj: DataClass, output_data_obj: DataClass
     ) -> Dict[str, Any]:
         r"""Call the generator with the input and output data objects."""
         input_str = input_data_obj.to_yaml()

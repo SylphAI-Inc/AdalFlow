@@ -1,7 +1,7 @@
 from typing import List, Optional, Dict
 from copy import deepcopy
 
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 from lightrag.core.parameter import Parameter
 from lightrag.core.component import Component
 from lightrag.optim.sampler import Sampler, Sample
@@ -19,9 +19,9 @@ class BootstrapFewShot(Optimizer):
         sampler: Sampler,
         num_shots: int,
         llm_augmenter: Optional[Component] = None,
-        task_input_dataclass: Optional[BaseDataClass] = None,
+        task_input_dataclass: Optional[DataClass] = None,
         output_processors: Optional[Component] = None,
-        task_output_dataclass: Optional[BaseDataClass] = None,
+        task_output_dataclass: Optional[DataClass] = None,
     ):
         super().__init__()
         self.example_parameter = parameter

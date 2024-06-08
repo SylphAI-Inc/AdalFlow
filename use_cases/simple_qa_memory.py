@@ -2,11 +2,11 @@
 We just need to very basic generator that can be used to generate text from a prompt.
 """
 
-from core.generator import Generator
-from core.component import Component
-from core.memory import Memory
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
+from lightrag.core.memory import Memory
 
-from components.api_client import OpenAIClient
+from lightrag.components.model_client import OpenAIClient
 
 
 import utils.setup_env
@@ -18,7 +18,7 @@ class SimpleDialog(Component):
         model_kwargs = {"model": "gpt-3.5-turbo"}
         task_desc_str = "You are a helpful assistant."
         self.generator = Generator(
-            model_client=OpenAIClient,
+            model_client=OpenAIClient(),
             model_kwargs=model_kwargs,
             preset_prompt_kwargs={"task_desc_str": task_desc_str},
         )
@@ -35,7 +35,10 @@ class SimpleDialog(Component):
                 break
             chat_history_str = self.chat_history()
             response = self.generator(
-                input=user_input, prompt_kwargs={"chat_history_str": chat_history_str}
+                prompt_kwargs={
+                    "chat_history_str": chat_history_str,
+                    "input": user_input,
+                },
             )
             # save the user input and response to the memory
             self.chat_history.add_dialog_turn(

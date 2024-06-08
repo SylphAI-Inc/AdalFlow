@@ -1,7 +1,7 @@
 from typing import Optional, Any, Dict
 
 from lightrag.core.types import ModelType
-from lightrag.core.api_client import APIClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
 from lightrag.core.component import Component
 import lightrag.core.functional as F
 
@@ -15,13 +15,13 @@ class Embedder(Component):
     """
 
     model_type: ModelType = ModelType.EMBEDDER
-    model_client: APIClient
+    model_client: ModelClient
     output_processors: Optional[Component]
 
     def __init__(
         self,
         *,
-        model_client: APIClient,
+        model_client: ModelClient,
         model_kwargs: Dict[str, Any] = {},
         output_processors: Optional[Component] = None,
     ) -> None:

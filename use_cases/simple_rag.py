@@ -2,22 +2,22 @@ from typing import Any, List, Optional
 import dotenv
 
 
-from core.generator import Generator
-from core.embedder import Embedder
-from core.data_components import (
+from lightrag.core.generator import Generator
+from lightrag.core.embedder import Embedder
+from lightrag.core.data_components import (
     ToEmbedderResponse,
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
-from core.data_classes import Document
-from core.document_splitter import DocumentSplitter
-from core.string_parser import JsonParser
-from core.component import Component, Sequential
-from core.db import LocalDocumentDB
-from core.functional import generate_component_key
+from lightrag.core.types import Document
+from lightrag.core.document_splitter import DocumentSplitter
+from lightrag.core.string_parser import JsonParser
+from lightrag.core.component import Component, Sequential
+from lightrag.core.db import LocalDocumentDB
+from lightrag.core.functional import generate_component_key
 
-from components.retriever import FAISSRetriever
-from components.api_client import OpenAIClient
+from lightrag.components.retriever import FAISSRetriever
+from lightrag.components.model_client import OpenAIClient
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
@@ -70,6 +70,7 @@ class RAG(Component):
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )
+        # TODO: make a new key
         self.data_transformer_key = generate_component_key(self.data_transformer)
         # initialize retriever, which depends on the vectorizer too
         self.retriever = FAISSRetriever(

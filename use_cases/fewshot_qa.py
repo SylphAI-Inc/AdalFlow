@@ -1,19 +1,19 @@
 from typing import List
 
-from core.generator import Generator
-from core.data_classes import Document
-from core.embedder import Embedder
-from core.data_components import (
+from lightrag.core.generator import Generator
+from lightrag.core.types import Document
+from lightrag.core.embedder import Embedder
+from lightrag.core.data_components import (
     ToEmbedderResponse,
     RetrieverOutputToContextStr,
 )
-from core.db import LocalDocumentDB
-from core.component import Component
-from core.document_splitter import DocumentSplitter
-from icl.retrieval_icl import RetrievalICL
+from lightrag.core.db import LocalDocumentDB
+from lightrag.core.component import Component
+from lightrag.core.document_splitter import DocumentSplitter
+from lightrag.icl.retrieval_icl import RetrievalICL
 
-from components.api_client import OpenAIClient
-from components.retriever import FAISSRetriever
+from lightrag.components.model_client import OpenAIClient
+from lightrag.components.retriever import FAISSRetriever
 
 
 import dotenv

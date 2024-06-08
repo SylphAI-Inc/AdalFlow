@@ -3,7 +3,7 @@ import tqdm
 from copy import deepcopy
 from torch.utils.data import DataLoader
 
-from lightrag.components.api_client import (
+from lightrag.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,

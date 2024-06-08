@@ -1,7 +1,7 @@
 import asyncio
 
-from core.generator import Generator
-from core.component import Component
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
 
 import utils.setup_env
 
@@ -17,7 +17,7 @@ class SimpleQA(Component):
         super().__init__()
         if provider == "openai":
             try:
-                from components.api_client import OpenAIClient
+                from components.model_client import OpenAIClient
 
             except ImportError:
                 raise ImportError(
@@ -27,7 +27,7 @@ class SimpleQA(Component):
             model_client = OpenAIClient
         elif provider == "groq":
             try:
-                from components.api_client import GroqAPIClient
+                from components.model_client import GroqAPIClient
             except ImportError:
                 raise ImportError(
                     "Please install the Groq API client by running 'pip install groq'"
@@ -36,7 +36,7 @@ class SimpleQA(Component):
             model_client = GroqAPIClient
         elif provider == "anthropic":
             try:
-                from components.api_client import AnthropicAPIClient
+                from components.model_client import AnthropicAPIClient
             except ImportError:
                 raise ImportError(
                     "Please install the Anthropic API client by running 'pip install anthropic'"

@@ -7,7 +7,7 @@ from lightrag.core.component import Component
 from lightrag.core.parameter import Parameter
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
-from lightrag.core.api_client import APIClient
+from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
@@ -32,16 +32,16 @@ class Generator(Component):
     """
 
     model_type: ModelType = ModelType.LLM
-    model_client: APIClient  # for better type checking
+    model_client: ModelClient  # for better type checking
 
     def __init__(
         self,
         *,
         # args for the model
-        model_client: APIClient,  # will be intialized in the main script
+        model_client: ModelClient,  # will be intialized in the main script
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
-        template: str = DEFAULT_LIGHTRAG_SYSTEM_PROMPT,
+        template: Optional[str] = None,
         preset_prompt_kwargs: Optional[Dict] = None,
         # args for the output processing
         output_processors: Optional[Component] = None,
@@ -59,6 +59,8 @@ class Generator(Component):
         But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
         """
         super().__init__()
+
+        template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
         self._init_prompt(template, preset_prompt_kwargs)
 

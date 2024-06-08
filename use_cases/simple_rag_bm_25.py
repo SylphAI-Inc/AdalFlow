@@ -9,10 +9,10 @@ from core.data_components import (
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
 from core.db import LocalDocumentDB
-from core.data_classes import Document
+from core.types import Document
 
 from components.retriever import InMemoryBM25Retriever
-from components.api_client import OpenAIClient
+from components.model_client import OpenAIClient
 
 import utils.setup_env
 

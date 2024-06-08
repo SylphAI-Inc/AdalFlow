@@ -1,7 +1,7 @@
-APIClient
+Model client
 ============
 This abstract class is to define ways for each API provider to communicate with LightRAG components. This
-includes cloud API provider and local API provider where you can wrap a `huggingface transformer model` as an API client.
+includes cloud API provider and local model provider where you can wrap a `huggingface transformer model` as a Model client.
 
 Most APIs are provided with `Sync` and `Async` clients. Each will be used in `call`(synchronous) and `acall`(asynchronous) methods. 
 We have seen how different API providers process the user query and the system message differently. Thus for the `APIClient` class we designed
