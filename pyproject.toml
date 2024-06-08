@@ -125,6 +125,7 @@ jupyter = "^1.0.0"
 ipykernel = "^6.29.4"
 colorama = "^0.4.6"
 dataclasses-jsonschema = "^2.16.0"
+groq = "^0.5.0"
 
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "^0.15.3"
