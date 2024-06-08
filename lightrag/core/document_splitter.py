@@ -17,7 +17,7 @@ from typing import List, Literal
 from more_itertools import windowed
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import Document
+from lightrag.core.types import Document
 
 # TODO: convert this to function
 

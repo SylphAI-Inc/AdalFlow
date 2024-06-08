@@ -16,7 +16,7 @@ from groq import (
 )
 
 from lightrag.core.api_client import APIClient, API_INPUT_TYPE
-from lightrag.core.data_classes import ModelType
+from lightrag.core.types import ModelType
 
 
 class GroqAPIClient(APIClient):

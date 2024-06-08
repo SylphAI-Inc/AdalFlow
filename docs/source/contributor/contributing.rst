@@ -87,10 +87,10 @@ After building, open ``docs/build/html/index.html`` in a web browser. If you fac
 
 .. code-block:: bash
 
-    cd docs/build/html
+    cd docs/build
     python -m http.server 8000 <path_to_html_output>
 
-Then navigate to the corresbonding site in your browser.
+Then navigate to the corresbonding site in your browser. E.g. it can be `http://127.0.0.1:8000/`.
 
 
 

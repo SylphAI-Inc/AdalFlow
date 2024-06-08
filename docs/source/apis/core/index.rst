@@ -8,8 +8,8 @@ Overview
 .. autosummary::
 
    core.api_client
+   core.base_data_class
    core.component
-   core.data_classes
    core.data_components
    core.db
    core.default_prompt_template
@@ -24,6 +24,7 @@ Overview
    core.string_parser
    core.tokenizer
    core.tool_helper
+   core.types
 
 
 API Client

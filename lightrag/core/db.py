@@ -9,7 +9,7 @@ use some functional components in lightrag to process the data.
 from typing import List, Optional, Callable
 
 from lightrag.core.component import Component
-from lightrag.core.data_classes import Document
+from lightrag.core.types import Document
 
 from lightrag.core.functional import generate_readable_key_for_function
 

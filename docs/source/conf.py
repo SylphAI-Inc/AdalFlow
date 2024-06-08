@@ -13,8 +13,7 @@
 import os
 import sys
 
-# sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath("../"))
+
 sys.path.insert(0, os.path.abspath("../../lightrag"))
 # # need to insert the paths
 # for dir in os.walk('../../lightrag'):
@@ -59,6 +58,7 @@ extensions = [
     # 'myst_parser'
 ]
 
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
@@ -98,7 +98,9 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = ["_static"]  # Only for CSS, JS, images, etc.
+html_extra_path = ['notebooks']
+
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "LightRAG"

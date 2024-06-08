@@ -37,7 +37,7 @@ from multiprocessing import Pool, cpu_count
 from functools import partial
 
 from lightrag.core.tokenizer import Tokenizer
-from lightrag.core.data_classes import RetrieverOutput, RetrieverOutput
+from lightrag.core.types import RetrieverOutput
 from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 
 

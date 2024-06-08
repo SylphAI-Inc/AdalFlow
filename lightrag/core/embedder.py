@@ -1,6 +1,6 @@
 from typing import Optional, Any, Dict
 
-from lightrag.core.data_classes import ModelType
+from lightrag.core.types import ModelType
 from lightrag.core.api_client import APIClient, API_INPUT_TYPE
 from lightrag.core.component import Component
 import lightrag.core.functional as F
@@ -79,7 +79,7 @@ class Embedder(Component):
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
-        composed_model_kwargs = self._pre_call(model_kwargs)
+        composed_model_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
         response = await self.model_client.acall(
             input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
         )
