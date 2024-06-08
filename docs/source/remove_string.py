@@ -28,7 +28,6 @@ if __name__ == "__main__":
         "./source/apis/core",
         "./source/apis/components",
         "./source/apis/utils",
-        "./source/apis/prompts",
         "./source/apis/eval",
         "./source/apis/tracing",
     ]
