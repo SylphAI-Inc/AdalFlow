@@ -225,16 +225,17 @@ Finally, check the results.
 
 3. LightRAG Retrievers
 ------------------------
-
 Given a query, the retriever is responsible to fetch the relevant documents.
 Now we have document splitter and embedder, we can check the retrievers now. 
 LightRAG provides ``FAISSRetriever``, ``InMemoryBM25Retriever``, and ``LLMRetriever``.
 
 #. FAISSRetriever
 
-The ``FAISSRetriever`` uses in-memory Faiss index to retrieve the top k chunks(see `research <https://github.com/facebookresearch/faiss>`_).
+The ``FAISSRetriever`` uses in-memory Faiss index to retrieve the top k chunks(see `research <https://github.com/facebookresearch/faiss>`_). It is particularly useful in applications involving large-scale vector.
 
-Before using ``FAISSRetriever``, we need to prepare the embeddings for documents or chuncks following the previous steps.
+``LightRAG's FAISSRetriever`` ex   
+
+Before using ``FAISSRetriever``, we need to prepare the embeddings for documents or chunks following the previous steps.
 
 .. code-block:: python
 
@@ -242,6 +243,4 @@ Before using ``FAISSRetriever``, we need to prepare the embeddings for documents
 Then, to speed up the retrieval, it is a common practice to build indexes from the documents or chunks.
 When the indexes are ready, we should pass the query to the retriever and get the top k documents closest to the query vector.
 ``LightRAG`` makes this process very easy for developers. Let's see the example.
-
-
 
