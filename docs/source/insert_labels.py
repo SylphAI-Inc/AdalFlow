@@ -25,6 +25,5 @@ if __name__ == "__main__":
         "./source/apis/components/_autosummary"
     )  # add label to component autosummary
     add_reference_labels("./source/apis/eval")
-    add_reference_labels("./source/apis/prompts")
     add_reference_labels("./source/apis/utils")
     add_reference_labels("./source/apis/tracing")

@@ -10,8 +10,18 @@ Overview
    components.agent
    components.model_client
    components.embedder
-   components.reasoning
+   .. components.reasoning
+
    components.retriever
+   components.output_parsers
+
+
+Output Parsers
+--------------
+.. toctree::
+   :maxdepth: 1
+
+   components.output_parsers
 
 Agents
 ------
@@ -20,7 +30,7 @@ Agents
 
    components.agent
 
-API Clients
+Model Clients
 -----------
 .. toctree::
    :maxdepth: 1
@@ -34,12 +44,12 @@ Embedders
 
    components.embedder
 
-Reasoners
----------
-.. toctree::
-   :maxdepth: 1
+.. Reasoners
+.. ---------
+.. .. toctree::
+..    :maxdepth: 1
 
-   components.reasoning
+..    components.reasoning
 
 Retrievers
 ----------

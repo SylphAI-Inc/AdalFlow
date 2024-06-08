@@ -1,5 +1,5 @@
 """
-Memory is more of a db where you can save all users' data and retrieve it when needed.
+Memory is more of a db or data type where you can save all users' data and retrieve it when needed.
 
 We can control if the memory is just per-session or retrieve from the users' all history.
 

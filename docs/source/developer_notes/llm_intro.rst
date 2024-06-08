@@ -1,5 +1,8 @@
-Introduction to LLM applications
+Introduction
 ====================================
+
+Introduction to LLM applations
+-------------------------------------
 All language models are doing is text completion, which means you pass a input text(called "prompt") to the model, and the model will generate the rest of the text for you. The model is trained to predict the next word given the previous words, so it can generate text that is coherent and relevant to the prompt.
 However, most API providers such as OpenAI, Anthropic provide the model in Chat Completions API, which take a list of messages instead of a `single text` as input. Why is that? We will have our assumptions in the next section.
 
@@ -62,6 +65,13 @@ The special tokens vary from different language models, and with propetriary mod
 2. Without knowing the special tokens, developers will be more dependant on their API, especially for advanced features like `Tools`, `Special output format`.
 
 But, you don't have to use their advanced features, our library in default will support those advanced features, ensuring developers to have `maximum control` and be almost model-agnostic.
+
+
+Data Flow & LightRAG structure
+---------------------
+
+TODO: Add our data flow diagram here.
+
 
 **Read on to see how.**
 

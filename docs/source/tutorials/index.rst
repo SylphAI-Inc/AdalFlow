@@ -1,9 +1,11 @@
-Level up
+.. _use_cases:
+
+Use Cases
 =============================
 
-Here is for tutorials.
+*How different parts are used to build various LLM applications*
 
-
+* 
 
 .. toctree::
    :maxdepth: 2

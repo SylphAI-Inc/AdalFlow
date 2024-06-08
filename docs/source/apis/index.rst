@@ -9,6 +9,7 @@ Welcome to the LightRAG API reference! This section provides detailed documentat
 
    core/index
 
+
 .. toctree::
    :maxdepth: 2
    :caption: Components

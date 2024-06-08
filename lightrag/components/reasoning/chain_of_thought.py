@@ -30,6 +30,7 @@ COT_TASK_DESC_STR_WITH_JSON_OUTPUT = f"""
 {COT_TASK_DESC_STR_BASIC} Output JSON format: {{"thought": "<The thought process to answer the query>", "answer": "<The answer to the query>"}}
 """
 
+
 # ChainOfThought will just be a generator with preset_prompt_kwargs of the task_desc_str = COT_TASK_DESC_STR
 # additional you can ask it to generate a json with "thought" and "anwer" keys and use jsonParser
 
