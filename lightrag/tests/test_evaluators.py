@@ -1,3 +1,6 @@
+import os
+import pytest
+
 from lightrag.eval.answer_match_evaluator import AnswerMatchEvaluator
 from lightrag.eval.retriever_evaluator import RetrieverEvaluator
 from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
@@ -47,6 +50,8 @@ def test_retriever_evaluator():
     assert 0.6 < relevance_list[1] < 0.61
 
 
+# This test is skipped by default. To run this test, set the environment variable RUN_LOCAL_TESTS to True (export RUN_LOCAL_TESTS=true).
+@pytest.mark.skipif(not os.getenv("RUN_LOCAL_TESTS"), reason="Skip unless on local")
 def test_llm_as_judge():
     all_questions = [
         "Is Beijing in China?",
