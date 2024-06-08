@@ -26,7 +26,7 @@ Judgement question: {{judgement_str}}
 You:
 """
 
-if OpenAIClient in globals():
+if "OpenAIClient" in globals():
     DEFAULT_LLM_EVALUATOR = Generator(
         model_client=OpenAIClient(),
         model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False},
