@@ -7,6 +7,7 @@ Overview
 ----------
 .. autosummary::
 
+   core.base_data_class
    core.model_client
    core.component
    core.data_components

@@ -100,7 +100,6 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]  # Only for CSS, JS, images, etc.
-html_extra_path = ['notebooks']
 
 
 # A shorter title for the navigation bar.  Default is the same as html_title.

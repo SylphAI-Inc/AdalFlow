@@ -6,7 +6,7 @@
 LightRAG Home
 =======================
 
-image:: ../../images/lightrag_structure.png
+.. .. image:: ../../images/lightrag_structure.png
 ..    :width: 60%
 
 LightRAG is the "PyTorch" library for building large langage model(LLM) applications. It is super light, modular and robust like "PyTorch", and offers essential components for `Retriever`-`Agent`-`Generator` (RAG). 
