@@ -14,11 +14,11 @@ DEFAULT_LLM_EVALUATOR_PROMPT = r"""
 {# question #}
 Question: {{question_str}}
 {# ground truth answer #}
-Ground truth answer: {{gt_answer}}
+Ground truth answer: {{gt_answer_str}}
 {# predicted answer #}
-Predicted answer: {{pred_answer}}
+Predicted answer: {{pred_answer_str}}
 {# judgement question #}
-Judgement question: {{input}}
+Judgement question: {{judgement_str}}
 {# assistant response #}
 You:
 """
@@ -68,10 +68,10 @@ class LLMasJudge:
         """
         output = self.llm_evaluator(
             prompt_kwargs={
-                "input": judgement_query,
+                "judgement_str": judgement_query,
                 "question_str": question,
-                "gt_answer": gt_answer,
-                "pred_answer": pred_answer,
+                "gt_answer_str": gt_answer,
+                "pred_answer_str": pred_answer,
             },
         )
         judgement = output.raw_response
