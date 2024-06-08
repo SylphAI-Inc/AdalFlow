@@ -19,7 +19,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
    .. grid-item-card::  PyTorch
 
       .. code-block:: python
-         
+
             import torch
             import torch.nn as nn
 
@@ -53,14 +53,14 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
                super().__init__()
                self.generator = Generator(
                   model_client=OpenAIClient(),
-                  model_kwargs={'model_name': 'gpt-3.5-turbo'}
+                  model_kwargs={'model': 'gpt-3.5-turbo'}
                )
 
             def call(self, query):
-               return self.generator.call(query)
+               return self.generator.call({'input_str': query})
 
             async def acall(self, query):
-               return await self.generator.acall(query)
+               return await self.generator.acall({'input_str': query})
 
          qa = SimpleQA()
          print(qa)
