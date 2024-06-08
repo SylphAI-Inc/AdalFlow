@@ -6,9 +6,7 @@ from lightrag.core.generator import Generator
 try:
     from lightrag.components.model_client import OpenAIClient
 except ImportError:
-    raise ImportError(
-        "openai is not installed. We will not set up the default LLM evaluator."
-    )
+    pass
 
 DEFAULT_LLM_EVALUATOR_PROMPT = r"""
 <<SYS>>{# task desc #}
