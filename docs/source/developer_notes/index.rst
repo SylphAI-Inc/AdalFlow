@@ -39,6 +39,8 @@ We have clear design phisolophy:
 Build the task pipeline
 =============================
 
+Base classes
+---------------
 There are two base classes, ``Component`` and ``DataClass``.
 - ``Component`` plays the same role as ``Module`` in PyTorch. It standardize the interface of all componnets with `call`, `acall`, and `__call__` methods, handles states, and serialization. 
 Components can be easily chained togehter via `Sequential` for now.
@@ -51,7 +53,8 @@ Components can be easily chained togehter via `Sequential` for now.
    component
    base_data_class
 
-
+Core Components and functional
+-------------------
 In the core, lies our ``Generator``.
 - Model Client  
 - Prompt
@@ -60,11 +63,9 @@ In the core, lies our ``Generator``.
 Assisted with ``DataClass`` for input and output data formating.
 
 With generator being in the center, all things are built around it via the prompt.
+- Retriever  (Enhance Generator to be more factual and less hallucination), provide `context_str` in prompt.
+- 
 
-
-Core Components - Generator
-
-Model cliens are for both
 
 .. toctree::
    :maxdepth: 1
@@ -72,31 +73,23 @@ Model cliens are for both
    api_client
    prompt
    generator
-
-1. string processing and output parser  (helper for Generator)
-
-
-
-Core Components - Retriever  (Enhance Generator to be more factual and less hallucination)
-
-.. toctree::
-   :maxdepth: 1
-
    embedder
    retriever
 
 
-Core Components - Agent (Enhance Generator with tools, planning, and reasoning)
+.. Core Components - Agent (Enhance Generator with tools, planning, and reasoning)
 
 tools and execturos, react and how react relates to generator.
+
+Core functional:
+- string_parser (parse the output string to structured data)
+- tool_helper (provide tools to interact with the generator)
+- memory (store the history of the conversation)
 
 .. toctree::
    :maxdepth: 1
 
-   model
-
-
-Like enhance its memoty! etc
+   
  
 
 Optimize the task pipeline
