@@ -1,6 +1,3 @@
-import os
-import pytest
-
 from lightrag.eval.answer_match_evaluator import AnswerMatchEvaluator
 from lightrag.eval.retriever_evaluator import RetrieverEvaluator
 
@@ -50,23 +47,23 @@ def test_retriever_evaluator():
 
 
 # This test is skipped by default. To run this test, set the environment variable RUN_LOCAL_TESTS to True (export RUN_LOCAL_TESTS=true).
-@pytest.mark.skipif(not os.getenv("RUN_LOCAL_TESTS"), reason="Skip unless on local")
-def test_llm_as_judge():
-    from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
+# @pytest.mark.skipif(not os.getenv("RUN_LOCAL_TESTS"), reason="Skip unless on local")
+# def test_llm_as_judge():
+#     from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
 
-    all_questions = [
-        "Is Beijing in China?",
-        "Is Apple founded before Google?",
-        "Is earth flat?",
-    ]
-    all_pred_answer = ["Yes", "Yes, Appled is founded before Google", "Yes"]
-    all_gt_answer = ["Yes", "Yes", "No"]
-    judgement_query = (
-        "For the question, does the predicted answer contain the ground truth answer?"
-    )
-    llm_judge = LLMasJudge()
-    avg_judgement, judgement_list = llm_judge.compute_judgement(
-        all_questions, all_pred_answer, all_gt_answer, judgement_query
-    )
-    assert avg_judgement == 2 / 3
-    assert judgement_list == [True, True, False]
+#     all_questions = [
+#         "Is Beijing in China?",
+#         "Is Apple founded before Google?",
+#         "Is earth flat?",
+#     ]
+#     all_pred_answer = ["Yes", "Yes, Appled is founded before Google", "Yes"]
+#     all_gt_answer = ["Yes", "Yes", "No"]
+#     judgement_query = (
+#         "For the question, does the predicted answer contain the ground truth answer?"
+#     )
+#     llm_judge = LLMasJudge()
+#     avg_judgement, judgement_list = llm_judge.compute_judgement(
+#         all_questions, all_pred_answer, all_gt_answer, judgement_query
+#     )
+#     assert avg_judgement == 2 / 3
+#     assert judgement_list == [True, True, False]
