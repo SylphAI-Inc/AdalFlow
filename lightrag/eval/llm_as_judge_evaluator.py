@@ -2,8 +2,13 @@
 
 from typing import List
 from lightrag.core.generator import Generator
-from lightrag.components.model_client import OpenAIClient
 
+try:
+    from lightrag.components.model_client import OpenAIClient
+except ImportError:
+    raise ImportError(
+        "openai is not installed. We will not set up the default LLM evaluator."
+    )
 
 DEFAULT_LLM_EVALUATOR_PROMPT = r"""
 <<SYS>>{# task desc #}
@@ -23,18 +28,21 @@ Judgement question: {{judgement_str}}
 You:
 """
 
-DEFAULT_LLM_EVALUATOR = Generator(
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False},
-    template=DEFAULT_LLM_EVALUATOR_PROMPT,
-    preset_prompt_kwargs={
-        "task_desc_str": r"""
-            You are a helpful assistant.
-            Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
-            Output True or False according to the judgement query.
-            """
-    },
-)
+if OpenAIClient in globals():
+    DEFAULT_LLM_EVALUATOR = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False},
+        template=DEFAULT_LLM_EVALUATOR_PROMPT,
+        preset_prompt_kwargs={
+            "task_desc_str": r"""
+                You are a helpful assistant.
+                Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
+                Output True or False according to the judgement query.
+                """
+        },
+    )
+else:
+    DEFAULT_LLM_EVALUATOR = None
 
 
 class LLMasJudge:
