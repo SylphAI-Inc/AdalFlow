@@ -128,5 +128,4 @@ Logging & Tracing
 .. toctree::
    :maxdepth: 1
 
-   logging
-   tracing
+   logging_tracing
