@@ -27,7 +27,7 @@ Overview
 
 
 Model Client
-----------
+---------------
 .. toctree::
    :maxdepth: 1
 
