@@ -13,13 +13,13 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath("."))
-sys.path.insert(0, os.path.abspath("../lightrag"))
-# sys.path.insert(0, os.path.abspath("../../"))
-# need to insert the paths
-for dir in os.walk("../lightrag"):
-    sys.path.insert(0, dir[0])
-#   print(dir[0])
+
+sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("../../lightrag"))
+# # need to insert the paths
+# for dir in os.walk('../../lightrag'):
+#   sys.path.insert(0, dir[0])
+# #   print(dir[0])
 
 import lightrag
 
@@ -44,7 +44,7 @@ author = "SylphAI"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    # "sphinx.ext.autosummary",
+    "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.intersphinx",
     "sphinx.ext.mathjax",
@@ -59,6 +59,7 @@ extensions = [
     # 'recommonmark',
     # 'myst_parser'
 ]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -99,7 +100,8 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+html_static_path = ["_static"]  # Only for CSS, JS, images, etc.
+
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "LightRAG"

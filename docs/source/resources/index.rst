@@ -9,4 +9,3 @@ Here is the content of our documentation project.
    :maxdepth: 2
 
    resources
-   contributing

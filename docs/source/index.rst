@@ -49,7 +49,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
    from core.component import Component
    from core.generator import Generator
-   from components.api_client import OpenAIClient
+   from components.model_client import OpenAIClient
 
    class SimpleQA(Component):
       def __init__(self):

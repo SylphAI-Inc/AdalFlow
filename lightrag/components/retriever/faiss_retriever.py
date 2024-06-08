@@ -10,7 +10,7 @@ except ImportError:
     raise ImportError("Please install numpy with: pip install numpy")
 
 from lightrag.core.component import Component
-from lightrag.core.retriever import Retriever, RetrieverOutput, RetrieverOutputType
+from lightrag.core.retriever import Retriever, RetrieverOutputType
 from lightrag.core.types import RetrieverOutput
 
 

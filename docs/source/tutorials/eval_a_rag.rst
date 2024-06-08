@@ -33,7 +33,7 @@ We import the necessary dependencies for our evaluation script. These include mo
 
     from core.openai_client import OpenAIClient
     from core.generator import Generator
-    from core.data_classes import Document
+    from core.base_data_class import Document
     from core.string_parser import JsonParser
     from core.component import Sequential
     from eval.evaluators import (
@@ -64,7 +64,7 @@ In this tutorial, we use the `HotpotQA dataset <https://huggingface.co/datasets/
     dataset = dataset["train"].select(range(5))
 
 **Step 4: build the document list for each sample in the dataset.**
-For each sample in the dataset, we create a list of documents to retrieve from according to its corresponding *context* in the dataset. Each document has a title and a list of sentences. We use the :obj:`Document` class from the :obj:`core.data_classes` module to represent each document.
+For each sample in the dataset, we create a list of documents to retrieve from according to its corresponding *context* in the dataset. Each document has a title and a list of sentences. We use the :obj:`Document` class from the :obj:`core.base_data_class` module to represent each document.
 
 .. code-block::
     :linenos:

@@ -7,9 +7,9 @@ Overview
 ----------
 .. autosummary::
 
+   core.base_data_class
    core.model_client
    core.component
-   core.base_data_class
    core.data_components
    core.db
    core.default_prompt_template
@@ -24,10 +24,11 @@ Overview
    core.string_parser
    core.tokenizer
    core.tool_helper
+   core.types
 
 
 Model Client
-----------
+---------------
 .. toctree::
    :maxdepth: 1
 

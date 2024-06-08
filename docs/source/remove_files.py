@@ -31,7 +31,7 @@ def remove_file(directory: str):
         print(f"No files to remove in {directory}")
         
     # remove api files to avoid showing duplicated section
-    target_files = ['components.api_client.openai_client.rst', 'components.retriever.faiss_retriever.rst', 'components.reasoning.chain_of_thought.rst', 'components.api_client.groq_client.rst', 'components.retriever.bm25_retriever.rst', 'components.api_client.google_client.rst', 'components.api_client.transformers_client.rst', 'components.retriever.llm_retriever.rst', 'components.agent.react_agent.rst', 'components.api_client.anthropic_client.rst']
+    target_files = ['components.model_client.openai_client.rst', 'components.retriever.faiss_retriever.rst', 'components.reasoning.chain_of_thought.rst', 'components.model_client.groq_client.rst', 'components.retriever.bm25_retriever.rst', 'components.model_client.google_client.rst', 'components.model_client.transformers_client.rst', 'components.retriever.llm_retriever.rst', 'components.agent.react_agent.rst', 'components.model_client.anthropic_client.rst']
     try:
         for filename in os.listdir(directory):
             if filename in target_files:

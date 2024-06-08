@@ -15,7 +15,7 @@ It does four things:
 
 (4) Handle API specific exceptions and errors to retry the call.
 
-Check the subclasses in `components/api_client/` directory for the functional API clients we have.
+Check the subclasses in `components/model_client/` directory for the functional API clients we have.
 """
 
 from typing import Any, Dict, Union, Sequence
@@ -35,7 +35,7 @@ class ModelClient(Component):
 
     This interface is designed to bridge the gap between LightRAG components inputs and model APIs.
 
-    You can see examples of the subclasses in components/api_client/ directory.
+    You can see examples of the subclasses in components/model_client/ directory.
     """
 
     def __init__(self, *args, **kwargs) -> None:

@@ -79,7 +79,7 @@ class Embedder(Component):
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
-        composed_model_kwargs = self._pre_call(model_kwargs)
+        composed_model_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
         response = await self.model_client.acall(
             input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
         )

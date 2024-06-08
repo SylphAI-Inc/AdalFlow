@@ -23,7 +23,7 @@ help:
 
 apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/core --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates	
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/eval --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/prompts ../lightrag/prompts --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/utils --separate --force

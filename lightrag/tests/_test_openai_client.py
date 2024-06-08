@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, AsyncMock
 
-from lightrag.core.data_classes import ModelType
+from lightrag.core.base_data_class import ModelType
 from lightrag.components.api_client import OpenAIClient
 
 

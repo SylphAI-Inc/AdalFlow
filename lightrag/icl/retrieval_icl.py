@@ -1,6 +1,6 @@
 from typing import List
 
-from lightrag.core.data_classes import Document
+from lightrag.core.types import Document
 from lightrag.core.retriever import Retriever
 from lightrag.core.embedder import Embedder
 from lightrag.core.data_components import (

@@ -24,7 +24,7 @@ Example to get signature and schema from a dataclass:
 
 .. code-block:: python
 
-    from core.data_classes import BaseDataClass
+    from core.base_data_class import BaseDataClass
     from dataclasses import dataclass, field
     # Define a dataclass
     @dataclass
@@ -73,7 +73,7 @@ Example to get signiture and schema from an instance:
 
 .. code-block:: python
 
-    from core.data_classes import BaseDataClass
+    from core.base_data_class import BaseDataClass
     from dataclasses import dataclass, field
     # Define a dataclass
     @dataclass
@@ -121,7 +121,7 @@ Example to get structured instance examples(``yaml`` or ``json``):
 
 .. code-block:: python
 
-    from core.data_classes import BaseDataClass
+    from core.base_data_class import BaseDataClass
     from dataclasses import dataclass, field
 
     @dataclass
@@ -163,7 +163,7 @@ Developers should select schema or signature depends on the use case.
 If developers want to load data from a dictionary to a certain data class, they can run:
 ``loaded_example = MyOutputs.load_from_dict({"age":10, "name":"Harry"})``.
 
-(For details, please refer to :class:`core.data_classes.BaseDataClass`.)
+(For details, please refer to :class:`core.base_data_class.BaseDataClass`.)
 
 
 **4. Implement with Other Components**
@@ -175,7 +175,7 @@ Example:
 
 .. code-block:: python
 
-    from core.data_classes import BaseDataClass
+    from core.base_data_class import BaseDataClass
     from dataclasses import dataclass, field
     from core.prompt_builder import Prompt
 
