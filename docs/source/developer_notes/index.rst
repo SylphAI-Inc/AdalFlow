@@ -36,7 +36,7 @@ We have clear design phisolophy:
 
    llm_intro
 
-Build the task pipeline
+Building
 =============================
 
 Base classes
@@ -93,7 +93,7 @@ Core functional:
    
  
 
-Optimize the task pipeline
+Optimizing
 =============================
 
 Datasets and Evaulation 
