@@ -232,10 +232,20 @@ LightRAG provides ``FAISSRetriever``, ``InMemoryBM25Retriever``, and ``LLMRetrie
 #. FAISSRetriever
 
 The ``FAISSRetriever`` uses in-memory Faiss index to retrieve the top k chunks(see `research <https://github.com/facebookresearch/faiss>`_). It is particularly useful in applications involving large-scale vector.
+The developers need to configure ``top_k``, ``dimensions`` and ``vectorizer`` first.
+``vectorizer`` is basically an instance of the ``Embedder``. The ``FAISSRetriever`` itself will initialize ``faiss.IndexFlatIP`` with the specified ``dimensions`` to do `Exact Search for Inner Product`.
 
-``LightRAG's FAISSRetriever`` ex   
+``LightRAG's FAISSRetriever`` provides :func:`components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents` to create index from embeddings(``vector`` field of each document).
+It will create ``xb`` indexes(the same number with embeddings). After the indexes are added, the index state will be ``True``.
+
+Then, developers can pass the queries to :func:`components.retriever.faiss_retriever.FAISSRetriever.retrieve`, the ``retrieve`` function embeds the queries, and performs inner product search for ``xq``(the number of queries) queries and return k most close vectors.
+We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability. This is how we calculate the score.
+Then we attach the score to each retrieval output.
+
+Next we will see a retrieval example.
 
 Before using ``FAISSRetriever``, we need to prepare the embeddings for documents or chunks following the previous steps.
+
 
 .. code-block:: python
 
