@@ -13,60 +13,60 @@ LightRAG is the "PyTorch" library for building large langage model(LLM) applicat
 
 You have a similar coding experience as PyTorch. Here is a side to side comparison of writing a PyTorch module and a LightRAG component:
 
-#TODO: make it side to side comparison
+.. grid:: 2
+   :gutter: 1
 
-**PyTorch:**
+   .. grid-item-card::  PyTorch
 
-.. code-block:: python
+      .. code-block:: python
+         
+            import torch
+            import torch.nn as nn
 
-   import torch
-   import torch.nn as nn
+            class Net(nn.Module):
+               def __init__(self):
+                  super(Net, self).__init__()
+                  self.conv1 = nn.Conv2d(1, 32, 3, 1)
+                  self.conv2 = nn.Conv2d(32, 64, 3, 1)
+                  self.dropout1 = nn.Dropout2d(0.25)
+                  self.dropout2 = nn.Dropout2d(0.5)
+                  self.fc1 = nn.Linear(9216, 128)
+                  self.fc2 = nn.Linear(128, 10)
 
-   class Net(nn.Module):
-      def __init__(self):
-         super(Net, self).__init__()
-         self.conv1 = nn.Conv2d(1, 32, 3, 1)
-         self.conv2 = nn.Conv2d(32, 64, 3, 1)
-         self.dropout1 = nn.Dropout2d(0.25)
-         self.dropout2 = nn.Dropout2d(0.5)
-         self.fc1 = nn.Linear(9216, 128)
-         self.fc2 = nn.Linear(128, 10)
+               def forward(self, x):
+                  x = self.conv1(x)
+                  x = self.conv2(x)
+                  x = self.dropout1(x)
+                  x = self.dropout2(x)
+                  x = self.fc1(x)
+                  return self.fc2(x)
 
-      def forward(self, x):
-         x = self.conv1(x)
-         x = self.conv2(x)
-         x = self.dropout1(x)
-         x = self.dropout2(x)
-         x = self.fc1(x)
-         return self.fc2(x)
+   .. grid-item-card::  LightRAG
 
-   my_nn = Net()
-   print(my_nn)
+      .. code-block:: python
 
-**LightRAG:**
+         from core.component import Component, Generator
+         from components.model_client import OpenAIClient
 
-.. code-block:: python
+         class SimpleQA(Component):
+            def __init__(self):
+               super().__init__()
+               self.generator = Generator(
+                  model_client=OpenAIClient(),
+                  model_kwargs={'model_name': 'gpt-3.5-turbo'}
+               )
 
-   from core.component import Component
-   from core.generator import Generator
-   from components.api_client import OpenAIClient
+            def call(self, query):
+               return self.generator.call(query)
 
-   class SimpleQA(Component):
-      def __init__(self):
-         super().__init__()
-         self.generator = Generator(
-            model_client=OpenAIClient,
-            model_kwargs={'model_name': 'gpt-3.5-turbo'}
-         )
+            async def acall(self, query):
+               return await self.generator.acall(query)
 
-      def call(self, query):
-         return self.generator.call(query)
+         qa = SimpleQA()
+         print(qa)
 
-      async def acall(self, query):
-         return await self.generator.acall(query)
 
-   qa = SimpleQA()
-   print(qa)
+
 
 
 **Why LightRAG?**

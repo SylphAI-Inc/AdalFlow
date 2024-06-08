@@ -1,3 +1,4 @@
+.. _core-base_data_class_note:
 DataClass
 ============
 

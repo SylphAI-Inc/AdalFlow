@@ -14,13 +14,20 @@ This is also our tutorials showing how each part works before we move ahead to b
    You can read interchangably between :ref:`Use Cases <use_cases>`.
 
 
-TODO: 
 
-1. provide a graph of the LightRAG architecture
-2. Put `why` and `how-to` guide by core parts with secondary toctree
+.. figure:: /_static/LLM_arch.png
+   :alt: LLM application is no different from a mode training/eval workflow
+   :align: center
+
+   LLM application is no different from a mode training/eval workflow
+
+   .. :height: 100px
+   .. :width: 200px
+   
+LightRAG library focus on providing building blocks for developers to **build** and **optimize** the `task pipeline`.
+We have clear design phisolophy:
 
 
-With generator being in the center, all things are built around it via the prompt.
 
 .. toctree::
    :maxdepth: 1
@@ -28,7 +35,17 @@ With generator being in the center, all things are built around it via the promp
    lightrag_design_philosophy
 
    llm_intro
+
+
+.. toctree::
+   :maxdepth: 1
+
    data_classes
+
+
+
+With generator being in the center, all things are built around it via the prompt.
+
 
 Core Components - Generator
 

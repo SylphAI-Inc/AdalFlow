@@ -97,7 +97,7 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
     return signature
 
 
-class DataClassMeta(type):
+class _DataClassMeta(type):
     r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
 
     Args:
@@ -112,7 +112,7 @@ class DataClassMeta(type):
     def __init__(
         cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
     ) -> None:
-        super(DataClassMeta, cls).__init__(name, bases, dct)
+        super(_DataClassMeta, cls).__init__(name, bases, dct)
         # __name__ is lightrag.core.base_data_class, will always be the base class
         # print("DataClassMeta init, class:", cls)
         # print(
@@ -139,10 +139,8 @@ class DataClassMeta(type):
 class DataClass:
     __doc__ = r"""The base data class for almost all data types that interact with LLMs.
      
-       designed to streamline the handling, serialization, and description of data within our applications.
-
+    Designed to streamline the handling, serialization, and description of data within our applications.
     Especially to LLM prompt.
-
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
     transparency and to keep the order of the fields when get serialized.
 
@@ -154,44 +152,48 @@ class DataClass:
 
     Better use schema with example signature (either yaml or json) depending on the use case.
 
-    Example usage:
-    ```
-    # Define a dataclass
-    from dataclasses import field, dataclass
-    from lightrag.core.base_data_class import DataClass
-    @dataclass
-    class MyOutputs(DataClass):
-        age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
-        name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-    # Create json signature
-    print(MyOutputs.to_json_signature())
-    # Output:
-    # {
-    #     "age": "The age of the person",
-    #     "name": "The name of the person"
-    # }
-    # Create yaml signature
-    print(MyOutputs.to_yaml_signature())
-    # Output:
-    # age: The age of the person
-    # name: The name of the person
+    Refer :ref:`DataClass<core-base_data_class_note>` for more detailed instructions.
 
-    # Create a dataclass instance
-    my_instance = MyOutputs(age=25, name="John Doe")
-    # Create json example
-    print(my_instance.to_json_example())
-    # Output:
-    # {
-    #     "age": 25,
-    #     "name": "John Doe"
-    # }
-    # Create yaml signature
-    print(my_instance.to_yaml_example())
-    # Output:
-    # age: 25
-    # name: John Doe
+    Examples:
 
-    ```
+    .. code-block:: python
+
+        # Define a dataclass
+        from dataclasses import field, dataclass
+        from lightrag.core import DataClass
+        @dataclass
+        class MyOutputs(DataClass):
+            age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
+            name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
+
+        # Create json signature
+        print(MyOutputs.to_json_signature())
+        # Output:
+        # {
+        #     "age": "The age of the person",
+        #     "name": "The name of the person"
+        # }
+        # Create yaml signature
+        print(MyOutputs.to_yaml_signature())
+        # Output:
+        # age: The age of the person
+        # name: The name of the person
+
+        # Create a dataclass instance
+        my_instance = MyOutputs(age=25, name="John Doe")
+        # Create json example
+        print(my_instance.to_json_example())
+        # Output:
+        # {
+        #     "age": 25,
+        #     "name": "John Doe"
+        # }
+        # Create yaml signature
+        print(my_instance.to_yaml_example())
+        # Output:
+        # age: 25
+        # name: John Doe
+
     """
 
     def __post_init__(self):
@@ -397,19 +399,22 @@ class DynamicDataClassFactory:
         },
         ...
     }
+
     Examples:
 
-    data = {
-        "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
-        "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
-    }
+    .. code-block:: python
 
-    DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
-    class_instance = DynamicOutputs()
-    print(class_instance)
+        data = {
+            "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
+            "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+        }
 
-    # Output:
-    # DataClass(age=30, name='John Doe')
+        DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
+        class_instance = DynamicOutputs()
+        print(class_instance)
+
+        # Output:
+        # DataClass(age=30, name='John Doe')
     """
 
     @staticmethod
