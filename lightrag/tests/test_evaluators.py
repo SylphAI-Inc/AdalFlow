@@ -3,7 +3,6 @@ import pytest
 
 from lightrag.eval.answer_match_evaluator import AnswerMatchEvaluator
 from lightrag.eval.retriever_evaluator import RetrieverEvaluator
-from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
 
 
 def test_answer_match_evaluator():
@@ -53,6 +52,8 @@ def test_retriever_evaluator():
 # This test is skipped by default. To run this test, set the environment variable RUN_LOCAL_TESTS to True (export RUN_LOCAL_TESTS=true).
 @pytest.mark.skipif(not os.getenv("RUN_LOCAL_TESTS"), reason="Skip unless on local")
 def test_llm_as_judge():
+    from lightrag.eval.llm_as_judge_evaluator import LLMasJudge
+
     all_questions = [
         "Is Beijing in China?",
         "Is Apple founded before Google?",
