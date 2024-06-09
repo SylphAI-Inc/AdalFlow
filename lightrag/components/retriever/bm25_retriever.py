@@ -175,7 +175,7 @@ class InMemoryBM25Retriever(Retriever):
         self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         # start to calculate the DF,TF, IDF
         self.avgdl = 0  # average document length
-        self.t2d: Dict[str, Tuple[int, int]] = (
+        self.t2d: Dict[str, Dict[int, int]] = (
             {}
         )  # term to document, <term: <doc_index, freq>>
         self.idf = {}
@@ -194,10 +194,10 @@ class InMemoryBM25Retriever(Retriever):
         for token, docs in self.t2d.items():
             idf = math.log(corpus_size - len(docs) + 0.5) - math.log(len(docs) + 0.5)
             self.idf[token] = idf
-            # if idf > self.alpha:
-            #     self.idf[token] = idf
-            # else:
-            #     to_delete.append(token)
+            if idf > self.alpha:
+                self.idf[token] = idf
+            else:
+                to_delete.append(token)
         print(f"idf: {self.idf}")
         for token in to_delete:
             del self.t2d[token]

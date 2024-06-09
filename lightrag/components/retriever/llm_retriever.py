@@ -9,13 +9,17 @@ from lightrag.core.string_parser import ListParser
 from lightrag.core.prompt_builder import Prompt
 
 DEFAULT_LLM_AS_RETRIEVER_TASK_DESC = """Your are a retriever. Given a list of documents in the context, \
-you will retrieve a list of {{top_k}} incices(int) of the documents that are most relevant to the query. You will output a list as follows:
-[<id from the most relevent with top_k options>]
+you will retrieve a list of {{top_k}} indices(int) of the documents that are most relevant to one query or a list of queries. You will output a list as follows:
+[
+    [<id from the most relevent with top_k options for query 1>],
+    [<id from the most relevent with top_k options for query 2>],
+    ...
+]
 """
 
 DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR = r"""
 {% for doc in documents %}
-{{ loop.index - 1}}. {{doc}}
+```{{ loop.index - 1}}. {{doc}}```
 {% endfor %}
 """
 
@@ -61,13 +65,23 @@ class LLMRetriever(Retriever):
             preset_prompt_kwargs={"documents": documents_to_use},
         )
         self.index_context_str = self.index_prompt()
-        self.generator.prompt.update_preset_prompt_kwargs(
+        self.generator.system_prompt.update_preset_prompt_kwargs(
             context_str=self.index_context_str
         )
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> RetrieverOutputType:
+    ) -> RetrieverOutputType: 
+        """Retrieve the k relevant documents.
+
+        Args:
+            query_or_queries (RetrieverInputType): a string or a list of strings.
+            top_k (Optional[int], optional): top k documents to fetch. Defaults to None.
+
+        Returns:
+            RetrieverOutputType: the developers should be aware that it actually returns a list of GeneratorOutput, post processing is required depends on how you instruct the model to output in the prompt and what output_processors you set up.
+            E.g. If the prompt is to output a list of indices and the output_processors is ListParser(), then it return: GeneratorOutput.data=[a list of indices]
+        """
         # run the generator
         print(f"query_or_queries: {query_or_queries}")
         if top_k is None:
@@ -78,9 +92,10 @@ class LLMRetriever(Retriever):
 
         prompt_kwargs = {
             "task_desc_str": task_desc_str,  # subprompt
+            "input_str": query_or_queries
         }
-
-        response = self.generator(query_or_queries, prompt_kwargs=prompt_kwargs)
+        response = self.generator(prompt_kwargs=prompt_kwargs)
+        print(f"llm retrieved indices {response}")
         return response
 
     def print_prompt(self):
@@ -89,7 +104,7 @@ class LLMRetriever(Retriever):
         prompt_kwargs = {
             "task_desc_str": task_desc_str,
         }
-        self.generator.prompt.print_prompt(**prompt_kwargs)
+        self.generator.system_prompt.print_prompt(**prompt_kwargs)
 
     def __call__(
         self,
