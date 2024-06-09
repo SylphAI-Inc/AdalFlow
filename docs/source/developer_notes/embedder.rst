@@ -1,17 +1,13 @@
 Embedder
 ============
 
-``Embedder`` class is similar to ``Generator``, it orchestrates embedding models via ``ModeClient`` and ``output_processors`` that can be used to process output from ``ModeClient``.
-
-
-
 A commonly applied approach in the NLP field to transform texts to numeric representation is Embedding. Embedding turns the texts data to the vector space.
 This enables us to calculate numbers such as similarity score. With embedding, during retrieval, we can do semantic search to find similar documents. 
 
 In ``LightRAG``, text embedding is managed through three main components: ``Embedder``, ``ToEmbedderResponse``, and ``ToEmbeddings``. 
 These components work together to transform text into embeddings using external model APIs from providers like `OpenAI`` and `Google`.
 
-* **Embedder:** It acts as the interface for external embedding models. It orchestrates the embedding process by communicating with the model's API, utilizing specified model arguments (``model_kwargs``) and an output processor (``output_processors``). Ensure that your model's API key is stored in the ``.env`` file. This setup prepares the Embedder to generate embeddings effectively.
+* **Embedder:** It acts as the interface for external embedding models. It orchestrates embedding models via ``ModeClient`` and ``output_processors`` that can be used to process output from ``ModeClient``. Ensure that your model's API key is stored in the ``.env`` file. This setup prepares the Embedder to generate embeddings effectively.
 * **ToEmbedderResponse:** It is designed to convert raw model outputs into structured ``EmbedderResponse`` formats, typically lists of float values representing embeddings. It should be used as the ``output_processors`` in the ``Embedder`` setup.
 * **ToEmbeddings:** It takes documents from ``Embedder``, processes documents in batches and uses an instance of ``Embedder`` as the ``vectorizer`` to obtain embeddings. After receiving the embeddings, ``ToEmbeddings`` assigns them back to the respective Document objects. This component ensures that the input data is copied and the original data remains unmodified.
 
