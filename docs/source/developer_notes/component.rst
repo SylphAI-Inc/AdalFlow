@@ -56,7 +56,8 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
                 def call(self, query: str) -> str:
                     return self.doc(prompt_kwargs={"input_str": query}).data
 
-Run the call method:
+In this note, we are creating an AI doctor to answer medical questions. 
+Run the ``DocQA`` on a query:
 
 .. code-block:: python
 
