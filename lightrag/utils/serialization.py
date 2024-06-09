@@ -103,19 +103,19 @@ def to_dict(obj: Any) -> Dict[str, Any]:
     return json.loads(serialize(obj))
 
 
-def save_json_from_dict(obj: Dict[str, Any], f: str = "task.json") -> None:
-    __doc__ = """Save the object to a json file.
+# def save_json_from_dict(obj: Dict[str, Any], f: str = "task.json") -> None:
+#     __doc__ = """Save the object to a json file.
 
-    Args:
-        obj (Dict[str, Any]): The object to be saved.
-        f (str, optional): The file name. Defaults to "task".
-    """
-    os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
-    try:
-        with open(f, "w") as file:
-            json.dump(obj, file, indent=4)
-    except IOError as e:
-        raise IOError(f"Error saving object to JSON file {f}: {e}")
+#     Args:
+#         obj (Dict[str, Any]): The object to be saved.
+#         f (str, optional): The file name. Defaults to "task".
+#     """
+#     os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+#     try:
+#         with open(f, "w") as file:
+#             json.dump(obj, file, indent=4)
+#     except IOError as e:
+#         raise IOError(f"Error saving object to JSON file {f}: {e}")
 
 
 def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:

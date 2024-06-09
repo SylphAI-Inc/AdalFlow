@@ -205,17 +205,24 @@ class Generator(Component):
         log.info(f"output: {output}")
         return output
 
+    # TODO: training is not supported in async call yet
     async def acall(
         self,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
-        Note: watch out for the rate limit and the timeout.
+
+        :warning::
+            Training is not supported in async call yet.
         """
+        log.info(f"prompt_kwargs: {prompt_kwargs}")
+        log.info(f"model_kwargs: {model_kwargs}")
+
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(completion)
+        log.info(f"output: {output}")
         return output
