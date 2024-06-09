@@ -81,12 +81,12 @@ Core Components
 
    * - Component
      - Description
-   * - :doc:`generator`
-     - The core component that orchestrates the model client(LLMs in particular), prompt, and output processors.
    * - :doc:`prompt`
      - Built on ``jinja2``, it programmablly and flexibly help users format prompt as input to the generator.
    * - :doc:`model_client`
      - ``ModelClient`` is the protocol and base class for all Models to communicate with components, either via APIs or local models.
+   * - :doc:`generator`
+     - The core component that orchestrates the model client(LLMs in particular), prompt, and output processors.
    * - :doc:`embedder`
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
@@ -97,9 +97,9 @@ Core Components
    :maxdepth: 1
    :hidden:
 
-   generator
    prompt
    model_client
+   generator
    embedder
    retriever
 
