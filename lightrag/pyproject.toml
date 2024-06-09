@@ -4,7 +4,6 @@ name = "lightrag"
 packages = [
     { include = "core", from = "." },
     { include = "components", from = "." },
-    { include = "prompts", from = "." },
     { include = "eval", from = "." },
     { include = "utils", from = "." },
     { include = "tracing", from = "." },

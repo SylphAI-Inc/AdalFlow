@@ -11,7 +11,8 @@ from lightrag.core import Generator, GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.string_parser import YAMLParser
-from lightrag.prompts.outputs import YAML_OUTPUT_FORMAT
+
+from lightrag.components.output_parsers import YAML_OUTPUT_FORMAT
 
 log = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ LLM_AUGMENTER_TEMPLATE = r"""Given inputs and outputs, you will fill in any fiel
 {{task_context_str}}
 </CONTEXT>
 {% endif %}
-<EXAMPLES>
+<EXAMPLES> {#TODO: use a better example template #}
 Inputs:
 Question: "Where is the capital of France?"
 Outputs:
@@ -58,6 +59,7 @@ class LLMAugmenter(Component):
     ):
         r"""Initialize the generator with the model client and the model kwargs."""
         super().__init__()
+        self.parser = YAMLOutputParser()
         # overwrite temperature to 1
         model_kwargs["temperature"] = 1
         self.generator = Generator(

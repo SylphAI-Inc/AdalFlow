@@ -1,6 +1,8 @@
 Installation
 ============
 
+[Xiaoyi]
+
 To start with LightRAG, please follow the steps:
 
 1. Clone the repository.

@@ -26,7 +26,6 @@ import lightrag
 import lightrag.components
 import lightrag.core
 import lightrag.eval
-import lightrag.prompts
 import lightrag.utils
 import lightrag.tracing
 
