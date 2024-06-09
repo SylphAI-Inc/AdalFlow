@@ -4,7 +4,7 @@ from dataclasses import field, MISSING, dataclass
 
 
 # Assuming DataClass is in your_module and correctly imported
-@dataclass
+# @dataclass
 class MyOutputs(DataClass):
     age: int = field(
         default=MISSING, metadata={"desc": "The age of the person", "prefix": "Age:"}

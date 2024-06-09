@@ -2,3 +2,4 @@
 /checkpoints*/
 *train_dspy.py
 *_ypsd*
+.ipynb_checkpoints/

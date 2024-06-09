@@ -1,9 +1,8 @@
 import asyncio
+import time
 
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
-
-import utils.setup_env
 
 
 class SimpleQA(Component):
@@ -17,47 +16,45 @@ class SimpleQA(Component):
         super().__init__()
         if provider == "openai":
             try:
-                from components.model_client import OpenAIClient
+                from lightrag.components.model_client import OpenAIClient
 
             except ImportError:
                 raise ImportError(
                     "Please install the OpenAI API client by running 'pip install openai'"
                 )
 
-            model_client = OpenAIClient
+            model_client = OpenAIClient()
         elif provider == "groq":
             try:
-                from components.model_client import GroqAPIClient
+                from lightrag.components.model_client import GroqAPIClient
             except ImportError:
                 raise ImportError(
                     "Please install the Groq API client by running 'pip install groq'"
                 )
 
-            model_client = GroqAPIClient
+            model_client = GroqAPIClient()
         elif provider == "anthropic":
             try:
-                from components.model_client import AnthropicAPIClient
+                from lightrag.components.model_client import AnthropicAPIClient
             except ImportError:
                 raise ImportError(
                     "Please install the Anthropic API client by running 'pip install anthropic'"
                 )
 
-            model_client = AnthropicAPIClient
+            model_client = AnthropicAPIClient()
         else:
             raise ValueError(f"Unknown provider: {provider}")
         self.generator = Generator(model_client=model_client, model_kwargs=model_kwargs)
         self.generator.print_prompt()
 
     def call(self, query: str) -> str:
-        return self.generator(input=query)
+        return self.generator({"input_str": query})
 
     async def acall(self, query: str) -> str:
-        return await self.generator.acall(input=query)
+        return await self.generator.acall({"input_str": query})
 
 
 if __name__ == "__main__":
-    import time
-
     query = "What is the capital of France?"
     queries = [query] * 10
 
@@ -83,7 +80,7 @@ if __name__ == "__main__":
             tasks = [make_async_call(query) for query in queries]
 
             start_time = time.time()
-            results = await asyncio.gather(*tasks)
+            _ = await asyncio.gather(*tasks)
             end_time = time.time()
 
             print(f"Total time for 10 async calls: {end_time - start_time} seconds")

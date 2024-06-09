@@ -1,6 +1,10 @@
 Embedder
 ============
 
+``Embedder`` class is similar to ``Generator``, it orchestrates embedding models via ``ModeClient`` and ``output_processors`` that can be used to process output from ``ModeClient``.
+
+
+
 A commonly applied approach in the NLP field to transform texts to numeric representation is Embedding. Embedding turns the texts data to the vector space.
 This enables us to calculate numbers such as similarity score. With embedding, during retrieval, we can do semantic search to find similar documents. 
 

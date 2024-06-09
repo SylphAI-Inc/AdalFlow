@@ -1,3 +1,5 @@
+"""Groq ModelClient integration"""
+
 import os
 from typing import Dict, Sequence, Optional, Any
 import backoff
@@ -41,17 +43,17 @@ class GroqAPIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
-        self._init_sync_client()
+        self.init_sync_client()
 
         self.async_client = None  # only initialize if the async call is called
 
-    def _init_sync_client(self):
+    def init_sync_client(self):
         api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
         self.sync_client = Groq(api_key=api_key)
 
-    def _init_async_client(self):
+    def init_async_client(self):
         api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
@@ -113,7 +115,7 @@ class GroqAPIClient(ModelClient):
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         if self.async_client is None:
-            self._init_async_client()
+            self.init_async_client()
         assert "model" in api_kwargs, "model must be specified"
         if model_type == ModelType.LLM:
             completion = await self.async_client.chat.completions.create(**api_kwargs)

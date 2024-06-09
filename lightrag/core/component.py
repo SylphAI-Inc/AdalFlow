@@ -55,18 +55,60 @@ def _addindent(s_, numSpaces):
 
 class Component:
     r"""
-    Component is the base class for all LightRAG components, such as Prompt, APIClient, Embedder, Retriever, Generator, etc.
+    Base class for all LLM task pipeline components.
+
+    Such as ``Prompt``, ``ModelClient``, ``Embedder``, ``Retriever``, ``Generator``, etc.
+    Your task pipeline should subclass this.
+
+    Components can also contain other Components, allowing to nest them in
+    a tree structure. You can assign the subcomponents as regular attributes::
+
+    Example:
+
+    .. code-block:: python
+
+        from lightrag.core import Component, Generator
+        from lightrag.components.model_client import OpenAIClient
+
+        template_doc = r"<SYS> You are a doctor </SYS> User: {{input_str}}"
+
+        class DocQA(Component):
+        def __init__(self):
+            super(DocQA, self).__init__()
+            self.doc = Generator(
+                template=template_doc,
+                model_client=OpenAIClient(),
+                model_kwargs={"model": "gpt-3.5-turbo"},
+            )
+
+        def call(self, query: str) -> str:
+            return self.doc(query).data
+
+        # instantiate the component
+        doc_qa = DocQA()
+        print(doc_qa)
+
+    The print will be:
+
+    .. code-block::
+
+        DocQA(
+        (doc): Generator(
+            model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
+            (system_prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+            (model_client): OpenAIClient()
+        )
+        )
+
+    We follow the same design pattern as PyTorch's ``nn.Module.``
+    Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases,
+    our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
+    Besides, (1) instead of `forward` and `backward` functions, we have `call` and `acall` functions for sync and async calls.
+    (2) we provide `to_dict` to handle serialization of the whole component states on top of `state_dict`.
 
     We purposly avoid using the name "Module" to avoid confusion with PyTorch's nn.Module.
     As we consider 'Component' to be an extension to 'Moduble' as if you use a local llm model
     for the Generator, you might need the 'Module' within the 'Component'.
-
-    But 'Component' follows a similar design pattern to 'Module' in PyTorch.
-
-    (1) 'Module' does not have async function because of GPU's inherent parallelism.
-     But we need to support async functions.
-     call and acall should call functions.
-    (2) All components can be running local or APIs. 'Component' can deal with API calls, so we need support retries and rate limits.
     """
 
     _version: int = 1  # Version of the component
@@ -195,7 +237,7 @@ class Component:
             # Fallback to a simpler representation
             return {"type": type(obj).__name__, "data": str(obj)}
 
-    def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
+    def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
         r"""Add a parameter to the component.
 
         The parameter can be accessed as an attribute using given name.
@@ -726,8 +768,9 @@ T = TypeVar("T", bound=Component)
 
 
 class Sequential(Component):
-    r"""A sequential container. Components will be added to it in the order they are passed to the constructor.
-
+    __doc__ = r"""A sequential container. 
+    
+    Components will be added to it in the order they are passed to the constructor.
     Output of the previous component is input to the next component as positional argument.
     """
 
@@ -817,6 +860,12 @@ class FunComponent(Component):
 
     Args:
         fun (Callable): The function to be wrapped.
+    
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FunComponent(function)
+    print(fun_component(1))  # 2
     """
 
     def __init__(self, fun: Callable):

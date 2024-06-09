@@ -1,4 +1,4 @@
-r"""Allow the users to install the required API client packages separately."""
+r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
 # try:
 #     from .openai_client import *
@@ -26,4 +26,4 @@ from .anthropic_client import *
 from .google_client import *
 from .groq_client import *
 from .openai_client import *
-from .transformers_client import *
+from .transformers_client import TransformersClient

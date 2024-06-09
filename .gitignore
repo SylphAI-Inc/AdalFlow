@@ -1,4 +1,5 @@
 .venv
+.vscode
 .DS_Store
 .env
 test_llamaindex.py

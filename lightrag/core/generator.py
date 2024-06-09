@@ -29,6 +29,17 @@ class Generator(Component):
     - Prompt
     - Model client
     - Output processors
+
+    Args:
+        model_client (ModelClient): The model client to use for the generator.
+        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}.
+        template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`.
+        preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
+        output_processors (Optional[Component], optional): The output processors after model call. Defaults to None.
+        trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
+
+    Note:
+        The output_processors will be applied to the string output of the model completion. And the result will be stored in the data field of the output. And we encourage you to only use it to parse the response to data format you will use later.
     """
 
     model_type: ModelType = ModelType.LLM
@@ -128,11 +139,13 @@ class Generator(Component):
             response = self.model_client.parse_chat_completion(completion)
         except Exception as e:
             log.error(f"Error parsing the completion: {e}")
-            response = str(completion)
-            return GeneratorOutput(raw_response=response, error=str(e))
+            # response = str(completion)
+            return GeneratorOutput(raw_response=str(completion), error=str(e))
 
-        # parse the raw string response
+        # the output processors operate on the str, the raw_response field.
         output: GeneratorOutputType = GeneratorOutput(raw_response=response)
+
+        # TODO: this output processing patterns need to be more clear
         response = deepcopy(response)
         if self.output_processors:
             try:
@@ -141,6 +154,8 @@ class Generator(Component):
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
                 output.error = str(e)
+        else:  # default to string output
+            output.data = response
 
         return output
 
@@ -190,17 +205,24 @@ class Generator(Component):
         log.info(f"output: {output}")
         return output
 
+    # TODO: training is not supported in async call yet
     async def acall(
         self,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
-        Note: watch out for the rate limit and the timeout.
+
+        :warning::
+            Training is not supported in async call yet.
         """
+        log.info(f"prompt_kwargs: {prompt_kwargs}")
+        log.info(f"model_kwargs: {model_kwargs}")
+
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(completion)
+        log.info(f"output: {output}")
         return output

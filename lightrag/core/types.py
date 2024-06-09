@@ -43,11 +43,13 @@ class ModelType(Enum):
 @dataclass
 class Embedding:
     """
+    Container for a single embedding.
+
     In sync with api spec, same as openai/types/embedding.py
     """
 
     embedding: List[float]
-    index: int  # match with the index of the input
+    index: Optional[int]  # match with the index of the input
 
 
 @dataclass
@@ -60,11 +62,51 @@ class Usage:
     total_tokens: int
 
 
-@dataclass
-class EmbedderResponse:
-    data: List[Embedding]
-    model: str
-    usage: Usage
+# @dataclass
+class EmbedderOutput(DataClass):
+    r"""Container to hold the response from an Embedder model.
+
+    Data standard for Embedder model output to interact with other components.
+    Batch processing is often available, thus we need a list of Embedding objects.
+    """
+
+    data: List[Embedding] = field(
+        default_factory=list, metadata={"desc": "List of embeddings"}
+    )
+    model: Optional[str] = field(default=None, metadata={"desc": "Model name"})
+    usage: Optional[Usage] = field(default=None, metadata={"desc": "Usage statistics"})
+    error: Optional[str] = field(default=None, metadata={"desc": "Error message"})
+    raw_response: Optional[Any] = field(
+        default=None, metadata={"desc": "Raw response"}
+    )  # only used if error
+
+
+# @dataclass
+class GeneratorOutput(DataClass, Generic[T_co]):
+    __doc__ = r"""
+    The output data class for the Generator component.
+    We can not control its output 100%, so we use this to track the error_message and
+    allow the raw string output to be passed through.
+
+    (1) When model predict and output processors are both without error,
+    we have data as the final output, error as None.
+    (2) When either model predict or output processors have error,
+    we have data as None, error as the error message.
+    
+    Raw_response will depends on the model predict.
+    """
+
+    data: T_co = field(
+        default=None,
+        metadata={"desc": "The final output data potentially after output parsers"},
+    )
+    error: Optional[str] = field(
+        default=None,
+        metadata={"desc": "Error message if any"},
+    )
+    raw_response: Optional[str] = field(
+        default=None, metadata={"desc": "Raw string response from the model"}
+    )
 
 
 @dataclass
@@ -240,7 +282,7 @@ class Document:
 
     def __repr__(self) -> str:
         # TODO: repr only those non empty fields
-        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:]}, estimated_num_tokens={self.estimated_num_tokens})" # show the whole embedding to avoid confusion
+        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:]}, estimated_num_tokens={self.estimated_num_tokens})"  # show the whole embedding to avoid confusion
 
     def __str__(self):
         return self.__repr__()
@@ -254,66 +296,3 @@ class RetrieverOutput:
     doc_scores: Optional[List[float]] = None
     query: Optional[str] = None
     documents: Optional[List[Document]] = None
-
-
-def retriever_output_to_context_str(
-    retriever_output: Union[RetrieverOutput, List[RetrieverOutput]],
-    deduplicate: bool = False,
-) -> str:
-    r"""The retrieved documents from one or mulitple queries.
-    Deduplicate is especially helpful when you used query expansion.
-    """
-    """
-    How to combine your retrieved chunks into the context is highly dependent on your use case.
-    If you used query expansion, you might want to deduplicate the chunks.
-    """
-    chunks_to_use: List[Document] = []
-    context_str = ""
-    sep = " "
-    if isinstance(retriever_output, RetrieverOutput):
-        chunks_to_use = retriever_output.documents
-    else:
-        for output in retriever_output:
-            chunks_to_use.extend(output.documents)
-    if deduplicate:
-        unique_chunks_ids = set([chunk.id for chunk in chunks_to_use])
-        # id and if it is used, it will be True
-        used_chunk_in_context_str: Dict[Any, bool] = {
-            id: False for id in unique_chunks_ids
-        }
-        for chunk in chunks_to_use:
-            if not used_chunk_in_context_str[chunk.id]:
-                context_str += sep + chunk.text
-                used_chunk_in_context_str[chunk.id] = True
-    else:
-        context_str = sep.join([chunk.text for chunk in chunks_to_use])
-    return context_str
-
-
-@dataclass
-class GeneratorOutput(DataClass, Generic[T_co]):
-    __doc__ = r"""
-    The output data class for the Generator component.
-    We can not control its output 100%, so we use this to track the error_message and
-    allow the raw string output to be passed through.
-
-    (1) When model predict and output processors are both without error,
-    we have data as the final output, error as None.
-    (2) When either model predict or output processors have error,
-    we have data as None, error as the error message.
-    
-    Raw_response will depends on the model predict.
-    """
-
-    data: T_co = field(
-        default=None,
-        metadata={"desc": "The final output data potentially after output parsers"},
-    )
-    error: Optional[str] = field(
-        default=None,
-        metadata={"desc": "Error message if any"},
-    )
-    raw_response: Optional[str] = field(
-        default=None,
-        metadata={"desc": "Raw response string"},
-    )

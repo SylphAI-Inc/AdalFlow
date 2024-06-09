@@ -9,7 +9,7 @@ LightRAG Home
 .. .. image:: ../../images/lightrag_structure.png
 ..    :width: 60%
 
-LightRAG is the "PyTorch" library for building large langage model(LLM) applications. It is super light, modular and robust like "PyTorch", and offers essential components for `Retriever`-`Agent`-`Generator` (RAG). 
+LightRAG is the "PyTorch" library for building large langage model(LLM) applications. It is super light, modular and robust like "PyTorch", and offers essential components for `Retriever`-`Agent`-`Generator` (RAG).
 
 You have a similar coding experience as PyTorch. Here is a side to side comparison of writing a PyTorch module and a LightRAG component:
 
@@ -19,7 +19,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
    .. grid-item-card::  PyTorch
 
       .. code-block:: python
-         
+
             import torch
             import torch.nn as nn
 
@@ -53,18 +53,17 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
                super().__init__()
                self.generator = Generator(
                   model_client=OpenAIClient(),
-                  model_kwargs={'model_name': 'gpt-3.5-turbo'}
+                  model_kwargs={'model': 'gpt-3.5-turbo'}
                )
 
             def call(self, query):
-               return self.generator.call(query)
+               return self.generator.call({'input_str': query})
 
             async def acall(self, query):
-               return await self.generator.acall(query)
+               return await self.generator.acall({'input_str': query})
 
          qa = SimpleQA()
          print(qa)
-
 
 
 
@@ -90,11 +89,11 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
 3. **Suitted for Both Researchers and Production Engineers**
 
-   On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions. 
-   Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production. 
-   With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data. 
-   Researchers will want their code to be adapted into more products too. 
-   
+   On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
+   Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production.
+   With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data.
+   Researchers will want their code to be adapted into more products too.
+
 
 
 **LightRAG vs other LLM libraries:**
@@ -114,7 +113,7 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
 * **User Documentation**: This documentation is for users who want to use LightRAG to build their applications.
 
-We encourage all users to at least skim through the developer documentation. Different from "PyTorch" where a normal user does not have to customize a building module for neural network, 
+We encourage all users to at least skim through the developer documentation. Different from "PyTorch" where a normal user does not have to customize a building module for neural network,
 LLM applications have much bigger scope and varies even more to different product environments, so developers customizing components on their own is much more common.
 
 
@@ -126,7 +125,7 @@ LLM applications have much bigger scope and varies even more to different produc
 
 
    get_started/index
-   
+
 
 
 
@@ -167,7 +166,7 @@ LLM applications have much bigger scope and varies even more to different produc
 ..    :glob:
 ..    :maxdepth: 1
 ..    :caption: Resources
-   
+
 ..    resources/index
 
 
@@ -177,6 +176,3 @@ LLM applications have much bigger scope and varies even more to different produc
    :caption: For Contributors
 
    contributor/index
-
-
-

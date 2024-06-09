@@ -1,7 +1,7 @@
 Evaluating a RAG Pipeline
 ==========================
 
-Evaluating an LLM application essentially involves various metric functions. You can write your own metric functions or import from other libraries. In LightRAG, we provide a set of metrics in :ref:`eval-evaluators`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
+In LightRAG, we provide a set of metrics in :ref:`our evaluators <evaluators>`. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline
 
 The full code for this tutorial can be found in `use_cases/rag_hotpotqa.py <https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py>`_.
 
