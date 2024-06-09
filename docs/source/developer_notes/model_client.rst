@@ -1,7 +1,16 @@
 ModelClient
 ============
+
 :ref:`ModelClient<core-model_client>` is the protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components/classes.
 By switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, you can make your prompt or ``Retriever`` model-agnostic.
+
+
+.. figure:: /_static/model_client.png
+    :align: center
+    :alt: ModelClient
+    :width: 400px
+
+    The interface to internal components in LightRAG
 
 Model Inference SDKs
 -------------------
