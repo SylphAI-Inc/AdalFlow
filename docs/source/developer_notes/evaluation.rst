@@ -1,7 +1,8 @@
 A Guideline on LLM Evaluation
 ====================================
 
-Evaluating LLMs and their applications is crucial for understanding their capabilities and limitations. Overall, such evaluation is a complex and multifaceted process. Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_:
+As the saying goes, "You cannot improve what you cannot measure". This is especially true in the context of LLMs, which have become increasingly popular due to their impressive performance on a wide range of tasks. Evaluating LLMs and their applications is crucial in both research and production to understand their capabilities and limitations.
+Overall, such evaluation is a complex and multifaceted process. Below, we provide a guideline for evaluating LLMs and their applications, incorporating aspects outlined by *Chang et al.* [1]_:
 
 * **What to evaluate**: the tasks and capabilities that LLMs are evaluated on.
 * **Where to evaluate**: the datasets and benchmarks that are used for evaluation.
@@ -57,7 +58,7 @@ If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BE
 .. code-block:: python
     :linenos:
 
-    from datasets import load_dataset
+    from datasets import load_metric
     bertscore = load_metric("bertscore")
     generated_text = ["life is good", "aim for the stars"]
     reference_text = ["life is great", "make it to the moon"]
@@ -102,4 +103,3 @@ If you intent to use metrics that are not available in the LightRAG library, you
 .. [4] Hendrycks, Dan, et al. "Measuring massive multitask language understanding." International Conference on Learning Representations. 2020.
 .. [5] Chen, Mark, et al. "Evaluating large language models trained on code." arXiv preprint arXiv:2107.03374 (2021).
 .. [6] Liu, Yang, et al. "Datasets for Large Language Models: A Comprehensive Survey." arXiv preprint arXiv:2402.18041 (2024).
-.. [7] Li, Minghao, et al. "API-Bank: A comprehensive benchmark for tool-augmented llms." The 2023 Conference on Empirical Methods in Natural Language Processing. 2023.
