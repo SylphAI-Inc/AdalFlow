@@ -53,7 +53,7 @@ New Instruction:
 """
 
 
-@dataclass
+# @dataclass
 class Instruction(DataClass):
     # prefix will be the same as text
     text: str = field(metadata={"desc": "The instruction text"})

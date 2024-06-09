@@ -15,7 +15,7 @@ from lightrag.utils import append_to_jsonl, load_jsonl
 log = logging.getLogger(__name__)
 
 
-@dataclass
+# @dataclass
 class GeneratorCallRecord(DataClass):
     prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
     model_kwargs: Dict[str, Any] = field(default_factory=dict)

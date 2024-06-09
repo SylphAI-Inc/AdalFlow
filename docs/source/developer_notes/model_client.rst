@@ -95,7 +95,7 @@ How you do this is highly flexible. Here is an example to use local embedding mo
 
 
 
-``ModelClient`` Protocol
+ModelClient Protocol
 -----------------------------------------------------------------------------------------------------------
 A model client can be used to manage different types of models, we defined a ``ModelType`` to categorize the model type.
 
