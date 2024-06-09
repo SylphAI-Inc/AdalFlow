@@ -156,7 +156,7 @@ class ReActAgent(Generator):
         preset_prompt_kwargs: Optional[
             Dict
         ] = {},  # you can pass examples here, additionally leverage few-shot or many-shots ICL.
-        output_processors: Optional[Component] = JsonParser(),
+        output_processors: Optional[Component] = None,
         model_client: ModelClient,
         model_kwargs: Optional[Dict] = {},
     ):
@@ -169,6 +169,7 @@ class ReActAgent(Generator):
         )
         self.tools = deepcopy(tools)
         self.max_steps = max_steps
+        self.output_processors = output_processors or JsonParser()
 
         self.additional_llm_tool = Generator(
             model_client=model_client, model_kwargs=model_kwargs
@@ -207,7 +208,6 @@ class ReActAgent(Generator):
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []
-        self.output_processors = output_processors
 
     def reset(self):
         r"""Reset the agent to start a new query."""

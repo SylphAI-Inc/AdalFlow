@@ -1,3 +1,5 @@
+"""Google GenAI ModelClient integration"""
+
 import os
 from typing import Dict, Sequence, Optional
 import backoff
@@ -27,11 +29,11 @@ class GoogleGenAIClient(ModelClient):
         r"""It is recommended to set the GOOGLE_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
         self._api_key = api_key
-        self.sync_client = self._init_sync_client()
+        self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.tested_llm_models = ["gemini-1.0-pro", "gemini-1.5-pro-latest"]
 
-    def _init_sync_client(self):
+    def init_sync_client(self):
         api_key = self._api_key or os.getenv("GOOGLE_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GOOGLE_API_KEY must be set")

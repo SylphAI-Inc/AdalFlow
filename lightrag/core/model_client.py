@@ -1,6 +1,21 @@
-r"""APIClient is LightRAG'protocol for all API clients, cloud or local to communicate with LightRAG's internal components.
+r"""ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components."""
 
-We designed the abstract APIClient class to separate the model API calls from the rest of the system,
+from typing import Any, Dict, Union, Sequence
+
+
+from lightrag.core.component import Component
+from lightrag.core.types import ModelType
+
+
+API_INPUT_TYPE = Union[
+    str, Sequence[str]
+]  # str/Sequence for llm and str/sequence/list for embeddings
+
+
+class ModelClient(Component):
+    __doc__ = r"""The protocol and abstract class for all models(either via APIs or local models) to communicate with components.
+
+    We designed the abstract APIClient class to separate the model API calls from the rest of the system,
 making it a plug-and-play component that can be used in functional components like Generator and Embedder.
 
 
@@ -16,22 +31,6 @@ It does four things:
 (4) Handle API specific exceptions and errors to retry the call.
 
 Check the subclasses in `components/model_client/` directory for the functional API clients we have.
-"""
-
-from typing import Any, Dict, Union, Sequence
-
-
-from lightrag.core.component import Component
-from lightrag.core.types import ModelType
-
-
-API_INPUT_TYPE = Union[
-    str, Sequence[str]
-]  # str/Sequence for llm and str/sequence/list for embeddings
-
-
-class ModelClient(Component):
-    __doc__ = r"""The abstract class for all API clients.
 
     This interface is designed to bridge the gap between LightRAG components inputs and model APIs.
 
@@ -45,12 +44,12 @@ class ModelClient(Component):
         self.sync_client = None
         self.async_client = None
 
-    def _init_sync_client(self):
+    def init_sync_client(self):
         raise NotImplementedError(
             f"{type(self).__name__} must implement _init_sync_client method"
         )
 
-    def _init_async_client(self):
+    def init_async_client(self):
         raise NotImplementedError(
             f"{type(self).__name__} must implement _init_async_client method"
         )

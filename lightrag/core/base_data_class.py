@@ -141,7 +141,7 @@ class _DataClassMeta(type):
 # TODO: we want the child class to work either with or without dataclass decorator,
 # using metaclass with DataClassMeta works if both base and child does not have dataclass decorator
 # but if the child has dataclass decorator, it will not work.
-# class DataClass(metaclass=DataClassMeta):
+# class DataClass(metaclass=_DataClassMeta):
 # class OutputDataClass(DataClass):
 # before we do more tests, we keep the base and child class manually decorated with dataclass
 
@@ -170,9 +170,8 @@ class DataClass:
     .. code-block:: python
 
         # Define a dataclass
-        from dataclasses import field, dataclass
         from lightrag.core import DataClass
-        @dataclass
+        
         class MyOutputs(DataClass):
             age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
             name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
