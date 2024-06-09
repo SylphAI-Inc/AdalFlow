@@ -1,3 +1,7 @@
+r"""
+The base class for all retrievers who in particular retrieve documents from a given database.
+"""
+
 from typing import List, Optional, Union, Any
 
 

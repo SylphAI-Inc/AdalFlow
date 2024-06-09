@@ -27,7 +27,7 @@ from use_cases.classification.data import (
 )
 
 
-from lightrag.core.base_data_class import BaseDataClass
+from lightrag.core.base_data_class import DataClass
 from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
 from use_cases.classification.utils import get_script_dir
 from use_cases.classification.config_log import log
@@ -38,6 +38,7 @@ Format: class_index. class_name, class_description
 {% for class in classes %}
 {{loop.index-1}}. {{class.label}}, {{class.desc}}
 {% endfor %}
+- Do not try to answer the question:
 """
 
 TEMPLATE = r"""{# task desc #}
@@ -58,12 +59,12 @@ TEMPLATE = r"""{# task desc #}
 </EXAMPLES>
 {% endif %}
 {{input_label}}: {{input}} {# input_label is the prompt argument #}
-Your output:
+Your output: {# the output label #}
 """
 
 
-@dataclass
-class InputFormat(BaseDataClass):
+# @dataclass
+class InputFormat(DataClass):
     # add the "prompt_arg" to represent the prompt argument that it should get matched to
     question: str = field(metadata={"desc": "The question to classify"})
 
@@ -75,8 +76,8 @@ class InputFormat(BaseDataClass):
         return super().load_from_dict(data)
 
 
-@dataclass
-class OutputFormat(BaseDataClass):
+# @dataclass
+class OutputFormat(DataClass):
     thought: str = field(
         metadata={
             "desc": "Your reasoning to classify the question to class_name",

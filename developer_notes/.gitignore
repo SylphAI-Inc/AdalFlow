@@ -1,0 +1,4 @@
+*.json
+*.test
+*logs
+test*
