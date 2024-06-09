@@ -242,15 +242,8 @@ Then, developers can pass the queries to :func:`components.retriever.faiss_retri
 We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability. This is how we calculate the score.
 Then we attach the score to each retrieval output.
 
-Next we will see a retrieval example.
-
-Before using ``FAISSRetriever``, we need to prepare the embeddings for documents or chunks following the previous steps.
-
-
-.. code-block:: python
-
-
 Then, to speed up the retrieval, it is a common practice to build indexes from the documents or chunks.
 When the indexes are ready, we should pass the query to the retriever and get the top k documents closest to the query vector.
 ``LightRAG`` makes this process very easy for developers. Let's see the example.
 
+#. 
