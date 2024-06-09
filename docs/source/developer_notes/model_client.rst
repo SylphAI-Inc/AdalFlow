@@ -97,6 +97,14 @@ How you do this is highly flexible. Here is an example to use local embedding mo
 
 ``ModelClient`` Protocol
 -----------------------------------------------------------------------------------------------------------
+A model client can be used to manage different types of models, we defined a ``ModelType`` to categorize the model type.
+
+.. code-block:: python
+
+    class ModelType(Enum):
+        EMBEDDER = auto()
+        LLM = auto()
+        UNDEFINED = auto()
 
 We designed 5 abstract methods in the ``ModelClient`` class to be implemented by the subclass model type.
 We will use :class:`components.model_client.OpenAIClient` along with the above ``TransformerEmbedder`` as examples.
@@ -265,3 +273,64 @@ The `TransformerClient` example:
 
 Our library currently integrated with 5 providers: OpenAI, Groq, Anthropic, Huggingface, and Google.
 Please check out :ref:`ModelClient Integration<components-model_client>`.
+
+Use ModelClient directly
+-----------------------------------------------------------------------------------------------------------
+Though ``ModelClient`` is often wrapped in a ``Generator`` or ``Embedder`` component, you can use it directly if you ever plan to write your own component.
+Here is an example to use ``OpenAIClient`` directly, first on LLM model:
+
+.. code-block:: python
+
+    from lightrag.components.model_client import OpenAIClient
+    from lightrag.core.types import ModelType
+    from lightrag.utils import setup_env
+
+    openai_client = OpenAIClient()
+
+    query = "What is the capital of France?"
+
+    # try LLM model
+    model_type = ModelType.LLM
+
+    prompt = f"User: {query}\n"
+    model_kwargs = {"model": "gpt-3.5-turbo", "temperature": 0.5, "max_tokens": 100}
+    api_kwargs = openai_client.convert_inputs_to_api_kwargs(input=prompt, 
+                                                            model_kwargs=model_kwargs, 
+                                                            model_type=model_type)
+    print(f"api_kwargs: {api_kwargs}")
+
+    response = openai_client.call(api_kwargs=api_kwargs, model_type=model_type)
+    response_text = openai_client.parse_chat_completion(response)
+    print(f"response_text: {response_text}")
+
+The output will be:
+
+.. code-block:: 
+
+    api_kwargs: {'model': 'gpt-3.5-turbo', 'temperature': 0.5, 'max_tokens': 100, 'messages': [{'role': 'system', 'content': 'User: What is the capital of France?\n'}]}
+    response_text: The capital of France is Paris.  
+
+Then on Embedder model:
+
+.. code-block:: python
+
+    # try embedding model
+    model_type = ModelType.EMBEDDER
+    # do batch embedding
+    input = [query] * 2
+    model_kwargs = {"model": "text-embedding-3-small", "dimensions": 8, "encoding_format": "float"}
+    api_kwargs = openai_client.convert_inputs_to_api_kwargs(input=input, model_kwargs=model_kwargs, model_type=model_type)
+    print(f"api_kwargs: {api_kwargs}")
+
+
+
+    response = openai_client.call(api_kwargs=api_kwargs, model_type=model_type)
+    reponse_embedder_output = openai_client.parse_embedding_response(response)
+    print(f"reponse_embedder_output: {reponse_embedder_output}")
+
+The output will be:
+
+.. code-block::
+
+    api_kwargs: {'model': 'text-embedding-3-small', 'dimensions': 8, 'encoding_format': 'float', 'input': ['What is the capital of France?', 'What is the capital of France?']}
+    reponse_embedder_output: EmbedderOutput(data=[Embedding(embedding=[0.6175549, 0.24047995, 0.4509756, 0.37041178, -0.33437008, -0.050995983, -0.24366009, 0.21549304], index=0), Embedding(embedding=[0.6175549, 0.24047995, 0.4509756, 0.37041178, -0.33437008, -0.050995983, -0.24366009, 0.21549304], index=1)], model='text-embedding-3-small', usage=Usage(prompt_tokens=14, total_tokens=14), error=None, raw_response=None)

@@ -26,4 +26,4 @@ from .anthropic_client import *
 from .google_client import *
 from .groq_client import *
 from .openai_client import *
-from .transformers_client import *
+from .transformers_client import TransformersClient

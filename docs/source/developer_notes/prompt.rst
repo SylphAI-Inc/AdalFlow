@@ -1,6 +1,6 @@
 Prompt
 ============
-LightRAG library in default maximizes developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
+We strick to maximize developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
 
 For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
 often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and 

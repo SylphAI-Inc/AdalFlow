@@ -1,9 +1,12 @@
 from .component import Component
 from .parameter import Parameter
+from .model_client import ModelClient
 from .base_data_class import DataClass, required_field
-from .types import GeneratorOutput
+
+
 from .generator import Generator
 from .prompt_builder import Prompt
+
 
 __all__ = [
     "Component",
@@ -13,4 +16,5 @@ __all__ = [
     "Prompt",
     "Parameter",
     "required_field",
+    "ModelClient",
 ]
