@@ -67,6 +67,38 @@ class Component:
 
     .. code-block:: python
 
+        from lightrag.core import Component, Generator
+        from lightrag.components.model_client import OpenAIClient
+
+        template_doc = r"<SYS> You are a doctor </SYS> User: {{input_str}}"
+
+        class DocQA(Component):
+        def __init__(self):
+            super(DocQA, self).__init__()
+            self.doc = Generator(
+                template=template_doc,
+                model_client=OpenAIClient(),
+                model_kwargs={"model": "gpt-3.5-turbo"},
+            )
+
+        def call(self, query: str) -> str:
+            return self.doc(query).data
+
+        # instantiate the component
+        doc_qa = DocQA()
+        print(doc_qa)
+
+    The print will be:
+
+    .. code-block::
+
+        DocQA(
+        (doc): Generator(
+            model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
+            (system_prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+            (model_client): OpenAIClient()
+        )
+        )
 
     We follow the same design pattern as PyTorch's ``nn.Module.``
     Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases,
@@ -205,7 +237,7 @@ class Component:
             # Fallback to a simpler representation
             return {"type": type(obj).__name__, "data": str(obj)}
 
-    def register_parameter(self, name: str, param: Optional[Parameter]) -> None:
+    def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
         r"""Add a parameter to the component.
 
         The parameter can be accessed as an attribute using given name.
@@ -736,8 +768,9 @@ T = TypeVar("T", bound=Component)
 
 
 class Sequential(Component):
-    r"""A sequential container. Components will be added to it in the order they are passed to the constructor.
-
+    __doc__ = r"""A sequential container. 
+    
+    Components will be added to it in the order they are passed to the constructor.
     Output of the previous component is input to the next component as positional argument.
     """
 
@@ -827,6 +860,12 @@ class FunComponent(Component):
 
     Args:
         fun (Callable): The function to be wrapped.
+    
+    Examples:
+
+    function = lambda x: x + 1
+    fun_component = FunComponent(function)
+    print(fun_component(1))  # 2
     """
 
     def __init__(self, fun: Callable):
