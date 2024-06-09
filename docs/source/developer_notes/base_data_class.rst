@@ -42,10 +42,9 @@ Here is how users can define a data class with our customized methods in LightRA
         DataClass,
         required_field,
     )
-    from dataclasses import field, dataclass
+    from dataclasses import field
 
 
-    @dataclass
     class MyOutputs(DataClass):
         name: str = field(
             default="John Doe",  # Optional field
@@ -234,7 +233,7 @@ Here is a real-world example:
 
 .. code-block:: python
 
-    class OutputFormat(BaseDataClass):
+    class OutputFormat(DataClass):
         thought: str = field(
             metadata={
                 "desc": "Your reasoning to classify the question to class_name",
