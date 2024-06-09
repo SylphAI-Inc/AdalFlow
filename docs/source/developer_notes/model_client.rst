@@ -276,7 +276,7 @@ Please check out :ref:`ModelClient Integration<components-model_client>`.
 
 Use ModelClient directly
 -----------------------------------------------------------------------------------------------------------
-Though ``ModelClient`` is often wrapped in a ``Generator`` or ``Embedder`` component, you can use it directly if you ever plan to write your own component.
+Though ``ModelClient`` is often managed in a ``Generator`` or ``Embedder`` component, you can use it directly if you ever plan to write your own component.
 Here is an example to use ``OpenAIClient`` directly, first on LLM model:
 
 .. code-block:: python
