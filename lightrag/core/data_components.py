@@ -1,15 +1,15 @@
-r"""These helps parse model or api's output to commonly used data structures.
+r"""Helper components for data types transformation.
+
 It is commonly used as output_processors.
 """
 
 from copy import deepcopy
-import dataclasses
-from typing import Any, Dict, List, Type, TypeVar, Sequence, Union
+from typing import Any, List, TypeVar, Sequence, Union, Dict, Any
 
 
 from lightrag.core.component import Component
 from lightrag.core.types import (
-    EmbedderResponse,
+    EmbedderOutput,
     Embedding,
     Usage,
     Document,
@@ -21,27 +21,14 @@ import lightrag.core.functional as F
 T = TypeVar("T")
 
 
-# TODO: move this to a separate file
-def from_dict_to_dataclass(klass: Type[T], d: Dict[str, Any]) -> T:
-    fieldtypes = {f.name: f.type for f in dataclasses.fields(klass)}
-    return klass(
-        **{
-            f: (
-                from_dict_to_dataclass(fieldtypes[f], d[f])
-                if dataclasses.is_dataclass(fieldtypes[f])
-                else d[f]
-            )
-            for f in d
-        }
-    )
-
-
-# from openai.types import CreateEmbeddingResponse
-
-
-def convert_to_embedder_response(
+# TODO: move this to the ModelClient.
+def parse_embedding_response(
     api_response,
-) -> EmbedderResponse:
+) -> EmbedderOutput:
+    r"""Parse embedding model output from the API response to EmbedderOutput.
+
+    Follows the OpenAI API response pattern.
+    """
     # Assuming `api_response` has `.embeddings` and `.usage` attributes
     # and that `embeddings` is a list of objects that can be converted to `Embedding` dataclass
     # TODO: check if any embedding is missing
@@ -56,25 +43,62 @@ def convert_to_embedder_response(
     # Assuming the model name is part of the response or set statically here
     model = api_response.model
 
-    return EmbedderResponse(data=embeddings, model=model, usage=usage)
+    return EmbedderOutput(data=embeddings, model=model, usage=usage)
 
 
-class ToEmbedderResponse(Component):
+def retriever_output_to_context_str(
+    retriever_output: Union[RetrieverOutput, List[RetrieverOutput]],
+    deduplicate: bool = False,
+) -> str:
+    r"""The retrieved documents from one or mulitple queries.
+    Deduplicate is especially helpful when you used query expansion.
     """
-    TODO: this might not apply to all Embedder models, this applys to one pattern
     """
+    How to combine your retrieved chunks into the context is highly dependent on your use case.
+    If you used query expansion, you might want to deduplicate the chunks.
+    """
+    chunks_to_use: List[Document] = []
+    context_str = ""
+    sep = " "
+    if isinstance(retriever_output, RetrieverOutput):
+        chunks_to_use = retriever_output.documents
+    else:
+        for output in retriever_output:
+            chunks_to_use.extend(output.documents)
+    if deduplicate:
+        unique_chunks_ids = set([chunk.id for chunk in chunks_to_use])
+        # id and if it is used, it will be True
+        used_chunk_in_context_str: Dict[Any, bool] = {
+            id: False for id in unique_chunks_ids
+        }
+        for chunk in chunks_to_use:
+            if not used_chunk_in_context_str[chunk.id]:
+                context_str += sep + chunk.text
+                used_chunk_in_context_str[chunk.id] = True
+    else:
+        context_str = sep.join([chunk.text for chunk in chunks_to_use])
+    return context_str
 
-    def __init__(
-        self,
-    ) -> None:
-        super().__init__()
 
-    def __call__(self, input: Any) -> EmbedderResponse:
-        """
-        convert the model output to EmbedderResponse
-        """
-        return convert_to_embedder_response(input)
-        # return from_dict_to_dataclass(EmbedderResponse, input)
+# class ToEmbedderResponse(Component):
+#     """Convert embedding model output to EmbedderOutput
+#     .. note:
+#        This might not apply to all Embedder models, this applys to one pattern
+#     """
+
+#     def __init__(
+#         self,
+#     ) -> None:
+#         super().__init__()
+
+#     def __call__(self, input: Any) -> EmbedderOutput:
+#         """
+#         convert the model output to EmbedderOutput
+#         """
+#         try:
+#             return parse_embedding_response(input)
+#         except Exception as e:
+#             raise ValueError(f"Error converting to EmbedderOutput: {e}")
 
 
 """
@@ -97,7 +121,7 @@ class ToEmbeddings(Component):
         output = deepcopy(input)
         for i in range(0, len(output), self.batch_size):
             batch = output[i : i + self.batch_size]
-            embedder_output: EmbedderResponse = self.vectorizer(
+            embedder_output: EmbedderOutput = self.vectorizer(
                 input=[chunk.text for chunk in batch]
             )
             vectors = embedder_output.data
@@ -111,7 +135,6 @@ class ToEmbeddings(Component):
         return output
 
 
-# TODO: a helper factory that converts any given function to a component
 class RetrieverOutputToContextStr(Component):
     r"""
     Wrap on functional F.retriever_output_to_context_str
@@ -125,7 +148,7 @@ class RetrieverOutputToContextStr(Component):
         self,
         input: Union[RetrieverOutput, List[RetrieverOutput]],
     ) -> str:
-        return F.retriever_output_to_context_str(
+        return retriever_output_to_context_str(
             retriever_output=input, deduplicate=self.deduplicate
         )
 

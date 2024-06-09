@@ -14,13 +14,14 @@ try:
         UnprocessableEntityError,
         BadRequestError,
     )
-    from openai.types import Completion
+    from openai.types import Completion, CreateEmbeddingResponse
 except ImportError:
     raise ImportError("Please install openai with: pip install openai")
 
 
 from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
-from lightrag.core.types import ModelType
+from lightrag.core.types import ModelType, EmbedderOutput
+from lightrag.core.data_components import parse_embedding_response
 
 import backoff
 
@@ -57,11 +58,21 @@ class OpenAIClient(ModelClient):
         return AsyncOpenAI(api_key=api_key)
 
     def parse_chat_completion(self, completion: Completion) -> str:
-        """
-        Parse the completion to a structure your sytem standarizes. (here is str)
-        # TODO: standardize the completion
-        """
+        """Parse the completion to a str."""
         return completion.choices[0].message.content
+
+    def parse_embedding_response(
+        self, response: CreateEmbeddingResponse
+    ) -> EmbedderOutput:
+        r"""Parse the embedding response to a structure LightRAG components can understand.
+
+        Should be called in ``Embedder``.
+        """
+        try:
+            return parse_embedding_response(response)
+        except Exception as e:
+            log.error(f"Error parsing the embedding response: {e}")
+            return EmbedderOutput(data=[], error=str(e), raw_response=response)
 
     def convert_inputs_to_api_kwargs(
         self,

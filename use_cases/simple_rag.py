@@ -1,26 +1,23 @@
 from typing import Any, List, Optional
-import dotenv
 
 
 from lightrag.core.generator import Generator
 from lightrag.core.embedder import Embedder
 from lightrag.core.data_components import (
-    ToEmbedderResponse,
+    # ToEmbedderResponse,
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
+
 from lightrag.core.types import Document
 from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.core.string_parser import JsonParser
 from lightrag.core.component import Component, Sequential
 from lightrag.core.db import LocalDocumentDB
-from lightrag.core.functional import generate_component_key
 
 from lightrag.components.retriever import FAISSRetriever
 from lightrag.components.model_client import OpenAIClient
-
-
-dotenv.load_dotenv(dotenv_path=".env", override=True)
+from lightrag.utils import setup_env
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
@@ -52,10 +49,10 @@ class RAG(Component):
         }
 
         vectorizer = Embedder(
-            model_client=OpenAIClient,
+            model_client=OpenAIClient(),
             # batch_size=self.vectorizer_settings["batch_size"], #TODO: where to put the batch size control and how big can it go?
             model_kwargs=self.vectorizer_settings["model_kwargs"],
-            output_processors=ToEmbedderResponse(),
+            # output_processors=ToEmbedderResponse(),
         )
         # TODO: check document splitter, how to process the parent and order of the chunks
         text_splitter = DocumentSplitter(
@@ -71,7 +68,7 @@ class RAG(Component):
             ),
         )
         # TODO: make a new key
-        self.data_transformer_key = generate_component_key(self.data_transformer)
+        self.data_transformer_key = self.data_transformer._get_name()
         # initialize retriever, which depends on the vectorizer too
         self.retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
@@ -96,7 +93,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient,
+            model_client=OpenAIClient(),
             model_kwargs=self.generator_model_kwargs,
             output_processors=JsonParser(),
         )
@@ -119,8 +116,9 @@ Output JSON format:
 
         prompt_kwargs = {
             "context_str": context,
+            "input_str": query,
         }
-        response = self.generator(input=query, prompt_kwargs=prompt_kwargs)
+        response = self.generator(prompt_kwargs=prompt_kwargs)
         return response
 
     def call(self, query: str) -> Any:
@@ -163,4 +161,4 @@ if __name__ == "__main__":
     # print(f"execution graph: {rag._execution_graph}")
     print(f"response: {response}")
     # print(f"subcomponents: {rag._components}")
-    rag.visualize_graph_html("my_component_graph.html")
+    # rag.visualize_graph_html("my_component_graph.html")

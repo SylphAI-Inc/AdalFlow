@@ -3,6 +3,7 @@
 from typing import Any, Dict, Union, List, Optional
 import logging
 from functools import lru_cache
+from core.types import EmbedderOutput
 import torch.nn.functional as F
 
 try:
@@ -19,7 +20,7 @@ except ImportError:
     raise ImportError("Please install transformers with: pip install transformers")
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
+from lightrag.core.types import ModelType, Embedding
 
 from lightrag.core.component import Component
 
@@ -124,6 +125,15 @@ class TransformersClient(ModelClient):
 
     def init_sync_client(self):
         return TransformerEmbedder()
+
+    def parse_embedding_response(self, response: Any) -> EmbedderOutput:
+        # convert list of float to list of embedding
+        # TODO: need to simplify this, Embedding data type does not seem necessary
+        embeddings: List[Embedding] = []
+        for idx, emb in enumerate(response):
+            embeddings.append(Embedding(index=idx, embedding=emb))
+        response = EmbedderOutput(data=embeddings)
+        return response
 
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         return self.sync_client(**api_kwargs)
