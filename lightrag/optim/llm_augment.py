@@ -59,7 +59,6 @@ class LLMAugmenter(Component):
     ):
         r"""Initialize the generator with the model client and the model kwargs."""
         super().__init__()
-        self.parser = YAMLOutputParser()
         # overwrite temperature to 1
         model_kwargs["temperature"] = 1
         self.generator = Generator(

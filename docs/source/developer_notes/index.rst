@@ -36,59 +36,105 @@ We have clear design phisolophy:
 
    llm_intro
 
+
+
+
 Building
 =============================
 
 Base classes
 ---------------
-There are two base classes, ``Component`` and ``DataClass``.
-- ``Component`` plays the same role as ``Module`` in PyTorch. It standardize the interface of all componnets with `call`, `acall`, and `__call__` methods, handles states, and serialization. 
-Components can be easily chained togehter via `Sequential` for now.
-- ``DataClass``, leverages the ``dataclasses`` module in Python to ease how data is interacting each component and especially how to formatted as string in Prompt, beside of the serialization.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Base Class
+     - Description
+   * - :doc:`component`
+     - Similar to ``Module`` in `PyTorch`, it standardizes the interface of all components with `call`, `acall`, and `__call__` methods, handles states, and serialization. Components can be easily chained togehter via `Sequential` for now.
+   * - :doc:`base_data_class`
+     - Leverages the ``dataclasses`` module in Python to ease the data interaction with prompt and serialization.
 
 
+.. create side bar navigation
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    component
    base_data_class
 
-Core Components and functional
+Core Components
 -------------------
-In the core, lies our ``Generator``.
-- Model Client  
-- Prompt
-- Output Parser
+.. In the core, lies our ``Generator``, it orchestrates three components: (1) Model Client, (2) Prompt, and (3) Output Processors.
   
-Assisted with ``DataClass`` for input and output data formating.
+.. Assisted with ``DataClass`` for input and output data formating.
 
-With generator being in the center, all things are built around it via the prompt.
-- Retriever  (Enhance Generator to be more factual and less hallucination), provide `context_str` in prompt.
-- 
+.. With generator being in the center, all things are built around it via the prompt.
+.. - Retriever  (Enhance Generator to be more factual and less hallucination), provide `context_str` in prompt.
+.. - 
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Component
+     - Description
+   * - :doc:`generator`
+     - The core component that orchestrates the model client(LLMs in particular), prompt, and output processors.
+   * - :doc:`prompt`
+     - Built on ``jinja2``, it programmablly and flexibly help users format prompt as input to the generator.
+   * - :doc:`model_client`
+     - ``ModelClient`` is the protocol and base class for all Models to communicate with components, either via APIs or local models.
+   * - :doc:`embedder`
+     - The component that orchestrates model client (Embedding models in particular) and output processors.
+   * - :doc:`retriever`
+     - The base class for all retrievers who in particular retrieve documents from a given database.
 
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
-   api_client
-   prompt
    generator
+   prompt
+   model_client
    embedder
    retriever
 
+Core functionals
+-------------------
 
-.. Core Components - Agent (Enhance Generator with tools, planning, and reasoning)
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
 
-tools and execturos, react and how react relates to generator.
+   * - Functional
+     - Description
+   * - :doc:`string_parser`
+     - Parse the output string to structured data.
+   * - :doc:`tool_helper`
+     - Provide tools to interact with the generator.
+   * - :doc:`document_splitter`
+     - For embedder and retriever to split the document.
+   * - :doc:`memory`
+     - Store the history of the conversation.
 
-Core functional:
 
-- string_parser (parse the output string to structured data)
-- tool_helper (provide tools to interact with the generator)
-- memory (store the history of the conversation)
 
 .. toctree::
    :maxdepth: 1
+
+
+Advanced Components
+-------------------
+- Agent (Enhance Generator with tools, planning, and reasoning)
+
+.. toctree::
+   :maxdepth: 1
+
+   agent
 
    
  

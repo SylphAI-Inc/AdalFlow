@@ -132,9 +132,9 @@ class TrecTrainer(Component):
 
         # OR use dataloader
         print(f"dataset: {dataset}")
-        subset = dataset.select(range(0, 10))
+        # subset = dataset.select(range(0, 10))
         for text, coarse_label in tqdm.tqdm(
-            zip(subset["text"], subset["coarse_label"])
+            zip(dataset["text"], dataset["coarse_label"])
         ):
             log.info(f"data: text: {text}, coarse_label: {coarse_label}")
             # task_input = data["text"]

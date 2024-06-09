@@ -1,4 +1,4 @@
-r"""Allow the users to install the required API client packages separately."""
+r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
 # try:
 #     from .openai_client import *

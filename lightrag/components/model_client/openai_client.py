@@ -1,5 +1,8 @@
+"""OpenAI ModelClient integration"""
+
 import os
 from typing import Dict, Sequence, Optional, List
+import logging
 
 try:
     import openai
@@ -21,6 +24,8 @@ from lightrag.core.types import ModelType
 
 import backoff
 
+log = logging.getLogger(__name__)
+
 
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
@@ -36,16 +41,16 @@ class OpenAIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
-        self.sync_client = self._init_sync_client()
+        self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
 
-    def _init_sync_client(self):
+    def init_sync_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return OpenAI(api_key=api_key)
 
-    def _init_async_client(self):
+    def init_async_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
         if not api_key:
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
@@ -103,7 +108,7 @@ class OpenAIClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs
         """
-        print(f"api_kwargs: {api_kwargs}")
+        log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:
@@ -129,7 +134,7 @@ class OpenAIClient(ModelClient):
         kwargs is the combined input and model_kwargs
         """
         if self.async_client is None:
-            self.async_client = self._init_async_client()
+            self.async_client = self.init_async_client()
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:

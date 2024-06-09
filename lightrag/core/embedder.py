@@ -1,3 +1,5 @@
+r"""The component that orchestrates model client (Embedding models in particular) and output processors."""
+
 from typing import Optional, Any, Dict
 
 from lightrag.core.types import ModelType
