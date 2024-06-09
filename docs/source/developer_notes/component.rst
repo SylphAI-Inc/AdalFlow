@@ -1,6 +1,9 @@
 Component
 ============
-:ref:`Component<core-component>` is the base class for all LightRAG components. It is similar to PyTorch's `nn.Module` class.
+:ref:`Component<core-component>` is to LLM task pipelines is what ``nn.Module`` is to PyTorch models.
+Task pipelines are composed of components, and class ``Component`` is the base class for it all.
+It shares the same
+the base class for all LightRAG components. It is similar to PyTorch's `nn.Module` class.
 We name it differently to avoid confusion and also for better compatibility with `PyTorch`.
 You write the code similar to how you write a PyTorch model.
 

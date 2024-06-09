@@ -146,8 +146,8 @@ class _DataClassMeta(type):
 # before we do more tests, we keep the base and child class manually decorated with dataclass
 
 
-@dataclass
-class DataClass:
+# @dataclass
+class DataClass(metaclass=_DataClassMeta):
     __doc__ = r"""The base data class for almost all data types that interact with LLMs.
      
     Designed to streamline the handling, serialization, and description of data within our applications.

@@ -55,18 +55,28 @@ def _addindent(s_, numSpaces):
 
 class Component:
     r"""
-    Component is the base class for all LightRAG components, such as Prompt, APIClient, Embedder, Retriever, Generator, etc.
+    Base class for all LLM task pipeline components.
+
+    Such as ``Prompt``, ``ModelClient``, ``Embedder``, ``Retriever``, ``Generator``, etc.
+    Your task pipeline should subclass this.
+
+    Components can also contain other Components, allowing to nest them in
+    a tree structure. You can assign the subcomponents as regular attributes::
+
+    Example:
+
+    .. code-block:: python
+
+
+    We follow the same design pattern as PyTorch's ``nn.Module.``
+    Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases,
+    our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
+    Besides, (1) instead of `forward` and `backward` functions, we have `call` and `acall` functions for sync and async calls.
+    (2) we provide `to_dict` to handle serialization of the whole component states on top of `state_dict`.
 
     We purposly avoid using the name "Module" to avoid confusion with PyTorch's nn.Module.
     As we consider 'Component' to be an extension to 'Moduble' as if you use a local llm model
     for the Generator, you might need the 'Module' within the 'Component'.
-
-    But 'Component' follows a similar design pattern to 'Module' in PyTorch.
-
-    (1) 'Module' does not have async function because of GPU's inherent parallelism.
-     But we need to support async functions.
-     call and acall should call functions.
-    (2) All components can be running local or APIs. 'Component' can deal with API calls, so we need support retries and rate limits.
     """
 
     _version: int = 1  # Version of the component

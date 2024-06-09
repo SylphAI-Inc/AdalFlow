@@ -154,6 +154,8 @@ class Generator(Component):
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
                 output.error = str(e)
+        else:  # default to string output
+            output.data = response
 
         return output
 

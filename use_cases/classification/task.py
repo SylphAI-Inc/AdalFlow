@@ -63,7 +63,7 @@ Your output: {# the output label #}
 """
 
 
-@dataclass
+# @dataclass
 class InputFormat(DataClass):
     # add the "prompt_arg" to represent the prompt argument that it should get matched to
     question: str = field(metadata={"desc": "The question to classify"})
@@ -76,7 +76,7 @@ class InputFormat(DataClass):
         return super().load_from_dict(data)
 
 
-@dataclass
+# @dataclass
 class OutputFormat(DataClass):
     thought: str = field(
         metadata={
