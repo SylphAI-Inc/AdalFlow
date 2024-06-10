@@ -15,11 +15,13 @@ LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "examples_str",
 ]
 
-DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
+DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""
+{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
+<SYS>
+{% endif %}
+{# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}
-{% else %}
-Answer user query.
 {% endif %}
 {# output format #}
 {% if output_format_str %}
@@ -56,6 +58,9 @@ Answer user query.
 <STEPS>
 {{steps_str}}
 </STEPS>
+{% endif %}
+{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
+</SYS>
 {% endif %}
 {% if input_str %}
 <Inputs>

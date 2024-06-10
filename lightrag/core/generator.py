@@ -17,8 +17,6 @@ GeneratorOutputType = GeneratorOutput
 log = logging.getLogger(__name__)
 
 
-# NOTE: currently generator cannot be used in Sequential due to specialized output data type
-# TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
 # TODO: create a dummpy model client for testing the generator
 class Generator(Component):
     """
@@ -82,7 +80,7 @@ class Generator(Component):
         self.output_processors = output_processors
 
         # add trainable_params to generator
-        prompt_variables = self.system_prompt.get_prompt_variables()
+        prompt_variables = self.prompt.get_prompt_variables()
         self._trainable_params: List[str] = []
         for param in trainable_params:
             if param not in prompt_variables:
@@ -99,7 +97,7 @@ class Generator(Component):
         r"""Initialize the prompt with the template and preset_prompt_kwargs."""
         self.template = template
         self.preset_prompt_kwargs = preset_prompt_kwargs
-        self.system_prompt = Prompt(
+        self.prompt = Prompt(
             template=template, preset_prompt_kwargs=preset_prompt_kwargs
         )
         # return Prompt(template=template, preset_prompt_kwargs=preset_prompt_kwargs)
@@ -127,7 +125,7 @@ class Generator(Component):
         return compose_model_kwargs(self.model_kwargs, model_kwargs)
 
     def print_prompt(self, **kwargs) -> str:
-        self.system_prompt.print_prompt(**kwargs)
+        self.prompt.print_prompt(**kwargs)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
@@ -162,7 +160,7 @@ class Generator(Component):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the system prompt from the template
-        system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
+        system_prompt_str = self.prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
