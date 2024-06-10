@@ -9,6 +9,8 @@ LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "input_str",
     "output_str",
 ]
+
+# TODO: is output_str used?
 LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "task_desc_str",
     # "output_format_str",
@@ -72,6 +74,7 @@ DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""
 {{output_str}}
 </Outputs>
 {% endif %}
+You:
 """
 """This is the default system prompt template used in the LightRAG.
 
