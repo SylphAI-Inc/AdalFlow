@@ -1,12 +1,13 @@
 from typing import List, Optional, Any, Dict
 
 from lightrag.core.component import Component
-from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
+from lightrag.core.retriever import Retriever, RetrieverInputType
 from lightrag.core.generator import Generator
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.core.string_parser import ListParser
 from lightrag.core.prompt_builder import Prompt
+from lightrag.core.types import GeneratorOutput
 
 DEFAULT_LLM_AS_RETRIEVER_TASK_DESC = """Your are a retriever. Given a list of documents in the context, \
 you will retrieve a list of {{top_k}} indices(int) of the documents that are most relevant to the query. You will output a list as follows:
@@ -19,6 +20,7 @@ DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR = r"""
 {% endfor %}
 """
 
+LLMRetrieverOutputType = List[GeneratorOutput] # set up the output of llm retrieval
 
 class LLMRetriever(Retriever):
     r"""We need to configure the generator with model_client, model_kwargs, output_processors, and preset_prompt_kwargs"""
@@ -67,7 +69,7 @@ class LLMRetriever(Retriever):
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> RetrieverOutputType: 
+    ) -> LLMRetrieverOutputType: 
         """Retrieve the k relevant documents.
 
         Args:
@@ -75,8 +77,8 @@ class LLMRetriever(Retriever):
             top_k (Optional[int], optional): top k documents to fetch. Defaults to None.
 
         Returns:
-            RetrieverOutputType: the developers should be aware that it actually returns a list of GeneratorOutput(:class:`GeneratorOutput <lightrag.core.types.GeneratorOutput>`), post processing is required depends on how you instruct the model to output in the prompt and what output_processors you set up.
-            E.g. If the prompt is to output a list of indices and the output_processors is ListParser(), then it return: GeneratorOutput.data=[a list of indices]
+            LLMRetrieverOutputType: the developers should be aware that the returned ``LLMRetrieverOutputType`` is actually a list of GeneratorOutput(:class:`GeneratorOutput <lightrag.core.types.GeneratorOutput>`), post processing is required depends on how you instruct the model to output in the prompt and what ``output_processors`` you set up.
+            E.g. If the prompt is to output a list of indices and the ``output_processors`` is ``ListParser()``, then it return: GeneratorOutput(data=[indices], error=None, raw_response='[indices]')
         """
         # run the generator
         print(f"query_or_queries: {query_or_queries}")
@@ -117,6 +119,6 @@ class LLMRetriever(Retriever):
         self,
         query_or_queries: RetrieverInputType,
         top_k: Optional[int] = None,
-    ) -> RetrieverOutputType:
+    ) -> LLMRetrieverOutputType:
         # query will be used
         return self.retrieve(query_or_queries, top_k)
