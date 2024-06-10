@@ -345,7 +345,7 @@ Here is an example for ``LLMRetriever``:
 .. code-block:: python
 
     from lightrag.components.model_client import OpenAIClient
-    from lightrag.core.types import Document, RetrieverOutput
+    from lightrag.core.types import Document
     from lightrag.core.document_splitter import DocumentSplitter
     from lightrag.components.retriever import LLMRetriever
     from lightrag.core.string_parser import ListParser
@@ -377,7 +377,7 @@ Here is an example for ``LLMRetriever``:
 
     # configure the model
     gpt_model_kwargs = {
-            "model": "gpt-4o",
+            "model": "gpt-3.5-turbo",
             "temperature": 0.0,
         }
     # set up the retriever
@@ -395,11 +395,12 @@ Here is an example for ``LLMRetriever``:
     queries = ["what does luna like to eat?", "what does Luna look like?"]
 
 
-    # get the retrieved results indices
-    llm_query_indices = llm_retriever.retrieve(query_or_queries=queries)
+    # get the retrieved list of GeneratorOutput, each contains list of indices
+    llm_query_output = llm_retriever.retrieve(query_or_queries=queries)
     # print(llm_query_indices)
     print("*" * 50)
-    for query, result in zip(queries, llm_query_indices.data):
+    for query, result in zip(queries, llm_query_output):
+        result = result.data # get list of indices from generatoroutput
         print(f"Query: {query}")
         if result:
             # Retrieve the indices from the result
