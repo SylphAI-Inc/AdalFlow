@@ -101,6 +101,7 @@ class LLMasJudge:
                 raise ValueError(
                     "model_client and model_kwargs should be both None or both not None."
                 )
+            assert self.llm_evaluator is not None, "llm_evaluator should not be None."
 
     def _compute_single_item(
         self, question: str, pred_answer: str, gt_answer: str, judgement_query: str
