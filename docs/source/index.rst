@@ -45,8 +45,8 @@ You have a similar coding experience as PyTorch. Here is a side to side comparis
 
       .. code-block:: python
 
-         from core.component import Component, Generator
-         from components.model_client import OpenAIClient
+         from lightrag.core.component import Component, Generator
+         from lightrag.components.model_client import OpenAIClient
 
          class SimpleQA(Component):
             def __init__(self):
