@@ -13,6 +13,7 @@ API_INPUT_TYPE = Union[
 ]  # str/Sequence for llm and str/sequence/list for embeddings
 
 
+# TODO: global model registry for all available models in users' project.
 class ModelClient(Component):
     __doc__ = r"""The protocol and abstract class for all models(either via APIs or local models) to communicate with components.
 

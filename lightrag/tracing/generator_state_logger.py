@@ -122,5 +122,5 @@ class GeneratorStateLogger:
             # convert each dict record to PromptRecord
             for name, records in self._trace_map.items():
                 self._trace_map[name] = [
-                    GeneratorStatesRecord.load_from_dict(record) for record in records
+                    GeneratorStatesRecord.from_dict(record) for record in records
                 ]

@@ -1,4 +1,4 @@
-"""Anthropic ModelClient integration"""
+"""Anthropic ModelClient integration."""
 
 import os
 from typing import Dict, Optional, Sequence, Union

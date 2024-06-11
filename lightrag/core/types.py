@@ -3,7 +3,7 @@ Functional data classes to support functional components like Generator, Retriev
 """
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Type
+from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -49,7 +49,7 @@ class Embedding:
     """
 
     embedding: List[float]
-    index: Optional[int]  # match with the index of the input
+    index: Optional[int]  # match with the index of the input, in case some are missing
 
 
 @dataclass
@@ -73,11 +73,27 @@ class EmbedderOutput(DataClass):
         default_factory=list, metadata={"desc": "List of embeddings"}
     )
     model: Optional[str] = field(default=None, metadata={"desc": "Model name"})
-    usage: Optional[Usage] = field(default=None, metadata={"desc": "Usage statistics"})
+    usage: Optional[Usage] = field(default=None, metadata={"desc": "Usage tracking"})
     error: Optional[str] = field(default=None, metadata={"desc": "Error message"})
     raw_response: Optional[Any] = field(
         default=None, metadata={"desc": "Raw response"}
     )  # only used if error
+    input: Optional[str] = field(default=None, metadata={"desc": "Input text"})
+
+    @property
+    def length(self) -> int:
+        return len(self.data) if self.data and isinstance(self.data, Sequence) else 0
+
+    @property
+    def embedding_dim(self) -> int:
+        r"""The dimension of the embedding, assuming all embeddings have the same dimension.
+
+        Returns:
+            int: The dimension of the embedding, -1 if no embedding is available
+        """
+        return (
+            len(self.data[0].embedding) if self.data and self.data[0].embedding else -1
+        )
 
 
 class GeneratorOutput(DataClass, Generic[T_co]):
@@ -102,6 +118,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None,
         metadata={"desc": "Error message if any"},
     )
+    usage: Optional[Usage] = field(default=None, metadata={"desc": "Usage tracking"})
     raw_response: Optional[str] = field(
         default=None, metadata={"desc": "Raw string response from the model"}
     )
@@ -234,31 +251,44 @@ class DialogSession:
         self.dialog_turns[order] = dialog_turn
 
 
-@dataclass
-class Document:
-    r"""A document object is a text container with optional metadata and vector representation.
+class Document(DataClass):
+    r"""A text container with optional metadata and vector representation.
     It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
     """
 
-    text: str = None
+    text: str = field(metadata={"desc": "The main text"})
 
-    meta_data: Optional[Dict[str, Any]] = None
+    meta_data: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Metadata for the document"}
+    )
     # can save data for filtering at retrieval time too
-    vector: List[float] = field(default_factory=list)
+    vector: List[float] = field(
+        default_factory=list,
+        metadata={"desc": "The vector representation of the document"},
+    )
     # the vector representation of the document
 
     id: Optional[str] = field(
-        default_factory=lambda: str(uuid.uuid4())
+        default_factory=lambda: str(uuid.uuid4()), metadata={"desc": "Unique id"}
     )  # unique id of the document
-    order: Optional[int] = (
-        None  # order of the chunked document in the original document
+    order: Optional[int] = field(
+        default=None,
+        metadata={"desc": "Order of the chunked document in the original document"},
     )
-    score: Optional[float] = None  # used in retrieved output
-    parent_doc_id: Optional[Union[str, UUID]] = (
-        None  # id of the Document where the chunk is from
+
+    score: Optional[float] = field(
+        default=None,
+        metadata={"desc": "Score of the document, likely used in retrieval output"},
     )
-    estimated_num_tokens: Optional[int] = (
-        None  # useful for cost and chunking estimation
+    parent_doc_id: Optional[Union[str, UUID]] = field(
+        default=None, metadata={"desc": "id of the Document where the chunk is from"}
+    )
+
+    estimated_num_tokens: Optional[int] = field(
+        default=None,
+        metadata={
+            "desc": "Estimated number of tokens in the text, useful for cost estimation"
+        },
     )
 
     def __post_init__(self):
@@ -266,21 +296,39 @@ class Document:
             tokenizer = Tokenizer()
             self.estimated_num_tokens = tokenizer.count_tokens(self.text)
 
-    @staticmethod
-    def from_dict(doc: Dict):
+    @classmethod
+    def from_dict(cls, doc: Dict):
+        doc = doc.copy()
         assert "meta_data" in doc, "meta_data is required"
         assert "text" in doc, "text is required"
-        # if "estimated_num_tokens" not in doc:
-        #     tokenizer = Tokenizer()
-        #     doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
+        if "estimated_num_tokens" not in doc:
+            tokenizer = Tokenizer()
+            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
         if "id" not in doc:
             doc["id"] = uuid.uuid4()
 
-        return Document(**doc)
+        return super().from_dict(doc)
 
     def __repr__(self) -> str:
         # TODO: repr only those non empty fields
-        return f"Document(id={self.id}, meta_data={self.meta_data}, text={self.text[0:]}, estimated_num_tokens={self.estimated_num_tokens})"  # show the whole embedding to avoid confusion
+        repr_str = "Document("
+        if self.id:
+            repr_str += f"id={self.id}, "
+        if self.text:
+            repr_str += f"text={self.text[0:]}, "
+        if self.meta_data:
+            repr_str += f"meta_data={self.meta_data}, "
+        if self.estimated_num_tokens:
+            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
+
+        if self.vector:
+            repr_str += f"vector={self.vector[0:10]}..., "
+        if self.score:
+            repr_str += f"score={self.score}, "
+        if self.parent_doc_id:
+            repr_str += f"parent_doc_id={self.parent_doc_id}, "
+        repr_str = repr_str[:-2] + ")"
+        return repr_str
 
     def __str__(self):
         return self.__repr__()

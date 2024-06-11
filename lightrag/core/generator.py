@@ -30,7 +30,7 @@ class Generator(Component):
 
     Args:
         model_client (ModelClient): The model client to use for the generator.
-        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}.
+        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
         template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`.
         preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
         output_processors (Optional[Component], optional): The output processors after model call. Defaults to None.
@@ -73,7 +73,7 @@ class Generator(Component):
 
         self._init_prompt(template, preset_prompt_kwargs)
 
-        self.model_kwargs = model_kwargs
+        self.model_kwargs = model_kwargs.copy()
         # init the model client
         self.model_client = model_client
 
@@ -224,3 +224,7 @@ class Generator(Component):
         output = self._post_call(completion)
         log.info(f"output: {output}")
         return output
+
+    def _extra_repr(self) -> str:
+        s = f"model_kwargs={self.model_kwargs}, "
+        return s

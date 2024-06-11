@@ -1,4 +1,4 @@
-"""OpenAI ModelClient integration"""
+"""OpenAI ModelClient integration."""
 
 import os
 from typing import Dict, Sequence, Optional, List
@@ -30,8 +30,22 @@ log = logging.getLogger(__name__)
 
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
-    
-    Visit https://platform.openai.com/docs/introduction for more api details.
+
+    Support both embedding and chat completion API. 
+
+    Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
+    (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
+
+    Note:
+        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API. 
+        We do not know how OpenAI is doing the formating or what prompt they have added.
+        Instead
+        - use :ref:`OutputParser<components-output_parsers>` for response parsing and formating.
+
+    References:
+        - Embeddings models: https://platform.openai.com/docs/guides/embeddings
+        - Chat models: https://platform.openai.com/docs/guides/text-generation
+        - OpenAI docs: https://platform.openai.com/docs/introduction
     """
 
     def __init__(self, api_key: Optional[str] = None):

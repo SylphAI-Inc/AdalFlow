@@ -1,7 +1,8 @@
 r"""The component that orchestrates model client (Embedding models in particular) and output processors."""
 
-from typing import Optional, Any, Dict
+from typing import Optional, Any, Dict, List
 import logging
+from tqdm import tqdm
 
 from lightrag.core.types import ModelType
 from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
@@ -25,8 +26,11 @@ class Embedder(Component):
         output_processors (Optional[Component], optional): The output processors after model call. Defaults to None.
             If you want to add further processing, it should operate on the ``EmbedderOutput`` data type.
 
+    input: a single str or a list of str. When a list is used, the list is processed as a batch of inputs in the model client.
+
     Note:
-        The ``output_processors`` will be applied only on the data field of ``EmbedderOutput``, which is a list of ``Embedding``.
+        - The ``output_processors`` will be applied only on the data field of ``EmbedderOutput``, which is a list of ``Embedding``.
+        - Use ``BatchEmbedder`` for automatically batching input of large size, larger than 100.
     """
 
     model_type: ModelType = ModelType.EMBEDDER
@@ -51,6 +55,11 @@ class Embedder(Component):
         #     raise ValueError(
         #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
         #     )
+        # ensure the model_client is an instance of ModelClient
+        if not isinstance(model_client, ModelClient):
+            raise ValueError(
+                f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
+            )
         self.model_client = model_client
         self.output_processors = output_processors
 
@@ -82,7 +91,7 @@ class Embedder(Component):
 
     def call(
         self,
-        *,
+        # *,
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
@@ -98,7 +107,7 @@ class Embedder(Component):
 
     async def acall(
         self,
-        *,
+        # *,
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
@@ -111,6 +120,50 @@ class Embedder(Component):
         log.debug(f"Output from {self.__class__.__name__}: {output}")
         return output
 
-    def extra_repr(self) -> str:
-        s = f"model_kwargs={self.model_kwargs}"
+    def _extra_repr(self) -> str:
+        s = f"model_kwargs={self.model_kwargs}, "
         return s
+
+
+BatchEmbedderInputType = EmbedderInputType
+ListEmbedderOutputType = List[EmbedderOutputType]
+
+
+class BatchEmbedder(Component):
+    __doc__ = r"""Adds batching to the embedder component.
+
+    Args:
+        embedder (Embedder): The embedder to use for batching.
+        batch_size (int, optional): The batch size to use for batching. Defaults to 100.
+    """
+
+    def __init__(self, embedder: Embedder, batch_size: int = 100) -> None:
+        super().__init__()
+        self.embedder = embedder
+        self.batch_size = batch_size
+
+    def call(
+        self, input: EmbedderInputType, model_kwargs: Optional[Dict] = {}
+    ) -> ListEmbedderOutputType:
+        r"""Call the embedder with batching.
+
+        Args:
+            input (EmbedderInputType): The input to the embedder. Use this when you have a large input that needs to be batched. Also ensure
+            the output can fit into memory.
+            model_kwargs (Optional[Dict], optional): The model kwargs to pass to the embedder. Defaults to {}.
+
+        Returns:
+            ListEmbedderOutputType: The output from the embedder.
+        """
+
+        if isinstance(input, str):
+            input = [input]
+        n = len(input)
+        embeddings: List[EmbedderOutputType] = []
+        for i in tqdm(range(0, n, self.batch_size)):
+            batch_input = input[i : i + self.batch_size]
+            batch_output = self.embedder.call(
+                input=batch_input, model_kwargs=model_kwargs
+            )
+            embeddings.append(batch_output)
+        return embeddings

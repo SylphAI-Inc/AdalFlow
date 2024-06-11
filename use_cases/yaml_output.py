@@ -1,7 +1,7 @@
 from lightrag.core.component import Component
 from lightrag.core.generator import Generator
 from lightrag.components.model_client import GroqAPIClient, OpenAIClient
-from lightrag.components.output_parsers import YAMLOutputParser, ListOutputParser
+from lightrag.components.output_parsers import YamlOutputParser, ListOutputParser
 
 
 from lightrag.core.base_data_class import DataClass, field
@@ -24,7 +24,7 @@ joke_example = JokeOutput(
 class JokeGenerator(Component):
     def __init__(self):
         super().__init__()
-        yaml_parser = YAMLOutputParser(data_class=JokeOutput, example=joke_example)
+        yaml_parser = YamlOutputParser(data_class=JokeOutput, example=joke_example)
         self.generator = Generator(
             model_client=GroqAPIClient(),
             model_kwargs={"model": "llama3-8b-8192", "temperature": 1.0},
@@ -39,7 +39,7 @@ class JokeGenerator(Component):
             prompt_kwargs={"input_str": query}, model_kwargs=model_kwargs
         )
         if response.error is None:
-            output = JokeOutput.load_from_dict(response.data)
+            output = JokeOutput.from_dict(response.data)
             return output
         else:
             None

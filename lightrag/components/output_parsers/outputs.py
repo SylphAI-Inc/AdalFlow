@@ -11,7 +11,7 @@ import logging
 from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
-from lightrag.core.base_data_class import DataClass, DataclassFormatType
+from lightrag.core.base_data_class import DataClass, DataClassFormatType
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
 # setup: Why couldn't the bicycle stand up by itself?
@@ -86,7 +86,7 @@ class OutputParser(Component):
         raise NotImplementedError("This is an abstract method.")
 
 
-class YAMLOutputParser(OutputParser):
+class YamlOutputParser(OutputParser):
     __doc__ = r"""YAML output parser using dataclass for schema extraction.
 
     Args:
@@ -97,7 +97,7 @@ class YAMLOutputParser(OutputParser):
 
     Examples:
 
-    >>> from prompts.outputs import YAMLOutputParser
+    >>> from prompts.outputs import YamlOutputParser
     >>> from dataclasses import dataclass, field
     >>> from typing import List
     >>>
@@ -110,7 +110,7 @@ class YAMLOutputParser(OutputParser):
     >>> # def from_dict(self, d: Dict[str, Any]) -> "ThoughtAction":
     >>> #     return ThoughtAction(**d)
     >>>
-    >>> yaml_parser = YAMLOutputParser(data_class_for_yaml=ThoughtAction)
+    >>> yaml_parser = YamlOutputParser(data_class_for_yaml=ThoughtAction)
     >>> yaml_format_instructions = yaml_parser.format_instructions()
     >>> print(yaml_format_instructions)
     >>> yaml_str = '''The output should be formatted as a standard YAML instance with the following JSON schema:
@@ -151,21 +151,21 @@ class YAMLOutputParser(OutputParser):
         self.example = example
 
     def format_instructions(
-        self, format_type: Optional[DataclassFormatType] = None
+        self, format_type: Optional[DataClassFormatType] = None
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format.
 
         Args:
-            format_type (DataclassFormatType, optional): The format type to show in the prompt.
-                Defaults to DataclassFormatType.SIGNATURE_YAML for less token usage.
-                Options: DataclassFormatType.SIGNATURE_YAML, DataclassFormatType.SIGNATURE_JSON, DataclassFormatType.SCHEMA.
+            format_type (DataClassFormatType, optional): The format type to show in the prompt.
+                Defaults to DataClassFormatType.SIGNATURE_YAML for less token usage.
+                Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataclassFormatType.SIGNATURE_YAML
+        format_type = format_type or DataClassFormatType.SIGNATURE_YAML
         schema = self.data_class_for_yaml.format_str(format_type=format_type)
         # convert example to string, convert data class to yaml string
         try:
             example_str = self.example.format_str(
-                format_type=DataclassFormatType.EXAMPLE_YAML
+                format_type=DataClassFormatType.EXAMPLE_YAML
             )
             logger.debug(f"{__class__.__name__} example_str: {example_str}")
 
@@ -206,20 +206,20 @@ class JsonOutputParser(OutputParser):
         self.example = example
 
     def format_instructions(
-        self, format_type: Optional[DataclassFormatType] = None
+        self, format_type: Optional[DataClassFormatType] = None
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the JSON output format.
 
         Args:
-            format_type (DataclassFormatType, optional): The format type to show in the prompt.
-                Defaults to DataclassFormatType.SIGNATURE_JSON for less token usage compared with DataclassFormatType.SCHEMA.
-                Options: DataclassFormatType.SIGNATURE_YAML, DataclassFormatType.SIGNATURE_JSON, DataclassFormatType.SCHEMA.
+            format_type (DataClassFormatType, optional): The format type to show in the prompt.
+                Defaults to DataClassFormatType.SIGNATURE_JSON for less token usage compared with DataClassFormatType.SCHEMA.
+                Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataclassFormatType.SIGNATURE_JSON
+        format_type = format_type or DataClassFormatType.SIGNATURE_JSON
         schema = self.data_class_for_json.format_str(format_type=format_type)
         try:
             example_str = self.example.format_str(
-                format_type=DataclassFormatType.EXAMPLE_JSON
+                format_type=DataClassFormatType.EXAMPLE_JSON
             )
             logger.debug(f"{__class__.__name__} example_str: {example_str}")
 
