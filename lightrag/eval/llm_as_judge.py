@@ -30,7 +30,7 @@ You:
 # We use OpenAIClient as the default LLM evaluator if it is available. Otherwise, we set it to None.
 if "OpenAIClient" in globals():
     DEFAULT_LLM_EVALUATOR = Generator(
-        model_client=OpenAIClient(),
+        model_client=OpenAIClient,
         model_kwargs={"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False},
         template=DEFAULT_LLM_EVALUATOR_PROMPT,
         preset_prompt_kwargs={

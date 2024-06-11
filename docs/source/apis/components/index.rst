@@ -9,7 +9,7 @@ Overview
 
    components.agent
    components.model_client
-   components.embedder
+ 
    .. components.reasoning
 
    components.retriever
@@ -37,12 +37,12 @@ Model Clients
 
    components.model_client
 
-Embedders
----------
-.. toctree::
-   :maxdepth: 1
+.. Embedders
+.. ---------
+.. .. toctree::
+..    :maxdepth: 1
 
-   components.embedder
+..    components.embedder
 
 .. Reasoners
 .. ---------

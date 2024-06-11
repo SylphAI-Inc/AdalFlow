@@ -3,7 +3,7 @@
 from typing import Any, Dict, Union, List, Optional
 import logging
 from functools import lru_cache
-from core.types import EmbedderOutput
+from lightrag.core.types import EmbedderOutput
 import torch.nn.functional as F
 
 try:
