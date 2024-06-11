@@ -43,6 +43,7 @@ def remove_file(directory: str):
         "components.retriever.llm_retriever.rst",
         "components.agent.react_agent.rst",
         "components.model_client.anthropic_client.rst",
+        "components.output_parsers.outputs.rst"
     ]
     try:
         for filename in os.listdir(directory):

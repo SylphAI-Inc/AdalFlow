@@ -1,132 +1,13 @@
-Retriever
-===================
+Embedder
+============
 
-In this tutorial, we will explain each component in ``LightRAG's Retriever`` and show you how to implement it in your LLM applications.
-
-LLMs develop fast, but they have limitations.
-
-**Content Window Limit:** Although the trend is, LLM models' content window keeps growing, there is still a context limit. 
-
-**Signal to Noise Ratio** Meanwhile, LLMs perform better when the provided contents are relevant to the task.
-
-To improve LLMs performances in production, Retrieval Augmented Generation (RAG), a system that augments LLMs by adding extra context from another source, becomes popular.
-**Retrieval**, one of the most important components of RAG, is the process to fetch the extra relevant information to the model.
-The common solution for Retrieval is to chunk the documents into smaller contexts, store these pieces in databases such as vectorstore, Graph DB and Relational DB depending on the use case, and create significant embedding representations for these chunks in order to retrieve.
-
-``LightRAG`` aims to find the optimal way to pass the task-requiring data into LLMs.
-
-1. Document Splitter
-----------------------
-
-The DocumentSplitter in LightRAG is designed to preprocess text by splitting long documents into smaller chunks. 
-This improves the performance of embedding models and ensures they operate within their maximum context length limits. 
-
-``LightRAG's DocumentSplitter`` splits a list of documents (:obj:`core.base_data_class.Document`) into a list of shorter documents.
-The document object to manage id, document content,optional meta data, document's embedding vectors, etc.
-Instead of maintaining the complex relationship between parent, child, previous, and next documents, ``LightRAG`` mainly manages the related documents with ``parent_doc_id`` (id of the Document where the chunk is from) and ``order`` (order of the chunked document in the original document).
-
-**Key Arguments:**
-
-* ``split_by`` is the unit by which the document should be split. We implemented a string split function inside to break the text into a ``list``. The splitted ``list`` will get concatenated based on the specified ``split_length`` later.
-Check the following table for ``split_by`` options:
-
-.. list-table:: Text Splitting Options
-   :widths: 10 15 75
-   :header-rows: 1
-
-   * - Option
-     - Split by
-     - Example
-   * - **page**
-     - ``\f``
-     - ``Hello, world!\fNew page starts here.`` to ``['Hello, world!\x0c', 'New page starts here.']``
-   * - **passage**
-     - ``\n\n``
-     - ``Hello, world!\n\nNew paragraph starts here`` to ``['Hello, world!\n\n', 'New paragraph starts here.']``
-   * - **sentence**
-     - ``.``
-     - ``Hello, world. This is LightRAG.`` to ``['Hello, world.', ' This is LightRAG.', '']``
-   * - **word**
-     - ``<space>``
-     - ``Hello, world. This is LightRAG.`` to ``['Hello, ', 'world. ', 'This ', 'is ', 'LightRAG.']``
-
-We will use ``word`` in our example. 
-
-* ``split_length`` is the the maximum number of units in each split. 
-
-* ``split_overlap`` is the number of units that each split should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis. In ``LightRAG`` we use ``windowed`` function in ``more-itertools`` package to build a sliding window for the texts to keep the overlaps. The window step size = ``split_length - split_overlap``.
-
-After splitting the long text into a list and using a sliding window to generate the text lists with specified overlap length, the text list will be concatenated into text pieces again.
-Here is a quick example:
-
-``Review: The theater service is terrible. The movie is good.`` Set ``split_by: word``, ``split_length: 6``, ``split_overlap: 2``. 
-
-With our ``DocumentSplitter`` logic, the output will be: ``Review: The theater service is terrible.``, ``is terrible. The movie is good.``
-It prevents the model of misunderstand the context. If we don't have overlap, the second sentence will be ``The movie is good.`` and the embedding model might only consider this document is merely ``Positive``.
-
-Now let's see the code example. First, import the components.
-
-.. code:: python
-
-    from core.document_splitter import DocumentSplitter
-    from core.base_data_class import Document
-
-Then, configure the splitter settings.
-
-.. code:: python
-
-    text_splitter_settings = {
-        "split_by": "word",
-        "split_length": 15,
-        "split_overlap": 2,
-        }
-
-Next, define the document splitter and set up the documents.
-
-.. code:: python
-
-    text_splitter = DocumentSplitter(
-    split_by=text_splitter_settings["split_by"],
-    split_length=text_splitter_settings["split_length"],
-    split_overlap=text_splitter_settings["split_overlap"],
-    )
-
-    example1 = Document(
-        text="Review: I absolutely loved the friendly staff and the welcoming atmosphere! Sentiment: Positive",
-    )
-    example2 = Document(
-        text="Review: It was an awful experience, the food was bland and overpriced. Sentiment: Negative",
-    )
-    example3 = Document(
-        text="Review: What a fantastic movie! Had a great time and would watch it again! Sentiment: Positive",
-    )
-    example4 = Document(
-        text="Review: The store is not clean and smells bad. Sentiment: Negative",
-    )
-
-    documents = [example1, example2, example3, example4]
-
-Now you can use the splitter to create document chunks.
-
-.. code:: python
-
-    splitted_docs = (text_splitter.call(documents=documents))
-
-    # output:
-    # splitted_doc: [Document(id=15d838c4-abda-4c39-b81f-9cd745effb43, meta_data=None, text=Review: I absolutely loved the friendly staff and the welcoming atmosphere! Sentiment: Positive, estimated_num_tokens=17), Document(id=e4850140-8762-4972-9bae-1dfe96ccb65f, meta_data=None, text=Review: It was an awful experience, the food was bland and overpriced. Sentiment: Negative, estimated_num_tokens=21), Document(id=6bd772b9-88b4-4dfa-a595-922c0f8a4efb, meta_data=None, text=Review: What a fantastic movie! Had a great time and would watch it again! Sentiment: , estimated_num_tokens=21), Document(id=b0d98c1b-13ac-4c92-882e-2ed0196b0c81, meta_data=None, text=again! Sentiment: Positive, estimated_num_tokens=6), Document(id=fdc2429b-17e7-4c00-991f-f89e0955e3a3, meta_data=None, text=Review: The store is not clean and smells bad. Sentiment: Negative, estimated_num_tokens=15)]
-
-
-2. Embedder
-----------------
-
-Now we have splitted long documents to shorter ones, the next part is to retrieve the relevant documents.
-But how can we find "relevant" texts? A commonly applied approach in the NLP field is Embedding. Embedding transforms the texts data to the vector space.
-This enables us to calculate numbers such as similarity score. We can do semantic search to find similar documents. 
+A commonly applied approach in the NLP field to transform texts to numeric representation is Embedding. Embedding turns the texts data to the vector space.
+This enables us to calculate numbers such as similarity score. With embedding, during retrieval, we can do semantic search to find similar documents. 
 
 In ``LightRAG``, text embedding is managed through three main components: ``Embedder``, ``ToEmbedderResponse``, and ``ToEmbeddings``. 
 These components work together to transform text into embeddings using external model APIs from providers like `OpenAI`` and `Google`.
 
-* **Embedder:** It acts as the interface for external embedding models. It orchestrates the embedding process by communicating with the model's API, utilizing specified model arguments (``model_kwargs``) and an output processor (``output_processors``). Ensure that your model's API key is stored in the ``.env`` file. This setup prepares the Embedder to generate embeddings effectively.
+* **Embedder:** It acts as the interface for external embedding models. It orchestrates embedding models via ``ModeClient`` and ``output_processors`` that can be used to process output from ``ModeClient``. Ensure that your model's API key is stored in the ``.env`` file. This setup prepares the Embedder to generate embeddings effectively.
 * **ToEmbedderResponse:** It is designed to convert raw model outputs into structured ``EmbedderResponse`` formats, typically lists of float values representing embeddings. It should be used as the ``output_processors`` in the ``Embedder`` setup.
 * **ToEmbeddings:** It takes documents from ``Embedder``, processes documents in batches and uses an instance of ``Embedder`` as the ``vectorizer`` to obtain embeddings. After receiving the embeddings, ``ToEmbeddings`` assigns them back to the respective Document objects. This component ensures that the input data is copied and the original data remains unmodified.
 
@@ -172,7 +53,7 @@ Then, set up the splitter with a simple example.
     )
     documents = [example1]
 
-    # split the documents into 2
+    # split the documents
     splitted_docs = (text_splitter.call(documents=documents))
     print(splitted_docs)
 
@@ -221,36 +102,4 @@ Finally, check the results.
     # the splitted doc: again! Sentiment: Positive
     # the embedding of the doc: [0.067159414, -0.054115806, -0.057209868, 0.083539754, 0.016137673, 0.10210415, -0.035945754, 0.02686073, 0.04844335, -0.042224888, -0.011026398, -0.06033427, -0.028711103, -0.08426777, 0.13516818, 0.077776305, -0.024570517, 0.03940383, 0.002749016, 0.042285554, -0.008243256, 0.0042391727, 0.011329738, -0.029393617, -0.035399742, 0.02642089, -0.057968218, -0.028999276, 0.1156331, -0.07298353, 0.04865569, -0.09925275, 0.09172993, -0.01283127, -0.062427312, 0.10064811, -0.03773546, -0.00045548353, -0.04735133, -0.042649563, 0.025829377, -0.10046611, 0.0144541375, -0.022795979, -0.050688066, 0.046380643, -0.051385745, -0.09433865, -0.00888027, 0.062609315, -0.090455905, 0.043802254, 0.06351934, 0.17933443, -0.017199362, -0.022022463, 0.036582768, 0.025237864, -0.010723059, -0.031425994, 0.053175453, -0.11423773, 0.08256907, -0.06691674, -0.024995193, -0.0099192085, -0.083600424, 0.121821225, 0.09634069, 0.045500956, 0.02479802, -0.02781625, 0.048018675, 0.013225611, 0.06430802, 0.020702936, 0.1029535, -0.02787692, 0.028392596, -0.103074834, -0.091183916, 0.025344033, -0.001270235, -0.106168896, -0.02047543, -0.102468155, -0.034489725, 0.0025802834, -0.03148666, 0.11532976, 0.043104574, 0.091244586, -0.034338057, -0.0118985, -0.016319677, -0.048534352, -0.03567275, 0.10519821, 0.001149847, 0.08669449, 0.01600117, 0.029454285, -0.059393916, 0.09100191, 0.015500659, 0.039555497, 0.018579558, -0.039828505, -0.019186236, -0.008804435, -0.106957585, -0.0491107, -0.02959079, 0.07595626, -0.02435818, -0.030515974, -0.042922568, 0.06527871, -0.08432844, 0.0253592, -0.026527058, -0.051749755, -0.02435818, -0.031122655, -0.08275107, -0.11496575, -0.049474705, 0.035794087, -0.052417103, -0.099495426, 0.07753363, 0.012596182, 0.05202276, 0.10762493, -0.083054416, -0.035460413, -0.0013953627, -0.042952903, -0.05369113, -0.084389105, 0.09081991, -0.102407485, -0.021855626, -0.030561475, -0.00427709, 0.011663412, 0.0027831418, 0.01821555, 0.022917315, 0.09354997, -0.012414178, 0.13395482, -0.07989968, 0.015417241, 0.039919507, -0.10289283, 0.0032514224, -0.026845565, -0.04352925, 0.0065862634, -0.014256966, 0.03254835, -0.06109262, -0.045318954, 0.090455905, 0.05584484, -0.10204348, -0.10580489, -0.122670576, -0.1124177, 0.05338779, 0.020733269, -0.060758945, -0.03828147, -0.0045538875, -0.02349366, -0.063458666, -0.002240922, -0.019337907, 0.060455605, 0.018185215, 0.090455905, 0.07158817, -0.04537962, 0.03934316, -0.022083132, -0.017942544, 0.13577485, -0.00918361, 0.042497892, 0.014401053, 0.111386344, 0.12218524, 0.065521374, 0.026026547, -0.082872406, 0.08523846, 0.092639945, -0.03718945, -0.07510691, 0.02646639, 0.024691852, 0.07261953, -0.020202424, -0.043893255, -0.044408932, -0.036249094, 0.07249819, -0.08317575, 0.038463477, 0.17654371, -0.060940947, 0.07486424, -0.012740267, -0.08651248, 0.045409955, -0.057118867, 0.069404125, 0.079110995, 0.066492066, -0.024479514, 0.022583641, 0.08851453, 0.023175154, -0.024919357, 0.06424735, 0.09209394, -0.025283365, -0.0428619, -0.16574481, 0.025237864, -0.034793064, 0.076138265, -0.09148726, -0.005429781, 0.0035945757, 0.10950564, 0.0175027, -0.04537962, -0.036188427, -0.014545139, 0.085905805, 0.06358001, 0.07061748, -0.06995014, 0.017123526, 0.06782676, 0.005190901, -0.034398723, 0.05011172, 0.035096403, 0.0023736332, -0.039161157, -0.04874669, -0.012846436, -0.011178068]
 
-    As you can see in the output, each splitted doc will have a vector representation. 
-
-3. LightRAG Retrievers
-------------------------
-Given a query, the retriever is responsible to fetch the relevant documents.
-Now we have document splitter and embedder, we can check the retrievers now. 
-LightRAG provides ``FAISSRetriever``, ``InMemoryBM25Retriever``, and ``LLMRetriever``.
-
-#. FAISSRetriever
-
-The ``FAISSRetriever`` uses in-memory Faiss index to retrieve the top k chunks(see `research <https://github.com/facebookresearch/faiss>`_). It is particularly useful in applications involving large-scale vector.
-The developers need to configure ``top_k``, ``dimensions`` and ``vectorizer`` first.
-``vectorizer`` is basically an instance of the ``Embedder``. The ``FAISSRetriever`` itself will initialize ``faiss.IndexFlatIP`` with the specified ``dimensions`` to do `Exact Search for Inner Product`.
-
-``LightRAG's FAISSRetriever`` provides :func:`components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents` to create index from embeddings(``vector`` field of each document).
-It will create ``xb`` indexes(the same number with embeddings). After the indexes are added, the index state will be ``True``.
-
-Then, developers can pass the queries to :func:`components.retriever.faiss_retriever.FAISSRetriever.retrieve`, the ``retrieve`` function embeds the queries, and performs inner product search for ``xq``(the number of queries) queries and return k most close vectors.
-We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability. This is how we calculate the score.
-Then we attach the score to each retrieval output.
-
-Next we will see a retrieval example.
-
-Before using ``FAISSRetriever``, we need to prepare the embeddings for documents or chunks following the previous steps.
-
-
-.. code-block:: python
-
-
-Then, to speed up the retrieval, it is a common practice to build indexes from the documents or chunks.
-When the indexes are ready, we should pass the query to the retriever and get the top k documents closest to the query vector.
-``LightRAG`` makes this process very easy for developers. Let's see the example.
-
+As you can see in the output, each splitted doc will have a vector representation. 

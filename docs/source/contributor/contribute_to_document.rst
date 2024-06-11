@@ -1,4 +1,4 @@
-Contributing
+Contribute to Document
 ===============================================
 
 .. contents::

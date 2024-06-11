@@ -5,4 +5,5 @@ For Contributors
 .. toctree::
    :maxdepth: 2
 
-   contributing
+   contribution_guide
+   contribute_to_document

@@ -59,3 +59,7 @@ table {
   .card, .card img {
     background-color: var(--pst-color-background);
   }
+
+table th, table td {
+    background-color: transparent;
+}
