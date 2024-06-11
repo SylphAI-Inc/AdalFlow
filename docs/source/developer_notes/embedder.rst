@@ -19,11 +19,50 @@ EmbedderOutput
 - ``error``: Error message if any error occurs during the model inference stage. Failure in the output processing stage will raise an exception instead of setting this field.
 - ``raw_response``: Used for failed model inference.
 
-You can use ``.length`` to get the number of embeddings in the ``data`` directly.
+You can use ``.length`` to get the number of embeddings in the ``data`` and ``.embedding_dim`` to get the dimension of the embeddings.
+
 
 Embedder in Action
 -------------------
 We currently support `all embedding models from OpenAI <https://platform.openai.com/docs/guides/embeddings>`_ and `'thenlper/gte-base' <https://huggingface.co/thenlper/gte-base>`_ from HuggingFace `transformers <https://huggingface.co/docs/transformers/en/index>`_.
+We will use these two to demonstrate how to use ``Embedder``, one from the API provider and the other using local model. For the local model, you might need to ensure ``transformers`` is installed.
+
+Use OpenAI API
+^^^^^^^^^^^^^^^
+Before you start ensure you config the API key either in the environment variable or `.env` file, or directly pass it to the ``OpenAIClient``.
+
+.. code-block:: python
+
+    from lightrag.core.embedder import Embedder
+    from lightrag.components.model_client import OpenAIClient
+    from lightrag.utils import setup_env # ensure you setup OPENAI_API_KEY in your project .env file
+
+    model_kwargs = {
+        "model": "text-embedding-3-small",
+        "dimensions": 256,
+        "encoding_format": "float",
+    }
+
+    query = "What is the capital of China?"
+
+    queries = [query] * 100
+
+
+    embedder = Embedder(model_client=OpenAIClient(), model_kwargs=model_kwargs)
+
+We find the ``model_kwargs`` from the OpenAI API documentation. We setup `query` to demonstrate call on a single query and `queries` to demonstrate batch call.
+
+**Visualize structure**
+
+We use ``print(embedder)`` to visualize the structure of the ``Embedder``. The output will be:
+
+.. code-block:: 
+
+    Embedder(
+    model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'}, 
+    (model_client): OpenAIClient()
+    )
+
 
 
 

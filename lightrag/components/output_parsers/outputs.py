@@ -19,7 +19,7 @@ from lightrag.core.base_data_class import DataClass, DataClassFormatType
 #
 # setup: What do you call a fake noodle?
 # punchline: An impasta.
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON instance with the following schema:
 ```
@@ -167,7 +167,7 @@ class YamlOutputParser(OutputParser):
             example_str = self.example.format_str(
                 format_type=DataClassFormatType.EXAMPLE_YAML
             )
-            logger.debug(f"{__class__.__name__} example_str: {example_str}")
+            log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
             example_str = None
@@ -221,7 +221,7 @@ class JsonOutputParser(OutputParser):
             example_str = self.example.format_str(
                 format_type=DataClassFormatType.EXAMPLE_JSON
             )
-            logger.debug(f"{__class__.__name__} example_str: {example_str}")
+            log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
             example_str = None
@@ -236,6 +236,8 @@ class JsonOutputParser(OutputParser):
 
 
 class ListOutputParser(OutputParser):
+    __doc__ = r"""List output parser to parse list of objects from the string."""
+
     def __init__(self, list_output_format_template: str = LIST_OUTPUT_FORMAT):
         super().__init__()
         self.list_output_format_prompt = Prompt(template=list_output_format_template)
@@ -246,3 +248,46 @@ class ListOutputParser(OutputParser):
 
     def call(self, input: str) -> list:
         return self.output_processors(input)
+
+
+def _parse_boolean_from_str(input: str) -> Optional[bool]:
+    input = input.strip()
+    if "true" in input.lower():
+        return True
+    elif "false" in input.lower():
+        return False
+    else:
+        return None
+
+
+class BooleanOutputParser(OutputParser):
+    __doc__ = r"""Boolean output parser to parse boolean values from the string."""
+
+    def __init__(self):
+        super().__init__()
+        self.output_processors = None
+
+    def format_instructions(self) -> str:
+        return "The output should be a boolean value. True or False."
+
+    def call(self, input: str) -> bool:
+
+        input = input.strip()
+        output = None
+        # evaluate the expression to get the boolean value
+        try:
+            output = eval(input)
+            if isinstance(output, bool):
+                return output
+            # go to string parsing
+            output = _parse_boolean_from_str(input)
+            if output is not None:
+                return output
+        except Exception as e:
+            # try to do regex matching for boolean values
+            log.info(f"Error: {e}")
+            output = _parse_boolean_from_str(input)
+            if output is not None:
+                return output
+        # when parsing is failed
+        return None

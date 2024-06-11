@@ -82,16 +82,20 @@ class Embedder(Component):
         embedding_output: EmbedderOutputType = (
             self.model_client.parse_embedding_response(response)
         )
+
         data = embedding_output.data
-        if not embedding_output.error and data is not None:
-            if self.output_processors:
+        if self.output_processors:
+            if not embedding_output.error and data is not None:
                 embedding_output.data = self.output_processors(data)
+            else:
+                log.debug(
+                    f"Skipping output processors due to error: {embedding_output.error}"
+                )
 
         return embedding_output
 
     def call(
         self,
-        # *,
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
@@ -107,7 +111,6 @@ class Embedder(Component):
 
     async def acall(
         self,
-        # *,
         input: EmbedderInputType,
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:

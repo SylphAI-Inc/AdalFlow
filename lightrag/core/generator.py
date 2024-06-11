@@ -69,6 +69,11 @@ class Generator(Component):
         """
         super().__init__()
 
+        if not isinstance(model_client, ModelClient):
+            raise ValueError(
+                f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
+            )
+
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
         self._init_prompt(template, preset_prompt_kwargs)
