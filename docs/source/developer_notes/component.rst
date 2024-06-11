@@ -7,7 +7,7 @@ What you will learn?
 
 Component
 ---------------------------------------
- :ref:`Component<core-component>` is to LLM task pipelines is what ``nn.Module`` is to PyTorch models.
+ :ref:`Component<core-component>` is to LLM task pipelines what ``nn.Module`` is to PyTorch models.
 
 It is the base class for components, such as ``Prompt``, ``ModelClient``, ``Generator``, ``Retriever`` in LightRAG.
 Your task pipeline should subclass from ``Component`` too. Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases, our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
@@ -144,7 +144,7 @@ To adds even more flexibility, we provide :class:`core.component.FunComponent` a
 
 FunComponent
 --------------
- Use :func:`core.component.fun_to_component` as a decorator easily convert a function to a Component with its unique class name.
+ Use :func:`core.component.fun_to_component` as a decorator to convert any function to a Component with its unique class name.
 
 :class:`core.component.FunComponent` is a subclass of :class:`core.component.Component` that allows you to define a component with a function.
 You can directly use this class as:

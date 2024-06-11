@@ -21,7 +21,7 @@ import lightrag.core.functional as F
 T = TypeVar("T")
 
 
-# TODO: move this to the ModelClient.
+# TODO: make the GeneratorOutput include the token usage too.
 def parse_embedding_response(
     api_response,
 ) -> EmbedderOutput:

@@ -62,7 +62,6 @@ class Usage:
     total_tokens: int
 
 
-# @dataclass
 class EmbedderOutput(DataClass):
     r"""Container to hold the response from an Embedder model.
 
@@ -81,7 +80,6 @@ class EmbedderOutput(DataClass):
     )  # only used if error
 
 
-# @dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
