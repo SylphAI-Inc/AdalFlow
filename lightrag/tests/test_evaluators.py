@@ -79,7 +79,7 @@ def test_llm_as_judge():
     )
     llm_judge = LLMasJudge()
     avg_judgement, judgement_list = llm_judge.compute(
-        questions, pred_answers, gt_answers, judgement_query
+        questions, gt_answers, pred_answers, judgement_query
     )
     assert avg_judgement == 2 / 3
     assert judgement_list == [True, True, False]

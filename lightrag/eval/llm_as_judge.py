@@ -42,8 +42,8 @@ DEFAULT_LLM_EVALUATOR_MODEL_KWARGS = {
 class DefaultLLMJudge(Component):
     __doc__ = r"""Demonstrate how to use an LLM/Generator to output True or False for a judgement query.
 
-    You can use any any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.
-    
+    You can use any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.
+
     A call on the LLM judge equalize to _compute_single_item method.
 
     Args:
@@ -59,7 +59,7 @@ class DefaultLLMJudge(Component):
         super().__init__()
         self.model_client = model_client
         if model_client is None:
-            log.info(f"model_client is None, default to OpenAIClient.")
+            log.info("model_client is None, default to OpenAIClient.")
             try:
                 from lightrag.components.model_client import OpenAIClient
             except ImportError:
@@ -82,8 +82,8 @@ class DefaultLLMJudge(Component):
 
         Args:
             question (str): Question string.
-            pred_answer (str): Predicted answer string.
             gt_answer (str): Ground truth answer string.
+            pred_answer (str): Predicted answer string.
             judgement_query (str): Judgement query string.
 
         Returns:
@@ -126,7 +126,7 @@ class LLMasJudge:
         >>> judgement_query = "For the question, does the predicted answer contain the ground truth answer?"
         >>> llm_judge = LLMasJudge()
         >>> avg_judgement, judgement_list = llm_judge.compute(
-        questions, pred_answers, gt_answers, judgement_query
+        questions, gt_answers, pred_answers, judgement_query
         )
         >>> avg_judgement
         2 / 3
@@ -143,8 +143,8 @@ class LLMasJudge:
     def compute(
         self,
         questions: List[str],
-        pred_answers: List[str],
         gt_answers: List[str],
+        pred_answers: List[str],
         judgement_query: str,
     ) -> List[bool]:
         r"""
@@ -152,19 +152,21 @@ class LLMasJudge:
 
         Args:
             questions (List[str]): List of question strings.
-            pred_answers (List[str]): List of predicted answer strings.
             gt_answers (List[str]): List of ground truth answer strings.
+            pred_answers (List[str]): List of predicted answer strings.
             judgement_query (str): Judgement query string.
 
         Returns:
-            List[bool]: Judgement results.
+            tuple:
+                - float: Average judgement score.
+                - List[bool]: Judgement results for each query.
         """
         judgement_list = []
-        for question, pred_answer, gt_answer in zip(
-            questions, pred_answers, gt_answers
+        for question, gt_answer, pred_answer in zip(
+            questions, gt_answers, pred_answers
         ):
             judgement = self.llm_evaluator(
-                question, pred_answer, gt_answer, judgement_query
+                question, gt_answer, pred_answer, judgement_query
             )
             judgement_list.append(judgement)
 
@@ -172,8 +174,6 @@ class LLMasJudge:
 
 
 if __name__ == "__main__":
-    from lightrag.utils import setup_env
-    from lightrag.components.model_client import OpenAIClient
 
     questions = [
         "Is Beijing in China?",
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     )
     llm_judge = LLMasJudge()
     avg_judgement, judgement_list = llm_judge.compute(
-        questions, pred_answers, gt_answers, judgement_query
+        questions, gt_answers, pred_answers, judgement_query
     )
     print(avg_judgement)
     print(judgement_list)
