@@ -1,5 +1,5 @@
 from .outputs import (
-    YAMLOutputParser,
+    YamlOutputParser,
     JsonOutputParser,
     ListOutputParser,
     YAML_OUTPUT_FORMAT,
@@ -8,7 +8,7 @@ from .outputs import (
 )
 
 __all__ = [
-    "YAMLOutputParser",
+    "YamlOutputParser",
     "JsonOutputParser",
     "ListOutputParser",
     "YAML_OUTPUT_FORMAT",

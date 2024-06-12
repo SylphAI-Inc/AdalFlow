@@ -77,7 +77,7 @@ class GeneratorStateLogger:
         self._generator_names.add(name)
 
         prompt_states: Dict = (
-            generator.system_prompt.to_dict()
+            generator.prompt.to_dict()
         )  # TODO: log all states of the generator instead of just the prompt
 
         try:
@@ -122,5 +122,5 @@ class GeneratorStateLogger:
             # convert each dict record to PromptRecord
             for name, records in self._trace_map.items():
                 self._trace_map[name] = [
-                    GeneratorStatesRecord.load_from_dict(record) for record in records
+                    GeneratorStatesRecord.from_dict(record) for record in records
                 ]

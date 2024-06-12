@@ -32,8 +32,10 @@ def average_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
     return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
 
+# TODO: provide a standard api for embedding and chat models used in local model SDKs
 class TransformerEmbedder:
     """Local model SDK for transformers.
+
 
     There are two ways to run transformers:
     (1) model and then run model inference
@@ -45,6 +47,10 @@ class TransformerEmbedder:
 
     The is now just an exmplary component that initialize a certain model from transformers and run inference on it.
     It is not tested on all transformer models yet. It might be necessary to write one for each model.
+
+    References:
+    - transformers: https://huggingface.co/docs/transformers/en/index
+    - thenlper/gte-base model:https://huggingface.co/thenlper/gte-base
     """
 
     models: Dict[str, type] = {}

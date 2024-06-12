@@ -1,4 +1,4 @@
-"""Groq ModelClient integration"""
+"""Groq ModelClient integration."""
 
 import os
 from typing import Dict, Sequence, Optional, Any

@@ -8,7 +8,7 @@ In ``LightRAG``, text embedding is managed through three main components: ``Embe
 These components work together to transform text into embeddings using external model APIs from providers like `OpenAI`` and `Google`.
 
 * **Embedder:** It acts as the interface for external embedding models. It orchestrates embedding models via ``ModeClient`` and ``output_processors`` that can be used to process output from ``ModeClient``. Ensure that your model's API key is stored in the ``.env`` file. This setup prepares the Embedder to generate embeddings effectively.
-* **ToEmbedderResponse:** It is designed to convert raw model outputs into structured ``EmbedderResponse`` formats, typically lists of float values representing embeddings. It should be used as the ``output_processors`` in the ``Embedder`` setup.
+.. * **ToEmbedderResponse:** It is designed to convert raw model outputs into structured ``EmbedderResponse`` formats, typically lists of float values representing embeddings. It should be used as the ``output_processors`` in the ``Embedder`` setup.
 * **ToEmbeddings:** It takes documents from ``Embedder``, processes documents in batches and uses an instance of ``Embedder`` as the ``vectorizer`` to obtain embeddings. After receiving the embeddings, ``ToEmbeddings`` assigns them back to the respective Document objects. This component ensures that the input data is copied and the original data remains unmodified.
 
 With these components, the embeddings will be created when you run ``ToEmbeddings``.

@@ -3,26 +3,26 @@ Generator
 The Center of it All 
 ~~~~~~~~~~~~~~~~~~~~~~~
 Generator is the most essential functional component in LightRAG. 
-It is a user-facing orchestration component for LLM prediction.
+It is a user-facing orchestration component with a simple and unified interface for LLM prediction.
 It orchestrates the following components along with their required arguments:
 
-- A prompt template
+- ``Prompt``
 
-- Model client
+- ``ModelClient``
 
-- Output processors
+- Output processors to process the raw string response to desired format.
 
 By switching out the model client, you can call any LLM model on your prompt, either API or local.
 
 GeneratorOutput
 ^^^^^^^^^^^^^^^
 Different from all other components, we can not alway enforce LLM to output the right format.
-We in particular created an output data class to track raw string response along its parsed task response and error messages for any failured LLM predictions.
-It is in developers' hands to process the output accordingly.
+We in particular created a :class:`core.types.GeneratorOutput` (a subclass of ``DataClass``) to store `data` (parsed response), `error` (error message if either the model inference SDKs fail or the output parsing fail) and `raw_response` (raw string response for reference) for any LLM predictions.
+It is in developers' hands to process the output accordingly. 
 
 Tracing
-^^^^^^^
-We provide two tracing methods to help you develop and improve the Generator:
+^^^^^^^^^^^
+In particular, we provide two tracing methods to help you develop and improve the Generator:
 
 1. Trace the history change(states) on prompt during your development process. Developers typically go through a long process of prompt optimization and it is frustrating
 to lose track of the prompt changes when your current change actually makes the performance much worse.
@@ -140,7 +140,7 @@ Here is an example log file:
     
 2. Trace all failed LLM predictions for further improvement.
 
-Similarly, `GeneratorCallLogger` is created to log generator call input arguments and output results.
+Similarly, :class:`tracing.generator_call_logger.GeneratorCallLogger` is created to log generator call input arguments and output results.
 `trace_generator_call` decorator is provided to provide one-line setup to trace calls, which in default will log only failed predictions.
 
 Adding the second decorator to the above example:
@@ -184,15 +184,22 @@ The `generator_call.jsonl` file contains the log of all calls to the generator, 
 
     {"prompt_kwargs": {"input_str": "What is the capital of France?"}, "model_kwargs": {}, "output": {"data": "Bonjour!\n\nThe capital of France is Paris, of course! But did you know that the Eiffel Tower in Paris is actually the most-visited paid monument in the world? Mind-blowing, right?\n\nNow, would you like to know some more fun facts or perhaps ask another question? I'm all ears (or should I say, all eyes?)", "error_message": null, "raw_response": "Bonjour!\n\nThe capital of France is Paris, of course! But did you know that the Eiffel Tower in Paris is actually the most-visited paid monument in the world? Mind-blowing, right?\n\nNow, would you like to know some more fun facts or perhaps ask another question? I'm all ears (or should I say, all eyes?)"}, "time_stamp": "2024-06-03T16:44:45.582859"}
 
-Refer API and use case `use_cases/tracing` for more details.
+.. note ::
 
+    Usually, let the evaluation run on evaluation to collect as much as failed predictions can be highly helpful for either manual prompting or auto-prompt engineering (APE).
 
-Training
-^^^^^^^^
+Training [Experimental]
+^^^^^^^^^^^^^^^^^^^^^^^
 
+.. A Note on Tokenization#
+.. By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
 
+.. If you change the LLM, you may need to update this tokenizer to ensure accurate token counts, chunking, and prompting.
 
-A Note on Tokenization#
-By default, LlamaIndex uses a global tokenizer for all token counting. This defaults to cl100k from tiktoken, which is the tokenizer to match the default LLM gpt-3.5-turbo.
+.. admonition:: API reference
+   :class: highlight
 
-If you change the LLM, you may need to update this tokenizer to ensure accurate token counts, chunking, and prompting.
+   - :class:`core.generator.Generator`
+   - :class:`core.types.GeneratorOutput`
+   - :class:`tracing.generator_call_logger.GeneratorCallLogger`
+   - :class:`tracing.generator_state_logger.GeneratorStateLogger`

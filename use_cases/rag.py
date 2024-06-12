@@ -2,10 +2,9 @@ from typing import Any, List, Optional
 import dotenv
 import yaml
 
-from lightrag.core.generator import Generator
+from lightrag.core.generator import Generator, GeneratorOutput
 from lightrag.core.embedder import Embedder
 from lightrag.core.data_components import (
-    ToEmbedderResponse,
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
@@ -40,10 +39,9 @@ class RAG(Component):
         self.text_splitter_settings = settings["text_splitter"]
 
         vectorizer = Embedder(
-            model_client=OpenAIClient,
+            model_client=OpenAIClient(),
             # batch_size=self.vectorizer_settings["batch_size"],
             model_kwargs=self.vectorizer_settings["model_kwargs"],
-            output_processors=ToEmbedderResponse(),
         )
         # TODO: check document splitter, how to process the parent and order of the chunks
         text_splitter = DocumentSplitter(
@@ -87,7 +85,7 @@ Output JSON format:
     "answer": "The answer to the query",
 }"""
             },
-            model_client=OpenAIClient,
+            model_client=OpenAIClient(),
             model_kwargs=self.generator_model_kwargs,
             output_processors=JsonParser(),
         )
@@ -108,9 +106,12 @@ Output JSON format:
 
         prompt_kwargs = {
             "context_str": context,
+            "input_str": query,
         }
-        response = self.generator(input=query, prompt_kwargs=prompt_kwargs)
-        return response
+        response = self.generator(prompt_kwargs=prompt_kwargs)
+        if response.error:
+            raise ValueError(f"Error in generator: {response.error}")
+        return response.data
 
     def call(self, query: str) -> Any:
         retrieved_documents = self.retriever(query)

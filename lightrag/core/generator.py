@@ -17,8 +17,6 @@ GeneratorOutputType = GeneratorOutput
 log = logging.getLogger(__name__)
 
 
-# NOTE: currently generator cannot be used in Sequential due to specialized output data type
-# TODO: generator should track its failed calls so that users can review them, and save the failed calls to a file
 # TODO: create a dummpy model client for testing the generator
 class Generator(Component):
     """
@@ -32,7 +30,7 @@ class Generator(Component):
 
     Args:
         model_client (ModelClient): The model client to use for the generator.
-        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}.
+        model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
         template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`.
         preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
         output_processors (Optional[Component], optional): The output processors after model call. Defaults to None.
@@ -71,18 +69,23 @@ class Generator(Component):
         """
         super().__init__()
 
+        if not isinstance(model_client, ModelClient):
+            raise ValueError(
+                f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
+            )
+
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
         self._init_prompt(template, preset_prompt_kwargs)
 
-        self.model_kwargs = model_kwargs
+        self.model_kwargs = model_kwargs.copy()
         # init the model client
         self.model_client = model_client
 
         self.output_processors = output_processors
 
         # add trainable_params to generator
-        prompt_variables = self.system_prompt.get_prompt_variables()
+        prompt_variables = self.prompt.get_prompt_variables()
         self._trainable_params: List[str] = []
         for param in trainable_params:
             if param not in prompt_variables:
@@ -99,7 +102,7 @@ class Generator(Component):
         r"""Initialize the prompt with the template and preset_prompt_kwargs."""
         self.template = template
         self.preset_prompt_kwargs = preset_prompt_kwargs
-        self.system_prompt = Prompt(
+        self.prompt = Prompt(
             template=template, preset_prompt_kwargs=preset_prompt_kwargs
         )
         # return Prompt(template=template, preset_prompt_kwargs=preset_prompt_kwargs)
@@ -111,7 +114,7 @@ class Generator(Component):
 
     #     As
     #     """
-    #     prompt_text = self.system_prompt.call(**kwargs)
+    #     prompt_text = self.prompt.call(**kwargs)
     #     return prompt_text
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
@@ -127,7 +130,7 @@ class Generator(Component):
         return compose_model_kwargs(self.model_kwargs, model_kwargs)
 
     def print_prompt(self, **kwargs) -> str:
-        self.system_prompt.print_prompt(**kwargs)
+        self.prompt.print_prompt(**kwargs)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
@@ -162,7 +165,7 @@ class Generator(Component):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the system prompt from the template
-        system_prompt_str = self.system_prompt.call(**prompt_kwargs).strip()
+        system_prompt_str = self.prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
@@ -226,3 +229,7 @@ class Generator(Component):
         output = self._post_call(completion)
         log.info(f"output: {output}")
         return output
+
+    def _extra_repr(self) -> str:
+        s = f"model_kwargs={self.model_kwargs}, "
+        return s

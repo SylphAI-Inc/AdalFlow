@@ -11,7 +11,7 @@ import logging
 from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
-from lightrag.core.base_data_class import DataClass, DataclassFormatType
+from lightrag.core.base_data_class import DataClass, DataClassFormatType
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
 # setup: Why couldn't the bicycle stand up by itself?
@@ -19,7 +19,7 @@ from lightrag.core.base_data_class import DataClass, DataclassFormatType
 #
 # setup: What do you call a fake noodle?
 # punchline: An impasta.
-logger = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON instance with the following schema:
 ```
@@ -86,7 +86,7 @@ class OutputParser(Component):
         raise NotImplementedError("This is an abstract method.")
 
 
-class YAMLOutputParser(OutputParser):
+class YamlOutputParser(OutputParser):
     __doc__ = r"""YAML output parser using dataclass for schema extraction.
 
     Args:
@@ -97,7 +97,7 @@ class YAMLOutputParser(OutputParser):
 
     Examples:
 
-    >>> from prompts.outputs import YAMLOutputParser
+    >>> from prompts.outputs import YamlOutputParser
     >>> from dataclasses import dataclass, field
     >>> from typing import List
     >>>
@@ -110,7 +110,7 @@ class YAMLOutputParser(OutputParser):
     >>> # def from_dict(self, d: Dict[str, Any]) -> "ThoughtAction":
     >>> #     return ThoughtAction(**d)
     >>>
-    >>> yaml_parser = YAMLOutputParser(data_class_for_yaml=ThoughtAction)
+    >>> yaml_parser = YamlOutputParser(data_class_for_yaml=ThoughtAction)
     >>> yaml_format_instructions = yaml_parser.format_instructions()
     >>> print(yaml_format_instructions)
     >>> yaml_str = '''The output should be formatted as a standard YAML instance with the following JSON schema:
@@ -151,23 +151,23 @@ class YAMLOutputParser(OutputParser):
         self.example = example
 
     def format_instructions(
-        self, format_type: Optional[DataclassFormatType] = None
+        self, format_type: Optional[DataClassFormatType] = None
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format.
 
         Args:
-            format_type (DataclassFormatType, optional): The format type to show in the prompt.
-                Defaults to DataclassFormatType.SIGNATURE_YAML for less token usage.
-                Options: DataclassFormatType.SIGNATURE_YAML, DataclassFormatType.SIGNATURE_JSON, DataclassFormatType.SCHEMA.
+            format_type (DataClassFormatType, optional): The format type to show in the prompt.
+                Defaults to DataClassFormatType.SIGNATURE_YAML for less token usage.
+                Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataclassFormatType.SIGNATURE_YAML
+        format_type = format_type or DataClassFormatType.SIGNATURE_YAML
         schema = self.data_class_for_yaml.format_str(format_type=format_type)
         # convert example to string, convert data class to yaml string
         try:
             example_str = self.example.format_str(
-                format_type=DataclassFormatType.EXAMPLE_YAML
+                format_type=DataClassFormatType.EXAMPLE_YAML
             )
-            logger.debug(f"{__class__.__name__} example_str: {example_str}")
+            log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
             example_str = None
@@ -206,22 +206,22 @@ class JsonOutputParser(OutputParser):
         self.example = example
 
     def format_instructions(
-        self, format_type: Optional[DataclassFormatType] = None
+        self, format_type: Optional[DataClassFormatType] = None
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the JSON output format.
 
         Args:
-            format_type (DataclassFormatType, optional): The format type to show in the prompt.
-                Defaults to DataclassFormatType.SIGNATURE_JSON for less token usage compared with DataclassFormatType.SCHEMA.
-                Options: DataclassFormatType.SIGNATURE_YAML, DataclassFormatType.SIGNATURE_JSON, DataclassFormatType.SCHEMA.
+            format_type (DataClassFormatType, optional): The format type to show in the prompt.
+                Defaults to DataClassFormatType.SIGNATURE_JSON for less token usage compared with DataClassFormatType.SCHEMA.
+                Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
-        format_type = format_type or DataclassFormatType.SIGNATURE_JSON
+        format_type = format_type or DataClassFormatType.SIGNATURE_JSON
         schema = self.data_class_for_json.format_str(format_type=format_type)
         try:
             example_str = self.example.format_str(
-                format_type=DataclassFormatType.EXAMPLE_JSON
+                format_type=DataClassFormatType.EXAMPLE_JSON
             )
-            logger.debug(f"{__class__.__name__} example_str: {example_str}")
+            log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
             example_str = None
@@ -236,6 +236,8 @@ class JsonOutputParser(OutputParser):
 
 
 class ListOutputParser(OutputParser):
+    __doc__ = r"""List output parser to parse list of objects from the string."""
+
     def __init__(self, list_output_format_template: str = LIST_OUTPUT_FORMAT):
         super().__init__()
         self.list_output_format_prompt = Prompt(template=list_output_format_template)
@@ -246,3 +248,46 @@ class ListOutputParser(OutputParser):
 
     def call(self, input: str) -> list:
         return self.output_processors(input)
+
+
+def _parse_boolean_from_str(input: str) -> Optional[bool]:
+    input = input.strip()
+    if "true" in input.lower():
+        return True
+    elif "false" in input.lower():
+        return False
+    else:
+        return None
+
+
+class BooleanOutputParser(OutputParser):
+    __doc__ = r"""Boolean output parser to parse boolean values from the string."""
+
+    def __init__(self):
+        super().__init__()
+        self.output_processors = None
+
+    def format_instructions(self) -> str:
+        return "The output should be a boolean value. True or False."
+
+    def call(self, input: str) -> bool:
+
+        input = input.strip()
+        output = None
+        # evaluate the expression to get the boolean value
+        try:
+            output = eval(input)
+            if isinstance(output, bool):
+                return output
+            # go to string parsing
+            output = _parse_boolean_from_str(input)
+            if output is not None:
+                return output
+        except Exception as e:
+            # try to do regex matching for boolean values
+            log.info(f"Error: {e}")
+            output = _parse_boolean_from_str(input)
+            if output is not None:
+                return output
+        # when parsing is failed
+        return None

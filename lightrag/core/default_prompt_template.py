@@ -9,17 +9,21 @@ LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "input_str",
     "output_str",
 ]
+
+# TODO: is output_str used?
 LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "task_desc_str",
     # "output_format_str",
     "examples_str",
 ]
 
-DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
+DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""
+{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
+<SYS>
+{% endif %}
+{# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}
-{% else %}
-Answer user query.
 {% endif %}
 {# output format #}
 {% if output_format_str %}
@@ -57,6 +61,9 @@ Answer user query.
 {{steps_str}}
 </STEPS>
 {% endif %}
+{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
+</SYS>
+{% endif %}
 {% if input_str %}
 <Inputs>
 {{input_str}}
@@ -67,6 +74,7 @@ Answer user query.
 {{output_str}}
 </Outputs>
 {% endif %}
+You:
 """
 """This is the default system prompt template used in the LightRAG.
 

@@ -7,7 +7,7 @@ What you will learn?
 
 Component
 ---------------------------------------
- :ref:`Component<core-component>` is to LLM task pipelines is what ``nn.Module`` is to PyTorch models.
+ :ref:`Component<core-component>` is to LLM task pipelines what ``nn.Module`` is to PyTorch models.
 
 It is the base class for components, such as ``Prompt``, ``ModelClient``, ``Generator``, ``Retriever`` in LightRAG.
 Your task pipeline should subclass from ``Component`` too. Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases, our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
@@ -25,14 +25,17 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
         .. code-block:: python
 
             import torch.nn as nn
+            import torch.nn.functional as F
 
-            class MyModel(nn.Module):
+            class Model(nn.Module):
                 def __init__(self):
                     super().__init__()
-                    self.fc = nn.Linear(10, 10)
-                
+                    self.conv1 = nn.Conv2d(1, 20, 5)
+                    self.conv2 = nn.Conv2d(20, 20, 5)
+
                 def forward(self, x):
-                    return self.fc(x)
+                    x = F.relu(self.conv1(x))
+                    return F.relu(self.conv2(x))
 
     .. grid-item-card::  LightRAG
             
@@ -64,7 +67,11 @@ Run the ``DocQA`` on a query:
     doc = DocQA()
     print(doc("What is the best treatment for headache?"))
 
+The response is:
 
+.. code-block:: 
+
+    As a doctor, the best treatment for a headache would depend on the underlying cause of the headache. Typically, over-the-counter pain relievers such as acetaminophen, ibuprofen, or aspirin can help to alleviate the pain. However, if the headache is severe or persistent, it is important to see a doctor for further evaluation and to determine the most appropriate treatment option. Other treatment options may include prescription medications, lifestyle modifications, stress management techniques, and relaxation techniques.
 
 As the foundamental building block in LLM task pipeline, the component is designed to serve four main purposes:
 
@@ -97,7 +104,7 @@ The printout:
     DocQA(
     (doc): Generator(
         model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
-        (system_prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+        (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
         (model_client): OpenAIClient()
     )
     )
@@ -137,7 +144,7 @@ To adds even more flexibility, we provide :class:`core.component.FunComponent` a
 
 FunComponent
 --------------
- Use :func:`core.component.fun_to_component` as a decorator easily convert a function to a Component with its unique class name.
+ Use :func:`core.component.fun_to_component` as a decorator to convert any function to a Component with its unique class name.
 
 :class:`core.component.FunComponent` is a subclass of :class:`core.component.Component` that allows you to define a component with a function.
 You can directly use this class as:
@@ -227,7 +234,7 @@ The structure of the sequence using ``print(seq)``:
     (1): DocQA(
         (doc): Generator(
         model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
-        (system_prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+        (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
         (model_client): OpenAIClient()
         )
     )

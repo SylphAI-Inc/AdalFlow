@@ -1,8 +1,13 @@
 ModelClient
 ============
+What you will learn?
 
-:ref:`ModelClient<core-model_client>` is the protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components/classes.
-By switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, you can make your prompt or ``Retriever`` model-agnostic.
+1. What is ``ModelClient`` and why is it designed this way?
+2. How to intergrate your own ``ModelClient``?
+3. How to use ``ModelClient`` directly?
+
+:ref:`ModelClient<core-model_client>` is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components/classes.
+Because so, by switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, you can make your prompt or ``Retriever`` model-agnostic.
 
 
 .. figure:: /_static/model_client.png
@@ -12,6 +17,10 @@ By switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, 
 
     The interface to internal components in LightRAG
 
+.. note::
+
+    All users are encouraged to customize your own ``ModelClient`` whenever you need to do so. You can refer our code in ``components.model_client`` dir.
+
 Model Inference SDKs
 -------------------
 With cloud API providers like OpenAI, Groq, Anthropic, it often comes with a `sync` and an `async` client via their SDKs. 
@@ -20,6 +29,7 @@ For example:
 .. code-block:: python
 
     from openai import OpenAI, AsyncOpenAI
+
     sync_client = OpenAI()
     async_client = AsyncOpenAI()
 
@@ -27,7 +37,8 @@ For example:
     response = sync_client.chat.completions.create(...)
 
 For local models, such as using `huggingface transformers`, you need to create this model inference SDKs yourself.
-How you do this is highly flexible. Here is an example to use local embedding model (e.g. ``thenlper/gte-base``) as a model (Refer :class:`components.model_client.transformers_client.TransformerEmbedder` for details):
+How you do this is highly flexible. Here is an example to use local embedding model (e.g. ``thenlper/gte-base``) as a model (Refer :class:`components.model_client.transformers_client.TransformerEmbedder` for details).
+It really is just normal model inference code.
 
 .. code-block:: python
 
@@ -106,7 +117,7 @@ A model client can be used to manage different types of models, we defined a ``M
         LLM = auto()
         UNDEFINED = auto()
 
-We designed 5 abstract methods in the ``ModelClient`` class to be implemented by the subclass model type.
+We designed 6 abstract methods in the ``ModelClient`` class to be implemented by the subclass model type.
 We will use :class:`components.model_client.OpenAIClient` along with the above ``TransformerEmbedder`` as examples.
 
 First, we offer two methods to initialize the model SDKs:
@@ -229,7 +240,8 @@ This is how ``TransformerClient`` does the same thing:
                 raise ValueError(f"model_type {model_type} is not supported")
 
 In addition, you can add any method that parse the SDK specific output to a format compatible with LightRAG components.
-Typically an LLM needs to use `parse_chat_completion` to parse the completion to texts.
+Typically an LLM needs to use `parse_chat_completion` to parse the completion to texts and `parse_embedding_response` to parse the embedding response to a structure LightRAG components can understand.
+
 
 .. code-block:: python
 
@@ -237,6 +249,14 @@ Typically an LLM needs to use `parse_chat_completion` to parse the completion to
         raise NotImplementedError(
             f"{type(self).__name__} must implement parse_chat_completion method"
         )
+
+    def parse_embedding_response(self, response: Any) -> EmbedderOutput:
+    r"""Parse the embedding response to a structure LightRAG components can understand."""
+    raise NotImplementedError(
+        f"{type(self).__name__} must implement parse_embedding_response method"
+    )
+
+You can refer to :class:`components.model_client.openai_client.OpenAIClient` for API embedding model integration and :class:`components.model_client.transformers_client.TransformersClient` for local embedding model integration.
 
 Then `call` and `acall` methods to call Model inference via their own arguments.
 We encourage the subclass provides error handling and retry mechanism in these methods.
@@ -334,3 +354,13 @@ The output will be:
 
     api_kwargs: {'model': 'text-embedding-3-small', 'dimensions': 8, 'encoding_format': 'float', 'input': ['What is the capital of France?', 'What is the capital of France?']}
     reponse_embedder_output: EmbedderOutput(data=[Embedding(embedding=[0.6175549, 0.24047995, 0.4509756, 0.37041178, -0.33437008, -0.050995983, -0.24366009, 0.21549304], index=0), Embedding(embedding=[0.6175549, 0.24047995, 0.4509756, 0.37041178, -0.33437008, -0.050995983, -0.24366009, 0.21549304], index=1)], model='text-embedding-3-small', usage=Usage(prompt_tokens=14, total_tokens=14), error=None, raw_response=None)
+
+.. admonition:: API reference
+   :class: highlight
+
+   - :class:`core.model_client.ModelClient`
+   - :class:`components.model_client.openai_client.OpenAIClient`
+   - :class:`components.model_client.transformers_client.TransformersClient`
+   - :class:`components.model_client.groq_client.GroqAPIClient`
+   - :class:`components.model_client.anthropic_client.AnthropicAPIClient`
+   - :class:`components.model_client.google_client.GoogleGenAIClient`

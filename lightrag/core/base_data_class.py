@@ -24,12 +24,14 @@ logger = logging.getLogger(__name__)
 T_co = TypeVar("T_co", covariant=True)
 
 
-class DataclassFormatType(enum.Enum):
-    r"""The format type for the dataclass schema."""
+class DataClassFormatType(enum.Enum):
+    r"""The format type for the DataClass schema."""
 
+    # for class
     SCHEMA = "schema"
     SIGNATURE_YAML = "signature_yaml"
     SIGNATURE_JSON = "signature_json"
+    # for instance
     EXAMPLE_YAML = "example_yaml"
     EXAMPLE_JSON = "example_json"
 
@@ -148,20 +150,48 @@ class _DataClassMeta(type):
 
 # @dataclass
 class DataClass(metaclass=_DataClassMeta):
-    __doc__ = r"""The base data class for almost all data types that interact with LLMs.
+    __doc__ = r"""The base data class for all data types that interact with LLMs.
      
-    Designed to streamline the handling, serialization, and description of data within our applications.
-    Especially to LLM prompt.
+    Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
     transparency and to keep the order of the fields when get serialized.
 
-    It creates string `signature` or `schema` for both the class type and the class instance.
+    How to create your own dataclass?
+    
+    1. Subclass DataClass and define the fields with the `field` decorator. 
+    2. Use the `medata` argument and a `desc` key to describe the field.
+    3. Keep the order of the fields as how you want them to be serialized and described to LLMs.
+    4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.
 
-    - `Schema` is a standard way to describe the data structure in Json string.
+    How to use it?
 
-    - Signature is more token effcient than schema, and schema can mislead the model if it is not used properly.
+    Describing:
 
-    Better use schema with example signature (either yaml or json) depending on the use case.
+    We defined :ref:`DataClassFormatType<core-base_data_class_format_type>` to categorize DataClass description formats 
+    as input or output in LLM prompt.
+
+
+    (1) For describing the class (data structure):
+
+    `Signature` is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.
+
+    - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_data_class_schema_str` as string and :meth:`to_data_class_schema` as dict.
+    - DataClassFormatType.SIGNATURE_JSON: emitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.
+    - DataClassFormatType.SIGNATURE_YAML: emitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.
+
+    (2) For describing the class instance: this is helpful to do few-shot examples in LLM prompt.
+    - DataClassFormatType.EXAMPLE_JSON: the json representation of the instance, :meth:`to_json` as string.
+    - DataClassFormatType.EXAMPLE_YAML: the yaml representation of the instance, :meth:`to_yaml` as string.
+
+    Overall, we have a unified class method :meth:`format_str` to generate formatted output based on the type of operation and class/instance context.
+
+    note::
+        You do not need to use our format, overwrite any method in the subclass to fit in your needs.
+
+    Loading data:
+
+    - :meth:`from_dict` is used to create a dataclass instance from a dictionary.
+
 
     Refer :ref:`DataClass<core-base_data_class_note>` for more detailed instructions.
 
@@ -221,7 +251,7 @@ class DataClass(metaclass=_DataClassMeta):
         setattr(self, field_name, value)
 
     @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data: Dict[str, Any]):
         r"""
         Create a dataclass instance from a dictionary.
         """
@@ -232,11 +262,11 @@ class DataClass(metaclass=_DataClassMeta):
         return cls(**valid_data)
 
     @classmethod
-    def format_str(cls: "DataClass", format_type: DataclassFormatType) -> str:
+    def format_str(cls: "DataClass", format_type: DataClassFormatType) -> str:
         """Generate formatted output based on the type of operation and class/instance context.
 
         Args:
-            format_type (DataclassFormatType): Specifies the format and type (schema, signature, example).
+            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
 
         Returns:
             str: A string representing the formatted output.
@@ -245,19 +275,19 @@ class DataClass(metaclass=_DataClassMeta):
             raise ValueError(f"{cls.__name__} must be a dataclass to use format_str.")
 
         # Check the type of format required and whether it's called on an instance or class
-        if format_type == DataclassFormatType.SIGNATURE_JSON:
+        if format_type == DataClassFormatType.SIGNATURE_JSON:
             return cls.to_json_signature()
-        elif format_type == DataclassFormatType.SIGNATURE_YAML:
+        elif format_type == DataClassFormatType.SIGNATURE_YAML:
             return cls.to_yaml_signature()
-        elif format_type == DataclassFormatType.EXAMPLE_JSON:
+        elif format_type == DataClassFormatType.EXAMPLE_JSON:
             if isinstance(cls, type):
                 raise ValueError("EXAMPLE_JSON requires an instance of the dataclass.")
             return cls.to_json()
-        elif format_type == DataclassFormatType.EXAMPLE_YAML:
+        elif format_type == DataClassFormatType.EXAMPLE_YAML:
             if isinstance(cls, type):
                 raise ValueError("EXAMPLE_YAML requires an instance of the dataclass.")
             return cls.to_yaml()
-        elif format_type == DataclassFormatType.SCHEMA:
+        elif format_type == DataClassFormatType.SCHEMA:
             return cls.to_data_class_schema_str()
         else:
             raise ValueError(f"Unsupported format type: {format_type}")

@@ -8,7 +8,7 @@ And finally you will have a classifier, cheaper and faster to run and perform th
 ## Task pipeline(Model)
 `task.py` along with `config`
 
-In class `TrecClassifier`'s `call` method. Beside of the standard output processing such as `YAMLOutputParser`, we see we add additional **task-specific processing** in case the llm is not following the standard output format (which should be failed predictions).
+In class `TrecClassifier`'s `call` method. Beside of the standard output processing such as `YamlOutputParser`, we see we add additional **task-specific processing** in case the llm is not following the standard output format (which should be failed predictions).
 
 
 ### Config [Optional]

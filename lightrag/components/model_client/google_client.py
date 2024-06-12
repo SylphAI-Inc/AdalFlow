@@ -1,4 +1,4 @@
-"""Google GenAI ModelClient integration"""
+"""Google GenAI ModelClient integration."""
 
 import os
 from typing import Dict, Sequence, Optional

@@ -221,13 +221,13 @@ Let's create an instance of the `MyOutputs` from a dictionary:
 .. code-block:: python
 
     data = {"name": "Jane Doe", "age": 25}
-    print(MyOutputs.load_from_dict(data))
+    print(MyOutputs.from_dict(data))
 
     # Output
     # MyOutputs(name='Jane Doe', age=25)
 
 In most cases, your dataset's key and the field name might not directly match.
-Instead of providing a mapping argument in the library, we suggest users to customize `load_from_dict` method for more **control** and **flexibility**.
+Instead of providing a mapping argument in the library, we suggest users to customize `from_dict` method for more **control** and **flexibility**.
 
 Here is a real-world example:
 
@@ -243,7 +243,7 @@ Here is a real-world example:
         class_index: int = field(metadata={"desc": "class_index in range[0, 5]"})
 
         @classmethod
-        def load_from_dict(cls, data: Dict[str, Any]):
+        def from_dict(cls, data: Dict[str, Any]):
             _COARSE_LABELS_DESC = [
                 "Abbreviation",
                 "Entity",
@@ -257,7 +257,7 @@ Here is a real-world example:
                 "class_index": data["coarse_label"],
                 "class_name": _COARSE_LABELS_DESC[data["coarse_label"]],
             }
-            return super().load_from_dict(data)
+            return super().from_dict(data)
 
 .. note::
     

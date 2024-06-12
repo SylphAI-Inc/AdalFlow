@@ -16,12 +16,12 @@ from lightrag.core.types import (
     RetrieverOutput,
 )
 import lightrag.core.functional as F
-
+from tqdm import tqdm
 
 T = TypeVar("T")
 
 
-# TODO: move this to the ModelClient.
+# TODO: make the GeneratorOutput include the token usage too.
 def parse_embedding_response(
     api_response,
 ) -> EmbedderOutput:
@@ -119,7 +119,7 @@ class ToEmbeddings(Component):
 
     def __call__(self, input: Sequence[Document]) -> Sequence[Document]:
         output = deepcopy(input)
-        for i in range(0, len(output), self.batch_size):
+        for i in tqdm(range(0, len(output), self.batch_size)):
             batch = output[i : i + self.batch_size]
             embedder_output: EmbedderOutput = self.vectorizer(
                 input=[chunk.text for chunk in batch]
