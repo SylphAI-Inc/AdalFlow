@@ -9,24 +9,15 @@ from dataclasses import (
     dataclass,
     field,
     InitVar,
-    fields,
-    make_dataclass,
-    MISSING,
-    is_dataclass,
 )
 from uuid import UUID
-
-
 from datetime import datetime
 import uuid
-import json
-import yaml
-import warnings
 import logging
 
 from lightrag.core.base_data_class import DataClass
-
 from lightrag.core.tokenizer import Tokenizer
+from lightrag.core.functional import is_normalized
 
 
 logger = logging.getLogger(__name__)
@@ -93,6 +84,19 @@ class EmbedderOutput(DataClass):
         """
         return (
             len(self.data[0].embedding) if self.data and self.data[0].embedding else -1
+        )
+
+    @property
+    def is_normalized(self) -> bool:
+        r"""Check if the embeddings are normalized to unit vectors.
+
+        Returns:
+            bool: True if the embeddings are normalized, False otherwise
+        """
+        return (
+            is_normalized(self.data[0].embedding)
+            if self.data and self.data[0].embedding
+            else False
         )
 
 

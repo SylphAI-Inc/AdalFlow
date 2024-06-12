@@ -77,7 +77,7 @@ class GeneratorStateLogger:
         self._generator_names.add(name)
 
         prompt_states: Dict = (
-            generator.system_prompt.to_dict()
+            generator.prompt.to_dict()
         )  # TODO: log all states of the generator instead of just the prompt
 
         try:

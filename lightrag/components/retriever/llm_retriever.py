@@ -20,7 +20,8 @@ DEFAULT_FORM_DOCUMENTS_STR_AS_CONTEXT_STR = r"""
 {% endfor %}
 """
 
-LLMRetrieverOutputType = List[GeneratorOutput] # set up the output of llm retrieval
+LLMRetrieverOutputType = List[GeneratorOutput]  # set up the output of llm retrieval
+
 
 class LLMRetriever(Retriever):
     r"""We need to configure the generator with model_client, model_kwargs, output_processors, and preset_prompt_kwargs"""
@@ -63,13 +64,13 @@ class LLMRetriever(Retriever):
             preset_prompt_kwargs={"documents": documents_to_use},
         )
         self.index_context_str = self.index_prompt()
-        self.generator.system_prompt.update_preset_prompt_kwargs(
+        self.generator.prompt.update_preset_prompt_kwargs(
             context_str=self.index_context_str
         )
 
     def retrieve(
         self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
-    ) -> LLMRetrieverOutputType: 
+    ) -> LLMRetrieverOutputType:
         """Retrieve the k relevant documents.
 
         Args:
@@ -84,19 +85,23 @@ class LLMRetriever(Retriever):
         print(f"query_or_queries: {query_or_queries}")
         if top_k is None:
             top_k = self.top_k
-        
+
         # render the task_desc_str
         task_desc_str = self.task_desc_prompt(top_k=top_k)
-        
+
         # Normalize the queries to always handle them as a list
-        queries = query_or_queries if isinstance(query_or_queries, list) else [query_or_queries]
-        retrieved_outputs = [] # maintain a list of GeneratorOutput
+        queries = (
+            query_or_queries
+            if isinstance(query_or_queries, list)
+            else [query_or_queries]
+        )
+        retrieved_outputs = []  # maintain a list of GeneratorOutput
 
         for query in queries:
-            
+
             prompt_kwargs = {
                 "task_desc_str": task_desc_str,  # subprompt
-                "input_str": query  # Ensure only one query is processed per call
+                "input_str": query,  # Ensure only one query is processed per call
             }
 
             # Call the generator for each query individually
@@ -113,7 +118,7 @@ class LLMRetriever(Retriever):
         prompt_kwargs = {
             "task_desc_str": task_desc_str,
         }
-        self.generator.system_prompt.print_prompt(**prompt_kwargs)
+        self.generator.prompt.print_prompt(**prompt_kwargs)
 
     def __call__(
         self,

@@ -114,7 +114,7 @@ class Generator(Component):
 
     #     As
     #     """
-    #     prompt_text = self.system_prompt.call(**kwargs)
+    #     prompt_text = self.prompt.call(**kwargs)
     #     return prompt_text
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:

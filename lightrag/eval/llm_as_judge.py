@@ -49,10 +49,6 @@ class DefaultLLMJudge(Component):
     Args:
         model_client (ModelClient): The model client to use for the generator.
         model_kwargs (Dict[str, Any], optional): The model kwargs to pass to the model client. Defaults to {}. Please refer to :ref:`ModelClient<components-model_client>` for the details on how to set the model_kwargs for your specific model if it is from our library.
-        template (Optional[str], optional): The template for the prompt.  Defaults to :ref:`DEFAULT_LLM_EVALUATOR_PROMPT<eval-llm_as_judge>`.
-        preset_prompt_kwargs (Optional[Dict], optional): The preset prompt kwargs to fill in the variables in the prompt. Defaults to None.
-        output_processors (Optional[Component], optional): The output processors after model call. Defaults to None.
-        trainable_params (Optional[List[str]], optional): The list of trainable parameters. Defaults to [].
     """
 
     def __init__(
