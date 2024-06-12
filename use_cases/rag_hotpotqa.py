@@ -4,14 +4,15 @@ import yaml
 
 from datasets import load_dataset
 
-from lightrag.core.generator import Generator
+from lightrag.core.generator import Generator, GeneratorOutput
 from lightrag.core.types import Document
 
 from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Sequential
-from lightrag.eval.evaluators import (
-    RetrieverEvaluator,
-    AnswerMacthEvaluator,
+from lightrag.core.component import Sequential, Component
+from lightrag.eval import (
+    RetrieverRecall,
+    RetrieverRelevance,
+    AnswerMatchAcc,
     LLMasJudge,
     DEFAULT_LLM_EVALUATOR_PROMPT,
 )
@@ -38,6 +39,55 @@ def get_supporting_sentences(
             sentence = context["sentences"][index][sent_id]
             extracted_sentences.append(sentence)
     return extracted_sentences
+
+
+LLM_EVALUATOR_PROMPT = r"""
+<<SYS>>{# task desc #}
+You are a helpful assistant.
+Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
+Output True or False according to the judgement query following this JSON format:
+{
+    "judgement": True
+}
+<</SYS>>
+---------------------
+{# question #}
+Question: {{question_str}}
+{# ground truth answer #}
+Ground truth answer: {{gt_answer_str}}
+{# predicted answer #}
+Predicted answer: {{pred_answer_str}}
+{# judgement question #}
+Judgement question: {{judgement_str}}
+{# assistant response #}
+You:
+"""
+
+
+class CustomizedLLMJudge(Component):
+    def __init__(self, model_kwargs: dict):
+        super().__init__()
+        self.model_kwargs = model_kwargs
+        self.llm_evaluator = Generator(
+            model_client=OpenAIClient(),
+            template=LLM_EVALUATOR_PROMPT,
+            output_processors=JsonParser(),
+            model_kwargs=model_kwargs,
+        )
+
+    def call(
+        self, question: str, pred_answer: str, gt_answer: str, judgement_query: str
+    ) -> bool:
+        prompt_kwargs = {
+            "question_str": question,
+            "gt_answer_str": gt_answer,
+            "pred_answer_str": pred_answer,
+            "judgement_str": judgement_query,
+        }
+        response: GeneratorOutput = self.llm_evaluator.call(prompt_kwargs=prompt_kwargs)
+        if not response.data:
+            raise ValueError("No data returned from the LLM evaluator.")
+        return response.data["judgement"] if "judgement" in response.data else None
 
 
 if __name__ == "__main__":
@@ -100,11 +150,12 @@ if __name__ == "__main__":
         print("====================================================")
 
     # Evaluate the retriever
-    retriever_evaluator = RetrieverEvaluator()
-    avg_recall, recall_list = retriever_evaluator.compute_recall(
+    retriever_recall = RetrieverRecall()
+    retriever_relevance = RetrieverRelevance()
+    avg_recall, recall_list = retriever_recall.compute(
         all_retrieved_context, all_gt_context
     )
-    avg_relevance, relevance_list = retriever_evaluator.compute_context_relevance(
+    avg_relevance, relevance_list = retriever_relevance.compute(
         all_retrieved_context, all_gt_context
     )
     print(f"Average recall: {avg_recall}")
@@ -113,35 +164,22 @@ if __name__ == "__main__":
     print(f"Relevance for each query: {relevance_list}")
 
     # Evaluate the generator
-    generator_evaluator = AnswerMacthEvaluator(type="fuzzy_match")
-    answer_match_acc, match_acc_list = generator_evaluator.compute_match_acc(
+    generator_evaluator = AnswerMatchAcc(type="fuzzy_match")
+    answer_match_acc, match_acc_list = generator_evaluator.compute(
         all_pred_answer, all_gt_answer
     )
     print(f"Answer match accuracy: {answer_match_acc}")
     print(f"Match accuracy for each query: {match_acc_list}")
     # Evaluate the generator using LLM as judge.
     # The task description and the judgement query can be customized.
-    llm_evaluator = Generator(
-        model_client=OpenAIClient,
-        template=DEFAULT_LLM_EVALUATOR_PROMPT,
-        output_processors=JsonParser(),
-        preset_prompt_kwargs={
-            "task_desc_str": r"""
-                You are a helpful assistant.
-                Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.
-                Output True or False according to the judgement query following this JSON format:
-                {
-                    "judgement": True
-                }
-                """
-        },
-        model_kwargs=settings["llm_evaluator"],
+
+    llm_judge = LLMasJudge(
+        llm_evaluator=CustomizedLLMJudge(model_kwargs=settings["llm_evaluator"])
     )
-    llm_judge = LLMasJudge(llm_evaluator)
     judgement_query = (
         "For the question, does the predicted answer contain the ground truth answer?"
     )
-    avg_judgement, judgement_list = llm_judge.compute_judgement(
+    avg_judgement, judgement_list = llm_judge.compute(
         all_questions, all_pred_answer, all_gt_answer, judgement_query
     )
     print(f"Average judgement: {avg_judgement}")

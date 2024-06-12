@@ -16,7 +16,7 @@ from lightrag.components.model_client import (
     AnthropicAPIClient,
 )
 from lightrag.core.prompt_builder import Prompt
-from lightrag.components.output_parsers import YAMLOutputParser
+from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.core.string_parser import JsonParser
 
 from lightrag.tracing import trace_generator_states, trace_generator_call
@@ -69,11 +69,11 @@ class InputFormat(DataClass):
     question: str = field(metadata={"desc": "The question to classify"})
 
     @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data: Dict[str, Any]):
         # customize to convert data item from a dataset into input data object
         # "text" -> "question"
         data = {"question": data["text"]}
-        return super().load_from_dict(data)
+        return super().from_dict(data)
 
 
 # @dataclass
@@ -87,13 +87,13 @@ class OutputFormat(DataClass):
     class_index: int = field(metadata={"desc": "class_index in range[0, 5]"})
 
     @classmethod
-    def load_from_dict(cls, data: Dict[str, Any]):
+    def from_dict(cls, data: Dict[str, Any]):
         data = {
             "thought": None,
             "class_index": data["coarse_label"],
             "class_name": _COARSE_LABELS_DESC[data["coarse_label"]],
         }
-        return super().load_from_dict(data)
+        return super().from_dict(data)
 
 
 def get_tracing_path():
@@ -140,7 +140,7 @@ class TRECClassifier(Component):
         #         },
         #     }
         # ]
-        yaml_parser = YAMLOutputParser(
+        yaml_parser = YamlOutputParser(
             data_class=OutputFormat,  # example=output_example
         )
         # output_str = OutputFormat.to_json_signature()

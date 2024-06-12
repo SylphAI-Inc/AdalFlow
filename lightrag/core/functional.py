@@ -2,7 +2,8 @@
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Type
+from typing import Dict, Any, Callable, Type, Union, List
+import numpy as np
 import re
 import json
 
@@ -25,6 +26,29 @@ def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict
     if model_kwargs:
         pass_model_kwargs.update(model_kwargs)
     return pass_model_kwargs
+
+
+VECTOR_TYPE = Union[List[float], np.ndarray]
+
+
+def is_normalized(v: VECTOR_TYPE, tol=1e-6) -> bool:
+    if isinstance(v, list):
+        v = np.array(v)
+    # Compute the norm of the vector (assuming v is 1D)
+    norm = np.linalg.norm(v)
+    # Check if the norm is approximately 1
+    return np.abs(norm - 1) < tol
+
+
+def normalize_vector(v: VECTOR_TYPE) -> List[float]:
+    if isinstance(v, list):
+        v = np.array(v)
+    # Compute the norm of the vector (assuming v is 1D)
+    norm = np.linalg.norm(v)
+    # Normalize the vector
+    normalized_v = v / norm
+    # Return the normalized vector as a list
+    return normalized_v.tolist()
 
 
 # import hashlib

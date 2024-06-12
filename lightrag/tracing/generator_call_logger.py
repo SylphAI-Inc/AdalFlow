@@ -102,7 +102,7 @@ class GeneratorCallLogger:
             raise FileNotFoundError(f"Generator {name} is not registered.")
 
         records: List[Dict] = load_jsonl(self._generator_names_to_files[name])
-        return [GeneratorCallRecord.load_from_dict(record) for record in records]
+        return [GeneratorCallRecord.from_dict(record) for record in records]
 
     def log_call(
         self,

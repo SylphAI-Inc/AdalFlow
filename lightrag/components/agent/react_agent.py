@@ -237,7 +237,7 @@ class ReActAgent(Generator):
             for tool in self.tools
         ]
         # pass the tools to the prompt
-        self.system_prompt.update_preset_prompt_kwargs(tools=self.tools)
+        self.prompt.update_preset_prompt_kwargs(tools=self.tools)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []

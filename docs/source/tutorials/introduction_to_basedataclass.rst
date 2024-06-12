@@ -161,7 +161,7 @@ Developers should select schema or signature depends on the use case.
 **3. Load Data from Dictionary**
 
 If developers want to load data from a dictionary to a certain data class, they can run:
-``loaded_example = MyOutputs.load_from_dict({"age":10, "name":"Harry"})``.
+``loaded_example = MyOutputs.from_dict({"age":10, "name":"Harry"})``.
 
 (For details, please refer to :class:`core.base_data_class.BaseDataClass`.)
 

@@ -45,8 +45,8 @@ class BootstrapFewShot(Optimizer):
             augmented_samples: List[Sample] = []
             for sample in samples:
                 sample_data = sample.data
-                input_obj = self.task_input_dataclass.load_from_dict(sample.data)
-                output_obj = self.task_output_dataclass.load_from_dict(sample.data)
+                input_obj = self.task_input_dataclass.from_dict(sample.data)
+                output_obj = self.task_output_dataclass.from_dict(sample.data)
                 augmented_output_obj: Dict = self.llm_augmenter(input_obj, output_obj)
                 # update the fields in the output_obj
                 for key, value in augmented_output_obj.items():
