@@ -25,7 +25,11 @@ LightRAG's Implementation
 -----------------------------------------------------
 Next, let's look at how ``LightRAG`` makes the implementation convenient. In ``LightRAG``, the ReAct agent is a type of :ref:`generator` that runs multiple sequential steps to generate the final response, with designed prompt, external functions(named as ``tools``) and ``JsonParser output_processors``.
 
-1. **Prompt:** We have a easy-to-customizable prompt template designed for ReAct agent that takes in the tools, examples, and context(step history), etc. :ref:`Prompt <DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
+1. **Prompt:** We have a easy-to-customizable prompt template designed for ReAct agent that takes in 
+``tools``, few shot ``examples``, ``history``, and ``user query``. 
+The ``history`` will be automatically managed by the agent. ``user query`` will be handled in each single turn. 
+Hence when initializing an agent, we only need to set up the ``tools`` and the ``examples`` in the ``preset_prompt_kwargs`` for the system prompt and 
+use ``user query`` in each agent call. :ref:`Prompt <DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
 
 2. **Tools:** ReAct Agent needs to plan the tool to use, which means it needs to access the tools' descriptions. 
 ``LightRAG`` provides dynamic tool handling, using ``FunctionTool`` to encapsulate tool functionalities. The metadata(function name, description, and parameters) will be extracted and passed to the prompt automatically. This process not only makes tool integration more seamless but also enhances developer efficiency by allowing straightforward definition and management of tools.
@@ -68,7 +72,7 @@ Here is the example to illustrate the usage of ``FunctionTool``. It's easy to se
 
 The agent will then call these external functions based on the function descriptions.
 In addition to user-defined tools, the :class:`ReActAgent <components.agent.react_agent.ReActAgent>` built-in ``llm_tool``
-for leveraging LLM's internal knowledge, and ``finish`` for completing processes. Developers have the flexibility to enable or disable these as needed.
+for leveraging LLM's internal knowledge, and ``finish`` for completing processes. ``llm_tool`` uses the same model with the agent. Developers have the flexibility to enable or disable these as needed.
 
 3. **Output Parser:** ``LightRAG`` requests the model to output intermediate Thought and Action as JSON, which facilitates better error handling and easier data manipulation than strings. For example,
     

@@ -28,6 +28,7 @@ from lightrag.core.generator import Generator
 from lightrag.core.component import Component
 from lightrag.core.tool_helper import FunctionTool, AsyncCallable
 from lightrag.core.string_parser import JsonParser, parse_function_call
+from lightrag.core.generator import GeneratorOutput
 
 from lightrag.core.model_client import ModelClient
 
@@ -214,7 +215,10 @@ class ReActAgent(Generator):
             # use the generator to answer the query
             prompt_kwargs = {"input_str": input} # wrap the query input in the local prompt_kwargs
             try:
-                return self.additional_llm_tool.call(prompt_kwargs=prompt_kwargs)
+                response =  self.additional_llm_tool.call(prompt_kwargs=prompt_kwargs)
+                json_response = response.data if isinstance(response, GeneratorOutput) else response # get json data from GeneratorOutput
+                # print(f"response: {response}, json_response: {json_response}")
+                return json_response
             except Exception as e:
                 print(f"Error using the generator: {e}")
 
@@ -269,7 +273,7 @@ class ReActAgent(Generator):
         action = action_step.action
         try:
             fun_name, args, kwargs = parse_function_call(action, self.tools_map)
-            print(f"fun_name: {fun_name}, args: {args}, kwargs: {kwargs}")
+            # print(f"fun_name: {fun_name}, args: {args}, kwargs: {kwargs}")
             fun: Union[Callable, AsyncCallable] = self.tools_map[fun_name].fn
             result = fun(*args, **kwargs)
             action_step.fun_name = fun_name
@@ -298,7 +302,10 @@ class ReActAgent(Generator):
         response = super().call(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         ) # response is GeneratorOutput
-        json_response = response.data # get json response data from generator output
+        
+        # get json response data from generator output
+        json_response = response.data if isinstance(response, GeneratorOutput) else response
+            
         parsed_response = self._parse_text_response(
             json_obj_response=json_response, step=step
         )
