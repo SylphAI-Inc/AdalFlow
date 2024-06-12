@@ -116,8 +116,8 @@ Core functionals
      - Parse the output string to structured data.
    * - :doc:`tool_helper`
      - Provide tools to interact with the generator.
-   * - :doc:`document_splitter`
-     - For embedder and retriever to split the document.
+   * - :doc:`text_splitter`
+     - To split long text into smaller chunks to fit into the token limits of embedder and generator.
    * - :doc:`memory`
      - Store the history of the conversation.
 
@@ -125,6 +125,8 @@ Core functionals
 
 .. toctree::
    :maxdepth: 1
+
+   text_splitter
 
 
 Advanced Components

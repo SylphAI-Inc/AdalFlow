@@ -78,7 +78,8 @@ Run the embedder and print the length and embedding dimension of the output.
     print(output.length, output.embedding_dim, output.is_normalized)
     # 1 256 True
 
-** Embed batch queries**:
+
+**Embed batch queries**:
 
 .. code-block:: python
 
@@ -126,6 +127,7 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
     from typing import List
     from lightrag.core.component import Component
     from copy import deepcopy
+    
     class DecreaseEmbeddingDim(Component):
         def __init__(self, old_dim: int, new_dim: int,  normalize: bool = True):
             super().__init__()
