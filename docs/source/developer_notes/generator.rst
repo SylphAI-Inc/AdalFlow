@@ -20,6 +20,14 @@ Different from all other components, we can not alway enforce LLM to output the 
 We in particular created a :class:`core.types.GeneratorOutput` (a subclass of ``DataClass``) to store `data` (parsed response), `error` (error message if either the model inference SDKs fail or the output parsing fail) and `raw_response` (raw string response for reference) for any LLM predictions.
 It is in developers' hands to process the output accordingly. 
 
+GeneratorInAction
+^^^^^^^^^^^^^^^^^
+Beside of these examples, LLM is like water, even in our library, we have components that have adpated Generator to other various functionalities.
+
+- :class:`components.retriever.llm_retriever.LLMRetriever` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.
+- :class:`eval.llm_as_judge.DefaultLLMJudge` is a judge that uses Generator to call LLM to evaluate the quality of the response.
+- :class:`optim.llm_optimizer.LLMOptimizer` is an optimizer that uses Generator to call LLM to optimize the prompt.
+
 Tracing
 ^^^^^^^^^^^
 In particular, we provide two tracing methods to help you develop and improve the Generator:

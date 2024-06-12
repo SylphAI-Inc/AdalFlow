@@ -28,6 +28,7 @@ import lightrag.core
 import lightrag.eval
 import lightrag.utils
 import lightrag.tracing
+import lightrag.optim
 
 # -- Project information -----------------------------------------------------
 
