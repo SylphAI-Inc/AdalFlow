@@ -44,6 +44,7 @@ Building
 
 Base classes
 ---------------
+Code path: ``lightrag.core``.
 
 .. list-table::
    :widths: 20 80
@@ -67,13 +68,11 @@ Base classes
 
 Core Components
 -------------------
-.. In the core, lies our ``Generator``, it orchestrates three components: (1) Model Client, (2) Prompt, and (3) Output Processors.
-  
-.. Assisted with ``DataClass`` for input and output data formating.
+Code path: ``lightrag.core``. For abstract classes:
 
-.. With generator being in the center, all things are built around it via the prompt.
-.. - Retriever  (Enhance Generator to be more factual and less hallucination), provide `context_str` in prompt.
-.. - 
+- ``ModelClient``: the functional subclass is in ``lightrag.components.model_client``.
+- ``Retriever``: the functional subclass is in ``lightrag.components.retriever``.
+
 
 .. list-table::
    :widths: 20 80
@@ -91,7 +90,10 @@ Core Components
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
      - The base class for all retrievers who in particular retrieve documents from a given database.
+   * - :doc:`text_splitter`
+     - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
 
+Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
 .. toctree::
    :maxdepth: 1
@@ -102,9 +104,12 @@ Core Components
    generator
    embedder
    retriever
+   text_splitter
+   rag
 
 Core functionals
 -------------------
+Code path: ``lightrag.core``
 
 .. list-table::
    :widths: 20 80
@@ -116,17 +121,16 @@ Core functionals
      - Parse the output string to structured data.
    * - :doc:`tool_helper`
      - Provide tools to interact with the generator.
-   * - :doc:`text_splitter`
-     - To split long text into smaller chunks to fit into the token limits of embedder and generator.
+
    * - :doc:`memory`
      - Store the history of the conversation.
 
 
 
-.. toctree::
-   :maxdepth: 1
+.. .. toctree::
+..    :maxdepth: 1
+..    :hidden:
 
-   text_splitter
 
 
 Advanced Components
@@ -135,6 +139,7 @@ Advanced Components
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    agent
 

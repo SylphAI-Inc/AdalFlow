@@ -1,4 +1,4 @@
-Text Splitter
+TextSplitter
 ===================
 .. admonition:: Author
    :class: highlight

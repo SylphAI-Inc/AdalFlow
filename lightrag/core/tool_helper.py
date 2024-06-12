@@ -6,8 +6,6 @@ This helps to standardize the tool interface and metadata to communicate with th
 from typing import Any, Optional, Dict, Callable, Awaitable
 from inspect import iscoroutinefunction, signature, Parameter
 
-# from pydantic import BaseModel
-# TODO: remove BaseModel, ensure code is working
 from abc import ABC, abstractmethod
 import json
 

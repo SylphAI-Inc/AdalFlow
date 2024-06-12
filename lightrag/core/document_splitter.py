@@ -89,8 +89,6 @@ class DocumentSplitter(Component):
         :raises ValueError: if the content of a document is None.
         """
 
-        print(f"start to split documents")
-
         if not isinstance(documents, list) or (
             documents and not isinstance(documents[0], Document)
         ):
@@ -114,7 +112,6 @@ class DocumentSplitter(Component):
                 )
                 for i, txt in enumerate(text_splits)
             ]
-        print(f"splitted_doc: {split_docs}")
         return split_docs
 
     def _split_into_units(
@@ -153,6 +150,36 @@ class DocumentSplitter(Component):
                 text_splits.append(txt)
         return text_splits
 
-    def extra_repr(self) -> str:
+    def _extra_repr(self) -> str:
         s = f"split_by={self.split_by}, split_length={self.split_length}, split_overlap={self.split_overlap}"
         return s
+
+
+if __name__ == "__main__":
+    # Test
+    doc1 = Document(text="This is a test document. It is a long document.")
+    doc2 = Document(text="This is another test document. It is also a long document.")
+    splitter = DocumentSplitter(split_by="sentence", split_length=4, split_overlap=1)
+    print(splitter)
+    # print(splitter([doc1, doc2]))
+    # # Output: [
+    # #     Document(text='This is a test document.', meta_data={}, parent_doc_id='0', order=0, vector=[]),
+    # #     Document(text='It is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
+    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
+    # #     Document(text='It is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])
+    # # ]
+    # splitter = DocumentSplitter(split_by="word", split_length=5, split_overlap=2)
+    # print(splitter([doc1, doc2]))
+    # # Output: [
+    # #     Document(text='This is a test document. It', meta_data={}, parent_doc_id='0', order=0, vector=[]),
+    # #     Document(text='is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
+    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
+    # #     Document(text='is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])
+    # # ]
+    # splitter = DocumentSplitter(split_by="page", split_length=1, split_overlap=0)
+    # print(splitter([doc1, doc2]))
+    # # Output: [
+    # #     Document(text='This is a test document.', meta_data={}, parent_doc_id='0', order=0, vector=[]),
+    # #     Document(text=' It is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
+    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
+    # #     Document(text=' It is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])
