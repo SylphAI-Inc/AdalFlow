@@ -23,13 +23,14 @@ Then it takes actions to utilize external resources(action). For more details, p
 
 LightRAG's Implementation
 -----------------------------------------------------
-Next, let's look at how ``LightRAG`` make the implementation convenient. In ``LightRAG``, the ReAct agent is a type of :ref:`generator` that runs multiple sequential steps to generate the final response, with designed prompt and ``JsonParser output_processors``.
+Next, let's look at how ``LightRAG`` makes the implementation convenient. In ``LightRAG``, the ReAct agent is a type of :ref:`generator` that runs multiple sequential steps to generate the final response, with designed prompt, external functions(named as ``tools``) and ``JsonParser output_processors``.
 
-1. We have a easy-to-customizable prompt template designed for ReAct agent that takes in the tools, examples, and context(step history), etc. :ref:`Prompt <DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
+1. **Prompt:** We have a easy-to-customizable prompt template designed for ReAct agent that takes in the tools, examples, and context(step history), etc. :ref:`Prompt <DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
 
-2. We provide dynamic tool handling, using ``FunctionTool`` to encapsulate tool functionalities. We extract and pass the metadata(function name, description, and parameters) to the prompt automatically. This process not only makes tool integration more seamless but also enhances developer efficiency by allowing straightforward definition and management of tools.
+2. **Tools:** ReAct Agent needs to plan the tool to use, which means it needs to access the tools' descriptions. 
+``LightRAG`` provides dynamic tool handling, using ``FunctionTool`` to encapsulate tool functionalities. The metadata(function name, description, and parameters) will be extracted and passed to the prompt automatically. This process not only makes tool integration more seamless but also enhances developer efficiency by allowing straightforward definition and management of tools.
 
-Here is the example to illustrate the functionalities of ``FunctionTool``.
+Here is the example to illustrate the usage of ``FunctionTool``. It's easy to set up using ``from_defaults``.
 
 .. code-block:: python
 
@@ -65,11 +66,11 @@ Here is the example to illustrate the functionalities of ``FunctionTool``.
     # Add two numbers.
     # Function parameter: {"type": "object", "properties": {"a": {"type": "int"}, "b": {"type": "int"}}, "required": ["a", "b"]}
 
-The agent will call these external functions based on the function descriptions.
-In addition to user-defined tools, ``FunctionTool`` supports essential built-in ``llm_tool``
+The agent will then call these external functions based on the function descriptions.
+In addition to user-defined tools, the :class:`ReActAgent <components.agent.react_agent.ReActAgent>` built-in ``llm_tool``
 for leveraging LLM's internal knowledge, and ``finish`` for completing processes. Developers have the flexibility to enable or disable these as needed.
 
-3. ``LightRAG`` requests the model to output intermediate Thought and Action as JSON, which facilitates better error handling and easier data manipulation than strings. For example,
+3. **Output Parser:** ``LightRAG`` requests the model to output intermediate Thought and Action as JSON, which facilitates better error handling and easier data manipulation than strings. For example,
     
 .. code-block:: json
     
@@ -81,7 +82,7 @@ for leveraging LLM's internal knowledge, and ``finish`` for completing processes
 This format allows the ``LightRAG`` JSON parser to efficiently decode the model's output and extract arguments. 
 The parsed data is then utilized by the ``StepOutput`` class to manage the flow of thought, action and observation.
 
-Let's see a Q&A agent example:
+4. **Example:** Let's see a Q&A agent example:
 
 .. code-block:: python
 
@@ -107,13 +108,13 @@ Let's see a Q&A agent example:
             FunctionTool.from_defaults(fn=add),
         ]
 
-    for tool in tools:
-        name = tool.metadata.name
-        description = tool.metadata.description
-        parameter = tool.metadata.fn_schema_str
-        print(f"Function name: {name}")
-        print(f"Function description: {description}")
-        print(f"Function parameter: {parameter}")
+    # for tool in tools:
+    #    name = tool.metadata.name
+    #    description = tool.metadata.description
+    #    parameter = tool.metadata.fn_schema_str
+    #    print(f"Function name: {name}")
+    #    print(f"Function description: {description}")
+    #    print(f"Function parameter: {parameter}")
         
         
     examples = [
@@ -150,7 +151,7 @@ Let's see a Q&A agent example:
     # Answer: The answer is 7.
     # Answer: The answer is 27.
 
-4. Moreover, in our design, the agent will potentially divide a query into subqueries, join all subqueries answers and finish the task. Developers can customize the prompt depending on the use cases.
+5. **Subquery and History:** Moreover, in our design, the agent will potentially divide a query into subqueries, join all subqueries answers and finish the task. Developers can customize the prompt depending on the use cases.
 The intermediate step history is managed. The agent will visit its previous reasoning, action and observations before making decisions.
 
 .. _deep-dive:
