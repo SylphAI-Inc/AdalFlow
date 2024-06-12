@@ -1,3 +1,5 @@
+.. _generator:
+
 Generator 
 =========
 The Center of it All 

@@ -1,5 +1,7 @@
 """
-https://arxiv.org/abs/2210.03629, published in Mar, 2023
+ReAct Agent leveraging LLM reasoning and function calling.
+
+Source: https://arxiv.org/abs/2210.03629, published in Mar, 2023
 
 Agent is not a model or LLM model.
 Agent is better defined as a system that uses LLM models to plan and replan steps that each involves the usage of various tools,
@@ -7,7 +9,7 @@ such as function calls, another LLM model based on the context and history (memo
 
 The future: the agent can write your prompts too. Check out dspy: https://github.com/stanfordnlp/dspy
 
-REact agent can be useful for
+ReAct agent can be useful for
 - Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
 - Plan the usage of the given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools.
 
@@ -22,12 +24,12 @@ from dataclasses import dataclass
 from copy import deepcopy
 
 
-from core.generator import Generator
-from core.component import Component
-from core.tool_helper import FunctionTool, AsyncCallable
-from core.string_parser import JsonParser, parse_function_call
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
+from lightrag.core.tool_helper import FunctionTool, AsyncCallable
+from lightrag.core.string_parser import JsonParser, parse_function_call
 
-from core.model_client import ModelClient
+from lightrag.core.model_client import ModelClient
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
@@ -84,6 +86,10 @@ Step {{history.step}}:
 }
 "observation": "{{history.observation}}"
 {% endfor %}
+{% if input_str %}
+User query:
+{{ input_str }}
+{% endif %}
 """
 
 
@@ -116,33 +122,59 @@ class ReActAgent(Generator):
     There are `examples` which is optional, a list of string examples in the prompt.
 
     Example:
-    ```
-    from core.openai_client import OpenAIClient
-    from components.agent.react_agent import ReActAgent
-    from core.tool_helper import FunctionTool
-    # define the tools
-    def multiply(a: int, b: int) -> int:
-        '''Multiply two numbers.'''
-        return a * b
-    def add(a: int, b: int) -> int:
-        '''Add two numbers.'''
-        return a + b
-    agent = ReActAgent(
-    tools=[multiply, add],
-    model_client=OpenAIClient,
-    model_kwargs={"model": "gpt-3.5-turbo"},
-    )
+        .. code-block:: python
+        
+            from lightrag.core.tool_helper import FunctionTool
+            from lightrag.components.agent.react_agent import ReActAgent
+            from lightrag.components.model_client import GroqAPIClient
 
-    Using examples:
+            import time
+            import dotenv
+            # load evironment
+            dotenv.load_dotenv(dotenv_path=".env", override=True)
 
-    preset_prompt_kwargs = {"examples": examples}
-    agent = ReActAgent(
-    tools=[multiply, add],
-    model_client=OpenAIClient,
-    model_kwargs={"model": "gpt-3.5-turbo"},
-    preset_prompt_kwargs=preset_prompt_kwargs,
-    )
-    ```
+            # define the tools
+            def multiply(a: int, b: int) -> int:
+                '''Multiply two numbers.'''
+                return a * b
+            def add(a: int, b: int) -> int:
+                '''Add two numbers.'''
+                return a + b
+            
+            tools = [
+                FunctionTool.from_defaults(fn=multiply),
+                FunctionTool.from_defaults(fn=add),
+            ]
+            
+            # set up examples
+            examples = [
+                "your example, a human-like task-solving trajectory"
+            ]
+            # preset examples in the prompt
+            preset_prompt_kwargs = {"example": examples}
+            
+            # set up llm args
+            llm_model_kwargs = {
+                "model": "llama3-70b-8192",
+                "temperature": 0.0
+            }
+            
+            # initialze an agent
+            agent = ReActAgent(
+                tools=tools,
+                model_client=GroqAPIClient(),
+                model_kwargs=llm_model_kwargs,
+                max_steps=3,
+                preset_prompt_kwargs=preset_prompt_kwargs
+            )
+            
+            # query the agent
+            queries = ["What is 3 add 4?", "3*9=?"]
+            average_time = 0
+            for query in queries:
+                t0 = time.time()
+                answer = agent(query)
+        
     """
 
     def __init__(
@@ -177,11 +209,12 @@ class ReActAgent(Generator):
 
         def llm_tool(input: str) -> str:
             """
-            I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple.
+            Answer any input query with llm's world knowledge. Use it as a fallback tool or when the query is simple.
             """
             # use the generator to answer the query
+            prompt_kwargs = {"input_str": input} # wrap the query input in the local prompt_kwargs
             try:
-                return self.additional_llm_tool(input=input)
+                return self.additional_llm_tool.call(prompt_kwargs=prompt_kwargs)
             except Exception as e:
                 print(f"Error using the generator: {e}")
 
@@ -252,7 +285,7 @@ class ReActAgent(Generator):
             return action_step
 
     def _run_one_step(
-        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs: Dict
+        self, step: int, prompt_kwargs: Dict, model_kwargs: Dict
     ) -> str:
         """
         Run one step of the agent.
@@ -263,10 +296,11 @@ class ReActAgent(Generator):
 
         # call the super class Generator to get the response
         response = super().call(
-            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
-        )
+            prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+        ) # response is GeneratorOutput
+        json_response = response.data # get json response data from generator output
         parsed_response = self._parse_text_response(
-            json_obj_response=response, step=step
+            json_obj_response=json_response, step=step
         )
         # execute the action
         if parsed_response and parsed_response.action:
@@ -280,14 +314,16 @@ class ReActAgent(Generator):
     def call(
         self,
         input: str,
-        promt_kwargs: Optional[Dict] = {},
+        prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
     ) -> Any:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
+        # wrap up the input in the prompt_kwargs
+        prompt_kwargs["input_str"] = input
         for i in range(self.max_steps):
             step = i + 1
             try:
-                self._run_one_step(input, step, promt_kwargs, model_kwargs)
+                self._run_one_step(step, prompt_kwargs, model_kwargs)
                 if (
                     self.step_history[-1].fun_name
                     and self.step_history[-1].fun_name == "finish"
@@ -309,81 +345,64 @@ class ReActAgent(Generator):
 
 
 if __name__ == "__main__":
-    from components.model_client import GroqAPIClient
-    import utils.setup_env
+    from lightrag.components.model_client import GroqAPIClient
+    import time
+    
+    import dotenv
+    # load evironment
+    dotenv.load_dotenv(dotenv_path=".env", override=True)
 
+    # define the tools
     def multiply(a: int, b: int) -> int:
-        """
-        Multiply two numbers.
-        """
+        '''Multiply two numbers.'''
         return a * b
-
     def add(a: int, b: int) -> int:
-        """
-        Add two numbers.
-        """
+        '''Add two numbers.'''
         return a + b
-
-    def search(query: str) -> str:
-        """
-        Search the web for the given query.
-        """
-        return "python programming is a great way to learn programming"
-
+    
     tools = [
         FunctionTool.from_defaults(fn=multiply),
         FunctionTool.from_defaults(fn=add),
-        # FunctionTool.from_defaults(fn=search),
     ]
-    llm_model_kwargs = {
-        "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
-        # mistral also not good: mixtral-8x7b-32768, but with better prompt, it can still work
-        "temperature": 0.0,
-    }
-
+    
+    # set up examples
     examples = [
-        # r"""
-        # User: What is 9 - 3?
-        # You: {
-        #     "thought": "I need to subtract 3 from 9, but there is no subtraction tool, so I ask llm_tool to answer the query.",
-        #     "action": "llm_tool('What is 9 - 3?')"
-        # }
-        # """
+        r"""
+        User: What is 9 - 3?
+        You: {
+            "thought": "I need to subtract 3 from 9, but there is no subtraction tool, so I ask llm_tool to answer the query.",
+            "action": "llm_tool('What is 9 - 3?')"
+        }
+        """
     ]
+    # preset examples in the prompt
+    preset_prompt_kwargs = {"example": examples}
+    
+    # set up llm args
+    llm_model_kwargs = {
+        "model": "llama3-70b-8192",
+        "temperature": 0.0
+    }
+    
+    # initialze an agent
     agent = ReActAgent(
-        # examples=examples,
         tools=tools,
-        max_steps=5,
-        model_client=GroqAPIClient,
+        model_client=GroqAPIClient(),
         model_kwargs=llm_model_kwargs,
+        max_steps=3,
+        preset_prompt_kwargs=preset_prompt_kwargs
     )
-    print(agent)
-    queries = [
-        # "What is 2 times 3?",
-        # "What is 3 plus 4?",
-        # "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
-        "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?",
-    ]
-    """
-    Results: mixtral-8x7b-32768, 0.9s per query
-    llama3-70b-8192, 1.8s per query
-    gpt-3.5-turbo, 2.2s per query
-    """
-    import time
+    
+    # query the agent
+    queries = ["What is 3 add 4?", "3*9=?"]
+    average_time = 0
+    for query in queries:
+        t0 = time.time()
+        answer = agent(query)
+        average_time += time.time() - t0
+        print(f"Answer: {answer}")
+    print(f"Average time: {average_time / len(queries)}")
 
-    for i in range(3):
-        agent = ReActAgent(
-            tools=tools,
-            max_steps=5,
-            model_client=GroqAPIClient,
-            model_kwargs=llm_model_kwargs,
-        )
-    print(agent.tools)
-
-    # average_time = 0
-    # for query in queries:
-    #     t0 = time.time()
-    #     answer = agent(query)
-    #     average_time += time.time() - t0
-    #     print(f"Answer: {answer}")
-    # print(f"Average time: {average_time / len(queries)}")
+"""
+GroqAPI(llama3-70b-8192) average time for simple queries in the example = 0.86s
+"""

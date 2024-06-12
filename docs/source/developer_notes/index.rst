@@ -134,8 +134,8 @@ Advanced Components
 .. toctree::
    :maxdepth: 1
 
-   agent
-
+  agent
+  react_agent_xy
    
  
 
