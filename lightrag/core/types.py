@@ -128,6 +128,98 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     )
 
 
+class Document(DataClass):
+    r"""A text container with optional metadata and vector representation.
+    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
+    """
+
+    text: str = field(metadata={"desc": "The main text"})
+
+    meta_data: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Metadata for the document"}
+    )
+    # can save data for filtering at retrieval time too
+    vector: List[float] = field(
+        default_factory=list,
+        metadata={"desc": "The vector representation of the document"},
+    )
+    # the vector representation of the document
+
+    id: Optional[str] = field(
+        default_factory=lambda: str(uuid.uuid4()), metadata={"desc": "Unique id"}
+    )  # unique id of the document
+    order: Optional[int] = field(
+        default=None,
+        metadata={"desc": "Order of the chunked document in the original document"},
+    )
+
+    score: Optional[float] = field(
+        default=None,
+        metadata={"desc": "Score of the document, likely used in retrieval output"},
+    )
+    parent_doc_id: Optional[Union[str, UUID]] = field(
+        default=None, metadata={"desc": "id of the Document where the chunk is from"}
+    )
+
+    estimated_num_tokens: Optional[int] = field(
+        default=None,
+        metadata={
+            "desc": "Estimated number of tokens in the text, useful for cost estimation"
+        },
+    )
+
+    def __post_init__(self):
+        if self.estimated_num_tokens is None and self.text:
+            tokenizer = Tokenizer()
+            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+
+    @classmethod
+    def from_dict(cls, doc: Dict):
+        doc = doc.copy()
+        assert "meta_data" in doc, "meta_data is required"
+        assert "text" in doc, "text is required"
+        if "estimated_num_tokens" not in doc:
+            tokenizer = Tokenizer()
+            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
+        if "id" not in doc:
+            doc["id"] = uuid.uuid4()
+
+        return super().from_dict(doc)
+
+    def __repr__(self) -> str:
+        # TODO: repr only those non empty fields
+        repr_str = "Document("
+        if self.id:
+            repr_str += f"id={self.id}, "
+        if self.text:
+            repr_str += f"text={self.text[0:]}, "
+        if self.meta_data:
+            repr_str += f"meta_data={self.meta_data}, "
+        if self.estimated_num_tokens:
+            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
+
+        if self.vector:
+            repr_str += f"vector={self.vector[0:10]}..., "
+        if self.score:
+            repr_str += f"score={self.score}, "
+        if self.parent_doc_id:
+            repr_str += f"parent_doc_id={self.parent_doc_id}, "
+        repr_str = repr_str[:-2] + ")"
+        return repr_str
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class RetrieverOutput(DataClass):
+    r"""Mainly used to retrieve a list of documents with scores."""
+
+    doc_indexes: List[int]  # either index or ids potentially
+    doc_scores: Optional[List[float]] = None
+    query: Optional[str] = None
+    documents: Optional[List[Document]] = None  # TODO: documents can be of any time
+
+
 @dataclass
 class UserQuery:
     query_str: str
@@ -253,96 +345,3 @@ class DialogSession:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
-
-
-class Document(DataClass):
-    r"""A text container with optional metadata and vector representation.
-    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
-    """
-
-    text: str = field(metadata={"desc": "The main text"})
-
-    meta_data: Optional[Dict[str, Any]] = field(
-        default=None, metadata={"desc": "Metadata for the document"}
-    )
-    # can save data for filtering at retrieval time too
-    vector: List[float] = field(
-        default_factory=list,
-        metadata={"desc": "The vector representation of the document"},
-    )
-    # the vector representation of the document
-
-    id: Optional[str] = field(
-        default_factory=lambda: str(uuid.uuid4()), metadata={"desc": "Unique id"}
-    )  # unique id of the document
-    order: Optional[int] = field(
-        default=None,
-        metadata={"desc": "Order of the chunked document in the original document"},
-    )
-
-    score: Optional[float] = field(
-        default=None,
-        metadata={"desc": "Score of the document, likely used in retrieval output"},
-    )
-    parent_doc_id: Optional[Union[str, UUID]] = field(
-        default=None, metadata={"desc": "id of the Document where the chunk is from"}
-    )
-
-    estimated_num_tokens: Optional[int] = field(
-        default=None,
-        metadata={
-            "desc": "Estimated number of tokens in the text, useful for cost estimation"
-        },
-    )
-
-    def __post_init__(self):
-        if self.estimated_num_tokens is None and self.text:
-            tokenizer = Tokenizer()
-            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
-
-    @classmethod
-    def from_dict(cls, doc: Dict):
-        doc = doc.copy()
-        assert "meta_data" in doc, "meta_data is required"
-        assert "text" in doc, "text is required"
-        if "estimated_num_tokens" not in doc:
-            tokenizer = Tokenizer()
-            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
-        if "id" not in doc:
-            doc["id"] = uuid.uuid4()
-
-        return super().from_dict(doc)
-
-    def __repr__(self) -> str:
-        # TODO: repr only those non empty fields
-        repr_str = "Document("
-        if self.id:
-            repr_str += f"id={self.id}, "
-        if self.text:
-            repr_str += f"text={self.text[0:]}, "
-        if self.meta_data:
-            repr_str += f"meta_data={self.meta_data}, "
-        if self.estimated_num_tokens:
-            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
-
-        if self.vector:
-            repr_str += f"vector={self.vector[0:10]}..., "
-        if self.score:
-            repr_str += f"score={self.score}, "
-        if self.parent_doc_id:
-            repr_str += f"parent_doc_id={self.parent_doc_id}, "
-        repr_str = repr_str[:-2] + ")"
-        return repr_str
-
-    def __str__(self):
-        return self.__repr__()
-
-
-@dataclass
-class RetrieverOutput:
-    r"""Mainly used to retrieve a list of documents with scores."""
-
-    doc_indexes: List[int]  # either index or ids potentially
-    doc_scores: Optional[List[float]] = None
-    query: Optional[str] = None
-    documents: Optional[List[Document]] = None

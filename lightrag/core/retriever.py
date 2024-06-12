@@ -2,18 +2,20 @@ r"""
 The base class for all retrievers who in particular retrieve documents from a given database.
 """
 
-from typing import List, Optional, Union, Any
+from typing import List, Optional, Union, Generic, TypeVar, Sequence
 
 
 from lightrag.core.component import Component
 from lightrag.core.types import RetrieverOutput
 
 RetrieverInputType = Union[str, List[str]]  # query
-RetrieverDocumentType = Any  # Documents
+RetrieverDocumentType = TypeVar(
+    "RetrieverDocumentType", contravariant=True
+)  # it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]
 
 
-class Retriever(Component):
+class Retriever(Component, Generic[RetrieverDocumentType]):
     """
     Retriever will manage its own index and retrieve in format of RetrieverOutput
     It takes a list of Document and builds index used for retrieval use anyway formed content from fields of the document
@@ -30,7 +32,7 @@ class Retriever(Component):
 
     def build_index_from_documents(
         self,
-        documents: RetrieverDocumentType,
+        documents: Sequence[RetrieverDocumentType],
         **kwargs,
     ):
         r"""Built index from the `text` field of each document in the list of documents.
@@ -40,6 +42,14 @@ class Retriever(Component):
         raise NotImplementedError(
             f"build_index_from_documents and input_field_map_func is not implemented"
         )
+
+    def save_index(self, *args, **kwargs):
+        r"""Persist the index, either in memory, disk or cloud storage."""
+        raise NotImplementedError(f"save_index is not implemented")
+
+    def load_index(self, *args, **kwargs):
+        r"""Load the index, either from memory, disk or cloud storage.Once loaded, turn the indexed to True"""
+        raise NotImplementedError(f"load_index is not implemented")
 
     def retrieve(
         self,
