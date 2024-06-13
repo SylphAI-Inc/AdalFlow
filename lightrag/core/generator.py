@@ -51,7 +51,7 @@ class Generator(Component):
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: Optional[str] = None,
-        preset_prompt_kwargs: Optional[Dict] = None,
+        preset_prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
         output_processors: Optional[Component] = None,
         # args for the trainable parameters

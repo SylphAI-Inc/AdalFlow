@@ -52,6 +52,7 @@ Design pattern
 A retrieval will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
 
 A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
+The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
 
 RetrieverOutput
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -69,17 +70,46 @@ Thus our ``RetrieverOutput`` is defined as:
 
 
 
-
+Here we will explain the design of our base class :class:`core.retriever.Retriever` so that users can easily integrate their own retriever or to customize existing ones.
 
 Build and Query Index -- The Algorithm
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For all retrievers, they will compute/manage ``index`` and handles the  ``query`` on given database.
+For some retrievers, they need ``index``, which is intermediate data that is used to assist the retrieval. 
+.. they will compute/manage ``index`` and handles the  ``query`` applied on the index to get the relevant documents.
 Index is data-structure specific to either retrieval method that is used to compute a relevancy score in the case of embeddings for semantic search and Term-Frequency-Inverse Document Frequency (TF-IDF) for BM25, and for rerankers it is just the query and the candidates files themselves and the model.
 For a local retriever, it will need to (1) computes the index itself given candidates documents, persist them for later usage (2) load index from local or cloud storage (3) query the index to get the relevant documents.
 
+The base class will have the following methods to do so:
+
+.. code:: python
+
+    def build_index_from_documents(
+        self,
+        documents: Sequence[RetrieverDocumentType],
+        **kwargs,
+    ):
+        r"""Built index from the `text` field of each document in the list of documents.
+        input_field_map_func: a function that maps the document to the input field to be used for indexing
+        You can use _get_inputs to get a standard format fits for this retriever or you can write your own
+        """
+        raise NotImplementedError(
+            f"build_index_from_documents and input_field_map_func is not implemented"
+        )
+    
+    def retrieve(
+        self,
+        query_or_queries: RetrieverInputType,
+        top_k: Optional[int] = None,
+        **kwargs,
+    ) -> RetrieverOutputType:
+        raise NotImplementedError(f"retrieve is not implemented")
+
 Load and Save Index - The Data Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
 For loading and saving in local and disk storage, we opt for ``pickle``, additionally, you can use local database such as SQLite, PgVector, Postgres along with cloud version to persist the index.
 
 
@@ -101,6 +131,12 @@ Remeber: they are the service proviers and the evaluation lies in developers han
 
 Examples 
 ------------------
+
+LLMAsRetriever
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+LocalReranker
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Local FAISSRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -127,3 +163,8 @@ CohereReRanker
    5. FAISS: 
    6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
    7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
+
+
+.. admonition:: API References
+   :class: highlight
+   - 

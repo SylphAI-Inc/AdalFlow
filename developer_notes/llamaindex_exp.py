@@ -25,8 +25,8 @@ print(nodes)
 from rank_bm25 import BM25Okapi
 
 corpus = [
+    "text1",
     "Li",
-    "text2 Li",
 ]
 tokenized_corpus = [doc.split(" ") for doc in corpus]
 
@@ -38,10 +38,52 @@ doc_scores = bm25.get_scores(tokenized_query)
 print(doc_scores)
 
 from lightrag.components.retriever import InMemoryBM25Retriever, split_text_by_word_fn
+from lightrag.utils import save_json, load_json
+from lightrag.utils import enable_library_logging
 
-retriever = InMemoryBM25Retriever(top_k=1, split_function=split_text_by_word_fn)
+retriever = InMemoryBM25Retriever(top_k=2, split_function=split_text_by_word_fn)
 
 
-retriever.build_index_from_documents(documents=corpus)
+# retriever.build_index_from_documents(documents=corpus)
+# index = retriever.get_index()
+# print(index)
+# save_path = "developer_notes/data/in_memory_bm25_index.json"
+# save_json(index, save_path)
+index = load_json("developer_notes/data/in_memory_bm25_index.json")
+retriever.load_index(index)
+query = "Li"
 output = retriever.retrieve(query)
 print(output)
+# output = retriever.retrieve(query)
+# print(output)
+
+# index = retriever.get_index()
+# print(index)
+from lightrag.components.model_client import OpenAIClient
+from lightrag.utils import setup_env
+from lightrag.components.retriever import LLMRetriever
+from lightrag.tracing import trace_generator_call
+
+
+@trace_generator_call(save_dir="developer_notes/traces")
+class LoggedLLMRetriever(LLMRetriever):
+    pass
+
+
+retriever = LoggedLLMRetriever(
+    top_k=1, model_client=OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
+)
+
+retriever.build_index_from_documents(documents=corpus)  # index are the documents
+
+print(retriever.print_prompt())
+output = retriever.retrieve(query)
+print(output)
+# import os
+
+# enable_library_logging()
+# path = os.path.join(
+#     get_script_dir(), "data", f"{retriever.__class__.__name__}_index.json"
+# )
+# print(path)
+# save_json(index, path)

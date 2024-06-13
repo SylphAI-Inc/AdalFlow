@@ -123,6 +123,18 @@ def trace_generator_call(
         >>>         )
         >>> # now you will see ./traces/TestGenerator dir being created.
         >>> # If the generator call has an error, it will be logged in the error file generator_call.jsonl
+     
+    If you want to decorate a component(such as LLMRetriever) from the library where you do not have access to the source code, you can do it like this:
+
+    .. code-block:: python
+        from lightrag.components.retriever import LLMRetriever
+
+        # Define a subclass and apply the decorator
+        @generator_call_logger
+        class LoggedLLMRetriever(LLMRetriever):
+            pass
+        retriever = LoggedLLMRetriever(...)
+
 
     You can access the logger via TestGenerator.generator_call_logger if you want to access call records in the code.
     """

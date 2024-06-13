@@ -27,12 +27,10 @@ Retriever
 (1) 
 """
 
-from typing import List, Dict, Tuple, Optional, Callable, Union
+from typing import List, Dict, Optional, Callable, Any, Union
 import numpy as np
-import collections
 import heapq
 import math
-import sys
 import logging
 
 from multiprocessing import Pool, cpu_count
@@ -42,31 +40,32 @@ from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.types import RetrieverOutput, RetrieverOutput
 from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
 
+log = logging.getLogger(__name__)
 
 PARAM_K1 = 1.5
 PARAM_B = 0.75
 PARAM_EPSILON = 0.25
-IDF_CUTOFF = 0
 
 
 def split_text_by_word_fn(x: str) -> List[str]:
+    x = x.lower()
     return x.split(" ")
 
 
 def split_text_by_token_fn(tokenizer: Tokenizer, x: str) -> List[str]:
+    x = x.lower()
     return tokenizer(x)
 
 
-log = logging.getLogger(__name__)
-
-
+# TODO: explain epsilon
 class InMemoryBM25Retriever(Retriever):
     __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
 
-    ..math::
+    .. math::
 
-        idf(q_i) = log((N - n(q_i) + 0.5) / (n(q_i) + 0.5))
-        score(q, d) = sum_{i=1}^{n} idf(q_i) * (f(q_i, d) * (k1 + 1)) / (f(q_i, d) + k1 * (1 - b + b * |d| / avgdl))
+        \text{idf}(q_i) = \epsilon \log\left(\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}\right)
+
+        \text{score}(q, d) = \sum_{i=1}^{n} \text{idf}(q_i) \cdot \frac{f(q_i, d) \cdot (k1 + 1)}{f(q_i, d) + k1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}
 
     Explanation:
         - IDF(q_i) is the inverse document frequency of term q_i, which measures how important the term is. To avoid division by zero, 0.5 is added to the denominator, also for diminishing the weight of terms that occur very frequently in the document set and increase the weight of terms that occur rarely.
@@ -78,16 +77,8 @@ class InMemoryBM25Retriever(Retriever):
 
     References:
         [1] https://en.wikipedia.org/wiki/Okapi_BM25
-        [2] https://github.com/dorianbrown/rank_bm25
 
-    Index includes:
-    ----------
-    nd: <token, freq> (n(q_i) in the formula)
-    t2d: <token, <doc_index, freq>> (f(q_i, d) in the formula)
-    idf: <token, idf> (idf(q_i) in the formula)
-    doc_len: list of document lengths (|d| in the formula)
-    avgdl: average document length in the corpus (avgdl in the formula)
-    
+        [2] https://github.com/dorianbrown/rank_bm25
 
     Args:
         top_k : (int): The number of documents to return
@@ -101,9 +92,11 @@ class InMemoryBM25Retriever(Retriever):
                 When b is bigger, lengthier documents (compared to average) have more impact on its effect. According to
                 [1]_, experiments suggest that 0.5 < b < 0.8 yields reasonably good results, although the optimal value
                 depends on factors such as the type of documents or queries.
-        epsilon: float
 
-       
+        epsilon: float
+                A small 
+               
+
 
     Examples:
 
@@ -121,15 +114,22 @@ class InMemoryBM25Retriever(Retriever):
             split_text_by_token_fn, Tokenizer()
         ),
     ):
+        r"""
+        - nd: <token, freq> (n(q_i) in the formula)
+        - t2d: <token, <doc_index, freq>> (f(q_i, d) in the formula)
+        - idf: <token, idf> (idf(q_i) in the formula)
+        - doc_len: list of document lengths (|d| in the formula)
+        - avgdl: average document length in the corpus (avgdl in the formula)
+        - corpus_size: total number of documents in the corpus (N in the formula)
+        """
         super().__init__()
         self.k1 = k1
         self.b = b
         self.epsilon = epsilon
         self.top_k = top_k
-
         self.split_function = split_function
-
         self.indexed = False  # this is important to check if the retrieve is possible
+        self.index_keys = ["nd", "t2d", "idf", "doc_len", "avgdl", "corpus_size"]
 
     def _apply_split_function(self, documents: List[str]):
         if self.split_function is None:
@@ -142,41 +142,30 @@ class InMemoryBM25Retriever(Retriever):
         # tokenized_documents = pool.map(self.split_function, documents)
         return tokenized_documents
 
-    # @property
-    # def corpus_size(self):
-    #     return self.corpus_size
+    def load_index(self, index: Dict[str, Any]):
 
-    # TODO: better implement this
-    def load_index(self, index):
-        self.t2d = index["t2d"]
-        self.idf = index["idf"]
-        self.doc_len = index["doc_len"]
-        self.avgdl = index["avgdl"]
-        self.k1 = index["k1"]
-        self.b = index["b"]
-        self.epsilon = index["epsilon"]
-        self.corpus_size = index["corpus_size"]
+        self.indexed = True
+        if not all(key in index for key in self.index_keys):
+            raise ValueError(
+                f"Index keys are not complete. Expected keys: {self.index_keys}"
+            )
+        self.indexed = True
+        for key, value in index.items():
+            setattr(self, key, value)
 
-    def save_index(self):
-        return {
-            "t2d": self.t2d,
-            "idf": self.idf,
-            "doc_len": self.doc_len,
-            "avgdl": self.avgdl,
-            "k1": self.k1,
-            "b": self.b,
-            "epsilon": self.epsilon,
-            "corpus_size": self.corpus_size,
-        }
+    def get_index(self) -> Dict[str, Any]:
+        if not self.indexed:
+            raise ValueError(
+                "Index is not built or loaded. Please either build the index or load it first."
+            )
+        return {key: getattr(self, key) for key in self.index_keys}
 
     def reset_index(self):
         self.t2d = []
+        self.nd = {}
         self.idf = {}
         self.doc_len = []
         self.avgdl = 0
-        self.k1 = PARAM_K1
-        self.b = PARAM_B
-        self.epsilon = PARAM_EPSILON
         self.indexed = False
 
     def _initialize(self, corpus: List[List[str]]):
@@ -269,7 +258,7 @@ class InMemoryBM25Retriever(Retriever):
         list_of_documents_str = documents.copy()
         self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         self._initialize(self.tokenized_documents)
-        self._calc_idf(self.tokenized_documents)
+        self._calc_idf()
         self.indexed = True
 
     def retrieve(

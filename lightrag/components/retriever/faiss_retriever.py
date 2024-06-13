@@ -1,13 +1,11 @@
 from typing import List, Optional, Sequence, Union
+import numpy as np
 
 try:
     import faiss
 except ImportError:
     raise ImportError("Please install faiss with: pip install faiss")
-try:
-    import numpy as np
-except ImportError:
-    raise ImportError("Please install numpy with: pip install numpy")
+
 
 from lightrag.core.component import Component
 from lightrag.core.retriever import Retriever, RetrieverOutputType
@@ -42,10 +40,8 @@ class FAISSRetriever(Retriever):
     def __init__(
         self,
         *,
-        # arguments
         top_k: int = 3,
         dimensions: int = 768,
-        # components
         vectorizer: Optional[Component] = None,
     ):
         super().__init__()
