@@ -105,7 +105,6 @@ Let us put all of these components together to build a :doc:`rag` (Retrieval Aug
    generator
    embedder
    retriever
-   retriever_xy
    text_splitter
    rag
 

@@ -3,9 +3,10 @@ Retriever
 
 **Why Retriever for LLM?**
 
-LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factuality and relevancy on the LLM answers.
+LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factualit, relevancy, and freshness on the LLM answers.
 Due to LLM's context window limit(can only take so much tokens each time), the ``lost-in-the-middle`` problem[6], and the high cost on speed and resources using large context,
-it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs.
+it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs. 
+It is easy to build a demo, but hard to excel due to the many different parts in the pipeline that made it difficult to evaluate and to optimize.
 
 **What is a retriever?**
 

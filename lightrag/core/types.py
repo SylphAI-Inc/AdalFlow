@@ -28,6 +28,7 @@ T_co = TypeVar("T_co", covariant=True)
 class ModelType(Enum):
     EMBEDDER = auto()
     LLM = auto()
+    RERANKER = auto()  # ranking model
     UNDEFINED = auto()
 
 
@@ -214,10 +215,10 @@ class Document(DataClass):
 class RetrieverOutput(DataClass):
     r"""Mainly used to retrieve a list of documents with scores."""
 
-    doc_indexes: List[int]  # either index or ids potentially
+    doc_indices: List[int]  # either index or ids potentially
     doc_scores: Optional[List[float]] = None
     query: Optional[str] = None
-    documents: Optional[List[Document]] = None  # TODO: documents can be of any time
+    documents: Optional[List[Document]] = None  # TODO: documents can be of any type
 
 
 @dataclass
