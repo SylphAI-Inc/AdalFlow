@@ -51,6 +51,13 @@ Design pattern
 ------------------
 A retrieval will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
 
+.. figure:: /_static/retriever.png
+    :align: center
+    :alt: Retriever design
+    :width: 620px
+
+    How LightRAG's built-in retriever fit into the task pipeline: We focus on the high-precision retrieval method so that users can build on top of that to form the final retrieval pipeline.
+
 A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
 The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
 
@@ -68,12 +75,17 @@ Thus our ``RetrieverOutput`` is defined as:
         query: Optional[str] = None
         documents: Optional[List[Document]] = None  # TODO: documents can be of any time
 
+Retriever Base Class 
+^^^^^^^^^^^^^^^^^^^^^^^^
 
+Our base class :class:`core.retriever.Retriever` highlights two parts for implementing a retriever:
 
-Here we will explain the design of our base class :class:`core.retriever.Retriever` so that users can easily integrate their own retriever or to customize existing ones.
+1.On the algorithm side, it need to prepare the input documents and to retrieve the documents given a query.
+2.On the data storage side, if the preparation stage requires heavy computation for building intermedia ``index``, it needs to communicate clearly (1) the ``index`` to users so that users can save them with their choosing storage approach,
+and (2) allow users to load the index back.
+so that users can easily integrate their own retriever or to customize existing ones.
 
-Build and Query Index -- The Algorithm
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Build and Query Index -- The Algorithm**
 
 For some retrievers, they need ``index``, which is intermediate data that is used to assist the retrieval. 
 .. they will compute/manage ``index`` and handles the  ``query`` applied on the index to get the relevant documents.
@@ -105,9 +117,13 @@ The base class will have the following methods to do so:
     ) -> RetrieverOutputType:
         raise NotImplementedError(f"retrieve is not implemented")
 
-Load and Save Index - The Data Storage
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+**Load and Save Index - The Data Storage**
 
+For retriever method that has intermedia index other than the source of database data, the storage varies from retriever to retriever.
+For example, ``BM25Retriever`` has the following attributes to form its index:
+
+.. code:: python
+    self.index_keys = ["nd", "t2d", "idf", "doc_len", "avgdl", "corpus_size"]
 
 
 For loading and saving in local and disk storage, we opt for ``pickle``, additionally, you can use local database such as SQLite, PgVector, Postgres along with cloud version to persist the index.

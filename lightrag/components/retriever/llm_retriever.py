@@ -1,7 +1,12 @@
 from typing import List, Optional, Any, Dict
 import logging
 
-from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
+from lightrag.core.retriever import (
+    Retriever,
+    RetrieverInputType,
+    RetrieverOutputType,
+    RetrieverOutput,
+)
 from lightrag.core.generator import Generator
 from lightrag.core.model_client import ModelClient
 from lightrag.core.string_parser import ListParser
@@ -67,7 +72,7 @@ class LLMRetriever(Retriever):
         self.generator.prompt.update_preset_prompt_kwargs(documents=documents_to_use)
 
     def retrieve(
-        self, query_or_queries: RetrieverInputType, top_k: Optional[int] = None
+        self, input: RetrieverInputType, top_k: Optional[int] = None
     ) -> RetrieverOutputType:
         """Retrieve the k relevant documents.
 
@@ -80,11 +85,7 @@ class LLMRetriever(Retriever):
             E.g. If the prompt is to output a list of indices and the ``output_processors`` is ``ListParser()``, then it return: GeneratorOutput(data=[indices], error=None, raw_response='[indices]')
         """
         top_k = top_k or self.top_k
-        queries = (
-            query_or_queries
-            if isinstance(query_or_queries, list)
-            else [query_or_queries]
-        )
+        queries = input if isinstance(input, list) else [input]
         retrieved_outputs: RetrieverOutputType = []
 
         for query in queries:
@@ -98,15 +99,19 @@ class LLMRetriever(Retriever):
                 log.error(f"error_message: {response.error}")
                 log.error(f"raw_response: {response.raw_response}")
                 log.error(f"response: {response.data}")
-                retrieved_outputs.append(None)
+                retrieved_outputs.append(RetrieverOutput(doc_indices=[]))
                 continue
-            retrieved_outputs.append(response.data)
+            retrieved_outputs.append(
+                RetrieverOutput(
+                    doc_indices=response.data,
+                )
+            )
         return retrieved_outputs
 
     def __call__(
         self,
-        query_or_queries: RetrieverInputType,
+        input: RetrieverInputType,
         top_k: Optional[int] = None,
     ) -> RetrieverOutputType:
         # query will be used
-        return self.retrieve(query_or_queries, top_k)
+        return self.retrieve(input, top_k)

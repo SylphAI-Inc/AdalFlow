@@ -188,12 +188,15 @@ class Document(DataClass):
         return super().from_dict(doc)
 
     def __repr__(self) -> str:
-        # TODO: repr only those non empty fields
+        max_text_len_to_show: int = 400
         repr_str = "Document("
         if self.id:
             repr_str += f"id={self.id}, "
         if self.text:
-            repr_str += f"text={self.text[0:]}, "
+            repr_str += f"text={self.text[0:max_text_len_to_show]} "
+            if len(self.text) > max_text_len_to_show:
+                repr_str += "..."
+            repr_str += ", "
         if self.meta_data:
             repr_str += f"meta_data={self.meta_data}, "
         if self.estimated_num_tokens:

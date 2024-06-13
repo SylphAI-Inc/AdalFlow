@@ -130,7 +130,7 @@ def trace_generator_call(
         from lightrag.components.retriever import LLMRetriever
 
         # Define a subclass and apply the decorator
-        @generator_call_logger
+        @trace_generator_call(save_dir=...)
         class LoggedLLMRetriever(LLMRetriever):
             pass
         retriever = LoggedLLMRetriever(...)

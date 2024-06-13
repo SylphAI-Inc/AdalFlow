@@ -18,11 +18,18 @@ from more_itertools import windowed
 
 from lightrag.core.component import Component
 from lightrag.core.types import Document
+from lightrag.core.tokenizer import Tokenizer
+
 
 # TODO: convert this to function
 
 DocumentSplitterInputType = List[Document]
 DocumentSplitterOutputType = List[Document]
+
+
+def split_text_by_token_fn(x: str, tokenizer: Tokenizer = Tokenizer()) -> List[str]:
+    x = x.lower()
+    return tokenizer.get_string_tokens(x)
 
 
 class DocumentSplitter(Component):
@@ -38,7 +45,7 @@ class DocumentSplitter(Component):
 
     def __init__(
         self,
-        split_by: Literal["word", "sentence", "page", "passage"] = "word",
+        split_by: Literal["word", "token", "sentence", "page", "passage"] = "word",
         split_length: int = 200,
         split_overlap: int = 0,
     ):
@@ -51,7 +58,7 @@ class DocumentSplitter(Component):
         super().__init__()
 
         self.split_by = split_by
-        if split_by not in ["word", "sentence", "page", "passage"]:
+        if split_by not in ["word", "sentence", "page", "passage", "token"]:
             raise ValueError(
                 "split_by must be one of 'word', 'sentence', 'page' or 'passage'."
             )
@@ -94,7 +101,7 @@ class DocumentSplitter(Component):
         ):
             raise TypeError("DocumentSplitter expects a List of Documents as input.")
 
-        split_docs = []
+        split_docs: List[Document] = []
         for doc in documents:
             if doc.text is None:
                 raise ValueError(
@@ -115,24 +122,30 @@ class DocumentSplitter(Component):
         return split_docs
 
     def _split_into_units(
-        self, text: str, split_by: Literal["word", "sentence", "passage", "page"]
+        self,
+        text: str,
+        split_by: Literal["word", "sentence", "passage", "page", "token"],
     ) -> List[str]:
-        if split_by == "page":
-            split_at = "\f"
-        elif split_by == "passage":
-            split_at = "\n\n"
-        elif split_by == "sentence":
-            split_at = "."
-        elif split_by == "word":
-            split_at = " "
-        else:
-            raise NotImplementedError(
-                "DocumentSplitter only supports 'word', 'sentence', 'page' or 'passage' split_by options."
-            )
-        units = text.split(split_at)
-        # Add the delimiter back to all units except the last one
-        for i in range(len(units) - 1):
-            units[i] += split_at
+        if split_by == "token":
+            units = split_text_by_token_fn(x=text)
+            print(units)
+        else:  # text splitter
+            if split_by == "page":
+                split_at = "\f"
+            elif split_by == "passage":
+                split_at = "\n\n"
+            elif split_by == "sentence":
+                split_at = "."
+            elif split_by == "word":
+                split_at = " "
+            else:
+                raise NotImplementedError(
+                    "DocumentSplitter only supports 'word', 'sentence', 'page' or 'passage' split_by options."
+                )
+            units = text.split(split_at)
+            # Add the delimiter back to all units except the last one
+            for i in range(len(units) - 1):
+                units[i] += split_at
         return units
 
     def _concatenate_units(
@@ -159,8 +172,11 @@ if __name__ == "__main__":
     # Test
     doc1 = Document(text="This is a test document. It is a long document.")
     doc2 = Document(text="This is another test document. It is also a long document.")
-    splitter = DocumentSplitter(split_by="sentence", split_length=4, split_overlap=1)
+    splitter = DocumentSplitter(split_by="token", split_length=4, split_overlap=1)
     print(splitter)
+    splitted_docs = splitter([doc1, doc2])
+    print(splitted_docs)
+
     # print(splitter([doc1, doc2]))
     # # Output: [
     # #     Document(text='This is a test document.', meta_data={}, parent_doc_id='0', order=0, vector=[]),

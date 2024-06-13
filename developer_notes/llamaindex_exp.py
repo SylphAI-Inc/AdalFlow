@@ -70,13 +70,18 @@ class LoggedLLMRetriever(LLMRetriever):
     pass
 
 
+# LLMRetriever = trace_generator_call(LLMRetriever)
+
+# print(f"LLMRetriever: {LLMRetriever}")
+
+
 retriever = LoggedLLMRetriever(
     top_k=1, model_client=OpenAIClient(), model_kwargs={"model": "gpt-3.5-turbo"}
 )
 
 retriever.build_index_from_documents(documents=corpus)  # index are the documents
 
-print(retriever.print_prompt())
+print(retriever.generator())
 output = retriever.retrieve(query)
 print(output)
 # import os
