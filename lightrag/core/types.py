@@ -129,6 +129,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     )
 
 
+GeneratorOutputType = GeneratorOutput[Any]
+
+
 class Document(DataClass):
     r"""A text container with optional metadata and vector representation.
     It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
@@ -218,10 +221,19 @@ class Document(DataClass):
 class RetrieverOutput(DataClass):
     r"""Mainly used to retrieve a list of documents with scores."""
 
-    doc_indices: List[int]  # either index or ids potentially
-    doc_scores: Optional[List[float]] = None
-    query: Optional[str] = None
-    documents: Optional[List[Document]] = None  # TODO: documents can be of any type
+    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+    doc_scores: Optional[List[float]] = field(
+        default=None, metadata={"desc": "List of document scores"}
+    )
+    query: Optional[str] = field(
+        default=None, metadata={"desc": "The query used to retrieve the documents"}
+    )
+    documents: Optional[List[Document]] = field(
+        default=None, metadata={"desc": "List of retrieved documents"}
+    )
+
+
+RetrieverOutputType = List[RetrieverOutput]
 
 
 @dataclass

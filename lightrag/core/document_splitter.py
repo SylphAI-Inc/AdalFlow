@@ -1,18 +1,9 @@
-"""
-Here is for us to prepare the documents for retrieve the context.
-LlamaIndex having DocumentStore. We just want you wrap your data here and define a retrieve method. 
-It highly depends on the product environment and can go beyond the scope of this library.
+"""Text splitter to split long text into smaller chunks to fit into the token limits of embedding and LLM models."""
 
-But these are shared:
-* DocumentStore
-* Chunk Document -> VectorStore
-* Embed chunk
-* Openup the db for context retrieval
-"""
-
-# TODO: (1) TextSplitters, JSON/HTML Splitter
+# TODO: JSON/HTML Splitter
 from copy import deepcopy
 from typing import List, Literal
+from tqdm import tqdm
 
 from more_itertools import windowed
 
@@ -20,8 +11,6 @@ from lightrag.core.component import Component
 from lightrag.core.types import Document
 from lightrag.core.tokenizer import Tokenizer
 
-
-# TODO: convert this to function
 
 DocumentSplitterInputType = List[Document]
 DocumentSplitterOutputType = List[Document]
@@ -33,7 +22,7 @@ def split_text_by_token_fn(x: str, tokenizer: Tokenizer = Tokenizer()) -> List[s
 
 
 class DocumentSplitter(Component):
-    r"""
+    __doc__ = r"""
     Splits a list of text documents into a list of text documents with shorter texts.
 
     Output: List[Document]
@@ -41,6 +30,26 @@ class DocumentSplitter(Component):
     Splitting documents with long texts is a common preprocessing step during indexing.
     This allows Embedders to create significant semantic representations
     and avoids exceeding the maximum context length of language models.
+
+    Args:
+        split_by (str): The unit by which the document should be split. Choose from "word" for splitting by " ",
+            "sentence" for splitting by ".", "page" for splitting by "\\f" or "passage" for splitting by "\\n\\n".
+        split_length (int): The maximum number of units in each split. It can be number of works, sentences, pages or passages.
+        split_overlap (int): The number of units that each split should overlap.
+
+    Example:
+
+    .. code-block:: python
+
+        from lightrag.core.document_splitter import DocumentSplitter
+        from lightrag.core.types import Document
+
+        doc1 = Document(text="This is a test document. It is a long document.")
+        doc2 = Document(text="This is another test document. It is also a long document.")
+        splitter = DocumentSplitter(split_by="token", split_length=4, split_overlap=1)
+        print(splitter)
+        splitted_docs = splitter([doc1, doc2])
+        print(splitted_docs)
     """
 
     def __init__(
@@ -49,12 +58,6 @@ class DocumentSplitter(Component):
         split_length: int = 200,
         split_overlap: int = 0,
     ):
-        """
-        :param split_by: The unit by which the document should be split. Choose from "word" for splitting by " ",
-            "sentence" for splitting by ".", "page" for splitting by "\\f" or "passage" for splitting by "\\n\\n".
-        :param split_length: The maximum number of units in each split.
-        :param split_overlap: The number of units that each split should overlap.
-        """
         super().__init__()
 
         self.split_by = split_by
@@ -102,7 +105,7 @@ class DocumentSplitter(Component):
             raise TypeError("DocumentSplitter expects a List of Documents as input.")
 
         split_docs: List[Document] = []
-        for doc in documents:
+        for doc in tqdm(documents, desc="Splitting documents"):
             if doc.text is None:
                 raise ValueError(
                     f"DocumentSplitter only works with text documents but document.content for document ID {doc.id} is None."
@@ -166,36 +169,3 @@ class DocumentSplitter(Component):
     def _extra_repr(self) -> str:
         s = f"split_by={self.split_by}, split_length={self.split_length}, split_overlap={self.split_overlap}"
         return s
-
-
-if __name__ == "__main__":
-    # Test
-    doc1 = Document(text="This is a test document. It is a long document.")
-    doc2 = Document(text="This is another test document. It is also a long document.")
-    splitter = DocumentSplitter(split_by="token", split_length=4, split_overlap=1)
-    print(splitter)
-    splitted_docs = splitter([doc1, doc2])
-    print(splitted_docs)
-
-    # print(splitter([doc1, doc2]))
-    # # Output: [
-    # #     Document(text='This is a test document.', meta_data={}, parent_doc_id='0', order=0, vector=[]),
-    # #     Document(text='It is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
-    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
-    # #     Document(text='It is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])
-    # # ]
-    # splitter = DocumentSplitter(split_by="word", split_length=5, split_overlap=2)
-    # print(splitter([doc1, doc2]))
-    # # Output: [
-    # #     Document(text='This is a test document. It', meta_data={}, parent_doc_id='0', order=0, vector=[]),
-    # #     Document(text='is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
-    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
-    # #     Document(text='is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])
-    # # ]
-    # splitter = DocumentSplitter(split_by="page", split_length=1, split_overlap=0)
-    # print(splitter([doc1, doc2]))
-    # # Output: [
-    # #     Document(text='This is a test document.', meta_data={}, parent_doc_id='0', order=0, vector=[]),
-    # #     Document(text=' It is a long document.', meta_data={}, parent_doc_id='0', order=1, vector=[]),
-    # #     Document(text='This is another test document.', meta_data={}, parent_doc_id='1', order=0, vector=[]),
-    # #     Document(text=' It is also a long document.', meta_data={}, parent_doc_id='1', order=1, vector=[])

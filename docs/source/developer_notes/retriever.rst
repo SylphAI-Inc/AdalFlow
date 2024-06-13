@@ -80,8 +80,8 @@ Retriever Base Class
 
 Our base class :class:`core.retriever.Retriever` highlights two parts for implementing a retriever:
 
-1.On the algorithm side, it need to prepare the input documents and to retrieve the documents given a query.
-2.On the data storage side, if the preparation stage requires heavy computation for building intermedia ``index``, it needs to communicate clearly (1) the ``index`` to users so that users can save them with their choosing storage approach,
+1. On the algorithm side, it need to prepare the input documents and to retrieve the documents given a query.
+2. On the data storage side, if the preparation stage requires heavy computation for building intermedia ``index``, it needs to communicate clearly (1) the ``index`` to users so that users can save them with their choosing storage approach,
 and (2) allow users to load the index back.
 so that users can easily integrate their own retriever or to customize existing ones.
 
