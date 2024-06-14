@@ -2,8 +2,8 @@ r"""
 The base class for all retrievers who in particular retrieve documents from a given database.
 """
 
-from typing import List, Optional, Union, Generic, TypeVar, Sequence, Dict, Any
-
+from typing import List, Optional, Union, Generic, TypeVar, Sequence, Dict, Any, Tuple
+import numpy as np
 
 from lightrag.core.component import Component
 from lightrag.core.types import RetrieverOutput
@@ -13,6 +13,15 @@ RetrieverDocumentType = TypeVar(
     "RetrieverDocumentType", contravariant=True
 )  # it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]
+
+
+def get_top_k_indices_scores(
+    scores: List[float], top_k: int
+) -> Tuple[List[int], List[float]]:
+    scores = np.array(scores)
+    top_k_indices = np.argsort(scores)[-top_k:][::-1]
+    top_k_scores = scores[top_k_indices]
+    return top_k_indices.tolist(), top_k_scores.tolist()
 
 
 class Retriever(Component, Generic[RetrieverDocumentType]):

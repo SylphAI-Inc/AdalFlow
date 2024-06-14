@@ -27,9 +27,9 @@ class DocumentSplitter(Component):
 
     Output: List[Document]
 
-    Splitting documents with long texts is a common preprocessing step during indexing.
-    This allows Embedders to create significant semantic representations
-    and avoids exceeding the maximum context length of language models.
+    Splitting documents with long texts is a common preprocessing step for LLM applications.
+    The splitted documents are easier to fit into the token limits of language models, both Embedders and Generators,
+    and to ensure the retrieved context can be more relevant than the large text itself.
 
     Args:
         split_by (str): The unit by which the document should be split. Choose from "word" for splitting by " ",
@@ -73,32 +73,11 @@ class DocumentSplitter(Component):
         self.split_overlap = split_overlap
 
     def split_text(self, text: str) -> List[str]:
-        """
-        Splits a text into a list of shorter texts.
-
-        :param text: The text to split.
-
-        :returns: A list of shorter texts.
-        """
+        r"""Splits a text into a list of shorter texts."""
         units = self._split_into_units(text, self.split_by)
         return self._concatenate_units(units, self.split_length, self.split_overlap)
 
     def call(self, documents: List[Document]) -> List[Document]:
-        """
-        Splits documents by the unit expressed in `split_by`, with a length of `split_length`
-        and an overlap of `split_overlap`.
-
-        :param documents: The documents to split.
-
-        :returns: A dictionary with the following key:
-            - `documents`: List of documents with the split texts. A metadata field "source_id" is added to each
-            document to keep track of the original document that was split. Other metadata are copied from the original
-            document.
-
-        :raises TypeError: if the input is not a list of Documents.
-        :raises ValueError: if the content of a document is None.
-        """
-
         if not isinstance(documents, list) or (
             documents and not isinstance(documents[0], Document)
         ):
@@ -154,9 +133,7 @@ class DocumentSplitter(Component):
     def _concatenate_units(
         self, elements: List[str], split_length: int, split_overlap: int
     ) -> List[str]:
-        """
-        Concatenates the elements into parts of split_length units.
-        """
+        """Concatenates the elements into parts of split_length units."""
         text_splits = []
         segments = windowed(elements, n=split_length, step=split_length - split_overlap)
         for seg in segments:
