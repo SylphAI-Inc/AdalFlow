@@ -70,7 +70,9 @@ class TestTransformerModelClient(unittest.TestCase):
         self.assertEqual(type(output[0]), float)
 
     def test_transformer_reranker_client(self):
-        transformer_reranker_client = TransformersClient()
+        transformer_reranker_client = TransformersClient(
+            model_name="BAAI/bge-reranker-base"
+        )
         print("Testing transformer reranker client")
         # run the model
         kwargs = {
@@ -78,7 +80,7 @@ class TestTransformerModelClient(unittest.TestCase):
             "mock": False,
         }
         api_kwargs = transformer_reranker_client.convert_inputs_to_api_kwargs(
-            input="Hello world",
+            input=self.reranker_input,
             model_kwargs=kwargs,
             model_type=ModelType.RERANKER,
         )

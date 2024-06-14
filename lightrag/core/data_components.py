@@ -15,6 +15,11 @@ from lightrag.core.types import (
     Document,
     RetrieverOutput,
 )
+from lightrag.core.embedder import (
+    BatchEmbedder,
+    BatchEmbedderOutputType,
+    BatchEmbedderInputType,
+)
 import lightrag.core.functional as F
 from tqdm import tqdm
 
@@ -116,22 +121,15 @@ class ToEmbeddings(Component):
         super().__init__()
         self.vectorizer = vectorizer
         self.batch_size = batch_size
+        self.batch_embedder = BatchEmbedder(embedder=vectorizer, batch_size=batch_size)
 
     def __call__(self, input: Sequence[Document]) -> Sequence[Document]:
         output = deepcopy(input)
-        for i in tqdm(range(0, len(output), self.batch_size)):
-            batch = output[i : i + self.batch_size]
-            embedder_output: EmbedderOutput = self.vectorizer(
-                input=[chunk.text for chunk in batch]
-            )
-            vectors = embedder_output.data
-            for j, vector in enumerate(vectors):
-                output[i + j].vector = vector.embedding
-            # update tracking
-            # self.tracking["vectorizer"]["num_calls"] += 1
-            # self.tracking["vectorizer"][
-            #     "num_tokens"
-            # ] += embedder_output.usage.total_tokens
+        # convert documents to a list of strings
+        embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]
+        outputs: BatchEmbedderOutputType = self.batch_embedder(input=embedder_input)
+        for embedder_output, doc in zip(outputs, output):  # add the vector to the doc
+            doc.vector = embedder_output.data
         return output
 
 

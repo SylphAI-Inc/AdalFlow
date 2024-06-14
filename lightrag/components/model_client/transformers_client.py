@@ -122,6 +122,37 @@ class TransformerEmbedder:
             raise ValueError(f"model {model_name} is not supported")
 
 
+class FlagRerankserSDK:
+    def __init__(self, model_name: Optional[str] = "BAAI/bge-reranker-base"):
+        try:
+            import FlagEmbedding
+        except ImportError:
+            raise ImportError(
+                "Please install FlagEmbedding with: pip install FlagEmbedding"
+            )
+        self.model_name = model_name
+        print(f"model_name: {model_name}")
+        if model_name is not None:
+            self.init_model(model_name=model_name)
+
+    def init_model(self, model_name: str):
+        try:
+            from FlagEmbedding import FlagReranker
+
+            self.model = FlagReranker(
+                "BAAI/bge-reranker-large", use_fp16=True
+            )  # Setting use_fp16 to True speeds up computation with a slight performance degradation
+            log.info(f"Done loading model {model_name}")
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+
+    def infer_bge_reranker_base(self, input=List[Tuple[str, str]]) -> List[float]:
+        scores = self.model.compute_score(input)
+        scores = F.sigmoid(scores)
+        return scores.tolist()
+
+
 class TransformerReranker:
     __doc__ = r"""Local model SDK for a reranker model using transformers.
 
@@ -139,7 +170,6 @@ class TransformerReranker:
         if model_name is not None:
             self.init_model(model_name=model_name)
 
-    @lru_cache(None)
     def init_model(self, model_name: str):
         try:
             print(f"Loading model {model_name}")
@@ -159,7 +189,7 @@ class TransformerReranker:
 
             # Move model to the selected device
             self.device = device
-            self.model.to(device)
+            # self.model.to(device)
             print(f"model: {self.model}")
             self.model.eval()
             print(f"model: {self.model}")
@@ -239,7 +269,7 @@ class TransformersClient(ModelClient):
 
     def __init__(self, model_name: Optional[str] = None) -> None:
         super().__init__()
-        self._model_name = model_name or "thenlper/gte-base"
+        self._model_name = model_name
         assert (
             self._model_name in self.support_models
         ), f"model {self._model_name} is not supported"
@@ -280,7 +310,6 @@ class TransformersClient(ModelClient):
             and "model" in api_kwargs
             and api_kwargs["model"] == "BAAI/bge-reranker-base"
         ):
-            print(f"reranker_client: {self.reranker_client}")
             if not hasattr(self, "reranker_client") or self.reranker_client is None:
                 print("init reranker client")
                 self.reranker_client = self.init_reranker_client()

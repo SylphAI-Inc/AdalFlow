@@ -40,6 +40,7 @@ groq = "^0.5.0"      # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
 # matplotlib = "^3.8.4"
 # colorama = "^0.4.6"
+more-itertools = "^10.3.0"
 
 
 [tool.poetry.group.test.dependencies]

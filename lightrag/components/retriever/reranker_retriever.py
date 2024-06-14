@@ -19,7 +19,6 @@ class RerankerRetriever(Retriever):
         super().__init__()
         self.top_k = top_k
         self._model_name = "BAAI/bge-reranker-base"
-        self.retriever = Retriever()
         self.model_client = TransformersClient(model_name=self._model_name)
 
     def reset_index(self):
@@ -27,7 +26,7 @@ class RerankerRetriever(Retriever):
         self.documents = []
 
     def build_index_from_documents(self, documents: List[str]):
-        self.documents = documents
+        self.documents = documents.copy()
         self.indexed = True
 
     def retrieve(
@@ -43,7 +42,6 @@ class RerankerRetriever(Retriever):
                 input=input,
                 model_kwargs={
                     "model": self._model_name,
-                    "mock": False,
                 },
                 model_type=ModelType.RERANKER,
             )
@@ -60,3 +58,17 @@ class RerankerRetriever(Retriever):
                 )
             )
         return retrieved_outputs
+
+
+if __name__ == "__main__":
+    # from lightrag.components.retriever import RerankerRetriever
+
+    query = "Li"
+    documents = ["Li", "text2"]
+
+    retriever = RerankerRetriever(top_k=1)
+    print(retriever)
+    retriever.build_index_from_documents(documents=documents)
+    print(retriever.documents)
+    output = retriever.retrieve(query)
+    print(output)

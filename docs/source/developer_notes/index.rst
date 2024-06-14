@@ -79,7 +79,7 @@ Code path: ``lightrag.core``. For abstract classes:
    :widths: 20 80
    :header-rows: 1
 
-   * - Component
+   * - Componentd
      - Description
    * - :doc:`prompt`
      - Built on ``jinja2``, it programmablly and flexibly format prompt(text) as **input to the generator**.

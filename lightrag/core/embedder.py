@@ -129,7 +129,7 @@ class Embedder(Component):
 
 
 BatchEmbedderInputType = EmbedderInputType
-ListEmbedderOutputType = List[EmbedderOutputType]
+BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
 class BatchEmbedder(Component):
@@ -147,7 +147,7 @@ class BatchEmbedder(Component):
 
     def call(
         self, input: EmbedderInputType, model_kwargs: Optional[Dict] = {}
-    ) -> ListEmbedderOutputType:
+    ) -> BatchEmbedderOutputType:
         r"""Call the embedder with batching.
 
         Args:
@@ -156,14 +156,17 @@ class BatchEmbedder(Component):
             model_kwargs (Optional[Dict], optional): The model kwargs to pass to the embedder. Defaults to {}.
 
         Returns:
-            ListEmbedderOutputType: The output from the embedder.
+            BatchEmbedderOutputType: The output from the embedder.
         """
 
         if isinstance(input, str):
             input = [input]
         n = len(input)
         embeddings: List[EmbedderOutputType] = []
-        for i in tqdm(range(0, n, self.batch_size)):
+        for i in tqdm(
+            range(0, n, self.batch_size),
+            desc="Batch embedding documents",
+        ):
             batch_input = input[i : i + self.batch_size]
             batch_output = self.embedder.call(
                 input=batch_input, model_kwargs=model_kwargs

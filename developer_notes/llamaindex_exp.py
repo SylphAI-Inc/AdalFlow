@@ -1,5 +1,11 @@
 # from llama_index.retrievers.bm25 import BM25Retriever as LlamaBM25Retriever
 
+from llama_index.core import (
+    VectorStoreIndex,
+    SimpleDirectoryReader,
+    load_index_from_storage,
+    StorageContext,
+)
 
 # from llama_index.core.data_structs import Node
 # from llama_index.core.schema import NodeWithScore
@@ -86,18 +92,54 @@
 # print(output)
 # # import os
 
-from lightrag.components.retriever import RerankerRetriever
+# if __name__ == "__main__":
 
-query = "Li"
-documents = ["Li", "text2"]
+# from lightrag.components.retriever import RerankerRetriever
+# import torch
+# from lightrag.components.model_client import (
+#     TransformersClient,
+#     TransformerReranker,
+#     TransformerEmbedder,
+#     ModelType,
+# )
 
-retriever = RerankerRetriever(top_k=1)
-print(retriever)
-retriever.build_index_from_documents(documents=documents)
-print(retriever.documents)
-output = retriever.retrieve(query)
-print(output)
+# # print(torch.backends.mps.is_available())
+# # print(
+# #     torch.backends.mps.is_built()
+# # )  # Should return True if PyTorch is built with MPS support
 
+# query = "Li"
+# documents = ["Li", "text2"]
+
+# retriever = RerankerRetriever(top_k=1)
+# print(retriever)
+# retriever.build_index_from_documents(documents=documents)
+# print(retriever.documents)
+# output = retriever.retrieve(query)
+# print(output)
+
+# def test_transformer_reranker_client():
+#     transformer_reranker_client = TransformersClient(
+#         model_name="BAAI/bge-reranker-base"
+#     )
+#     print("Testing transformer reranker client")
+#     # run the model
+#     kwargs = {
+#         "model": "BAAI/bge-reranker-base",
+#         "mock": False,
+#     }
+#     inputs = [["Li", "text2"], ["Li", "Li's"]]
+#     api_kwargs = transformer_reranker_client.convert_inputs_to_api_kwargs(
+#         input=inputs,
+#         model_kwargs=kwargs,
+#         model_type=ModelType.RERANKER,
+#     )
+#     print(api_kwargs)
+#     output = transformer_reranker_client.call(
+#         api_kwargs=api_kwargs, model_type=ModelType.RERANKER
+#     )
+
+# test_transformer_reranker_client()
 
 # enable_library_logging()
 # path = os.path.join(

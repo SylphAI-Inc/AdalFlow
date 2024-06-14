@@ -55,7 +55,7 @@ class Usage:
 
 
 class EmbedderOutput(DataClass):
-    r"""Container to hold the response from an Embedder model.
+    r"""Container to hold the response from an Embedder model. Only Per-batch.
 
     Data standard for Embedder model output to interact with other components.
     Batch processing is often available, thus we need a list of Embedding objects.
@@ -70,7 +70,8 @@ class EmbedderOutput(DataClass):
     raw_response: Optional[Any] = field(
         default=None, metadata={"desc": "Raw response"}
     )  # only used if error
-    input: Optional[str] = field(default=None, metadata={"desc": "Input text"})
+    # input: Optional[str] = field(default=None, metadata={"desc": "Input text"})
+    input: Optional[List[str]] = field(default=None, metadata={"desc": "Input text"})
 
     @property
     def length(self) -> int:
