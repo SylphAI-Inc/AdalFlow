@@ -125,6 +125,8 @@ Core functionals
 
 .. toctree::
    :maxdepth: 1
+   
+   document_splitter
 
 
 Advanced Components

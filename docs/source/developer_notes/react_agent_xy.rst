@@ -1,6 +1,8 @@
 ReAct Agent
 =================
 
+Check out `react agent notebook <../notebooks/react_agent.ipynb>`_
+
 The goal of this tutorial is to:
 
 1. Demonstrate how ``LightRAG`` implements the ReAct agent
