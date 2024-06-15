@@ -31,13 +31,22 @@ def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict
 VECTOR_TYPE = Union[List[float], np.ndarray]
 
 
-def is_normalized(v: VECTOR_TYPE, tol=1e-6) -> bool:
+def is_normalized(v: VECTOR_TYPE, tol=1e-4) -> bool:
     if isinstance(v, list):
         v = np.array(v)
     # Compute the norm of the vector (assuming v is 1D)
     norm = np.linalg.norm(v)
     # Check if the norm is approximately 1
     return np.abs(norm - 1) < tol
+
+
+def normalize_np_array(v: np.ndarray) -> np.ndarray:
+    # Compute the norm of the vector (assuming v is 1D)
+    norm = np.linalg.norm(v)
+    # Normalize the vector
+    normalized_v = v / norm
+    # Return the normalized vector
+    return normalized_v
 
 
 def normalize_vector(v: VECTOR_TYPE) -> List[float]:

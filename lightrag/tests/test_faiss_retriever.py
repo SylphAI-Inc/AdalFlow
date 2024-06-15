@@ -14,10 +14,18 @@ from lightrag.core.types import (
 
 
 # Helper function to create dummy embeddings
-def create_dummy_embeddings(num_embeddings, dim):
+# def create_dummy_embeddings(num_embeddings, dim):
+#     vector = np.random.rand(num_embeddings, dim).astype(np.float32)
+#     normalized_vector = normalize_vector(vector)
+#     return normalized_vector
+
+
+# Helper function to create dummy embeddings
+def create_dummy_embeddings(num_embeddings, dim, normalize=True):
     vector = np.random.rand(num_embeddings, dim).astype(np.float32)
-    normalized_vector = normalize_vector(vector)
-    return normalized_vector
+    if normalize:
+        vector = normalize_vector(vector)
+    return vector
 
 
 class TestFAISSRetriever(unittest.TestCase):
@@ -84,6 +92,38 @@ class TestFAISSRetriever(unittest.TestCase):
         self.retriever.reset_index()
         self.assertIsNone(self.retriever.index)
         self.assertEqual(self.retriever.total_chunks, 0)
+
+    def test_retrieve_non_normalized_embeddings_with_l2_metric(self):
+        retriever = FAISSRetriever(
+            embedder=self.embedder, dimensions=self.dimensions, metric="euclidean"
+        )
+        non_normalized_embeddings = create_dummy_embeddings(
+            self.num_embeddings, self.dimensions, normalize=False
+        )
+        retriever.build_index_from_documents(non_normalized_embeddings)
+
+        query_embedding = create_dummy_embeddings(1, self.dimensions, normalize=False)
+        result = retriever.retrieve_embedding_queries(query_embedding)
+        self.assertIsInstance(result[0], RetrieverOutput)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0].doc_indices), retriever.top_k)
+        self.assertEqual(len(result[0].doc_scores), retriever.top_k)
+
+    def test_retrieve_normalized_embeddings_with_l2_metric(self):
+        retriever = FAISSRetriever(
+            embedder=self.embedder, dimensions=self.dimensions, metric="euclidean"
+        )
+        normalized_embeddings = create_dummy_embeddings(
+            self.num_embeddings, self.dimensions, normalize=True
+        )
+        retriever.build_index_from_documents(normalized_embeddings)
+
+        query_embedding = create_dummy_embeddings(1, self.dimensions, normalize=True)
+        result = retriever.retrieve_embedding_queries(query_embedding)
+        self.assertIsInstance(result[0], RetrieverOutput)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0].doc_indices), retriever.top_k)
+        self.assertEqual(len(result[0].doc_scores), retriever.top_k)
 
 
 if __name__ == "__main__":

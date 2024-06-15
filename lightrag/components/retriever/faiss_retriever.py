@@ -1,6 +1,6 @@
 """Semantic search/embedding-based retriever using FAISS."""
 
-from typing import List, Optional, Sequence, Union, Dict, overload, Any
+from typing import List, Optional, Sequence, Union, Dict, overload, Any, Literal
 import numpy as np
 import logging
 import os
@@ -18,6 +18,7 @@ from lightrag.core.types import (
     RetrieverOutputType,
     EmbedderOutputType,
 )
+from lightrag.core.functional import normalize_np_array, is_normalized
 
 log = logging.getLogger(__name__)
 
@@ -41,13 +42,16 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 class FAISSRetriever(Retriever):
     __doc__ = r"""Semantic search/embedding-based retriever using FAISS.
 
-    To use the retriever, ensure to call :meth:`build_index_from_documents` before calling :meth:`retrieve`.
+    To use the retriever, you can either pass the index embeddings from the :meth:`__init__` or use the :meth:`build_index_from_documents` method.
+
 
     Args:
         embedder (Embedder, optimal): The embedder component to use for converting the queries in string format to embeddings.
             Ensure the vectorizer is exactly the same as the one used to the embeddings in the index.
         top_k (int, optional): Number of chunks to retrieve. Defaults to 5.
         dimensions (Optional[int], optional): Dimension of the embeddings. Defaults to None. It can automatically infer the dimensions from the first chunk.
+        documents (Optional[FAISSRetrieverDocumentType], optional): List of embeddings. Format can be List[List[float]] or List[np.ndarray]. Defaults to None.
+        metric (Literal["cosine", "euclidean", "prob"], optional): The metric to use for the retrieval. Defaults to "prob" which converts cosine similarity to probability.
     
     How FAISS works:
 
@@ -75,17 +79,21 @@ class FAISSRetriever(Retriever):
         top_k: int = 5,
         dimensions: Optional[int] = None,
         documents: Optional[FAISSRetrieverDocumentType] = None,
-        is_embedding_normalized: bool = True,
+        metric: Literal["cosine", "euclidean", "prob"] = "prob",
     ):
         super().__init__()
         self.dimensions = dimensions
         self.embedder = embedder  # used to vectorize the queries
         self.top_k = top_k
-        self.is_embedding_normalized = is_embedding_normalized
-        if self.is_embedding_normalized:
+        self.metric = metric
+        if self.metric == "cosine" or self.metric == "prob":
             self._faiss_index_type = faiss.IndexFlatIP
-        else:
+            self._needs_normalized_embeddings = True
+        elif self.metric == "euclidean":
             self._faiss_index_type = faiss.IndexFlatL2
+            self._needs_normalized_embeddings = False
+        else:
+            raise ValueError(f"Invalid metric: {self.metric}")
 
         self.index = None  # faiss index
         self.documents = None
@@ -117,6 +125,7 @@ class FAISSRetriever(Retriever):
                 self.dimensions == self.xb.shape[1]
             ), f"Dimension mismatch: {self.dimensions} != {self.xb.shape[1]}"
         self.total_chunks = xb.shape[0]
+
         self.index = self._faiss_index_type(self.dimensions)
         self.index.add(xb)
         self.indexed = True
@@ -146,6 +155,14 @@ class FAISSRetriever(Retriever):
                 self.xb = np.array(documents, dtype=np.float32)
             else:
                 self.xb = documents
+            if self._needs_normalized_embeddings:
+                first_vector = self.xb[0]
+                if not is_normalized(first_vector):
+                    log.warning(
+                        f"Embeddings are not normalized, normalizing the embeddings"
+                    )
+                    self.xb = normalize_np_array(self.xb)
+
             self._preprare_faiss_index_from_np_array(self.xb)
             log.info(f"Index built with {self.total_chunks} chunks")
         except Exception as e:
@@ -205,7 +222,7 @@ class FAISSRetriever(Retriever):
             raise e
 
         D, Ind = self.index.search(xq, top_k if top_k else self.top_k)
-        if self.is_embedding_normalized:
+        if self.metric == "prob":
             D = self._convert_cosine_similarity_to_probability(D)
         output: RetrieverOutputType = self._to_retriever_output(Ind, D)
         return output
@@ -302,6 +319,8 @@ class FAISSRetriever(Retriever):
 
     def _extra_repr(self) -> str:
         s = f"top_k={self.top_k}"
+        if self.metric:
+            s += f", metric={self.metric}"
         if self.dimensions:
             s += f", dimensions={self.dimensions}"
         if self.documents:
