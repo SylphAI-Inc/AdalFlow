@@ -1,47 +1,45 @@
 r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
-# try:
-#     from .openai_client import *
-# except ImportError:
-
-#     pass
-# try:
-#     from .groq_client import *
-# except ImportError:
-#     pass
-# try:
-#     from .anthropic_client import *
-# except ImportError:
-#     pass
-# try:
-#     from .transformers_client import *
-# except ImportError:
-#     pass
-# try:
-#     from .google_client import *
-# except ImportError:
-#     pass
-
-from .anthropic_client import AnthropicAPIClient
-from .google_client import GoogleGenAIClient
-from .groq_client import GroqAPIClient
-from .openai_client import OpenAIClient
-from .transformers_client import (
-    TransformersClient,
-    TransformerEmbedder,
-    TransformerReranker,
-)
 from lightrag.utils.registry import EntityMapping
+import logging
+
+log = logging.getLogger(__name__)
+
+__all__ = []
+
+try:
+    from .openai_client import OpenAIClient
+
+    __all__.append("OpenAIClient")
+except ImportError as e:
+    log.info(f"Optional module not installed: {e}")
+
+try:
+    from .groq_client import GroqAPIClient
+
+    __all__.append("GroqAPIClient")
+except ImportError as e:
+    log.info(f"Optional module not installed: {e}")
+
+try:
+    from .anthropic_client import AnthropicAPIClient
+
+    __all__.append("AnthropicAPIClient")
+
+except ImportError as e:
+    log.info(f"Optional module not installed: {e}")
+
+try:
+    from .transformers_client import (
+        TransformersClient,
+        TransformerEmbedder,
+        TransformerReranker,
+    )
+
+    __all__.extend(["TransformersClient", "TransformerEmbedder", "TransformerReranker"])
+except ImportError as e:
+    log.info(f"Optional module not installed: {e}")
 
 
-__all__ = [
-    "AnthropicAPIClient",
-    "GoogleGenAIClient",
-    "GroqAPIClient",
-    "OpenAIClient",
-    "TransformersClient",
-    "TransformerEmbedder",
-    "TransformerReranker",
-]
 for name in __all__:
     EntityMapping.register(name, globals()[name])
