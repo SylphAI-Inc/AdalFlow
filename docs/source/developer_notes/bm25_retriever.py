@@ -268,7 +268,7 @@ class InMemoryBM25Retriever(Retriever):
         Retrieve the top n documents for the query and return only the indexes of the documents.
 
         Args:
-            query_or_queries: Union[str, List[str]]: The query or list of queries
+            input: Union[str, List[str]]: The query or list of queries
             top_k: Optional[int]: The number of documents to return
         """
         if not self.indexed:
@@ -276,14 +276,14 @@ class InMemoryBM25Retriever(Retriever):
 
         top_k = top_k or self.top_k
         output: RetrieverOutputType = []
-        if isinstance(query_or_queries, str):
-            query_or_queries = [query_or_queries]
-        elif isinstance(query_or_queries, list):
+        if isinstance(input, str):
+            input = [input]
+        elif isinstance(input, list):
             pass
         else:
-            raise ValueError("query_or_queries should be a string or a list of strings")
+            raise ValueError("input should be a string or a list of strings")
         # process each query
-        for query in query_or_queries:
+        for query in input:
             tokens = self.split_function(query)
             scores = self._get_scores(tokens)
             top_k_idx = heapq.nlargest(top_k, range(len(scores)), scores.__getitem__)
@@ -294,9 +294,9 @@ class InMemoryBM25Retriever(Retriever):
         return output
 
     def __call__(
-        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
+        self, input: Union[str, List[str]], top_k: Optional[int] = None
     ) -> RetrieverOutputType:
-        response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
+        response = self.retrieve(input=input, top_k=top_k)
         # if self.output_processors:
         #     response = self.output_processors(response)
         return response

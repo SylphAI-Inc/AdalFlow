@@ -1,14 +1,20 @@
 import unittest
+import torch
 from lightrag.components.model_client import (
     TransformersClient,
     TransformerReranker,
     TransformerEmbedder,
-    ModelType,
 )
+from lightrag.core.types import ModelType
+
+# Set the number of threads for PyTorch, avoid segementation fault
+torch.set_num_threads(1)
+torch.set_num_interop_threads(1)
 
 
 class TestTransformerModelClient(unittest.TestCase):
     def setUp(self) -> None:
+
         self.reranker_input = [
             ["what is panda?", "hi"],
             [
@@ -19,7 +25,9 @@ class TestTransformerModelClient(unittest.TestCase):
 
     def test_transformer_embedder(self):
         transformer_embedder_model = "thenlper/gte-base"
-        transformer_embedder_model_component = TransformerEmbedder()
+        transformer_embedder_model_component = TransformerEmbedder(
+            model_name=transformer_embedder_model
+        )
         print(
             f"Testing transformer embedder with model {transformer_embedder_model_component}"
         )
@@ -35,27 +43,27 @@ class TestTransformerModelClient(unittest.TestCase):
         # run the model
         kwargs = {
             "model": "thenlper/gte-base",
-            "mock": False,
+            # "mock": False,
         }
         api_kwargs = transformer_client.convert_inputs_to_api_kwargs(
             input="Hello world",
             model_kwargs=kwargs,
             model_type=ModelType.EMBEDDER,
         )
-        print(api_kwargs)
+        # print(api_kwargs)
         output = transformer_client.call(
             api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
         )
 
-        print(transformer_client)
-        print(output)
+        # print(transformer_client)
+        # print(output)
 
     def test_transformer_reranker(self):
         transformer_reranker_model = "BAAI/bge-reranker-base"
         transformer_reranker_model_component = TransformerReranker()
-        print(
-            f"Testing transformer reranker with model {transformer_reranker_model_component}"
-        )
+        # print(
+        #     f"Testing transformer reranker with model {transformer_reranker_model_component}"
+        # )
 
         model_kwargs = {
             "model": transformer_reranker_model,

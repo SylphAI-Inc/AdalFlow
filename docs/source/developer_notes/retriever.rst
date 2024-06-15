@@ -131,7 +131,7 @@ The base class will have the following methods to do so:
     
     def retrieve(
         self,
-        query_or_queries: RetrieverInputType,
+        input: RetrieverInputType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> RetrieverOutputType:

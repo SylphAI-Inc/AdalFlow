@@ -131,7 +131,6 @@ class FlagRerankserSDK:
                 "Please install FlagEmbedding with: pip install FlagEmbedding"
             )
         self.model_name = model_name
-        print(f"model_name: {model_name}")
         if model_name is not None:
             self.init_model(model_name=model_name)
 
@@ -172,27 +171,23 @@ class TransformerReranker:
 
     def init_model(self, model_name: str):
         try:
-            print(f"Loading model {model_name}")
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            print(f"get tokenizer: {self.tokenizer}")
             self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
             # Check device availability and set the device
             if torch.cuda.is_available():
                 device = torch.device("cuda")
-                print("Using CUDA (GPU) for inference.")
+                log.info("Using CUDA (GPU) for inference.")
             elif torch.backends.mps.is_available():
                 device = torch.device("mps")
-                print("Using MPS (Apple Silicon) for inference.")
+                log.info("Using MPS (Apple Silicon) for inference.")
             else:
                 device = torch.device("cpu")
-                print("Using CPU for inference.")
+                log.info("Using CPU for inference.")
 
             # Move model to the selected device
             self.device = device
-            # self.model.to(device)
-            print(f"model: {self.model}")
+            self.model.to(device)
             self.model.eval()
-            print(f"model: {self.model}")
             # register the model
             self.models[model_name] = self.model  # TODO: better model registration
             log.info(f"Done loading model {model_name}")
@@ -218,9 +213,7 @@ class TransformerReranker:
                 return_tensors="pt",
                 max_length=512,
             )
-            print(inputs)
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
-            print(f"model: {model}")
             scores = (
                 model(**inputs, return_dict=True)
                 .logits.view(
@@ -228,7 +221,6 @@ class TransformerReranker:
                 )
                 .float()
             )
-            print(scores)
             # apply sigmoid to get the scores
             scores = F.sigmoid(scores)
         return scores.tolist()
@@ -270,13 +262,14 @@ class TransformersClient(ModelClient):
     def __init__(self, model_name: Optional[str] = None) -> None:
         super().__init__()
         self._model_name = model_name
-        assert (
-            self._model_name in self.support_models
-        ), f"model {self._model_name} is not supported"
+        if self._model_name:
+            assert (
+                self._model_name in self.support_models
+            ), f"model {self._model_name} is not supported"
         if self._model_name == "thenlper/gte-base":
             self.sync_client = self.init_sync_client()
         elif self._model_name == "BAAI/bge-reranker-base":
-            self.reranker_client = None
+            self.reranker_client = self.init_reranker_client()
         self.async_client = None
 
     def init_sync_client(self):
@@ -311,9 +304,7 @@ class TransformersClient(ModelClient):
             and api_kwargs["model"] == "BAAI/bge-reranker-base"
         ):
             if not hasattr(self, "reranker_client") or self.reranker_client is None:
-                print("init reranker client")
                 self.reranker_client = self.init_reranker_client()
-                print(f"reranker_client: {self.reranker_client}")
             return self.reranker_client(**api_kwargs)
 
     def convert_inputs_to_api_kwargs(
