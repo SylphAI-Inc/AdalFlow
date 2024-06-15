@@ -5,9 +5,11 @@ It is commonly used as output_processors.
 
 from copy import deepcopy
 from typing import Any, List, TypeVar, Sequence, Union, Dict, Any
+from tqdm import tqdm
 
 
 from lightrag.core.component import Component
+
 from lightrag.core.types import (
     EmbedderOutput,
     Embedding,
@@ -19,9 +21,9 @@ from lightrag.core.embedder import (
     BatchEmbedder,
     BatchEmbedderOutputType,
     BatchEmbedderInputType,
+    Embedder,
 )
 import lightrag.core.functional as F
-from tqdm import tqdm
 
 T = TypeVar("T")
 
@@ -117,7 +119,7 @@ class ToEmbeddings(Component):
     It operates on a copy of the input data, and does not modify the input data.
     """
 
-    def __init__(self, vectorizer: Component, batch_size: int = 50) -> None:
+    def __init__(self, vectorizer: Embedder, batch_size: int = 50) -> None:
         super().__init__(batch_size=batch_size)
         self.vectorizer = vectorizer
         self.batch_size = batch_size
@@ -128,9 +130,12 @@ class ToEmbeddings(Component):
         # convert documents to a list of strings
         embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]
         outputs: BatchEmbedderOutputType = self.batch_embedder(input=embedder_input)
-        for embedder_output, doc in zip(outputs, output):  # add the vector to the doc
-            for embedding in embedder_output.data:
-                doc.vector = embedding.embedding
+        # n them back to the original order along with its query
+        for batch_idx, batch_output in tqdm(
+            enumerate(outputs), desc="Adding embeddings to documents from batch"
+        ):
+            for idx, embedding in enumerate(batch_output.data):
+                output[batch_idx * self.batch_size + idx].vector = embedding.embedding
         return output
 
     def _extra_repr(self) -> str:

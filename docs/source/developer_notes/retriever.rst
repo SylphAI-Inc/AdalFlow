@@ -63,17 +63,37 @@ The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embeddin
 
 RetrieverOutput
 ^^^^^^^^^^^^^^^^^^^^^^^^
+Retriever can require different types of input, but they all have the same output format so that we can easily switch between different retrievers in your task pipeline.
+
 Thus our ``RetrieverOutput`` is defined as:
 
 .. code-block:: python
 
     class RetrieverOutput(DataClass):
-        r"""Mainly used to retrieve a list of documents with scores."""
+    __doc__ = r"""Save the output of a single query in retrievers."""
 
-        doc_indexes: List[int]  # either index or ids potentially
-        doc_scores: Optional[List[float]] = None
-        query: Optional[str] = None
-        documents: Optional[List[Document]] = None  # TODO: documents can be of any time
+    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+    doc_scores: Optional[List[float]] = field(
+        default=None, metadata={"desc": "List of document scores"}
+    )
+    query: Optional[str] = field(
+        default=None, metadata={"desc": "The query used to retrieve the documents"}
+    )
+    documents: Optional[List[Document]] = field(
+        default=None, metadata={"desc": "List of retrieved documents"}
+    )
+
+
+    RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
+
+You can find the types in :doc:`core.types` module.
+
+We support both single query or a list of queries to be used as input in the retriever. The list of queries can be helpful in cases like:
+
+(1) batch-processing, especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.
+(2) for cases like `query expansion` where to increase the recall, users often generate multiple queries from the original query.
+
+
 
 Retriever Base Class 
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -176,7 +196,7 @@ CohereReRanker
    2. BM25: https://en.wikipedia.org/wiki/Okapi_BM25
    3. Representative learning models: https://arxiv.org/abs/2104.08663 [Find the right reference]
    4. Reranking models: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   5. FAISS: 
+   5. FAISS: https://github.com/facebookresearch/faiss
    6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
    7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
 

@@ -101,8 +101,7 @@ class LocalDocumentDB:
     def _get_transformer_name(self, transformer: Component) -> str:
         # check all _sub_components and join the name with _
         name = f"{transformer.__class__.__name__}_"
-        for n, sub_component in transformer.named_components():
-            print(f"sub_component: {sub_component}")
+        for n, _ in transformer.named_components():
             name += n + "_"
         return name
 
@@ -185,12 +184,17 @@ class LocalDocumentDB:
             self.documents.pop(index)
 
     def save_state(self, filepath: str):
-        """Save the current state (attributes) of the document DB using pickle."""
+        """Save the current state (attributes) of the document DB using pickle.
+
+        Note:
+            The transformer setups will be lost when pickling. As it might not be picklable.
+        """
         filepath = filepath or "storage/local_document_db.pkl"
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
         with open(filepath, "wb") as file:
             pickle.dump(self, file)
 
+    # TODO: only if the transformer setup is not picklable, then we will remove it.
     @classmethod
     def load_state(cls, filepath: str = None) -> "LocalDocumentDB":
         """Load the state of the document DB from a pickle file."""
@@ -198,6 +202,7 @@ class LocalDocumentDB:
         with open(filepath, "rb") as file:
             return pickle.load(file)
 
+    # transformer set up will be lost when pickling
     def __getstate__(self):
         """Exclude non-picklable attributes."""
 
@@ -215,51 +220,43 @@ class LocalDocumentDB:
 
 if __name__ == "__main__":
     from lightrag.core.types import Document
-
-    documents = [
-        Document(text="This is a test document. It is a long document."),
-        Document(text="This is another test document. It is also a long document."),
-    ]
-    db = LocalDocumentDB()
-    print("state", db.__dict__)
-    print(db)
-    db.load_documents(documents)
-    print(db)
-
-    from lightrag.components.model_client import OpenAIClient
-    from lightrag.core.document_splitter import DocumentSplitter
-    from lightrag.core.embedder import Embedder, BatchEmbedder
-    from lightrag.core.component import Sequential
-    from lightrag.core.data_components import ToEmbeddings
+    from lightrag.components.retriever import FAISSRetriever
+    from lightrag.core.db import LocalDocumentDB
+    from lightrag.utils.config import construct_components_from_config
     from lightrag.utils import setup_env
-    from lightrag.utils.registry import EntityMapping
 
-    # # Register transformers
-    # TransformerRegistry.register("DocumentSplitter", DocumentSplitter)
-    # TransformerRegistry.register("Embedder", Embedder)
-
-    # this relatest to the config
-    # TODO: component needs to be picklable
-    # Two ways to use this config:
-    # TODO: add this to utils/config.py
-    config = {  # attribute and its config to recreate the component
+    data_transformer_config = {  # attribute and its config to recreate the component
+        "embedder": {
+            "component_name": "Embedder",
+            "component_config": {
+                "model_client": {
+                    "component_name": "OpenAIClient",
+                    "component_config": {},
+                },
+                "model_kwargs": {
+                    "model": "text-embedding-3-small",
+                    "dimensions": 256,
+                    "encoding_format": "float",
+                },
+            },
+        },
         "document_splitter": {
-            "entity_name": "DocumentSplitter",
-            "entity_config": {
+            "component_name": "DocumentSplitter",
+            "component_config": {
                 "split_by": "word",
                 "split_length": 400,
                 "split_overlap": 200,
             },
         },
         "to_embeddings": {
-            "entity_name": "ToEmbeddings",
-            "entity_config": {
+            "component_name": "ToEmbeddings",
+            "component_config": {
                 "vectorizer": {
-                    "entity_name": "Embedder",
-                    "entity_config": {
+                    "component_name": "Embedder",
+                    "component_config": {
                         "model_client": {
-                            "entity_name": "OpenAIClient",
-                            "entity_config": {},
+                            "component_name": "OpenAIClient",
+                            "component_config": {},
                         },
                         "model_kwargs": {
                             "model": "text-embedding-3-small",
@@ -275,139 +272,20 @@ if __name__ == "__main__":
         },
     }
 
-    # TODO: create config from a component pipeline.
+    path = "developer_notes/developer_notes/db_states.pkl"
+    db = LocalDocumentDB.load_state(path)
+    transformer_key = db.list_transformed_data_keys()[0]
+    print(db.transformer_setups)
+    components = construct_components_from_config(data_transformer_config)
+    embedder = components["embedder"]
+    transformed_documents = db.get_transformed_data(
+        transformer_key
+    )  # list of documents
+    embeddings = [doc.vector for doc in transformed_documents]
+    retriever = FAISSRetriever(
+        embedder=embedder, documents=embeddings
+    )  # allow to initialize with documents too
 
-    def construct_entity(config: Dict[str, Any]) -> Any:
-        entity_name = config["entity_name"]
-        entity_cls = EntityMapping.get(entity_name)
-        entity_config = config.get("entity_config", {})
-
-        initialized_config = {}
-
-        for key, value in entity_config.items():
-            if isinstance(value, dict) and "entity_name" in value:
-                # Recursively construct sub-entities
-                initialized_config[key] = construct_entity(value)
-            else:
-                initialized_config[key] = value
-
-        return entity_cls(**initialized_config)
-
-    def construct_entities_from_config(
-        config: Dict[str, Dict[str, Any]]
-    ) -> Dict[str, Any]:
-        entities = {}
-        for attr, entity_config in config.items():
-            entities[attr] = construct_entity(entity_config)
-        return entities
-
-    vectorizer_settings = {
-        "batch_size": 100,
-        "model_kwargs": {
-            "model": "text-embedding-3-small",
-            "dimensions": 256,
-            "encoding_format": "float",
-        },
-    }
-    retriever_settings = {
-        "top_k": 2,
-    }
-    generator_model_kwargs = {
-        "model": "gpt-3.5-turbo",
-        "temperature": 0.3,
-        "stream": False,
-    }
-    text_splitter_settings = {  # TODO: change it to direct to spliter kwargs
-        "split_by": "word",
-        "chunk_size": 400,
-        "chunk_overlap": 200,
-    }
-    vectorizer = Embedder(
-        model_client=OpenAIClient(),
-        # batch_size=self.vectorizer_settings["batch_size"],
-        model_kwargs=vectorizer_settings["model_kwargs"],
-    )
-    # TODO: check document splitter, how to process the parent and order of the chunks
-    text_splitter = DocumentSplitter(
-        split_by=text_splitter_settings["split_by"],
-        split_length=text_splitter_settings["chunk_size"],
-        split_overlap=text_splitter_settings["chunk_overlap"],
-    )
-    batch_embedder = BatchEmbedder(
-        embedder=vectorizer,
-        batch_size=vectorizer_settings["batch_size"],
-    )
-    data_transformer = Sequential(
-        text_splitter,
-        ToEmbeddings(
-            vectorizer=vectorizer,
-            batch_size=vectorizer_settings["batch_size"],
-        ),
-    )
-    entities = construct_entities_from_config(config)
-    print("entities:", entities)
-    # print(entities["embedder"])
-
-    # test
-    # embedder = entities["embedder"]
-    # input = "Li"
-    # output = embedder(input)
-    # print("output:", output)
-
-    to_embeddings = entities["to_embeddings"]
-    print(type(to_embeddings), to_embeddings.vectorizer)
-
-    new_data_transformer = Sequential(
-        entities["document_splitter"], entities["to_embeddings"]
-    )
-    print(new_data_transformer)
-    db.transform_data(new_data_transformer)
-    print(db)
-
-    # db = LocalDocumentDB.load_state("storage/local_document_db.pkl")
-    # print(db)
-#     db.register_transformer(data_transformer)
-#     print(f"state: {db.__dict__}")
-#     # print(db.transformer_setups)
-#     print(db)
-
-#     for name, componnet in data_transformer.named_components():
-#         print(f"name: {name}, component: {componnet}")
-
-#     new_data_transformer = Sequential(
-#         entities["document_splitter"], entities["to_embeddings"]
-#     )
-#     configs = new_data_transformer.extract_component_config()
-#     print(f"configs: {configs}")
-
-#     configs = {
-#         "component_name": "Sequential",
-#         "component_config": {
-#             "args": None,
-#             "0": {
-#                 "component_name": "DocumentSplitter",
-#                 "component_config": {
-#                     "split_by": "word",
-#                     "split_length": 400,
-#                     "split_overlap": 200,
-#                 },
-#             },
-#             "1": {
-#                 "component_name": "ToEmbeddings",
-#                 "component_config": {"vectorizer": None, "batch_size": 100},
-#                 "batch_embedder": {
-#                     "component_name": "BatchEmbedder",
-#                     "component_config": {"embedder": None, "batch_size": 100},
-#                 },
-#             },
-#         },
-#     }
-# # print(f"_init_name: {new_data_transformer._init_args}")
-# # print(
-# #     f"entity_name: {new_data_transformer[0]._init_args}, {new_data_transformer[0]}"
-# # )
-# # extracted_config = new_data_transformer.extract_component_config()
-# # print(f"extracted_config: {extracted_config}")
-# db.transform_data(new_data_transformer)
-# # print(db)
-# # db.save_state("storage/local_document_db.pkl")
+    query = "What happened at Viaweb and Interleaf?"
+    retrieved_documents = retriever(query)
+    print(retrieved_documents)

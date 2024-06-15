@@ -801,21 +801,6 @@ class Component:
         main_str += ")"
         return main_str
 
-    # # For configuration
-    # @classmethod
-    # def construct_component_from_config(cls, config: Dict[str, Any]) -> "Component":
-    #     r"""Constructs a component from a configuration dictionary.
-
-    #     Args:
-    #         config (Dict[str, Any]): configuration dictionary.
-
-    #     Returns:
-    #         Component: the constructed component.
-    #     """
-    #     raise NotImplementedError(
-    #         f"Component {cls.__name__} does not support configuration-based construction."
-    #     )
-
     def _get_init_args(self, *args, **kwargs) -> Dict[str, Any]:
         """Save the initialization arguments."""
         sig = inspect.signature(self.__class__.__init__)

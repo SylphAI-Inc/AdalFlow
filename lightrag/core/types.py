@@ -55,7 +55,7 @@ class Usage:
 
 
 class EmbedderOutput(DataClass):
-    r"""Container to hold the response from an Embedder model. Only Per-batch.
+    __doc__ = r"""Container to hold the response from an Embedder model. Only Per-batch.
 
     Data standard for Embedder model output to interact with other components.
     Batch processing is often available, thus we need a list of Embedding objects.
@@ -70,7 +70,6 @@ class EmbedderOutput(DataClass):
     raw_response: Optional[Any] = field(
         default=None, metadata={"desc": "Raw response"}
     )  # only used if error
-    # input: Optional[str] = field(default=None, metadata={"desc": "Input text"})
     input: Optional[List[str]] = field(default=None, metadata={"desc": "Input text"})
 
     @property
@@ -100,6 +99,10 @@ class EmbedderOutput(DataClass):
             if self.data and self.data[0].embedding
             else False
         )
+
+
+EmbedderOutputType = EmbedderOutput
+BatchEmbedderOutputType = List[EmbedderOutput]
 
 
 class GeneratorOutput(DataClass, Generic[T_co]):
@@ -220,7 +223,7 @@ class Document(DataClass):
 
 
 class RetrieverOutput(DataClass):
-    r"""Mainly used to retrieve a list of documents with scores."""
+    __doc__ = r"""Save the output of a single query in retrievers."""
 
     doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
     doc_scores: Optional[List[float]] = field(
@@ -234,7 +237,7 @@ class RetrieverOutput(DataClass):
     )
 
 
-RetrieverOutputType = List[RetrieverOutput]
+RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
 
 
 @dataclass
