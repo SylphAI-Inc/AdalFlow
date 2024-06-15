@@ -47,7 +47,6 @@ class RerankerRetriever(Retriever):
                 model_type=ModelType.RERANKER,
             )
             log.info(f"api_kwargs: {api_kwargs}")
-            print(f"api_kwargs: {api_kwargs}    ")
             scores: List[float] = self.model_client.call(
                 api_kwargs=api_kwargs, model_type=ModelType.RERANKER
             )
@@ -59,17 +58,3 @@ class RerankerRetriever(Retriever):
                 )
             )
         return retrieved_outputs
-
-
-# if __name__ == "__main__":
-#     # from lightrag.components.retriever import RerankerRetriever
-
-#     query = "Li"
-#     documents = ["Li", "text2"]
-
-#     retriever = RerankerRetriever(top_k=1)
-#     print(retriever)
-#     retriever.build_index_from_documents(documents=documents)
-#     print(retriever.documents)
-#     output = retriever.retrieve(query)
-#     print(output)

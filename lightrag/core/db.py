@@ -28,22 +28,6 @@ A dataset can include anything, and some parts will be represented as local docu
 log = logging.getLogger(__name__)
 
 
-class TransformerRegistry:
-    _registry: Dict[str, Type] = {}
-
-    @classmethod
-    def register(cls, name: str, transformer_cls: Type):
-        cls._registry[name] = transformer_cls
-
-    @classmethod
-    def get(cls, name: str) -> Type:
-        return cls._registry[name]
-
-    @classmethod
-    def get_all(cls) -> Dict[str, Type]:
-        return cls._registry
-
-
 # @dataclass
 @dataclass
 class LocalDocumentDB:
@@ -218,74 +202,74 @@ class LocalDocumentDB:
         self.transformer_setups = {}
 
 
-if __name__ == "__main__":
-    from lightrag.core.types import Document
-    from lightrag.components.retriever import FAISSRetriever
-    from lightrag.core.db import LocalDocumentDB
-    from lightrag.utils.config import construct_components_from_config
-    from lightrag.utils import setup_env
+# if __name__ == "__main__":
+#     from lightrag.core.types import Document
+#     from lightrag.components.retriever import FAISSRetriever
+#     from lightrag.core.db import LocalDocumentDB
+#     from lightrag.utils.config import construct_components_from_config
+#     from lightrag.utils import setup_env
 
-    data_transformer_config = {  # attribute and its config to recreate the component
-        "embedder": {
-            "component_name": "Embedder",
-            "component_config": {
-                "model_client": {
-                    "component_name": "OpenAIClient",
-                    "component_config": {},
-                },
-                "model_kwargs": {
-                    "model": "text-embedding-3-small",
-                    "dimensions": 256,
-                    "encoding_format": "float",
-                },
-            },
-        },
-        "document_splitter": {
-            "component_name": "DocumentSplitter",
-            "component_config": {
-                "split_by": "word",
-                "split_length": 400,
-                "split_overlap": 200,
-            },
-        },
-        "to_embeddings": {
-            "component_name": "ToEmbeddings",
-            "component_config": {
-                "vectorizer": {
-                    "component_name": "Embedder",
-                    "component_config": {
-                        "model_client": {
-                            "component_name": "OpenAIClient",
-                            "component_config": {},
-                        },
-                        "model_kwargs": {
-                            "model": "text-embedding-3-small",
-                            "dimensions": 256,
-                            "encoding_format": "float",
-                        },
-                    },
-                    # the other config is to instantiate the entity (class and function) with the given config as arguments
-                    # "entity_state": "storage/embedder.pkl", # this will load back the state of the entity
-                },
-                "batch_size": 100,
-            },
-        },
-    }
+#     data_transformer_config = {  # attribute and its config to recreate the component
+#         "embedder": {
+#             "component_name": "Embedder",
+#             "component_config": {
+#                 "model_client": {
+#                     "component_name": "OpenAIClient",
+#                     "component_config": {},
+#                 },
+#                 "model_kwargs": {
+#                     "model": "text-embedding-3-small",
+#                     "dimensions": 256,
+#                     "encoding_format": "float",
+#                 },
+#             },
+#         },
+#         "document_splitter": {
+#             "component_name": "DocumentSplitter",
+#             "component_config": {
+#                 "split_by": "word",
+#                 "split_length": 400,
+#                 "split_overlap": 200,
+#             },
+#         },
+#         "to_embeddings": {
+#             "component_name": "ToEmbeddings",
+#             "component_config": {
+#                 "vectorizer": {
+#                     "component_name": "Embedder",
+#                     "component_config": {
+#                         "model_client": {
+#                             "component_name": "OpenAIClient",
+#                             "component_config": {},
+#                         },
+#                         "model_kwargs": {
+#                             "model": "text-embedding-3-small",
+#                             "dimensions": 256,
+#                             "encoding_format": "float",
+#                         },
+#                     },
+#                     # the other config is to instantiate the entity (class and function) with the given config as arguments
+#                     # "entity_state": "storage/embedder.pkl", # this will load back the state of the entity
+#                 },
+#                 "batch_size": 100,
+#             },
+#         },
+#     }
 
-    path = "developer_notes/developer_notes/db_states.pkl"
-    db = LocalDocumentDB.load_state(path)
-    transformer_key = db.list_transformed_data_keys()[0]
-    print(db.transformer_setups)
-    components = construct_components_from_config(data_transformer_config)
-    embedder = components["embedder"]
-    transformed_documents = db.get_transformed_data(
-        transformer_key
-    )  # list of documents
-    embeddings = [doc.vector for doc in transformed_documents]
-    retriever = FAISSRetriever(
-        embedder=embedder, documents=embeddings
-    )  # allow to initialize with documents too
+#     path = "developer_notes/developer_notes/db_states.pkl"
+#     db = LocalDocumentDB.load_state(path)
+#     transformer_key = db.list_transformed_data_keys()[0]
+#     print(db.transformer_setups)
+#     components = construct_components_from_config(data_transformer_config)
+#     embedder = components["embedder"]
+#     transformed_documents = db.get_transformed_data(
+#         transformer_key
+#     )  # list of documents
+#     embeddings = [doc.vector for doc in transformed_documents]
+#     retriever = FAISSRetriever(
+#         embedder=embedder, documents=embeddings
+#     )  # allow to initialize with documents too
 
-    query = "What happened at Viaweb and Interleaf?"
-    retrieved_documents = retriever(query)
-    print(retrieved_documents)
+#     query = "What happened at Viaweb and Interleaf?"
+#     retrieved_documents = retriever(query)
+#     print(retrieved_documents)

@@ -7,17 +7,8 @@ from lightrag.core.embedder import Embedder
 from lightrag.core.functional import normalize_vector
 from lightrag.core.types import (
     EmbedderOutput,
-    EmbedderOutputType,
-    RetrieverOutputType,
     RetrieverOutput,
 )
-
-
-# Helper function to create dummy embeddings
-# def create_dummy_embeddings(num_embeddings, dim):
-#     vector = np.random.rand(num_embeddings, dim).astype(np.float32)
-#     normalized_vector = normalize_vector(vector)
-#     return normalized_vector
 
 
 # Helper function to create dummy embeddings
