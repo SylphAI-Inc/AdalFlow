@@ -9,7 +9,8 @@ from lightrag.core.retriever import (
     RetrieverOutputType,
     RetrieverInputType,
 )
-from lightrag.components.model_client import TransformersClient, ModelType
+from lightrag.components.model_client import TransformersClient
+from lightrag.core.types import ModelType
 
 log = logging.getLogger(__name__)
 

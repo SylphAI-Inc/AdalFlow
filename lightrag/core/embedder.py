@@ -45,7 +45,7 @@ class Embedder(Component):
         output_processors: Optional[Component] = None,
     ) -> None:
 
-        super().__init__()
+        super().__init__(model_kwargs=model_kwargs)
         if not isinstance(model_kwargs, Dict):
             raise ValueError(
                 f"{type(self).__name__} requires a dictionary for model_kwargs, not a string"
@@ -141,7 +141,7 @@ class BatchEmbedder(Component):
     """
 
     def __init__(self, embedder: Embedder, batch_size: int = 100) -> None:
-        super().__init__()
+        super().__init__(batch_size=batch_size)
         self.embedder = embedder
         self.batch_size = batch_size
 

@@ -58,7 +58,9 @@ class DocumentSplitter(Component):
         split_length: int = 200,
         split_overlap: int = 0,
     ):
-        super().__init__()
+        super().__init__(
+            split_by=split_by, split_length=split_length, split_overlap=split_overlap
+        )
 
         self.split_by = split_by
         if split_by not in ["word", "sentence", "page", "passage", "token"]:

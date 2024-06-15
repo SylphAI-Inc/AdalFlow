@@ -118,7 +118,7 @@ class ToEmbeddings(Component):
     """
 
     def __init__(self, vectorizer: Component, batch_size: int = 50) -> None:
-        super().__init__()
+        super().__init__(batch_size=batch_size)
         self.vectorizer = vectorizer
         self.batch_size = batch_size
         self.batch_embedder = BatchEmbedder(embedder=vectorizer, batch_size=batch_size)
@@ -129,8 +129,13 @@ class ToEmbeddings(Component):
         embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]
         outputs: BatchEmbedderOutputType = self.batch_embedder(input=embedder_input)
         for embedder_output, doc in zip(outputs, output):  # add the vector to the doc
-            doc.vector = embedder_output.data
+            for embedding in embedder_output.data:
+                doc.vector = embedding.embedding
         return output
+
+    def _extra_repr(self) -> str:
+        s = f"batch_size={self.batch_size}"
+        return s
 
 
 class RetrieverOutputToContextStr(Component):

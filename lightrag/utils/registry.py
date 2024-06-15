@@ -14,7 +14,7 @@ class EntityMapping:
 
     @classmethod
     def get(cls, name: str) -> Type:
-        return cls._registry[name]
+        return cls._registry[name] if name in cls._registry else None
 
     @classmethod
     def get_all(cls) -> Dict[str, Type]:

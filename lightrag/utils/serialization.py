@@ -6,6 +6,8 @@ from typing import Mapping, Any, Optional, List, Dict, Union
 import enum
 import inspect
 
+from lightrag.utils.registry import EntityMapping
+
 
 log = logging.getLogger(__name__)
 
@@ -89,6 +91,21 @@ def serialize(obj: Mapping[str, Any]) -> str:
     """
 
     return json.dumps(obj, indent=4, default=default)
+
+
+def deserialize(data: str) -> Any:
+    """Deserialize the JSON string back to an object."""
+    return json.loads(data, object_hook=_deserialize_object_hook)
+
+
+def _deserialize_object_hook(d: Dict[str, Any]) -> Any:
+    """Hook to deserialize objects based on their type."""
+    if "type" in d and "data" in d:
+        class_name = d["type"]
+        class_type = EntityMapping.get(class_name)
+        if class_type:
+            return class_type.from_dict(d)
+    return d
 
 
 def to_dict(obj: Any) -> Dict[str, Any]:

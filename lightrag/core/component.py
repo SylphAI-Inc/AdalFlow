@@ -12,15 +12,20 @@ from typing import (
     overload,
     Mapping,
     TypeVar,
+    Type,
 )
 from collections import OrderedDict
 import operator
 from itertools import islice
 import logging
+import pickle
+import inspect
 
 
 from lightrag.core.parameter import Parameter
 from lightrag.utils.serialization import default
+
+from lightrag.utils.registry import EntityMapping
 
 # import networkx as nx
 # from pyvis.network import Network
@@ -28,6 +33,8 @@ from lightrag.utils.serialization import default
 # import matplotlib.pyplot as plt
 # import itertools
 log = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 class _IncompatibleKeys(
@@ -114,6 +121,7 @@ class Component:
     _version: int = 1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
+    _init_args: Dict[str, Any] = {}  # Store the init arguments
     # _execution_graph: List[str] = []  # This will store the graph of execution.
     # _graph = nx.DiGraph()
     # _last_called = None  # Tracks the last component called
@@ -128,6 +136,8 @@ class Component:
         super().__setattr__("_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
+        # only for tracking the init args
+        super().__setattr__("_init_args", self._get_init_args(*args, **kwargs))
 
     def train(self, mode: bool = True):
         r"""Sets the component in training mode."""
@@ -157,41 +167,6 @@ class Component:
         keys = [key for key in keys if not key[0].isdigit()]
         return sorted(keys)
 
-    # TODO: test it
-    # def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
-    #     r"""Converts the component to a dictionary object.
-    #     This is helpful for serialization and it provides more states of the component than state_dict.
-    #     """
-    #     exclude = exclude or []
-    #     result = {}
-    #     for key, value in self.__dict__.items():
-    #         if key not in exclude:
-    #             if isinstance(value, dict):
-    #                 # Sorting dictionary by keys
-    #                 result[key] = {k: v for k, v in sorted(value.items())}
-    #             elif isinstance(value, list):
-    #                 # Sorting lists directly if they contain sortable elements
-    #                 try:
-    #                     sorted_list = sorted(value)
-    #                 except TypeError:
-    #                     # If elements are not comparable, leave as is
-    #                     sorted_list = value
-    #                 result[key] = sorted_list
-    #                 # elif hasattr(value, "to_dict"):
-    #                 #     try:
-    #                 #         # If the object has a to_dict method, use it
-    #                 #         result[key] = value.to_dict()
-    #                 #     except Exception as e:
-    #                 #         log.error(
-    #                 #             f"Error calling to_dict for {key} and value {value}: {e}"
-    #                 #         )
-    #                 #         result[key] = {"type": type(value).__name__, "data": str(value)}
-    #             else:
-    #                 result[key] = value
-    #     return result
-
-    # TODO: try a pickle version and be able to recreate the component
-    # TODO: can potentially use named_components and named_parameters.
     def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
         """Converts the component to a dictionary object for serialization, including more states of the component than state_dict.
 
@@ -205,14 +180,26 @@ class Component:
         data_dict = result["data"]
         for key, value in self.__dict__.items():
             if key not in exclude:
-                data_dict[key] = self._process_value(value)
+                try:
+                    data_dict[key] = self._process_value(value)
+                except TypeError:
+                    # Handle unserializable objects by pickling them
+                    data_dict[key] = {"_pickle_data": pickle.dumps(value).hex()}
 
         return result
 
     def _process_value(self, value):
         """Process values recursively for serialization."""
+        # if isinstance(value, dict):
+        #     # Recurse into dictionaries
+        #     return {k: self._process_value(v) for k, v in sorted(value.items())}
+
         if isinstance(value, dict):
-            # Recurse into dictionaries
+            if isinstance(value, OrderedDict):
+                return {
+                    "_ordered_dict": True,
+                    "data": [(k, self._process_value(v)) for k, v in value.items()],
+                }
             return {k: self._process_value(v) for k, v in sorted(value.items())}
         elif isinstance(value, list):
             # Recursively process list items
@@ -236,6 +223,57 @@ class Component:
             log.error(f"Error calling to_dict for object {obj}: {e}")
             # Fallback to a simpler representation
             return {"type": type(obj).__name__, "data": str(obj)}
+
+    @classmethod
+    def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
+        """Create an instance of the component from a dictionary.
+        Need to do it recursively for subcomponents.
+        """
+        # set the attributes of the class
+        # Instantiate the class without calling __init__
+        obj = cls.__new__(cls)
+        for key, value in data["data"].items():
+            setattr(obj, key, cls._restore_value(value))
+        return obj
+
+    @staticmethod
+    def _restore_value(value: Any) -> Any:
+        """Restore the original value from the serialized value."""
+        if isinstance(value, dict):
+            if "_pickle_data" in value:
+                # Handle unpickling
+                return pickle.loads(bytes.fromhex(value["_pickle_data"]))
+            if "_ordered_dict" in value and value["_ordered_dict"]:
+                return OrderedDict(
+                    (Component._restore_value(k), Component._restore_value(v))
+                    for k, v in value["data"]
+                )
+            if "type" in value and "data" in value:
+                # this is likely a class instance, restore using from_dict
+                class_name = value.get("type")
+                class_type = EntityMapping.get(class_name) or globals().get(class_name)
+                if class_type:
+                    try:
+                        return class_type.from_dict(value)
+                    except Exception as e:
+                        log.error(
+                            f"Error restoring class using from_dict {class_name}: {e}, value{value}"
+                        )
+                        return class_type()
+                else:
+                    log.error(f"Unknown class type: {class_name}")
+                    return value
+            else:  # Recursively process the dictionary
+                return {k: Component._restore_value(v) for k, v in value.items()}
+        elif isinstance(value, list):
+            return [Component._restore_value(v) for v in value]
+        return value
+
+    @classmethod
+    def load_state_pickle(cls, filepath: str) -> "Component":
+        """Load the state of the component from a file using pickle."""
+        with open(filepath, "rb") as file:
+            return pickle.load(file)
 
     def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
         r"""Add a parameter to the component.
@@ -763,6 +801,36 @@ class Component:
         main_str += ")"
         return main_str
 
+    # # For configuration
+    # @classmethod
+    # def construct_component_from_config(cls, config: Dict[str, Any]) -> "Component":
+    #     r"""Constructs a component from a configuration dictionary.
+
+    #     Args:
+    #         config (Dict[str, Any]): configuration dictionary.
+
+    #     Returns:
+    #         Component: the constructed component.
+    #     """
+    #     raise NotImplementedError(
+    #         f"Component {cls.__name__} does not support configuration-based construction."
+    #     )
+
+    def _get_init_args(self, *args, **kwargs) -> Dict[str, Any]:
+        """Save the initialization arguments."""
+        sig = inspect.signature(self.__class__.__init__)
+        params = sig.parameters
+        init_args = {}
+
+        for i, (key, param) in enumerate(params.items()):
+            if key == "self":
+                continue
+            if param.default == inspect.Parameter.empty:
+                init_args[key] = args[i] if i < len(args) else kwargs.get(key)
+            else:
+                init_args[key] = kwargs.get(key, param.default)
+        return init_args
+
 
 T = TypeVar("T", bound=Component)
 
@@ -772,6 +840,23 @@ class Sequential(Component):
     
     Components will be added to it in the order they are passed to the constructor.
     Output of the previous component is input to the next component as positional argument.
+
+    Examples:
+    1. Use list as input:
+        >>> seq = Sequential([component1, component2])
+    2. Use positional arguments:
+        >>> seq = Sequential(component1, component2)
+    3. Use both:
+        >>> seq = Sequential(component1, [component2, component3])
+    4. Add components:
+        >>> seq.append(component4)
+    5. Get a component:
+        >>> seq[0]
+    6. Delete a component:
+        >>> del seq[0]
+    7. Iterate over components:
+        >>> for component in seq:
+        >>>     print(component)
     """
 
     _components: Dict[str, Component]  # type: ignore[assignment]

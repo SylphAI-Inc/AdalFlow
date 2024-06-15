@@ -98,10 +98,18 @@ class LocalDocumentDB:
     def get_mapped_data(self, key: str) -> List[Document]:
         return self.mapped_documents[key]
 
+    def _get_transformer_name(self, transformer: Component) -> str:
+        # check all _sub_components and join the name with _
+        name = f"{transformer.__class__.__name__}_"
+        for n, sub_component in transformer.named_components():
+            print(f"sub_component: {sub_component}")
+            name += n + "_"
+        return name
+
     def register_transformer(self, transformer: Component, key: Optional[str] = None):
         """Register a transformer to be used later for transforming the documents."""
         if key is None:
-            key = transformer._get_name() + "_transformer"
+            key = self._get_transformer_name(transformer)
             log.info(f"Generated key for transformer: {key}")
         self.transformer_setups[key] = transformer
 
@@ -109,14 +117,14 @@ class LocalDocumentDB:
         self,
         transformer: Component,
         key: Optional[str] = None,
-        documents: Optional[List[Document]] = None,
+        # documents: Optional[List[Document]] = None,
     ) -> List[Document]:
         """Transform the documents using the transformer, the transformed documents will be used to build index."""
         if key is None:
-            key = transformer._get_name() + "_transformer"
+            key = self._get_transformer_name(transformer)
             log.info(f"Generated key for transformed data: {key}")
 
-        documents_to_use = documents.copy() if documents else self.documents.copy()
+        documents_to_use = self.documents.copy()
         self.transformed_documents[key] = transformer(documents_to_use)
         self.transformer_setups[key] = transformer  # Record the transformer obj
         return key
@@ -213,6 +221,7 @@ if __name__ == "__main__":
         Document(text="This is another test document. It is also a long document."),
     ]
     db = LocalDocumentDB()
+    print("state", db.__dict__)
     print(db)
     db.load_documents(documents)
     print(db)
@@ -231,20 +240,9 @@ if __name__ == "__main__":
 
     # this relatest to the config
     # TODO: component needs to be picklable
+    # Two ways to use this config:
+    # TODO: add this to utils/config.py
     config = {  # attribute and its config to recreate the component
-        "embedder": {
-            "entity_name": "Embedder",
-            "entity_config": {
-                "model_client": {
-                    "entity_name": "OpenAIClient",
-                },
-                "model_kwargs": {
-                    "model": "text-embedding-3-small",
-                    "dimensions": 256,
-                    "encoding_format": "float",
-                },
-            },
-        },
         "document_splitter": {
             "entity_name": "DocumentSplitter",
             "entity_config": {
@@ -256,7 +254,22 @@ if __name__ == "__main__":
         "to_embeddings": {
             "entity_name": "ToEmbeddings",
             "entity_config": {
-                "vectorizer": "embedder",
+                "vectorizer": {
+                    "entity_name": "Embedder",
+                    "entity_config": {
+                        "model_client": {
+                            "entity_name": "OpenAIClient",
+                            "entity_config": {},
+                        },
+                        "model_kwargs": {
+                            "model": "text-embedding-3-small",
+                            "dimensions": 256,
+                            "encoding_format": "float",
+                        },
+                    },
+                    # the other config is to instantiate the entity (class and function) with the given config as arguments
+                    # "entity_state": "storage/embedder.pkl", # this will load back the state of the entity
+                },
                 "batch_size": 100,
             },
         },
@@ -333,12 +346,68 @@ if __name__ == "__main__":
     )
     entities = construct_entities_from_config(config)
     print("entities:", entities)
+    # print(entities["embedder"])
+
+    # test
+    # embedder = entities["embedder"]
+    # input = "Li"
+    # output = embedder(input)
+    # print("output:", output)
+
+    to_embeddings = entities["to_embeddings"]
+    print(type(to_embeddings), to_embeddings.vectorizer)
+
+    new_data_transformer = Sequential(
+        entities["document_splitter"], entities["to_embeddings"]
+    )
+    print(new_data_transformer)
+    db.transform_data(new_data_transformer)
+    print(db)
 
     # db = LocalDocumentDB.load_state("storage/local_document_db.pkl")
     # print(db)
-    db.register_transformer(data_transformer)
-    # print(db.transformer_setups)
-    print(db)
-    db.transform_data(data_transformer)
-    print(db)
-    db.save_state("storage/local_document_db.pkl")
+#     db.register_transformer(data_transformer)
+#     print(f"state: {db.__dict__}")
+#     # print(db.transformer_setups)
+#     print(db)
+
+#     for name, componnet in data_transformer.named_components():
+#         print(f"name: {name}, component: {componnet}")
+
+#     new_data_transformer = Sequential(
+#         entities["document_splitter"], entities["to_embeddings"]
+#     )
+#     configs = new_data_transformer.extract_component_config()
+#     print(f"configs: {configs}")
+
+#     configs = {
+#         "component_name": "Sequential",
+#         "component_config": {
+#             "args": None,
+#             "0": {
+#                 "component_name": "DocumentSplitter",
+#                 "component_config": {
+#                     "split_by": "word",
+#                     "split_length": 400,
+#                     "split_overlap": 200,
+#                 },
+#             },
+#             "1": {
+#                 "component_name": "ToEmbeddings",
+#                 "component_config": {"vectorizer": None, "batch_size": 100},
+#                 "batch_embedder": {
+#                     "component_name": "BatchEmbedder",
+#                     "component_config": {"embedder": None, "batch_size": 100},
+#                 },
+#             },
+#         },
+#     }
+# # print(f"_init_name: {new_data_transformer._init_args}")
+# # print(
+# #     f"entity_name: {new_data_transformer[0]._init_args}, {new_data_transformer[0]}"
+# # )
+# # extracted_config = new_data_transformer.extract_component_config()
+# # print(f"extracted_config: {extracted_config}")
+# db.transform_data(new_data_transformer)
+# # print(db)
+# # db.save_state("storage/local_document_db.pkl")

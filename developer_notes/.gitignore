@@ -2,3 +2,4 @@
 *.test
 *logs
 test*
+*.pkl
