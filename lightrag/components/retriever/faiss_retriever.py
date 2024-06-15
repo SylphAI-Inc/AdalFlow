@@ -1,6 +1,6 @@
-"""Local semantic search/embedding-based retriever using FAISS."""
+"""Semantic search/embedding-based retriever using FAISS."""
 
-from typing import List, Optional, Sequence, Union, Dict, overload
+from typing import List, Optional, Sequence, Union, Dict, overload, Any
 import numpy as np
 import logging
 import os
@@ -39,7 +39,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 
 class FAISSRetriever(Retriever):
-    __doc__ = r"""Local semantic search/embedding-based retriever using FAISS.
+    __doc__ = r"""Semantic search/embedding-based retriever using FAISS.
 
     To use the retriever, ensure to call :meth:`build_index_from_documents` before calling :meth:`retrieve`.
 
@@ -61,7 +61,7 @@ class FAISSRetriever(Retriever):
 
     Other index options:
     - faiss.IndexFlatL2: L2 or Euclidean distance, [-inf, inf]
-    - faiss.IndexFlatIP: inner product of normalized vectors will be cosine similarity, [-1, 1]
+    - faiss.IndexFlatIP: Inner product of embeddings (inner product of normalized vectors will be cosine similarity, [-1, 1])
 
     We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability in [0, 1]
 
@@ -75,20 +75,51 @@ class FAISSRetriever(Retriever):
         top_k: int = 5,
         dimensions: Optional[int] = None,
         documents: Optional[FAISSRetrieverDocumentType] = None,
+        is_embedding_normalized: bool = True,
     ):
         super().__init__()
         self.dimensions = dimensions
         self.embedder = embedder  # used to vectorize the queries
         self.top_k = top_k
+        self.is_embedding_normalized = is_embedding_normalized
+        if self.is_embedding_normalized:
+            self._faiss_index_type = faiss.IndexFlatIP
+        else:
+            self._faiss_index_type = faiss.IndexFlatL2
 
-        self.index = None
+        self.index = None  # faiss index
+        self.documents = None
+        self.xb = None  # numpy array of embeddings
+        self.total_chunks: int = 0
+        # setup the index of the retriever
+        self.index_keys = ["xb"]
         if documents:
+            self.documents = documents
             self.build_index_from_documents(documents)
 
     def reset_index(self):
-        self.index.reset() if self.index else None
+        self.index = None if self.index else None
         self.total_chunks: int = 0
         self.indexed = False
+
+    def load_index(self, data: Dict[str, Any]):
+        super().load_index(data)
+        # recreate the index with faiss
+        assert "xb" in data, "xb is not found in the data"
+        self._preprare_faiss_index_from_np_array(data["xb"])
+
+    def _preprare_faiss_index_from_np_array(self, xb: np.ndarray):
+        r"""Prepare the faiss index from the numpy array."""
+        if not self.dimensions:
+            self.dimensions = self.xb.shape[1]
+        else:
+            assert (
+                self.dimensions == self.xb.shape[1]
+            ), f"Dimension mismatch: {self.dimensions} != {self.xb.shape[1]}"
+        self.total_chunks = xb.shape[0]
+        self.index = self._faiss_index_type(self.dimensions)
+        self.index.add(xb)
+        self.indexed = True
 
     def build_index_from_documents(
         self,
@@ -102,7 +133,7 @@ class FAISSRetriever(Retriever):
         If you are using Document format, pass them as [doc.vector for doc in documents]
         """
         try:
-            self.total_chunks = len(documents)
+            self.documents = documents
 
             # convert to numpy array
             if not isinstance(documents, np.ndarray) and isinstance(
@@ -112,20 +143,10 @@ class FAISSRetriever(Retriever):
                 assert all(
                     len(doc) == len(documents[0]) for doc in documents
                 ), "All embeddings should be of the same size"
-                xb = np.array(documents, dtype=np.float32)
+                self.xb = np.array(documents, dtype=np.float32)
             else:
-                xb = documents
-            # check dimensions
-            if not self.dimensions:
-                self.dimensions = xb.shape[1]
-            else:
-                assert (
-                    self.dimensions == xb.shape[1]
-                ), f"Dimension mismatch: {self.dimensions} != {xb.shape[1]}"
-            # prepare the faiss index
-            self.index = faiss.IndexFlatIP(self.dimensions)
-            self.index.add(xb)
-            self.indexed = True
+                self.xb = documents
+            self._preprare_faiss_index_from_np_array(self.xb)
             log.info(f"Index built with {self.total_chunks} chunks")
         except Exception as e:
             log.error(f"Error building index: {e}, resetting the index")
@@ -152,9 +173,9 @@ class FAISSRetriever(Retriever):
         # Step 2: processing rows (one query at a time)
         for row in zip(Ind, D):
             indices, distances = row
-            # chunks: List[Chunk] = []
-            retrieved_documents_indices = indices
-            retrieved_documents_scores = distances
+            # convert from numpy to list
+            retrieved_documents_indices = indices.tolist()
+            retrieved_documents_scores = distances.tolist()
             output.append(
                 RetrieverOutput(
                     doc_indices=retrieved_documents_indices,
@@ -169,16 +190,23 @@ class FAISSRetriever(Retriever):
         input: FAISSRetrieverEmbeddingInputType,
         top_k: Optional[int] = None,
     ) -> RetrieverOutputType:
+        if not self.indexed or self.index.ntotal == 0:
+            raise ValueError(
+                "Index is empty. Please set the chunks to build the index from"
+            )
         # check if the input is List, convert to numpy array
         try:
             if not isinstance(input, np.ndarray):
                 xq = np.array(input, dtype=np.float32)
+            else:
+                xq = input
         except Exception as e:
             log.error(f"Error converting input to numpy array: {e}")
             raise e
 
         D, Ind = self.index.search(xq, top_k if top_k else self.top_k)
-        D = self._convert_cosine_similarity_to_probability(D)
+        if self.is_embedding_normalized:
+            D = self._convert_cosine_similarity_to_probability(D)
         output: RetrieverOutputType = self._to_retriever_output(Ind, D)
         return output
 
@@ -195,7 +223,7 @@ class FAISSRetriever(Retriever):
 
         When top_k is not provided, it will use the default top_k set during initialization.
         """
-        if self.index.ntotal == 0:
+        if not self.indexed or self.index.ntotal == 0:
             raise ValueError(
                 "Index is empty. Please set the chunks to build the index from"
             )
@@ -214,9 +242,10 @@ class FAISSRetriever(Retriever):
         # embed the queries, assume the length fits into a batch.
         try:
             embeddings: EmbedderOutputType = self.embedder(valid_queries)
-            queries_embeddings: List[float] = [
+            queries_embeddings: List[List[float]] = [
                 data.embedding for data in embeddings.data
             ]
+
         except Exception as e:
             log.error(f"Error embedding queries: {e}")
             raise e
@@ -275,4 +304,6 @@ class FAISSRetriever(Retriever):
         s = f"top_k={self.top_k}"
         if self.dimensions:
             s += f", dimensions={self.dimensions}"
+        if self.documents:
+            s += f", total_chunks={self.total_chunks}"
         return s

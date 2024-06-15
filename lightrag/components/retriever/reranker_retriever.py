@@ -61,15 +61,15 @@ class RerankerRetriever(Retriever):
         return retrieved_outputs
 
 
-if __name__ == "__main__":
-    # from lightrag.components.retriever import RerankerRetriever
+# if __name__ == "__main__":
+#     # from lightrag.components.retriever import RerankerRetriever
 
-    query = "Li"
-    documents = ["Li", "text2"]
+#     query = "Li"
+#     documents = ["Li", "text2"]
 
-    retriever = RerankerRetriever(top_k=1)
-    print(retriever)
-    retriever.build_index_from_documents(documents=documents)
-    print(retriever.documents)
-    output = retriever.retrieve(query)
-    print(output)
+#     retriever = RerankerRetriever(top_k=1)
+#     print(retriever)
+#     retriever.build_index_from_documents(documents=documents)
+#     print(retriever.documents)
+#     output = retriever.retrieve(query)
+#     print(output)

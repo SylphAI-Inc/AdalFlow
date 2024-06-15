@@ -87,27 +87,6 @@ def retriever_output_to_context_str(
     return context_str
 
 
-# class ToEmbedderResponse(Component):
-#     """Convert embedding model output to EmbedderOutput
-#     .. note:
-#        This might not apply to all Embedder models, this applys to one pattern
-#     """
-
-#     def __init__(
-#         self,
-#     ) -> None:
-#         super().__init__()
-
-#     def __call__(self, input: Any) -> EmbedderOutput:
-#         """
-#         convert the model output to EmbedderOutput
-#         """
-#         try:
-#             return parse_embedding_response(input)
-#         except Exception as e:
-#             raise ValueError(f"Error converting to EmbedderOutput: {e}")
-
-
 """
 For now these are the data transformation components
 """
