@@ -23,14 +23,13 @@ from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
 from copy import deepcopy
 
-
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
 from lightrag.core.tool_helper import FunctionTool, AsyncCallable
 from lightrag.core.string_parser import JsonParser, parse_function_call
 from lightrag.core.generator import GeneratorOutput
-
 from lightrag.core.model_client import ModelClient
+from lightrag.utils.logger import printc
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
@@ -312,6 +311,7 @@ class ReActAgent(Generator):
         # execute the action
         if parsed_response and parsed_response.action:
             parsed_response = self._execute_action(parsed_response)
+            printc(f"step: {step}, response: {parsed_response}", color="blue")
         else:
             print(f"Failed to parse response for step {step}")
         self.step_history.append(parsed_response)
@@ -327,6 +327,7 @@ class ReActAgent(Generator):
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         # wrap up the input in the prompt_kwargs
         prompt_kwargs["input_str"] = input
+        printc(f"input_query: {input}", color="cyan")
         for i in range(self.max_steps):
             step = i + 1
             try:
@@ -339,8 +340,11 @@ class ReActAgent(Generator):
             except Exception as e:
                 error_message = f"Error running step {step}: {e}"
                 print(error_message)
-
-        answer = self.step_history[-1].observation
+        try:
+            answer = self.step_history[-1].observation
+        except:
+            answer = None
+        printc(f"answer: {answer}", color="magneta")
         print(f"step_history: {self.step_history}")
         self.reset()
         return answer
@@ -349,67 +353,3 @@ class ReActAgent(Generator):
         s = f"tools={self.tools}, max_steps={self.max_steps}, "
         s += super()._extra_repr()
         return s
-
-
-if __name__ == "__main__":
-    from lightrag.components.model_client import GroqAPIClient
-    import time
-    
-    import dotenv
-    # load evironment
-    dotenv.load_dotenv(dotenv_path=".env", override=True)
-
-    # define the tools
-    def multiply(a: int, b: int) -> int:
-        '''Multiply two numbers.'''
-        return a * b
-    def add(a: int, b: int) -> int:
-        '''Add two numbers.'''
-        return a + b
-    
-    tools = [
-        FunctionTool.from_defaults(fn=multiply),
-        FunctionTool.from_defaults(fn=add),
-    ]
-    
-    # set up examples
-    examples = [
-        r"""
-        User: What is 9 - 3?
-        You: {
-            "thought": "I need to subtract 3 from 9, but there is no subtraction tool, so I ask llm_tool to answer the query.",
-            "action": "llm_tool('What is 9 - 3?')"
-        }
-        """
-    ]
-    # preset examples in the prompt
-    preset_prompt_kwargs = {"example": examples}
-    
-    # set up llm args
-    llm_model_kwargs = {
-        "model": "llama3-70b-8192",
-        "temperature": 0.0
-    }
-    
-    # initialze an agent
-    agent = ReActAgent(
-        tools=tools,
-        model_client=GroqAPIClient(),
-        model_kwargs=llm_model_kwargs,
-        max_steps=3,
-        preset_prompt_kwargs=preset_prompt_kwargs
-    )
-    
-    # query the agent
-    queries = ["What is 3 add 4?", "3*9=?"]
-    average_time = 0
-    for query in queries:
-        t0 = time.time()
-        answer = agent(query)
-        average_time += time.time() - t0
-        print(f"Answer: {answer}")
-    print(f"Average time: {average_time / len(queries)}")
-
-"""
-GroqAPI(llama3-70b-8192) average time for simple queries in the example = 0.86s
-"""
