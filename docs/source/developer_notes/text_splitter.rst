@@ -1,12 +1,11 @@
-Document Splitter
-========================
+Text Splitter
+-----------------
+
 LLMs’s context window is limited and the performance often drops with very long and nonsense input.
 Shorter content is more manageable and fits memory constraint.
 The goal of the document splitter is to chunk large data into smaller ones, potentially improving embedding and retrieving.
-In this tutorial, we will learn to implement ``LightRAG`` splitters.
+In this tutorial, we will learn to implement ``LightRAG`` splitter.
 
-TextSplitter
------------------
 The ``TextSplitter`` is designed to efficiently process and chunk **plain text**. 
 It leverages configurable separators to facilitate the splitting of :obj:`document object <core.types.Document>` into smaller manageable document chunks.
 
@@ -18,6 +17,18 @@ Capabilities
 **Customizability:** Supports customization of separators, allowing developers to define how the text is segmented based on the use case.
 
 **Scalability:** Optimized for performance, handling extensive documents efficiently, with chunk size and overlap control. The raw documents metadata will not be changed.
+
+Overview
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``TextSplitter`` supports plain text splitting. It first utilizes a ``split_by`` argument to specify the 
+text-splitting criterion. 
+
+The long text will get broken down into a list of shorter texts. 
+
+Then we create a sliding window with length = ``chunk_size``. It moves at step = ``chunk_size`` - ``chunk_overlap``.
+
+The texts inside each window will get concatenated to a small chunk. 
 
 Key Arguments
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -46,10 +57,6 @@ Check the following table for ``split_by`` options:
      - ``<space>``
      - ``Hello, world. This is LightRAG.`` to ``['Hello, ', 'world. ', 'This ', 'is ', 'LightRAG.']``
 
-.. note::
-
-  The splitted ``list`` will get **concatenated** based on the specified ``chunk_size`` and ``chunk_overlap`` later.
-
 * ``chunk_size`` is the the maximum number of units in each chunk. 
 
 * ``chunk_overlap`` is the number of units that each chunk should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis.
@@ -59,7 +66,7 @@ Usage Example
 
 .. code-block:: python
 
-    from lightrag.core.document_splitter import TextSplitter
+    from lightrag.core.text_splitter import TextSplitter
     from lightrag.core.types import Document
 
     # Configure the splitter settings
