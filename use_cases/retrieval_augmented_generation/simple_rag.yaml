@@ -1,0 +1,19 @@
+vectorizer:
+  batch_size: 100
+  model_kwargs:
+    model: text-embedding-3-small
+    dimensions: 256
+    encoding_format: float
+
+retriever:
+  top_k: 2
+
+generator:
+  model: gpt-3.5-turbo
+  temperature: 0.3
+  stream: false
+
+text_splitter:
+  split_by: sentence
+  chunk_size: 1
+  chunk_overlap: 0
