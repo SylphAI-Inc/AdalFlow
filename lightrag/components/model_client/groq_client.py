@@ -18,7 +18,7 @@ except ImportError:
     raise ImportError("Please install groq with: pip install groq")
 
 
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
 
 
@@ -67,7 +67,7 @@ class GroqAPIClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:

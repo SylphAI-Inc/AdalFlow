@@ -40,6 +40,13 @@ try:
 except ImportError as e:
     log.info(f"Optional module not installed: {e}")
 
+try:
+    from .cohere_client import CohereAPIClient
+
+    __all__.append("CohereAPIClient")
+except ImportError as e:
+    log.info(f"Optional module not installed: {e}")
+
 
 for name in __all__:
     EntityMapping.register(name, globals()[name])

@@ -1,17 +1,16 @@
 r"""The component that orchestrates model client (Embedding models in particular) and output processors."""
 
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Union
 import logging
 from tqdm import tqdm
 
 from lightrag.core.types import ModelType
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
-from lightrag.core.types import EmbedderOutput
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import EmbedderOutputType
 from lightrag.core.component import Component
 import lightrag.core.functional as F
 
-EmbedderInputType = API_INPUT_TYPE
-EmbedderOutputType = EmbedderOutput
+EmbedderInputType = Union[str, List[str]]
 
 log = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ except ImportError:
     raise ImportError("Please install openai with: pip install openai")
 
 
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput
 from lightrag.core.data_components import parse_embedding_response
 
@@ -93,7 +93,7 @@ class OpenAIClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,  # user input
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:

@@ -22,15 +22,6 @@ from lightrag.core.types import (
 )
 
 
-def get_top_k_indices_scores(
-    scores: List[float], top_k: int
-) -> Tuple[List[int], List[float]]:
-    scores_np = np.array(scores)
-    top_k_indices = np.argsort(scores_np)[-top_k:][::-1]
-    top_k_scores = scores_np[top_k_indices]
-    return top_k_indices.tolist(), top_k_scores.tolist()
-
-
 class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
     __doc__ = r"""The base class for all retrievers.
 

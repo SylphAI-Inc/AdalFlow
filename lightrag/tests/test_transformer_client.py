@@ -1,5 +1,6 @@
 import unittest
 import torch
+
 from lightrag.components.model_client import (
     TransformersClient,
     TransformerReranker,
@@ -15,12 +16,10 @@ torch.set_num_interop_threads(1)
 class TestTransformerModelClient(unittest.TestCase):
     def setUp(self) -> None:
 
-        self.reranker_input = [
-            ["what is panda?", "hi"],
-            [
-                "what is panda?",
-                "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",
-            ],
+        self.query = "what is panda?"
+        self.documents = [
+            "The giant panda (Ailuropoda melanoleuca), sometimes called a panda bear or simply panda, is a bear species endemic to China.",
+            "The red panda (Ailurus fulgens), also called the lesser panda, the red bear-cat, and the red cat-bear, is a mammal native to the eastern Himalayas and southwestern China.",
         ]
 
     def test_transformer_embedder(self):
@@ -67,7 +66,9 @@ class TestTransformerModelClient(unittest.TestCase):
 
         model_kwargs = {
             "model": transformer_reranker_model,
-            "input": self.reranker_input,
+            "documents": self.documents,
+            "query": self.query,
+            "top_k": 2,
         }
 
         output = transformer_reranker_model_component(
@@ -85,10 +86,11 @@ class TestTransformerModelClient(unittest.TestCase):
         # run the model
         kwargs = {
             "model": "BAAI/bge-reranker-base",
-            "mock": False,
+            "documents": self.documents,
+            "top_k": 2,
         }
         api_kwargs = transformer_reranker_client.convert_inputs_to_api_kwargs(
-            input=self.reranker_input,
+            input=self.query,
             model_kwargs=kwargs,
             model_type=ModelType.RERANKER,
         )
@@ -97,4 +99,4 @@ class TestTransformerModelClient(unittest.TestCase):
         output = transformer_reranker_client.call(
             api_kwargs=api_kwargs, model_type=ModelType.RERANKER
         )
-        self.assertEqual(type(output), list)
+        self.assertEqual(type(output), tuple)

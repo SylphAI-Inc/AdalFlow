@@ -26,7 +26,8 @@ except ImportError:
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, Embedding
 
-from lightrag.core.component import Component
+from lightrag.core.functional import get_top_k_indices_scores
+
 
 log = logging.getLogger(__name__)
 
@@ -122,36 +123,6 @@ class TransformerEmbedder:
             raise ValueError(f"model {model_name} is not supported")
 
 
-class FlagRerankserSDK:
-    def __init__(self, model_name: Optional[str] = "BAAI/bge-reranker-base"):
-        try:
-            import FlagEmbedding
-        except ImportError:
-            raise ImportError(
-                "Please install FlagEmbedding with: pip install FlagEmbedding"
-            )
-        self.model_name = model_name
-        if model_name is not None:
-            self.init_model(model_name=model_name)
-
-    def init_model(self, model_name: str):
-        try:
-            from FlagEmbedding import FlagReranker
-
-            self.model = FlagReranker(
-                "BAAI/bge-reranker-large", use_fp16=True
-            )  # Setting use_fp16 to True speeds up computation with a slight performance degradation
-            log.info(f"Done loading model {model_name}")
-        except Exception as e:
-            log.error(f"Error loading model {model_name}: {e}")
-            raise e
-
-    def infer_bge_reranker_base(self, input=List[Tuple[str, str]]) -> List[float]:
-        scores = self.model.compute_score(input)
-        scores = F.sigmoid(scores)
-        return scores.tolist()
-
-
 class TransformerReranker:
     __doc__ = r"""Local model SDK for a reranker model using transformers.
 
@@ -198,14 +169,20 @@ class TransformerReranker:
 
     def infer_bge_reranker_base(
         self,
-        input=List[Tuple[str, str]],  # list of pairs of the query and the candidate
+        # input=List[Tuple[str, str]],  # list of pairs of the query and the candidate
+        query: str,
+        documents: List[str],
     ) -> List[float]:
         model = self.models.get(self.model_name, None)
         if model is None:
             # initialize the model
             self.init_model(self.model_name)
 
+        # convert the query and documents to pair input
+        input = [(query, doc) for doc in documents]
+
         with torch.no_grad():
+
             inputs = self.tokenizer(
                 input,
                 padding=True,
@@ -223,7 +200,10 @@ class TransformerReranker:
             )
             # apply sigmoid to get the scores
             scores = F.sigmoid(scores)
-        return scores.tolist()
+
+        scores = scores.tolist()
+        print(f"scores: {scores}")
+        return scores
 
     def __call__(self, **kwargs):
         r"""Ensure "model" and "input" are in the kwargs."""
@@ -239,7 +219,10 @@ class TransformerReranker:
         model_name = kwargs["model"]
         # inference the model
         if model_name == self.model_name:
-            return self.infer_bge_reranker_base(kwargs["input"])
+            assert "query" in kwargs, "query is required"
+            assert "documents" in kwargs, "documents is required"
+            scores = self.infer_bge_reranker_base(kwargs["query"], kwargs["documents"])
+            return scores
         else:
             raise ValueError(f"model {model_name} is not supported")
 
@@ -305,11 +288,15 @@ class TransformersClient(ModelClient):
         ):
             if not hasattr(self, "reranker_client") or self.reranker_client is None:
                 self.reranker_client = self.init_reranker_client()
-            return self.reranker_client(**api_kwargs)
+            scores = self.reranker_client(**api_kwargs)
+            top_k_indices, top_k_scores = get_top_k_indices_scores(
+                scores, api_kwargs["top_k"]
+            )
+            return top_k_indices, top_k_scores
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: Any,
+        input: Any,  # for retriever, it is a single query,
         model_kwargs: dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
@@ -318,7 +305,10 @@ class TransformersClient(ModelClient):
             final_model_kwargs["input"] = input
             return final_model_kwargs
         elif model_type == ModelType.RERANKER:
-            final_model_kwargs["input"] = input
+            assert "model" in final_model_kwargs, "model must be specified"
+            assert "documents" in final_model_kwargs, "documents must be specified"
+            assert "top_k" in final_model_kwargs, "top_k must be specified"
+            final_model_kwargs["query"] = input
             return final_model_kwargs
         else:
             raise ValueError(f"model_type {model_type} is not supported")

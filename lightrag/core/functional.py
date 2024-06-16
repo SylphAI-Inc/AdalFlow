@@ -2,7 +2,7 @@
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Type, Union, List
+from typing import Dict, Any, Callable, Type, Union, List, Tuple
 import numpy as np
 import re
 import json
@@ -58,6 +58,19 @@ def normalize_vector(v: VECTOR_TYPE) -> List[float]:
     normalized_v = v / norm
     # Return the normalized vector as a list
     return normalized_v.tolist()
+
+
+def get_top_k_indices_scores(
+    scores: Union[List[float], np.ndarray], top_k: int
+) -> Tuple[List[int], List[float]]:
+    if isinstance(scores, list):
+        scores_np = np.array(scores)
+    else:
+        scores_np = scores
+    print(f"scores_np: {scores_np}")
+    top_k_indices = np.argsort(scores_np)[-top_k:][::-1]
+    top_k_scores = scores_np[top_k_indices]
+    return top_k_indices.tolist(), top_k_scores.tolist()
 
 
 # import hashlib

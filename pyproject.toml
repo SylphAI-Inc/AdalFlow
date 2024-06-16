@@ -17,8 +17,8 @@ packages = [
 python = ">=3.11, <4.0"
 lightrag = { path = "./lightrag", develop = true }
 torch = "^2.3.1"
-transformers = "^4.40.0"
 flagembedding = "^1.2.10"
+cohere = "^5.5.7"
 
 
 [tool.poetry.group.dev.dependencies]
