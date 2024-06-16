@@ -1,33 +1,6 @@
-r""" Implementation based on : https://en.wikipedia.org/wiki/Okapi_BM25
-TODO: Trotmam et al, Improvements to BM25 and Language Models Examined
-Retrieval is highly dependent on the database.
+"""BM25 retriever implementation. """
 
-db-> transformer -> (index) should be a pair
-LocalDocumentDB:  [Local Document RAG]
-(1) algorithm, (2) index, build_index_from_documents (3) retrieve (top_k, query)
-
-What algorithm will do for LocalDocumentDB:
-(1) Build_index_from_documents (2) retrieval initialization (3) retrieve (top_k, query), potentially with score.
-
-InMemoryRetriever: (Component)
-(1) load_documents (2) build_index_from_documents (3) retrieve (top_k, query)
-
-PostgresDB:
-(1) sql_query for retrieval (2) pg_vector for retrieval (3) retrieve (top_k, query)
-
-MemoryDB:
-(1) chat_history (2) provide different retrieval methods, allow specify retrievel method at init.
-
-Generator:
-(1) prompt
-(2) model_client (model)
-(3) output_processors
-
-Retriever
-(1) 
-"""
-
-from typing import List, Dict, Optional, Callable, Any, Union
+from typing import List, Dict, Optional, Callable, Any, Union, Sequence
 import numpy as np
 import heapq
 import math
@@ -37,8 +10,16 @@ from multiprocessing import Pool, cpu_count
 from functools import partial
 
 from lightrag.core.tokenizer import Tokenizer
-from lightrag.core.types import RetrieverOutput, RetrieverOutput
-from lightrag.core.retriever import Retriever, RetrieverInputType, RetrieverOutputType
+from lightrag.core.types import (
+    RetrieverOutput,
+    RetrieverOutputType,
+    RetrieverInputStrType,
+    RetrieverDocumentsType,
+)
+from lightrag.core.retriever import (
+    Retriever,
+)
+from lightrag.utils.serialization import save_json, load_json
 
 log = logging.getLogger(__name__)
 
@@ -53,17 +34,18 @@ def split_text_by_word_fn(x: str) -> List[str]:
 
 
 def split_text_by_token_fn(tokenizer: Tokenizer, x: str) -> List[str]:
-    x = x.lower()
-    return tokenizer(x)
+    return tokenizer.get_string_tokens(x)
 
 
-# TODO: explain epsilon
-class InMemoryBM25Retriever(Retriever):
+class InMemoryBM25Retriever(Retriever[str, RetrieverInputStrType]):
     __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
+
+    It expects str as the final document type after ``document_map_func`` if the given document is not already in the format of List[str].
+    It expects Union[str, Sequence[str]] as the input in :meth:`retrieve` method.
 
     .. math::
 
-        \text{idf}(q_i) = \epsilon \log\left(\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}\right)
+        \text{idf}(q_i) = \log\left(\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}\right)
 
         \text{score}(q, d) = \sum_{i=1}^{n} \text{idf}(q_i) \cdot \frac{f(q_i, d) \cdot (k1 + 1)}{f(q_i, d) + k1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}
 
@@ -82,25 +64,56 @@ class InMemoryBM25Retriever(Retriever):
 
     Args:
         top_k : (int): The number of documents to return
-        k1 : float
-                Constant used for influencing the term frequency saturation. After saturation is reached, additional
+        k1 : (float, optional): Constant used for influencing the term frequency saturation. After saturation is reached, additional
                 presence for the term adds a significantly less additional score. According to [1]_, experiments suggest
                 that 1.2 < k1 < 2 yields reasonably good results, although the optimal value depends on factors such as
                 the type of documents or queries.
-        b : float
-                Constant used for influencing the effects of different document lengths relative to average document length.
+        b : (float, optional): Constant used for influencing the effects of different document lengths relative to average document length.
                 When b is bigger, lengthier documents (compared to average) have more impact on its effect. According to
                 [1]_, experiments suggest that 0.5 < b < 0.8 yields reasonably good results, although the optimal value
                 depends on factors such as the type of documents or queries.
+        epsilon: (float, optional): Used to adapt the negative idf score to epilon * average_idf. Default is 0.25
 
-        epsilon: float
-                A small 
+        documents: (List[Any], optional): The list of documents to build the index from. Default is None.
+        document_map_func: (Callable, optional): The function to transform the document into `List[str]`. 
+            You don't need it if your documents are already in format `List[str]`.
                
-
-
     Examples:
 
+    .. code-block:: python
+    
+            from lightrag.components.retriever.bm25_retriever import InMemoryBM25Retriever
+            
+            documents = ["hello world", "world is beautiful", "today is a good day"]
 
+    1. Pass the documents from the __init__ method:
+
+    .. code-block:: python
+
+            retriever = InMemoryBM25Retriever(top_k=1, documents=documents)
+            output = retriever("hello")
+            print(output)
+            # Output:
+            # [RetrieverOutput(doc_indices=[0], doc_scores=[0.6229580777634034], query=None, documents=None)]
+    
+    2. Pass the documents from the :meth:`build_index_from_documents` method:
+
+    .. code-block:: python
+            retriever = InMemoryBM25Retriever(top_k=1)
+            retriever.build_index_from_documents(documents) 
+            output = retriever("hello")
+    
+    3. Save the index to file and load it back:
+
+    .. code-block:: python
+
+            retriever.save_to_file("bm25_index.json")
+            retriever2 = InMemoryBM25Retriever.load_from_file("bm25_index.json")
+            output = retriever2("hello")
+            print(output)
+
+    note:
+    The retriever only fill in the ``doc_indices`` and ``doc_scores``. The ``documents`` needs to be filled in by the user.
     """
 
     def __init__(
@@ -110,9 +123,8 @@ class InMemoryBM25Retriever(Retriever):
         k1: float = PARAM_K1,
         b: float = PARAM_B,
         epsilon: float = PARAM_EPSILON,
-        split_function: Optional[Callable] = partial(
-            split_text_by_token_fn, Tokenizer()
-        ),
+        documents: Optional[Sequence[Any]] = None,
+        document_map_func: Optional[Callable[[Any], str]] = None,
     ):
         r"""
         - nd: <token, freq> (n(q_i) in the formula)
@@ -127,54 +139,55 @@ class InMemoryBM25Retriever(Retriever):
         self.b = b
         self.epsilon = epsilon
         self.top_k = top_k
-        self.split_function = split_function
+        self._split_function = split_text_by_word_fn
         self.indexed = False  # this is important to check if the retrieve is possible
-        self.index_keys = ["nd", "t2d", "idf", "doc_len", "avgdl", "corpus_size"]
+        self.index_keys = [
+            "nd",
+            "t2d",
+            "idf",
+            "doc_len",
+            "avgdl",
+            "corpus_size",
+            "top_k",
+            "k1",
+            "b",
+            "epsilon",
+            "indexed",
+        ]
+        # initialize the index
+        self.reset_index()
+        self.documents = documents
+        if documents:
+            self.build_index_from_documents(documents, document_map_func)
+
+    def reset_index(self):
+        r"""Used for both initializing and resetting the index."""
+        self.t2d: List[Dict[str, int]] = []  # term freuqency in each document
+        self.nd: Dict[str, int] = {}  # number of documents containing the term
+        self.idf: Dict[str, float] = {}  # idf of each term
+        self.doc_len: List[int] = []  # list of document lengths
+        self.avgdl: float = 0  # average document length
+        self.corpus_size: int = 0
+        self.indexed: bool = (
+            False  # this is important to check if the retrieve is possible
+        )
 
     def _apply_split_function(self, documents: List[str]):
-        if self.split_function is None:
+        if self._split_function is None:
             raise ValueError("split_function is not defined")
         if not documents:
             log.warning("No documents to split")
             return
-        tokenized_documents = [self.split_function(doc) for doc in documents]
+        tokenized_documents = [self._split_function(doc) for doc in documents]
         # pool = Pool(cpu_count())
         # tokenized_documents = pool.map(self.split_function, documents)
         return tokenized_documents
 
-    def load_index(self, index: Dict[str, Any]):
-
-        self.indexed = True
-        if not all(key in index for key in self.index_keys):
-            raise ValueError(
-                f"Index keys are not complete. Expected keys: {self.index_keys}"
-            )
-        self.indexed = True
-        for key, value in index.items():
-            setattr(self, key, value)
-
-    def get_index(self) -> Dict[str, Any]:
-        if not self.indexed:
-            raise ValueError(
-                "Index is not built or loaded. Please either build the index or load it first."
-            )
-        return {key: getattr(self, key) for key in self.index_keys}
-
-    def reset_index(self):
-        self.t2d = []
-        self.nd = {}
-        self.idf = {}
-        self.doc_len = []
-        self.avgdl = 0
-        self.indexed = False
-
     def _initialize(self, corpus: List[List[str]]):
         r"""Initialize the term to document dictionary with the term frequencies in each document"""
-        self.t2d: List[Dict[str, int]] = []  # term freuqency in each document
-        self.nd: Dict[str, int] = {}  # number of documents containing the term
-        self.avgdl = 0  # average document length
-        self.doc_len = []  # list of document lengths
+
         self.corpus_size = len(corpus)
+
         for document in corpus:
             self.doc_len.append(len(document))
             term_freq = {}
@@ -206,6 +219,8 @@ class InMemoryBM25Retriever(Retriever):
                 negative_idf.append(token)
         self.average_idf = idf_sum / len(self.nd)  # average idf for each term
 
+        # replace negative idf with epsilon * average_idf
+        # NOTE: we can still have negative idf if most terms are too common, especially when the corpus is small
         eps = self.epsilon * self.average_idf
         for token in negative_idf:
             self.idf[token] = eps
@@ -248,27 +263,37 @@ class InMemoryBM25Retriever(Retriever):
 
     def build_index_from_documents(
         self,
-        documents: List[str],
-        # input_field_map_func: Callable[[Any], str] = lambda x: x.text,
+        documents: RetrieverDocumentsType,
+        document_map_func: Optional[Callable[[Any], str]] = None,
+        **kwargs,
     ):
         r"""Built index from the `text` field of each document in the list of documents"""
+        assert documents, "documents should not be empty"
+        self.reset_index()
+        self.documents = documents
+        # the documents to be indexed
+        if document_map_func:
+            assert callable(document_map_func), "document_map_func should be callable"
+            assert isinstance(
+                document_map_func(documents[0]), str
+            ), "document_map_func should return a string"
+            list_of_documents_str = [document_map_func(doc) for doc in documents]
+        else:
+            list_of_documents_str = documents
 
-        # make a copy of the documents
-        # list_of_documents_str = [input_field_map_func(doc) for doc in documents]
-        list_of_documents_str = documents.copy()
         self.tokenized_documents = self._apply_split_function(list_of_documents_str)
         self._initialize(self.tokenized_documents)
         self._calc_idf()
         self.indexed = True
 
     def retrieve(
-        self, input: RetrieverInputType, top_k: Optional[int] = None
+        self, input: RetrieverInputStrType, top_k: Optional[int] = None, **kwargs
     ) -> RetrieverOutputType:
         """
         Retrieve the top n documents for the query and return only the indexes of the documents.
 
         Args:
-            query_or_queries: Union[str, List[str]]: The query or list of queries
+            input: Union[str, List[str]]: The query or list of queries
             top_k: Optional[int]: The number of documents to return
         """
         if not self.indexed:
@@ -276,27 +301,74 @@ class InMemoryBM25Retriever(Retriever):
 
         top_k = top_k or self.top_k
         output: RetrieverOutputType = []
-        if isinstance(query_or_queries, str):
-            query_or_queries = [query_or_queries]
-        elif isinstance(query_or_queries, list):
+        if isinstance(input, str):
+            input = [input]
+        elif isinstance(input, list):
             pass
         else:
-            raise ValueError("query_or_queries should be a string or a list of strings")
+            raise ValueError("input should be a string or a list of strings")
         # process each query
-        for query in query_or_queries:
-            tokens = self.split_function(query)
+        for query in input:
+            tokens = self._split_function(query)
             scores = self._get_scores(tokens)
             top_k_idx = heapq.nlargest(top_k, range(len(scores)), scores.__getitem__)
             top_k_scores = [scores[i] for i in top_k_idx]
             output.append(
-                RetrieverOutput(doc_indices=top_k_idx, doc_scores=top_k_scores)
+                RetrieverOutput(
+                    doc_indices=top_k_idx, doc_scores=top_k_scores, query=query
+                )
             )
         return output
 
-    def __call__(
-        self, query_or_queries: Union[str, List[str]], top_k: Optional[int] = None
-    ) -> RetrieverOutputType:
-        response = self.retrieve(query_or_queries=query_or_queries, top_k=top_k)
-        # if self.output_processors:
-        #     response = self.output_processors(response)
-        return response
+    def save_to_file(self, path: str):
+        index_dict = super().to_dict()
+        # filter out index_dict[data] that is not in self.index_keys
+        for key in list(index_dict["data"].keys()):
+            if key not in self.index_keys:
+                del index_dict["data"][key]
+        try:
+            save_json(index_dict, path)
+        except Exception as e:
+            log.error(f"Error saving the index to file: {e}")
+            raise e
+
+    @classmethod
+    def load_from_file(cls, path: str):
+        # create an instance of the class
+        try:
+            index_dict = load_json(path)
+            instance = cls.from_dict(index_dict)
+            # add the split function
+            instance._split_function = split_text_by_word_fn
+            return instance
+        except Exception as e:
+            log.error(f"Error loading the index from file: {e}")
+            raise e
+
+    def _extra_repr(self) -> str:
+        s = f"top_k={self.top_k}, k1={self.k1}, b={self.b}, epsilon={self.epsilon}"
+        if self.indexed:
+            s += f"\nNumber of documents: {self.corpus_size}"
+        return s
+
+    # def __call__(
+    #     self, input: RetrieverInputStrType, top_k: Optional[int] = None
+    # ) -> RetrieverOutputType:
+    #     response = self.retrieve(input=input, top_k=top_k)
+    #     return response
+
+
+if __name__ == "__main__":
+    documents = ["hello world", "world is beautiful", "today is a good day"]
+    retriever = InMemoryBM25Retriever(top_k=1, documents=documents)
+    output = retriever("hello")
+    print(output)
+    # Output:
+    # [RetrieverOutput(doc_indices=[0], doc_scores=[0.6229580777634034], query=None, documents=None)]
+    retriever.save_to_file("bm25_index.json")
+    retriever2 = InMemoryBM25Retriever.load_from_file("bm25_index.json")
+    output = retriever2("hello")
+    print("output 2", output)
+    print(retriever2)
+    # Output:
+    # [RetrieverOutput(doc_indices=[0], doc_scores=[0.6229580777634034], query=None, documents=None)]]

@@ -17,6 +17,7 @@ from lightrag.core.types import (
     RetrieverOutput,
     RetrieverOutputType,
     EmbedderOutputType,
+    RetrieverInputType,
 )
 from lightrag.core.functional import normalize_np_array, is_normalized
 
@@ -99,8 +100,6 @@ class FAISSRetriever(Retriever):
         self.documents = None
         self.xb = None  # numpy array of embeddings
         self.total_chunks: int = 0
-        # setup the index of the retriever
-        self.index_keys = ["xb"]
         if documents:
             self.documents = documents
             self.build_index_from_documents(documents)
@@ -109,12 +108,6 @@ class FAISSRetriever(Retriever):
         self.index = None if self.index else None
         self.total_chunks: int = 0
         self.indexed = False
-
-    def load_index(self, data: Dict[str, Any]):
-        super().load_index(data)
-        # recreate the index with faiss
-        assert "xb" in data, "xb is not found in the data"
-        self._preprare_faiss_index_from_np_array(data["xb"])
 
     def _preprare_faiss_index_from_np_array(self, xb: np.ndarray):
         r"""Prepare the faiss index from the numpy array."""

@@ -5,6 +5,7 @@ from .base_data_class import DataClass, required_field
 from .document_splitter import DocumentSplitter
 from .embedder import Embedder, BatchEmbedder
 from .data_components import ToEmbeddings, RetrieverOutputToContextStr
+from .retriever import Retriever
 
 
 from .generator import Generator
@@ -28,6 +29,8 @@ __all__ = [
     "Embedder",
     "BatchEmbedder",
     "ToEmbeddings",
+    "RetrieverOutputToContextStr",
+    "Retriever",
 ]
 
 for name in __all__:

@@ -1,5 +1,6 @@
 import tiktoken
 from typing import List
+import re
 
 from lightrag.core.component import Component
 
@@ -15,14 +16,28 @@ class Tokenizer(Component):
         at the tiktoken documentation.
     """
 
-    def __init__(self, name: str = "cl100k_base"):
+    def __init__(self, name: str = "cl100k_base", remove_stop_words: bool = False):
         super().__init__()
         self.name = name
         self.tokenizer = tiktoken.get_encoding(name)
+        self.stop_words = (
+            set(["and", "the", "is", "in", "at", "of", "a", "an"])
+            if remove_stop_words
+            else set()
+        )
 
     # call is the same as forward/encode, so that we can use it in Sequential
     def __call__(self, input: str) -> List[str]:
         return self.encode(input)
+
+    def preprocess(self, text: str) -> str:
+        # Lowercase the text
+        text = text.lower()
+        # Remove punctuation
+        text = re.sub(r"[^\w\s]", "", text)
+        # Remove extra whitespace
+        text = re.sub(r"\s+", " ", text).strip()
+        return text
 
     def encode(self, text: str) -> List[int]:
         r"""Encodes the input text into token IDs."""
@@ -38,5 +53,7 @@ class Tokenizer(Component):
 
     def get_string_tokens(self, text: str) -> List[str]:
         r"""Returns the string tokens from the input text."""
+        text = self.preprocess(text)
+
         token_ids = self.encode(text)
         return [self.tokenizer.decode([token_id]) for token_id in token_ids]

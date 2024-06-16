@@ -237,7 +237,14 @@ class RetrieverOutput(DataClass):
     )
 
 
+RetrieverInputStrType = Union[str, Sequence[str]]
+RetrieverInputType = TypeVar("RetrieverInputType", contravariant=True)
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverDocumentsType = Sequence[Any]
+# it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
+
+# different retriever may support different input data type
 
 
 @dataclass

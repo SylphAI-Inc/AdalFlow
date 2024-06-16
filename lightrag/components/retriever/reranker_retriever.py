@@ -1,37 +1,62 @@
 """Demonstrating reranker to rank the documents and retrieve the top-k documents"""
 
-from typing import List, Optional
+from typing import List, Optional, Callable, Any
 import logging
-from core.retriever import RetrieverOutputType, get_top_k_indices_scores
+
 from lightrag.core.retriever import (
     Retriever,
-    RetrieverOutput,
+    get_top_k_indices_scores,
+)
+from lightrag.core.types import (
+    RetrieverInputStrType,
     RetrieverOutputType,
-    RetrieverInputType,
+    RetrieverDocumentsType,
+    RetrieverOutput,
+    ModelType,
 )
 from lightrag.components.model_client import TransformersClient
-from lightrag.core.types import ModelType
 
 log = logging.getLogger(__name__)
 
 
-class RerankerRetriever(Retriever):
-    def __init__(self, top_k: int = 5):
+class RerankerRetriever(Retriever[str, RetrieverInputStrType]):
+    r"""
+    A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.
+
+    Args:
+        top_k (int, optional): The number of top documents to retrieve. Defaults to 5.
+    """
+
+    def __init__(
+        self,
+        top_k: int = 5,
+        documents: Optional[RetrieverDocumentsType] = None,
+        document_map_func: Optional[Callable[[Any], str]] = None,
+    ):
         super().__init__()
         self.top_k = top_k
         self._model_name = "BAAI/bge-reranker-base"
         self.model_client = TransformersClient(model_name=self._model_name)
+        if documents:
+            self.build_index_from_documents(documents, document_map_func)
 
     def reset_index(self):
         self.indexed = False
         self.documents = []
 
-    def build_index_from_documents(self, documents: List[str]):
-        self.documents = documents.copy()
+    def build_index_from_documents(
+        self,
+        documents: RetrieverDocumentsType,
+        document_map_func: Optional[Callable[[Any], str]] = None,
+    ):
+        if document_map_func:
+            documents = [document_map_func(doc) for doc in documents]
+        else:
+            documents = documents
         self.indexed = True
 
     def retrieve(
-        self, input: RetrieverInputType, top_k: Optional[int] = None
+        self, input: RetrieverInputStrType, top_k: Optional[int] = None
     ) -> RetrieverOutputType:
         top_k = top_k or self.top_k
         queries = input if isinstance(input, List) else [input]

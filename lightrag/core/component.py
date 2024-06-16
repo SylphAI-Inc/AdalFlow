@@ -173,19 +173,22 @@ class Component:
         Each data if of format: {"type": type, "data": data}
         """
         exclude = exclude or []
+        exclude = set(exclude)
         result: Dict[str, Any] = {
             "type": type(self).__name__,
             "data": {},
         }  # Add the type of the component
         data_dict = result["data"]
         for key, value in self.__dict__.items():
-            if key not in exclude:
-                try:
-                    data_dict[key] = self._process_value(value)
-                except TypeError:
-                    # Handle unserializable objects by pickling them
-                    data_dict[key] = {"_pickle_data": pickle.dumps(value).hex()}
+            key = str(key)
+            if key in exclude:
+                continue
 
+            try:
+                data_dict[key] = self._process_value(value)
+            except TypeError:
+                # Handle unserializable objects by pickling them
+                data_dict[key] = {"_pickle_data": pickle.dumps(value).hex()}
         return result
 
     def _process_value(self, value):
@@ -230,8 +233,8 @@ class Component:
         Need to do it recursively for subcomponents.
         """
         # set the attributes of the class
-        # Instantiate the class without calling __init__
-        obj = cls.__new__(cls)
+        # Instantiate the class with _init_args
+        obj = cls(**data.get("_init_args", {}))
         for key, value in data["data"].items():
             setattr(obj, key, cls._restore_value(value))
         return obj
