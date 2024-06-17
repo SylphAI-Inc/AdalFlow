@@ -81,7 +81,7 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
     #     return {key: getattr(self, key) for key in self.index_keys}
 
     def save_to_file(self, path: str):
-        r"""Save the state including the index to a file.
+        r"""Save the state, including the index to a file.
 
         Optional for subclass to implement a default persistence method.
         """
@@ -89,7 +89,7 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
 
     @classmethod
     def load_from_file(cls, path: str):
-        r"""Load the index from a file.
+        r"""Load the state, including index from a file.
 
         Optional for subclass to implement a default persistence method.
         """

@@ -4,22 +4,22 @@ import os
 from typing import Dict, Sequence, Optional, Any
 import backoff
 
-try:
-    import groq
-    from groq import Groq, AsyncGroq
-    from groq import (
-        APITimeoutError,
-        InternalServerError,
-        RateLimitError,
-        UnprocessableEntityError,
-    )
 
-except ImportError:
-    raise ImportError("Please install groq with: pip install groq")
+import groq
+from groq import Groq, AsyncGroq
+from groq import (
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+    UnprocessableEntityError,
+)
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.GROQ.name, OptionalPackages.GROQ.value)
 
 
 class GroqAPIClient(ModelClient):

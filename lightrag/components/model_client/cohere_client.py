@@ -4,19 +4,18 @@ import os
 from typing import Dict, Optional, Any, List, Tuple
 import backoff
 
-try:
-    import cohere
-    from cohere import (
-        BadRequestError,
-        InternalServerError,
-    )
-
-except ImportError:
-    raise ImportError("Please install cohere with: pip install cohere")
+import cohere
+from cohere import (
+    BadRequestError,
+    InternalServerError,
+)
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.COHERE.name, OptionalPackages.COHERE.value)
 
 
 class CohereAPIClient(ModelClient):

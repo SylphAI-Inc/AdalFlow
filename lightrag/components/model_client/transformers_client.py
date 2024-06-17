@@ -6,28 +6,28 @@ from functools import lru_cache
 from lightrag.core.types import EmbedderOutput
 import torch.nn.functional as F
 
-try:
-    import torch
-except ImportError:
-    raise ImportError("Please install torch with: pip install torch")
+
+import torch
+
 from torch import Tensor
 
-try:
-    import transformers
-    from transformers import (
-        AutoTokenizer,
-        AutoModel,
-        AutoModelForSequenceClassification,
-    )
 
-except ImportError:
-    raise ImportError("Please install transformers with: pip install transformers")
+import transformers
+from transformers import (
+    AutoTokenizer,
+    AutoModel,
+    AutoModelForSequenceClassification,
+)
+
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, Embedding
 
 from lightrag.core.functional import get_top_k_indices_scores
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
+safe_import(OptionalPackages.TRANSFORMERS.name, OptionalPackages.TRANSFORMERS.value)
+safe_import(OptionalPackages.TORCH.name, OptionalPackages.TORCH.value)
 
 log = logging.getLogger(__name__)
 

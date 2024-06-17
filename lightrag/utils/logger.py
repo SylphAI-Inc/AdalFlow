@@ -48,15 +48,13 @@ COLOR_MAP = {
 log = logging.getLogger(__name__)
 
 
-# NOTE: what if users set up two logger in the same script with the same name, we dont config the logger again, but we add the handler again, is it a problem?
-# NOTE: When both console and file are false, the logger should not have any handlers.
 def get_default_log_config(
     level: str = "INFO",
     filepath: str = "./logs/app.log",
     enable_console: bool = True,
     enable_file: bool = True,
 ) -> logging.Logger:
-    r"""Default logger to simplify the logging configuration.
+    __doc__ = r"""Helper function to get the default log configuration.
 
     We config logging with the following default settings:
     1. Enable both console and file output.
@@ -65,35 +63,18 @@ def get_default_log_config(
     3. Set up the default date format: "%Y-%m-%d %H:%M:%S".
 
     Args:
-        name str: Name of the logger. Defaults to "default". Users should pass '__name__' to get the logger name as the module name.
-        filename str: Name of the output log file. Defaults to "./logs/app.log".
-        level str: Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
-        enable_console bool: Control the console output. Defaults to True.
-        enable_file bool: Control the file output. Defaults to True.
-
-    Example:
-        .. code-block:: python
-
-            from utils.logger import get_default_logger
-            logger = get_default_logger(name=__name__, level="DEBUG") # set level = debug
-            logger.info("This is an info message")
-            logger.warning("This is a warning message")
+        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        filepath (str): Name of the output log file. Defaults to "./logs/app.log".
+        enable_console (bool): Control the console output. Defaults to True.
+        enable_file (bool): Control the file output. Defaults to True.
 
     Returns:
-        logging.Logger: A configured logger, following the same logic with Python default logger, you can add more configuration such as add Handler to it.
+        Tuple[int, List[logging.Handler]]: The logging level and the list of handlers.
     """
 
     def get_level(level: str) -> int:
         """Return the logging level constant based on a string."""
         return LOG_LEVELS.get(level.upper(), logging.INFO)
-
-    # 1. create the logger the library developers want to use
-    # logger = logging.getLogger(name=name)
-
-    # if logger.handlers:
-    # log.info(f"Logger {name} already has handlers, skip the configuration.")
-
-    # return logger
 
     # 2. Config the default format and style
     format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
@@ -111,17 +92,8 @@ def get_default_log_config(
 
     for h in handlers:
         h.setFormatter(formatter)
-        # logger.addHandler(h)
 
-    # prevent duplication in the root logger
-    # logger.propagate = False
-    # print(
-    #     f"Logger {name} is configured with level {level}, console: {enable_console}, file: {enable_file}"
-    # )
-
-    # 3. Enable a global config that will enable the library logs to be shown
-    # logging.basicConfig(level=get_level(level), handlers=handlers)
-    return get_level(level), handlers  # logger
+    return get_level(level), handlers
 
 
 def enable_library_logging(
@@ -132,13 +104,29 @@ def enable_library_logging(
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
 ) -> None:
-    r"""Config the library logging.
+    __doc__ = r"""Enable the default library logging.
 
-    We config logging with the following default settings:
-    1. Enable console output, and disable file output.
-    2. Set up the default format: "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s".
-    The format is: time, log level, filename(where the log is from), line number, function name, message.
-    3. Set up the default date format: "%Y-%m-%d %H:%M:%S".
+    The default config follows :func:`get_default_log_config`.
+
+    Example:
+    
+    1. Enable the library logging with default settings which outputs library logs to console:
+
+    .. code-block:: python
+
+        from lightrag.utils.logger import enable_library_logging
+        
+        enable_library_logging(level="DEBUG", enable_console=True, enable_file=False)
+
+    2. Enable the library logging with default settings which outputs library logs to file:
+
+    .. code-block:: python
+
+        from lightrag.utils.logger import enable_library_logging
+
+        enable_library_logging(level="DEBUG", enable_console=False, enable_file=True, filename="library.log")
+
+    
 
     Args:
         level str: Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".

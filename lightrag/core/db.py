@@ -178,7 +178,6 @@ class LocalDocumentDB:
         with open(filepath, "wb") as file:
             pickle.dump(self, file)
 
-    # TODO: only if the transformer setup is not picklable, then we will remove it.
     @classmethod
     def load_state(cls, filepath: str = None) -> "LocalDocumentDB":
         """Load the state of the document DB from a pickle file."""

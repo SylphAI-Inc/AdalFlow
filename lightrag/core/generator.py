@@ -17,7 +17,6 @@ GeneratorOutputType = GeneratorOutput
 log = logging.getLogger(__name__)
 
 
-# TODO: create a dummpy model client for testing the generator
 class Generator(Component):
     """
     An user-facing orchestration component for LLM prediction.

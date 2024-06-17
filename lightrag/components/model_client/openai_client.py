@@ -5,25 +5,27 @@ from typing import Dict, Sequence, Optional, List, Any, TypeVar
 import logging
 from lightrag.utils.registry import EntityMapping
 
-try:
-    import openai
-    from openai import OpenAI, AsyncOpenAI
-    from openai import (
-        APITimeoutError,
-        InternalServerError,
-        RateLimitError,
-        UnprocessableEntityError,
-        BadRequestError,
-    )
 
-    from openai.types import Completion, CreateEmbeddingResponse
-except ImportError:
-    raise ImportError("Please install openai with: pip install openai")
+import openai
+from openai import OpenAI, AsyncOpenAI
+from openai import (
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+    UnprocessableEntityError,
+    BadRequestError,
+)
+
+from openai.types import Completion, CreateEmbeddingResponse
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput
 from lightrag.core.data_components import parse_embedding_response
+
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.OPENAI.name, OptionalPackages.OPENAI.value)
 
 import backoff
 

@@ -18,6 +18,7 @@ import logging
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.functional import is_normalized
+from lightrag.components.model_client import *
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +31,14 @@ class ModelType(Enum):
     LLM = auto()
     RERANKER = auto()  # ranking model
     UNDEFINED = auto()
+
+
+class ModelClientType(Enum):
+    COHERE = CohereAPIClient
+    TRANSFORMERS = TransformersClient
+    ANTHROPIC = AnthropicAPIClient
+    GROQ = GroqAPIClient
+    OPENAI = OpenAIClient
 
 
 # TODO: define standard required outputs
