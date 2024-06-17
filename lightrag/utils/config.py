@@ -64,9 +64,15 @@ from lightrag.utils.registry import EntityMapping
 
 
 def construct_component(config: Dict[str, Any]) -> Any:
-    __doc__ = (
-        r"""Construct an componenet from a configuration dictionary. Format type 1"""
-    )
+    r"""Construct a single componenet from a configuration dictionary. Format type 1.
+
+    Args:
+        config (Dict[str, Any]): Configuration dictionary for the component.
+
+    Returns:
+        Any: The constructed component.
+    """
+    assert "component_name" in config, "component_name is required in the config"
 
     component_name = config["component_name"]
     component_cls = EntityMapping.get(component_name)
@@ -87,7 +93,7 @@ def construct_component(config: Dict[str, Any]) -> Any:
 def construct_components_from_config(
     config: Dict[str, Dict[str, Any]]
 ) -> Dict[str, Any]:
-    __doc__ = r"""Construct multiple components from a configuration dictionary. Format type 1"""
+    r"""Construct multiple components from a configuration dictionary. Format type 1"""
     components = {}
     for attr, component_config in config.items():
         components[attr] = construct_component(component_config)

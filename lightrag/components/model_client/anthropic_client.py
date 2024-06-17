@@ -23,7 +23,7 @@ from lightrag.core.types import ModelType
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
-safe_import(OptionalPackages.ANTHROPIC.name, OptionalPackages.ANTHROPIC.value)
+safe_import(OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1])
 
 
 class AnthropicAPIClient(ModelClient):

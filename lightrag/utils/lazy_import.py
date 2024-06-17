@@ -13,7 +13,6 @@ class OptionalPackages(Enum):
     __doc__ = r"""Enum for optional packages that can be used in the library.
 
     The package name and error message are defined for each optional package as a tuple.
-    
     """
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
@@ -28,8 +27,7 @@ class OptionalPackages(Enum):
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
     TORCH = ("torch", "Please install torch with: pip install torch")
-
-    # Add more packages here as needed
+    FAISS = ("faiss", "Please install faiss with: pip install faiss")
 
     def __init__(self, package_name, error_message):
         self.package_name = package_name

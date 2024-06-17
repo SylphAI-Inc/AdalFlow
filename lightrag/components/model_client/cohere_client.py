@@ -1,9 +1,11 @@
 """Cohere ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any, List, Tuple
+from typing import Dict, Optional, Any
 import backoff
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
+safe_import(OptionalPackages.COHERE.value[0], OptionalPackages.COHERE.value[1])
 import cohere
 from cohere import (
     BadRequestError,
@@ -13,16 +15,13 @@ from cohere import (
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
-safe_import(OptionalPackages.COHERE.name, OptionalPackages.COHERE.value)
 
 
 class CohereAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Cohere API.
 
     Visit https://docs.cohere.com/ for more api details.
-    
+
     Tested Cohere models: 6/16/2024
     - rerank-english-v2.0
     """

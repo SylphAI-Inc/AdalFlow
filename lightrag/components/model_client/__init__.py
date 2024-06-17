@@ -1,10 +1,6 @@
 r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
 from lightrag.utils.registry import EntityMapping
-
-
-# Create a dictionary to map string names to client classes
-from dataclasses import dataclass
 from lightrag.utils import LazyImport, OptionalPackages
 
 CohereAPIClient = LazyImport(

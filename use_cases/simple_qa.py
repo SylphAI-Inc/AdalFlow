@@ -3,6 +3,9 @@ import time
 
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
+from lightrag.components.model_client import OpenAIClient
+from lightrag.components.model_client import GroqAPIClient
+from lightrag.components.model_client import AnthropicAPIClient
 
 
 class SimpleQA(Component):
@@ -15,31 +18,12 @@ class SimpleQA(Component):
     ):
         super().__init__()
         if provider == "openai":
-            try:
-                from lightrag.components.model_client import OpenAIClient
-
-            except ImportError:
-                raise ImportError(
-                    "Please install the OpenAI API client by running 'pip install openai'"
-                )
 
             model_client = OpenAIClient()
         elif provider == "groq":
-            try:
-                from lightrag.components.model_client import GroqAPIClient
-            except ImportError:
-                raise ImportError(
-                    "Please install the Groq API client by running 'pip install groq'"
-                )
 
             model_client = GroqAPIClient()
         elif provider == "anthropic":
-            try:
-                from lightrag.components.model_client import AnthropicAPIClient
-            except ImportError:
-                raise ImportError(
-                    "Please install the Anthropic API client by running 'pip install anthropic'"
-                )
 
             model_client = AnthropicAPIClient()
         else:

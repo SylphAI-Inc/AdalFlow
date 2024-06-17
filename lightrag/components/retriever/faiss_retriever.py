@@ -1,14 +1,11 @@
 """Semantic search/embedding-based retriever using FAISS."""
 
-from typing import List, Optional, Sequence, Union, Dict, overload, Any, Literal
+from typing import List, Optional, Sequence, Union, Dict, overload, Literal
 import numpy as np
 import logging
 import os
 
-try:
-    import faiss
-except ImportError:
-    raise ImportError("Please install faiss with: pip install faiss")
+import faiss
 
 
 from lightrag.core.retriever import Retriever
@@ -17,9 +14,12 @@ from lightrag.core.types import (
     RetrieverOutput,
     RetrieverOutputType,
     EmbedderOutputType,
-    RetrieverInputType,
 )
 from lightrag.core.functional import normalize_np_array, is_normalized
+
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.FAISS.value[0], OptionalPackages.FAISS.value[1])
 
 log = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class FAISSRetriever(Retriever):
         dimensions (Optional[int], optional): Dimension of the embeddings. Defaults to None. It can automatically infer the dimensions from the first chunk.
         documents (Optional[FAISSRetrieverDocumentType], optional): List of embeddings. Format can be List[List[float]] or List[np.ndarray]. Defaults to None.
         metric (Literal["cosine", "euclidean", "prob"], optional): The metric to use for the retrieval. Defaults to "prob" which converts cosine similarity to probability.
-    
+
     How FAISS works:
 
     The retriever uses in-memory Faiss index to retrieve the top k chunks
@@ -152,7 +152,7 @@ class FAISSRetriever(Retriever):
                 first_vector = self.xb[0]
                 if not is_normalized(first_vector):
                     log.warning(
-                        f"Embeddings are not normalized, normalizing the embeddings"
+                        "Embeddings are not normalized, normalizing the embeddings"
                     )
                     self.xb = normalize_np_array(self.xb)
 

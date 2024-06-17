@@ -18,7 +18,13 @@ import logging
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.functional import is_normalized
-from lightrag.components.model_client import *
+from lightrag.components.model_client import (
+    CohereAPIClient,
+    TransformersClient,
+    AnthropicAPIClient,
+    GroqAPIClient,
+    OpenAIClient,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -33,7 +39,8 @@ class ModelType(Enum):
     UNDEFINED = auto()
 
 
-class ModelClientType(Enum):
+@dataclass
+class ModelClientType:
     COHERE = CohereAPIClient
     TRANSFORMERS = TransformersClient
     ANTHROPIC = AnthropicAPIClient
@@ -147,7 +154,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     we have data as the final output, error as None.
     (2) When either model predict or output processors have error,
     we have data as None, error as the error message.
-    
+
     Raw_response will depends on the model predict.
     """
 
