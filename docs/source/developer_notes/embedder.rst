@@ -78,7 +78,8 @@ Run the embedder and print the length and embedding dimension of the output.
     print(output.length, output.embedding_dim, output.is_normalized)
     # 1 256 True
 
-** Embed batch queries**:
+
+**Embed batch queries**:
 
 .. code-block:: python
 
@@ -94,11 +95,6 @@ Set up the embedder with the local model.
 
     from lightrag.core.embedder import Embedder
     from lightrag.components.model_client import TransformersClient
-
-    model_kwargs = {
-        "model": "thenlper/gte-base",
-        "device": "cpu",
-    }
 
     model_kwargs = {"model": "thenlper/gte-base"}
     local_embedder = Embedder(model_client=TransformersClient(), model_kwargs=model_kwargs)
@@ -126,6 +122,7 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
     from typing import List
     from lightrag.core.component import Component
     from copy import deepcopy
+
     class DecreaseEmbeddingDim(Component):
         def __init__(self, old_dim: int, new_dim: int,  normalize: bool = True):
             super().__init__()

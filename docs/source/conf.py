@@ -14,7 +14,7 @@ import os
 import sys
 
 
-sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../lightrag"))
 # # need to insert the paths
 # for dir in os.walk('../../lightrag'):
@@ -28,6 +28,7 @@ import lightrag.core
 import lightrag.eval
 import lightrag.utils
 import lightrag.tracing
+import lightrag.optim
 
 # -- Project information -----------------------------------------------------
 

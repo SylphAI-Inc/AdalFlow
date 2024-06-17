@@ -51,7 +51,7 @@ class Generator(Component):
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: Optional[str] = None,
-        preset_prompt_kwargs: Optional[Dict] = None,
+        preset_prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
         output_processors: Optional[Component] = None,
         # args for the trainable parameters
@@ -67,7 +67,6 @@ class Generator(Component):
         You can preset the prompt kwargs to fill in the variables in the prompt using preset_prompt_kwargs.
         But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
         """
-        super().__init__()
 
         if not isinstance(model_client, ModelClient):
             raise ValueError(
@@ -75,6 +74,13 @@ class Generator(Component):
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+
+        super().__init__(
+            model_kwargs=model_kwargs,
+            template=template,
+            preset_prompt_kwargs=preset_prompt_kwargs,
+            trainable_params=trainable_params,
+        )
 
         self._init_prompt(template, preset_prompt_kwargs)
 

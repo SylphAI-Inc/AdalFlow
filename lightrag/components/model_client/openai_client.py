@@ -1,8 +1,9 @@
 """OpenAI ModelClient integration."""
 
 import os
-from typing import Dict, Sequence, Optional, List
+from typing import Dict, Sequence, Optional, List, Any, TypeVar
 import logging
+from lightrag.utils.registry import EntityMapping
 
 try:
     import openai
@@ -14,18 +15,20 @@ try:
         UnprocessableEntityError,
         BadRequestError,
     )
+
     from openai.types import Completion, CreateEmbeddingResponse
 except ImportError:
     raise ImportError("Please install openai with: pip install openai")
 
 
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput
 from lightrag.core.data_components import parse_embedding_response
 
 import backoff
 
 log = logging.getLogger(__name__)
+T = TypeVar("T")
 
 
 class OpenAIClient(ModelClient):
@@ -90,7 +93,7 @@ class OpenAIClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,  # user input
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -166,3 +169,18 @@ class OpenAIClient(ModelClient):
             return await self.async_client.chat.completions.create(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+    @classmethod
+    def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
+        obj = super().from_dict(data)
+        # recreate the existing clients
+        obj.sync_client = obj.init_sync_client()
+        obj.async_client = obj.init_async_client()
+        return obj
+
+    def to_dict(self) -> Dict[str, Any]:
+        r"""Convert the component to a dictionary."""
+        # TODO: not exclude but save yes or no for recreating the clients
+        exclude = ["sync_client", "async_client"]  # unserializable object
+        output = super().to_dict(exclude=exclude)
+        return output

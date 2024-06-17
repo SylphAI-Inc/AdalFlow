@@ -1,17 +1,16 @@
 r"""The component that orchestrates model client (Embedding models in particular) and output processors."""
 
-from typing import Optional, Any, Dict, List
+from typing import Optional, Any, Dict, List, Union
 import logging
 from tqdm import tqdm
 
 from lightrag.core.types import ModelType
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
-from lightrag.core.types import EmbedderOutput
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import EmbedderOutputType
 from lightrag.core.component import Component
 import lightrag.core.functional as F
 
-EmbedderInputType = API_INPUT_TYPE
-EmbedderOutputType = EmbedderOutput
+EmbedderInputType = Union[str, List[str]]
 
 log = logging.getLogger(__name__)
 
@@ -45,7 +44,7 @@ class Embedder(Component):
         output_processors: Optional[Component] = None,
     ) -> None:
 
-        super().__init__()
+        super().__init__(model_kwargs=model_kwargs)
         if not isinstance(model_kwargs, Dict):
             raise ValueError(
                 f"{type(self).__name__} requires a dictionary for model_kwargs, not a string"
@@ -129,7 +128,7 @@ class Embedder(Component):
 
 
 BatchEmbedderInputType = EmbedderInputType
-ListEmbedderOutputType = List[EmbedderOutputType]
+BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
 class BatchEmbedder(Component):
@@ -141,13 +140,13 @@ class BatchEmbedder(Component):
     """
 
     def __init__(self, embedder: Embedder, batch_size: int = 100) -> None:
-        super().__init__()
+        super().__init__(batch_size=batch_size)
         self.embedder = embedder
         self.batch_size = batch_size
 
     def call(
         self, input: EmbedderInputType, model_kwargs: Optional[Dict] = {}
-    ) -> ListEmbedderOutputType:
+    ) -> BatchEmbedderOutputType:
         r"""Call the embedder with batching.
 
         Args:
@@ -156,14 +155,17 @@ class BatchEmbedder(Component):
             model_kwargs (Optional[Dict], optional): The model kwargs to pass to the embedder. Defaults to {}.
 
         Returns:
-            ListEmbedderOutputType: The output from the embedder.
+            BatchEmbedderOutputType: The output from the embedder.
         """
 
         if isinstance(input, str):
             input = [input]
         n = len(input)
         embeddings: List[EmbedderOutputType] = []
-        for i in tqdm(range(0, n, self.batch_size)):
+        for i in tqdm(
+            range(0, n, self.batch_size),
+            desc="Batch embedding documents",
+        ):
             batch_input = input[i : i + self.batch_size]
             batch_output = self.embedder.call(
                 input=batch_input, model_kwargs=model_kwargs

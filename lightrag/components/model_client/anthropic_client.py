@@ -1,7 +1,7 @@
 """Anthropic ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Sequence, Union
+from typing import Dict, Optional, Sequence, Union, Any
 
 try:
     import anthropic
@@ -20,7 +20,7 @@ except ImportError:
 import backoff
 
 
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
 
 
@@ -56,7 +56,7 @@ class AnthropicAPIClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:

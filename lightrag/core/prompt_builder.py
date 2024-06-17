@@ -1,14 +1,17 @@
 import jinja2.meta
 from jinja2 import Template, Environment
 import jinja2
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Type, TypeVar
 import logging
 from functools import lru_cache
 
 from lightrag.core.component import Component
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
+
 logger = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 @lru_cache(None)
@@ -67,21 +70,24 @@ class Prompt(Component):
     ):
         super().__init__()
 
-        self._template_string = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-        self.template: Template = None
-        try:
-            env = get_jinja2_environment()
-            self.template = env.from_string(template)
-        except Exception as e:
-            raise ValueError(f"Invalid Jinja2 template: {e}")
-
+        self.template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        self.__create_jinja2_template()
         self.prompt_variables: List[str] = []
-        for var in self._find_template_variables(self._template_string):
+        for var in self._find_template_variables(self.template):
             self.prompt_variables.append(var)
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
         self.preset_prompt_kwargs = preset_prompt_kwargs
+
+    def __create_jinja2_template(self):
+        r"""Create the Jinja2 template object."""
+        try:
+            self.jinja2_template: Template = get_jinja2_environment().from_string(
+                self.template
+            )
+        except Exception as e:
+            raise ValueError(f"Invalid Jinja2 template: {e}")
 
     def update_preset_prompt_kwargs(self, **kwargs):
         r"""Update the preset prompt kwargs after Prompt is initialized."""
@@ -97,7 +103,7 @@ class Prompt(Component):
 
     def _find_template_variables(self, template_str: str):
         """Automatically find all the variables in the template."""
-        parsed_content = self.template.environment.parse(template_str)
+        parsed_content = self.jinja2_template.environment.parse(template_str)
         return jinja2.meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
@@ -116,7 +122,7 @@ class Prompt(Component):
         r"""Print the template string."""
         print("Template:")
         print(f"-------")
-        print(f"{self._template_string}")
+        print(f"{self.template}")
         print(f"-------")
 
     def print_prompt(self, **kwargs):
@@ -125,7 +131,7 @@ class Prompt(Component):
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
             logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
-            prompt_str = self.template.render(**pass_kwargs)
+            prompt_str = self.jinja2_template.render(**pass_kwargs)
             print("Prompt:")
             print(prompt_str)
         except Exception as e:
@@ -138,26 +144,33 @@ class Prompt(Component):
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
 
-            prompt_str = self.template.render(**pass_kwargs)
+            prompt_str = self.jinja2_template.render(**pass_kwargs)
             return prompt_str
 
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 
     def _extra_repr(self) -> str:
-        s = f"template: {self._template_string}"
+        s = f"template: {self.template}"
         if self.preset_prompt_kwargs:
             s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
         if self.prompt_variables:
             s += f", prompt_variables: {self.prompt_variables}"
         return s
 
+    @classmethod
+    def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
+        obj = super().from_dict(data)
+        # recreate the jinja2 template
+        obj.jinja2_template = get_jinja2_environment().from_string(obj.template)
+        return obj
+
     def to_dict(self) -> Dict[str, Any]:
         """
         Get the dictionary representation of all the Prompt object's attributes, with sorting applied to
         dictionary keys and list elements to ensure consistent ordering.
         """
-        exclude = ["template"]
+        exclude = ["jinja2_template"]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
 

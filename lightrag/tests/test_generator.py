@@ -95,7 +95,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
         self.assertEqual(
             prompt_logger._trace_map["Test Generator"][2].prompt_states["data"][
-                "_template_string"
+                "template"
             ],
             "Hello, {{ input_str }}!",
         )

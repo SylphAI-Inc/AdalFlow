@@ -184,7 +184,7 @@ Second. we use `convert_inputs_to_api_kwargs` for subclass to convert LightRAG i
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -198,7 +198,7 @@ This is how `OpenAIClient` implements this method:
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,  # user input
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:

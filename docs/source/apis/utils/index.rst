@@ -7,6 +7,8 @@ Overview
 
    utils.logger
    utils.serialization
+   utils.config
+   utils.registry
    utils.setup_env
 
 Logger

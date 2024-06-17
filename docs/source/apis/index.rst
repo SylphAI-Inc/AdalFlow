@@ -19,10 +19,18 @@ Welcome to the LightRAG API reference! This section provides detailed documentat
 
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Prompts
+   :maxdepth: 1
+   :caption: Optimizer
 
-   prompts/index
+   optim/index
+
+   .. optim.optimizer
+   .. optim.sampler
+   .. optim.few_shot_optimizer
+   .. optim.llm_augment
+   .. optim.llm_optimizer
+
+   .. Why cant this one layer work?
 
 .. toctree::
    :maxdepth: 2

@@ -1,7 +1,7 @@
 """Google GenAI ModelClient integration."""
 
 import os
-from typing import Dict, Sequence, Optional
+from typing import Dict, Sequence, Optional, Any
 import backoff
 
 try:
@@ -15,7 +15,7 @@ try:
 except ImportError:
     raise ImportError("Please install google-generativeai to use GoogleGenAIClient")
 
-from lightrag.core.model_client import ModelClient, API_INPUT_TYPE
+from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
 
 
@@ -48,7 +48,7 @@ class GoogleGenAIClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:

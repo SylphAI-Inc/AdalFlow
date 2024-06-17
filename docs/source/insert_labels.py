@@ -27,3 +27,4 @@ if __name__ == "__main__":
     add_reference_labels("./source/apis/eval")
     add_reference_labels("./source/apis/utils")
     add_reference_labels("./source/apis/tracing")
+    add_reference_labels("./source/apis/optim")

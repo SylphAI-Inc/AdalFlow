@@ -2,25 +2,47 @@ r"""
 The base class for all retrievers who in particular retrieve documents from a given database.
 """
 
-from typing import List, Optional, Union, Any
-
+from typing import (
+    List,
+    Optional,
+    Generic,
+    Dict,
+    Any,
+    Tuple,
+    Callable,
+)
+import numpy as np
 
 from lightrag.core.component import Component
-from lightrag.core.types import RetrieverOutput
+from lightrag.core.types import (
+    RetrieverInputType,
+    RetrieverDocumentType,
+    RetrieverDocumentsType,
+    RetrieverOutputType,
+)
 
-RetrieverInputType = Union[str, List[str]]  # query
-RetrieverDocumentType = Any  # Documents
-RetrieverOutputType = List[RetrieverOutput]
 
+class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
+    __doc__ = r"""The base class for all retrievers.
 
-class Retriever(Component):
-    """
     Retriever will manage its own index and retrieve in format of RetrieverOutput
-    It takes a list of Document and builds index used for retrieval use anyway formed content from fields of the document
-    using the input_field_map_func
+    
+    Args:
+        indexed (bool, optional): whether the retriever has an index. Defaults to False.
+        index_keys (List[str], optional): attributes that define the index that can be used to restore the retriever. Defaults to [].
+    
+    The key method :meth:`build_index_from_documents` is the method to build the index from the documents.
+    ``documents`` is a sequence of any type of document. With ``document_map_func``, you can map the document
+    of Any type to the specific type ``RetrieverDocumentType`` that the retriever expects.
+    
+    note:
+    To get the state of the retriever, leverage the :methd: "from_dict" and "to_dict" methods of the base class Component.
+
+
     """
 
-    indexed = False
+    indexed: bool = False
+    index_keys: List[str] = []  # attributes that define the index
 
     def __init__(self, *args, **kwargs):
         super().__init__()
@@ -30,20 +52,52 @@ class Retriever(Component):
 
     def build_index_from_documents(
         self,
-        documents: RetrieverDocumentType,
+        documents: RetrieverDocumentsType,
+        document_map_func: Optional[Callable[[Any], RetrieverDocumentType]] = None,
         **kwargs,
     ):
-        r"""Built index from the `text` field of each document in the list of documents.
-        input_field_map_func: a function that maps the document to the input field to be used for indexing
-        You can use _get_inputs to get a standard format fits for this retriever or you can write your own
-        """
+        r"""Built index from the [document_map_func(doc) for doc in documents]."""
         raise NotImplementedError(
             f"build_index_from_documents and input_field_map_func is not implemented"
         )
 
+    # TODO: this might not apply for cloud storage with built-in search engine
+    # def load_index(self, index: Dict[str, Any]):
+    #     r"""Load the index from a dictionary with expected index keys. Once loaded, turn the indexed to True"""
+    #     if not all(key in index for key in self.index_keys):
+    #         raise ValueError(
+    #             f"Index keys are not complete. Expected keys: {self.index_keys}"
+    #         )
+    #     for key, value in index.items():
+    #         setattr(self, key, value)
+    #     self.indexed = True
+
+    # def get_index(self) -> Dict[str, Any]:
+    #     r"""Return the index as a dictionary. It is up to users to decide where and how to persist it."""
+    #     if not self.indexed:
+    #         raise ValueError(
+    #             "Index is not built or loaded. Please either build the index or load it first."
+    #         )
+    #     return {key: getattr(self, key) for key in self.index_keys}
+
+    def save_to_file(self, path: str):
+        r"""Save the state including the index to a file.
+
+        Optional for subclass to implement a default persistence method.
+        """
+        pass
+
+    @classmethod
+    def load_from_file(cls, path: str):
+        r"""Load the index from a file.
+
+        Optional for subclass to implement a default persistence method.
+        """
+        pass
+
     def retrieve(
         self,
-        query_or_queries: RetrieverInputType,
+        input: RetrieverInputType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> RetrieverOutputType:
@@ -51,8 +105,8 @@ class Retriever(Component):
 
     def __call__(
         self,
-        query_or_queries: RetrieverInputType,
+        input: RetrieverInputType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> RetrieverOutputType:
-        raise NotImplementedError(f"__call__ is not implemented")
+        return self.retrieve(input, top_k, **kwargs)
