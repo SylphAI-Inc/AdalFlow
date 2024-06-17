@@ -1,4 +1,4 @@
-"""Demonstrating reranker to rank the documents and retrieve the top-k documents"""
+"""Reranking model using modelclient as a retriever."""
 
 from typing import List, Optional, Callable, Any, Dict
 import logging

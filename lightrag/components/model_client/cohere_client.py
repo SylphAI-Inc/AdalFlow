@@ -117,6 +117,8 @@ class CohereAPIClient(ModelClient):
         assert "model" in api_kwargs, "model must be specified"
         if model_type == ModelType.RERANKER:
             response = await self.async_client.rerank(**api_kwargs)
-            return response
+            top_k_scores = [result.relevance_score for result in response.results]
+            top_k_indices = [result.index for result in response.results]
+            return top_k_indices, top_k_scores
         else:
             raise ValueError(f"model_type {model_type} is not supported")

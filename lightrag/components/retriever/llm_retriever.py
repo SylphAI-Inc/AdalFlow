@@ -1,3 +1,5 @@
+"""LLM as retriever module."""
+
 from typing import List, Optional, Any, Dict, Callable
 import logging
 
@@ -117,6 +119,7 @@ class LLMRetriever(Retriever[str, RetrieverInputStrType]):
             retrieved_outputs.append(
                 RetrieverOutput(
                     doc_indices=response.data,
+                    query=query,
                 )
             )
         return retrieved_outputs

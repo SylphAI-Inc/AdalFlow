@@ -32,6 +32,29 @@ class ModelType(Enum):
     UNDEFINED = auto()
 
 
+# TODO: define standard required outputs
+def get_model_args(model_type: ModelType) -> List[str]:
+    r"""Get the required keys in model_kwargs for a specific model type.
+
+    note:
+    If your model inference sdk uses different keys, you need to convert them to the standard keys here in their specifc ModelClient.
+
+    Args:
+        model_type (ModelType): The model type
+
+    Returns:
+        List[str]: The required keys in model_kwargs
+    """
+    if model_type == ModelType.EMBEDDER:
+        return ["model"]
+    elif model_type == ModelType.LLM:
+        return ["model"]
+    elif model_type == ModelType.RERANKER:
+        return ["model", "top_k", "documents", "query"]
+    else:
+        return []
+
+
 @dataclass
 class Embedding:
     """
