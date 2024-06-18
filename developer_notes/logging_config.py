@@ -40,7 +40,6 @@ def get_logger_and_enable_library_logging_in_same_file():
         level="DEBUG",
         enable_console=False,
         enable_file=True,
-        return_logger=True,
         save_dir=log_dir,
         filename=file_name,
         name="test",

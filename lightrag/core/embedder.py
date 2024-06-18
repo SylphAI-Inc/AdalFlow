@@ -10,6 +10,7 @@ from lightrag.core.types import EmbedderOutputType
 from lightrag.core.component import Component
 import lightrag.core.functional as F
 
+
 EmbedderInputType = Union[str, List[str]]
 
 log = logging.getLogger(__name__)
@@ -61,6 +62,31 @@ class Embedder(Component):
             )
         self.model_client = model_client
         self.output_processors = output_processors
+
+    @classmethod
+    def from_config(cls, config: Dict[str, Any]) -> "Embedder":
+        """Create an Embedder from a configuration dictionary.
+
+        Example:
+
+        .. code-block:: python
+
+            embedder_config =  {
+                "model_client": {
+                    "component_name": "OpenAIClient",
+                    "component_config": {}
+                },
+                "model_kwargs": {
+                    "model": "text-embedding-3-small",
+                    "dimensions": 256,
+                    "encoding_format": "float"
+                }
+            }
+
+            embedder = Embedder.from_config(embedder_config)
+        """
+        assert "model_client" in config, "model_client is required in the config"
+        return super().from_config(config)
 
     def update_default_model_kwargs(self, **model_kwargs) -> Dict:
         return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
