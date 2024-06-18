@@ -7,14 +7,11 @@ authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 
 packages = [
-    { include = "use_cases", from = "." },
-    { include = "benchmarks", from = "." },
-    { include = "docs", from = "." },
+    { include = "lightrag", from = "." }
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.11, <4.0"
-lightrag = { path = "./lightrag", develop = true }
+python = ">=3.10, <4.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -40,6 +37,7 @@ ipykernel = "^6.29.4"
 colorama = "^0.4.6"
 dataclasses-jsonschema = "^2.16.0"
 groq = "^0.5.0"
+tqdm = "^4.66.4"
 
 
 [tool.poetry.group.doc.dependencies]
