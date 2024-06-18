@@ -1,13 +1,11 @@
 """BM25 retriever implementation. """
 
-from typing import List, Dict, Optional, Callable, Any, Union, Sequence
+from typing import List, Dict, Optional, Callable, Any, Sequence
 import numpy as np
 import heapq
 import math
 import logging
 
-from multiprocessing import Pool, cpu_count
-from functools import partial
 
 from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.types import (
@@ -19,7 +17,7 @@ from lightrag.core.types import (
 from lightrag.core.retriever import (
     Retriever,
 )
-from lightrag.utils.serialization import save_json, load_json
+from lightrag.utils.file_io import save_json, load_json
 
 log = logging.getLogger(__name__)
 
@@ -75,15 +73,15 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverInputStrType]):
         epsilon: (float, optional): Used to adapt the negative idf score to epilon * average_idf. Default is 0.25
 
         documents: (List[Any], optional): The list of documents to build the index from. Default is None.
-        document_map_func: (Callable, optional): The function to transform the document into `List[str]`. 
+        document_map_func: (Callable, optional): The function to transform the document into `List[str]`.
             You don't need it if your documents are already in format `List[str]`.
-               
+
     Examples:
 
     .. code-block:: python
-    
+
             from lightrag.components.retriever.bm25_retriever import InMemoryBM25Retriever
-            
+
             documents = ["hello world", "world is beautiful", "today is a good day"]
 
     1. Pass the documents from the __init__ method:
@@ -95,14 +93,14 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverInputStrType]):
             print(output)
             # Output:
             # [RetrieverOutput(doc_indices=[0], doc_scores=[0.6229580777634034], query=None, documents=None)]
-    
+
     2. Pass the documents from the :meth:`build_index_from_documents` method:
 
     .. code-block:: python
             retriever = InMemoryBM25Retriever(top_k=1)
-            retriever.build_index_from_documents(documents) 
+            retriever.build_index_from_documents(documents)
             output = retriever("hello")
-    
+
     3. Save the index to file and load it back:
 
     .. code-block:: python

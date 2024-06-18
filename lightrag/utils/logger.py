@@ -48,13 +48,13 @@ COLOR_MAP = {
 log = logging.getLogger(__name__)
 
 
-def get_default_log_config(
+def _get_log_config(
     level: str = "INFO",
     filepath: str = "./logs/app.log",
     enable_console: bool = True,
     enable_file: bool = True,
-) -> logging.Logger:
-    __doc__ = r"""Helper function to get the default log configuration.
+) -> Tuple[int, List[logging.Handler]]:
+    r"""Helper function to get the default log configuration.
 
     We config logging with the following default settings:
     1. Enable both console and file output.
@@ -77,7 +77,7 @@ def get_default_log_config(
         return LOG_LEVELS.get(level.upper(), logging.INFO)
 
     # 2. Config the default format and style
-    format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
+    format = "%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d:%(funcName)s] - %(message)s"
     formatter = logging.Formatter(format, datefmt="%Y-%m-%d %H:%M:%S")
 
     # Set up the handler
@@ -100,22 +100,23 @@ def enable_library_logging(
     level: str = "INFO",
     enable_console: bool = True,
     enable_file: bool = False,
-    # filename: str = "./logs/app.log",
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
-) -> None:
-    __doc__ = r"""Enable the default library logging.
+    return_logger: bool = False,
+    name: str = "lightrag",
+) -> Optional[logging.Logger]:
+    r"""Enable the library logging which is the root logger.
 
     The default config follows :func:`get_default_log_config`.
 
     Example:
-    
+
     1. Enable the library logging with default settings which outputs library logs to console:
 
     .. code-block:: python
 
         from lightrag.utils.logger import enable_library_logging
-        
+
         enable_library_logging(level="DEBUG", enable_console=True, enable_file=False)
 
     2. Enable the library logging with default settings which outputs library logs to file:
@@ -126,26 +127,44 @@ def enable_library_logging(
 
         enable_library_logging(level="DEBUG", enable_console=False, enable_file=True, filename="library.log")
 
-    
+    3. Enable the library logging along with getting a logger of the same configuration:
+
+    .. code-block:: python
+
+        from lightrag.utils.logger import enable_library_logging
+
+        logger = enable_library_logging(level="DEBUG", enable_console=True, enable_file=False, return_logger=True)
+
+
 
     Args:
-        level str: Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
-        enable_console bool: Control the console output. Defaults to True.
-        enable_file bool: Control the file output. Defaults to False.
-        filename str: Name of the output log file. Defaults to "./logs/app.log".
-
+        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        enable_console (bool): Control the console output. Defaults to True.
+        enable_file (bool): Control the file output. Defaults to False.
+        save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
+        filename (Optional[str]): Name of the output log file. Defaults to "app.log".
+        return_logger (bool): Return the logger with the same configuration. Defaults to False.
     """
+    # reset the past logging configuration
     save_dir = save_dir or "./logs"
     os.makedirs(save_dir, exist_ok=True)
-    filename = filename or f"app.log"
+    filename = filename or "app.log"
     filepath = os.path.join(save_dir, filename)
-    default_config = get_default_log_config(
+    default_config = _get_log_config(
         level=level,
         enable_console=enable_console,
         enable_file=enable_file,
         filepath=filepath,
     )
-    logging.basicConfig(level=default_config[0], handlers=default_config[1])
+
+    root_logger = logging.getLogger()
+    root_logger.setLevel(default_config[0])
+    root_logger.handlers = []  # Clear existing handlers
+    for handler in default_config[1]:
+        root_logger.addHandler(handler)
+
+    if return_logger:
+        return root_logger
 
 
 def get_logger(
@@ -157,13 +176,24 @@ def get_logger(
     enable_console: bool = True,
     enable_file: bool = True,
 ) -> logging.Logger:
+    r"""Get a named logger without changing the root logger.
+
+    Args:
+        name (str): Name of the logger.
+        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
+        filename (Optional[str]): Name of the output log file. Defaults to "app.log".
+        enable_console (bool): Control the console output. Defaults to True.
+        enable_file (bool): Control the file output. Defaults to True.
+    """
+    assert name, "Name of the logger cannot be None or empty"
 
     save_dir = save_dir or "./logs"
     os.makedirs(save_dir, exist_ok=True)
-    filename = filename or f"app.log"
+    filename = filename or "app.log"
     filepath = os.path.join(save_dir, filename)
 
-    config = get_default_log_config(
+    config = _get_log_config(
         level=level,
         filepath=filepath,
         enable_console=enable_console,
@@ -171,9 +201,10 @@ def get_logger(
     )
     logger = logging.getLogger(name)
     logger.setLevel(config[0])
+    logger.handlers = []  # Clear existing handlers
     for handler in config[1]:
         logger.addHandler(handler)
-    logger.propagate = False
+    logger.propagate = False  # Do not propagate to the root logger
     return logger
 
 

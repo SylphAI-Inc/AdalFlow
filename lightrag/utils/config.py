@@ -63,8 +63,8 @@ from typing import Any, Dict
 from lightrag.utils.registry import EntityMapping
 
 
-def construct_component(config: Dict[str, Any]) -> Any:
-    r"""Construct a single componenet from a configuration dictionary. Format type 1.
+def new_component(config: Dict[str, Any]) -> Any:
+    r"""Create a single componenet from a configuration dictionary. Format type 1.
 
     Args:
         config (Dict[str, Any]): Configuration dictionary for the component.
@@ -83,18 +83,16 @@ def construct_component(config: Dict[str, Any]) -> Any:
     for key, value in component_config.items():
         if isinstance(value, dict) and "component_name" in value:
             # Recursively construct sub-entities
-            initialized_config[key] = construct_component(value)
+            initialized_config[key] = new_component(value)
         else:
             initialized_config[key] = value
 
     return component_cls(**initialized_config)
 
 
-def construct_components_from_config(
-    config: Dict[str, Dict[str, Any]]
-) -> Dict[str, Any]:
+def new_components_from_config(config: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
     r"""Construct multiple components from a configuration dictionary. Format type 1"""
     components = {}
     for attr, component_config in config.items():
-        components[attr] = construct_component(component_config)
+        components[attr] = new_component(component_config)
     return components

@@ -9,6 +9,7 @@ from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from lightrag.utils.config import new_component
 
 
 GeneratorInputType = str
@@ -110,7 +111,29 @@ class Generator(Component):
         self.prompt = Prompt(
             template=template, preset_prompt_kwargs=preset_prompt_kwargs
         )
-        # return Prompt(template=template, preset_prompt_kwargs=preset_prompt_kwargs)
+
+    @classmethod
+    def from_config(cls, config: Dict[str, Any]) -> "Generator":
+        r"""Create a Generator instance from the config dictionary.
+
+        Example:
+
+        .. code-block:: python
+
+            config = {
+                        "model_client": {
+                            "component_name": "OpenAIClient",
+                            "component_config": {}
+                        },
+                        "model_kwargs": {"model": "gpt-3.5-turbo", "temperature": 0}
+                    }
+            generator = Generator.from_config(config)
+        """
+        # create init_kwargs from the config
+        assert "model_client" in config, "model_client is required in the config"
+        kwargs = config.copy()
+        kwargs["model_client"] = new_component(config["model_client"])
+        return cls(**kwargs)
 
     # def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
     #     """

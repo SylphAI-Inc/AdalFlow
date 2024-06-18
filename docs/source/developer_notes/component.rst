@@ -19,9 +19,9 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
 
 .. grid:: 2
     :gutter: 1
-    
+
     .. grid-item-card::  PyTorch
-        
+
         .. code-block:: python
 
             import torch.nn as nn
@@ -38,13 +38,13 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
                     return F.relu(self.conv2(x))
 
     .. grid-item-card::  LightRAG
-            
+
         .. code-block:: python
 
             from lightrag.core import Component, Generator
             from lightrag.components.model_client import OpenAIClient
 
-            
+
             template_doc = r"""<SYS> You are a doctor </SYS> User: {{input_str}}"""
 
             class DocQA(Component):
@@ -59,7 +59,7 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
                 def call(self, query: str) -> str:
                     return self.doc(prompt_kwargs={"input_str": query}).data
 
-In this note, we are creating an AI doctor to answer medical questions. 
+In this note, we are creating an AI doctor to answer medical questions.
 Run the ``DocQA`` on a query:
 
 .. code-block:: python
@@ -69,7 +69,7 @@ Run the ``DocQA`` on a query:
 
 The response is:
 
-.. code-block:: 
+.. code-block::
 
     As a doctor, the best treatment for a headache would depend on the underlying cause of the headache. Typically, over-the-counter pain relievers such as acetaminophen, ibuprofen, or aspirin can help to alleviate the pain. However, if the headache is severe or persistent, it is important to see a doctor for further evaluation and to determine the most appropriate treatment option. Other treatment options may include prescription medications, lifestyle modifications, stress management techniques, and relaxation techniques.
 
@@ -86,7 +86,7 @@ Here are the benefits of using the Component class:
 - Transparency.
 - Flexibility.
 
-.. Transparency 
+.. Transparency
 .. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We can easily visualize the structure via `print`:
@@ -98,9 +98,9 @@ We can easily visualize the structure via `print`:
 
 The printout:
 
-.. code-block:: 
+.. code-block::
 
-    
+
     DocQA(
     (doc): Generator(
         model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
@@ -135,7 +135,7 @@ You can easily save the detailed states:
 
 .. code-block:: python
 
-    from utils.serialization import save_json
+    from utils.file_io import save_json
 
     save_json(doc.to_dict(), "doc.json")
 
@@ -157,8 +157,8 @@ You can directly use this class as:
         return x + 1
 
     fun_component = FunComponent(add_one)
-    print(fun_component(1))  
-    print(type(fun_component))  
+    print(fun_component(1))
+    print(type(fun_component))
 
     # output:
     # 2
@@ -172,7 +172,7 @@ Via direct call:
 
 .. code-block:: python
 
-    from lightrag.core.component import fun_to_component 
+    from lightrag.core.component import fun_to_component
 
     fun_component = fun_to_component(add_one)
     print(fun_component(1))
@@ -219,7 +219,7 @@ Let's put the FunComponent and DocQA together in a sequence:
 We automatically enhance users' queries before passing them to the DocQA component.
 The output is:
 
-.. code-block:: 
+.. code-block::
 
     1. Over-the-counter pain relievers like acetaminophen, ibuprofen, or aspirin
     2. Rest and relaxation
@@ -227,7 +227,7 @@ The output is:
 
 The structure of the sequence using ``print(seq)``:
 
-.. code-block:: 
+.. code-block::
 
     Sequential(
     (0): EnhanceQueryComponent()
