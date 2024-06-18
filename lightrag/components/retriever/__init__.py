@@ -1,20 +1,25 @@
-from .bm25_retriever import *
-from .llm_retriever import *
+from .bm25_retriever import InMemoryBM25Retriever
+from .llm_retriever import LLMRetriever
 
+from lightrag.utils import LazyImport, OptionalPackages
 from lightrag.utils.registry import EntityMapping
 
-# FAISS Retriever
-try:
-    from .faiss_retriever import FAISSRetriever
+FAISSRetriever = LazyImport(
+    "lightrag.components.retriever.faiss_retriever.FAISSRetriever",
+    OptionalPackages.FAISS,
+)
 
-    EntityMapping.register("FAISSRetriever", FAISSRetriever)
-except ImportError as e:
-    print(f"Optional module not installed: {e}")
+from .reranker_retriever import RerankerRetriever
+from .postgres_retriever import PostgresRetriever
 
-# Reranker
-try:
-    from .reranker_retriever import *
+__all__ = [
+    "InMemoryBM25Retriever",
+    "LLMRetriever",
+    "FAISSRetriever",
+    "RerankerRetriever",
+    "PostgresRetriever",
+]
 
-    EntityMapping.register("RerankerRetriever", RerankerRetriever)
-except ImportError as e:
-    print(f"Optional module not installed: {e}")
+
+for name in __all__:
+    EntityMapping.register(name, globals()[name])

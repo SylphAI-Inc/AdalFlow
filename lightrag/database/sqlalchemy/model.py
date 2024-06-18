@@ -24,6 +24,7 @@ Note:
 
 References:
 [1] https://github.com/pgvector/pgvector?tab=readme-ov-file#installation-notes---linux-and-mac
+[2] pgvector python package: https://pypi.org/project/pgvector/
 """
 
 from typing import Optional, Dict, List

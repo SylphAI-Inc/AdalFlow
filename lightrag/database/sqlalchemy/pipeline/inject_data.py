@@ -1,13 +1,12 @@
 from typing import List
-import os
 
 from lightrag.core.component import Sequential
 from lightrag.core.types import Document
 
 from lightrag.utils.config import new_component
-from lightrag.utils.file_io import load_json
 from lightrag.database.sqlalchemy.sqlachemy_manager import DatabaseManager
 from lightrag.database.sqlalchemy.model import DocumentModel
+from lightrag.database.sqlalchemy.pipeline import default_config
 
 
 # TODO: async call
@@ -54,15 +53,11 @@ class EmbeddingPipeline:
 
     def __init__(self, batch_size: int = 100):
         self.batch_size = batch_size
-        current_script_dir = os.path.dirname(os.path.realpath(__file__))
 
-        config_path = f"{current_script_dir}/default_config.json"
-        print(config_path)
-
-        self.config_dict = load_json(config_path)
-        print(self.config_dict)
+        self.config_dict = default_config
         self.document_splitter = new_component(self.config_dict["document_splitter"])
         self.to_embeddings = new_component(self.config_dict["to_embeddings"])
+        self.vectorizer = self.to_embeddings.vectorizer
 
         self.data_transformer = Sequential(
             self.document_splitter,
@@ -75,9 +70,14 @@ class EmbeddingPipeline:
     def process_batch(self, documents: List[Document]):
         transformed_documents = self.data_transformer(documents)
         session = self.db_manager.get_session()
-        DocumentModel.insert_update_bulk(
-            [doc.to_dict() for doc in transformed_documents], session
-        )
+        documents_to_upload = []
+        for doc in transformed_documents:
+            item = doc.to_dict()
+            if "score" in item:
+                del item["score"]
+            documents_to_upload.append(item)
+
+        DocumentModel.insert_update_bulk(documents_to_upload, session)
         return transformed_documents
 
     def __call__(self, documents: List[Document]):
@@ -89,30 +89,48 @@ class EmbeddingPipeline:
             self.process_batch(List)
 
 
-# if __name__ == "__main__":
-#     from lightrag.core.types import Document
-#     from lightrag.utils import setup_env  # noqa
+if __name__ == "__main__":
+    from lightrag.core.types import Document
+    from lightrag.utils import setup_env  # noqa
 
-#     documents = [
-#         {
-#             "meta_data": {"title": "Li Yin's profile"},
-#             "text": "My name is Li Yin, I love rock climbing"
-#             + "lots of nonsense text" * 500,
-#             "id": "doc1",
-#         },
-#         {
-#             "meta_data": {"title": "Interviewing Li Yin"},
-#             "text": "lots of more nonsense text" * 250
-#             + "Li Yin is a software developer and AI researcher"
-#             + "lots of more nonsense text" * 250,
-#             "id": "doc2",
-#         },
-#     ]
-#     db_name = "vector_db"
-#     postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
-#     ep = EmbeddingPipeline()
-#     ep.setup_database_manager(postgres_url)
+    documents = [
+        {
+            "meta_data": {"title": "Li Yin's profile"},
+            "text": "My name is Li Yin, I love rock climbing"
+            + "lots of nonsense text" * 500,
+            "id": "doc1",
+        },
+        {
+            "meta_data": {"title": "Interviewing Li Yin"},
+            "text": "lots of more nonsense text" * 250
+            + "Li Yin is a software developer and AI researcher"
+            + "lots of more nonsense text" * 250,
+            "id": "doc2",
+        },
+    ]
+    db_name = "vector_db"
+    postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
+    ep = EmbeddingPipeline()
 
-#     new_documents = [Document(**doc) for doc in documents]
+    ep.setup_database_manager(postgres_url)
+    # new_documents = [Document(**doc) for doc in documents]
+    # ep(new_documents)
 
-#     ep(new_documents)
+    db_manager = DatabaseManager(postgres_url)
+    tables = db_manager.list_table_schemas()
+    print(tables)
+    column = "vector"
+    table_name = "document"
+    vectorizer = ep.vectorizer
+    query = "What did the author do?"
+    query_embedding = vectorizer(query).data[0].embedding
+
+    def format_query_str(
+        table_name: str, column: str, query_embedding: List[float], top_k: int = 5
+    ):
+        return f"""SELECT * FROM {table_name} ORDER BY {column} <-> '{str(query_embedding)}' LIMIT {top_k};"""
+
+    l2_nearest_neighbor = format_query_str(table_name, column, query_embedding)
+    print(l2_nearest_neighbor)
+    results = db_manager.execute_query(l2_nearest_neighbor)
+    print(results)

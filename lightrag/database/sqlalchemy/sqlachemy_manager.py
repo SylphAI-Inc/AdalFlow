@@ -6,6 +6,7 @@ from sqlalchemy.sql import text
 from sqlalchemy.engine import reflection
 
 from lightrag.database.sqlalchemy.base import Base
+from lightrag.database.sqlalchemy.model import *  # noqa
 
 
 class DatabaseManager:
@@ -71,10 +72,16 @@ class DatabaseManager:
         return self._Session()
 
     def execute_query(self, query: str, params: dict = None) -> None:
+        r"""Executes a raw SQL query."""
+        result_list = []
         with self.get_session() as session:
             result = session.execute(text(query), params)
             session.commit()
-        return result
+            # Use result.keys() to get the column names
+            result_list = [
+                {key: value for key, value in zip(result.keys(), row)} for row in result
+            ]
+        return result_list
 
     def search(self, model, **kwargs):
         with self.get_session() as session:
