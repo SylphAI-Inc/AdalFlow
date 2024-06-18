@@ -36,3 +36,4 @@ local_cache/
 data/
 traces/
 *.log
+storage/

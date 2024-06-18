@@ -250,16 +250,44 @@ class DataClass(metaclass=_DataClassMeta):
             logging.warning(f"Field {field_name} does not exist in the dataclass")
         setattr(self, field_name, value)
 
+    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
+        """More of an internal method used for serialization.
+
+        Converts the dataclass to a dictionary, optionally excluding specified fields.
+        Use this to save states of the instance, not advised to use in LLM prompt.
+        """
+        if not is_dataclass(self):
+            raise ValueError("to_dict() called on a class type, not an instance.")
+        if exclude is None:
+            exclude = []
+        exclude_set = set(exclude)
+
+        data = {
+            field.name: getattr(self, field.name)
+            for field in fields(self)
+            if field.name not in exclude_set
+        }
+        # Recursively convert nested dataclasses
+        for key, value in data.items():
+            if is_dataclass(value):
+                data[key] = value.to_dict()
+        return data
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]):
         r"""
         Create a dataclass instance from a dictionary.
         """
-        valid_data: Dict[str, Any] = {}
-        for f in fields(cls):
-            if f.name in data:
-                valid_data[f.name] = data[f.name]
-        return cls(**valid_data)
+        # Recursively construct nested dataclasses
+        field_types = {f.name: f.type for f in fields(cls)}
+        init_kwargs = {}
+        for key, value in data.items():
+            field_type = field_types[key]
+            if is_dataclass(field_type):
+                init_kwargs[key] = field_type.from_dict(value)
+            else:
+                init_kwargs[key] = value
+        return cls(**init_kwargs)
 
     @classmethod
     def format_str(cls: "DataClass", format_type: DataClassFormatType) -> str:
@@ -430,28 +458,6 @@ class DataClass(metaclass=_DataClassMeta):
         Use this to save states of the class in serialization, not advised to use in LLM prompt.
         """
         return cls.to_data_class_schema(exclude)
-
-    # TODO: maybe worth to support recursive to_dict for nested dataclasses
-    # Can consider when we find the nested dataclass needs
-    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """More of an internal method used for serialization.
-
-        Converts the dataclass to a dictionary, optionally excluding specified fields.
-        Use this to save states of the instance, not advised to use in LLM prompt.
-        """
-        if not is_dataclass(self):
-            raise ValueError("to_dict() called on a class type, not an instance.")
-        if exclude is None:
-            exclude = []
-        exclude_set = set(exclude)
-
-        data = {
-            field.name: getattr(self, field.name)
-            for field in fields(self)
-            if field.name not in exclude_set
-        }
-
-        return data
 
 
 """Reserved for Agent to automatically create a dataclass and to manipulate the code"""

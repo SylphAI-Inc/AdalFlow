@@ -30,6 +30,7 @@ if __name__ == "__main__":
         "./source/apis/utils",
         "./source/apis/eval",
         "./source/apis/tracing",
+        "./source/apis/optim",
     ]
     for directory in directories:
         remove_unwanted_string(directory, "module")

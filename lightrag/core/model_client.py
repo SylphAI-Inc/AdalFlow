@@ -1,16 +1,11 @@
 r"""ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components."""
 
-from typing import Any, Dict, Union, Sequence
+from typing import Any, Dict, Union, Sequence, Optional
 from enum import Enum, auto
 
 
 from lightrag.core.component import Component
 from lightrag.core.types import ModelType, EmbedderOutput
-
-
-API_INPUT_TYPE = Union[
-    str, Sequence[str]
-]  # str/Sequence for llm and str/sequence/list for embeddings
 
 
 # TODO: global model registry for all available models in users' project.
@@ -73,7 +68,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -81,7 +76,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
         Bridge the Component's standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.
 
         Args:
-            input (API_INPUT_TYPE): user input
+            input (Optional[Any], optional): input to the model. Defaults to None.
             model_kwargs (Dict): model kwargs
             model_type (ModelType): model type
 

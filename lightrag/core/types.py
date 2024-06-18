@@ -28,7 +28,31 @@ T_co = TypeVar("T_co", covariant=True)
 class ModelType(Enum):
     EMBEDDER = auto()
     LLM = auto()
+    RERANKER = auto()  # ranking model
     UNDEFINED = auto()
+
+
+# TODO: define standard required outputs
+def get_model_args(model_type: ModelType) -> List[str]:
+    r"""Get the required keys in model_kwargs for a specific model type.
+
+    note:
+    If your model inference sdk uses different keys, you need to convert them to the standard keys here in their specifc ModelClient.
+
+    Args:
+        model_type (ModelType): The model type
+
+    Returns:
+        List[str]: The required keys in model_kwargs
+    """
+    if model_type == ModelType.EMBEDDER:
+        return ["model"]
+    elif model_type == ModelType.LLM:
+        return ["model"]
+    elif model_type == ModelType.RERANKER:
+        return ["model", "top_k", "documents", "query"]
+    else:
+        return []
 
 
 @dataclass
@@ -54,7 +78,7 @@ class Usage:
 
 
 class EmbedderOutput(DataClass):
-    r"""Container to hold the response from an Embedder model.
+    __doc__ = r"""Container to hold the response from an Embedder model. Only Per-batch.
 
     Data standard for Embedder model output to interact with other components.
     Batch processing is often available, thus we need a list of Embedding objects.
@@ -69,7 +93,7 @@ class EmbedderOutput(DataClass):
     raw_response: Optional[Any] = field(
         default=None, metadata={"desc": "Raw response"}
     )  # only used if error
-    input: Optional[str] = field(default=None, metadata={"desc": "Input text"})
+    input: Optional[List[str]] = field(default=None, metadata={"desc": "Input text"})
 
     @property
     def length(self) -> int:
@@ -100,6 +124,10 @@ class EmbedderOutput(DataClass):
         )
 
 
+EmbedderOutputType = EmbedderOutput
+BatchEmbedderOutputType = List[EmbedderOutput]
+
+
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -126,6 +154,120 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     raw_response: Optional[str] = field(
         default=None, metadata={"desc": "Raw string response from the model"}
     )
+
+
+GeneratorOutputType = GeneratorOutput[Any]
+
+
+class Document(DataClass):
+    r"""A text container with optional metadata and vector representation.
+    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
+    """
+
+    text: str = field(metadata={"desc": "The main text"})
+
+    meta_data: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Metadata for the document"}
+    )
+    # can save data for filtering at retrieval time too
+    vector: List[float] = field(
+        default_factory=list,
+        metadata={"desc": "The vector representation of the document"},
+    )
+    # the vector representation of the document
+
+    id: Optional[str] = field(
+        default_factory=lambda: str(uuid.uuid4()), metadata={"desc": "Unique id"}
+    )  # unique id of the document
+    order: Optional[int] = field(
+        default=None,
+        metadata={"desc": "Order of the chunked document in the original document"},
+    )
+
+    score: Optional[float] = field(
+        default=None,
+        metadata={"desc": "Score of the document, likely used in retrieval output"},
+    )
+    parent_doc_id: Optional[Union[str, UUID]] = field(
+        default=None, metadata={"desc": "id of the Document where the chunk is from"}
+    )
+
+    estimated_num_tokens: Optional[int] = field(
+        default=None,
+        metadata={
+            "desc": "Estimated number of tokens in the text, useful for cost estimation"
+        },
+    )
+
+    def __post_init__(self):
+        if self.estimated_num_tokens is None and self.text:
+            tokenizer = Tokenizer()
+            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
+
+    @classmethod
+    def from_dict(cls, doc: Dict):
+        doc = doc.copy()
+        assert "meta_data" in doc, "meta_data is required"
+        assert "text" in doc, "text is required"
+        if "estimated_num_tokens" not in doc:
+            tokenizer = Tokenizer()
+            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
+        if "id" not in doc:
+            doc["id"] = uuid.uuid4()
+
+        return super().from_dict(doc)
+
+    def __repr__(self) -> str:
+        max_text_len_to_show: int = 400
+        repr_str = "Document("
+        if self.id:
+            repr_str += f"id={self.id}, "
+        if self.text:
+            repr_str += f"text={self.text[0:max_text_len_to_show]} "
+            if len(self.text) > max_text_len_to_show:
+                repr_str += "..."
+            repr_str += ", "
+        if self.meta_data:
+            repr_str += f"meta_data={self.meta_data}, "
+        if self.estimated_num_tokens:
+            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
+
+        if self.vector:
+            repr_str += f"vector={self.vector[0:10]}..., "
+        if self.score:
+            repr_str += f"score={self.score}, "
+        if self.parent_doc_id:
+            repr_str += f"parent_doc_id={self.parent_doc_id}, "
+        repr_str = repr_str[:-2] + ")"
+        return repr_str
+
+    def __str__(self):
+        return self.__repr__()
+
+
+class RetrieverOutput(DataClass):
+    __doc__ = r"""Save the output of a single query in retrievers."""
+
+    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+    doc_scores: Optional[List[float]] = field(
+        default=None, metadata={"desc": "List of document scores"}
+    )
+    query: Optional[str] = field(
+        default=None, metadata={"desc": "The query used to retrieve the documents"}
+    )
+    documents: Optional[List[Document]] = field(
+        default=None, metadata={"desc": "List of retrieved documents"}
+    )
+
+
+RetrieverInputStrType = Union[str, Sequence[str]]
+RetrieverInputType = TypeVar("RetrieverInputType", contravariant=True)
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverDocumentsType = Sequence[Any]
+# it is up the the subclass to decide the type of the documents
+RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
+
+# different retriever may support different input data type
 
 
 @dataclass
@@ -253,96 +395,3 @@ class DialogSession:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
-
-
-class Document(DataClass):
-    r"""A text container with optional metadata and vector representation.
-    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
-    """
-
-    text: str = field(metadata={"desc": "The main text"})
-
-    meta_data: Optional[Dict[str, Any]] = field(
-        default=None, metadata={"desc": "Metadata for the document"}
-    )
-    # can save data for filtering at retrieval time too
-    vector: List[float] = field(
-        default_factory=list,
-        metadata={"desc": "The vector representation of the document"},
-    )
-    # the vector representation of the document
-
-    id: Optional[str] = field(
-        default_factory=lambda: str(uuid.uuid4()), metadata={"desc": "Unique id"}
-    )  # unique id of the document
-    order: Optional[int] = field(
-        default=None,
-        metadata={"desc": "Order of the chunked document in the original document"},
-    )
-
-    score: Optional[float] = field(
-        default=None,
-        metadata={"desc": "Score of the document, likely used in retrieval output"},
-    )
-    parent_doc_id: Optional[Union[str, UUID]] = field(
-        default=None, metadata={"desc": "id of the Document where the chunk is from"}
-    )
-
-    estimated_num_tokens: Optional[int] = field(
-        default=None,
-        metadata={
-            "desc": "Estimated number of tokens in the text, useful for cost estimation"
-        },
-    )
-
-    def __post_init__(self):
-        if self.estimated_num_tokens is None and self.text:
-            tokenizer = Tokenizer()
-            self.estimated_num_tokens = tokenizer.count_tokens(self.text)
-
-    @classmethod
-    def from_dict(cls, doc: Dict):
-        doc = doc.copy()
-        assert "meta_data" in doc, "meta_data is required"
-        assert "text" in doc, "text is required"
-        if "estimated_num_tokens" not in doc:
-            tokenizer = Tokenizer()
-            doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
-        if "id" not in doc:
-            doc["id"] = uuid.uuid4()
-
-        return super().from_dict(doc)
-
-    def __repr__(self) -> str:
-        # TODO: repr only those non empty fields
-        repr_str = "Document("
-        if self.id:
-            repr_str += f"id={self.id}, "
-        if self.text:
-            repr_str += f"text={self.text[0:]}, "
-        if self.meta_data:
-            repr_str += f"meta_data={self.meta_data}, "
-        if self.estimated_num_tokens:
-            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
-
-        if self.vector:
-            repr_str += f"vector={self.vector[0:10]}..., "
-        if self.score:
-            repr_str += f"score={self.score}, "
-        if self.parent_doc_id:
-            repr_str += f"parent_doc_id={self.parent_doc_id}, "
-        repr_str = repr_str[:-2] + ")"
-        return repr_str
-
-    def __str__(self):
-        return self.__repr__()
-
-
-@dataclass
-class RetrieverOutput:
-    r"""Mainly used to retrieve a list of documents with scores."""
-
-    doc_indexes: List[int]  # either index or ids potentially
-    doc_scores: Optional[List[float]] = None
-    query: Optional[str] = None
-    documents: Optional[List[Document]] = None

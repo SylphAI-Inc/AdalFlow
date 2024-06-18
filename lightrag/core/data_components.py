@@ -5,9 +5,11 @@ It is commonly used as output_processors.
 
 from copy import deepcopy
 from typing import Any, List, TypeVar, Sequence, Union, Dict, Any
+from tqdm import tqdm
 
 
 from lightrag.core.component import Component
+
 from lightrag.core.types import (
     EmbedderOutput,
     Embedding,
@@ -15,8 +17,13 @@ from lightrag.core.types import (
     Document,
     RetrieverOutput,
 )
+from lightrag.core.embedder import (
+    BatchEmbedder,
+    BatchEmbedderOutputType,
+    BatchEmbedderInputType,
+    Embedder,
+)
 import lightrag.core.functional as F
-from tqdm import tqdm
 
 T = TypeVar("T")
 
@@ -80,27 +87,6 @@ def retriever_output_to_context_str(
     return context_str
 
 
-# class ToEmbedderResponse(Component):
-#     """Convert embedding model output to EmbedderOutput
-#     .. note:
-#        This might not apply to all Embedder models, this applys to one pattern
-#     """
-
-#     def __init__(
-#         self,
-#     ) -> None:
-#         super().__init__()
-
-#     def __call__(self, input: Any) -> EmbedderOutput:
-#         """
-#         convert the model output to EmbedderOutput
-#         """
-#         try:
-#             return parse_embedding_response(input)
-#         except Exception as e:
-#             raise ValueError(f"Error converting to EmbedderOutput: {e}")
-
-
 """
 For now these are the data transformation components
 """
@@ -112,27 +98,28 @@ class ToEmbeddings(Component):
     It operates on a copy of the input data, and does not modify the input data.
     """
 
-    def __init__(self, vectorizer: Component, batch_size: int = 50) -> None:
-        super().__init__()
+    def __init__(self, vectorizer: Embedder, batch_size: int = 50) -> None:
+        super().__init__(batch_size=batch_size)
         self.vectorizer = vectorizer
         self.batch_size = batch_size
+        self.batch_embedder = BatchEmbedder(embedder=vectorizer, batch_size=batch_size)
 
     def __call__(self, input: Sequence[Document]) -> Sequence[Document]:
         output = deepcopy(input)
-        for i in tqdm(range(0, len(output), self.batch_size)):
-            batch = output[i : i + self.batch_size]
-            embedder_output: EmbedderOutput = self.vectorizer(
-                input=[chunk.text for chunk in batch]
-            )
-            vectors = embedder_output.data
-            for j, vector in enumerate(vectors):
-                output[i + j].vector = vector.embedding
-            # update tracking
-            # self.tracking["vectorizer"]["num_calls"] += 1
-            # self.tracking["vectorizer"][
-            #     "num_tokens"
-            # ] += embedder_output.usage.total_tokens
+        # convert documents to a list of strings
+        embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]
+        outputs: BatchEmbedderOutputType = self.batch_embedder(input=embedder_input)
+        # n them back to the original order along with its query
+        for batch_idx, batch_output in tqdm(
+            enumerate(outputs), desc="Adding embeddings to documents from batch"
+        ):
+            for idx, embedding in enumerate(batch_output.data):
+                output[batch_idx * self.batch_size + idx].vector = embedding.embedding
         return output
+
+    def _extra_repr(self) -> str:
+        s = f"batch_size={self.batch_size}"
+        return s
 
 
 class RetrieverOutputToContextStr(Component):

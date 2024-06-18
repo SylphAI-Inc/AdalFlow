@@ -1,10 +1,38 @@
 /* custom.css */
 
 :root {
-  /* Use softer blue from bootstrap's default info color */
-  --pst-color-info: 23, 162, 184;
-}
+    --pst-color-info: 23, 162, 184;
+    --pst-color-logo: #2EB5EB;
+    --bs-gray-500:#adb5bd;
 
+  }
+p {
+    font-size: 0.9em;
+    margin-bottom: 1.15rem;
+  }
+  
+html[data-theme=light] {
+    --pst-color-secondary: #3d3d3d; /*change the secondary color, header link to gray */
+    --pst-color-link-hover: #25262; /*change the side bar link color to black */
+    --pst-color-table-row-hover-bg: #f8f9fa; /*change the table row hover color to light gray */
+    --sd-color-secondary: gray; /*change the secondary color to black */
+    --sd-color-secondary-highlight: gray; /*change the secondary highlight color to black */
+  }
+
+.bd-main .bd-content .bd-article-container {
+    max-width: 100%;  /* default is 60em */
+  }
+
+h1{
+    font-size: 2rem; /* make the h1 in the code smaller */
+}
+/* .bd-page-width {
+    max-width: 100%; 
+  } */
+
+.sig-name {
+    color: black; /* set the class name and attributes to black */
+}
 .caption-text {
   font-size: 14px;  /* Sets the smallest font size */
   color: gray;     /* Sets the color to gray */

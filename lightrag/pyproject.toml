@@ -24,7 +24,7 @@ classifiers = [
 # include = "lightrag"
 
 [tool.poetry.dependencies]
-python = ">=3.11, <4.0"
+python = ">=3.10, <4.0"
 
 python-dotenv = "^1.0.1"
 backoff = "^2.2.1"
@@ -40,11 +40,14 @@ groq = "^0.5.0"      # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
 # matplotlib = "^3.8.4"
 # colorama = "^0.4.6"
+more-itertools = "^10.3.0"
 
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.1.1"
 pytest-mock = "^3.14.0"
+transformers = "^4.41.2"
+torch = "^2.3.1"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"

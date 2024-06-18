@@ -18,6 +18,7 @@ This is also our tutorials showing how each part works before we move ahead to b
 .. figure:: /_static/LLM_arch.png
    :alt: LLM application is no different from a mode training/eval workflow
    :align: center
+   :width: 600px
 
    LLM application is no different from a mode training/eval workflow
 
@@ -44,6 +45,7 @@ Building
 
 Base classes
 ---------------
+Code path: ``lightrag.core``.
 
 .. list-table::
    :widths: 20 80
@@ -67,31 +69,32 @@ Base classes
 
 Core Components
 -------------------
-.. In the core, lies our ``Generator``, it orchestrates three components: (1) Model Client, (2) Prompt, and (3) Output Processors.
-  
-.. Assisted with ``DataClass`` for input and output data formating.
+Code path: ``lightrag.core``. For abstract classes:
 
-.. With generator being in the center, all things are built around it via the prompt.
-.. - Retriever  (Enhance Generator to be more factual and less hallucination), provide `context_str` in prompt.
-.. - 
+- ``ModelClient``: the functional subclass is in ``lightrag.components.model_client``.
+- ``Retriever``: the functional subclass is in ``lightrag.components.retriever``.
+
 
 .. list-table::
    :widths: 20 80
    :header-rows: 1
 
-   * - Component
+   * - Componentd
      - Description
    * - :doc:`prompt`
-     - Built on ``jinja2``, it programmablly and flexibly help users format prompt as input to the generator.
+     - Built on ``jinja2``, it programmablly and flexibly format prompt(text) as **input to the generator**.
    * - :doc:`model_client`
-     - ``ModelClient`` is the protocol and base class for all Models to communicate with components, either via APIs or local models.
+     - ``ModelClient`` is the protocol and base class for LightRAG to **integrate all models**, either APIs or local, LLMs or Embedding models or any others.
    * - :doc:`generator`
-     - The core component that orchestrates the model client(LLMs in particular), prompt, and output processors.
+     - The **center component** that orchestrates the model client(LLMs in particular), prompt, and output processors for format parsing or any post processing.
    * - :doc:`embedder`
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
-     - The base class for all retrievers who in particular retrieve documents from a given database.
+     - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
+   * - :doc:`text_splitter`
+     - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
 
+Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
 .. toctree::
    :maxdepth: 1
@@ -102,9 +105,12 @@ Core Components
    generator
    embedder
    retriever
+   text_splitter
+   rag
 
 Core functionals
 -------------------
+Code path: ``lightrag.core``
 
 .. list-table::
    :widths: 20 80
@@ -135,6 +141,7 @@ Advanced Components
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
   agent
   react_agent_xy
