@@ -14,6 +14,7 @@ class OptionalPackages(Enum):
 
     The package name and error message are defined for each optional package as a tuple.
     """
+    # model sdk
     GROQ = ("groq", "Please install groq with: pip install groq")
     OPENAI = ("openai", "Please install openai with: pip install openai")
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
@@ -26,8 +27,22 @@ class OptionalPackages(Enum):
         "Please install transformers with: pip install transformers",
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
+
+    # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
+
+    # search library
     FAISS = ("faiss", "Please install faiss with: pip install faiss")
+
+    # db library
+    SQLALCHEMY = (
+        "sqlalchemy",
+        "Please install sqlalchemy with: pip install sqlalchemy",
+    )
+    PGVECTOR = (
+        "pgvector",
+        "Please install pgvector with: pip install pgvector",
+    )
 
     def __init__(self, package_name, error_message):
         self.package_name = package_name

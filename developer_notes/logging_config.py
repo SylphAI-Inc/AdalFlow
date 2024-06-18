@@ -43,7 +43,6 @@ def get_logger_and_enable_library_logging_in_same_file():
         enable_file=True,
         save_dir=log_dir,
         filename=file_name,
-        name="test",
     )
     # log.info("app: test log message")
     generator = Generator.from_config(generator_config)

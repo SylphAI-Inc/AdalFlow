@@ -151,14 +151,14 @@ class _DataClassMeta(type):
 # @dataclass
 class DataClass(metaclass=_DataClassMeta):
     __doc__ = r"""The base data class for all data types that interact with LLMs.
-     
+
     Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
     transparency and to keep the order of the fields when get serialized.
 
     How to create your own dataclass?
-    
-    1. Subclass DataClass and define the fields with the `field` decorator. 
+
+    1. Subclass DataClass and define the fields with the `field` decorator.
     2. Use the `medata` argument and a `desc` key to describe the field.
     3. Keep the order of the fields as how you want them to be serialized and described to LLMs.
     4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.
@@ -167,7 +167,7 @@ class DataClass(metaclass=_DataClassMeta):
 
     Describing:
 
-    We defined :ref:`DataClassFormatType<core-base_data_class_format_type>` to categorize DataClass description formats 
+    We defined :ref:`DataClassFormatType<core-base_data_class_format_type>` to categorize DataClass description formats
     as input or output in LLM prompt.
 
 
@@ -201,7 +201,7 @@ class DataClass(metaclass=_DataClassMeta):
 
         # Define a dataclass
         from lightrag.core import DataClass
-        
+
         class MyOutputs(DataClass):
             age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
             name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
@@ -282,6 +282,9 @@ class DataClass(metaclass=_DataClassMeta):
         field_types = {f.name: f.type for f in fields(cls)}
         init_kwargs = {}
         for key, value in data.items():
+            if key not in field_types:
+                logging.warning(f"Field {key} does not exist in the dataclass")
+                continue
             field_type = field_types[key]
             if is_dataclass(field_type):
                 init_kwargs[key] = field_type.from_dict(value)
@@ -474,7 +477,7 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        
+
     }
 
     Examples:

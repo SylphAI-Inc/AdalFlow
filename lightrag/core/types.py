@@ -228,7 +228,7 @@ class Document(DataClass):
         if "estimated_num_tokens" not in doc:
             tokenizer = Tokenizer()
             doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
-        if "id" not in doc:
+        if "id" not in doc or not doc["id"]:
             doc["id"] = uuid.uuid4()
 
         return super().from_dict(doc)
