@@ -72,7 +72,9 @@ def new_component(config: Dict[str, Any]) -> Any:
     Returns:
         Any: The constructed component.
     """
-    assert "component_name" in config, "component_name is required in the config"
+    assert (
+        "component_name" in config
+    ), f"component_name is required in the config: {config}"
 
     component_name = config["component_name"]
     component_cls = EntityMapping.get(component_name)

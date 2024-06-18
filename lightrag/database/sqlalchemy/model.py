@@ -31,27 +31,26 @@ from datetime import datetime
 import logging
 
 from sqlalchemy import (
-    create_engine,
     Column,
     Integer,
-    Float,
     String,
     Text,
     DateTime,
 )
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session as BaseSession
-from sqlalchemy.dialects.postgresql import JSONB
 import uuid
 
+from sqlalchemy.orm import Session as BaseSession
+from sqlalchemy.dialects.postgresql import JSONB
+
+from pgvector.sqlalchemy import Vector
+
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
+from lightrag.database.sqlalchemy.base import Base
 
 safe_import(OptionalPackages.SQLALCHEMY.value[0], OptionalPackages.SQLALCHEMY.value[1])
 safe_import(OptionalPackages.PGVECTOR.value[0], OptionalPackages.PGVECTOR.value[1])
 
 log = logging.getLogger(__name__)
-
-Base = declarative_base()
 
 
 class DocumentBase(Base):
@@ -64,12 +63,8 @@ class DocumentBase(Base):
     meta_data = Column(
         JSONB
     )  # Utilizing JSONB for metadata storage if using PostgreSQL
-    # vector = Column(Vector())  # Using ScalarListType to store list of floats
     order = Column(Integer)
-    score = Column(Float)
-    parent_doc_id = Column(
-        String
-    )  # Assuming UUIDs are stored as strings, adjust if using actual UUID type
+    parent_doc_id = Column(String)
     estimated_num_tokens = Column(Integer)
     created_at = Column(
         DateTime, default=datetime.utcnow
@@ -78,19 +73,12 @@ class DocumentBase(Base):
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
     )  # Updates timestamp on any update
 
-    # def __post_init__(self):
-    #     if self.estimated_num_tokens is None and self.text:
-    #         tokenizer = Tokenizer()
-    #         self.estimated_num_tokens = tokenizer.count_tokens(self.text)
-
     def to_dict(self):
         return {
             "id": self.id,
             "text": self.text,
             "meta_data": self.meta_data,
-            # "vector": self.vector,
             "order": self.order,
-            "score": self.score,
             "parent_doc_id": self.parent_doc_id,
             "estimated_num_tokens": self.estimated_num_tokens,
             "created_at": self.created_at,
@@ -109,17 +97,14 @@ class DocumentBase(Base):
             if existing_document:
                 for key, value in document_data.items():
                     setattr(existing_document, key, value)
-                print("Updated existing document.")
                 log.debug(f"Updated document: {existing_document}")
             else:
                 new_document = cls(**document_data)
                 session.add(new_document)
-                print("Inserted new document.")
                 log.debug(f"Inserted document: {new_document}")
             session.commit()
             return existing_document if existing_document else new_document
         except Exception as e:
-            print(f"Error: {e}")
             log.error(f"Error: {e}, Rolling back transaction.")
             session.rollback()
             return None
@@ -153,6 +138,12 @@ class DocumentBase(Base):
             return None
 
 
+# TODO: extend more fields to support full-text search
+# class DocumentSearchExtended(DocumentBase):
+#     __abstract__ = True
+#     text_tsvector = Column("text_tsvector", String)
+
+
 class DocumentWithoutVector(DocumentBase):
     __doc__ = r"""Document class without pgvector support."""
     __tablename__ = "document"
@@ -177,13 +168,15 @@ class DocumentWithoutVector(DocumentBase):
         super().__init__(*args, **kwargs)
 
 
-class Document(DocumentBase):
+class DocumentModel(DocumentBase):
     __doc__ = r"""Document class extending the DocumentBase with pgvector support."""
 
     __tablename__ = "document"
     __bind_key__ = "vector_db"
 
     __table_args__ = {"extend_existing": True}  # Allows extending the table
+
+    vector = Column(Vector())  # using pgvector for vector storage
 
     def __init__(
         self,
@@ -199,46 +192,60 @@ class Document(DocumentBase):
         super().__init__(*args, **kwargs)
 
 
-if __name__ == "__main__":
-    from sqlalchemy.sql import text
+# if __name__ == "__main__":
+#     from sqlalchemy.sql import text
 
-    db_name = "vector_db"
-    postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
-    engine = create_engine(postgres_url)
+#     from lightrag.database.sqlalchemy.sqlachemy_manager import DatabaseManager
 
-    try:
-        # Begin a transaction
-        with engine.connect() as connection:
-            # Use the connection to execute a raw SQL command
-            # Ensuring the session commits after, especially for operations requiring administrative rights
-            connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
-            connection.commit()  # Explicitly commit to ensure that the CREATE EXTENSION command is finalized
-    except Exception as e:
-        print(f"An error occurred while trying to create the extension: {e}")
+#     db_name = "vector_db"
+#     postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
 
-    Base.metadata.create_all(engine, checkfirst=True)
-    Session = sessionmaker(bind=engine)
-    session = Session()
+#     db_manager = DatabaseManager(postgres_url)
+#     engine = db_manager.engine
+#     table_names = db_manager.list_table_schemas()
+#     print(f"Table names: {table_names}")
+#     database_schema = db_manager.list_database_schemas()
+#     print(f"Database schema: {database_schema}")
+#     database_name = db_manager.get_database_name()
+#     print(f"Database name: {database_name}")
+#     # engine = create_engine(postgres_url)
 
-    # doc = Document(text="Hello world")
-    Document.insert_update_single({"text": "Hello world"}, session=session)
-    # do bulk insert
-    Document.insert_update_bulk(
-        [
-            {"id": "doc2", "text": "Hello world 2"},
-            {"id": "doc3", "text": "Hello world 3"},
-        ],
-        session=session,
-    )
-    # session.add(doc)
-    # session.commit()
-    # from lightrag.core.types import Document as LightragDocument
+#     try:
+#         # Begin a transaction
+#         with engine.connect() as connection:
+#             # Use the connection to execute a raw SQL command
+#             # Ensuring the session commits after, especially for operations requiring administrative rights
+#             connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+#             connection.commit()  # Explicitly commit to ensure that the CREATE EXTENSION command is finalized
+#     except Exception as e:
+#         print(f"An error occurred while trying to create the extension: {e}")
 
-    # doc_2 = LightragDocument.from_dict(doc.to_dict())
-    # print("doc:", doc, doc.id)
-    # print("doc_2:", doc_2, doc_2.id)
+#     # Base.metadata.create_all(engine, checkfirst=True)
+#     # Session = sessionmaker(bind=engine)
+#     # session = Session()
+#     db_manager.create_tables()
+#     session = db_manager.get_session()
 
-    # print(doc.id)
-    # print(doc.text)
-    session.close()
-    engine.dispose()
+#     # doc = Document(text="Hello world")
+#     DocumentModel.insert_update_single({"text": "Hello world"}, session=session)
+#     # do bulk insert
+#     DocumentModel.insert_update_bulk(
+#         [
+#             {"id": "doc2", "text": "Hello world 2"},
+#             {"id": "doc3", "text": "Hello world 3"},
+#         ],
+#         session=session,
+#     )
+#     db_manager.close()
+#     # session.add(doc)
+#     # session.commit()
+#     # from lightrag.core.types import Document as LightragDocument
+
+#     # doc_2 = LightragDocument.from_dict(doc.to_dict())
+#     # print("doc:", doc, doc.id)
+#     # print("doc_2:", doc_2, doc_2.id)
+
+#     # print(doc.id)
+#     # print(doc.text)
+#     # session.close()
+#     # engine.dispose()
