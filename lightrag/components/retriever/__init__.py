@@ -10,7 +10,13 @@ FAISSRetriever = LazyImport(
 )
 
 from .reranker_retriever import RerankerRetriever
-from .postgres_retriever import PostgresRetriever
+
+# from .postgres_retriever import PostgresRetriever
+
+PostgresRetriever = LazyImport(
+    "lightrag.components.retriever.postgres_retriever.PostgresRetriever",
+    OptionalPackages.SQLALCHEMY,
+)
 
 __all__ = [
     "InMemoryBM25Retriever",
