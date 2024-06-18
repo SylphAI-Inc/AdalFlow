@@ -1,6 +1,7 @@
 from lightrag.utils.logger import enable_library_logging, get_logger
 from lightrag.utils.file_io import load_json
 from lightrag.core import Generator
+from lightrag.utils import setup_env  # noqa
 
 log_dir = "developer_notes/logs"
 
