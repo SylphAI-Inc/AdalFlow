@@ -17,7 +17,7 @@ from .file_io import (
 from .logger import printc, enable_library_logging, get_logger
 from .registry import EntityMapping
 from .config import new_components_from_config, new_component
-from .lazy_import import LazyImport, OptionalPackages
+from .lazy_import import LazyImport, OptionalPackages, safe_import
 
 
 __all__ = [
@@ -41,4 +41,5 @@ __all__ = [
     "load_jsonl",
     "append_to_jsonl",
     "write_list_to_jsonl",
+    "safe_import",
 ]

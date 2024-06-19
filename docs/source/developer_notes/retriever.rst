@@ -18,7 +18,7 @@ Though the definition is simple - "Retrieve relevant information for a given que
 No doubt the retriever part is the one of the most diversity and have the longest history in LLM application landscapes.
 
 
-There are numerous search techniques long existing before the vector/semantic search and a reranking model, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search,
+There are numerous search techniques long existing before the vector/semantic search and reranking models, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search,
 and can be applied on various data types, such as text, time-sensitive data, locations, sensor data, and images, videos, audios, etc, and stored in various types of databases, such as relational databases, NoSQL databases, and vector databases.
 
 .. In LightRAG
@@ -70,7 +70,7 @@ We instead want to provide a design pattern where users can
 A retriever will work hand in hand with the ``database`` and the ``data model``.
 We will have a local database :class:`core.db.LocalDB` and a cloud sql-based database (using ``SQLAlchemy``) that can work with any data class, and espeically with the :class:`core.types.Document` and :class:`core.types.DialogTurn`
 which provides ``context`` and ``conversation_history`` and is key to the LLM application.
-As for the retriever methods, we cover the most representative methods: LLMAsRetriever, Reranker, Semantic Search, BM25, database's built-in search such as the full-text search/sql based search using Postgres and the semantic search using ``PgVector``.
+As for the retriever methods, we cover the most representative methods: LLMAsRetriever, Reranker(Cross-encoder), Semantic Search(Bi-encoder), BM25, database's built-in search such as the full-text search/sql based search using Postgres and the semantic search using ``PgVector``.
 
 .. so that users can clearly and easily integrate their own retriever, either to work withh local files or to work with cloud databases with the remaining part of an LLM application.
 .. Our goal is for doing so, users get to better evaluate and optimize the whole task pipeline as a whole.
@@ -227,6 +227,7 @@ CohereReRanker
    5. FAISS: https://github.com/facebookresearch/faiss
    6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
    7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
+   8. Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
 
 
 .. admonition:: API References

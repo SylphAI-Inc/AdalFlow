@@ -31,6 +31,20 @@ OpenAIClient = LazyImport(
     "lightrag.components.model_client.openai_client.OpenAIClient",
     OptionalPackages.OPENAI,
 )
+get_first_message_content = LazyImport(
+    "lightrag.components.model_client.openai_client.get_first_message_content",
+    OptionalPackages.OPENAI,
+)
+get_all_messages_content = LazyImport(
+    "lightrag.components.model_client.openai_client.get_all_messages_content",
+    OptionalPackages.OPENAI,
+)
+get_probabilities = LazyImport(
+    "lightrag.components.model_client.openai_client.get_probabilities",
+    OptionalPackages.OPENAI,
+)
+
+
 __all__ = [
     "CohereAPIClient",
     "TransformerReranker",
