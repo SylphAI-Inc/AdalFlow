@@ -1,55 +1,53 @@
 Retriever
 ============
 
+Context
+------------------
+
 **Why Retriever for LLM?**
 
-LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factualit, relevancy, and freshness on the LLM answers.
+LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factuality, relevancy, and freshness on the LLM answers.
 Due to LLM's context window limit(can only take so much tokens each time), the ``lost-in-the-middle`` problem[6], and the high cost on speed and resources using large context,
-it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs. 
-It is easy to build a demo, but hard to excel due to the many different parts in the pipeline that made it difficult to evaluate and to optimize.
+it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs.
+
+.. It is easy to build a demo, but hard to excel due to the many different parts in the pipeline that made it difficult to evaluate and to optimize.
 
 **What is a retriever?**
 
-Though the definition is simple - "Retrieve relevant information for a given query from a given database", retriever is the part with the most diversity in LLM application landscapes.
-It is essentially the core of any search and information retrieval system. 
+Though the definition is simple - "Retrieve relevant information for a given query from a given database", retriever can go as wide as the entire search and information retriever field.
+No doubt the retriever part is the one of the most diversity and have the longest history in LLM application landscapes.
 
-There are numerous search techniques, such as keyword search, full-text search, semantic search, and reranking, applied on various data types, such as text, time-sensitive data, locations, sensor data, and images, videos, audios, etc, stored in various types of databases, such as relational databases, NoSQL databases, and vector databases.
-There are also dense and sparse retrieval methods.
+
+There are numerous search techniques long existing before the vector/semantic search and a reranking model, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search,
+and can be applied on various data types, such as text, time-sensitive data, locations, sensor data, and images, videos, audios, etc, and stored in various types of databases, such as relational databases, NoSQL databases, and vector databases.
+
+.. In LightRAG
+.. There are also dense and sparse retrieval methods.
 .. - Keyword search
 .. - Full-text search: Here is one example: https://www.postgresql.org/docs/current/textsearch.html
 ..   > TF-IDF (Term Frequency-Inverse Document Frequency)
 ..   > BM25 (Best Matching 25)
 .. - Wildcard search, Fuzzy search, Proximity search, Phrase search, Boolean search, facet search etc
-.. - Semantic search using embedding models 
+.. - Semantic search using embedding models
 .. - Reranking using ranking models.
 
 .. Second, there are numerous data types: Text, Time-sensitive data, Locations, Sensor data, and Images, Videos, Audios etc
 
 .. Third,  the data can be stored anywhere: In-memory data, Local and Disk-based data, and Cloud DBs such as relational databases, NoSQL databases, vector databases etc
 
-**What is important for users?**
+**Retrievel in production**
 
-The most important thing is for users to design the search strategy that can be a combination of all different search techniques. 
+So in production, retrieval is often of multiple-stages, from the cheapest to the most expensive and most accurate, from millions of candidates to a few hundreds or even less.
 For example, when you want to search for candidates from a pool of profiles stored in realtional db say Postgres, you can search by name simply using keyword, or check if the name equals to the query.
-You also want to search by their profession, which you have already categorized, this makes it a filter search. Or the search query semantically is hard to describe with keywords or to create a fixed set of category, then vector/semantc search using 
-the cosine similarity between the query and the profile embeddings can be helpful. To be even more accurate, reranking models where the query and a candidate set of the profile text are directly passed to models and be reranked.
-So in production, retrieval often is multiple-stages, and each stage can use different types of search techniques to filter out the candidates, from the cheapest to the most expensive and most accurate.
-As a library, we do not aim to optimize the coverage of integration, but provide a design pattern so that:
+You also want to search by their profession, which you have already categorized, either by model or human labeling, this makes it a filter search.
+Or if the search query requires more semantic understanding, we will leverage semantic search using embedding models.
+If we want it to be more accurate, we move up to more expensive and more accurate methods such as reranking models and LLM-based retrieval methods.
 
-**What is retriever in LightRAG library?**
 
-A retriever in our library is a component that potentially retrieves relevant ``context`` and pass it to the ``prompt`` of a ``generator``.
-If your data is big, we assume it is users' responsibility to do fuzzy and cheap filter and search that gives high recall even though low precision till to have a manageable set of candidates (fit into local memory or a latency limit) to optimize for high precision. 
-To optimize recall, often BM25, TF-IDF, and semantic search using embedding models are used. And lastly, reranking models are used for the final precision optimization.
-As the layer close to deliver the final user experience, we try to provide a great design pattern so that:
-
-- Users can clearly implement your own retriever to work with your data and your LightRAG LLM applications.
-- Know how to evaluate and optimize the task pipeline.
 
 
 Design pattern
 ------------------
-A retrieval will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
 
 .. figure:: /_static/retriever.png
     :align: center
@@ -58,8 +56,38 @@ A retrieval will work hand in hand with a ``database``: the retriever will be re
 
     How LightRAG's built-in retriever fit into the task pipeline: We focus on the high-precision retrieval method so that users can build on top of that to form the final retrieval pipeline.
 
-A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
-The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
+LightRAG library does not prioritize the coverage of integration, the reasons are:
+
+1. It is literally too-wide to cover them all.
+2. The challenges with RAG application lies more in evaluation and optimization due to many different moving parts and many hyperparmeters, and less in implementing or integrating a 3rd party retriever.
+
+We instead want to provide a design pattern where users can
+
+1. Learn our existing coverage and implementation and use them out-of-the-box as building blocks.
+2. Easily integrate their own retriever and make them work seamlessly with the remaining part of the LLM application so that they can evaluate and optimize the whole task pipeline.
+3. Easily combine different retriever methods to form a multiple-stage retrieval pipeline.
+
+A retriever will work hand in hand with the ``database`` and the ``data model``.
+We will have a local database :class:`core.db.LocalDB` and a cloud sql-based database (using ``SQLAlchemy``) that can work with any data class, and espeically with the :class:`core.types.Document` and :class:`core.types.DialogTurn`
+which provides ``context`` and ``conversation_history`` and is key to the LLM application.
+As for the retriever methods, we cover the most representative methods: LLMAsRetriever, Reranker, Semantic Search, BM25, database's built-in search such as the full-text search/sql based search using Postgres and the semantic search using ``PgVector``.
+
+.. so that users can clearly and easily integrate their own retriever, either to work withh local files or to work with cloud databases with the remaining part of an LLM application.
+.. Our goal is for doing so, users get to better evaluate and optimize the whole task pipeline as a whole.
+
+.. A retriever in our library is a component that potentially retrieves relevant ``context`` and pass it to the ``prompt`` of a ``generator``.
+.. If your data is big, we assume it is users' responsibility to do fuzzy and cheap filter and search that gives high recall even though low precision till to have a manageable set of candidates (fit into local memory or a latency limit) to optimize for high precision.
+.. To optimize recall, often BM25, TF-IDF, and semantic search using embedding models are used. And lastly, reranking models are used for the final precision optimization.
+.. As the layer close to deliver the final user experience, we try to provide a great design pattern so that:
+
+
+
+
+.. A retriever will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
+
+
+.. A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
+.. The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
 
 RetrieverOutput
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -95,7 +123,7 @@ We support both single query or a list of queries to be used as input in the ret
 
 
 
-Retriever Base Class 
+Retriever Base Class
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Our base class :class:`core.retriever.Retriever` highlights two parts for implementing a retriever:
@@ -107,7 +135,7 @@ so that users can easily integrate their own retriever or to customize existing 
 
 **Build and Query Index -- The Algorithm**
 
-For some retrievers, they need ``index``, which is intermediate data that is used to assist the retrieval. 
+For some retrievers, they need ``index``, which is intermediate data that is used to assist the retrieval.
 .. they will compute/manage ``index`` and handles the  ``query`` applied on the index to get the relevant documents.
 Index is data-structure specific to either retrieval method that is used to compute a relevancy score in the case of embeddings for semantic search and Term-Frequency-Inverse Document Frequency (TF-IDF) for BM25, and for rerankers it is just the query and the candidates files themselves and the model.
 For a local retriever, it will need to (1) computes the index itself given candidates documents, persist them for later usage (2) load index from local or cloud storage (3) query the index to get the relevant documents.
@@ -128,7 +156,7 @@ The base class will have the following methods to do so:
         raise NotImplementedError(
             f"build_index_from_documents and input_field_map_func is not implemented"
         )
-    
+
     def retrieve(
         self,
         input: RetrieverInputType,
@@ -149,12 +177,12 @@ For example, ``BM25Retriever`` has the following attributes to form its index:
 For loading and saving in local and disk storage, we opt for ``pickle``, additionally, you can use local database such as SQLite, PgVector, Postgres along with cloud version to persist the index.
 
 
-Current Coverage 
+Current Coverage
 --------------------
 
 To implement three local retrievers to work on local documents and data types to showcase these algorithms:
 
-1. ``BM25Retriever`` 
+1. ``BM25Retriever``
 2. ``FAISSRetriever`` using FAISS library for semantic search
 3. ``Reranker`` a local reranker model.
 
@@ -165,7 +193,7 @@ To demonstrate how we can use search provided by cloud database, we can consider
 
 Remeber: they are the service proviers and the evaluation lies in developers hands and can be unique to your data and applications.
 
-Examples 
+Examples
 ------------------
 
 LLMAsRetriever
@@ -203,4 +231,4 @@ CohereReRanker
 
 .. admonition:: API References
    :class: highlight
-   - 
+   -

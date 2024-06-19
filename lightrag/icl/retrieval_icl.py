@@ -7,7 +7,7 @@ from lightrag.core.data_components import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
 )
-from lightrag.core.db import LocalDocumentDB
+from lightrag.core.db import LocalDB
 from lightrag.core.component import Component, Sequential
 from lightrag.core.document_splitter import DocumentSplitter
 
@@ -19,7 +19,7 @@ class RetrievalICL(Component):
         retriever_output_processors: RetrieverOutputToContextStr,
         text_splitter: DocumentSplitter,
         vectorizer: Embedder,
-        db: LocalDocumentDB,
+        db: LocalDB,
     ):
         super().__init__()
         self.retriever = retriever

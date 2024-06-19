@@ -2,7 +2,7 @@ from typing import Any, List, Optional
 import dotenv
 import yaml
 
-from lightrag.core.generator import Generator, GeneratorOutput
+from lightrag.core.generator import Generator
 from lightrag.core.embedder import Embedder
 from lightrag.core.data_components import (
     RetrieverOutputToContextStr,
@@ -13,7 +13,7 @@ from lightrag.core.types import Document
 from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.core.string_parser import JsonParser
 from lightrag.core.component import Component, Sequential
-from lightrag.core.db import LocalDocumentDB
+from lightrag.core.db import LocalDB
 
 import os
 
@@ -65,7 +65,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
         # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
-        self.db = LocalDocumentDB(
+        self.db = LocalDB(
             # retriever_transformer=data_transformer,  # prepare data for retriever to build index with
             # retriever=retriever,
             # retriever_output_processors=RetrieverOutputToContextStr(deduplicate=True),

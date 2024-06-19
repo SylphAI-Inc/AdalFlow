@@ -1,11 +1,10 @@
-"""LocalDocumentDB is to handle documents: in-memory and stored in the local file system in pickle format."""
+"""LocalDB is to handle documents: in-memory and stored in the local file system in pickle format."""
 
-from typing import List, Optional, Callable, Dict, Any, Type
+from typing import List, Optional, Callable, Dict, Any
 import pickle
 import os
 import logging
 from dataclasses import field, dataclass
-import threading
 
 
 from lightrag.core.component import Component
@@ -13,7 +12,7 @@ from lightrag.core.types import Document
 from lightrag.core.functional import generate_readable_key_for_function
 
 """
-Why do we need a localDocumentDB as the product db is always in the cloud?
+Why do we need a LocalDB as the product db is always in the cloud?
 
 1. For testing and development, we can use a local db to test the components and experimenting before deploying to the cloud.
 
@@ -29,13 +28,14 @@ log = logging.getLogger(__name__)
 
 
 # @dataclass
+# TODO: make it work with any data type just like a cloud db that can have any table with different columns
 @dataclass
-class LocalDocumentDB:
+class LocalDB:
     r"""
     It inherits from the Component class for better structure visualization. But normally it cant be chained as part of the query flow/pipeline.
     For now we use a list of Documents, might consider optimize it later
 
-    LocalDocumentDB is used to experiment and once deployed, can be used to manage per-query related documents in the application.
+    LocalDB is used to experiment and once deployed, can be used to manage per-query related documents in the application.
     It can be used to help retriever prepare index using transformer, and to store and load back the index to avoid re-computation.
 
     Retriever will be configured already, but when we retrieve, we can potentially override the initial configuration.
@@ -179,7 +179,7 @@ class LocalDocumentDB:
             pickle.dump(self, file)
 
     @classmethod
-    def load_state(cls, filepath: str = None) -> "LocalDocumentDB":
+    def load_state(cls, filepath: str = None) -> "LocalDB":
         """Load the state of the document DB from a pickle file."""
         filepath = filepath or "storage/local_document_db.pkl"
         with open(filepath, "rb") as file:

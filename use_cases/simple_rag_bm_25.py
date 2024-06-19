@@ -1,5 +1,4 @@
 from typing import Any, List, Optional
-import dotenv
 
 from core.generator import Generator
 from core.data_components import (
@@ -8,13 +7,13 @@ from core.data_components import (
 
 from core.string_parser import JsonParser
 from core.component import Component, Sequential
-from core.db import LocalDocumentDB
+from core.db import LocalDB
 from core.types import Document
 
 from components.retriever import InMemoryBM25Retriever
 from components.model_client import OpenAIClient
 
-import utils.setup_env
+import utils.setup_env  # noqa
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
@@ -37,7 +36,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
 
-        self.db = LocalDocumentDB()
+        self.db = LocalDB()
 
         # initialize generator
         self.generator = Generator(

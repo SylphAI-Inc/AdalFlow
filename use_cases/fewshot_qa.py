@@ -4,10 +4,9 @@ from lightrag.core.generator import Generator
 from lightrag.core.types import Document
 from lightrag.core.embedder import Embedder
 from lightrag.core.data_components import (
-    ToEmbedderResponse,
     RetrieverOutputToContextStr,
 )
-from lightrag.core.db import LocalDocumentDB
+from lightrag.core.db import LocalDB
 from lightrag.core.component import Component
 from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.icl.retrieval_icl import RetrievalICL
@@ -56,7 +55,6 @@ class FewshotQA(Component):
         vectorizer = Embedder(
             model_client=OpenAIClient(),
             model_kwargs=self.vectorizer_settings["model_kwargs"],
-            output_processors=ToEmbedderResponse(),
         )
         self.retriever = FAISSRetriever(
             top_k=self.retriever_settings["top_k"],
@@ -65,7 +63,7 @@ class FewshotQA(Component):
         )
 
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
-        self.db = LocalDocumentDB()
+        self.db = LocalDB()
         self.retrieval_icl = RetrievalICL(
             retriever=self.retriever,
             retriever_output_processors=self.retriever_output_processors,

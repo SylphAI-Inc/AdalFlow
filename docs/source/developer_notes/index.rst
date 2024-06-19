@@ -1,7 +1,7 @@
 .. _developer_notes:
 
 
-Developer Notes 
+Developer Notes
 =============================
 
 *How each part works*
@@ -24,7 +24,7 @@ This is also our tutorials showing how each part works before we move ahead to b
 
    .. :height: 100px
    .. :width: 200px
-   
+
 LightRAG library focus on providing building blocks for developers to **build** and **optimize** the `task pipeline`.
 We have clear design phisolophy:
 
@@ -67,12 +67,12 @@ Code path: ``lightrag.core``.
    component
    base_data_class
 
-Core Components
+RAG Essentials
 -------------------
 Code path: ``lightrag.core``. For abstract classes:
 
 - ``ModelClient``: the functional subclass is in ``lightrag.components.model_client``.
-- ``Retriever``: the functional subclass is in ``lightrag.components.retriever``.
+- ``Retriever``: the functional subclass is in ``lightrag.components.retriever``. It works hand-in-hand with the ``LocalDB`` and Cloud DB in ``lightrag.database``.
 
 
 .. list-table::
@@ -93,6 +93,8 @@ Code path: ``lightrag.core``. For abstract classes:
      - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
    * - :doc:`text_splitter`
      - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
+   * - :doc:`db`
+     - The local database to store and persist ``Document`` and ``DialogTurn`` to support context and conversational history retrieval.
 
 Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
@@ -105,52 +107,51 @@ Let us put all of these components together to build a :doc:`rag` (Retrieval Aug
    generator
    embedder
    retriever
+   db
    text_splitter
    rag
 
-Core functionals
--------------------
-Code path: ``lightrag.core``
+Agent Essentials
+-----------------------------
+Agent in ``components.agent`` is LLM great with reasoning, planning, and using tools to interact and accomplish tasks.
 
 .. list-table::
    :widths: 20 80
    :header-rows: 1
 
-   * - Functional
-     - Description
-   * - :doc:`string_parser`
-     - Parse the output string to structured data.
-   * - :doc:`tool_helper`
-     - Provide tools to interact with the generator.
+    * - :doc: `tool_helper`
+      - Provide tools (function calls) to interact with the generator.
+    * - :doc: `agent`
+      - The ReactAgent.
 
-   * - :doc:`memory`
-     - Store the history of the conversation.
+.. Core functionals
+.. -------------------
+.. Code path: ``lightrag.core``
+
+..    :widths: 20 80
+..    :header-rows: 1
+
+..    * - Functional
+..      - Description
+..    * - :doc:`string_parser`
+..      - Parse the output string to structured data.
+..    * - :doc:`tool_helper`
+..      - Provide tools to interact with the generator.
+
+..    * - :doc:`memory`
+..      - Store the history of the conversation.
 
 
 
-.. .. toctree::
-..    :maxdepth: 1
-..    :hidden:
 
 
 
-Advanced Components
--------------------
-- Agent (Enhance Generator with tools, planning, and reasoning)
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
-
-   agent
-
-   
- 
 
 Optimizing
 =============================
 
-Datasets and Evaulation 
+Datasets and Evaulation
 
 .. toctree::
    :maxdepth: 1
