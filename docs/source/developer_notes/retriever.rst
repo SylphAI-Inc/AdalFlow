@@ -54,7 +54,7 @@ Design pattern
     :alt: Retriever design
     :width: 620px
 
-    LightRAG retriever covers high-precision retriever methods and make them work locally and in-memory, this will help researchers and developers to build and test.
+    LightRAG retriever covers high-precision retriever methods and make them work locally and in-memory, this will help researchers and developers build and test.
     We also showcase how it is like to work with cloud database for **large-scale data** along with its built-in search& filter methods.
 
 
@@ -369,7 +369,7 @@ We tested on the shorter and almost key-word like version of our queries and use
     document_map_func = lambda x: x["title"] + " " + x["content"]
     bm25_retriever.build_index_from_documents(documents=documents, document_map_func=document_map_func)
 
-Theis time the retrieval gives us the right answer.
+This time the retrieval gives us the right answer.
 
 .. code-block::
 
@@ -379,11 +379,193 @@ Theis time the retrieval gives us the right answer.
 Reranker as Retriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
 Semantic search works well, and reranker basd on mostly `cross-encoder` model is supposed to work even better.
-We have integrated two rerankers: ``bge-reranker-base`` [10]_ and rerankers provided by ``Cohere`` [11]_.
+We have integrated two rerankers: ``BAAI/bge-reranker-base`` [10]_ hosted on ``transformers`` and rerankers provided by ``Cohere`` [11]_.
 These models follow the ``ModelClient`` protocol and are directly accessible as retriever from :class:`components.retriever.reranker_retriever.RerankerRetriever`.
 
-LLMAsRetriever
+
+
+
+**Reranker ModelClient Integration**
+
+A reranker will take ``ModelType.RERANKER`` and the standard LightRAG library requires it to have four arguments in the ``model_kwargs``:
+``['model', 'top_k', 'documents', 'query']``. It is in the ModelClient which converts LightRAG's standard arguments to the model's specific arguments.
+If you want to intergrate your reranker, either locally or using APIs, check out :class:`components.model_client.transformers_client.TransformersClient` and
+:class:`components.model_client.cohere_client.CohereAPIClient` for how to do it.
+
+
+To use it from the ``RerankerRetriever``, we only need to pass the ``model`` along with other arguments who does not
+require conversion in the ``model_kwargs``. Here is how we use model  `rerank-english-v3.0` from Cohere(Make sure you have the cohere sdk installed and prepared your api key):
+
+.. code-block:: python
+
+    from lightrag.components.retriever import RerankerRetriever
+
+    model_client = ModelClientType.COHERE()
+    model_kwargs = {"model": "rerank-english-v3.0"}
+
+
+    reranker = RerankerRetriever(
+        top_k=2, model_client=model_client, model_kwargs=model_kwargs
+    )
+    print(reranker)
+
+The printout:
+
+.. code-block::
+
+    RerankerRetriever(
+        top_k=2, model_kwargs={'model': 'rerank-english-v3.0'}, model_client=CohereAPIClient(), total_documents=0
+        (model_client): CohereAPIClient()
+    )
+
+Now we build the index and do the retrieval:
+
+
+.. code-block:: python
+
+    document_map_func = lambda x: x["content"]
+    reranker.build_index_from_documents(documents=documents, document_map_func=document_map_func)
+
+    output_1 = reranker(input=query_1)
+    output_2 = reranker(input=query_2)
+    output_3 = reranker(input = [query_1, query_2])
+
+From the structure after adding documents we see the reranker has passed the documents to the ``model_kwargs`` so that it can send it all to the ``ModelClient``.
+
+.. code-block::
+
+    RerankerRetriever(
+        top_k=2, model_kwargs={'model': 'rerank-english-v3.0', 'documents': ['Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', 'Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', 'While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.', 'Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.']}, model_client=CohereAPIClient(), total_documents=4
+        (model_client): CohereAPIClient()
+    )
+
+From the results we see it gets the right answer and has a close to 1 score.
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.99520767, 0.9696708], query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[1, 2], doc_scores=[0.98742366, 0.9701269], query='How do solar panels impact the environment?', documents=None)]
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.99520767, 0.9696708], query='What are the benefits of renewable energy?', documents=None), RetrieverOutput(doc_indices=[1, 2], doc_scores=[0.98742366, 0.9701269], query='How do solar panels impact the environment?', documents=None)]
+
+Now let us see how the ``BAAI/bge-reranker-base` from local transformers model works:
+
+.. code-block:: python
+
+    model_client = ModelClientType.TRANSFORMERS()
+    model_kwargs = {"model": "BAAI/bge-reranker-base"}
+
+    reranker = RerankerRetriever(
+        top_k=2,
+        model_client=model_client,
+        model_kwargs=model_kwargs,
+        documents=documents,
+        document_map_func=document_map_func,
+    )
+    print(reranker)
+
+The printout:
+
+.. code-block::
+
+    RerankerRetriever(
+        top_k=2, model_kwargs={'model': 'BAAI/bge-reranker-base', 'documents': ['Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', 'Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', 'While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.', 'Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.']}, model_client=TransformersClient(), total_documents=4
+        (model_client): TransformersClient()
+    )
+
+Here is the retrieval result:
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.9996004700660706, 0.9950029253959656], query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[2, 0], doc_scores=[0.9994490742683411, 0.9994476437568665], query='How do solar panels impact the environment?', documents=None)]
+
+It missed one at the second query, but it is at the top 3.
+Semantically,  these documents might be close.
+If we use top_k = 3, the genearator might be able to filter out the irrelevant one and eventually give out the right final response.
+Also, if we use both the `title` and `content`, it will also got the right response.
+
+
+
+LLM as Retriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are differen ways to use LLM as a retriever:
+
+1. Directly show it of all documents and query and ask it to return the indices of the top_k as a list.
+2. Put the query and document a pair and ask it to do a `yes` and `no`. Additionally, we can use its `logprobs` of the `yes` token to get a probability-like score.
+
+For the first case, with out prompt and zero-shot, `gpt-3.5-turbo` is not working as well as `gpt-4o` which got both answers right.
+Here is our code:
+
+.. code-block:: python
+
+    from lightrag.components.retriever import LLMRetriever
+
+    model_client = ModelClientType.OPENAI()
+    model_kwargs = {
+        "model": "gpt-4o",
+    }
+    document_map_func = lambda x: x["content"]
+    llm_retriever = LLMRetriever(
+            top_k=2,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            documents=documents,
+            document_map_func=document_map_func
+        )
+    print(llm_retriever)
+
+The printout:
+
+.. code-block::
+
+    LLMRetriever(
+        top_k=2, total_documents=4,
+        (generator): Generator(
+            model_kwargs={'model': 'gpt-4o'},
+            (prompt): Prompt(
+            template: <SYS>
+            You are a retriever. Given a list of documents, you will retrieve the top_k {{top_k}} most relevant documents and output the indices (int) as a list:
+            [<index of the most relevant with top_k options>]
+            <Documents>
+            {% for doc in documents %}
+            ```Index {{ loop.index - 1 }}. {{ doc }}```
+            {% endfor %}
+            </Documents>
+            </SYS>
+            Query: {{ input_str }}
+            You:
+            , preset_prompt_kwargs: {'top_k': 2, 'documents': ['Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', 'Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', 'While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.', 'Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.']}, prompt_variables: ['documents', 'top_k', 'input_str']
+            )
+            (model_client): OpenAIClient()
+            (output_processors): ListParser()
+        )
+    )
+
+Here is the response:
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=None, query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[1, 2], doc_scores=None, query='How do solar panels impact the environment?', documents=None)]
+
+We can call the retriever with different model without reinitializing the retriever. Here is how we do it with `gpt-3.5-turbo`:
+
+.. code-block:: python
+
+    model_kwargs = {
+        "model": "gpt-3.5-turbo",
+    }
+    output_1 = llm_retriever(model_kwargs=model_kwargs, input=query_1)
+    output_2 = llm_retriever(model_kwargs=model_kwargs, input=query_2)
+
+The response is:
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 1], doc_scores=None, query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[1, 2], doc_scores=None, query='How do solar panels impact the environment?', documents=None)]
+
 
 PostgresRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^

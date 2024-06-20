@@ -19,11 +19,20 @@ log = logging.getLogger(__name__)
 
 
 class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
-    r"""
+    __doc__ = r"""
     A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.
 
     Args:
         top_k (int, optional): The number of top documents to retrieve. Defaults to 5.
+        model_client (ModelClient): The model client that has a reranker model,
+            such as ``CohereAPIClient`` or ``TransformersClient``.
+        model_kwargs (Dict): The model kwargs to pass to the model client.
+        documents (Optional[RetrieverDocumentsType], optional): The documents to build the index from. Defaults to None.
+        document_map_func (Optional[Callable[[Any], str]], optional): The function to map the document of Any type to the specific type ``RetrieverDocumentType`` that the retriever expects. Defaults to None.
+
+    Examples:
+
+
     """
 
     def __init__(
@@ -40,12 +49,15 @@ class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
         assert "model" in self._model_kwargs, "model must be specified in model_kwargs"
 
         self.model_client = model_client
+
+        self.reset_index()
         if documents:
             self.build_index_from_documents(documents, document_map_func)
 
     def reset_index(self):
         self.indexed = False
         self.documents = []
+        self.total_documents: int = 0
 
     def build_index_from_documents(
         self,
@@ -56,6 +68,7 @@ class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
             documents = [document_map_func(doc) for doc in documents]
         else:
             documents = documents
+        self.total_documents = len(documents)
 
         self._model_kwargs["documents"] = documents
 
@@ -89,3 +102,7 @@ class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
                 )
             )
         return retrieved_outputs
+
+    def _extra_repr(self) -> str:
+        s = f"top_k={self.top_k}, model_kwargs={self._model_kwargs}, model_client={self.model_client}, total_documents={self.total_documents}"
+        return s

@@ -1,8 +1,8 @@
-"""Functional interface. 
+"""Functional interface.
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Type, Union, List, Tuple
+from typing import Dict, Any, Callable, Union, List, Tuple
 import numpy as np
 import re
 import json
@@ -67,7 +67,6 @@ def get_top_k_indices_scores(
         scores_np = np.array(scores)
     else:
         scores_np = scores
-    print(f"scores_np: {scores_np}")
     top_k_indices = np.argsort(scores_np)[-top_k:][::-1]
     top_k_scores = scores_np[top_k_indices]
     return top_k_indices.tolist(), top_k_scores.tolist()
@@ -265,7 +264,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
     try:
         json_obj = json.loads(json_str)
         return json_obj
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError:
         # 2nd attemp after fixing the json string
         try:
             print("Trying to fix potential missing commas...")
@@ -275,7 +274,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
             print(f"Fixed JSON string: {json_str}")
             json_obj = json.loads(json_str)
             return json_obj
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             # 3rd attemp using yaml
             try:
                 import yaml
@@ -287,7 +286,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
                 print("Parsing JSON string with PyYAML...")
                 json_obj = yaml.safe_load(json_str)
                 return json_obj
-            except yaml.YAMLError as e_yaml:
+            except yaml.YAMLError as e:
                 raise ValueError(
                     f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
                 )

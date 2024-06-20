@@ -198,7 +198,6 @@ class TransformerReranker:
             scores = F.sigmoid(scores)
 
         scores = scores.tolist()
-        print(f"scores: {scores}")
         return scores
 
     def __call__(self, **kwargs):

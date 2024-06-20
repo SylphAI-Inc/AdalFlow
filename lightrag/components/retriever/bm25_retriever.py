@@ -139,7 +139,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
         - idf: <token, idf> (idf(q_i) in the formula)
         - doc_len: list of document lengths (|d| in the formula)
         - avgdl: average document length in the corpus (avgdl in the formula)
-        - corpus_size: total number of documents in the corpus (N in the formula)
+        - total_documents: total number of documents in the corpus (N in the formula)
         """
         super().__init__()
         self.k1 = k1
@@ -159,7 +159,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
             "idf",
             "doc_len",
             "avgdl",
-            "corpus_size",
+            "total_documents",
             "top_k",
             "k1",
             "b",
@@ -180,10 +180,10 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
         self.idf: Dict[str, float] = {}  # idf of each term
         self.doc_len: List[int] = []  # list of document lengths
         self.avgdl: float = 0  # average document length
-        self.corpus_size: int = 0
         self.indexed: bool = (
             False  # this is important to check if the retrieve is possible
         )
+        self.total_documents: int = 0
 
     def _apply_split_function(self, documents: List[str]):
         if self._split_function is None:
@@ -199,7 +199,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
         r"""Initialize the term to document dictionary with the term frequencies in each document.
         The corpi is a list of tokenized documents."""
 
-        self.corpus_size = len(corpus)
+        self.total_documents = len(corpus)
 
         for document in corpus:
             self.doc_len.append(len(document))
@@ -225,7 +225,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
         )  # idf can be negative if word is too common: more than half of the documents
         self.idf: Dict[str, float] = {}
         for token, freq in self.nd.items():
-            idf = math.log(self.corpus_size - freq + 0.5) - math.log(freq + 0.5)
+            idf = math.log(self.total_documents - freq + 0.5) - math.log(freq + 0.5)
             self.idf[token] = idf
             idf_sum += idf
             if idf < 0:
@@ -244,7 +244,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
         Args:
             query: List[str]: The tokenized query
         """
-        score = np.zeros(self.corpus_size)
+        score = np.zeros(self.total_documents)
         doc_len = np.array(self.doc_len)
         for q in query:
             q_freq = np.array([(doc.get(q) or 0) for doc in self.t2d])
@@ -364,6 +364,5 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
 
     def _extra_repr(self) -> str:
         s = f"top_k={self.top_k}, k1={self.k1}, b={self.b}, epsilon={self.epsilon}, use_tokenizer={self._use_tokenizer}"
-        if self.indexed:
-            s += f", total_documents={self.corpus_size}"
+        s += f", total_documents={self.total_documents}"
         return s

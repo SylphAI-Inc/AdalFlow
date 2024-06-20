@@ -90,11 +90,3 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverQueryType]):
         **kwargs,
     ) -> RetrieverOutputType:
         raise NotImplementedError("Async retrieve is not implemented")
-
-    # def __call__(
-    #     self,
-    #     input: RetrieverQueriesType,
-    #     top_k: Optional[int] = None,
-    #     **kwargs,
-    # ) -> RetrieverOutputType:
-    #     return self.call(input, top_k, **kwargs)
