@@ -178,10 +178,10 @@ Please refer to :doc:`text_splitter` and our provided notebook on how to use it.
 Retriever Base Class
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Functionally, the base retriever :class:`core.retriever.Retriever` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actually retrieval calls.
+Functionally, the base retriever :class:`core.retriever.Retriever` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actual retrieval calls.
 Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
 As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
-with the saving and loading process. As a helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
 It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
 As an example, :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever` has the following key attributes to index.
 
@@ -192,9 +192,12 @@ As an example, :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever
 
 Retriever in Action
 --------------------
-All of our retrievers are located in the ``components.retriever`` module.
+All of our retrievers are  subclassed from the base retriever, and they are located in the ``components.retriever`` module.
 You can skim through their implementations here: :ref:`retriever<components-retriever>`.
-Here is our toy documents and queries in any format you want:
+Currently only :class:`components.retriever.faiss_retriever.InMemoryBM25Retriever` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
+The ``FAISSRetriever`` will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.
+
+In this note, we will use the following documents and queries for demonstration:
 
 .. code-block:: python
 
