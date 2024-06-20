@@ -4,22 +4,21 @@ import os
 from typing import Dict, Sequence, Optional, Any
 import backoff
 
-try:
-    import groq
-    from groq import Groq, AsyncGroq
-    from groq import (
-        APITimeoutError,
-        InternalServerError,
-        RateLimitError,
-        UnprocessableEntityError,
-    )
 
-except ImportError:
-    raise ImportError("Please install groq with: pip install groq")
+from groq import Groq, AsyncGroq
+from groq import (
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+    UnprocessableEntityError,
+)
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.GROQ.value[0], OptionalPackages.GROQ.value[1])
 
 
 class GroqAPIClient(ModelClient):
@@ -27,7 +26,7 @@ class GroqAPIClient(ModelClient):
 
     Visit https://console.groq.com/docs/ for more api details.
     Check https://console.groq.com/docs/models for the available models.
-    
+
     Tested Groq models: 4/22/2024
     - llama3-8b-8192
     - llama3-70b-8192

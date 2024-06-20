@@ -18,6 +18,13 @@ import logging
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.functional import is_normalized
+from lightrag.components.model_client import (
+    CohereAPIClient,
+    TransformersClient,
+    AnthropicAPIClient,
+    GroqAPIClient,
+    OpenAIClient,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +37,15 @@ class ModelType(Enum):
     LLM = auto()
     RERANKER = auto()  # ranking model
     UNDEFINED = auto()
+
+
+@dataclass
+class ModelClientType:
+    COHERE = CohereAPIClient
+    TRANSFORMERS = TransformersClient
+    ANTHROPIC = AnthropicAPIClient
+    GROQ = GroqAPIClient
+    OPENAI = OpenAIClient
 
 
 # TODO: define standard required outputs
@@ -124,8 +140,11 @@ class EmbedderOutput(DataClass):
         )
 
 
+EmbedderInputType = Union[str, Sequence[str]]
 EmbedderOutputType = EmbedderOutput
-BatchEmbedderOutputType = List[EmbedderOutput]
+
+BatchEmbedderInputType = EmbedderInputType
+BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
 class GeneratorOutput(DataClass, Generic[T_co]):
@@ -138,7 +157,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     we have data as the final output, error as None.
     (2) When either model predict or output processors have error,
     we have data as None, error as the error message.
-    
+
     Raw_response will depends on the model predict.
     """
 
@@ -161,7 +180,7 @@ GeneratorOutputType = GeneratorOutput[Any]
 
 class Document(DataClass):
     r"""A text container with optional metadata and vector representation.
-    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
+    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDB.
     """
 
     text: str = field(metadata={"desc": "The main text"})
@@ -212,7 +231,7 @@ class Document(DataClass):
         if "estimated_num_tokens" not in doc:
             tokenizer = Tokenizer()
             doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
-        if "id" not in doc:
+        if "id" not in doc or not doc["id"]:
             doc["id"] = uuid.uuid4()
 
         return super().from_dict(doc)
@@ -245,29 +264,36 @@ class Document(DataClass):
         return self.__repr__()
 
 
+RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
+RetrieverStrQueryType = str
+RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
+RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
+
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverStrDocumentType = str  # for text retrieval
+RetrieverDocumentsType = Sequence[RetrieverDocumentType]
+
+
+# TODO: use the string formatting of the subclass
 class RetrieverOutput(DataClass):
-    __doc__ = r"""Save the output of a single query in retrievers."""
+    __doc__ = r"""Save the output of a single query in retrievers.
+
+    It is up to the subclass of Retriever to specify the type of query and document.
+    """
 
     doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
     doc_scores: Optional[List[float]] = field(
         default=None, metadata={"desc": "List of document scores"}
     )
-    query: Optional[str] = field(
+    query: Optional[RetrieverQueryType] = field(
         default=None, metadata={"desc": "The query used to retrieve the documents"}
     )
-    documents: Optional[List[Document]] = field(
+    documents: Optional[List[RetrieverDocumentType]] = field(
         default=None, metadata={"desc": "List of retrieved documents"}
     )
 
 
-RetrieverInputStrType = Union[str, Sequence[str]]
-RetrieverInputType = TypeVar("RetrieverInputType", contravariant=True)
-RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
-RetrieverDocumentsType = Sequence[Any]
-# it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
-
-# different retriever may support different input data type
 
 
 @dataclass
@@ -282,18 +308,20 @@ class AssistantResponse:
     metadata: Optional[Dict[str, Any]] = None
 
 
-# TODO: the data class can also be a component?
-@dataclass
-class DialogTurn:
-    r"""A turn consists of a user query and the assistant response, \
-    or potentially with more other roles in a multi-party conversation.
+# There could  more other roles in a multi-party conversation. We might consider in the future.
+# TODO: test the str format when passing it to LLM model.
+class DialogTurn(DataClass):
+    __doc__ = r"""A turn consists of a user query and the assistant response.
 
-    Here we only consider the user query and the assistant response. If you want multiple parties
-    you can extend this class or create a new class.
+    The dataformat is designed to fit into a relational database, where each turn is a row.
+    Use `session_id` to group the turns into a dialog session with the `order` field and
+    `user_query_timestamp` and `assistant_response_timestamp` to order the turns.
+
     Examples:
-    - User: Hi, how are you?
-    - Assistant: I'm fine, thank you!
-    DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
+
+        - User: Hi, how are you?
+        - Assistant: I'm fine, thank you!
+        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
     """
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -327,13 +355,14 @@ class DialogTurn:
         self.assistant_response_timestamp = assistant_response_timestamp
 
 
+# this data structure is used
 @dataclass
 class DialogSession:
-    r"""A dialog session consists of multiple dialog turns, \
-    and potentially with more other roles in a multi-party conversation.
+    __doc__ = r"""A dialog session manages the dialog turns in a whole conversation as a session.
 
-    Here we only consider the dialog turns. If you want multiple parties
-    you can extend this class or create a new class.
+    This class is mainly used in-memory for the dialog system/app to manage active conversations.
+    You won't need this class for past conversations which have already been persisted in a database as a form of
+    record or history.
     """
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))  # the id of the session

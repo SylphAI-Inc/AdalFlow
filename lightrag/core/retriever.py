@@ -6,35 +6,33 @@ from typing import (
     List,
     Optional,
     Generic,
-    Dict,
     Any,
-    Tuple,
     Callable,
 )
-import numpy as np
 
 from lightrag.core.component import Component
 from lightrag.core.types import (
-    RetrieverInputType,
+    RetrieverQueriesType,
+    RetrieverQueryType,
     RetrieverDocumentType,
     RetrieverDocumentsType,
     RetrieverOutputType,
 )
 
 
-class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
+class Retriever(Component, Generic[RetrieverDocumentType, RetrieverQueryType]):
     __doc__ = r"""The base class for all retrievers.
 
     Retriever will manage its own index and retrieve in format of RetrieverOutput
-    
+
     Args:
         indexed (bool, optional): whether the retriever has an index. Defaults to False.
         index_keys (List[str], optional): attributes that define the index that can be used to restore the retriever. Defaults to [].
-    
+
     The key method :meth:`build_index_from_documents` is the method to build the index from the documents.
     ``documents`` is a sequence of any type of document. With ``document_map_func``, you can map the document
     of Any type to the specific type ``RetrieverDocumentType`` that the retriever expects.
-    
+
     note:
     To get the state of the retriever, leverage the :methd: "from_dict" and "to_dict" methods of the base class Component.
 
@@ -48,7 +46,7 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
         super().__init__()
 
     def reset_index(self):
-        raise NotImplementedError(f"reset_index is not implemented")
+        raise NotImplementedError("reset_index is not implemented")
 
     def build_index_from_documents(
         self,
@@ -58,55 +56,37 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverInputType]):
     ):
         r"""Built index from the [document_map_func(doc) for doc in documents]."""
         raise NotImplementedError(
-            f"build_index_from_documents and input_field_map_func is not implemented"
+            "build_index_from_documents and input_field_map_func is not implemented"
         )
 
-    # TODO: this might not apply for cloud storage with built-in search engine
-    # def load_index(self, index: Dict[str, Any]):
-    #     r"""Load the index from a dictionary with expected index keys. Once loaded, turn the indexed to True"""
-    #     if not all(key in index for key in self.index_keys):
-    #         raise ValueError(
-    #             f"Index keys are not complete. Expected keys: {self.index_keys}"
-    #         )
-    #     for key, value in index.items():
-    #         setattr(self, key, value)
-    #     self.indexed = True
-
-    # def get_index(self) -> Dict[str, Any]:
-    #     r"""Return the index as a dictionary. It is up to users to decide where and how to persist it."""
-    #     if not self.indexed:
-    #         raise ValueError(
-    #             "Index is not built or loaded. Please either build the index or load it first."
-    #         )
-    #     return {key: getattr(self, key) for key in self.index_keys}
-
     def save_to_file(self, path: str):
-        r"""Save the state including the index to a file.
+        r"""Save the state, including the index to a file.
 
         Optional for subclass to implement a default persistence method.
+        Subclass can leverge component's `to_dict` method to get the states and choose to save them in any file format.
         """
         pass
 
     @classmethod
     def load_from_file(cls, path: str):
-        r"""Load the index from a file.
+        r"""Load the state, including index from a file to restore the retriever.
 
-        Optional for subclass to implement a default persistence method.
+        Subclass can leverge component's `from_dict` method to restore the states from the file.
         """
         pass
 
-    def retrieve(
+    def call(
         self,
-        input: RetrieverInputType,
+        input: RetrieverQueriesType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> RetrieverOutputType:
-        raise NotImplementedError(f"retrieve is not implemented")
+        raise NotImplementedError("retrieve is not implemented")
 
-    def __call__(
+    async def acall(
         self,
-        input: RetrieverInputType,
+        input: RetrieverQueriesType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> RetrieverOutputType:
-        return self.retrieve(input, top_k, **kwargs)
+        raise NotImplementedError("Async retrieve is not implemented")

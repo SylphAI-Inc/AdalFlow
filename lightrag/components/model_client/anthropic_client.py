@@ -1,20 +1,18 @@
 """Anthropic ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Sequence, Union, Any
+from typing import Dict, Optional, Any
 
-try:
-    import anthropic
-    from anthropic import (
-        RateLimitError,
-        APITimeoutError,
-        InternalServerError,
-        UnprocessableEntityError,
-        BadRequestError,
-    )
-    from anthropic.types import Message
-except ImportError:
-    raise ImportError("Please install anthropic with: pip install anthropic")
+
+import anthropic
+from anthropic import (
+    RateLimitError,
+    APITimeoutError,
+    InternalServerError,
+    UnprocessableEntityError,
+    BadRequestError,
+)
+from anthropic.types import Message
 
 
 import backoff
@@ -22,6 +20,10 @@ import backoff
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
+
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+safe_import(OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1])
 
 
 class AnthropicAPIClient(ModelClient):

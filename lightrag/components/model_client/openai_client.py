@@ -1,29 +1,33 @@
 """OpenAI ModelClient integration."""
 
 import os
-from typing import Dict, Sequence, Optional, List, Any, TypeVar
+from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
+from dataclasses import dataclass
+
 import logging
-from lightrag.utils.registry import EntityMapping
 
-try:
-    import openai
-    from openai import OpenAI, AsyncOpenAI
-    from openai import (
-        APITimeoutError,
-        InternalServerError,
-        RateLimitError,
-        UnprocessableEntityError,
-        BadRequestError,
-    )
+from openai import OpenAI, AsyncOpenAI
+from openai import (
+    APITimeoutError,
+    InternalServerError,
+    RateLimitError,
+    UnprocessableEntityError,
+    BadRequestError,
+)
 
-    from openai.types import Completion, CreateEmbeddingResponse
-except ImportError:
-    raise ImportError("Please install openai with: pip install openai")
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput
 from lightrag.core.data_components import parse_embedding_response
+
+
+safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
+
+
+from openai.types import Completion, CreateEmbeddingResponse
+
 
 import backoff
 
@@ -31,19 +35,59 @@ log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
+# completion parsing functions and you can combine them into one singple chat completion parser
+def get_first_message_content(completion: Completion) -> str:
+    r"""When we only need the content of the first message.
+    It is the default parser for chat completion."""
+    return completion.choices[0].message.content
+
+
+def get_all_messages_content(completion: Completion) -> List[str]:
+    r"""When the n > 1, get all the messages content."""
+    return [c.message.content for c in completion.choices]
+
+
+@dataclass
+class TokenLogProb:
+    r"""similar to openai.ChatCompletionTokenLogprob"""
+
+    token: str
+    logprob: float
+
+
+def get_probabilities(completion: Completion) -> List[List[TokenLogProb]]:
+    r"""Get the probabilities of each token in the completion."""
+    log_probs = []
+    for c in completion.choices:
+        content = c.logprobs.content
+        print(content)
+        log_probs_for_choice = []
+        for openai_token_logprob in content:
+            token = openai_token_logprob.token
+            logprob = openai_token_logprob.logprob
+            log_probs_for_choice.append(TokenLogProb(token=token, logprob=logprob))
+        log_probs.append(log_probs_for_choice)
+    return log_probs
+
+
 class OpenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the OpenAI API client.
 
-    Support both embedding and chat completion API. 
+    Support both embedding and chat completion API.
 
     Users (1) simplify use ``Embedder`` and ``Generator`` components by passing OpenAIClient() as the model_client.
     (2) can use this as an example to create their own API client or extend this class(copying and modifing the code) in their own project.
 
     Note:
-        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API. 
+        We suggest users not to use `response_format` to enforce output data type or `tools` and `tool_choice`  in your model_kwargs when calling the API.
         We do not know how OpenAI is doing the formating or what prompt they have added.
         Instead
         - use :ref:`OutputParser<components-output_parsers>` for response parsing and formating.
+
+    Args:
+        api_key (Optional[str], optional): OpenAI API key. Defaults to None.
+        chat_completion_parser (Callable[[Completion], Any], optional): A function to parse the chat completion to a str. Defaults to None.
+            Default is `get_first_message_content`.
 
     References:
         - Embeddings models: https://platform.openai.com/docs/guides/embeddings
@@ -51,7 +95,11 @@ class OpenAIClient(ModelClient):
         - OpenAI docs: https://platform.openai.com/docs/introduction
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        chat_completion_parser: Callable[[Completion], Any] = None,
+    ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
         Args:
@@ -61,6 +109,9 @@ class OpenAIClient(ModelClient):
         self._api_key = api_key
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
+        self.chat_completion_parser = (
+            chat_completion_parser or get_first_message_content
+        )
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
@@ -74,9 +125,13 @@ class OpenAIClient(ModelClient):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI(api_key=api_key)
 
-    def parse_chat_completion(self, completion: Completion) -> str:
+    # save raw response
+
+    def parse_chat_completion(self, completion: Completion) -> Any:
         """Parse the completion to a str."""
-        return completion.choices[0].message.content
+        log.debug(f"completion: {completion}")
+        return self.chat_completion_parser(completion)
+        # return completion.choices[0].message.content
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse

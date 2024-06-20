@@ -14,7 +14,6 @@ from typing import (
     TypeVar,
     Type,
 )
-from collections import OrderedDict
 import operator
 from itertools import islice
 import logging
@@ -24,6 +23,7 @@ import inspect
 
 from lightrag.core.parameter import Parameter
 from lightrag.utils.serialization import default
+from lightrag.utils.config import new_component
 
 from lightrag.utils.registry import EntityMapping
 
@@ -229,8 +229,8 @@ class Component:
 
     @classmethod
     def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
-        """Create an instance of the component from a dictionary.
-        Need to do it recursively for subcomponents.
+        """Create an instance from previously serialized data
+        using :meth:`~to_dict` method.
         """
         # set the attributes of the class
         # Instantiate the class with _init_args
@@ -238,6 +238,16 @@ class Component:
         for key, value in data["data"].items():
             setattr(obj, key, cls._restore_value(value))
         return obj
+
+    @classmethod
+    def from_config(cls: Type[T], config: Dict[str, Any]) -> T:
+        """Create an instance of the component from a configuration dictionary."""
+        kwargs = config.copy()
+        # check arguments that are a component
+        for key, value in kwargs.items():
+            if "component_name" in value:
+                kwargs[key] = new_component(value)
+        return cls(**kwargs)
 
     @staticmethod
     def _restore_value(value: Any) -> Any:
@@ -672,7 +682,7 @@ class Component:
                     load(child, child_state_dict, prefix=child_prefix)
 
         load(self, state_dict)
-        del load
+        # del load
         if strict:
             if len(unexpected_keys) > 0:
                 error_msgs.insert(
@@ -824,8 +834,8 @@ T = TypeVar("T", bound=Component)
 
 
 class Sequential(Component):
-    __doc__ = r"""A sequential container. 
-    
+    __doc__ = r"""A sequential container.
+
     Components will be added to it in the order they are passed to the constructor.
     Output of the previous component is input to the next component as positional argument.
 
@@ -933,7 +943,7 @@ class FunComponent(Component):
 
     Args:
         fun (Callable): The function to be wrapped.
-    
+
     Examples:
 
     function = lambda x: x + 1
@@ -950,9 +960,9 @@ class FunComponent(Component):
 
 
 def fun_to_component(fun) -> FunComponent:
-    __doc__ = r"""Helper function to convert a function into a Component with
+    r"""Helper function to convert a function into a Component with
     its own class name.
-    
+
     Can be used as both a decorator and a function.
 
     Args:
@@ -969,7 +979,7 @@ def fun_to_component(fun) -> FunComponent:
         >>> class MyFunctionComponent(FunComponent):
         >>>     def __init__(self):
         >>>         super().__init__(my_function)
-    
+
     2. As a function:
         >>> my_function_component = fun_to_component(my_function)
     """
