@@ -187,7 +187,7 @@ As an example, :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever
 
 .. code:: python
 
-    self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","corpus_size","top_k","k1","b","epsilon","indexed"]
+    self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","total_documents","top_k","k1","b","epsilon","indexed"]
 
 
 Retriever in Action
@@ -492,7 +492,7 @@ LLM as Retriever
 There are differen ways to use LLM as a retriever:
 
 1. Directly show it of all documents and query and ask it to return the indices of the top_k as a list.
-2. Put the query and document a pair and ask it to do a `yes` and `no`. Additionally, we can use its `logprobs` of the `yes` token to get a probability-like score.
+2. Put the query and document a pair and ask it to do a `yes` and `no`. Additionally, we can use its `logprobs` of the `yes` token to get a probability-like score. We will implement this in the near future, for now, you can refer [8]_ to implement it yourself.
 
 For the first case, with out prompt and zero-shot, `gpt-3.5-turbo` is not working as well as `gpt-4o` which got both answers right.
 Here is our code:
@@ -571,6 +571,16 @@ PostgresRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Use together with Database
+-----------------------------
+When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.
+
+With LocalDB
+^^^^^^^^^^^^^^^^^^^^^^^^
+We have previously computed embeddings, now let us :class:`core.db.LocalDB` to help with the persistence.
+(Although you can totally persist them yourself such as using pickle).
+Additionally, ``LocalDB`` help us keep track of our initial documents and its transformed documents.
+
 
 .. admonition:: References
    :class: highlight
@@ -596,3 +606,4 @@ PostgresRetriever
    - :class:`components.retriever.faiss_retriever.FAISSRetriever`
    - :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever`
    - :class:`components.retriever.reranker_retriever.RerankerRetriever`
+   - :class:`components.retriever.llm_retriever.LLMRetriever`

@@ -23,10 +23,11 @@ log = logging.getLogger(__name__)
 
 DEFAULT_LLM_AS_RETRIEVER_PROMPT_TEMPLATE = r"""<SYS>
 You are a retriever. Given a list of documents, you will retrieve the top_k {{top_k}} most relevant documents and output the indices (int) as a list:
-[<index of the most relevant with top_k options>]
+[<index of the most relevant top_k options>]
 <Documents>
 {% for doc in documents %}
 ```Index {{ loop.index - 1 }}. {{ doc }}```
+______________
 {% endfor %}
 </Documents>
 </SYS>
