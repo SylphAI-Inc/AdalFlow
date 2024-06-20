@@ -7,7 +7,7 @@ from lightrag.core.retriever import (
     Retriever,
 )
 from lightrag.core.types import (
-    RetrieverInputStrType,
+    RetrieverStrQueriesType,
     RetrieverOutputType,
     RetrieverDocumentsType,
     RetrieverOutput,
@@ -18,7 +18,7 @@ from lightrag.core.model_client import ModelClient
 log = logging.getLogger(__name__)
 
 
-class RerankerRetriever(Retriever[str, RetrieverInputStrType]):
+class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
     r"""
     A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.
 
@@ -61,8 +61,8 @@ class RerankerRetriever(Retriever[str, RetrieverInputStrType]):
 
         self.indexed = True
 
-    def retrieve(
-        self, input: RetrieverInputStrType, top_k: Optional[int] = None
+    def call(
+        self, input: RetrieverStrQueriesType, top_k: Optional[int] = None
     ) -> RetrieverOutputType:
         top_k = top_k or self.top_k
         queries = input if isinstance(input, List) else [input]

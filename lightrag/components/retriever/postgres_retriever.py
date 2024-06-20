@@ -12,7 +12,8 @@ from lightrag.core.embedder import Embedder
 
 from lightrag.core.types import (
     RetrieverOutput,
-    RetrieverInputStrType,
+    RetrieverStrQueryType,
+    RetrieverStrQueriesType,
 )
 from lightrag.database.sqlalchemy.sqlachemy_manager import DatabaseManager
 
@@ -34,7 +35,7 @@ class DistanceToOperator(Enum):
     L1 = "<+>"
 
 
-class PostgresRetriever(Retriever[Any, RetrieverInputStrType]):
+class PostgresRetriever(Retriever[Any, RetrieverStrQueryType]):
     __doc__ = r"""Use a postgres database to store and retrieve documents.
 
     Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.
@@ -156,9 +157,9 @@ class PostgresRetriever(Retriever[Any, RetrieverInputStrType]):
         """Convert cosine distance to probability."""
         return [(1 - cosine_distance) for cosine_distance in cosine_distance]
 
-    def retrieve(
+    def call(
         self,
-        input: RetrieverInputStrType,
+        input: RetrieverStrQueriesType,
         top_k: Optional[int] = None,
         **kwargs,
     ) -> List[RetrieverOutput]:

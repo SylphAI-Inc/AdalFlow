@@ -140,8 +140,11 @@ class EmbedderOutput(DataClass):
         )
 
 
+EmbedderInputType = Union[str, Sequence[str]]
 EmbedderOutputType = EmbedderOutput
-BatchEmbedderOutputType = List[EmbedderOutput]
+
+BatchEmbedderInputType = EmbedderInputType
+BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
 class GeneratorOutput(DataClass, Generic[T_co]):
@@ -261,29 +264,36 @@ class Document(DataClass):
         return self.__repr__()
 
 
+RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
+RetrieverStrQueryType = str
+RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
+RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
+
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverStrDocumentType = str  # for text retrieval
+RetrieverDocumentsType = Sequence[RetrieverDocumentType]
+
+
+# TODO: use the string formatting of the subclass
 class RetrieverOutput(DataClass):
-    __doc__ = r"""Save the output of a single query in retrievers."""
+    __doc__ = r"""Save the output of a single query in retrievers.
+
+    It is up to the subclass of Retriever to specify the type of query and document.
+    """
 
     doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
     doc_scores: Optional[List[float]] = field(
         default=None, metadata={"desc": "List of document scores"}
     )
-    query: Optional[str] = field(
+    query: Optional[RetrieverQueryType] = field(
         default=None, metadata={"desc": "The query used to retrieve the documents"}
     )
-    documents: Optional[List[Document]] = field(
+    documents: Optional[List[RetrieverDocumentType]] = field(
         default=None, metadata={"desc": "List of retrieved documents"}
     )
 
 
-RetrieverInputStrType = Union[str, Sequence[str]]
-RetrieverInputType = TypeVar("RetrieverInputType", contravariant=True)
-RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
-RetrieverDocumentsType = Sequence[Any]
-# it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
-
-# different retriever may support different input data type
 
 
 @dataclass

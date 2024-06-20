@@ -1,6 +1,5 @@
 import tiktoken
 from typing import List
-import re
 
 from lightrag.core.component import Component
 
@@ -30,17 +29,13 @@ class Tokenizer(Component):
     def __call__(self, input: str) -> List[str]:
         return self.encode(input)
 
-    def preprocess(self, text: str) -> str:
+    def preprocess(self, text: str) -> List[str]:
         # Lowercase the text
-        text = text.lower()
-        # Remove punctuation
-        text = re.sub(r"[^\w\s]", "", text)
-        # Remove extra whitespace
-        text = re.sub(r"\s+", " ", text).strip()
-        return text
+        words = text.lower().split()
+        return words
 
     def encode(self, text: str) -> List[int]:
-        r"""Encodes the input text into token IDs."""
+        r"""Encodes the input text/word into token IDs."""
         return self.tokenizer.encode(text)
 
     def decode(self, tokens: List[str]) -> str:
@@ -51,9 +46,9 @@ class Tokenizer(Component):
         r"""Counts the number of tokens in the input text."""
         return len(self.encode(text))
 
-    def get_string_tokens(self, text: str) -> List[str]:
-        r"""Returns the string tokens from the input text."""
-        text = self.preprocess(text)
+    # def get_string_tokens(self, text: str) -> List[str]:
+    #     r"""Returns the string tokens from the input text."""
+    #     text = self.preprocess(text)
 
-        token_ids = self.encode(text)
-        return [self.tokenizer.decode([token_id]) for token_id in token_ids]
+    #     token_ids = self.encode(text)
+    #     return [self.tokenizer.decode([token_id]) for token_id in token_ids]

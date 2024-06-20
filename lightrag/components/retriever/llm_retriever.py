@@ -1,6 +1,6 @@
 """LLM as retriever module."""
 
-from typing import List, Optional, Any, Dict, Callable
+from typing import Optional, Any, Dict, Callable
 import logging
 
 from lightrag.core.retriever import (
@@ -13,7 +13,8 @@ from lightrag.core.types import (
     GeneratorOutput,
     RetrieverOutput,
     RetrieverDocumentsType,
-    RetrieverInputStrType,
+    RetrieverStrQueryType,
+    RetrieverStrQueriesType,
     RetrieverOutputType,
 )
 
@@ -35,7 +36,7 @@ You:
 """
 
 
-class LLMRetriever(Retriever[str, RetrieverInputStrType]):
+class LLMRetriever(Retriever[str, RetrieverStrQueryType]):
     __doc__ = r"""Use LLM to access the query and the documents to retrieve the top k relevant indices of the documents.
 
     Users can follow this example and to customize the prompt or additionally ask it to output score along with the indices.
@@ -44,7 +45,7 @@ class LLMRetriever(Retriever[str, RetrieverInputStrType]):
         top_k (Optional[int], optional): top k documents to fetch. Defaults to 1.
         model_client (ModelClient): the model client to use.
         model_kwargs (Dict[str, Any], optional): the model kwargs. Defaults to {}.
-    
+
     .. note::
         There is chance some queries might fail, which will lead to empty response None for that query in the List of RetrieverOutput. Users should handle this case.
     """
@@ -85,13 +86,13 @@ class LLMRetriever(Retriever[str, RetrieverInputStrType]):
         self.generator.prompt.update_preset_prompt_kwargs(documents=documents)
         self.indexed = True
 
-    def retrieve(
-        self, input: RetrieverInputStrType, top_k: Optional[int] = None
+    def call(
+        self, input: RetrieverStrQueriesType, top_k: Optional[int] = None
     ) -> RetrieverOutputType:
         """Retrieve the k relevant documents.
 
         Args:
-            query_or_queries (RetrieverInputStrType): a string or a list of strings.
+            query_or_queries (RetrieverStrQueriesType): a string or a list of strings.
             top_k (Optional[int], optional): top k documents to fetch. Defaults to None.
 
         Returns:
@@ -124,10 +125,10 @@ class LLMRetriever(Retriever[str, RetrieverInputStrType]):
             )
         return retrieved_outputs
 
-    def __call__(
-        self,
-        input: RetrieverInputStrType,
-        top_k: Optional[int] = None,
-    ) -> RetrieverOutputType:
-        # query will be used
-        return self.retrieve(input, top_k)
+    # def __call__(
+    #     self,
+    #     input: RetrieverStrQueriesType,
+    #     top_k: Optional[int] = None,
+    # ) -> RetrieverOutputType:
+    #     # query will be used
+    #     return self.retrieve(input, top_k)

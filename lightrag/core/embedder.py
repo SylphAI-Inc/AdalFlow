@@ -1,17 +1,20 @@
 r"""The component that orchestrates model client (Embedding models in particular) and output processors."""
 
-from typing import Optional, Any, Dict, List, Union
+from typing import Optional, Any, Dict, List
 import logging
 from tqdm import tqdm
 
 from lightrag.core.types import ModelType
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import EmbedderOutputType
+from lightrag.core.types import (
+    EmbedderOutputType,
+    EmbedderInputType,
+    BatchEmbedderInputType,
+    BatchEmbedderOutputType,
+)
 from lightrag.core.component import Component
 import lightrag.core.functional as F
 
-
-EmbedderInputType = Union[str, List[str]]
 
 log = logging.getLogger(__name__)
 
@@ -131,6 +134,8 @@ class Embedder(Component):
         )
 
         output = self._post_call(response)
+        # add back the input
+        output.input = [input] if isinstance(input, str) else input
         log.debug(f"Output from {self.__class__.__name__}: {output}")
         return output
 
@@ -153,10 +158,6 @@ class Embedder(Component):
         return s
 
 
-BatchEmbedderInputType = EmbedderInputType
-BatchEmbedderOutputType = List[EmbedderOutputType]
-
-
 class BatchEmbedder(Component):
     __doc__ = r"""Adds batching to the embedder component.
 
@@ -171,12 +172,12 @@ class BatchEmbedder(Component):
         self.batch_size = batch_size
 
     def call(
-        self, input: EmbedderInputType, model_kwargs: Optional[Dict] = {}
+        self, input: BatchEmbedderInputType, model_kwargs: Optional[Dict] = {}
     ) -> BatchEmbedderOutputType:
         r"""Call the embedder with batching.
 
         Args:
-            input (EmbedderInputType): The input to the embedder. Use this when you have a large input that needs to be batched. Also ensure
+            input (BatchEmbedderInputType): The input to the embedder. Use this when you have a large input that needs to be batched. Also ensure
             the output can fit into memory.
             model_kwargs (Optional[Dict], optional): The model kwargs to pass to the embedder. Defaults to {}.
 

@@ -22,8 +22,11 @@ class CohereAPIClient(ModelClient):
 
     Visit https://docs.cohere.com/ for more api details.
 
+    References:
+    - Cohere reranker: https://docs.cohere.com/reference/rerank
+
     Tested Cohere models: 6/16/2024
-    - rerank-english-v2.0
+    -  rerank-english-v3.0, rerank-multilingual-v3.0, rerank-english-v2.0, rerank-multilingual-v2.0
     """
 
     def __init__(self, api_key: Optional[str] = None):

@@ -35,9 +35,9 @@ and can be applied on various data types, such as text, time-sensitive data, loc
 
 .. Third,  the data can be stored anywhere: In-memory data, Local and Disk-based data, and Cloud DBs such as relational databases, NoSQL databases, vector databases etc
 
-**Retrievel in production**
+**Retrieval in Production**
 
-So in production, retrieval is often of multiple-stages, from the cheapest to the most expensive and most accurate, from millions of candidates to a few hundreds or even less.
+In real production, retrieval is often of multiple-stages, from the cheapest to the most expensive and most accurate, from millions of candidates to a few hundreds or even less.
 For example, when you want to search for candidates from a pool of profiles stored in realtional db say Postgres, you can search by name simply using keyword, or check if the name equals to the query.
 You also want to search by their profession, which you have already categorized, either by model or human labeling, this makes it a filter search.
 Or if the search query requires more semantic understanding, we will leverage semantic search using embedding models.
@@ -54,7 +54,9 @@ Design pattern
     :alt: Retriever design
     :width: 620px
 
-    How LightRAG's built-in retriever fit into the task pipeline: We focus on the high-precision retrieval method so that users can build on top of that to form the final retrieval pipeline.
+    LightRAG retriever covers high-precision retriever methods and make them work locally and in-memory, this will help researchers and developers to build and test.
+    We also showcase how it is like to work with cloud database for **large-scale data** along with its built-in search& filter methods.
+
 
 LightRAG library does not prioritize the coverage of integration, the reasons are:
 
@@ -89,133 +91,304 @@ As for the retriever methods, we cover the most representative methods: LLMAsRet
 .. A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
 .. The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
 
-RetrieverOutput
+Retriever Data Types
 ^^^^^^^^^^^^^^^^^^^^^^^^
-Retriever can require different types of input, but they all have the same output format so that we can easily switch between different retrievers in your task pipeline.
+In most cases, the query is string. But there are cases we might need both text and images as a query, such as "find me a cloth that looks like this".
+We defined the query type as:
 
-Thus our ``RetrieverOutput`` is defined as:
+.. code-block:: python
+
+    RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
+    RetrieverStrQueryType = str
+    RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
+    RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
+
+As we see, our retriever should be able to handle both single query and multiple queries at once.
+
+The documents are a sequence of document of any type that will be later specified by the subclass:
+
+.. code-block:: python
+
+    RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True) # a single document
+    RetrieverDocumentsType = Sequence[RetrieverDocumentType] # The final documents types retriever can use
+
+
+We further define  the same output format so that we can easily switch between different retrievers in our task pipeline.
+Here is our output format:
+
 
 .. code-block:: python
 
     class RetrieverOutput(DataClass):
-    __doc__ = r"""Save the output of a single query in retrievers."""
+        __doc__ = r"""Save the output of a single query in retrievers.
 
-    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
-    doc_scores: Optional[List[float]] = field(
-        default=None, metadata={"desc": "List of document scores"}
-    )
-    query: Optional[str] = field(
-        default=None, metadata={"desc": "The query used to retrieve the documents"}
-    )
-    documents: Optional[List[Document]] = field(
-        default=None, metadata={"desc": "List of retrieved documents"}
-    )
+        It is up to the subclass of Retriever to specify the type of query and document.
+        """
+
+        doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+        doc_scores: Optional[List[float]] = field(
+            default=None, metadata={"desc": "List of document scores"}
+        )
+        query: Optional[RetrieverQueryType] = field(
+            default=None, metadata={"desc": "The query used to retrieve the documents"}
+        )
+        documents: Optional[List[RetrieverDocumentType]] = field(
+            default=None, metadata={"desc": "List of retrieved documents"}
+        )
 
 
     RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
 
-You can find the types in :doc:`core.types` module.
+You can find the types in :ref:`core.types<core-types>`. The list of queries and `RetrieverOutput` can be helpful for:
 
-We support both single query or a list of queries to be used as input in the retriever. The list of queries can be helpful in cases like:
+(1) Batch-processing: especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.
+(2) For `query expansion` where to increase the recall, users often generate multiple queries from the original query.
 
-(1) batch-processing, especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.
-(2) for cases like `query expansion` where to increase the recall, users often generate multiple queries from the original query.
+
+.. code-block:: python
+
+    class Retriever(Component, Generic[RetrieverDocumentType, RetrieverQueryType]):
+
+        ...
+
+        def call(
+            self,
+            input: RetrieverQueriesType,
+            top_k: Optional[int] = None,
+            **kwargs,
+        ) -> RetrieverOutputType:
+            raise NotImplementedError(f"retrieve is not implemented")
+
+        async def acall(
+            self,
+            input: RetrieverQueriesType,
+            top_k: Optional[int] = None,
+            **kwargs,
+        ) -> RetrieverOutputType:
+            raise NotImplementedError(f"Async retrieve is not implemented")
+
+
+**Document and TextSplitter**
+
+If your documents(text format) are too large and it is a common practise to first use ``TextSplitter`` to split them into smaller chunks.
+Please refer to :doc:`text_splitter` and our provided notebook on how to use it.
 
 
 
 Retriever Base Class
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Our base class :class:`core.retriever.Retriever` highlights two parts for implementing a retriever:
-
-1. On the algorithm side, it need to prepare the input documents and to retrieve the documents given a query.
-2. On the data storage side, if the preparation stage requires heavy computation for building intermedia ``index``, it needs to communicate clearly (1) the ``index`` to users so that users can save them with their choosing storage approach,
-and (2) allow users to load the index back.
-so that users can easily integrate their own retriever or to customize existing ones.
-
-**Build and Query Index -- The Algorithm**
-
-For some retrievers, they need ``index``, which is intermediate data that is used to assist the retrieval.
-.. they will compute/manage ``index`` and handles the  ``query`` applied on the index to get the relevant documents.
-Index is data-structure specific to either retrieval method that is used to compute a relevancy score in the case of embeddings for semantic search and Term-Frequency-Inverse Document Frequency (TF-IDF) for BM25, and for rerankers it is just the query and the candidates files themselves and the model.
-For a local retriever, it will need to (1) computes the index itself given candidates documents, persist them for later usage (2) load index from local or cloud storage (3) query the index to get the relevant documents.
-
-The base class will have the following methods to do so:
+Functionally, the base retriever :class:`core.retriever.Retriever` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actually retrieval calls.
+Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
+As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
+with the saving and loading process. As a helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
+As an example, :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever` has the following key attributes to index.
 
 .. code:: python
 
-    def build_index_from_documents(
-        self,
-        documents: Sequence[RetrieverDocumentType],
-        **kwargs,
-    ):
-        r"""Built index from the `text` field of each document in the list of documents.
-        input_field_map_func: a function that maps the document to the input field to be used for indexing
-        You can use _get_inputs to get a standard format fits for this retriever or you can write your own
-        """
-        raise NotImplementedError(
-            f"build_index_from_documents and input_field_map_func is not implemented"
-        )
-
-    def retrieve(
-        self,
-        input: RetrieverInputType,
-        top_k: Optional[int] = None,
-        **kwargs,
-    ) -> RetrieverOutputType:
-        raise NotImplementedError(f"retrieve is not implemented")
-
-**Load and Save Index - The Data Storage**
-
-For retriever method that has intermedia index other than the source of database data, the storage varies from retriever to retriever.
-For example, ``BM25Retriever`` has the following attributes to form its index:
-
-.. code:: python
-    self.index_keys = ["nd", "t2d", "idf", "doc_len", "avgdl", "corpus_size"]
+    self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","corpus_size","top_k","k1","b","epsilon","indexed"]
 
 
-For loading and saving in local and disk storage, we opt for ``pickle``, additionally, you can use local database such as SQLite, PgVector, Postgres along with cloud version to persist the index.
-
-
-Current Coverage
+Retriever in Action
 --------------------
+All of our retrievers are located in the ``components.retriever`` module.
+You can skim through their implementations here: :ref:`retriever<components-retriever>`.
+Here is our toy documents and queries in any format you want:
 
-To implement three local retrievers to work on local documents and data types to showcase these algorithms:
+.. code-block:: python
 
-1. ``BM25Retriever``
-2. ``FAISSRetriever`` using FAISS library for semantic search
-3. ``Reranker`` a local reranker model.
+    query_1 = "What are the benefits of renewable energy?" # gt is [0, 3]
+    query_2 = "How do solar panels impact the environment?" # gt is [1, 2]
 
-To demonstrate how we can use search provided by cloud database, we can consider them as a search service providers:
+    documents =[
+        {
+            "title": "The Impact of Renewable Energy on the Economy",
+            "content": "Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure."
+        },
+        {
+            "title": "Understanding Solar Panels",
+            "content": "Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels."
+        },
+        {
+            "title": "Pros and Cons of Solar Energy",
+            "content": "While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems."
+        },
+        {
+            "title":  "Renewable Energy and Its Effects",
+            "content": "Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts."
+        }
+    ]
 
-1. ``PostgresRetriever`` for full-text search together with either ``SQLAlchemy`` or ``Psycopg2``
-2. ``PineConeRetriever`` for semantic search using PineCone API.
+The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.
 
-Remeber: they are the service proviers and the evaluation lies in developers hands and can be unique to your data and applications.
+In-memory FAISSRetriever
+^^^^^^^^^^^^^^^^^^^^^^^^
+First, let's do semantic search, here we will use in-memory :class:`components.retriever.faiss_retriever.InMemoryFAISSRetriever`.
+FAISS retriever takes embeddings which can be ``List[float]`` or ``np.ndarray`` and build an index using FAISS library.
+The query can take both embeddings and str formats.
 
-Examples
-------------------
+.. note ::
+    ``faiss`` package is optional in our library. When you want to use it, ensure you have it installed in your env.
+
+We will quickly prepare the embeddings of the above documents using `content` field.
+
+.. code-block:: python
+
+    from lightrag.core.embedder import Embedder
+    from lightrag.core.types import ModelClientType
+
+
+    model_kwargs = {
+        "model": "text-embedding-3-small",
+        "dimensions": 256,
+        "encoding_format": "float",
+    }
+
+    embedder = Embedder(model_client =ModelClientType.OPENAI(), model_kwargs=model_kwargs)
+    output = embedder(input=[doc["content"] for doc in documents])
+    documents_embeddings = [x.embedding for x in output.data]
+
+
+For the initialization, a retriever can take both its required documents along with hyperparmeters including ``top_k``.
+The ``documents`` field is optional. Let's pass it all from ``__init__`` first:
+
+.. code-block:: python
+
+    from lightrag.components.retriever import FAISSRetriever
+    retriever = FAISSRetriever(top_k=2, embedder=embedder, documents=documents_embeddings)
+
+    print(retriever)
+
+The printout:
+
+.. code-block::
+
+    FAISSRetriever(
+     top_k=2, metric=prob, dimensions=256, total_documents=4
+     (embedder): Embedder(
+        model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
+        (model_client): OpenAIClient()
+     )
+    )
+
+We can also pass the documents using :meth:`components.retriever.faiss_retriever.InMemoryFAISSRetriever.build_index_from_documents` method after the initialization.
+This is helpful when your retriever would need to work with different pool of documents each time.
+
+.. code-block:: python
+
+    retriever_1 = FAISSRetriever(top_k=2, embedder=embedder)
+    retriever_1.build_index_from_documents(documents=documents_embeddings)
+
+Now, we will do the retriever, the input can either be a single query or a list of queries:
+
+.. code-block:: python
+
+    output_1 = retriever(input=query_1)
+    output_2 = retriever(input=query_2)
+    output_3 = retriever(input = [query_1, query_2])
+    print(output_1)
+    print(output_2)
+    print(output_3)
+
+The printout is:
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.8119999766349792, 0.7749999761581421], query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[2, 1], doc_scores=[0.8169999718666077, 0.8109999895095825], query='How do solar panels impact the environment?', documents=None)]
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.8119999766349792, 0.7749999761581421], query='What are the benefits of renewable energy?', documents=None), RetrieverOutput(doc_indices=[2, 1], doc_scores=[0.8169999718666077, 0.8109999895095825], query='How do solar panels impact the environment?', documents=None)]
+
+In default, the score is a simulated probabity in range ``[0, 1]`` using consine similarity. The higher the score, the more relevant the document is to the query.
+You can check the retriever for more type of scores.
+
+BM25Retriever
+^^^^^^^^^^^^^^^^^^^^^^^^
+So the semantic search works pretty well. We will see how :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever` works in comparison.
+We reimplemented the code in [9]_ with one improvement: instead of using ``text.split(" ")``, we use tokenizer to split the text. Here is a comparison of how they different:
+
+.. code-block:: python
+
+    from lightrag.components.retriever.bm25_retriever import split_text_by_word_fn_then_lower_tokenized, split_text_by_word_fn
+
+    query_1_words = split_text_by_word_fn(query_1)
+    query_1_tokens = split_text_by_word_fn_then_lower_tokenized(query_1)
+
+Output:
+
+.. code-block::
+
+    ['what', 'are', 'the', 'benefits', 'of', 'renewable', 'energy?']
+    ['what', 'are', 'the', 'benef', 'its', 'of', 're', 'new', 'able', 'energy', '?']
+
+We prepare the retriever:
+
+.. code-block:: python
+
+    from lightrag.components.retriever import InMemoryBM25Retriever
+
+    document_map_func = lambda x: x["content"]
+
+    bm25_retriever = InMemoryBM25Retriever(top_k=2, documents=documents, document_map_func=document_map_func)
+    print(bm25_retriever)
+
+It takes ``document_map_func`` to map the documents to the text format the retriever can work with.
+The output is:
+
+.. code-block::
+
+    InMemoryBM25Retriever(top_k=2, k1=1.5, b=0.75, epsilon=0.25, use_tokenizer=True, total_documents=4)
+
+Now we call the retriever exactly the same way as we did with the FAISS retriever:
+
+.. code-block:: python
+
+    output_1 = bm25_retriever(input=query_1)
+    output_2 = bm25_retriever(input=query_2)
+    output_3 = bm25_retriever(input = [query_1, query_2])
+    print(output_1)
+    print(output_2)
+    print(output_3)
+
+The printout is:
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[2, 1], doc_scores=[2.151683837681807, 1.6294762236217233], query='What are the benefits of renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[3, 2], doc_scores=[1.5166601493236314, 0.7790170272403408], query='How do solar panels impact the environment?', documents=None)]
+    [RetrieverOutput(doc_indices=[2, 1], doc_scores=[2.151683837681807, 1.6294762236217233], query='What are the benefits of renewable energy?', documents=None), RetrieverOutput(doc_indices=[3, 2], doc_scores=[1.5166601493236314, 0.7790170272403408], query='How do solar panels impact the environment?', documents=None)]
+
+Here we see the first query returns ``[2, 1]`` while the ground truth is ``[0, 3]``. The second query returns ``[3, 2]`` while the ground truth is ``[1, 2]``.
+The performance is quite disappointing. BM25 is known for lack of semantic understanding and does not consider context.
+We tested on the shorter and almost key-word like version of our queries and use both the `title` and `content`, and it gives the right response using the tokenized split.
+
+.. code-block:: python
+
+    query_1_short = "renewable energy?"  # gt is [0, 3]
+    query_2_short = "solar panels?"  # gt is [1, 2]
+    document_map_func = lambda x: x["title"] + " " + x["content"]
+    bm25_retriever.build_index_from_documents(documents=documents, document_map_func=document_map_func)
+
+Theis time the retrieval gives us the right answer.
+
+.. code-block::
+
+    [RetrieverOutput(doc_indices=[0, 3], doc_scores=[0.9498793313012154, 0.8031794089550072], query='renewable energy?', documents=None)]
+    [RetrieverOutput(doc_indices=[2, 1], doc_scores=[0.5343238380789569, 0.4568096570283078], query='solar panels?', documents=None)]
+
+Reranker as Retriever
+^^^^^^^^^^^^^^^^^^^^^^^^
+Semantic search works well, and reranker basd on mostly `cross-encoder` model is supposed to work even better.
+We have integrated two rerankers: ``bge-reranker-base`` [10]_ and rerankers provided by ``Cohere`` [11]_.
+These models follow the ``ModelClient`` protocol and are directly accessible as retriever from :class:`components.retriever.reranker_retriever.RerankerRetriever`.
 
 LLMAsRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-LocalReranker
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Local FAISSRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Local BM25Retriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 PostgresRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-PineConeRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
 
-CohereReRanker
-^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. admonition:: References
    :class: highlight
@@ -228,8 +401,16 @@ CohereReRanker
    6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
    7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
    8. Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
+   9. Rank_bm25: https://github.com/dorianbrown/rank_bm25
+   10. https://huggingface.co/BAAI/bge-reranker-base
+   11. Cohere reranker: https://docs.cohere.com/reference/rerank
 
 
 .. admonition:: API References
    :class: highlight
-   -
+
+   - :class:`core.retriever.Retriever`
+   - :ref:`core.types<core-types>`
+   - :class:`components.retriever.faiss_retriever.FAISSRetriever`
+   - :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever`
+   - :class:`components.retriever.reranker_retriever.RerankerRetriever`

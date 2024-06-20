@@ -1,4 +1,8 @@
-from .bm25_retriever import InMemoryBM25Retriever
+from .bm25_retriever import (
+    InMemoryBM25Retriever,
+    split_text_by_word_fn,
+    split_text_by_word_fn_then_lower_tokenized,
+)
 from .llm_retriever import LLMRetriever
 
 from lightrag.utils import LazyImport, OptionalPackages
@@ -24,6 +28,8 @@ __all__ = [
     "FAISSRetriever",
     "RerankerRetriever",
     "PostgresRetriever",
+    "split_text_by_word_fn",
+    "split_text_by_word_fn_then_lower_tokenized",
 ]
 
 
