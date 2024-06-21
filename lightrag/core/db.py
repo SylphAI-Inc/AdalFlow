@@ -37,8 +37,7 @@ class LocalDB(Generic[T]):
         transformer_setups (Dict[str, Component], optional): Transformer setup by key. Defaults to {}.
           It is used to save the transformer setup for later use.
     """
-    _transformer_files = {}
-    _transformer_type_names = {}
+
     name: Optional[str] = None
     items: List[T] = field(
         default_factory=list, metadata={"description": "The original documents"}
@@ -228,28 +227,31 @@ class LocalDB(Generic[T]):
     def __getstate__(self):
         """Exclude non-picklable attributes and prepare transformer setups for serialization."""
         state = self.__dict__.copy()
-        self._transformer_files = {}
+        _transformer_files = {}
+        _transformer_type_names = {}
 
         for key, transformer in self.transformer_setups.items():
             transformer_file = f"{key}_transformer.pkl"
             transformer.pickle_to_file(transformer_file)
-            self._transformer_files[key] = transformer_file
-            self._transformer_type_names[key] = transformer.__class__.__name__
+            _transformer_files[key] = transformer_file
+            _transformer_type_names[key] = transformer.__class__.__name__
         # state.pop("transformer_setups")
         state["transformer_setups"] = {}
+        state["_transformer_files"] = _transformer_files
+        state["_transformer_type_names"] = _transformer_type_names
         return state
 
     def __setstate__(self, state):
         """Restore state and load transformer setups from their respective files."""
+        _transformer_files = state.pop("_transformer_files")
+        _transformer_type_names = state.pop("_transformer_type_names")
         self.__dict__.update(state)
-        self.transformer_setups = {}
-        for key, transformer_file in self._transformer_files.items():
-            class_type = EntityMapping.get(self._transformer_type_names[key])
+        print(f"states: {state}")
+        for key, transformer_file in _transformer_files.items():
+            class_type = EntityMapping.get(_transformer_type_names[key])
             print(f"transformer_file: {transformer_file}")
             print(f"transformer_type: {class_type}")
             self.transformer_setups[key] = class_type.load_from_pickle(transformer_file)
-        self._transformer_files = {}  # Clear the temporary storage
-        self._transformer_type_names = {}
 
 
 if __name__ == "__main__":
@@ -303,8 +305,8 @@ if __name__ == "__main__":
 
     db.transform_data(key="test", transformer=transformer)
     print(db.transformed_items["test"])
-    db.pickle_to_file("storage/local_document_db.pkl")
-    db2 = LocalDB.load_from_pickle("storage/local_document_db.pkl")
+    db.save_state("storage/local_document_db.pkl")
+    db2 = LocalDB.load_state("storage/local_document_db.pkl")
     print(db2)
     # db.save_state("storage/local_document_db.pkl")
     # db2 = LocalDB.load_state("storage/local_document_db.pkl")
