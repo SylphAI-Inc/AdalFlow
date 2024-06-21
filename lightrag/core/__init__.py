@@ -1,7 +1,7 @@
 from .component import Component, Sequential, FunComponent, fun_to_component
 from .parameter import Parameter
 from .model_client import ModelClient
-from .base_data_class import DataClass, required_field
+from .base_data_class import DataClass, required_field, DataClassFormatType
 from .embedder import Embedder, BatchEmbedder
 from .retriever import Retriever
 
@@ -45,6 +45,8 @@ __all__ = [
     "FunComponent",
     "fun_to_component",
     "DataClass",
+    "DataClassFormatType",
+    "required_field",
     "Generator",
     "Prompt",
     "Parameter",

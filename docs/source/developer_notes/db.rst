@@ -106,10 +106,10 @@ The printout will be:
 DialogTurn
 ~~~~~~~~~~~~~~~~~~
 The :class:`core.types.DialogTurn` is only used as a data structure to a user-assistant conversation turn in LLM applications.
-**If we need to apply a text processing pipeline to a conversational history, we will convert it to ``Document`` first.**
+**If we need to apply a text processing pipeline to a conversational history, we will use our text container``Document`` to store the text we need to use.**
 
 .. note ::
-    For both ``Document`` and ``DialogTurn``, we have an equivalent class in :doc:`database.sqlalchemy.model` to handle the persitence of data in a SQL database.
+    For both ``Document`` and ``DialogTurn``, we have an equivalent class in :doc:`database.sqlalchemy.model`(:class:`database.sqlalchemy.modoel.Document`) to handle the persitence of data in a SQL database.
 
 Here is how to get a list of ``DialogTurn`` from the ``turns``:
 
@@ -223,7 +223,13 @@ The printout will be:
 
 Local database
 --------------------
-In-memory management and storage of ``Document`` and ``DialogTurn`` objects are provided by :class:`core.database.DocumentDatabase` and :class:`core.database.DialogDatabase` respectively.
+:class:`core.db.LocalDB` offers in-memory CRUD data operations, data transfomation/processing pipelines and processed data
+In-memory management and storage of ``Document`` and ``DialogTurn`` objects are provided by :class:`core.db.LocalDB`.
+
+**LocalDB class**
+
+``LocalDB`` is a container to store and manage a sequence of items of any data type.
+
 
 **Data Loading and CRUD Operations**
 

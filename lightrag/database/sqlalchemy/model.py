@@ -37,8 +37,11 @@ from sqlalchemy import (
     String,
     Text,
     DateTime,
+    TIMESTAMP,
+    func,
 )
 import uuid
+
 
 from sqlalchemy.orm import Session as BaseSession
 from sqlalchemy.dialects.postgresql import JSONB
@@ -191,6 +194,73 @@ class DocumentModel(DocumentBase):
         if bind_key:
             type(self).__bind_key__ = bind_key
         super().__init__(*args, **kwargs)
+
+
+class DialogueTurnModel(Base):
+    __tablename__ = "dialogue_turn_all_in_one"
+    __bind_key__ = "dialogue_db"
+
+    id = Column(
+        uuid.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )  # Assuming SERIAL is auto-incrementing integer
+    turn_index = Column(Integer)
+    user_id = Column(
+        uuid.UUID(as_uuid=True),
+        nullable=False,
+    )
+    session_id = Column(
+        uuid.UUID(as_uuid=True),
+        # ForeignKey("dialogue_session.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    user_query_params = Column(JSONB)
+    converse_agent_response = Column(JSONB)
+    search_agent_response = Column(JSONB)
+    user_feedback = Column(JSONB)
+    turn_start_time = Column(DateTime, default=datetime.datetime.now())
+    converse_agent_response_time = Column(DateTime, default=datetime.datetime.now())
+    search_agent_response_time = Column(
+        DateTime, default=datetime.datetime.now()
+    )  # matches
+    # matches should be a list of dictionaries
+    created_at = Column(TIMESTAMP, default=func.now())
+    updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
+    deleted_at = Column(TIMESTAMP, nullable=True)  # soft delete
+
+    def __str__(self):
+        str_repr = ""
+        str_repr += f"id: {self.id}\n"
+        str_repr += f"turn_index: {self.turn_index}\n"
+        str_repr += f"user_id: {self.user_id}\n"
+        str_repr += f"session_id: {self.session_id}\n"
+        str_repr += f"user_query_params: {self.user_query_params}\n"
+        str_repr += f"converse_agent_response: {self.converse_agent_response}\n"
+        str_repr += f"search_agent_response: {self.search_agent_response}\n"
+        str_repr += f"user_feedback: {self.user_feedback}\n"
+        str_repr += f"turn_start_time: {self.turn_start_time}\n"
+        str_repr += (
+            f"converse_agent_response_time: {self.converse_agent_response_time}\n"
+        )
+        str_repr += f"search_agent_response_time: {self.search_agent_response_time}\n"
+        return str_repr
+
+    def to_dict(self):
+        return {
+            "turn_index": self.turn_index,
+            "user_id": self.user_id,
+            "session_id": self.session_id,
+            "user_query_params": self.user_query_params,
+            "converse_agent_response": self.converse_agent_response,
+            "search_agent_response": self.search_agent_response,
+            "user_feedback": self.user_feedback,
+            "turn_start_time": self.turn_start_time,
+            "converse_agent_response_time": self.converse_agent_response_time,
+            "search_agent_response_time": self.search_agent_response_time,
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at,
+        }
 
 
 # if __name__ == "__main__":

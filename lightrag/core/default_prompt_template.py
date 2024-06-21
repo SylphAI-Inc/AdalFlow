@@ -1,16 +1,15 @@
+# TODO: potentially make a data class for this
 LIGHTRAG_DEFAULT_PROMPT_ARGS = [
-    "task_desc_str",
-    "output_format_str",
-    "tools_str",
-    "examples_str",
-    "chat_history_str",
-    "context_str",
-    "steps_str",
-    "input_str",
-    "output_str",
+    "task_desc_str",  # task description
+    "output_format_str",  # output format of the task
+    "tools_str",  # tools used in the task
+    "examples_str",  # examples of the task
+    "chat_history_str",  # chat history of the user
+    "context_str",  # context of the user query
+    "steps_str",  # used in agent steps
+    "input_str",  # user query or input
 ]
 
-# TODO: is output_str used?
 LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS = [
     "task_desc_str",
     # "output_format_str",
@@ -65,14 +64,9 @@ DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""
 </SYS>
 {% endif %}
 {% if input_str %}
-<Inputs>
+<User>
 {{input_str}}
-</Inputs>
-{% endif %}
-{% if output_str %}
-<Outputs>
-{{output_str}}
-</Outputs>
+</User>
 {% endif %}
 You:
 """
