@@ -23,7 +23,7 @@ First, import the packages and set up the environment.
     from lightrag.components.model_client import OpenAIClient
     from lightrag.core.data_components import ToEmbedderResponse, ToEmbeddings
     from lightrag.core.types import Document
-    from lightrag.core.document_splitter import DocumentSplitter
+    from lightrag.components.data_process import DocumentSplitter
 
     import dotenv
     dotenv.load_dotenv(dotenv_path=".env", override=True)

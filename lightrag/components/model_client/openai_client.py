@@ -2,7 +2,6 @@
 
 import os
 from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
-from dataclasses import dataclass
 
 import logging
 
@@ -19,8 +18,8 @@ from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType, EmbedderOutput
-from lightrag.core.data_components import parse_embedding_response
+from lightrag.core.types import ModelType, EmbedderOutput, TokenLogProb
+from lightrag.components.model_client.utils import parse_embedding_response
 
 
 safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
@@ -45,14 +44,6 @@ def get_first_message_content(completion: Completion) -> str:
 def get_all_messages_content(completion: Completion) -> List[str]:
     r"""When the n > 1, get all the messages content."""
     return [c.message.content for c in completion.choices]
-
-
-@dataclass
-class TokenLogProb:
-    r"""similar to openai.ChatCompletionTokenLogprob"""
-
-    token: str
-    logprob: float
 
 
 def get_probabilities(completion: Completion) -> List[List[TokenLogProb]]:

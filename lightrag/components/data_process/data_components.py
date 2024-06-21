@@ -1,7 +1,4 @@
-r"""Helper components for data types transformation.
-
-It is commonly used as output_processors.
-"""
+"""Helper components for data transformation such as embeddings and document splitting."""
 
 from copy import deepcopy
 from typing import List, TypeVar, Sequence, Union, Dict, Any
@@ -11,9 +8,6 @@ from tqdm import tqdm
 from lightrag.core.component import Component
 
 from lightrag.core.types import (
-    EmbedderOutput,
-    Embedding,
-    Usage,
     Document,
     RetrieverOutput,
 )
@@ -24,32 +18,15 @@ from lightrag.core.embedder import (
     Embedder,
 )
 
-T = TypeVar("T")
 
+T = TypeVar("T")
+__all__ = [
+    "ToEmbeddings",
+    "RetrieverOutputToContextStr",
+    "retriever_output_to_context_str",
+]
 
 # TODO: make the GeneratorOutput include the token usage too.
-def parse_embedding_response(
-    api_response,
-) -> EmbedderOutput:
-    r"""Parse embedding model output from the API response to EmbedderOutput.
-
-    Follows the OpenAI API response pattern.
-    """
-    # Assuming `api_response` has `.embeddings` and `.usage` attributes
-    # and that `embeddings` is a list of objects that can be converted to `Embedding` dataclass
-    # TODO: check if any embedding is missing
-    embeddings = [
-        Embedding(embedding=e.embedding, index=e.index) for e in api_response.data
-    ]
-    usage = Usage(
-        prompt_tokens=api_response.usage.prompt_tokens,
-        total_tokens=api_response.usage.total_tokens,
-    )  # Assuming `usage` is an object with a `count` attribute
-
-    # Assuming the model name is part of the response or set statically here
-    model = api_response.model
-
-    return EmbedderOutput(data=embeddings, model=model, usage=usage)
 
 
 def retriever_output_to_context_str(

@@ -1,6 +1,4 @@
-"""
-Functional data classes to support functional components like Generator, Retriever, and Assistant.
-"""
+"""Functional data classes to support functional components like Generator, Retriever, and Assistant."""
 
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence
@@ -91,6 +89,14 @@ class Usage:
 
     prompt_tokens: int
     total_tokens: int
+
+
+@dataclass
+class TokenLogProb:
+    r"""similar to openai.ChatCompletionTokenLogprob"""
+
+    token: str
+    logprob: float
 
 
 @dataclass

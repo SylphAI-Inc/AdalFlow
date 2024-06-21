@@ -4,16 +4,17 @@ import yaml
 
 from lightrag.core.generator import Generator
 from lightrag.core.embedder import Embedder
-from lightrag.core.data_components import (
-    RetrieverOutputToContextStr,
-    ToEmbeddings,
-)
+
 from lightrag.core.types import Document
 
-from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.core.string_parser import JsonParser
 from lightrag.core.component import Component, Sequential
 from lightrag.core.db import LocalDB
+from lightrag.components.data_process import (
+    RetrieverOutputToContextStr,
+    ToEmbeddings,
+    DocumentSplitter,
+)
 
 import os
 

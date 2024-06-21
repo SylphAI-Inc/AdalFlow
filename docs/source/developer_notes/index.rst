@@ -79,7 +79,7 @@ Code path: ``lightrag.core``. For abstract classes:
    :widths: 20 80
    :header-rows: 1
 
-   * - Componentd
+   * - Part
      - Description
    * - :doc:`prompt`
      - Built on ``jinja2``, it programmablly and flexibly format prompt(text) as **input to the generator**.
@@ -91,10 +91,26 @@ Code path: ``lightrag.core``. For abstract classes:
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
      - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
+
+
+
+Data Processing: including transformer, pipeline, and storage. Code path: ``lightrag.components.data_process``, ``lightrag.core.db``, and ``lightrag.database``.
+Components work on a sequence of ``Document`` and return a sequence of ``Document``.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
    * - :doc:`text_splitter`
      - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
    * - :doc:`db`
-     - The local database to store and persist ``Document`` and ``DialogTurn`` to support context and conversational history retrieval.
+     - Understanding the data modelig, processing, and storage as a whole. Support context retrieval and conversation management.
+
+
+..  * - :doc:`data_pipeline`
+..    - The pipeline to process data, including text splitting, embedding, and retrieval.
 
 Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
@@ -107,8 +123,8 @@ Let us put all of these components together to build a :doc:`rag` (Retrieval Aug
    generator
    embedder
    retriever
-   db
    text_splitter
+   db
    rag
 
 Agent Essentials

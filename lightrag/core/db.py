@@ -221,84 +221,46 @@ class LocalDB(Generic[T]):
 
         state = self.__dict__.copy()
         # Remove the transformer setups
-        state.pop("transformer_setups", None)
+        # state.pop("transformer_setups", None)
+        for key, transformer in self.transformer_setups.items():
+            self.transformed_items[key] = transformer.to_dict()
+        print(f"transformed_items: {self.transformed_items}")
         return state
 
     def __setstate__(self, state):
         """Restore state (including non-picklable attributes with default values if needed)."""
         self.__dict__.update(state)
         # Reinitialize transformer setups to an empty dictionary
-        self.transformer_setups = {}
+        # self.transformer_setups = {}
+        for key, transformer in self.transformer_setups.items():
+            self.transformed_items[key] = Component.from_dict(transformer)
 
 
 if __name__ == "__main__":
-    from lightrag.core.types import Document
-#     from lightrag.components.retriever import FAISSRetriever
-#     from lightrag.core.db import LocalDocumentDB
-#     from lightrag.utils.config import construct_components_from_config
-#     from lightrag.utils import setup_env
+    # test LocalDB
+    from lightrag.core.component import Sequential, fun_to_component
 
-#     data_transformer_config = {  # attribute and its config to recreate the component
-#         "embedder": {
-#             "component_name": "Embedder",
-#             "component_config": {
-#                 "model_client": {
-#                     "component_name": "OpenAIClient",
-#                     "component_config": {},
-#                 },
-#                 "model_kwargs": {
-#                     "model": "text-embedding-3-small",
-#                     "dimensions": 256,
-#                     "encoding_format": "float",
-#                 },
-#             },
-#         },
-#         "document_splitter": {
-#             "component_name": "DocumentSplitter",
-#             "component_config": {
-#                 "split_by": "word",
-#                 "split_length": 400,
-#                 "split_overlap": 200,
-#             },
-#         },
-#         "to_embeddings": {
-#             "component_name": "ToEmbeddings",
-#             "component_config": {
-#                 "vectorizer": {
-#                     "component_name": "Embedder",
-#                     "component_config": {
-#                         "model_client": {
-#                             "component_name": "OpenAIClient",
-#                             "component_config": {},
-#                         },
-#                         "model_kwargs": {
-#                             "model": "text-embedding-3-small",
-#                             "dimensions": 256,
-#                             "encoding_format": "float",
-#                         },
-#                     },
-#                     # the other config is to instantiate the entity (class and function) with the given config as arguments
-#                     # "entity_state": "storage/embedder.pkl", # this will load back the state of the entity
-#                 },
-#                 "batch_size": 100,
-#             },
-#         },
-#     }
+    db = LocalDB()
+    db.load([{"text": "hello world"}, {"text": "hello world2"}])
 
-#     path = "developer_notes/developer_notes/db_states.pkl"
-#     db = LocalDocumentDB.load_state(path)
-#     transformer_key = db.list_transformed_data_keys()[0]
-#     print(db.transformer_setups)
-#     components = construct_components_from_config(data_transformer_config)
-#     embedder = components["embedder"]
-#     transformed_documents = db.get_transformed_data(
-#         transformer_key
-#     )  # list of documents
-#     embeddings = [doc.vector for doc in transformed_documents]
-#     retriever = FAISSRetriever(
-#         embedder=embedder, documents=embeddings
-#     )  # allow to initialize with documents too
+    @fun_to_component
+    def add(docs: List):
+        print(f"docs: {docs}")
+        for doc in docs:
+            doc["text"] += " add"
+        return docs
 
-#     query = "What happened at Viaweb and Interleaf?"
-#     retrieved_documents = retriever(query)
-#     print(retrieved_documents)
+    @fun_to_component
+    def minus(docs: List):
+        print(f"docs: {docs}")
+        for doc in docs:
+            doc["text"] += " minus"
+        return docs
+
+    transformer = Sequential(add, minus)
+
+    db.transform_data(key="test", transformer=transformer)
+    print(db.transformed_items["test"])
+    db.save_state("storage/local_document_db.pkl")
+    db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    print(db2.transformed_items["test"])

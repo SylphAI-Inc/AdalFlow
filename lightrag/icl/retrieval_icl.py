@@ -3,13 +3,13 @@ from typing import List
 from lightrag.core.types import Document
 from lightrag.core.retriever import Retriever
 from lightrag.core.embedder import Embedder
-from lightrag.core.data_components import (
+from lightrag.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
+    DocumentSplitter,
 )
 from lightrag.core.db import LocalDB
 from lightrag.core.component import Component, Sequential
-from lightrag.core.document_splitter import DocumentSplitter
 
 
 class RetrievalICL(Component):

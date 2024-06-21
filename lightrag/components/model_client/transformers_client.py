@@ -20,6 +20,7 @@ from lightrag.core.types import ModelType, Embedding, EmbedderOutput
 from lightrag.core.functional import get_top_k_indices_scores
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
+
 safe_import(
     OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
 )
