@@ -10,7 +10,7 @@ default_config = {
     "to_embeddings": {
         "component_name": "ToEmbeddings",
         "component_config": {
-            "vectorizer": {
+            "embedder": {
                 "component_name": "Embedder",
                 "component_config": {
                     "model_client": {

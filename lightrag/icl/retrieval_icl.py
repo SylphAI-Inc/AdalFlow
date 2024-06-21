@@ -30,7 +30,7 @@ class RetrievalICL(Component):
         self.data_transformer = Sequential(
             self.text_splitter,
             ToEmbeddings(
-                vectorizer=self.vectorizer,
+                embedder=self.vectorizer,
             ),
         )
         self.data_transformer_key = self.data_transformer._get_name()

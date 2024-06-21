@@ -1,6 +1,6 @@
-"""LocalDB is to handle documents: in-memory and stored in the local file system in pickle format."""
+"""LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn."""
 
-from typing import List, Optional, Callable, Dict, Any
+from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic
 import pickle
 import os
 import logging
@@ -11,76 +11,78 @@ from lightrag.core.component import Component
 from lightrag.core.types import Document
 from lightrag.core.functional import generate_readable_key_for_function
 
-"""
-Why do we need a LocalDB as the product db is always in the cloud?
-
-1. For testing and development, we can use a local db to test the components and experimenting before deploying to the cloud.
-
-This means localdb has to be highly flexible and customizable and will eventullay in sync with the cloud db.
-
-So a great local db is highly important and the #1 step to build a product.
-
-A dataset can include anything, and some parts will be represented as local document db.
-"""
-
 
 log = logging.getLogger(__name__)
+
+T = TypeVar("T")
+
+U = TypeVar("U")  # U will be the type after transformation
 
 
 # @dataclass
 # TODO: make it work with any data type just like a cloud db that can have any table with different columns
 @dataclass
-class LocalDB:
-    r"""
-    It inherits from the Component class for better structure visualization. But normally it cant be chained as part of the query flow/pipeline.
-    For now we use a list of Documents, might consider optimize it later
+class LocalDB(Generic[T]):
+    __doc__ = r"""LocalDB with in-memory CRUD operations, data persistence, data mapping and transformation.
 
-    LocalDB is used to experiment and once deployed, can be used to manage per-query related documents in the application.
-    It can be used to help retriever prepare index using transformer, and to store and load back the index to avoid re-computation.
+    Args:
 
-    Retriever will be configured already, but when we retrieve, we can potentially override the initial configuration.
+        items (List[T], optional): The original data items. Defaults to [].
+        transformed_items (Dict[str, List [U]], optional): Transformed data items by key. Defaults to {}.
+             Transformer must be of type Component.
+        mapped_items (Dict[str, List[Document]], optional): Mapped documents by key. Defaults to {}.
+             map_func is a function that maps the document to the desired format.
+
+        transformer_setups (Dict[str, Component], optional): Transformer setup by key. Defaults to {}.
+          It is used to save the transformer setup for later use.
     """
-
-    documents: List[Document] = field(
+    name: Optional[str] = None
+    items: List[T] = field(
         default_factory=list, metadata={"description": "The original documents"}
     )
 
-    transformed_documents: Dict[str, List[Document]] = field(
+    transformed_items: Dict[str, List[U]] = field(
         default_factory=dict, metadata={"description": "Transformed documents by key"}
     )
-    mapped_documents: Dict[str, List[Document]] = field(
+    mapped_items: Dict[str, List[Document]] = field(
         default_factory=dict, metadata={"description": "Mapped documents by key"}
     )
-    transformer_setups: Dict[str, Any] = field(
+
+    transformer_setups: Dict[str, Component] = field(
         default_factory=dict, metadata={"description": "Transformer setup by key"}
+    )
+    mapper_setups: Dict[str, Callable[[Document], Document]] = field(
+        default_factory=dict, metadata={"description": "Mapper setup by key"}
     )
 
     # def __post_init__(self):
     #     super().__init__()
+    @property
+    def length(self):
+        return len(self.items)
 
     def list_mapped_data_keys(self) -> List[str]:
-        return list(self.mapped_documents.keys())
+        return list(self.mapped_items.keys())
 
     def list_transformed_data_keys(self) -> List[str]:
-        return list(self.transformed_documents.keys())
+        return list(self.transformed_items.keys())
 
     def map_data(
         self,
         key: Optional[str] = None,
-        map_func: Callable[[Document], Document] = lambda x: x,
+        map_fn: Callable[[Document], Document] = lambda x: x,
     ) -> List[Document]:
         """Map a document especially the text field into the content that you want other components to use such as document splitter and embedder."""
         # make a copy of the documents
         if key is None:
-            key = generate_readable_key_for_function(map_func)
-        documents_to_use = self.documents.copy()
-        self.mapped_documents[key] = [
-            map_func(document) for document in documents_to_use
-        ]
+            key = generate_readable_key_for_function(map_fn)
+        documents_to_use = self.items.copy()
+        self.mapped_items[key] = [map_fn(document) for document in documents_to_use]
+        self.mapper_setups[key] = map_fn
         return key
 
     def get_mapped_data(self, key: str) -> List[Document]:
-        return self.mapped_documents[key]
+        return self.mapped_items[key]
 
     def _get_transformer_name(self, transformer: Component) -> str:
         # check all _sub_components and join the name with _
@@ -100,72 +102,100 @@ class LocalDB:
         self,
         transformer: Component,
         key: Optional[str] = None,
+        map_fn: Optional[
+            Callable[[T], Any]
+        ] = None,  # to map the document to designed format the transformer expects
         # documents: Optional[List[Document]] = None,
-    ) -> List[Document]:
+    ) -> List[U]:
         """Transform the documents using the transformer, the transformed documents will be used to build index."""
         if key is None:
             key = self._get_transformer_name(transformer)
             log.info(f"Generated key for transformed data: {key}")
 
-        documents_to_use = self.documents.copy()
-        self.transformed_documents[key] = transformer(documents_to_use)
+        if map_fn is not None:
+            items_to_use = [map_fn(item) for item in self.items]
+        else:
+            items_to_use = self.items.copy()
+
+        self.transformed_items[key] = transformer(items_to_use)
         self.transformer_setups[key] = transformer  # Record the transformer obj
         return key
 
     def get_transformed_data(self, key: str) -> List[Document]:
         """Get the transformed documents by key."""
-        return self.transformed_documents[key]
+        return self.transformed_items[key]
 
     # TODO: when new documents are added, we need to extend the transformed documents as well
-    def load_documents(
-        self, documents: List[Document], apply_transformer: bool = False
-    ):
+    def load(self, documents: List[Any], apply_transformer: bool = True):
         """Load the db with new documents."""
         if apply_transformer:
             for key, transformer in self.transformer_setups.items():
-                self.transformed_documents[key] = transformer(documents)
-        self.documents = documents
+                self.transformed_items[key] = transformer(documents)
+        self.items = documents
 
-    def extend_documents(
-        self, documents: List[Document], apply_transformer: bool = False
-    ):
+    def extend(self, documents: List[Any], apply_transformer: bool = True):
         """Extend the db with new documents."""
         if apply_transformer:
             for key, transformer in self.transformer_setups.items():
-                self.transformed_documents[key].extend(transformer(documents))
+                self.transformed_items[key].extend(transformer(documents))
 
-        self.documents.extend(documents)
+        self.items.extend(documents)
+
+    def delete(self, indices: List[int], remove_transformed=True):
+        """Remove documents by index.
+        Args:
+            indices (List[int]): List of indices to remove.
+            remove_transformed (bool): Whether to remove the transformed documents as well.
+        """
+        if remove_transformed:
+            for key in self.transformed_items.keys():
+                self.transformed_items[key] = [
+                    doc
+                    for i, doc in enumerate(self.transformed_items[key])
+                    if i not in indices
+                ]
+        for index in indices:
+            self.items.pop(index)
+
+    def add(
+        self, document: Any, index: Optional[int] = None, apply_transformer: bool = True
+    ):
+        """Add a single document to the db.
+
+        Args:
+            document (Any): The document to add.
+            index (int, optional): The index to add the document at. Defaults to None.
+            When None, the document is appended to the end.
+            apply_transformer (bool, optional): Whether to apply the transformer to the document. Defaults to True.
+        """
+        transformed_documents = {}
+        if apply_transformer:
+            for key, transformer in self.transformer_setups.items():
+                transformed_documents[key] = transformer(document)
+        # add the document
+        if index is not None:
+            self.items.insert(index, document)
+            for key, transformed_docs in transformed_documents.items():
+                self.transformed_items[key].insert(index, transformed_docs)
+        else:
+            self.items.append(document)
+            for key, transformed_docs in transformed_documents.items():
+                self.transformed_items[key].append(transformed_docs)
 
     def reset_all(self):
         r"""Reset all attributes to empty."""
-        self.reset_documents()
-        self.mapped_documents = {}
+        self.reset()
+        self.mapped_items = {}
         self.transformer_setups = {}
 
-    def reset_documents(self, remove_transformed=True):
+    def reset(self, remove_transformed=True):
         """Remove all documents.
         Args:
             remove_transformed (bool): Whether to remove the transformed documents as well.
         """
-        self.documents = []
+        self.items = []
         if remove_transformed:
-            self.transformed_documents = {}
-
-    def remove_documents_by_index(self, indexes: List[int], remove_transformed=True):
-        """Remove documents by index.
-        Args:
-            indexes (List[int]): List of indexes to remove.
-            remove_transformed (bool): Whether to remove the transformed documents as well.
-        """
-        if remove_transformed:
-            for key in self.transformed_documents.keys():
-                self.transformed_documents[key] = [
-                    doc
-                    for i, doc in enumerate(self.transformed_documents[key])
-                    if i not in indexes
-                ]
-        for index in indexes:
-            self.documents.pop(index)
+            self.transformed_items = {}
 
     def save_state(self, filepath: str):
         """Save the current state (attributes) of the document DB using pickle.
@@ -201,8 +231,8 @@ class LocalDB:
         self.transformer_setups = {}
 
 
-# if __name__ == "__main__":
-#     from lightrag.core.types import Document
+if __name__ == "__main__":
+    from lightrag.core.types import Document
 #     from lightrag.components.retriever import FAISSRetriever
 #     from lightrag.core.db import LocalDocumentDB
 #     from lightrag.utils.config import construct_components_from_config

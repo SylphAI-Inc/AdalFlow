@@ -4,10 +4,10 @@
 Developer Notes
 =============================
 
-*How each part works*
+*Why and How each part works*
 
-Learn LightRAG design phisolophy and the reasoning(`why` and `how-to`) behind each core part within the LightRAG library.
-This is also our tutorials showing how each part works before we move ahead to build use cases (LLM applications).
+Learn LightRAG design phisolophy and the `why` and `how-to` (customize and integrate) behind each core part within the LightRAG library.
+This is our tutorials before you move ahead to build use cases  (LLM applications) end to end.
 
 .. note::
 

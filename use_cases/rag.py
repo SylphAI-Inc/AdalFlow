@@ -52,7 +52,7 @@ class RAG(Component):
         self.data_transformer = Sequential(
             text_splitter,
             ToEmbeddings(
-                vectorizer=vectorizer,
+                embedder=vectorizer,
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )

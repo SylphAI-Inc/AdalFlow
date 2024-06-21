@@ -4,7 +4,7 @@ It is commonly used as output_processors.
 """
 
 from copy import deepcopy
-from typing import Any, List, TypeVar, Sequence, Union, Dict, Any
+from typing import List, TypeVar, Sequence, Union, Dict, Any
 from tqdm import tqdm
 
 
@@ -23,7 +23,6 @@ from lightrag.core.embedder import (
     BatchEmbedderInputType,
     Embedder,
 )
-import lightrag.core.functional as F
 
 T = TypeVar("T")
 
@@ -91,6 +90,9 @@ def retriever_output_to_context_str(
 For now these are the data transformation components
 """
 
+ToEmbeddingsInputType = Sequence[Document]
+ToEmbeddingsOutputType = Sequence[Document]
+
 
 class ToEmbeddings(Component):
     r"""It transforms a Sequence of Chunks or Documents to a List of Embeddings.
@@ -98,13 +100,13 @@ class ToEmbeddings(Component):
     It operates on a copy of the input data, and does not modify the input data.
     """
 
-    def __init__(self, vectorizer: Embedder, batch_size: int = 50) -> None:
+    def __init__(self, embedder: Embedder, batch_size: int = 50) -> None:
         super().__init__(batch_size=batch_size)
-        self.vectorizer = vectorizer
+        self.embedder = embedder
         self.batch_size = batch_size
-        self.batch_embedder = BatchEmbedder(embedder=vectorizer, batch_size=batch_size)
+        self.batch_embedder = BatchEmbedder(embedder=embedder, batch_size=batch_size)
 
-    def __call__(self, input: Sequence[Document]) -> Sequence[Document]:
+    def __call__(self, input: ToEmbeddingsInputType) -> ToEmbeddingsOutputType:
         output = deepcopy(input)
         # convert documents to a list of strings
         embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]

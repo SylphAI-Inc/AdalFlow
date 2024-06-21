@@ -49,6 +49,9 @@ llama-index = "^0.10.44"
 llama-index-vector-stores-postgres = "^0.1.11"
 pgvector = "^0.2.5"
 cohere = "^5.5.8"
+langchain = "^0.2.5"
+langchain-community = "^0.2.5"
+langchain-openai = "^0.1.8"
 
 
 [tool.poetry.group.doc.dependencies]

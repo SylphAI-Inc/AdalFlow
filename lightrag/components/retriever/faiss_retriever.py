@@ -96,6 +96,9 @@ class FAISSRetriever(
         metric: Literal["cosine", "euclidean", "prob"] = "prob",
     ):
         super().__init__()
+
+        self.reset_index()
+
         self.dimensions = dimensions
         self.embedder = embedder  # used to vectorize the queries
         self.top_k = top_k
@@ -109,7 +112,6 @@ class FAISSRetriever(
         else:
             raise ValueError(f"Invalid metric: {self.metric}")
 
-        self.reset_index()
         if documents:
             self.documents = documents
             self.build_index_from_documents(documents, document_map_func)

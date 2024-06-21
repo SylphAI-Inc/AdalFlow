@@ -574,6 +574,12 @@ PostgresRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
+Use Score Threshold instead of top_k
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+In some cases, when the retriever has a computed score and you might prefer to use the score instead of ``top_k`` to filter out the relevant documents.
+To do so, you can simplify set the ``top_k`` to the full size of the documents and use a post-processing step or a component(to chain with the retriever) to filter out the documents with the score below the threshold.
+
+
 Use together with Database
 -----------------------------
 When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.

@@ -148,8 +148,8 @@ class _DataClassMeta(type):
 # before we do more tests, we keep the base and child class manually decorated with dataclass
 
 
-# @dataclass
-class DataClass(metaclass=_DataClassMeta):
+@dataclass
+class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
 
     Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
@@ -293,7 +293,7 @@ class DataClass(metaclass=_DataClassMeta):
         return cls(**init_kwargs)
 
     @classmethod
-    def format_str(cls: "DataClass", format_type: DataClassFormatType) -> str:
+    def format_class_str(cls: "DataClass", format_type: DataClassFormatType) -> str:
         """Generate formatted output based on the type of operation and class/instance context.
 
         Args:
@@ -301,7 +301,20 @@ class DataClass(metaclass=_DataClassMeta):
 
         Returns:
             str: A string representing the formatted output.
+
+        Examples:
+
+        .. code-block:: python
+
+            # Define a dataclass
+            from lightrag.core import DataClass
+
         """
+        assert format_type in [
+            DataClassFormatType.SIGNATURE_JSON,
+            DataClassFormatType.SIGNATURE_YAML,
+            DataClassFormatType.SCHEMA,
+        ], "format_class_str is only for class formats"
         if not is_dataclass(cls):
             raise ValueError(f"{cls.__name__} must be a dataclass to use format_str.")
 
@@ -310,16 +323,35 @@ class DataClass(metaclass=_DataClassMeta):
             return cls.to_json_signature()
         elif format_type == DataClassFormatType.SIGNATURE_YAML:
             return cls.to_yaml_signature()
-        elif format_type == DataClassFormatType.EXAMPLE_JSON:
-            if isinstance(cls, type):
-                raise ValueError("EXAMPLE_JSON requires an instance of the dataclass.")
-            return cls.to_json()
-        elif format_type == DataClassFormatType.EXAMPLE_YAML:
-            if isinstance(cls, type):
-                raise ValueError("EXAMPLE_YAML requires an instance of the dataclass.")
-            return cls.to_yaml()
+
         elif format_type == DataClassFormatType.SCHEMA:
             return cls.to_data_class_schema_str()
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
+
+    def format_example_str(self, format_type: DataClassFormatType) -> str:
+        """Generate formatted output based on the type of operation and class/instance context.
+
+        Args:
+            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
+
+        Returns:
+            str: A string representing the formatted output.
+
+        """
+        if not is_dataclass(self):
+            raise ValueError(f"{self.__name__} must be a dataclass to use format_str.")
+
+        assert format_type in [
+            DataClassFormatType.EXAMPLE_JSON,
+            DataClassFormatType.EXAMPLE_YAML,
+        ], "format_str is only for example formats"
+
+        # Check the type of format required and whether it's called on an instance or class
+        if format_type == DataClassFormatType.EXAMPLE_JSON:
+            return self.to_json()
+        elif format_type == DataClassFormatType.EXAMPLE_YAML:
+            return self.to_yaml()
         else:
             raise ValueError(f"Unsupported format type: {format_type}")
 
