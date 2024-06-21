@@ -37,3 +37,4 @@ data/
 traces/
 *.log
 storage/
+*.pkl

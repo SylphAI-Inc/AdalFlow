@@ -85,6 +85,7 @@ Here are the benefits of using the Component class:
 
 - Transparency.
 - Flexibility.
+- Searialization and deserialization.
 
 .. Transparency
 .. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -142,6 +143,12 @@ You can easily save the detailed states:
 
 To adds even more flexibility, we provide :class:`core.component.FunComponent` and :class:`core.component.Sequential` for more advanced use cases.
 
+
+**Searalization and deserialization**
+
+We provide ``is_pickable`` method to check if the component is pickable.
+And any of your component, it is a good practise to ensure it is pickable.
+
 FunComponent
 --------------
  Use :func:`core.component.fun_to_component` as a decorator to convert any function to a Component with its unique class name.
@@ -187,7 +194,7 @@ Via decorator will be even more convenient to have a component from a function:
 
 .. code-block:: python
 
-    @fun_to_component
+    .. @fun_to_component
     def add_one(x):
         return x + 1
 

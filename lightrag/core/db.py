@@ -1,8 +1,6 @@
 """LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn."""
 
 from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic
-import pickle
-import os
 import logging
 from dataclasses import field, dataclass
 
@@ -22,7 +20,7 @@ U = TypeVar("U")  # U will be the type after transformation
 # @dataclass
 # TODO: make it work with any data type just like a cloud db that can have any table with different columns
 @dataclass
-class LocalDB(Generic[T]):
+class LocalDB(Generic[T], Component):
     __doc__ = r"""LocalDB with in-memory CRUD operations, data persistence, data mapping and transformation.
 
     Args:
@@ -197,48 +195,56 @@ class LocalDB(Generic[T]):
         if remove_transformed:
             self.transformed_items = {}
 
-    def save_state(self, filepath: str):
-        """Save the current state (attributes) of the document DB using pickle.
+    # def save_state(self, filepath: str):
+    #     """Save the current state (attributes) of the document DB using pickle.
 
-        Note:
-            The transformer setups will be lost when pickling. As it might not be picklable.
-        """
-        filepath = filepath or "storage/local_document_db.pkl"
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        with open(filepath, "wb") as file:
-            pickle.dump(self, file)
+    #     Note:
+    #         The transformer setups will be lost when pickling. As it might not be picklable.
+    #     """
+    #     filepath = filepath or "storage/local_document_db.pkl"
+    #     file_dir = os.path.dirname(filepath)
+    #     if file_dir and file_dir != "":
+    #         os.makedirs(file_dir, exist_ok=True)
 
-    @classmethod
-    def load_state(cls, filepath: str = None) -> "LocalDB":
-        """Load the state of the document DB from a pickle file."""
-        filepath = filepath or "storage/local_document_db.pkl"
-        with open(filepath, "rb") as file:
-            return pickle.load(file)
+    #     with open(filepath, "wb") as file:
+    #         pickle.dump(self, file)
 
-    # transformer set up will be lost when pickling
-    def __getstate__(self):
-        """Exclude non-picklable attributes."""
+    # @classmethod
+    # def load_state(cls, filepath: str = None) -> "LocalDB":
+    #     """Load the state of the document DB from a pickle file."""
+    #     filepath = filepath or "storage/local_document_db.pkl"
+    #     with open(filepath, "rb") as file:
+    #         return pickle.load(file)
 
-        state = self.__dict__.copy()
-        # Remove the transformer setups
-        # state.pop("transformer_setups", None)
-        for key, transformer in self.transformer_setups.items():
-            self.transformed_items[key] = transformer.to_dict()
-        print(f"transformed_items: {self.transformed_items}")
-        return state
+    # # transformer set up will be lost when pickling
+    # def __getstate__(self):
+    #     """Exclude non-picklable attributes."""
 
-    def __setstate__(self, state):
-        """Restore state (including non-picklable attributes with default values if needed)."""
-        self.__dict__.update(state)
-        # Reinitialize transformer setups to an empty dictionary
-        # self.transformer_setups = {}
-        for key, transformer in self.transformer_setups.items():
-            self.transformed_items[key] = Component.from_dict(transformer)
+    #     state = self.__dict__.copy()
+    #     # Remove the transformer setups
+    #     # state.pop("transformer_setups", None)
+    #     for key, transformer in self.transformer_setups.items():
+    #         self.transformed_items[key] = transformer.to_dict()
+    #     print(f"transformed_items: {self.transformed_items}")
+    #     return state
+
+    # def __setstate__(self, state):
+    #     """Restore state (including non-picklable attributes with default values if needed)."""
+    #     self.__dict__.update(state)
+    #     # Reinitialize transformer setups to an empty dictionary
+    #     # self.transformer_setups = {}
+    #     for key, transformer in self.transformer_setups.items():
+    #         print(f"key: {key}, transformer: {transformer}")
+    #         # self.transformed_items[key] = Component.from_dict(transformer)
 
 
 if __name__ == "__main__":
     # test LocalDB
-    from lightrag.core.component import Sequential, fun_to_component
+    from lightrag.core.component import (
+        Sequential,
+        Component,
+        fun_to_component,
+    )
 
     db = LocalDB()
     db.load([{"text": "hello world"}, {"text": "hello world2"}])
@@ -250,6 +256,26 @@ if __name__ == "__main__":
             doc["text"] += " add"
         return docs
 
+    class Add(Component):
+        def __init__(self):
+            super().__init__()
+
+        def call(self, docs: List):
+            print(f"docs: {docs}")
+            for doc in docs:
+                doc["text"] += " add"
+            return docs
+
+    class Minus(Component):
+        def __init__(self):
+            super().__init__()
+
+        def call(self, docs: List):
+            print(f"docs minus: {docs}")
+            for doc in docs:
+                doc["text"] += " minus"
+            return docs
+
     @fun_to_component
     def minus(docs: List):
         print(f"docs: {docs}")
@@ -257,10 +283,66 @@ if __name__ == "__main__":
             doc["text"] += " minus"
         return docs
 
+    # transformer = Sequential(FunComponent(add), FunComponent(minus))
+
     transformer = Sequential(add, minus)
 
     db.transform_data(key="test", transformer=transformer)
     print(db.transformed_items["test"])
-    db.save_state("storage/local_document_db.pkl")
-    db2 = LocalDB.load_state("storage/local_document_db.pkl")
-    print(db2.transformed_items["test"])
+    db.pickle_to_file("storage/local_document_db.pkl")
+    db2 = LocalDB.load_from_pickle("storage/local_document_db.pkl")
+    print(db2)
+    # db.save_state("storage/local_document_db.pkl")
+    # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    # print(db2.transformed_items["test"])
+
+    # # use the transformerp
+    # transformer_2 = db2.transformer_setups["test"]
+
+    # print(f"typeof transformer_2: {type(transformer_2)}")
+
+    # print(transformer_2([{"text": "hello world"}]))
+
+    # from lightrag.core.embedder import Embedder
+    # from lightrag.core.types import ModelClientType
+    # from lightrag.components.data_process import DocumentSplitter, ToEmbeddings
+    # from lightrag.core.component import Sequential
+    # from lightrag.utils import setup_env  # noqa
+    # from lightrag.utils import enable_library_logging
+
+    # enable_library_logging(level="DEBUG")
+
+    # model_kwargs = {
+    #     "model": "text-embedding-3-small",
+    #     "dimensions": 256,
+    #     "encoding_format": "float",
+    # }
+
+    # splitter_config = {"split_by": "word", "split_length": 50, "split_overlap": 10}
+
+    # splitter = DocumentSplitter(**splitter_config)
+    # embedder = Embedder(
+    #     model_client=ModelClientType.OPENAI(), model_kwargs=model_kwargs
+    # )
+    # embedder_transformer = ToEmbeddings(embedder, batch_size=2)
+    # data_transformer = Sequential(splitter, embedder_transformer)
+
+    # print(f"is embedder_transformer: {data_transformer.is_picklable()}")
+
+    # db = LocalDB()
+    # db.load([Document(text="hello world"), Document(text="hello world2")])
+
+    # db.transform_data(key="test", transformer=data_transformer)
+
+    # print(f"is db picklable: {db.is_picklable()}")
+    # db.pickle_to_file("storage/local_document_db.pkl")
+    # db2 = LocalDB.load_from_pickle("storage/local_document_db.pkl")
+    # # db.save_state("storage/local_document_db.pkl")
+    # # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+
+    # print(db2)
+    # print(db2.transformer_setups["test"])
+    # print(db.transformer_setups["test"])
+    # # db.save_state("storage/local_document_db.pkl")
+    # # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    # # print(db2.transformed_items["test"])

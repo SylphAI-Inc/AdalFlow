@@ -227,6 +227,9 @@ class OpenAIClient(ModelClient):
     def to_dict(self) -> Dict[str, Any]:
         r"""Convert the component to a dictionary."""
         # TODO: not exclude but save yes or no for recreating the clients
-        exclude = ["sync_client", "async_client"]  # unserializable object
+        exclude = [
+            "sync_client",
+            "async_client",
+        ]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
