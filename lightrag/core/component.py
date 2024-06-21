@@ -241,11 +241,14 @@ class Component:
                     "_ordered_dict": True,
                     "data": [(k, self._process_value(v)) for k, v in value.items()],
                 }
-            return {k: self._process_value(v) for k, v in sorted(value.items())}
+            # return {k: self._process_value(v) for k, v in sorted(value.items())}
+            # no sorting
+            return {k: self._process_value(v) for k, v in value.items()}
         elif isinstance(value, list):
             # Recursively process list items
             try:
-                return sorted(self._process_value(v) for v in value)
+                # return sorted(self._process_value(v) for v in value)
+                return [self._process_value(v) for v in value]
             except TypeError:
                 # If elements are not comparable, process them without sorting
                 return [self._process_value(v) for v in value]
@@ -275,7 +278,6 @@ class Component:
 
         # obj = cls(**data.get("_init_args", {}))
         obj = cls.__new__(cls)  # Create a new instance without calling __init__
-        # obj = __new__(cls)
         for key, value in data["data"].items():
             setattr(obj, key, cls._restore_value(value))
         return obj
@@ -982,6 +984,7 @@ class Sequential(Component):
         return input
 
 
+# TODO: support async call
 class FunComponent(Component):
     r"""Component that wraps a function.
 
@@ -1008,7 +1011,6 @@ class FunComponent(Component):
         return super()._extra_repr() + f"fun_name={self.fun_name}"
 
 
-# TODO: NoT pickable yet
 def fun_to_component(fun) -> FunComponent:
     r"""Helper function to convert a function into a Component with
     its own class name.

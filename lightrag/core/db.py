@@ -2,12 +2,15 @@
 
 from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic
 import logging
+import os
 from dataclasses import field, dataclass
+import pickle
 
 
-from lightrag.core.component import Component
+from lightrag.core.component import Component, Sequential
 from lightrag.core.types import Document
 from lightrag.core.functional import generate_readable_key_for_function
+from lightrag.utils.registry import EntityMapping
 
 
 log = logging.getLogger(__name__)
@@ -20,7 +23,7 @@ U = TypeVar("U")  # U will be the type after transformation
 # @dataclass
 # TODO: make it work with any data type just like a cloud db that can have any table with different columns
 @dataclass
-class LocalDB(Generic[T], Component):
+class LocalDB(Generic[T]):
     __doc__ = r"""LocalDB with in-memory CRUD operations, data persistence, data mapping and transformation.
 
     Args:
@@ -34,6 +37,8 @@ class LocalDB(Generic[T], Component):
         transformer_setups (Dict[str, Component], optional): Transformer setup by key. Defaults to {}.
           It is used to save the transformer setup for later use.
     """
+    _transformer_files = {}
+    _transformer_type_names = {}
     name: Optional[str] = None
     items: List[T] = field(
         default_factory=list, metadata={"description": "The original documents"}
@@ -195,47 +200,56 @@ class LocalDB(Generic[T], Component):
         if remove_transformed:
             self.transformed_items = {}
 
-    # def save_state(self, filepath: str):
-    #     """Save the current state (attributes) of the document DB using pickle.
+    def save_state(self, filepath: str):
+        """Save the current state (attributes) of the document DB using pickle.
 
-    #     Note:
-    #         The transformer setups will be lost when pickling. As it might not be picklable.
-    #     """
-    #     filepath = filepath or "storage/local_document_db.pkl"
-    #     file_dir = os.path.dirname(filepath)
-    #     if file_dir and file_dir != "":
-    #         os.makedirs(file_dir, exist_ok=True)
+        Note:
+            The transformer setups will be lost when pickling. As it might not be picklable.
+        """
+        filepath = filepath or "storage/local_document_db.pkl"
+        file_dir = os.path.dirname(filepath)
+        if file_dir and file_dir != "":
+            os.makedirs(file_dir, exist_ok=True)
 
-    #     with open(filepath, "wb") as file:
-    #         pickle.dump(self, file)
+        with open(filepath, "wb") as file:
+            pickle.dump(self, file)
+        # reset the _transformer_files
+        # self._transformer_files = {}
+        # self._transformer_type_names = {}
 
-    # @classmethod
-    # def load_state(cls, filepath: str = None) -> "LocalDB":
-    #     """Load the state of the document DB from a pickle file."""
-    #     filepath = filepath or "storage/local_document_db.pkl"
-    #     with open(filepath, "rb") as file:
-    #         return pickle.load(file)
+    @classmethod
+    def load_state(cls, filepath: str = None) -> "LocalDB":
+        """Load the state of the document DB from a pickle file."""
+        filepath = filepath or "storage/local_document_db.pkl"
+        with open(filepath, "rb") as file:
+            return pickle.load(file)
 
-    # # transformer set up will be lost when pickling
-    # def __getstate__(self):
-    #     """Exclude non-picklable attributes."""
+    # transformer set up will be lost when pickling
+    def __getstate__(self):
+        """Exclude non-picklable attributes and prepare transformer setups for serialization."""
+        state = self.__dict__.copy()
+        self._transformer_files = {}
 
-    #     state = self.__dict__.copy()
-    #     # Remove the transformer setups
-    #     # state.pop("transformer_setups", None)
-    #     for key, transformer in self.transformer_setups.items():
-    #         self.transformed_items[key] = transformer.to_dict()
-    #     print(f"transformed_items: {self.transformed_items}")
-    #     return state
+        for key, transformer in self.transformer_setups.items():
+            transformer_file = f"{key}_transformer.pkl"
+            transformer.pickle_to_file(transformer_file)
+            self._transformer_files[key] = transformer_file
+            self._transformer_type_names[key] = transformer.__class__.__name__
+        # state.pop("transformer_setups")
+        state["transformer_setups"] = {}
+        return state
 
-    # def __setstate__(self, state):
-    #     """Restore state (including non-picklable attributes with default values if needed)."""
-    #     self.__dict__.update(state)
-    #     # Reinitialize transformer setups to an empty dictionary
-    #     # self.transformer_setups = {}
-    #     for key, transformer in self.transformer_setups.items():
-    #         print(f"key: {key}, transformer: {transformer}")
-    #         # self.transformed_items[key] = Component.from_dict(transformer)
+    def __setstate__(self, state):
+        """Restore state and load transformer setups from their respective files."""
+        self.__dict__.update(state)
+        self.transformer_setups = {}
+        for key, transformer_file in self._transformer_files.items():
+            class_type = EntityMapping.get(self._transformer_type_names[key])
+            print(f"transformer_file: {transformer_file}")
+            print(f"transformer_type: {class_type}")
+            self.transformer_setups[key] = class_type.load_from_pickle(transformer_file)
+        self._transformer_files = {}  # Clear the temporary storage
+        self._transformer_type_names = {}
 
 
 if __name__ == "__main__":
