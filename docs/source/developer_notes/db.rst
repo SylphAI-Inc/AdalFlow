@@ -223,7 +223,67 @@ The printout will be:
 
 Local database
 --------------------
-:class:`core.db.LocalDB` offers in-memory CRUD data operations, data transfomation/processing pipelines and processed data
+:class:`core.db.LocalDB` is a powerful data management class:
+
+1. It manages a sequence of data items of any data type with CRUD operations.
+2. Keep track and apply data transfomation/processing pipelines to its items.
+3. Save and load the state of the items to/from a file, including all data and data transformer records.
+
+This table lists its attributes and important methods:
+
+.. list-table::
+    :header-rows: 1
+
+    * - Group
+      - Attribute/Method
+      - Description
+    * - Attributes
+      - ``name``
+      - The name of the database.
+    * -
+      - ``items``
+      - A list of items in the database.
+    * -
+      - ``transformed_items``
+      - A dictionary to store the transformed items.
+    * -
+      - ``transformer_setups``
+      - A dictionary to store the transformer setups.
+    * -
+      - ``mapper_setups``
+      - A dictionary to store the mapping functions used together with transformer.
+    * - Data CRUD Operations
+      - ``load(items: List[Any])``
+      - Load a list of items to the database ``items``.
+    * -
+      - ``extend(items, List[Any], apply_transformer: bool = True)``
+      - Add items to the end of ``items``. Optionally apply transformer from ``transformer_setups``.
+    * -
+      - ``add(item: Any, index: Optional[int] = None, apply_transformer: bool = True)``
+      - Add a single item by index or append to the end. Optionally apply the transformer.
+    * -
+      - ``delete(index: Optional[int] = None, remove_transformed: bool = True)``
+      - Remove items by index or pop the last item. Optionally remove the transformed data as well. Assume the transformed item has the same index as the original item. Might not always be the case.
+    * -
+      - ``reset()``
+      - Reset all attributes to the initial state.
+    * - Data Processing
+      - ``register_transformer(transformer: Component, key: Optional[str], map_fn: Optional[Callable])``
+      - Register a data transformation to the database to be used later.
+    * -
+      - ``apply_transformer(key: str)``
+      - Apply a transformer(``transformer_setups[key]``) to the items in the database and store the transformed items in ``transformed_items``.
+    * -
+      - ``transform_data(data_transformer: Component, map_fn: Callable, key: str)``
+      - Apply a transformer to the items and store the transformer and its mapper in ``transformer_setups`` and ``mapper_setups``. The transformed items are stored in ``transformed_items``.
+    * -  Data Persistence
+      - ``save_state(filepath: str)``
+      - Save the state of the database to a pickle file.
+    * -
+      - ``load_state(filepath: str)``
+      - A class method to load the state of the database from a pickle file.
+
+
 In-memory management and storage of ``Document`` and ``DialogTurn`` objects are provided by :class:`core.db.LocalDB`.
 
 **LocalDB class**

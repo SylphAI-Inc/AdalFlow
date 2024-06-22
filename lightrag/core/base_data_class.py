@@ -461,7 +461,6 @@ class DataClass:
         indent_str = " " * 2
 
         for f in fields(self):
-            print(f"f: {f}, {f.name}, exclude {exclude}")
             if f.name and exclude and f.name in exclude:
                 continue
             value = getattr(self, f.name)
@@ -495,9 +494,7 @@ class DataClass:
                     value_formatted.split("\n")
                 )
                 value_formatted = value_formatted.rstrip().rstrip("\n...")
-                print(value_formatted)
                 content = f"{f.name}: \n{value_formatted}"
-                print("content:", content)
                 yaml_content.append(content)
             else:
                 # Use yaml.dump for other types but ensure the output is clean

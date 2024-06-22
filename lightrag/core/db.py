@@ -37,11 +37,11 @@ class LocalDB(Generic[T]):
     2. load: Load the db with data. ``db.load([{"text": "hello world"}, {"text": "hello world2"}])``
     3. extend: Extend the db with data. ``db.extend([{"text": "hello world3"}])``.
        In default, the transformer is applied and the transformed data is extended.
-    4. add: Add a single document to the db. ``db.add({"text": "hello world4"})``.
+    4. add: Add a single item to the db. ``db.add({"text": "hello world4"})``.
        In default, the transformer is applied and the transformed data is added.
        Unless the transformed data keeps the same length as the original data, the insert operation does not mean insert after the last item.
-    5. delete: Remove documents by index. ``db.delete([0])``.
-    6. reset: Remove all documents. ``db.reset()``, including transformed_items and transformer_setups,and map_fn_setups.
+    5. delete: Remove items by index. ``db.delete([0])``.
+    6. reset: Remove all items. ``db.reset()``, including transformed_items and transformer_setups,and mapper_setups.
 
     Data transformation:
     1. Register a transformer first and apply it later
@@ -67,13 +67,13 @@ class LocalDB(Generic[T]):
 
     .. code-block:: python
 
-            db.save_state("storage/local_document_db.pkl")
+            db.save_state("storage/local_item_db.pkl")
 
     2. Load the state of the db from a pickle file.
 
     .. code-block:: python
 
-            db2 = LocalDB.load_state("storage/local_document_db.pkl")
+            db2 = LocalDB.load_state("storage/local_item_db.pkl")
 
     3. Check if the loaded and original db are the same.
 
@@ -89,7 +89,7 @@ class LocalDB(Generic[T]):
              Transformer must be of type Component.
         transformer_setups (Dict[str, Component], optional): Transformer setup by key. Defaults to {}.
           It is used to save the transformer setup for later use.
-        map_fn_setups (Dict[str, Callable[[T], Any]], optional): Map function setup by key. Defaults to {}.
+        mapper_setups (Dict[str, Callable[[T], Any]], optional): Map function setup by key. Defaults to {}.
     """
 
     name: Optional[str] = field(
@@ -106,7 +106,7 @@ class LocalDB(Generic[T]):
     transformer_setups: Dict[str, Component] = field(
         default_factory=dict, metadata={"description": "Transformer setup by key"}
     )
-    map_fn_setups: Dict[str, Callable[[T], Any]] = field(
+    mapper_setups: Dict[str, Callable[[T], Any]] = field(
         default_factory=dict, metadata={"description": "Map function setup by key"}
     )
 
@@ -118,7 +118,7 @@ class LocalDB(Generic[T]):
         return list(self.transformed_items.keys())
 
     def get_transformed_data(self, key: str) -> List[U]:
-        """Get the transformed documents by key."""
+        """Get the transformed items by key."""
         return self.transformed_items[key]
 
     def _get_transformer_name(self, transformer: Component) -> str:
@@ -139,12 +139,12 @@ class LocalDB(Generic[T]):
             log.info(f"Generated key for transformer: {key}")
         self.transformer_setups[key] = transformer
         if map_fn is not None:
-            self.map_fn_setups[key] = map_fn
+            self.mapper_setups[key] = map_fn
         return key
 
     def apply_transformer(self, key: str):
         """Apply the transformer to the data."""
-        map_fn = self.map_fn_setups.get(key, None)
+        map_fn = self.mapper_setups.get(key, None)
         if map_fn is not None:
             items_to_use = [map_fn(item) for item in self.items]
         else:
@@ -157,7 +157,7 @@ class LocalDB(Generic[T]):
         key: Optional[str] = None,
         map_fn: Optional[Callable[[T], Any]] = None,
     ) -> List[U]:
-        """Transform the documents using the given transformer and register the transformer."""
+        """Transform the items using the given transformer and register the transformer."""
 
         key = self.register_transformer(transformer, key, map_fn)
 
@@ -169,12 +169,11 @@ class LocalDB(Generic[T]):
         self.transformed_items[key] = transformer(items_to_use)
         return key
 
-    def load(self, documents: List[Any], apply_transformer: bool = True):
-        """Load the db with new documents and apply the registered transformer.
+    def load(self, items: List[Any]):
+        """Load the db with new items.
 
         Args:
-            documents (List[Any]): The documents to load.
-            apply_transformer (bool, optional): Whether to apply the transformer to the documents. Defaults to True.
+            items (List[Any]): The items to load.
 
         Examples:
 
@@ -183,95 +182,88 @@ class LocalDB(Generic[T]):
             db = LocalDB()
             db.load([{"text": "hello world"}, {"text": "hello world2"}])
         """
-        self.items = documents
-        if apply_transformer:
-            for key, _ in self.transformer_setups.items():
-                self.apply_transformer(key)
+        self.items = items
 
-    def extend(self, documents: List[Any], apply_transformer: bool = True):
-        """Extend the db with new documents."""
-        self.items.extend(documents)
+    def extend(self, items: List[Any], apply_transformer: bool = True):
+        """Extend the db with new items."""
+        self.items.extend(items)
         if apply_transformer:
             for key, _ in self.transformer_setups.items():
                 # check if there was a map function registered
-                transformed_documents = []
-                if key in self.map_fn_setups:
-                    map_fn = self.map_fn_setups[key]
-                    transformed_documents = transformer(
-                        [map_fn(doc) for doc in documents]
-                    )
+                transformed_items = []
+                if key in self.mapper_setups:
+                    map_fn = self.mapper_setups[key]
+                    transformed_items = transformer([map_fn(doc) for doc in items])
                 else:
-                    transformed_documents = transformer(documents)
-                self.transformed_items[key].extend(transformed_documents)
+                    transformed_items = transformer(items)
+                self.transformed_items[key].extend(transformed_items)
 
-        self.items.extend(documents)
+        self.items.extend(items)
 
-    def delete(self, indices: List[int], remove_transformed=True):
-        """Remove documents by index.
+    def delete(self, index: Optional[int] = None, remove_transformed: bool = True):
+        """Remove items by index or pop the last item. Optionally remove the transformed data as well.
+
+        Assume the transformed item has the same index as the original item. Might not always be the case.
+
         Args:
-            indices (List[int]): List of indices to remove.
-            remove_transformed (bool): Whether to remove the transformed documents as well.
+            index (Optional[int], optional): The index to remove. Defaults to None.
+            remove_transformed (bool, optional): Whether to remove the transformed data as well. Defaults to True.
         """
         if remove_transformed:
             for key in self.transformed_items.keys():
-                self.transformed_items[key] = [
-                    doc
-                    for i, doc in enumerate(self.transformed_items[key])
-                    if i not in indices
-                ]
-        for index in indices:
-            self.items.pop(index)
+                self.transformed_items[key].pop(index)
+        self.items.pop(index)
 
     def add(
-        self, document: Any, index: Optional[int] = None, apply_transformer: bool = True
+        self, item: Any, index: Optional[int] = None, apply_transformer: bool = True
     ):
-        """Add a single document to the db, optionally at a specific index.
+        """Add a single item by index or append to the end. Optionally apply the transformer.
 
         .. note::
-            The document will be transformed using the registered transformer.
+            The item will be transformed using the registered transformer.
             Only if the transformed data keeps the same length as the original data, the ``insert`` operation will work correctly.
 
         Args:
-            document (Any): The document to add.
-            index (int, optional): The index to add the document at. Defaults to None.
-            When None, the document is appended to the end.
-            apply_transformer (bool, optional): Whether to apply the transformer to the document. Defaults to True.
+            item (Any): The item to add.
+            index (int, optional): The index to add the item at. Defaults to None.
+            When None, the item is appended to the end.
+            apply_transformer (bool, optional): Whether to apply the transformer to the item. Defaults to True.
         """
-        transformed_documents: Dict[str, List] = {}
+        transformed_items: Dict[str, List] = {}
         if apply_transformer:
             for key, transformer in self.transformer_setups.items():
                 transformed_docs = []
-                map_fn = self.map_fn_setups.get(key, None)
+                map_fn = self.mapper_setups.get(key, None)
                 if map_fn is not None:
-                    transformed_docs = transformer([map_fn(document)])
+                    transformed_docs = transformer([map_fn(item)])
                 else:
-                    transformed_docs = transformer([document])
-                transformed_documents[key] = transformed_docs
+                    transformed_docs = transformer([item])
+                transformed_items[key] = transformed_docs
 
         if index is not None:
-            self.items.insert(index, document)
-            for key, transformed_docs in transformed_documents.items():
+            self.items.insert(index, item)
+            for key, transformed_docs in transformed_items.items():
                 for doc in transformed_docs:
                     self.transformed_items[key].insert(index, doc)
         else:
-            self.items.append(document)
-            for key, transformed_docs in transformed_documents.items():
+            self.items.append(item)
+            for key, transformed_docs in transformed_items.items():
                 self.transformed_items[key].extend(transformed_docs)
 
     def reset(self):
         r"""Reset all attributes to empty."""
-        self.reset()
         self.mapped_items = {}
         self.transformer_setups = {}
-        self.map_fn_setups = {}
+        self.mapper_setups = {}
+        self.items = []
 
     def save_state(self, filepath: str):
-        """Save the current state (attributes) of the document DB using pickle.
+        """Save the current state (attributes) of the DB using pickle.
 
         Note:
             The transformer setups will be lost when pickling. As it might not be picklable.
         """
-        filepath = filepath or "storage/local_document_db.pkl"
+        filepath = filepath or "storage/local_item_db.pkl"
         file_dir = os.path.dirname(filepath)
         if file_dir and file_dir != "":
             os.makedirs(file_dir, exist_ok=True)
@@ -281,21 +273,19 @@ class LocalDB(Generic[T]):
 
     @classmethod
     def load_state(cls, filepath: str = None) -> "LocalDB":
-        """Load the state of the document DB from a pickle file."""
-        filepath = filepath or "storage/local_document_db.pkl"
+        """Load the state of the DB from a pickle file."""
+        filepath = filepath or "storage/local_item_db.pkl"
         with open(filepath, "rb") as file:
             return pickle.load(file)
 
     def __getstate__(self):
-        """Exclude non-picklable attributes and prepare transformer setups for serialization."""
+        """Special handling of the components in pickling."""
         state = self.__dict__.copy()
         _transformer_files = {}
         _transformer_type_names = {}
 
         for key, transformer in self.transformer_setups.items():
-            transformer_file = f"{key}_transformer.pkl"
-            transformer.pickle_to_file(transformer_file)
-            _transformer_files[key] = transformer_file
+            _transformer_files[key] = transformer.to_dict()
             _transformer_type_names[key] = transformer.__class__.__name__
         state["transformer_setups"] = {}
         state["_transformer_files"] = _transformer_files
@@ -303,14 +293,16 @@ class LocalDB(Generic[T]):
         return state
 
     def __setstate__(self, state):
-        """Restore state and load transformer setups from their respective files."""
+        """Restore state with special handling of the components."""
         _transformer_files = state.pop("_transformer_files")
         _transformer_type_names = state.pop("_transformer_type_names")
         self.__dict__.update(state)
         for key, transformer_file in _transformer_files.items():
-            class_type = EntityMapping.get(_transformer_type_names[key])
-
-            self.transformer_setups[key] = class_type.load_from_pickle(transformer_file)
+            class_type = (
+                EntityMapping.get(_transformer_type_names[key], None)
+                or globals()[_transformer_type_names[key]]
+            )
+            self.transformer_setups[key] = class_type.from_dict(transformer_file)
 
 
 if __name__ == "__main__":
@@ -364,11 +356,11 @@ if __name__ == "__main__":
 
     db.transform_data(key="test", transformer=transformer)
     print(db.transformed_items["test"])
-    db.save_state("storage/local_document_db.pkl")
-    db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    db.save_state("storage/local_item_db.pkl")
+    db2 = LocalDB.load_state("storage/local_item_db.pkl")
     print(db2)
-    # db.save_state("storage/local_document_db.pkl")
-    # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    # db.save_state("storage/local_item_db.pkl")
+    # db2 = LocalDB.load_state("storage/local_item_db.pkl")
     # print(db2.transformed_items["test"])
 
     # # use the transformerp
@@ -410,14 +402,14 @@ if __name__ == "__main__":
     # db.transform_data(key="test", transformer=data_transformer)
 
     # print(f"is db picklable: {db.is_picklable()}")
-    # db.pickle_to_file("storage/local_document_db.pkl")
-    # db2 = LocalDB.load_from_pickle("storage/local_document_db.pkl")
-    # # db.save_state("storage/local_document_db.pkl")
-    # # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    # db.pickle_to_file("storage/local_item_db.pkl")
+    # db2 = LocalDB.load_from_pickle("storage/local_item_db.pkl")
+    # # db.save_state("storage/local_item_db.pkl")
+    # # db2 = LocalDB.load_state("storage/local_item_db.pkl")
 
     # print(db2)
     # print(db2.transformer_setups["test"])
     # print(db.transformer_setups["test"])
-    # # db.save_state("storage/local_document_db.pkl")
-    # # db2 = LocalDB.load_state("storage/local_document_db.pkl")
+    # # db.save_state("storage/local_item_db.pkl")
+    # # db2 = LocalDB.load_state("storage/local_item_db.pkl")
     # # print(db2.transformed_items["test"])
