@@ -46,9 +46,7 @@ class Tokenizer(Component):
         r"""Counts the number of tokens in the input text."""
         return len(self.encode(text))
 
-    # def get_string_tokens(self, text: str) -> List[str]:
-    #     r"""Returns the string tokens from the input text."""
-    #     text = self.preprocess(text)
-
-    #     token_ids = self.encode(text)
-    #     return [self.tokenizer.decode([token_id]) for token_id in token_ids]
+    def get_string_tokens(self, text: str) -> List[str]:
+        r"""Returns the string tokens from the input text."""
+        token_ids = self.encode(text)
+        return [self.tokenizer.decode([token_id]) for token_id in token_ids]

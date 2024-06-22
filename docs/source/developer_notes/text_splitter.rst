@@ -5,8 +5,8 @@ TextSplitter
 
    `Xiaoyi Gu <https://github.com/Alleria1809>`_
 
-The DocumentSplitter in LightRAG is designed to preprocess text by splitting long documents into smaller chunks. 
-This improves the performance of embedding models and ensures they operate within their maximum context length limits. 
+The ``DocumentSplitter`` in LightRAG is designed to preprocess text by splitting long documents into smaller chunks.
+This improves the performance of embedding models and ensures they operate within their maximum context length limits.
 
 ``LightRAG's DocumentSplitter`` splits a list of documents (:obj:`core.base_data_class.Document`) into a list of shorter documents.
 The document object to manage id, document content,optional meta data, document's embedding vectors, etc.
@@ -37,16 +37,16 @@ Check the following table for ``split_by`` options:
      - ``<space>``
      - ``Hello, world. This is LightRAG.`` to ``['Hello, ', 'world. ', 'This ', 'is ', 'LightRAG.']``
 
-We will use ``word`` in our example. 
+We will use ``word`` in our example.
 
-* ``split_length`` is the the maximum number of units in each split. 
+* ``split_length`` is the the maximum number of units in each split.
 
 * ``split_overlap`` is the number of units that each split should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis. In ``LightRAG`` we use ``windowed`` function in ``more-itertools`` package to build a sliding window for the texts to keep the overlaps. The window step size = ``split_length - split_overlap``.
 
 After splitting the long text into a list and using a sliding window to generate the text lists with specified overlap length, the text list will be concatenated into text pieces again.
 Here is a quick example:
 
-``Review: The theater service is terrible. The movie is good.`` Set ``split_by: word``, ``split_length: 6``, ``split_overlap: 2``. 
+``Review: The theater service is terrible. The movie is good.`` Set ``split_by: word``, ``split_length: 6``, ``split_overlap: 2``.
 
 With our ``DocumentSplitter`` logic, the output will be: ``Review: The theater service is terrible.``, ``is terrible. The movie is good.``
 It prevents the model of misunderstand the context. If we don't have overlap, the second sentence will be ``The movie is good.`` and the embedding model might only consider this document is merely ``Positive``.

@@ -1,6 +1,4 @@
-"""
-Functional data classes to support functional components like Generator, Retriever, and Assistant.
-"""
+"""Functional data classes to support functional components like Generator, Retriever, and Assistant."""
 
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence
@@ -93,6 +91,15 @@ class Usage:
     total_tokens: int
 
 
+@dataclass
+class TokenLogProb:
+    r"""similar to openai.ChatCompletionTokenLogprob"""
+
+    token: str
+    logprob: float
+
+
+@dataclass
 class EmbedderOutput(DataClass):
     __doc__ = r"""Container to hold the response from an Embedder model. Only Per-batch.
 
@@ -147,6 +154,7 @@ BatchEmbedderInputType = EmbedderInputType
 BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -178,9 +186,11 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 GeneratorOutputType = GeneratorOutput[Any]
 
 
+@dataclass
 class Document(DataClass):
-    r"""A text container with optional metadata and vector representation.
-    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDB.
+    __doc__ = r"""A text container with optional metadata and vector representation.
+
+    It is the data structure to support functions like Retriever, DocumentSplitter, and used with LocalDB.
     """
 
     text: str = field(metadata={"desc": "The main text"})
@@ -225,6 +235,19 @@ class Document(DataClass):
 
     @classmethod
     def from_dict(cls, doc: Dict):
+        """Create a Document object from a dictionary.
+
+        Example:
+
+        .. code-block :: python
+
+            doc = Document.from_dict({
+                "id": "123",
+                "text": "Hello world",
+                "meta_data": {"title": "Greeting"}
+            })
+        """
+
         doc = doc.copy()
         assert "meta_data" in doc, "meta_data is required"
         assert "text" in doc, "text is required"
@@ -236,32 +259,22 @@ class Document(DataClass):
 
         return super().from_dict(doc)
 
-    def __repr__(self) -> str:
-        max_text_len_to_show: int = 400
-        repr_str = "Document("
-        if self.id:
-            repr_str += f"id={self.id}, "
-        if self.text:
-            repr_str += f"text={self.text[0:max_text_len_to_show]} "
-            if len(self.text) > max_text_len_to_show:
-                repr_str += "..."
-            repr_str += ", "
-        if self.meta_data:
-            repr_str += f"meta_data={self.meta_data}, "
-        if self.estimated_num_tokens:
-            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
-
-        if self.vector:
-            repr_str += f"vector={self.vector[0:10]}..., "
-        if self.score:
-            repr_str += f"score={self.score}, "
-        if self.parent_doc_id:
-            repr_str += f"parent_doc_id={self.parent_doc_id}, "
-        repr_str = repr_str[:-2] + ")"
-        return repr_str
-
-    def __str__(self):
-        return self.__repr__()
+    def __repr__(self):
+        """Custom repr method to truncate the text to 100 characters and vector to 10 floats."""
+        max_chars_to_show = 100
+        truncated_text = (
+            self.text[:max_chars_to_show] + "..."
+            if len(self.text) > max_chars_to_show
+            else self.text
+        )
+        truncated_vector = (
+            f"len: {len(self.vector)}" if len(self.vector) else self.vector
+        )
+        return (
+            f"Document(id={self.id}, text={truncated_text!r}, meta_data={self.meta_data}, "
+            f"vector={truncated_vector!r}, parent_doc_id={self.parent_doc_id}, order={self.order}, "
+            f"score={self.score})"
+        )
 
 
 RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
@@ -274,7 +287,7 @@ RetrieverStrDocumentType = str  # for text retrieval
 RetrieverDocumentsType = Sequence[RetrieverDocumentType]
 
 
-# TODO: use the string formatting of the subclass
+@dataclass
 class RetrieverOutput(DataClass):
     __doc__ = r"""Save the output of a single query in retrievers.
 
@@ -309,13 +322,25 @@ class AssistantResponse:
 
 
 # There could  more other roles in a multi-party conversation. We might consider in the future.
-# TODO: test the str format when passing it to LLM model.
+@dataclass
 class DialogTurn(DataClass):
     __doc__ = r"""A turn consists of a user query and the assistant response.
 
     The dataformat is designed to fit into a relational database, where each turn is a row.
     Use `session_id` to group the turns into a dialog session with the `order` field and
     `user_query_timestamp` and `assistant_response_timestamp` to order the turns.
+
+    Args:
+
+        id (str): The unique id of the turn.
+        user_id (str, optional): The unique id of the user.
+        session_id (str, optional): The unique id of the dialog session.
+        order (int, optional): The order of the turn in the dialog session, starts from 0.
+        user_query (UserQuery, optional): The user query in the turn.
+        assistant_response (AssistantResponse, optional): The assistant response in the turn.
+        user_query_timestamp (datetime, optional): The timestamp of the user query.
+        assistant_response_timestamp (datetime, optional): The timestamp of the assistant response.
+        metadata (Dict[str, Any], optional): Additional metadata.
 
     Examples:
 
@@ -324,17 +349,42 @@ class DialogTurn(DataClass):
         DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
     """
 
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    order: Optional[int] = (
-        None  # the order of the turn in the Dialog Session, starts from 0
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4()),
+        metadata={"desc": "The unique id of the turn"},
     )
-    user_query: Optional[UserQuery] = None
-    assistant_response: Optional[AssistantResponse] = None
-    user_query_timestamp: Optional[datetime] = None
-    assistant_response_timestamp: Optional[datetime] = None
-    metadata: Optional[Dict[str, Any]] = None  # additional metadata
+    user_id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the user"}
+    )
+    session_id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the dialog session"}
+    )
+    order: Optional[int] = field(
+        default=None,
+        metadata={"desc": "The order of the turn in the Dialog Session, starts from 0"},
+    )
+
+    user_query: Optional[UserQuery] = field(
+        default=None, metadata={"desc": "The user query in the turn"}
+    )
+    assistant_response: Optional[AssistantResponse] = field(
+        default=None, metadata={"desc": "The assistant response in the turn"}
+    )
+    user_query_timestamp: Optional[datetime] = field(
+        default_factory=datetime.now,
+        metadata={"desc": "The timestamp of the user query"},
+    )
+    assistant_response_timestamp: Optional[datetime] = field(
+        default_factory=datetime.now,
+        metadata={"desc": "The timestamp of the assistant response"},
+    )
+    metadata: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Additional metadata"}
+    )
+    vector: Optional[List[float]] = field(
+        default=None,
+        metadata={"desc": "The vector representation of the dialog turn"},
+    )
 
     def set_user_query(
         self, user_query: UserQuery, user_query_timestamp: Optional[datetime] = None
@@ -355,7 +405,6 @@ class DialogTurn(DataClass):
         self.assistant_response_timestamp = assistant_response_timestamp
 
 
-# this data structure is used
 @dataclass
 class DialogSession:
     __doc__ = r"""A dialog session manages the dialog turns in a whole conversation as a session.

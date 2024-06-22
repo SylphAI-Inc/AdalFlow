@@ -15,7 +15,7 @@ from lightrag.utils import serialize
 log = logging.getLogger(__name__)
 
 
-# @dataclass
+@dataclass
 class GeneratorStatesRecord(DataClass):
     prompt_states: Dict[str, Any] = field(default_factory=dict)
     time_stamp: str = field(default_factory=str)

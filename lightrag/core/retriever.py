@@ -46,6 +46,7 @@ class Retriever(Component, Generic[RetrieverDocumentType, RetrieverQueryType]):
         super().__init__()
 
     def reset_index(self):
+        r"""Initialize/reset any attributes/states for the index."""
         raise NotImplementedError("reset_index is not implemented")
 
     def build_index_from_documents(

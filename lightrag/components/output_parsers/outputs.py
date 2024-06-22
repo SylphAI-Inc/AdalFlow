@@ -1,6 +1,6 @@
 """The most commonly used output parsers for the Generator.
 
-Note: Even with OutputParser for output_format_str formatting and the response parsing, it is not 100% guaranteed 
+Note: Even with OutputParser for output_format_str formatting and the response parsing, it is not 100% guaranteed
 as user query can impact the output. Test your code well!
 """
 
@@ -19,6 +19,15 @@ from lightrag.core.base_data_class import DataClass, DataClassFormatType
 #
 # setup: What do you call a fake noodle?
 # punchline: An impasta.
+
+__all__ = [
+    "OutputParser",
+    "YamlOutputParser",
+    "JsonOutputParser",
+    "ListOutputParser",
+    "BooleanOutputParser",
+]
+
 log = logging.getLogger(__name__)
 
 JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON instance with the following schema:
@@ -48,7 +57,7 @@ Here is an example:
 {% endif %}
 
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
--Follow the YAML formatting conventions with an indent of 2 spaces. 
+-Follow the YAML formatting conventions with an indent of 2 spaces.
 -Quote the string values properly.
 """
 
@@ -68,7 +77,7 @@ class OutputParser(Component):
     This interface helps users customize output parsers with consistent interfaces for the Generator.
     Even though you don't always need to subclass it.
 
-    LightRAG uses two core components: 
+    LightRAG uses two core components:
     1. the Prompt to format output instruction
     2. A string parser component from core.string_parser for response parsing.
     """
@@ -122,7 +131,7 @@ class YamlOutputParser(OutputParser):
     >>> -Follow the YAML formatting conventions with an indent of 2 spaces.
     >>> '''
     >>> # use it in the generator
-    >>> task_desc_str = "You are a helpful assistant who answers user query. "+yaml_format_instructions 
+    >>> task_desc_str = "You are a helpful assistant who answers user query. "+yaml_format_instructions
     >>> generator = Generator(output_processors=yaml_parser, ..., preset_prompt_kwargs={"task_desc_str": task_desc_str})
     >>> generator("Should i be a doctor?")
     """
@@ -161,10 +170,10 @@ class YamlOutputParser(OutputParser):
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
-        schema = self.data_class_for_yaml.format_str(format_type=format_type)
+        schema = self.data_class_for_yaml.format_class_str(format_type=format_type)
         # convert example to string, convert data class to yaml string
         try:
-            example_str = self.example.format_str(
+            example_str = self.example.format_example_str(
                 format_type=DataClassFormatType.EXAMPLE_YAML
             )
             log.debug(f"{__class__.__name__} example_str: {example_str}")
@@ -216,9 +225,9 @@ class JsonOutputParser(OutputParser):
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
-        schema = self.data_class_for_json.format_str(format_type=format_type)
+        schema = self.data_class_for_json.format_class_str(format_type=format_type)
         try:
-            example_str = self.example.format_str(
+            example_str = self.example.format_example_str(
                 format_type=DataClassFormatType.EXAMPLE_JSON
             )
             log.debug(f"{__class__.__name__} example_str: {example_str}")

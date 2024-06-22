@@ -3,12 +3,12 @@ from typing import List
 from lightrag.core.generator import Generator
 from lightrag.core.types import Document
 from lightrag.core.embedder import Embedder
-from lightrag.core.data_components import (
+from lightrag.components.data_process import (
     RetrieverOutputToContextStr,
+    DocumentSplitter,
 )
 from lightrag.core.db import LocalDB
 from lightrag.core.component import Component
-from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.icl.retrieval_icl import RetrievalICL
 
 from lightrag.components.model_client import OpenAIClient

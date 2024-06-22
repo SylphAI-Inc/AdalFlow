@@ -167,6 +167,44 @@ class Component:
         keys = [key for key in keys if not key[0].isdigit()]
         return sorted(keys)
 
+    def is_picklable(self) -> bool:
+        """
+        Test if the given object is picklable.
+
+        Args:
+            obj: The object to test.
+
+        Returns:
+            bool: True if the object is picklable, False otherwise.
+        """
+        try:
+            import io
+
+            # Create a BytesIO buffer to simulate file I/O
+            buffer = io.BytesIO()
+            target = self.to_dict()
+            # Try to serialize the object to the buffer
+            pickle.dump(target, buffer)
+            # Reset the buffer's position to the beginning
+            buffer.seek(0)
+            # Try to deserialize the object from the buffer
+            pickle.load(buffer)
+            return True
+        except (pickle.PicklingError, TypeError, AttributeError) as e:
+            log.info(f"Object is not picklable: {e}")
+            return False
+
+    def pickle_to_file(self, filepath: str) -> None:
+        """Pickle the component to a file."""
+        with open(filepath, "wb") as file:
+            pickle.dump(self.to_dict(), file)
+
+    @classmethod
+    def load_from_pickle(cls, filepath: str) -> None:
+        """Load the component from a file."""
+        with open(filepath, "rb") as file:
+            return cls.from_dict(pickle.load(file))
+
     def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
         """Converts the component to a dictionary object for serialization, including more states of the component than state_dict.
 
@@ -203,11 +241,14 @@ class Component:
                     "_ordered_dict": True,
                     "data": [(k, self._process_value(v)) for k, v in value.items()],
                 }
-            return {k: self._process_value(v) for k, v in sorted(value.items())}
+            # return {k: self._process_value(v) for k, v in sorted(value.items())}
+            # no sorting
+            return {k: self._process_value(v) for k, v in value.items()}
         elif isinstance(value, list):
             # Recursively process list items
             try:
-                return sorted(self._process_value(v) for v in value)
+                # return sorted(self._process_value(v) for v in value)
+                return [self._process_value(v) for v in value]
             except TypeError:
                 # If elements are not comparable, process them without sorting
                 return [self._process_value(v) for v in value]
@@ -234,7 +275,9 @@ class Component:
         """
         # set the attributes of the class
         # Instantiate the class with _init_args
-        obj = cls(**data.get("_init_args", {}))
+
+        # obj = cls(**data.get("_init_args", {}))
+        obj = cls.__new__(cls)  # Create a new instance without calling __init__
         for key, value in data["data"].items():
             setattr(obj, key, cls._restore_value(value))
         return obj
@@ -267,6 +310,9 @@ class Component:
                 class_type = EntityMapping.get(class_name) or globals().get(class_name)
                 if class_type:
                     try:
+                        log.info(
+                            f"Restoring class using from_dict {class_name}, {value}"
+                        )
                         return class_type.from_dict(value)
                     except Exception as e:
                         log.error(
@@ -938,8 +984,9 @@ class Sequential(Component):
         return input
 
 
+# TODO: support async call
 class FunComponent(Component):
-    __doc__ = r"""Component that wraps a function.
+    r"""Component that wraps a function.
 
     Args:
         fun (Callable): The function to be wrapped.
@@ -951,12 +998,17 @@ class FunComponent(Component):
     print(fun_component(1))  # 2
     """
 
-    def __init__(self, fun: Callable):
+    def __init__(self, fun: Optional[Callable] = None, afun: Optional[Callable] = None):
         super().__init__()
-        self.fun = fun
+        self.fun_name = fun.__name__
+        EntityMapping.register(self.fun_name, fun)
 
     def call(self, *args, **kwargs):
-        return self.fun(*args, **kwargs)
+        fun = EntityMapping.get(self.fun_name)
+        return fun(*args, **kwargs)
+
+    def _extra_repr(self) -> str:
+        return super()._extra_repr() + f"fun_name={self.fun_name}"
 
 
 def fun_to_component(fun) -> FunComponent:
@@ -988,7 +1040,19 @@ def fun_to_component(fun) -> FunComponent:
     class_name = (
         "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
     )
-    return type(class_name, (FunComponent,), {})(fun)
+    print(f"Class name: {class_name}, function name: {fun.__name__}")
+    # register the function
+    EntityMapping.register(fun.__name__, fun)
+    # Define a new component class dynamically
+    component_class = type(
+        class_name,
+        (FunComponent,),
+        {"__init__": lambda self: FunComponent.__init__(self, fun)},
+    )
+    # register the component
+    EntityMapping.register(class_name, component_class)
+
+    return component_class()
 
 
 # TODO: not used yet, will further investigate dict mode

@@ -16,7 +16,7 @@ Example:
         "to_embeddings": {
             "entity_name": "ToEmbeddings",
             "entity_config": {
-                "vectorizer": {
+                "embedder": {
                     "entity_name": "Embedder",
                     "entity_config": {
                         "model_client": {

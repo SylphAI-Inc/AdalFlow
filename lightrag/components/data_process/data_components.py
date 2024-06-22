@@ -1,19 +1,13 @@
-r"""Helper components for data types transformation.
-
-It is commonly used as output_processors.
-"""
+"""Helper components for data transformation such as embeddings and document splitting."""
 
 from copy import deepcopy
-from typing import Any, List, TypeVar, Sequence, Union, Dict, Any
+from typing import List, TypeVar, Sequence, Union, Dict, Any
 from tqdm import tqdm
 
 
 from lightrag.core.component import Component
 
 from lightrag.core.types import (
-    EmbedderOutput,
-    Embedding,
-    Usage,
     Document,
     RetrieverOutput,
 )
@@ -23,34 +17,16 @@ from lightrag.core.embedder import (
     BatchEmbedderInputType,
     Embedder,
 )
-import lightrag.core.functional as F
+
 
 T = TypeVar("T")
-
+__all__ = [
+    "ToEmbeddings",
+    "RetrieverOutputToContextStr",
+    "retriever_output_to_context_str",
+]
 
 # TODO: make the GeneratorOutput include the token usage too.
-def parse_embedding_response(
-    api_response,
-) -> EmbedderOutput:
-    r"""Parse embedding model output from the API response to EmbedderOutput.
-
-    Follows the OpenAI API response pattern.
-    """
-    # Assuming `api_response` has `.embeddings` and `.usage` attributes
-    # and that `embeddings` is a list of objects that can be converted to `Embedding` dataclass
-    # TODO: check if any embedding is missing
-    embeddings = [
-        Embedding(embedding=e.embedding, index=e.index) for e in api_response.data
-    ]
-    usage = Usage(
-        prompt_tokens=api_response.usage.prompt_tokens,
-        total_tokens=api_response.usage.total_tokens,
-    )  # Assuming `usage` is an object with a `count` attribute
-
-    # Assuming the model name is part of the response or set statically here
-    model = api_response.model
-
-    return EmbedderOutput(data=embeddings, model=model, usage=usage)
 
 
 def retriever_output_to_context_str(
@@ -91,6 +67,9 @@ def retriever_output_to_context_str(
 For now these are the data transformation components
 """
 
+ToEmbeddingsInputType = Sequence[Document]
+ToEmbeddingsOutputType = Sequence[Document]
+
 
 class ToEmbeddings(Component):
     r"""It transforms a Sequence of Chunks or Documents to a List of Embeddings.
@@ -98,13 +77,13 @@ class ToEmbeddings(Component):
     It operates on a copy of the input data, and does not modify the input data.
     """
 
-    def __init__(self, vectorizer: Embedder, batch_size: int = 50) -> None:
+    def __init__(self, embedder: Embedder, batch_size: int = 50) -> None:
         super().__init__(batch_size=batch_size)
-        self.vectorizer = vectorizer
+        self.embedder = embedder
         self.batch_size = batch_size
-        self.batch_embedder = BatchEmbedder(embedder=vectorizer, batch_size=batch_size)
+        self.batch_embedder = BatchEmbedder(embedder=embedder, batch_size=batch_size)
 
-    def __call__(self, input: Sequence[Document]) -> Sequence[Document]:
+    def __call__(self, input: ToEmbeddingsInputType) -> ToEmbeddingsOutputType:
         output = deepcopy(input)
         # convert documents to a list of strings
         embedder_input: BatchEmbedderInputType = [chunk.text for chunk in output]

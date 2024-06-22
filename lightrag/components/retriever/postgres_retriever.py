@@ -228,7 +228,7 @@ if __name__ == "__main__":
     db_name = "vector_db"
     postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
 
-    vector_config = default_config["to_embeddings"]["component_config"]["vectorizer"][
+    vector_config = default_config["to_embeddings"]["component_config"]["embedder"][
         "component_config"
     ]
     eb = Embedder.from_config(vector_config)

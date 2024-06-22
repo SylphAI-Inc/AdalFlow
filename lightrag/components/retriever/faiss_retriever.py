@@ -1,6 +1,16 @@
 """Semantic search/embedding-based retriever using FAISS."""
 
-from typing import List, Optional, Sequence, Union, Dict, overload, Literal
+from typing import (
+    List,
+    Optional,
+    Sequence,
+    Union,
+    Dict,
+    overload,
+    Literal,
+    Any,
+    Callable,
+)
 import numpy as np
 import logging
 import os
@@ -79,10 +89,16 @@ class FAISSRetriever(
         embedder: Optional[Embedder] = None,
         top_k: int = 5,
         dimensions: Optional[int] = None,
-        documents: Optional[FAISSRetrieverDocumentsType] = None,
+        documents: Optional[Any] = None,
+        document_map_func: Optional[
+            Callable[[Any], FAISSRetrieverDocumentEmbeddingType]
+        ] = None,
         metric: Literal["cosine", "euclidean", "prob"] = "prob",
     ):
         super().__init__()
+
+        self.reset_index()
+
         self.dimensions = dimensions
         self.embedder = embedder  # used to vectorize the queries
         self.top_k = top_k
@@ -96,18 +112,17 @@ class FAISSRetriever(
         else:
             raise ValueError(f"Invalid metric: {self.metric}")
 
-        self.index = None  # faiss index
-        self.documents = None
-        self.xb = None  # numpy array of embeddings
-        self.total_documents: int = 0
         if documents:
             self.documents = documents
-            self.build_index_from_documents(documents)
+            self.build_index_from_documents(documents, document_map_func)
 
     def reset_index(self):
-        self.index = None if self.index else None
+        self.index = None
         self.total_documents: int = 0
-        self.indexed = False
+        self.documents: Sequence[Any] = None
+        self.xb: np.ndarray = None
+        self.dimensions: Optional[int] = None
+        self.indexed: bool = False
 
     def _preprare_faiss_index_from_np_array(self, xb: np.ndarray):
         r"""Prepare the faiss index from the numpy array."""
@@ -125,7 +140,10 @@ class FAISSRetriever(
 
     def build_index_from_documents(
         self,
-        documents: FAISSRetrieverDocumentsType,
+        documents: Sequence[Any],
+        document_map_func: Optional[
+            Callable[[Any], FAISSRetrieverDocumentEmbeddingType]
+        ] = None,
     ):
         r"""Build index from embeddings.
 
@@ -134,6 +152,9 @@ class FAISSRetriever(
 
         If you are using Document format, pass them as [doc.vector for doc in documents]
         """
+        if document_map_func:
+            assert callable(document_map_func), "document_map_func should be callable"
+            documents = [document_map_func(doc) for doc in documents]
         try:
             self.documents = documents
 
@@ -306,6 +327,7 @@ class FAISSRetriever(
         if isinstance(input, str) or (
             isinstance(input, Sequence) and isinstance(input[0], str)
         ):
+            assert self.embedder, "Embedder is not provided"
             return self.retrieve_string_queries(input, top_k)
         else:
             return self.retrieve_embedding_queries(input, top_k)
