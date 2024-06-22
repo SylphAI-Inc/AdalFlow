@@ -115,16 +115,24 @@ Here is how to get a list of ``DialogTurn`` from the ``turns``:
 
 .. code-block:: python
 
-    from lightrag.core.types import DialogTurn
+    from lightrag.core.types import DialogTurn, UserQuery, AssistantResponse
 
-    dialog_turns = [DialogTurn(user_query = turn['user'], assistant_response = turn['system'], user_query_timestamp = turn['user_time'], assistant_response_timestamp = turn['system_time']) for turn in turns]
+    dialog_turns = [
+    DialogTurn(
+            user_query=UserQuery(query_str=turn["user"]),
+            assistant_response=AssistantResponse(response_str=turn["system"]),
+            user_query_timestamp=turn["user_time"],
+            assistant_response_timestamp=turn["system_time"],
+        )
+        for turn in turns
+    ]
     print(dialog_turns)
 
 The printout will be:
 
 .. code-block::
 
-    [DialogTurn(id='e3b48bcc-df68-43a4-aa81-93922b619293', user_id=None, session_id=None, order=None, user_query='What are the benefits of renewable energy?', assistant_response='I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', user_query_timestamp='2021-09-01T12:00:00Z', assistant_response_timestamp='2021-09-01T12:00:01Z', metadata=None, vector=None), DialogTurn(id='21f0385d-d19a-442f-ae99-910e984cdb65', user_id=None, session_id=None, order=None, user_query='How do solar panels impact the environment?', assistant_response='Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', user_query_timestamp='2021-09-01T12:00:02Z', assistant_response_timestamp='2021-09-01T12:00:03Z', metadata=None, vector=None)]
+    [DialogTurn(id='f2eddc77-4667-43f5-87e0-fd11f12958b3', user_id=None, session_id=None, order=None, user_query=UserQuery(query_str='What are the benefits of renewable energy?', metadata=None), assistant_response=AssistantResponse(response_str='I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', metadata=None), user_query_timestamp='2021-09-01T12:00:00Z', assistant_response_timestamp='2021-09-01T12:00:01Z', metadata=None, vector=None), DialogTurn(id='b2dbdf2f-f513-493d-aaa8-c77c98ac260f', user_id=None, session_id=None, order=None, user_query=UserQuery(query_str='How do solar panels impact the environment?', metadata=None), assistant_response=AssistantResponse(response_str='Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', metadata=None), user_query_timestamp='2021-09-01T12:00:02Z', assistant_response_timestamp='2021-09-01T12:00:03Z', metadata=None, vector=None)]
 
 
 Data Pipeline
@@ -143,7 +151,7 @@ we simplify just need to add a mapping function to convert the original data to 
 
     def map_dialogturn_to_document(turn: DialogTurn) -> Document:
         # it can be important to keep the original data's id
-        return Document(id=turn.id, text=turn.user_query + ' ' + turn.assistant_response)
+        return Document(id=turn.id, text=turn.user_query.query_str + ' ' + turn.assistant_response.response_str)
 
 You can refer to :doc:`text_splitter` for more details on how to use ``TextSplitter``.
 ``ToEmbeddings`` is an orchestrator on ``BatchEmbedder`` and it will generate embeddings for a list of ``Document`` and store the embeddings as ``List[Float]`` in the ``vector`` field of each ``Document``.
@@ -223,6 +231,9 @@ The printout will be:
 
 Local database
 --------------------
+
+**LocalDB class**
+
 :class:`core.db.LocalDB` is a powerful data management class:
 
 1. It manages a sequence of data items of any data type with CRUD operations.
@@ -234,7 +245,7 @@ This table lists its attributes and important methods:
 .. list-table::
     :header-rows: 1
 
-    * - Group
+    * -
       - Attribute/Method
       - Description
     * - Attributes
@@ -271,11 +282,11 @@ This table lists its attributes and important methods:
       - ``register_transformer(transformer: Component, key: Optional[str], map_fn: Optional[Callable])``
       - Register a data transformation to the database to be used later.
     * -
-      - ``apply_transformer(key: str)``
-      - Apply a transformer(``transformer_setups[key]``) to the items in the database and store the transformed items in ``transformed_items``.
+      - ``transform(key: str)``
+      - Apply a transformer by key to the data.
     * -
-      - ``transform_data(data_transformer: Component, map_fn: Callable, key: str)``
-      - Apply a transformer to the items and store the transformer and its mapper in ``transformer_setups`` and ``mapper_setups``. The transformed items are stored in ``transformed_items``.
+      - ``transform(transformer: Component, map_fn: Callable, key: str)``
+      - Register and apply a transformer to the data.
     * -  Data Persistence
       - ``save_state(filepath: str)``
       - Save the state of the database to a pickle file.
@@ -283,17 +294,12 @@ This table lists its attributes and important methods:
       - ``load_state(filepath: str)``
       - A class method to load the state of the database from a pickle file.
 
-
-In-memory management and storage of ``Document`` and ``DialogTurn`` objects are provided by :class:`core.db.LocalDB`.
-
-**LocalDB class**
-
-``LocalDB`` is a container to store and manage a sequence of items of any data type.
+Now, finally, we have a good way to organize important data along its pipeline like ``Document`` and ``DialogTurn`` in a database.
 
 
 **Data Loading and CRUD Operations**
 
-Let's create a ``LocalDB`` to manage the ``dialog_turns``:
+Let's create a ``LocalDB`` to manage the ``dialog_turns`` and its data processing pipeline:
 
 .. code-block:: python
 
@@ -309,20 +315,48 @@ The printout will be:
 
 .. code-block::
 
-    LocalDB(name='dialog_turns', items=[], transformed_items={}, mapped_items={}, transformer_setups={}, mapper_setups={})
-    LocalDB(name='dialog_turns', items=[DialogTurn(id='e3b48bcc-df68-43a4-aa81-93922b619293', user_id=None, session_id=None, order=None, user_query='What are the benefits of renewable energy?', assistant_response='I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', user_query_timestamp='2021-09-01T12:00:00Z', assistant_response_timestamp='2021-09-01T12:00:01Z', metadata=None, vector=None), DialogTurn(id='21f0385d-d19a-442f-ae99-910e984cdb65', user_id=None, session_id=None, order=None, user_query='How do solar panels impact the environment?', assistant_response='Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', user_query_timestamp='2021-09-01T12:00:02Z', assistant_response_timestamp='2021-09-01T12:00:03Z', metadata=None, vector=None)], transformed_items={}, mapped_items={}, transformer_setups={}, mapper_setups={})
+    LocalDB(name='dialog_turns', items=[], transformed_items={}, transformer_setups={}, mapper_setups={})
+    LocalDB(name='dialog_turns', items=[DialogTurn(id='f2eddc77-4667-43f5-87e0-fd11f12958b3', user_id=None, session_id=None, order=None, user_query=UserQuery(query_str='What are the benefits of renewable energy?', metadata=None), assistant_response=AssistantResponse(response_str='I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', metadata=None), user_query_timestamp='2021-09-01T12:00:00Z', assistant_response_timestamp='2021-09-01T12:00:01Z', metadata=None, vector=None), DialogTurn(id='b2dbdf2f-f513-493d-aaa8-c77c98ac260f', user_id=None, session_id=None, order=None, user_query=UserQuery(query_str='How do solar panels impact the environment?', metadata=None), assistant_response=AssistantResponse(response_str='Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', metadata=None), user_query_timestamp='2021-09-01T12:00:02Z', assistant_response_timestamp='2021-09-01T12:00:03Z', metadata=None, vector=None)], transformed_items={}, transformer_setups={}, mapper_setups={})
 
 
 **Data Processing/Transformation Pipeline(such as TextSplitter and Embedder)**
 
-The `LocalDB` will save different transformations in ``transformed_items`` with either user defined key or the default key ``default``.
-Here is how to apply the data transformation to the ``items`` in ``dialog_turn_db``:
+We register and apply the transformer from the last section to the data stored in the ``dialog_turn_db``:
 
 .. code-block:: python
 
     key = "split_and_embed"
-    dialog_turn_db.transform_data(data_transformer, map_fn=map_dialogturn_to_document, key=key)
+    dialog_turn_db.transform(data_transformer, map_fn=map_dialogturn_to_document, key=key)
+
     print(dialog_turn_db.transformed_items[key])
+    print(dialog_turn_db.transformer_setups[key])
+    print(dialog_turn_db.mapper_setups[key])
+
+The printout will be:
+
+.. code-block::
+
+    Splitting documents: 100%|██████████| 2/2 [00:00<00:00, 2167.04it/s]
+    Batch embedding documents: 100%|██████████| 2/2 [00:00<00:00,  5.46it/s]
+    Adding embeddings to documents from batch: 2it [00:00, 63072.24it/s]
+    [Document(id=64987b2b-b6c6-4eb4-9122-02448e3fd394, text='What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...', meta_data=None, vector='len: 256', parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=0, score=None), Document(id=9a424d4c-4bd0-48ce-aba9-7a4f86892556, text='and installation sectors. The growth in renewable energy usage boosts local economies through increa...', meta_data=None, vector='len: 256', parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=1, score=None), Document(id=45efa517-8e52-4780-bdbd-2329ffa8d4b6, text='How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...', meta_data=None, vector='len: 256', parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=0, score=None), Document(id=bc0ff7f6-27cc-4e24-8c3e-9435ed755e20, text='has been found to have a significant positive effect on the environment by reducing the reliance on ...', meta_data=None, vector='len: 256', parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=1, score=None)]
+    Sequential(
+    (0): DocumentSplitter(split_by=word, split_length=50, split_overlap=10)
+    (1): ToEmbeddings(
+        batch_size=2
+        (embedder): Embedder(
+        model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
+        (model_client): OpenAIClient()
+        )
+        (batch_embedder): BatchEmbedder(
+        (embedder): Embedder(
+            model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
+            (model_client): OpenAIClient()
+        )
+      )
+     )
+    )
+    <function map_dialogturn_to_document at 0x10fb26f20>
 
 **Save/Reload Data**
 
@@ -330,18 +364,108 @@ Here is how to apply the data transformation to the ``items`` in ``dialog_turn_d
 
     dialog_turn_db.save_state(filepath='.storage/dialog_turns.pkl')
     reloaded_dialog_turn_db = LocalDB.load_state(filepath='.storage/dialog_turns.pkl')
-    print(reloaded_dialog_turn_db)
+    print(str(dialog_turn_db.__dict__) == str(restored_dialog_turn_db.__dict__))
 
-Here is the reloaded_dialog_turn_db
+This will print ``True`` if the two databases are the same. We can use the reloaded db class to continue to work with the data.
+This data class can be really helpful for researchers and developers to run and track local experiments to optimize the data processing pipelines
+
+**CRUD Operations using with Generator for a conversation**
+
+We will have a chatbot and add new conversation turns to the database. When the conversation is too long to fit into token limit of your LLM model, you can easily
+use a retriever to control the conversation history length.
+
+First, let us prepare the generator. We will use ``input_str`` and ``chat_history_str`` from our default prompt.
+This will also leverage ``DialogTurn`` 's inheritant ability from ``DataClass`` to quickly form the ``chat_history_str``.
+
+.. code-block:: python
+
+    from lightrag.core import Generator
+
+    llm_kwargs = {
+        "model": "gpt-3.5-turbo"
+    }
+
+    generator = Generator(model_client = ModelClientType.OPENAI(), model_kwargs=llm_kwargs)
+
+Here is the code to form the prompt and we will use ``generator.print_prompt()`` to check how the prompt will look like:
+
+.. code-block:: python
+
+    from typing import List
+
+    input_str = "What are the benefits of renewable energy? Did I ask this before?"
+
+    def format_chat_history_str(turns: List[DialogTurn]) -> str:
+        chat_history_str = []
+        for turn in turns:
+            chat_history_str.append(
+                        turn.to_yaml(
+                            exclude=[
+                                "id",
+                                "user_id",
+                                "session_id",
+                                "user_query_timestamp",
+                                "assistant_response_timestamp",
+                                "order",
+                                "metadata",
+                                "vector",
+                            ],
+                        )
+                    )
+        chat_history_str = '\n_________\n'.join(chat_history_str)
+        return chat_history_str
+
+    chat_history_str = format_chat_history_str(dialog_turn_db.items[0:1])
+    print(generator.print_prompt(input_str=input_str, chat_history_str=chat_history_str))
+
+The printout will be:
 
 .. code-block::
 
-    LocalDB(name='dialog_turns', items=[DialogTurn(id='72daef1d-5731-427c-b2fd-d738a95bddc7', user_id=None, session_id=None, order=None, user_query='What are the benefits of renewable energy?', assistant_response='I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.', user_query_timestamp='2021-09-01T12:00:00Z', assistant_response_timestamp='2021-09-01T12:00:01Z', metadata=None, vector=None), DialogTurn(id='6ab9179f-fa00-4189-b068-91f16f4d9441', user_id=None, session_id=None, order=None, user_query='How do solar panels impact the environment?', assistant_response='Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.', user_query_timestamp='2021-09-01T12:00:02Z', assistant_response_timestamp='2021-09-01T12:00:03Z', metadata=None, vector=None)], transformed_items={'split_and_embed': [Document(id=77d1e191-4a20-4b05-b4a7-d7da3b107152, text='What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...', meta_data=None, vector='len: 256', parent_doc_id=72daef1d-5731-427c-b2fd-d738a95bddc7, order=0, score=None), Document(id=75eaf430-7b63-4e4c-b3fe-4eba7288c4e3, text='and installation sectors. The growth in renewable energy usage boosts local economies through increa...', meta_data=None, vector='len: 256', parent_doc_id=72daef1d-5731-427c-b2fd-d738a95bddc7, order=1, score=None), Document(id=a1a85d93-92dd-4d39-8b5e-0f29511b186e, text='How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...', meta_data=None, vector='len: 256', parent_doc_id=6ab9179f-fa00-4189-b068-91f16f4d9441, order=0, score=None), Document(id=8118c379-e3a3-4076-94fe-07cc64fc42ae, text='has been found to have a significant positive effect on the environment by reducing the reliance on ...', meta_data=None, vector='len: 256', parent_doc_id=6ab9179f-fa00-4189-b068-91f16f4d9441, order=1, score=None)]}, mapped_items={}, transformer_setups={}, mapper_setups={})
+    Prompt:
+
+    <SYS>
+    <CHAT_HISTORY>
+    user_query:
+    metadata: null
+    query_str: What are the benefits of renewable energy?
+    assistant_response:
+    metadata: null
+    response_str: I can see you are interested in renewable energy. Renewable energy technologies
+        not only help in reducing greenhouse gas emissions but also contribute significantly
+        to the economy by creating jobs in the manufacturing and installation sectors. The
+        growth in renewable energy usage boosts local economies through increased investment
+        in technology and infrastructure
+    </CHAT_HISTORY>
+    </SYS>
+    <User>
+    What are the benefits of renewable energy? Did I ask this before?
+    </User>
+    You:
+
+Now, let us chat with the generator and add the conversation turns to the database:
+
+
+.. code-block:: python
+
+    response = generator(prompt_kwargs={"input_str": input_str, "chat_history_str": chat_history_str})
+    print(response)
+
+    # add the turn and apply the transformer
+    new_turn = DialogTurn(
+        user_query=UserQuery(query_str=input_str),
+        assistant_response=AssistantResponse(response_str=response.data),
+    )
+    dialog_turn_db.add(new_turn, apply_transformer=True)
+
+    print(dialog_turn_db.length, len(dialog_turn_db.transformed_items[key]))
+
+    # 3 6
+
 
 
 **Use With Retriever**
 
-**Use With Generator**
 
 
 Cloud database

@@ -1,6 +1,6 @@
 """LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn."""
 
-from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic
+from typing import List, Optional, Callable, Dict, Any, TypeVar, Generic, overload
 import logging
 import os
 from dataclasses import field, dataclass
@@ -60,7 +60,7 @@ class LocalDB(Generic[T]):
 
     .. code-block:: python
 
-            db.transform_data(transformer, key="test", map_fn=map_fn)
+            db.transform(transformer, key="test", map_fn=map_fn)
 
     Data persistence:
     1. Save the state of the db to a pickle file.
@@ -142,32 +142,54 @@ class LocalDB(Generic[T]):
             self.mapper_setups[key] = map_fn
         return key
 
-    def apply_transformer(self, key: str):
-        """Apply the transformer to the data."""
-        map_fn = self.mapper_setups.get(key, None)
-        if map_fn is not None:
-            items_to_use = [map_fn(item) for item in self.items]
-        else:
-            items_to_use = self.items.copy()
-        self.transformed_items[key] = self.transformer_setups[key](items_to_use)
+    @overload
+    def transform(self, key: str) -> str:
+        """Apply the transformer by key to the data."""
+        ...
 
-    def transform_data(
+    @overload
+    def transform(
         self,
         transformer: Component,
         key: Optional[str] = None,
         map_fn: Optional[Callable[[T], Any]] = None,
-    ) -> List[U]:
-        """Transform the items using the given transformer and register the transformer."""
+    ) -> str:
+        """Register and apply the transformer to the data."""
+        ...
 
-        key = self.register_transformer(transformer, key, map_fn)
+    def transform(
+        self,
+        transformer: Optional[Component] = None,
+        key: Optional[str] = None,
+        map_fn: Optional[Callable[[T], Any]] = None,
+    ) -> str:
+        """The main method to apply the transformer to the data in two ways:
+        1. Apply the transformer by key to the data using ``transform(key="test")``.
+        2. Register and apply the transformer to the data using ``transform(transformer, key="test")``.
+
+        Args:
+            transformer (Optional[Component], optional): The transformer to use. Defaults to None.
+            key (Optional[str], optional): The key to use for the transformer. Defaults to None.
+            map_fn (Optional[Callable[[T], Any]], optional): The map function to use. Defaults to None.
+
+        Returns:
+            str: The key used for the transformation, from which the transformed data can be accessed.
+        """
+        key_to_use = key
+        if transformer:
+            key = self.register_transformer(transformer, key, map_fn)
+            key_to_use = key
+        if key_to_use is None:
+            raise ValueError("Key must be provided.")
 
         if map_fn is not None:
             items_to_use = [map_fn(item) for item in self.items]
         else:
             items_to_use = self.items.copy()
 
-        self.transformed_items[key] = transformer(items_to_use)
-        return key
+        transformer_to_use = self.transformer_setups[key_to_use]
+        self.transformed_items[key_to_use] = transformer_to_use(items_to_use)
+        return key_to_use
 
     def load(self, items: List[Any]):
         """Load the db with new items.
@@ -299,7 +321,7 @@ class LocalDB(Generic[T]):
         self.__dict__.update(state)
         for key, transformer_file in _transformer_files.items():
             class_type = (
-                EntityMapping.get(_transformer_type_names[key], None)
+                EntityMapping.get(_transformer_type_names[key])
                 or globals()[_transformer_type_names[key]]
             )
             self.transformer_setups[key] = class_type.from_dict(transformer_file)
@@ -354,7 +376,7 @@ if __name__ == "__main__":
 
     transformer = Sequential(add, minus)
 
-    db.transform_data(key="test", transformer=transformer)
+    db.transform(key="test", transformer=transformer)
     print(db.transformed_items["test"])
     db.save_state("storage/local_item_db.pkl")
     db2 = LocalDB.load_state("storage/local_item_db.pkl")
@@ -399,7 +421,7 @@ if __name__ == "__main__":
     # db = LocalDB()
     # db.load([Document(text="hello world"), Document(text="hello world2")])
 
-    # db.transform_data(key="test", transformer=data_transformer)
+    # db.transform(key="test", transformer=data_transformer)
 
     # print(f"is db picklable: {db.is_picklable()}")
     # db.pickle_to_file("storage/local_item_db.pkl")
