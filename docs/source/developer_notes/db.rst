@@ -466,6 +466,37 @@ Now, let us chat with the generator and add the conversation turns to the databa
 
 **Use With Retriever**
 
+Assume our history is getting too long to fit into the token limit.
+We will use a semantic retriever to fetch relevant chunked documents from the database.
+Then, instead of directly using the documents, we will find its relevant dialog turns by comparing the ``parent_doc_id`` with the ``id`` of the document.
+Here is the code to prepare the relevant dialog turns.
+
+.. code-block:: python
+
+    from lightrag.components.retriever.faiss_retriever import FAISSRetriever
+
+    retriever = FAISSRetriever(top_k=3, embedder=embedder)
+    embeddings = [item.vector for item in dialog_turn_db.transformed_items[key]]
+    retriever.build_index_from_documents(documents=embeddings)
+
+    # get the relevant documents
+    top_k_documents = retriever(input=input_str)
+
+    # get the relevant dialog turns
+    parent_doc_ids = set(
+        [
+            dialog_turn_db.transformed_items[key][doc_index].parent_doc_id
+            for doc_index in top_k_documents[0].doc_indices
+        ]
+    )
+
+    condition_fn = lambda item: item.id in parent_doc_ids
+    fetched_dialog_turns = [item for item in dialog_turn_db.items if condition_fn(item)]
+
+
+Now, we can use the ``fetched_dialog_turns`` to continue the conversation with the generator.
+
+
 
 
 Cloud database

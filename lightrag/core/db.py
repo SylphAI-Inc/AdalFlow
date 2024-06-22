@@ -272,6 +272,16 @@ class LocalDB(Generic[T]):
             for key, transformed_docs in transformed_items.items():
                 self.transformed_items[key].extend(transformed_docs)
 
+    def fetch_items(self, condition: Callable[[T], bool]) -> List[T]:
+        """Fetch items with a condition."""
+        return [item for item in self.items if condition(item)]
+
+    def fetch_transformed_items(
+        self, key: str, condition: Callable[[U], bool]
+    ) -> List[U]:
+        """Fetch transformed items with a condition."""
+        return [item for item in self.transformed_items[key] if condition(item)]
+
     def reset(self):
         r"""Reset all attributes to empty."""
         self.mapped_items = {}

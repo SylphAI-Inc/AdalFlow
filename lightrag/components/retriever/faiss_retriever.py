@@ -327,6 +327,7 @@ class FAISSRetriever(
         if isinstance(input, str) or (
             isinstance(input, Sequence) and isinstance(input[0], str)
         ):
+            assert self.embedder, "Embedder is not provided"
             return self.retrieve_string_queries(input, top_k)
         else:
             return self.retrieve_embedding_queries(input, top_k)
