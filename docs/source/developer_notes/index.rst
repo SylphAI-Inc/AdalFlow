@@ -59,6 +59,8 @@ Code path: ``lightrag.core``.
      - Leverages the ``dataclasses`` module in Python to ease the data interaction with prompt and serialization.
 
 
+
+
 .. create side bar navigation
 .. toctree::
    :maxdepth: 1
@@ -106,13 +108,13 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    * - :doc:`text_splitter`
      - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
    * - :doc:`db`
-     - Understanding the data modelig, processing, and storage as a whole. Support context retrieval and conversation management.
+     - Understanding the data modeling, processing, and storage as a whole. We will build a chatbot with enhanced memory and memoy retrieval in this note (RAG).
 
 
 ..  * - :doc:`data_pipeline`
 ..    - The pipeline to process data, including text splitting, embedding, and retrieval.
 
-Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
+.. Let us put all of these components together to build a :doc:`rag` (Retrieval Augmented Generation), which requires data processing pipeline along with a task pipeline to run user queries.
 
 .. toctree::
    :maxdepth: 1
@@ -172,6 +174,10 @@ Datasets and Evaulation
 .. toctree::
    :maxdepth: 1
 
+   configs
+
+   datasets
+
    evaluation
 
 
@@ -188,9 +194,20 @@ Optimizer & Trainer
 
 Logging & Tracing
 =============================
+Code path: ``lightrag.utils``.
 
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`logging`
+     - LightRAG uses ``logging`` module as the first defense line to help users debug the code. We made the effort to help you set it up easily.
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
+   logging
    logging_tracing

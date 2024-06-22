@@ -7,7 +7,7 @@ from dataclasses import field, dataclass
 import pickle
 
 
-from lightrag.core.component import Component, Sequential
+from lightrag.core.component import Component
 from lightrag.utils.registry import EntityMapping
 
 
@@ -210,7 +210,7 @@ class LocalDB(Generic[T]):
         """Extend the db with new items."""
         self.items.extend(items)
         if apply_transformer:
-            for key, _ in self.transformer_setups.items():
+            for key, transformer in self.transformer_setups.items():
                 # check if there was a map function registered
                 transformed_items = []
                 if key in self.mapper_setups:
@@ -335,113 +335,3 @@ class LocalDB(Generic[T]):
                 or globals()[_transformer_type_names[key]]
             )
             self.transformer_setups[key] = class_type.from_dict(transformer_file)
-
-
-if __name__ == "__main__":
-    # test LocalDB
-    from lightrag.core.component import (
-        Sequential,
-        Component,
-        fun_to_component,
-    )
-
-    db = LocalDB()
-    db.load([{"text": "hello world"}, {"text": "hello world2"}])
-
-    @fun_to_component
-    def add(docs: List):
-        print(f"docs: {docs}")
-        for doc in docs:
-            doc["text"] += " add"
-        return docs
-
-    class Add(Component):
-        def __init__(self):
-            super().__init__()
-
-        def call(self, docs: List):
-            print(f"docs: {docs}")
-            for doc in docs:
-                doc["text"] += " add"
-            return docs
-
-    class Minus(Component):
-        def __init__(self):
-            super().__init__()
-
-        def call(self, docs: List):
-            print(f"docs minus: {docs}")
-            for doc in docs:
-                doc["text"] += " minus"
-            return docs
-
-    @fun_to_component
-    def minus(docs: List):
-        print(f"docs: {docs}")
-        for doc in docs:
-            doc["text"] += " minus"
-        return docs
-
-    # transformer = Sequential(FunComponent(add), FunComponent(minus))
-
-    transformer = Sequential(add, minus)
-
-    db.transform(key="test", transformer=transformer)
-    print(db.transformed_items["test"])
-    db.save_state("storage/local_item_db.pkl")
-    db2 = LocalDB.load_state("storage/local_item_db.pkl")
-    print(db2)
-    # db.save_state("storage/local_item_db.pkl")
-    # db2 = LocalDB.load_state("storage/local_item_db.pkl")
-    # print(db2.transformed_items["test"])
-
-    # # use the transformerp
-    # transformer_2 = db2.transformer_setups["test"]
-
-    # print(f"typeof transformer_2: {type(transformer_2)}")
-
-    # print(transformer_2([{"text": "hello world"}]))
-
-    # from lightrag.core.embedder import Embedder
-    # from lightrag.core.types import ModelClientType
-    # from lightrag.components.data_process import DocumentSplitter, ToEmbeddings
-    # from lightrag.core.component import Sequential
-    # from lightrag.utils import setup_env  # noqa
-    # from lightrag.utils import enable_library_logging
-
-    # enable_library_logging(level="DEBUG")
-
-    # model_kwargs = {
-    #     "model": "text-embedding-3-small",
-    #     "dimensions": 256,
-    #     "encoding_format": "float",
-    # }
-
-    # splitter_config = {"split_by": "word", "split_length": 50, "split_overlap": 10}
-
-    # splitter = DocumentSplitter(**splitter_config)
-    # embedder = Embedder(
-    #     model_client=ModelClientType.OPENAI(), model_kwargs=model_kwargs
-    # )
-    # embedder_transformer = ToEmbeddings(embedder, batch_size=2)
-    # data_transformer = Sequential(splitter, embedder_transformer)
-
-    # print(f"is embedder_transformer: {data_transformer.is_picklable()}")
-
-    # db = LocalDB()
-    # db.load([Document(text="hello world"), Document(text="hello world2")])
-
-    # db.transform(key="test", transformer=data_transformer)
-
-    # print(f"is db picklable: {db.is_picklable()}")
-    # db.pickle_to_file("storage/local_item_db.pkl")
-    # db2 = LocalDB.load_from_pickle("storage/local_item_db.pkl")
-    # # db.save_state("storage/local_item_db.pkl")
-    # # db2 = LocalDB.load_state("storage/local_item_db.pkl")
-
-    # print(db2)
-    # print(db2.transformer_setups["test"])
-    # print(db.transformer_setups["test"])
-    # # db.save_state("storage/local_item_db.pkl")
-    # # db2 = LocalDB.load_state("storage/local_item_db.pkl")
-    # # print(db2.transformed_items["test"])

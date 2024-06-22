@@ -1,4 +1,4 @@
-Data
+Data & RAG
 ====================
 
     The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
