@@ -1,9 +1,11 @@
-import jinja2.meta
-from jinja2 import Template, Environment
-import jinja2
-from typing import Dict, Any, Optional, List, Type, TypeVar
+"""Class prompt builder for LightRAG system prompt."""
+
+from typing import Dict, Any, Optional, List, TypeVar
 import logging
 from functools import lru_cache
+
+from jinja2 import Template, Environment, StrictUndefined, meta
+
 
 from lightrag.core.component import Component
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
@@ -19,7 +21,7 @@ def get_jinja2_environment():
     r"""Helper function for Prompt component to get the Jinja2 environment with the default settings."""
     try:
         default_environment = Environment(
-            undefined=jinja2.StrictUndefined,
+            undefined=StrictUndefined,
             trim_blocks=True,
             keep_trailing_newline=True,
             lstrip_blocks=True,
@@ -33,7 +35,7 @@ def get_jinja2_environment():
 class Prompt(Component):
     __doc__ = r"""A component that renders a text string from a template using Jinja2 templates.
 
-    In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template. 
+    In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
 
     Args:
         template (str, optional): The Jinja2 template string. Defaults to DEFAULT_LIGHTRAG_SYSTEM_PROMPT.
@@ -48,7 +50,7 @@ class Prompt(Component):
         >>> prompt.call(context_str="This is a context string.")
 
         When examples_str itself is another template with variables, You can use another Prompt to render it.
-        
+
         >>> EXAMPLES_TEMPLATE = r'''
         >>> {% if examples %}
         >>> {% for example in examples %}
@@ -66,7 +68,7 @@ class Prompt(Component):
         self,
         *,
         template: Optional[str] = None,
-        preset_prompt_kwargs: Optional[Dict] = {},
+        prompt_kwargs: Optional[Dict] = {},
     ):
         super().__init__()
 
@@ -78,7 +80,7 @@ class Prompt(Component):
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
-        self.preset_prompt_kwargs = preset_prompt_kwargs
+        self.prompt_kwargs = prompt_kwargs
 
     def __create_jinja2_template(self):
         r"""Create the Jinja2 template object."""
@@ -89,9 +91,9 @@ class Prompt(Component):
         except Exception as e:
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
-    def update_preset_prompt_kwargs(self, **kwargs):
+    def update_prompt_kwargs(self, **kwargs):
         r"""Update the preset prompt kwargs after Prompt is initialized."""
-        self.preset_prompt_kwargs.update(kwargs)
+        self.prompt_kwargs.update(kwargs)
 
     def get_prompt_variables(self) -> List[str]:
         r"""Get the prompt kwargs."""
@@ -104,13 +106,13 @@ class Prompt(Component):
     def _find_template_variables(self, template_str: str):
         """Automatically find all the variables in the template."""
         parsed_content = self.jinja2_template.environment.parse(template_str)
-        return jinja2.meta.find_undeclared_variables(parsed_content)
+        return meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
         r"""Compose the final prompt kwargs by combining the preset_prompt_kwargs and the provided kwargs."""
         composed_kwargs = {key: None for key in self.prompt_variables}
-        if self.preset_prompt_kwargs:
-            composed_kwargs.update(self.preset_prompt_kwargs)
+        if self.prompt_kwargs:
+            composed_kwargs.update(self.prompt_kwargs)
         if kwargs:
             for key, _ in kwargs.items():
                 if key not in composed_kwargs:
@@ -121,9 +123,9 @@ class Prompt(Component):
     def print_prompt_template(self):
         r"""Print the template string."""
         print("Template:")
-        print(f"-------")
+        print("-------")
         print(f"{self.template}")
-        print(f"-------")
+        print("-------")
 
     def print_prompt(self, **kwargs):
         r"""Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs."""
@@ -152,8 +154,8 @@ class Prompt(Component):
 
     def _extra_repr(self) -> str:
         s = f"template: {self.template}"
-        if self.preset_prompt_kwargs:
-            s += f", preset_prompt_kwargs: {self.preset_prompt_kwargs}"
+        if self.prompt_kwargs:
+            s += f", prompt_kwargs: {self.prompt_kwargs}"
         if self.prompt_variables:
             s += f", prompt_variables: {self.prompt_variables}"
         return s
@@ -175,37 +177,37 @@ class Prompt(Component):
         return output
 
 
-if __name__ == "__main__":
-    import logging
+# if __name__ == "__main__":
+#     import logging
 
-    logging.basicConfig(level=logging.DEBUG)
-    prompt = Prompt(
-        preset_prompt_kwargs={"task_desc_str": "You are a helpful assistant."}
-    )
-    print(prompt)
-    prompt.print_prompt_template()
-    prompt.print_prompt(context_str="This is a context string.")
-    prompt.call(context_str="This is a context string.")
-    states = prompt.state_dict()
-    print(f"states: {states}")
-    named_params = prompt.named_parameters()
-    print(f"named_params: {named_params}")
-    for name, param in named_params:
-        print(f"{name}: {param}")
+#     logging.basicConfig(level=logging.DEBUG)
+#     prompt = Prompt(
+#         preset_prompt_kwargs={"task_desc_str": "You are a helpful assistant."}
+#     )
+#     print(prompt)
+#     prompt.print_prompt_template()
+#     prompt.print_prompt(context_str="This is a context string.")
+#     prompt.call(context_str="This is a context string.")
+#     states = prompt.state_dict()
+#     print(f"states: {states}")
+#     named_params = prompt.named_parameters()
+#     print(f"named_params: {named_params}")
+#     for name, param in named_params:
+#         print(f"{name}: {param}")
 
-    # get dict of prompt
-    prompt_dict = prompt.to_dict()
-    print(f"prompt_dict: {prompt_dict}")
-    prompt_state = prompt.state_dict()
-    print(f"prompt_state: {prompt_state}")
+#     # get dict of prompt
+#     prompt_dict = prompt.to_dict()
+#     print(f"prompt_dict: {prompt_dict}")
+#     prompt_state = prompt.state_dict()
+#     print(f"prompt_state: {prompt_state}")
 
-    # EXAMPLES_TEMPLATE = r"""
-    # {% if examples %}
-    # {% for example in examples %}
-    # {{loop.index}}. {{example}}
-    # {% endfor %}
-    # {% endif %}
-    # """
-    # examples_prompt = Prompt(template=EXAMPLES_TEMPLATE)
-    # examples_str = examples_prompt.call(examples=["Example 1", "Example 2"])
-    # prompt.print_prompt(examples_str=examples_str)
+# EXAMPLES_TEMPLATE = r"""
+# {% if examples %}
+# {% for example in examples %}
+# {{loop.index}}. {{example}}
+# {% endfor %}
+# {% endif %}
+# """
+# examples_prompt = Prompt(template=EXAMPLES_TEMPLATE)
+# examples_str = examples_prompt.call(examples=["Example 1", "Example 2"])
+# prompt.print_prompt(examples_str=examples_str)

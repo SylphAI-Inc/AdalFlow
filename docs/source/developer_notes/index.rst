@@ -74,6 +74,9 @@ Code path: ``lightrag.core``.
 
 RAG Essentials
 -------------------
+RAG components
+~~~~~~~~~~~~~~~~~~~~~~
+
 Code path: ``lightrag.core``. For abstract classes:
 
 - ``ModelClient``: the functional subclass is in ``lightrag.components.model_client``.
@@ -97,7 +100,8 @@ Code path: ``lightrag.core``. For abstract classes:
    * - :doc:`retriever`
      - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
 
-
+Data, Processing, and storage
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Data Processing: including transformer, pipeline, and storage. Code path: ``lightrag.components.data_process``, ``lightrag.core.db``, and ``lightrag.database``.
 Components work on a sequence of ``Document`` and return a sequence of ``Document``.
@@ -131,20 +135,23 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    retriever
    text_splitter
    db
-   rag
+
+
 
 Agent Essentials
 -----------------------------
 Agent in ``components.agent`` is LLM great with reasoning, planning, and using tools to interact and accomplish tasks.
 
 .. list-table::
-   :widths: 20 80
+   :widths: 30 70
    :header-rows: 1
 
-    * - :doc: `tool_helper`
-      - Provide tools (function calls) to interact with the generator.
-    * - :doc: `agent`
-      - The ReactAgent.
+   * - Part
+     - Description
+   * - :doc:`tool_helper`
+     - Provide tools (function calls) to interact with the generator.
+   * - :doc:`agent`
+     - The ReactAgent.
 
 .. toctree::
     :maxdepth: 1

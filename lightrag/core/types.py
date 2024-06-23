@@ -417,9 +417,8 @@ class Conversation:
     """
 
     id: str = field(
-        default_factory=lambda: str(
-            uuid.uuid4(), metadata={"desc": "The id of the conversation"}
-        )
+        default_factory=lambda: str(uuid.uuid4()),
+        metadata={"desc": "The id of the conversation"},
     )  # the id of the conversation
     name: Optional[str] = field(
         default=None, metadata={"desc": "The name of the conversation"}
@@ -492,3 +491,26 @@ class Conversation:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
+
+
+@dataclass
+class StepOutput:
+    __doc__ = r"""The output of a single step in the agent."""
+    step: int = field(
+        default=0, metadata={"desc": "The order of the step in the agent"}
+    )
+    thought: str = field(
+        default="", metadata={"desc": "The thought of the agent in the step"}
+    )
+    action: str = field(
+        default="", metadata={"desc": "The action of the agent in the step"}
+    )
+    fun_name: Optional[str] = None  # parsed from action
+    fun_args: Optional[List[Any]] = None  # parsed from action
+    fun_kwargs: Optional[Dict[str, Any]] = None  # parsed from action
+    observation: Optional[str] = (
+        None  # when step is created, observation is not available, the funtion result
+    )
+
+    def __str__(self):
+        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"

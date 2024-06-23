@@ -5,7 +5,6 @@ Agent is not a model or LLM model.
 Agent is better defined as a system that uses LLM models to plan and replan steps that each involves the usage of various tools,
 such as function calls, another LLM model based on the context and history (memory) to complete a task autonomously.
 
-The future: the agent can write your prompts too. Check out dspy: https://github.com/stanfordnlp/dspy
 
 REact agent can be useful for
 - Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
@@ -15,21 +14,23 @@ The initial ReAct paper does not support different types of tools. We have great
 to answer questions that cant be answered or better be answered by llm using its world knowledge.
 - Every react agent can be given a different tasks, different tools, and different LLM models to complete the task.
 - 'finish' tool is defined to finish the task by joining all subqueries answers.
+
+Reference:
+[1] LLM Agent survey: https://github.com/Paitesanshi/LLM-Agent-Survey
 """
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from copy import deepcopy
 
 
-from core.generator import Generator
-from core.component import Component
-from core.tool_helper import FunctionTool, AsyncCallable
-from core.string_parser import JsonParser, parse_function_call
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
+from lightrag.core.tool_helper import FunctionTool, AsyncCallable
+from lightrag.core.string_parser import JsonParser, parse_function_call
 from lightrag.core.types import StepOutput
+from lightrag.core.model_client import ModelClient
 
-from core.model_client import ModelClient
-
-DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
+DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
@@ -91,44 +92,49 @@ Step {{history.step}}:
 
 
 class ReActAgent(Generator):
-    r"""
-    ReActAgent is a type of Generator that runs multiple and sequential steps to generate the final response, with DEFAULT_REACT_AGENT_SYSTEM_PROMPT and JsonParser output_processors.
+    __doc__ = r"""ReActAgent is a subclass of Generator that runs multiple and sequential functional call steps to generate the final response.
 
-    Users need these arguments to initialize the ReActAgent:
+    Users need to set up:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
     - max_steps: the maximum number of steps the agent can take to complete the task.
-    - All other arguments are inherited from Generator such as model_client, model_kwargs, prompt, output_processors, etc.
+    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
+    - model_client: the model client to use to generate the response.
+    - model_kwargs: the model kwargs to use to generate the response.
+
+    For the generator, the default arguments are:
+    (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+    (2) default output_processors: JsonParser
 
     There are `examples` which is optional, a list of string examples in the prompt.
 
     Example:
-    ```
-    from core.openai_client import OpenAIClient
-    from components.agent.react_agent import ReActAgent
-    from core.tool_helper import FunctionTool
-    # define the tools
-    def multiply(a: int, b: int) -> int:
-        '''Multiply two numbers.'''
-        return a * b
-    def add(a: int, b: int) -> int:
-        '''Add two numbers.'''
-        return a + b
-    agent = ReActAgent(
-    tools=[multiply, add],
-    model_client=OpenAIClient,
-    model_kwargs={"model": "gpt-3.5-turbo"},
-    )
 
-    Using examples:
+    .. code-block:: python
+        from core.openai_client import OpenAIClient
+        from components.agent.react_agent import ReActAgent
+        from core.tool_helper import FunctionTool
+        # define the tools
+        def multiply(a: int, b: int) -> int:
+            '''Multiply two numbers.'''
+            return a * b
+        def add(a: int, b: int) -> int:
+            '''Add two numbers.'''
+            return a + b
+        agent = ReActAgent(
+        tools=[multiply, add],
+        model_client=OpenAIClient,
+        model_kwargs={"model": "gpt-3.5-turbo"},
+        )
 
-    preset_prompt_kwargs = {"examples": examples}
-    agent = ReActAgent(
-    tools=[multiply, add],
-    model_client=OpenAIClient,
-    model_kwargs={"model": "gpt-3.5-turbo"},
-    preset_prompt_kwargs=preset_prompt_kwargs,
-    )
-    ```
+        Using examples:
+
+        preset_prompt_kwargs = {"examples": examples}
+        agent = ReActAgent(
+        tools=[multiply, add],
+        model_client=OpenAIClient,
+        model_kwargs={"model": "gpt-3.5-turbo"},
+        preset_prompt_kwargs=preset_prompt_kwargs,
+        )
     """
 
     def __init__(
@@ -136,19 +142,23 @@ class ReActAgent(Generator):
         # added arguments specifc to React
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
+        add_llm_as_fallback: bool = True,
         *,
         # the following arguments are inherited from Generator
-        template: str = DEFAULT_REACT_AGENT_SYSTEM_PROMPT,
-        preset_prompt_kwargs: Optional[
-            Dict
-        ] = {},  # you can pass examples here, additionally leverage few-shot or many-shots ICL.
-        output_processors: Optional[Component] = None,
         model_client: ModelClient,
-        model_kwargs: Optional[Dict] = {},
+        model_kwargs: Dict = {},
+        template: Optional[str] = None,
+        prompt_kwargs: Optional[Dict] = {},
+        output_processors: Optional[Component] = None,
     ):
+        assert "model" in model_kwargs, "model must be provided in model_kwargs"
+        assert model_client, "model_client must be provided"
+        # assert tools and len(tools) > 0, "At least one tool must be provided"
+
+        template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
         super().__init__(
             template=template,
-            preset_prompt_kwargs=preset_prompt_kwargs,
+            prompt_kwargs=prompt_kwargs,
             output_processors=output_processors,
             model_client=model_client,
             model_kwargs=model_kwargs,
@@ -157,8 +167,10 @@ class ReActAgent(Generator):
         self.max_steps = max_steps
         self.output_processors = output_processors or JsonParser()
 
-        self.additional_llm_tool = Generator(
-            model_client=model_client, model_kwargs=model_kwargs
+        self._additional_llm_tool = (
+            Generator(model_client=model_client, model_kwargs=model_kwargs)
+            if add_llm_as_fallback
+            else None
         )
 
         def llm_tool(input: str) -> str:
@@ -167,7 +179,7 @@ class ReActAgent(Generator):
             """
             # use the generator to answer the query
             try:
-                return self.additional_llm_tool(input=input)
+                return self._additional_llm_tool(input=input)
             except Exception as e:
                 print(f"Error using the generator: {e}")
 
@@ -179,7 +191,10 @@ class ReActAgent(Generator):
             """
             return answer
 
-        self.tools.extend([llm_tool, finish])
+        if add_llm_as_fallback:
+            self.tools.append(llm_tool)
+        self.tools.append(finish)
+
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
             (
@@ -190,7 +205,7 @@ class ReActAgent(Generator):
             for tool in self.tools
         ]
         # pass the tools to the prompt
-        self.prompt.update_preset_prompt_kwargs(tools=self.tools)
+        self.prompt.update_prompt_kwargs(tools=self.tools)
 
         self.tools_map = {tool.metadata.name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []
@@ -335,39 +350,42 @@ if __name__ == "__main__":
         # }
         # """
     ]
-    agent = ReActAgent(
-        # examples=examples,
-        tools=tools,
-        max_steps=5,
-        model_client=GroqAPIClient,
-        model_kwargs=llm_model_kwargs,
-    )
-    print(agent)
+    # agent = ReActAgent(
+    #     # examples=examples,
+    #     tools=tools,
+    #     max_steps=5,
+    #     model_client=GroqAPIClient,
+    #     model_kwargs=llm_model_kwargs,
+    # )
+    # print(agent)
     queries = [
         # "What is 2 times 3?",
         # "What is 3 plus 4?",
         # "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
-        "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?",
+        # "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?",
+        "Give me 5 words rhyming with cool, and make a 4-sentence poem using them",
     ]
     """
     Results: mixtral-8x7b-32768, 0.9s per query
     llama3-70b-8192, 1.8s per query
     gpt-3.5-turbo, 2.2s per query
     """
+    import time
 
+    tools = []
     for i in range(3):
         agent = ReActAgent(
-            tools=tools,
+            tools=[],
             max_steps=5,
-            model_client=GroqAPIClient,
+            model_client=GroqAPIClient(),
             model_kwargs=llm_model_kwargs,
         )
     print(agent.tools)
 
-    # average_time = 0
-    # for query in queries:
-    #     t0 = time.time()
-    #     answer = agent(query)
-    #     average_time += time.time() - t0
-    #     print(f"Answer: {answer}")
-    # print(f"Average time: {average_time / len(queries)}")
+    average_time = 0
+    for query in queries:
+        t0 = time.time()
+        answer = agent(query)
+        average_time += time.time() - t0
+        print(f"Answer: {answer}")
+    print(f"Average time: {average_time / len(queries)}")
