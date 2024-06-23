@@ -7,10 +7,7 @@ authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 
 packages = [
-    { include = "use_cases", from = "." },
-    { include = "benchmarks", from = "." },
-    { include = "docs", from = "." },
-    { include = "developer_notes", from = "." },
+    { include = "lightrag", from = "." }
 ]
 
 [tool.poetry.dependencies]
@@ -59,6 +56,9 @@ pydata-sphinx-theme = "^0.15.3"
 sphinx-design = "^0.6.0"
 sphinx-copybutton = "^0.5.2"
 sphinx = "^7.3.7"
+nbsphinx = "^0.9.4"
+nbconvert = "^7.16.4"
+pandoc = "^2.3"
 
 
 [build-system]

@@ -10,7 +10,7 @@ What you will learn?
 Because so, by switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, you can make your prompt or ``Retriever`` model-agnostic.
 
 
-.. figure:: /_static/model_client.png
+.. figure:: /_static/images/model_client.png
     :align: center
     :alt: ModelClient
     :width: 400px
@@ -22,7 +22,7 @@ Because so, by switching off ``ModelClient``  in a ``Generator`` or ``Embedder``
     All users are encouraged to customize your own ``ModelClient`` whenever you need to do so. You can refer our code in ``components.model_client`` dir.
 
 Model Inference SDKs
--------------------
+------------------------
 With cloud API providers like OpenAI, Groq, Anthropic, it often comes with a `sync` and an `async` client via their SDKs. 
 For example:
 

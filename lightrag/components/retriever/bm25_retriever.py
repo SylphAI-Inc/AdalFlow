@@ -42,6 +42,17 @@ def split_text_by_word_fn_then_lower_tokenized(x: str) -> List[str]:
             final_tokens.append(tokenizer.decode([token]))
     return final_tokens
 
+def split_text_tokenized(x: str) -> List[str]:
+    tokenizer = Tokenizer()
+    # words = x.lower().split(" ")
+    tokens = tokenizer.encode(x)
+    # print(tokens)
+    final_tokens: List[str] = []
+    for token in tokens:
+        final_tokens.append(tokenizer.decode([token]))
+    # print(final_tokens)
+    return final_tokens
+
 
 class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
     __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
@@ -106,6 +117,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
     2. Pass the documents from the :meth:`build_index_from_documents` method:
 
     .. code-block:: python
+    
             retriever = InMemoryBM25Retriever(top_k=1)
             retriever.build_index_from_documents(documents)
             output = retriever("hello")

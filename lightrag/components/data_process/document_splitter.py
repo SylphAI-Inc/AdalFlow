@@ -152,3 +152,16 @@ class DocumentSplitter(Component):
     def _extra_repr(self) -> str:
         s = f"split_by={self.split_by}, split_length={self.split_length}, split_overlap={self.split_overlap}"
         return s
+    
+if __name__ == "__main__":
+    from lightrag.core.document_splitter import DocumentSplitter
+    from lightrag.core.types import Document
+
+    doc1 = Document(text="This is a simple test to check splitting.")
+    # doc2 = Document(text="This is another test document. It is also a long document.")
+    splitter = DocumentSplitter(split_by="word", split_length=5, split_overlap=2)
+    # print(splitter)
+    splitted_docs = splitter([doc1])
+    # print(splitted_docs)
+    for doc in splitted_docs:
+        print(doc.text)
