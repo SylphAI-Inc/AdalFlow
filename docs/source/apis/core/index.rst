@@ -22,6 +22,7 @@ Overview
    core.prompt_builder
    core.retriever
    core.string_parser
+   core.text_splitter
    core.tokenizer
    core.tool_helper
    core.types
@@ -66,7 +67,8 @@ Document Processing
 .. toctree::
    :maxdepth: 1
 
-   core.document_splitter
+   .. core.document_splitter
+   core.text_splitter
 
 Embedding and Retrieval
 -----------------------

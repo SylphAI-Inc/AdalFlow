@@ -1,79 +1,124 @@
 """
-Document Splitter
+Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.
 
-Document Splitter is for us to prepare the documents for retrieve the context.
-LlamaIndex having DocumentStore. We just want you wrap your data here and define a retrieve method. 
-It highly depends on the product environment and can go beyond the scope of this library.
+We encourage you to process your data here and define your own embedding and retrieval methods. These methods can highly depend on the product environment and may extend beyond the scope of this library.
 
-But these are shared:
-* DocumentStore
-* Chunk Document -> VectorStore
-* Embed chunk
-* Openup the db for context retrieval
+However, the following approaches are commonly shared:
+
+* **Document Storage:** Define how to store the documents, both raw and chunked. For example, LlamaIndex uses `Document Stores <https://docs.llamaindex.ai/en/stable/module_guides/storing/docstores/>`_ to manage ingested document chunks.
+
+* **Document Chunking:** Segment documents into manageable chunks suitable for further processing.
+
+* **Vectorization:** Embed each chunk and store the resulting vectors in Vector Stores. For example, LLama index utilizes `Vector Stores <https://docs.llamaindex.ai/en/stable/module_guides/storing/vector_stores/>`_.
+
+* **Retrieval:** Leverage vectors for context retrieval.
 """
 
 from copy import deepcopy
 from typing import List, Literal
 from tqdm import tqdm
+import logging
 
 from lightrag.core.component import Component
 from lightrag.core.types import Document
+from lightrag.components.retriever.bm25_retriever import split_text_tokenized
 
 # TODO:
 # More splitters such as PDF/JSON/HTML Splitter can be built on TextSplitter.
+
+log = logging.getLogger(__name__)
 
 DocumentSplitterInputType = List[Document]
 DocumentSplitterOutputType = List[Document]
 
 # customizable seperators map
-separators = {"page": "\f", "passage": "\n\n", "word": " ", "sentence": "."}
+SEPARATORS = {"page": "\f", "passage": "\n\n", "word": " ", "sentence": ".", "token": ""}
 
 DEFAULT_CHUNK_SIZE = 1024
 DEFAULT_CHUNK_OVERLAP = 20
 
 class TextSplitter(Component):
-    """        
-    Text Splitter for Processing and Chunking Documents
+    """  
+    Text Splitter for Chunking Documents in Batch
 
-    * **Overview**
-    The ``TextSplitter`` supports plain text splitting. It first utilizes a ``split_by`` argument to specify the 
-    text-splitting criterion. The long text will get broken down into a list of shorter texts. 
-    Then we create a sliding window with length=``chunk_size``. It moves at step=``chunk_size``-``chunk_overlap``.
-    The texts inside each window will get concatenated to a small chunk. 
+    The ``TextSplitter`` is designed for splitting plain text into manageable chunks.
+    It supports 2 types of splitting. 
     
-    * **Definitions**
-    ``separators``: A dictionary that maps ``split_by`` keys to their corresponding separator strings. 
+    * Type 1: Specify the exact text splitting point such as space<" "> and periods<".">. It is intuitive:
+    "Hello, world!" -> ["Hello, " ,"world!"]
     
-    ``split_by``: A parameter that selects the key from the ``separators`` dictionary to determine how the text is split. It defines the rule or boundary for splitting text.
-    
-    * **Splitting Details**
-    The ``TextSplitter`` utilizes Python's ``str.split(separator)`` method. Valid options include "word", "sentence", "page", and "passage". 
-    Developers can refer to ``separators`` = {"page": "\f", "passage": "\n\n", "word": " ", "sentence": "."} for exact points of text division.
-    Separators mapping relationship: separators[split_by]=separator.
-
-    * **Customization**
-    You can also customize the separators for different needs. For example, by defining separators = {"question": "?"} 
-    and setting ``split_by``="question", the document will be split at each question mark, ideal for processing text structured 
-    as a series of questions.
+    * Type 2: Use :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`. It works as:
+    "Hello, world!" -> ['Hello', ',', ' world', '!'] 
     
     .. note::
-        Typically the split texts will be embedded and potentially get retrieved. 
-        Developers need to determine how to assign text to each data trunk for the embedding and retrieval tasks.
-        The ``TextSplitter`` ``split_by`` examples:
-        - "word": Splits the text at every space (' '), treating spaces as the boundaries between words.
-        - "sentence": Splits the text at every period followed by a space ('. '), treating these as the ends of sentences.
-        - "page": Splits the text at form feed characters ('\\f'), which are often used to represent page breaks in documents.
-        - "passage": Splits the text at double newline characters ('\\n\\n'), useful for distinguishing between paragraphs or sections.
+        The punctuation is considered as a token.
+        
+    This aligns with how models see text in the form of tokens. (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_)
+    
+    Simple text splitting(Type 1) can underestimate the number of tokens. Tokenizer reflects the real token numbers the models take in. 
+    But the Tokenizer here only works at world level.
+    
+    * **Definitions**
+    
+    ``split_by``: Specifies the text-splitting criterion using predefined keys like "word", "sentence", "page", "passage", and "token". The splitter utilizes the corresponding separator from the ``SEPARATORS`` dictionary.
+    
+    ``SEPARATORS``: Maps ``split_by`` criterions to their exact text separators, e.g., spaces<" "> for "word" or periods<"."> for "sentence".
+    
+    Usage: **SEPARATORS[``split_by``]=separator**
+    
+    .. note::
+        For option ``token``, its separator is "" because we directly split by a tokenizer, instead of text point.
+    
+    * **Overview**:
+    ``TextSplitter`` first utilizes ``split_by`` to specify the text-splitting criterion and breaks the long text into smaller texts.
+    Then we create a sliding window with length= ``chunk_size``. It moves at step= ``chunk_size`` - ``chunk_overlap``.
+    The texts inside each window will get concatenated to a smaller chunk. The generated chunks from the splitted text will be returned.
+    
+    * **Splitting Details**
+    Type 1: 
+    The ``TextSplitter`` utilizes Python's ``str.split(separator)`` method. 
+    Developers can refer to 
+    
+    .. code-block:: none
+
+        {
+            "page": "\\f",
+            "passage": "\\n",
+            "word": " ",
+            "sentence": "."
+        }
+    for exact points of text division.
+    
+    .. note::
+        Developers need to determine how to assign text to each data chunk for the embedding and retrieval tasks.
+        The ``TextSplitter`` ``split_by`` cases:
+        
+        - "word": Splits the text at every space (" "), treating spaces as the boundaries between words.
+        
+        - "sentence": Splits the text at every period ("."), treating these as the ends of sentences.
+        
+        - "page": Splits the text at form feed characters ("\\f"), which are often used to represent page breaks in documents.
+        
+        - "passage": Splits the text at double newline characters ("\\n\\n"), useful for distinguishing between paragraphs or sections.
+
+    Type 2:
+    We implement a tokenizer using ``cl100k_base`` encoding that aligns with how models see text in the form of tokens.
+    E.g. "tiktoken is great!" -> ["t", "ik", "token", " is", " great", "!"] This helps developers control the token usage and budget better.
+    
+    
+    * **Customization**
+    You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured 
+    as a series of questions. If you need to customize :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`, please check `Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_.
     
     * **Concatenating Details**
-    The TextSplitter then reattaches the specified separator to each piece of the split text, except for the last segment.
+    Type 1/Type 2 create a list of split texts. ``TextSplitter`` then reattaches the specified separator to each piece of the split text, except for the last segment.
     This approach maintains the original spacing and punctuation, which is critical in contexts like natural language processing where text formatting can impact interpretations and outcomes.
     E.g. "hello world!" split by "word" will be kept as "hello " and "world!"
     
-    * **Usage Examples**
-    - This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
+    * **Use Cases**
+    This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
     
-    - To handle PDF content, developers need to first extract the text using tools like `PyPDF2` or `PDFMiner` before splitting.
+    To handle PDF content, developers need to first extract the text using tools like ``PyPDF2`` or ``PDFMiner`` before splitting.
     
     Example:
         .. code-block:: python
@@ -123,7 +168,7 @@ class TextSplitter(Component):
     """
     def __init__(
         self,
-        split_by: Literal["word", "sentence", "page", "passage"] = "word",
+        split_by: Literal["word", "sentence", "page", "passage", "token"] = "word",
         chunk_size: int = DEFAULT_CHUNK_SIZE,
         chunk_overlap: int = DEFAULT_CHUNK_OVERLAP,
         batch_size: int = 1000
@@ -147,27 +192,30 @@ class TextSplitter(Component):
 
         # variable value checks
         self.split_by = split_by
-        if split_by not in separators:
-            options = ", ".join(f"'{key}'" for key in separators.keys())
+        if split_by not in SEPARATORS:
+            options = ", ".join(f"'{key}'" for key in SEPARATORS.keys())
+            log.error(f"Invalid options for split_by. You must select from {options}.")
             raise ValueError(f"Invalid options for split_by. You must select from {options}.")
 
         if chunk_overlap >= chunk_size:
+            log.error(f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}")
             raise ValueError(
-                f"chunk_overlap can't be larger than chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
+                f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
             )
             
         if chunk_size <= 0:
+            log.error(f"chunk_size must be greater than 0. Received value: {chunk_size}")
             raise ValueError(f"chunk_size must be greater than 0. Received value: {chunk_size}")
         self.chunk_size = chunk_size
         
         if chunk_overlap < 0:
+            log.error(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
             raise ValueError(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
         self.chunk_overlap = chunk_overlap  
         
         self.batch_size = batch_size
 
     def split_text(self, text: str) -> List[str]:
-        
         """
         Splits the provided text into chunks.
         
@@ -179,12 +227,15 @@ class TextSplitter(Component):
         Returns:
             List[str]: A list of text chunks.
         """
-        
-        splits = self._split_text(text, self.split_by)
-        chunks = self._concatenate_splits(splits, self.chunk_size, self.chunk_overlap)
+        log.info(f"Splitting text with split_by: {self.split_by}, chunk_size: {self.chunk_size}, chunk_overlap: {self.chunk_overlap}")
+        separator = SEPARATORS[self.split_by]
+        splits = self._split_text(text, separator)
+        log.info(f"Text split into {len(splits)} parts.")
+        chunks = self._concatenate_splits(splits, self.chunk_size, self.chunk_overlap, separator)
+        log.info(f"Text concatenated into {len(chunks)} chunks.")
         return chunks
 
-    def call(self, documents: List[Document]) -> List[Document]:
+    def call(self, documents: DocumentSplitterInputType) -> DocumentSplitterOutputType:
         """
         Process the splitting task on a list of documents in batch.
         
@@ -203,6 +254,7 @@ class TextSplitter(Component):
         """
         
         if not isinstance(documents, list) or any(not isinstance(doc, Document) for doc in documents):
+            log.error("Input should be a list of Documents.")
             raise TypeError("Input should be a list of Documents.")
         
         split_docs = []
@@ -212,9 +264,11 @@ class TextSplitter(Component):
             
             for doc in batch_docs:
                 if not isinstance(doc, Document):
+                    log.error(f"Each item in documents should be an instance of Document, but got {type(doc).__name__}.")
                     raise TypeError(f"Each item in documents should be an instance of Document, but got {type(doc).__name__}.")
 
                 if doc.text is None:
+                    log.error(f"Text should not be None. Doc id: {doc.id}")
                     raise ValueError(f"Text should not be None. Doc id: {doc.id}")
 
                 text_splits = self.split_text(doc.text)
@@ -230,57 +284,51 @@ class TextSplitter(Component):
                     )
                     for i, txt in enumerate(text_splits)
                 ])
+        log.info(f"Processed {len(documents)} documents into {len(split_docs)} split documents.")
         return split_docs
         
     def _split_text(
-        self, text: str, split_by: str) -> List[str]:
-        """Perform the actual splitting of text using the specified split_by."""
-        # get the separator
-        separator = separators[split_by]
-        
-        # for each piece of text, break into smaller splits 
-        splits = text.split(separator)
-        
-        # separators will be added in the end of the split, except the last split
-        splits = self._add_separator(splits, separator)
-        return splits
-
-    def _add_separator(self, splits: List[str], separator: str):
-        """operate how split_by separator should be added back to each split here
-        
-        Adds the split_by separator to the end of each split except the last one, reforming the original text structure."""
-        for i in range(len(splits) - 1):
-            splits[i] += separator
+        self, text: str, separator: str) -> List[str]:
+        """Split text based on the specified separator."""
+        if self.split_by == "token":
+            splits = split_text_tokenized(text)
+        else:
+            splits = text.split(separator)
+            log.info(f"Text split by '{separator}' into {len(splits)} parts.")
         return splits
         
     def _concatenate_splits(
-        self, splits: List[str], chunk_size: int, chunk_overlap: int
+        self, splits: List[str], chunk_size: int, chunk_overlap: int, separator: str
     ) -> List[str]:
         """
         Concatenates split text chunks based on the specified chunk size and overlap.
         """
         chunks = []
-        start_index = 0
-        end_index = start_index + chunk_size
-        while end_index < len(splits):
-            # filter out None to avoid join error
-            current_splits = [unit for unit in splits[start_index:end_index]]
-            chunk = "".join(current_splits) 
+        # we use a window to get the text for each trunk, the window size is chunk_size, step is chunk_size - chunk_overlap 
+        step = chunk_size - chunk_overlap
+        idx = 0
+        
+        for idx in range(0, len(splits), step):
+            # 1. if the window exceeds the list of splitted string, break and process the last chunk
+            # 2. if the window ends exactly the same with the splits, then break and treat the splits[idx:len(splits)] as the last chunk
+            if idx+chunk_size >= len(splits):  
+                break
+            current_splits = splits[idx:idx+chunk_size]
+            # add the separator between each unit and concatenate the string
+            # this won't be the last chunk, so we need to add the separator at the end
+            chunk = separator.join(current_splits) + separator
             chunks.append(chunk)
-            # update the next start, end pointers, step size = chunk_size - chunk_overlap
-            start_index += chunk_size - chunk_overlap
-            end_index = start_index + chunk_size
-            # when the end point exceed the splits length, exit
-            
-        # if there's any content between start pointer and the end of the split, it should be included in the last chunk
-        # process the last chunk if the len(last_chunk) > 0, if last_chunk="", ignore it.
-        if start_index < len(splits):
-            last_chunk = "".join(splits[start_index:])
+        
+        if idx < len(splits):
+            last_chunk = separator.join(splits[idx:]) 
             if len(last_chunk) > 0:
                 chunks.append(last_chunk)
-            
+        log.info(f"Concatenated into {len(chunks)} chunks.")
         return chunks
-
-    def extra_repr(self) -> str:
+    
+    def _extra_repr(self) -> str:
         s = f"split_by={self.split_by}, chunk_size={self.chunk_size}, chunk_overlap={self.chunk_overlap}"
         return s
+    
+    
+# test the execution llamaindex and langchain

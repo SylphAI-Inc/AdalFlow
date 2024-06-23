@@ -22,6 +22,7 @@ to answer questions that cant be answered or better be answered by llm using its
 from typing import List, Union, Callable, Optional, Any, Dict
 from dataclasses import dataclass
 from copy import deepcopy
+import logging
 
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
@@ -30,6 +31,8 @@ from lightrag.core.string_parser import JsonParser, parse_function_call
 from lightrag.core.generator import GeneratorOutput
 from lightrag.core.model_client import ModelClient
 from lightrag.utils.logger import printc
+
+log = logging.getLogger(__name__)
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
@@ -219,7 +222,8 @@ class ReActAgent(Generator):
                 # print(f"response: {response}, json_response: {json_response}")
                 return json_response
             except Exception as e:
-                print(f"Error using the generator: {e}")
+                # print(f"Error using the generator: {e}")
+                log.error(f"Error using the generator: {e}")
 
             return None
 
@@ -262,7 +266,8 @@ class ReActAgent(Generator):
             action = json_obj_response.get(action_key, "")
             return StepOutput(step=step, thought=thought, action=action)
         except Exception as e:
-            print(f"Error parsing response: {e}")
+            # print(f"Error parsing response: {e}")
+            log.error(f"Error parsing response: {e}")
             return None
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
@@ -282,7 +287,8 @@ class ReActAgent(Generator):
             action_step.observation = result
             return action_step
         except Exception as e:
-            print(f"Error executing {action}: {e}")
+            # print(f"Error executing {action}: {e}")
+            log.error(f"Error executing {action}: {e}")
             # pass the error as observation so that the agent can continue and correct the error in the next step
             action_step.observation = f"Error executing {action}: {e}"
             return action_step
@@ -313,7 +319,8 @@ class ReActAgent(Generator):
             parsed_response = self._execute_action(parsed_response)
             printc(f"step: {step}, response: {parsed_response}", color="blue")
         else:
-            print(f"Failed to parse response for step {step}")
+            # print(f"Failed to parse response for step {step}")
+            log.error(f"Failed to parse response for step {step}")
         self.step_history.append(parsed_response)
 
         return response
@@ -339,13 +346,15 @@ class ReActAgent(Generator):
                     break
             except Exception as e:
                 error_message = f"Error running step {step}: {e}"
-                print(error_message)
+                # print(error_message)
+                log.error(error_message)
         try:
             answer = self.step_history[-1].observation
         except:
             answer = None
         printc(f"answer: {answer}", color="magneta")
-        print(f"step_history: {self.step_history}")
+        # print(f"step_history: {self.step_history}")
+        log.info(f"step_history: {self.step_history}")
         self.reset()
         return answer
 

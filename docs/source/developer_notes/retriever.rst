@@ -51,7 +51,7 @@ Design pattern
 ------------------
 A retrieval will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
 
-.. figure:: /_static/retriever.png
+.. figure:: /_static/images/retriever.png
     :align: center
     :alt: Retriever design
     :width: 620px
@@ -143,6 +143,7 @@ For retriever method that has intermedia index other than the source of database
 For example, ``BM25Retriever`` has the following attributes to form its index:
 
 .. code:: python
+    
     self.index_keys = ["nd", "t2d", "idf", "doc_len", "avgdl", "corpus_size"]
 
 
@@ -202,5 +203,6 @@ CohereReRanker
 
 
 .. admonition:: API References
+
    :class: highlight
    - 

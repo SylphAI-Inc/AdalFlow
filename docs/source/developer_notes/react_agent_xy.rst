@@ -178,7 +178,7 @@ Unlike the reasoning only and acting only approaches, given a query, the ReAct a
 
 Here is an example from the paper that demonstrates the workflow.
 
-.. image:: ../../../images/ReAct.jpg
+.. image:: ../_static/images/ReAct.jpg
 
 The environment contains user query, step histories, observations, and external sources.
 

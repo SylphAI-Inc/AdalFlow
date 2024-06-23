@@ -31,7 +31,7 @@ Agents
    components.agent
 
 Model Clients
------------
+-----------------
 .. toctree::
    :maxdepth: 1
 

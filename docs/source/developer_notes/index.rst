@@ -15,7 +15,7 @@ This is also our tutorials showing how each part works before we move ahead to b
 
 
 
-.. figure:: /_static/LLM_arch.png
+.. figure:: /_static/images/LLM_arch.png
    :alt: LLM application is no different from a mode training/eval workflow
    :align: center
    :width: 600px
@@ -79,7 +79,7 @@ Code path: ``lightrag.core``. For abstract classes:
    :widths: 20 80
    :header-rows: 1
 
-   * - Componentd
+   * - Components
      - Description
    * - :doc:`prompt`
      - Built on ``jinja2``, it programmablly and flexibly format prompt(text) as **input to the generator**.
@@ -128,11 +128,6 @@ Code path: ``lightrag.core``
      - Store the history of the conversation.
 
 
-
-.. toctree::
-   :maxdepth: 1
-   
-   text_splitter
 
 
 Advanced Components
