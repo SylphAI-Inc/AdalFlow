@@ -5,7 +5,7 @@ from lightrag.core.types import (
     UserQuery,
     AssistantResponse,
     DialogTurn,
-    DialogSession,
+    Conversation,
 )
 
 
@@ -37,7 +37,7 @@ def test_dialog_turn_creation():
 
 
 def test_dialog_session_operations():
-    session = DialogSession()
+    session = Conversation()
     assert isinstance(session.id, str)  # Check if the UUID is automatically generated
 
     # Creating dialog turns
