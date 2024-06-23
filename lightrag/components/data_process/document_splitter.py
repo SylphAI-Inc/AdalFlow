@@ -21,6 +21,10 @@ def split_text_by_token_fn(x: str, tokenizer: Tokenizer = Tokenizer()) -> List[s
     return tokenizer.get_string_tokens(x)
 
 
+DocumentSplitterInputType = List[Document]
+DocumentSplitterOutputType = List[Document]
+
+
 class DocumentSplitter(Component):
     __doc__ = r"""
     Splits a list of text documents into a list of text documents with shorter texts.

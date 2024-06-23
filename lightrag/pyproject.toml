@@ -62,6 +62,7 @@ pre-commit = "^3.7.0"
 # sphinx-rtd-theme = "^2.0.0"
 # pydata-sphinx-theme = "0.15.2"
 # sphinx-design = "^0.6.0"
+sqlalchemy = "^2.0.30"
 
 
 [tool.ruff]

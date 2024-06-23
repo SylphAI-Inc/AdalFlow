@@ -1,6 +1,4 @@
-"""
-Functional data classes to support functional components like Generator, Retriever, and Assistant.
-"""
+"""Functional data classes to support functional components like Generator, Retriever, and Assistant."""
 
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence
@@ -18,6 +16,13 @@ import logging
 from lightrag.core.base_data_class import DataClass
 from lightrag.core.tokenizer import Tokenizer
 from lightrag.core.functional import is_normalized
+from lightrag.components.model_client import (
+    CohereAPIClient,
+    TransformersClient,
+    AnthropicAPIClient,
+    GroqAPIClient,
+    OpenAIClient,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -30,6 +35,15 @@ class ModelType(Enum):
     LLM = auto()
     RERANKER = auto()  # ranking model
     UNDEFINED = auto()
+
+
+@dataclass
+class ModelClientType:
+    COHERE = CohereAPIClient
+    TRANSFORMERS = TransformersClient
+    ANTHROPIC = AnthropicAPIClient
+    GROQ = GroqAPIClient
+    OPENAI = OpenAIClient
 
 
 # TODO: define standard required outputs
@@ -77,6 +91,15 @@ class Usage:
     total_tokens: int
 
 
+@dataclass
+class TokenLogProb:
+    r"""similar to openai.ChatCompletionTokenLogprob"""
+
+    token: str
+    logprob: float
+
+
+@dataclass
 class EmbedderOutput(DataClass):
     __doc__ = r"""Container to hold the response from an Embedder model. Only Per-batch.
 
@@ -124,10 +147,14 @@ class EmbedderOutput(DataClass):
         )
 
 
+EmbedderInputType = Union[str, Sequence[str]]
 EmbedderOutputType = EmbedderOutput
-BatchEmbedderOutputType = List[EmbedderOutput]
+
+BatchEmbedderInputType = EmbedderInputType
+BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -138,7 +165,7 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     we have data as the final output, error as None.
     (2) When either model predict or output processors have error,
     we have data as None, error as the error message.
-    
+
     Raw_response will depends on the model predict.
     """
 
@@ -159,9 +186,11 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 GeneratorOutputType = GeneratorOutput[Any]
 
 
+@dataclass
 class Document(DataClass):
-    r"""A text container with optional metadata and vector representation.
-    It is the data structure to support functions like Retriever, DocumentSplitter, and LocalDocumentDB.
+    __doc__ = r"""A text container with optional metadata and vector representation.
+
+    It is the data structure to support functions like Retriever, DocumentSplitter, and used with LocalDB.
     """
 
     text: str = field(metadata={"desc": "The main text"})
@@ -206,68 +235,78 @@ class Document(DataClass):
 
     @classmethod
     def from_dict(cls, doc: Dict):
+        """Create a Document object from a dictionary.
+
+        Example:
+
+        .. code-block :: python
+
+            doc = Document.from_dict({
+                "id": "123",
+                "text": "Hello world",
+                "meta_data": {"title": "Greeting"}
+            })
+        """
+
         doc = doc.copy()
         assert "meta_data" in doc, "meta_data is required"
         assert "text" in doc, "text is required"
         if "estimated_num_tokens" not in doc:
             tokenizer = Tokenizer()
             doc["estimated_num_tokens"] = tokenizer.count_tokens(doc["text"])
-        if "id" not in doc:
+        if "id" not in doc or not doc["id"]:
             doc["id"] = uuid.uuid4()
 
         return super().from_dict(doc)
 
-    def __repr__(self) -> str:
-        max_text_len_to_show: int = 400
-        repr_str = "Document("
-        if self.id:
-            repr_str += f"id={self.id}, "
-        if self.text:
-            repr_str += f"text={self.text[0:max_text_len_to_show]} "
-            if len(self.text) > max_text_len_to_show:
-                repr_str += "..."
-            repr_str += ", "
-        if self.meta_data:
-            repr_str += f"meta_data={self.meta_data}, "
-        if self.estimated_num_tokens:
-            repr_str += f"estimated_num_tokens={self.estimated_num_tokens}, "
-
-        if self.vector:
-            repr_str += f"vector={self.vector[0:10]}..., "
-        if self.score:
-            repr_str += f"score={self.score}, "
-        if self.parent_doc_id:
-            repr_str += f"parent_doc_id={self.parent_doc_id}, "
-        repr_str = repr_str[:-2] + ")"
-        return repr_str
-
-    def __str__(self):
-        return self.__repr__()
+    def __repr__(self):
+        """Custom repr method to truncate the text to 100 characters and vector to 10 floats."""
+        max_chars_to_show = 100
+        truncated_text = (
+            self.text[:max_chars_to_show] + "..."
+            if len(self.text) > max_chars_to_show
+            else self.text
+        )
+        truncated_vector = (
+            f"len: {len(self.vector)}" if len(self.vector) else self.vector
+        )
+        return (
+            f"Document(id={self.id}, text={truncated_text!r}, meta_data={self.meta_data}, "
+            f"vector={truncated_vector!r}, parent_doc_id={self.parent_doc_id}, order={self.order}, "
+            f"score={self.score})"
+        )
 
 
+RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
+RetrieverStrQueryType = str
+RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
+RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
+
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverStrDocumentType = str  # for text retrieval
+RetrieverDocumentsType = Sequence[RetrieverDocumentType]
+
+
+@dataclass
 class RetrieverOutput(DataClass):
-    __doc__ = r"""Save the output of a single query in retrievers."""
+    __doc__ = r"""Save the output of a single query in retrievers.
+
+    It is up to the subclass of Retriever to specify the type of query and document.
+    """
 
     doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
     doc_scores: Optional[List[float]] = field(
         default=None, metadata={"desc": "List of document scores"}
     )
-    query: Optional[str] = field(
+    query: Optional[RetrieverQueryType] = field(
         default=None, metadata={"desc": "The query used to retrieve the documents"}
     )
-    documents: Optional[List[Document]] = field(
+    documents: Optional[List[RetrieverDocumentType]] = field(
         default=None, metadata={"desc": "List of retrieved documents"}
     )
 
 
-RetrieverInputStrType = Union[str, Sequence[str]]
-RetrieverInputType = TypeVar("RetrieverInputType", contravariant=True)
-RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
-RetrieverDocumentsType = Sequence[Any]
-# it is up the the subclass to decide the type of the documents
 RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
-
-# different retriever may support different input data type
 
 
 @dataclass
@@ -282,31 +321,70 @@ class AssistantResponse:
     metadata: Optional[Dict[str, Any]] = None
 
 
-# TODO: the data class can also be a component?
+# There could  more other roles in a multi-party conversation. We might consider in the future.
 @dataclass
-class DialogTurn:
-    r"""A turn consists of a user query and the assistant response, \
-    or potentially with more other roles in a multi-party conversation.
+class DialogTurn(DataClass):
+    __doc__ = r"""A turn consists of a user query and the assistant response.
 
-    Here we only consider the user query and the assistant response. If you want multiple parties
-    you can extend this class or create a new class.
+    The dataformat is designed to fit into a relational database, where each turn is a row.
+    Use `session_id` to group the turns into a dialog session with the `order` field and
+    `user_query_timestamp` and `assistant_response_timestamp` to order the turns.
+
+    Args:
+
+        id (str): The unique id of the turn.
+        user_id (str, optional): The unique id of the user.
+        session_id (str, optional): The unique id of the dialog session.
+        order (int, optional): The order of the turn in the dialog session, starts from 0.
+        user_query (UserQuery, optional): The user query in the turn.
+        assistant_response (AssistantResponse, optional): The assistant response in the turn.
+        user_query_timestamp (datetime, optional): The timestamp of the user query.
+        assistant_response_timestamp (datetime, optional): The timestamp of the assistant response.
+        metadata (Dict[str, Any], optional): Additional metadata.
+
     Examples:
-    - User: Hi, how are you?
-    - Assistant: I'm fine, thank you!
-    DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
+
+        - User: Hi, how are you?
+        - Assistant: I'm fine, thank you!
+        DialogTurn(id=uuid4(), user_query=UserQuery("Hi, how are you?"), assistant_response=AssistantResponse("I'm fine, thank you!"))
     """
 
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
-    order: Optional[int] = (
-        None  # the order of the turn in the Dialog Session, starts from 0
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4()),
+        metadata={"desc": "The unique id of the turn"},
     )
-    user_query: Optional[UserQuery] = None
-    assistant_response: Optional[AssistantResponse] = None
-    user_query_timestamp: Optional[datetime] = None
-    assistant_response_timestamp: Optional[datetime] = None
-    metadata: Optional[Dict[str, Any]] = None  # additional metadata
+    user_id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the user"}
+    )
+    session_id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the dialog session"}
+    )
+    order: Optional[int] = field(
+        default=None,
+        metadata={"desc": "The order of the turn in the Dialog Session, starts from 0"},
+    )
+
+    user_query: Optional[UserQuery] = field(
+        default=None, metadata={"desc": "The user query in the turn"}
+    )
+    assistant_response: Optional[AssistantResponse] = field(
+        default=None, metadata={"desc": "The assistant response in the turn"}
+    )
+    user_query_timestamp: Optional[datetime] = field(
+        default_factory=datetime.now,
+        metadata={"desc": "The timestamp of the user query"},
+    )
+    assistant_response_timestamp: Optional[datetime] = field(
+        default_factory=datetime.now,
+        metadata={"desc": "The timestamp of the assistant response"},
+    )
+    metadata: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Additional metadata"}
+    )
+    vector: Optional[List[float]] = field(
+        default=None,
+        metadata={"desc": "The vector representation of the dialog turn"},
+    )
 
     def set_user_query(
         self, user_query: UserQuery, user_query_timestamp: Optional[datetime] = None
@@ -329,11 +407,11 @@ class DialogTurn:
 
 @dataclass
 class DialogSession:
-    r"""A dialog session consists of multiple dialog turns, \
-    and potentially with more other roles in a multi-party conversation.
+    __doc__ = r"""A dialog session manages the dialog turns in a whole conversation as a session.
 
-    Here we only consider the dialog turns. If you want multiple parties
-    you can extend this class or create a new class.
+    This class is mainly used in-memory for the dialog system/app to manage active conversations.
+    You won't need this class for past conversations which have already been persisted in a database as a form of
+    record or history.
     """
 
     id: str = field(default_factory=lambda: str(uuid.uuid4()))  # the id of the session

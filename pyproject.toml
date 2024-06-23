@@ -15,7 +15,8 @@ python = ">=3.11, <4.0"
 lightrag = { path = "./lightrag", develop = true }
 torch = "^2.3.1"
 flagembedding = "^1.2.10"
-cohere = "^5.5.7"
+# cohere = "^5.5.7"
+openai = "^1.34.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -42,7 +43,12 @@ groq = "^0.5.0"
 # llama-index-retrievers-bm25 = "^0.1.3"
 rank-bm25 = "^0.2.2"
 llama-index = "^0.10.44"
-tqdm = "^4.66.4"
+llama-index-vector-stores-postgres = "^0.1.11"
+pgvector = "^0.2.5"
+cohere = "^5.5.8"
+langchain = "^0.2.5"
+langchain-community = "^0.2.5"
+langchain-openai = "^0.1.8"
 
 
 [tool.poetry.group.doc.dependencies]

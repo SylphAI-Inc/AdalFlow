@@ -1,7 +1,6 @@
 r"""ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components."""
 
-from typing import Any, Dict, Union, Sequence, Optional
-from enum import Enum, auto
+from typing import Any, Dict, Optional
 
 
 from lightrag.core.component import Component
@@ -85,7 +84,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
 
-    def parse_chat_completion(self, completion: Any) -> str:
+    def parse_chat_completion(self, completion: Any) -> Any:
         r"""Parse the chat completion to str."""
         raise NotImplementedError(
             f"{type(self).__name__} must implement parse_chat_completion method"

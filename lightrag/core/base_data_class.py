@@ -148,17 +148,18 @@ class _DataClassMeta(type):
 # before we do more tests, we keep the base and child class manually decorated with dataclass
 
 
-# @dataclass
-class DataClass(metaclass=_DataClassMeta):
+# 1. Support dataclass as field type, the nested dataclass using to_yaml, to_dict, or __dict__.
+@dataclass
+class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
-     
+
     Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
     transparency and to keep the order of the fields when get serialized.
 
     How to create your own dataclass?
-    
-    1. Subclass DataClass and define the fields with the `field` decorator. 
+
+    1. Subclass DataClass and define the fields with the `field` decorator.
     2. Use the `medata` argument and a `desc` key to describe the field.
     3. Keep the order of the fields as how you want them to be serialized and described to LLMs.
     4. field with default value is considered optional. Field without default value and field with default_factory=required_field is considered required.
@@ -201,7 +202,7 @@ class DataClass(metaclass=_DataClassMeta):
 
         # Define a dataclass
         from lightrag.core import DataClass
-        
+
         class MyOutputs(DataClass):
             age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
             name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
@@ -270,7 +271,14 @@ class DataClass(metaclass=_DataClassMeta):
         # Recursively convert nested dataclasses
         for key, value in data.items():
             if is_dataclass(value):
-                data[key] = value.to_dict()
+                if hasattr(value, "to_dict"):
+                    data[key] = value.to_dict()
+                elif hasattr(value, "__dict__"):
+                    data[key] = value.__dict__
+                else:
+                    logging.warning(
+                        f"Field {key} is not a dataclass or does not have a to_dict method"
+                    )
         return data
 
     @classmethod
@@ -282,15 +290,36 @@ class DataClass(metaclass=_DataClassMeta):
         field_types = {f.name: f.type for f in fields(cls)}
         init_kwargs = {}
         for key, value in data.items():
+            if key not in field_types:
+                logging.warning(f"Field {key} does not exist in the dataclass")
+                continue
             field_type = field_types[key]
             if is_dataclass(field_type):
-                init_kwargs[key] = field_type.from_dict(value)
+                if isinstance(value, str):
+                    # Attempt to parse the string as JSON
+                    try:
+                        value = json.loads(value)
+                    except json.JSONDecodeError:
+                        logging.error(f"Error decoding JSON for field {key}")
+                        continue
+                if hasattr(field_type, "from_dict"):
+                    init_kwargs[key] = field_type.from_dict(value)
+                elif hasattr(field_type, "__dict__"):
+                    init_kwargs[key] = field_type(**value)
+                else:
+                    logging.warning(
+                        f"Field {key} is not a dataclass or does not have a from_dict method"
+                    )
             else:
                 init_kwargs[key] = value
         return cls(**init_kwargs)
 
     @classmethod
-    def format_str(cls: "DataClass", format_type: DataClassFormatType) -> str:
+    def format_class_str(
+        cls: "DataClass",
+        format_type: DataClassFormatType,
+        exclude: Optional[List[str]] = None,
+    ) -> str:
         """Generate formatted output based on the type of operation and class/instance context.
 
         Args:
@@ -298,25 +327,59 @@ class DataClass(metaclass=_DataClassMeta):
 
         Returns:
             str: A string representing the formatted output.
+
+        Examples:
+
+        .. code-block:: python
+
+            # Define a dataclass
+            from lightrag.core import DataClass
+
         """
+        assert format_type in [
+            DataClassFormatType.SIGNATURE_JSON,
+            DataClassFormatType.SIGNATURE_YAML,
+            DataClassFormatType.SCHEMA,
+        ], "format_class_str is only for class formats"
         if not is_dataclass(cls):
             raise ValueError(f"{cls.__name__} must be a dataclass to use format_str.")
 
         # Check the type of format required and whether it's called on an instance or class
         if format_type == DataClassFormatType.SIGNATURE_JSON:
-            return cls.to_json_signature()
+            return cls.to_json_signature(exclude)
         elif format_type == DataClassFormatType.SIGNATURE_YAML:
-            return cls.to_yaml_signature()
-        elif format_type == DataClassFormatType.EXAMPLE_JSON:
-            if isinstance(cls, type):
-                raise ValueError("EXAMPLE_JSON requires an instance of the dataclass.")
-            return cls.to_json()
-        elif format_type == DataClassFormatType.EXAMPLE_YAML:
-            if isinstance(cls, type):
-                raise ValueError("EXAMPLE_YAML requires an instance of the dataclass.")
-            return cls.to_yaml()
+            return cls.to_yaml_signature(exclude)
+
         elif format_type == DataClassFormatType.SCHEMA:
-            return cls.to_data_class_schema_str()
+            return cls.to_data_class_schema_str(exclude)
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
+
+    def format_example_str(
+        self, format_type: DataClassFormatType, exclude: Optional[List[str]] = None
+    ) -> str:
+        """Generate formatted output based on the type of operation and class/instance context.
+
+        Args:
+            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
+
+        Returns:
+            str: A string representing the formatted output.
+
+        """
+        if not is_dataclass(self):
+            raise ValueError(f"{self.__name__} must be a dataclass to use format_str.")
+
+        assert format_type in [
+            DataClassFormatType.EXAMPLE_JSON,
+            DataClassFormatType.EXAMPLE_YAML,
+        ], "format_str is only for example formats"
+
+        # Check the type of format required and whether it's called on an instance or class
+        if format_type == DataClassFormatType.EXAMPLE_JSON:
+            return self.to_json(exclude)
+        elif format_type == DataClassFormatType.EXAMPLE_YAML:
+            return self.to_yaml(exclude)
         else:
             raise ValueError(f"Unsupported format type: {format_type}")
 
@@ -395,6 +458,8 @@ class DataClass(metaclass=_DataClassMeta):
         """
         exclude = exclude or []
         yaml_content = []
+        indent_str = " " * 2
+
         for f in fields(self):
             if f.name and exclude and f.name in exclude:
                 continue
@@ -403,19 +468,41 @@ class DataClass(metaclass=_DataClassMeta):
             if isinstance(value, str):
                 # Directly format strings to ensure quotes are correctly placed
                 value_formatted = f'"{value}"'
+                yaml_content.append(f"{f.name}: {value_formatted}")
             elif isinstance(value, (list, dict)):
-                # For complex types, use yaml.dump but strip unwanted newlines and marks
-                value_formatted = (
-                    yaml.dump(value, default_flow_style=False).strip().rstrip("\n...")
+                value_formatted = yaml.dump(value, default_flow_style=False)
+                yaml_content.append(f"{f.name}: \n{value_formatted}")  # same line
+            # other class, check if they have to_dict method, other wise, use __dict__
+            elif (
+                hasattr(value, "to_yaml")
+                or hasattr(value, "to_dict")
+                or hasattr(value, "__dict__")
+            ):
+                if hasattr(value, "to_yaml"):
+                    value_formatted = value.to_yaml()
+                else:
+                    if hasattr(value, "to_dict"):
+                        value_formatted = yaml.dump(
+                            value.to_dict(), default_flow_style=False
+                        )
+                    else:
+                        value_formatted = yaml.dump(
+                            value.__dict__, default_flow_style=False
+                        )
+                # add indent to each line
+                value_formatted = indent_str + f"\n{indent_str}".join(
+                    value_formatted.split("\n")
                 )
+                value_formatted = value_formatted.rstrip().rstrip("\n...")
+                content = f"{f.name}: \n{value_formatted}"
+                yaml_content.append(content)
             else:
                 # Use yaml.dump for other types but ensure the output is clean
                 value_formatted = (
                     yaml.dump(value, default_flow_style=False).strip().rstrip("\n...")
                 )
 
-            yaml_content.append(f"{f.name}: {value_formatted}")
-
+                yaml_content.append(f"{f.name}: {value_formatted}")
         yaml_output = "\n".join(yaml_content)
         return yaml_output
 
@@ -442,6 +529,19 @@ class DataClass(metaclass=_DataClassMeta):
             elif isinstance(value, (list, dict)):
                 # Convert lists and dictionaries to a string and then parse it back to ensure correct format
                 json_content[f.name] = json.loads(json.dumps(value))
+            # other class, check if they have to_dict method, other wise, use __dict__
+            elif (
+                hasattr(value, "to_json")
+                or hasattr(value, "to_dict")
+                or hasattr(value, "__dict__")
+            ):
+                if hasattr(value, "to_json"):
+                    json_content[f.name] = json.loads(value.to_json())
+                else:
+                    if hasattr(value, "to_dict"):
+                        json_content[f.name] = value.to_dict()
+                    else:
+                        json_content[f.name] = value.__dict__
             else:
                 # Fallback for other types if necessary, can be customized further based on needs
                 json_content[f.name] = str(value)
@@ -474,7 +574,7 @@ class DynamicDataClassFactory:
             "desc": "Field description",
             "prefix": "Field prefix",
         },
-        
+
     }
 
     Examples:
@@ -513,3 +613,75 @@ class DynamicDataClassFactory:
         )
 
         return dynamic_class
+
+
+if __name__ == "__main__":
+    from dataclasses import dataclass
+
+    @dataclass
+    class Address:
+        street: str
+        city: str
+        postal_code: str
+
+    @dataclass
+    class Person(DataClass):
+        name: str
+        age: int
+        address: Address
+
+    person = Person(
+        name="John Doe",
+        age=30,
+        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+    )
+    print(person.to_yaml())
+    yaml_str = person.to_yaml()
+    print(yaml_str)
+    print("last char", repr(yaml_str[-2:]))
+    print(yaml.safe_load(yaml_str))
+    restored_person = Person.from_dict(yaml.safe_load(yaml_str))
+    print(restored_person)
+
+    # test to_json
+    print(person.to_json())
+    json_str = person.to_json()
+    print(json_str)
+    print(json.loads(json_str))
+    restored_person = Person.from_dict(json.loads(json_str))
+    print(restored_person)
+
+    # now try a list of nested dataclass
+    @dataclass
+    class Company(DataClass):
+        name: str
+        address: Address
+        employees: List[int]  # employee ids
+
+    company = Company(
+        name="ACME",
+        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+        employees=[1, 2, 3],
+    )
+    print(company.to_yaml())
+    yaml_str = company.to_yaml()
+    default_yaml_str = yaml.dump(company, default_flow_style=False)
+    # load back
+    restored_company = Company.from_dict(yaml.safe_load(yaml_str))
+    print(restored_company)
+    # print("default yaml:", default_yaml_str)
+    # print(yaml.safe_load(default_yaml_str)), will fail as it is not a valid yaml string
+
+    json_str = company.to_json()
+    print(json_str)
+    restored_company = Company.from_dict(json.loads(json_str))
+    print(restored_company)
+    print("to_dict:", company.to_dict())
+    print("to_dict_class:", Company.to_dict_class())
+
+    print(f"person to dict {person.to_dict()}")
+    print(f"person to dict default {person.__dict__}")
+
+    # default_json_str = json.dumps(company, indent=4)
+    # print(default_json_str)
+    # print(json.loads(default_json_str))

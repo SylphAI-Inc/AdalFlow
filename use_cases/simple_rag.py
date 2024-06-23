@@ -3,21 +3,21 @@ from typing import Any, List, Optional
 
 from lightrag.core.generator import Generator
 from lightrag.core.embedder import Embedder
-from lightrag.core.data_components import (
-    # ToEmbedderResponse,
-    RetrieverOutputToContextStr,
-    ToEmbeddings,
-)
 
 from lightrag.core.types import Document
-from lightrag.core.document_splitter import DocumentSplitter
 from lightrag.core.string_parser import JsonParser
 from lightrag.core.component import Component, Sequential
-from lightrag.core.db import LocalDocumentDB
+from lightrag.core.db import LocalDB
 
 from lightrag.components.retriever import FAISSRetriever
 from lightrag.components.model_client import OpenAIClient
-from lightrag.utils import setup_env
+
+from lightrag.components.data_process import (
+    RetrieverOutputToContextStr,
+    ToEmbeddings,
+    DocumentSplitter,
+)
+from lightrag.utils import setup_env  # noqa
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
@@ -63,7 +63,7 @@ class RAG(Component):
         self.data_transformer = Sequential(
             text_splitter,
             ToEmbeddings(
-                vectorizer=vectorizer,
+                embedder=vectorizer,
                 batch_size=self.vectorizer_settings["batch_size"],
             ),
         )
@@ -77,7 +77,7 @@ class RAG(Component):
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
         # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
-        self.db = LocalDocumentDB()
+        self.db = LocalDB()
 
         # initialize generator
         self.generator = Generator(

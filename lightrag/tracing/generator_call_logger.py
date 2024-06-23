@@ -15,7 +15,7 @@ from lightrag.utils import append_to_jsonl, load_jsonl
 log = logging.getLogger(__name__)
 
 
-# @dataclass
+@dataclass
 class GeneratorCallRecord(DataClass):
     prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
     model_kwargs: Dict[str, Any] = field(default_factory=dict)
@@ -28,7 +28,7 @@ class GeneratorCallLogger:
 
     Allow multiple generators to be logged, and each with its own jsonl file.
 
-    The log files are stored in the ./traces/ directory. If a project_name is provided, 
+    The log files are stored in the ./traces/ directory. If a project_name is provided,
     it will be stored in ./traces/{project_name}.
 
     Args:

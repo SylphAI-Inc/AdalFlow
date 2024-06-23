@@ -1,52 +1,59 @@
 r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
 from lightrag.utils.registry import EntityMapping
-import logging
+from lightrag.utils import LazyImport, OptionalPackages
 
-log = logging.getLogger(__name__)
+CohereAPIClient = LazyImport(
+    "lightrag.components.model_client.cohere_client.CohereAPIClient",
+    OptionalPackages.COHERE,
+)
+TransformerReranker = LazyImport(
+    "lightrag.components.model_client.transformers_client.TransformerReranker",
+    OptionalPackages.TRANSFORMERS,
+)
+TransformerEmbedder = LazyImport(
+    "lightrag.components.model_client.transformers_client.TransformerEmbedder",
+    OptionalPackages.TRANSFORMERS,
+)
+TransformersClient = LazyImport(
+    "lightrag.components.model_client.transformers_client.TransformersClient",
+    OptionalPackages.TRANSFORMERS,
+)
+AnthropicAPIClient = LazyImport(
+    "lightrag.components.model_client.anthropic_client.AnthropicAPIClient",
+    OptionalPackages.ANTHROPIC,
+)
+GroqAPIClient = LazyImport(
+    "lightrag.components.model_client.groq_client.GroqAPIClient",
+    OptionalPackages.GROQ,
+)
+OpenAIClient = LazyImport(
+    "lightrag.components.model_client.openai_client.OpenAIClient",
+    OptionalPackages.OPENAI,
+)
+get_first_message_content = LazyImport(
+    "lightrag.components.model_client.openai_client.get_first_message_content",
+    OptionalPackages.OPENAI,
+)
+get_all_messages_content = LazyImport(
+    "lightrag.components.model_client.openai_client.get_all_messages_content",
+    OptionalPackages.OPENAI,
+)
+get_probabilities = LazyImport(
+    "lightrag.components.model_client.openai_client.get_probabilities",
+    OptionalPackages.OPENAI,
+)
 
-__all__ = []
 
-try:
-    from .openai_client import OpenAIClient
-
-    __all__.append("OpenAIClient")
-except ImportError as e:
-    log.info(f"Optional module not installed: {e}")
-
-try:
-    from .groq_client import GroqAPIClient
-
-    __all__.append("GroqAPIClient")
-except ImportError as e:
-    log.info(f"Optional module not installed: {e}")
-
-try:
-    from .anthropic_client import AnthropicAPIClient
-
-    __all__.append("AnthropicAPIClient")
-
-except ImportError as e:
-    log.info(f"Optional module not installed: {e}")
-
-try:
-    from .transformers_client import (
-        TransformersClient,
-        TransformerEmbedder,
-        TransformerReranker,
-    )
-
-    __all__.extend(["TransformersClient", "TransformerEmbedder", "TransformerReranker"])
-except ImportError as e:
-    log.info(f"Optional module not installed: {e}")
-
-try:
-    from .cohere_client import CohereAPIClient
-
-    __all__.append("CohereAPIClient")
-except ImportError as e:
-    log.info(f"Optional module not installed: {e}")
-
+__all__ = [
+    "CohereAPIClient",
+    "TransformerReranker",
+    "TransformerEmbedder",
+    "TransformersClient",
+    "AnthropicAPIClient",
+    "GroqAPIClient",
+    "OpenAIClient",
+]
 
 for name in __all__:
     EntityMapping.register(name, globals()[name])

@@ -145,6 +145,42 @@ One more example on ``split_by=token``:
         )
     documents = [doc1]
     splitted_docs = (text_splitter.call(documents=documents))
+
+    for doc in splitted_docs:
+        print(doc.text)
+    # Output:
+    # Hello, this is lightrag. Please 
+    # lightrag. Please implement your splitter 
+    # your splitter here.
+In this case, when splitting by ``word`` with ``chunk_size``=5 and ``chunk_overlap``=2,
+each chunk will repeat 2 words from the previous chunk. These 2 words are set by ``chunk_overlap``.
+This means each chunk has ``5-2=3`` word(split unit) difference compared with its previous.
+
+.. note::
+    ``chunk_overlap`` should always be smaller than ``chunk_size``, otherwise the window won't move and the splitting stucks.
+
+
+One more example on ``split_by=token``:
+
+.. code-block:: python
+    # configure the splitter setting
+    text_splitter_settings = {
+            "split_by": "token",
+            "chunk_size": 5,
+            "chunk_overlap": 2,
+            }
+
+    # set up the document splitter
+    text_splitter = TextSplitter(
+        ...
+        )
+
+    doc1 = Document(
+        text="Hello, this is lightrag. Please implement your splitter here.",
+        id="doc1",
+        )
+    documents = [doc1]
+    splitted_docs = (text_splitter.call(documents=documents))
     for doc in splitted_docs:
         print(doc.text)
     # Output:

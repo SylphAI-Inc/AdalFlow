@@ -1,14 +1,11 @@
-"""Functional interface. 
+"""Functional interface.
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Type, Union, List, Tuple
+from typing import Dict, Any, Callable, Union, List, Tuple
 import numpy as np
 import re
 import json
-
-
-# TODO: test to convert all functions to component
 
 
 def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict:
@@ -67,45 +64,9 @@ def get_top_k_indices_scores(
         scores_np = np.array(scores)
     else:
         scores_np = scores
-    print(f"scores_np: {scores_np}")
     top_k_indices = np.argsort(scores_np)[-top_k:][::-1]
     top_k_scores = scores_np[top_k_indices]
     return top_k_indices.tolist(), top_k_scores.tolist()
-
-
-# import hashlib
-# import json
-
-
-# def generate_component_key(component: Component) -> str:
-#     """
-#     Generates a unique key for a Component instance based on its type,
-#     version, configuration, and nested components.
-#     """
-#     # Start with the basic information: class name and version
-#     key_parts = {
-#         "class_name": component._get_name(),
-#         "version": getattr(component, "_version", 0),
-#     }
-
-#     # If the component stores configuration directly, serialize this configuration
-#     if hasattr(component, "get_config"):
-#         config = (
-#             component.get_config()
-#         )  # Ensure this method returns a serializable dictionary
-#         key_parts["config"] = json.dumps(config, sort_keys=True)
-
-#     # If the component contains other components, include their keys
-#     if hasattr(component, "_components") and component._components:
-#         nested_keys = {}
-#         for name, subcomponent in component._components.items():
-#             if subcomponent:
-#                 nested_keys[name] = generate_component_key(subcomponent)
-#         key_parts["nested"] = nested_keys
-
-#     # Serialize key_parts to a string and hash it
-#     key_str = json.dumps(key_parts, sort_keys=True)
-#     return hashlib.sha256(key_str.encode("utf-8")).hexdigest()
 
 
 def generate_readable_key_for_function(fn: Callable) -> str:
@@ -265,7 +226,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
     try:
         json_obj = json.loads(json_str)
         return json_obj
-    except json.JSONDecodeError as e:
+    except json.JSONDecodeError:
         # 2nd attemp after fixing the json string
         try:
             print("Trying to fix potential missing commas...")
@@ -275,7 +236,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
             print(f"Fixed JSON string: {json_str}")
             json_obj = json.loads(json_str)
             return json_obj
-        except json.JSONDecodeError as e:
+        except json.JSONDecodeError:
             # 3rd attemp using yaml
             try:
                 import yaml
@@ -287,7 +248,7 @@ def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
                 print("Parsing JSON string with PyYAML...")
                 json_obj = yaml.safe_load(json_str)
                 return json_obj
-            except yaml.YAMLError as e_yaml:
+            except yaml.YAMLError as e:
                 raise ValueError(
                     f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
                 )

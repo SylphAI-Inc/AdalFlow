@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import numpy as np
 
 from lightrag.components.retriever import FAISSRetriever
@@ -47,7 +47,7 @@ class TestFAISSRetriever(unittest.TestCase):
 
     def test_build_index_from_documents(self):
         self.assertIsNotNone(self.retriever.index)
-        self.assertEqual(self.retriever.total_chunks, self.num_embeddings)
+        self.assertEqual(self.retriever.total_documents, self.num_embeddings)
         self.assertEqual(self.retriever.index.d, self.dimensions)
 
     def test_retrieve_embedding_queries(self):
@@ -82,7 +82,7 @@ class TestFAISSRetriever(unittest.TestCase):
     def test_reset_index(self):
         self.retriever.reset_index()
         self.assertIsNone(self.retriever.index)
-        self.assertEqual(self.retriever.total_chunks, 0)
+        self.assertEqual(self.retriever.total_documents, 0)
 
     def test_retrieve_non_normalized_embeddings_with_l2_metric(self):
         retriever = FAISSRetriever(
