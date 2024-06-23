@@ -21,14 +21,19 @@ Reference:
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from copy import deepcopy
+import logging
 
 
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
 from lightrag.core.tool_helper import FunctionTool, AsyncCallable
 from lightrag.core.string_parser import JsonParser, parse_function_call
-from lightrag.core.types import StepOutput
+from lightrag.core.types import StepOutput, GeneratorOutput
 from lightrag.core.model_client import ModelClient
+from lightrag.utils.logger import printc
+
+
+log = logging.getLogger(__name__)
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
 {# role/task description #}
@@ -76,7 +81,7 @@ Remember:
 {% endif %}
 <</SYS>>
 -----------------
-{# History #}
+{# Step History #}
 {% for history in step_history %}
 Step {{history.step}}:
 {
@@ -85,6 +90,10 @@ Step {{history.step}}:
 }
 "observation": "{{history.observation}}"
 {% endfor %}
+{% if input_str %}
+User query:
+{{ input_str }}
+{% endif %}
 """
 
 
@@ -179,8 +188,13 @@ class ReActAgent(Generator):
             """
             # use the generator to answer the query
             try:
-                return self._additional_llm_tool(input=input)
+                output: GeneratorOutput = self._additional_llm_tool(
+                    prompt_kwargs={"input_str": input}
+                )
+                response = output.data if output else None
+                return response
             except Exception as e:
+                log.error(f"Error using the generator: {e}")
                 print(f"Error using the generator: {e}")
 
             return None
@@ -227,6 +241,7 @@ class ReActAgent(Generator):
             action = json_obj_response.get(action_key, "")
             return StepOutput(step=step, thought=thought, action=action)
         except Exception as e:
+            log.error(f"Error parsing response: {e}")
             print(f"Error parsing response: {e}")
             return None
 
@@ -237,7 +252,6 @@ class ReActAgent(Generator):
         action = action_step.action
         try:
             fun_name, args, kwargs = parse_function_call(action, self.tools_map)
-            print(f"fun_name: {fun_name}, args: {args}, kwargs: {kwargs}")
             fun: Union[Callable, AsyncCallable] = self.tools_map[fun_name].fn
             result = fun(*args, **kwargs)
             action_step.fun_name = fun_name
@@ -247,14 +261,12 @@ class ReActAgent(Generator):
             action_step.observation = result
             return action_step
         except Exception as e:
-            print(f"Error executing {action}: {e}")
+            log.error(f"Error executing {action}: {e}")
             # pass the error as observation so that the agent can continue and correct the error in the next step
             action_step.observation = f"Error executing {action}: {e}"
             return action_step
 
-    def _run_one_step(
-        self, input: str, step: int, prompt_kwargs: Dict, model_kwargs: Dict
-    ) -> str:
+    def _run_one_step(self, step: int, prompt_kwargs: Dict, model_kwargs: Dict) -> str:
         """
         Run one step of the agent.
         """
@@ -263,17 +275,18 @@ class ReActAgent(Generator):
         prompt_kwargs["step_history"] = self.step_history
 
         # call the super class Generator to get the response
-        response = super().call(
-            input=input, prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
+        response: GeneratorOutput = super().call(
+            prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
         parsed_response = self._parse_text_response(
-            json_obj_response=response, step=step
+            json_obj_response=response.data, step=step
         )
         # execute the action
         if parsed_response and parsed_response.action:
             parsed_response = self._execute_action(parsed_response)
+            printc(f"Step {step}: \n{parsed_response}\n_______\n", color="blue")
         else:
-            print(f"Failed to parse response for step {step}")
+            log.error(f"Failed to parse response for step {step}")
         self.step_history.append(parsed_response)
 
         return response
@@ -285,21 +298,24 @@ class ReActAgent(Generator):
         model_kwargs: Optional[Dict] = {},
     ) -> Any:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
+        prompt_kwargs = deepcopy(promt_kwargs)
+        prompt_kwargs["input_str"] = input
+        printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1
             try:
-                self._run_one_step(input, step, promt_kwargs, model_kwargs)
+                self._run_one_step(step, prompt_kwargs, model_kwargs)
                 if (
                     self.step_history[-1].fun_name
                     and self.step_history[-1].fun_name == "finish"
                 ):
                     break
             except Exception as e:
-                error_message = f"Error running step {step}: {e}"
-                print(error_message)
+                log.error(f"Error running step {step}: {e}")
 
         answer = self.step_history[-1].observation
-        print(f"step_history: {self.step_history}")
+        printc(f"answer:\n {answer}", color="green")
+        log.info(f"step_history: {self.step_history}")
         self.reset()
         return answer
 
@@ -311,6 +327,7 @@ class ReActAgent(Generator):
 
 if __name__ == "__main__":
     from components.model_client import GroqAPIClient
+    from lightrag.utils import setup_env  # noqa
 
     def multiply(a: int, b: int) -> int:
         """
@@ -380,12 +397,11 @@ if __name__ == "__main__":
             model_client=GroqAPIClient(),
             model_kwargs=llm_model_kwargs,
         )
-    print(agent.tools)
+    # print(agent.tools)
 
     average_time = 0
     for query in queries:
         t0 = time.time()
         answer = agent(query)
         average_time += time.time() - t0
-        print(f"Answer: {answer}")
     print(f"Average time: {average_time / len(queries)}")

@@ -9,7 +9,7 @@
 
 ## How the Documentation Works
 
-We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) as the language. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files. 
+We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) as the language. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files.
 
 ## Setup
 
@@ -19,7 +19,24 @@ We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool
 
 ### **2. Install Necessary Packages**
 
-`pip install sphinx sphinx-rtd-theme`  
+You can use either `poetry` or `pip` to install the necessary packages.
+
+**Use `poetry`:**
+
+
+All the packages are manged in the project's ``pyproject.toml`` file in the doc dependencies section. You can install all the necessary packages by running:
+
+```
+poetry install --with doc
+```
+
+**Use `pip`:**
+
+Or you can use `pip` to install the necessary packages listed in ``requirements.txt``:
+
+```
+pip install -r requirements.txt
+```
 
 ### **3. Build the Documentation**
 
@@ -71,7 +88,7 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
 
 ### **Existing Sections**
 
-Existing sections include: 
+Existing sections include:
 
 `get_started/`: Includes installation and LightRAG introduction
 
@@ -85,7 +102,7 @@ Existing sections include:
 
 Most of the documentation updates should be written as comments/doc-strings in your source code, which will be automatically converted to docs. Do manual editing when you add instructions to use your code, adjust the layout, etc.
 
-The existing documentation is a combination of automatic generation and human editing.  
+The existing documentation is a combination of automatic generation and human editing.
 
 ### **Source Code Doc-string Update**
 
@@ -109,7 +126,7 @@ If you add new modules or code to the project, sphinx has a [command](https://ww
 sphinx-apidoc [OPTIONS] -o <OUTPUT_PATH> <MODULE_PATH> [EXCLUDE_PATTERN …]
 ```
 
-***Note:*** 
+***Note:***
 
 If your new module is a folder, it should contain a `__init__.py` file.
 
@@ -125,7 +142,7 @@ sphinx-apidoc -o docs/source/tutorials ./use_cases **test**
 
 (*test* is to exclude the files containing `test` in the filename)
 
-You will find a `modules.rst` and a `use_cases.rst`  in the `docs/source/tutorials`. The `use_cases.rst` contains all the packages included in your `./use_cases`. 
+You will find a `modules.rst` and a `use_cases.rst`  in the `docs/source/tutorials`. The `use_cases.rst` contains all the packages included in your `./use_cases`.
 
 Then you should add the link to the `index.rst` to show your source code and docs in the documentation. Find `docs/source/index.rst` and add the new section:
 
@@ -134,11 +151,11 @@ Then you should add the link to the `index.rst` to show your source code and doc
    :glob:
    :maxdepth: 1
    :caption: Use Cases
-   
+
    tutorials/use_cases
 ```
 
-Then run: 
+Then run:
 
 ```python
 cd docs
@@ -153,9 +170,9 @@ And you will be able to find the newly added use_cases module.
 If you want to add any written files such as README.md to the documentation, there is an easy way to transform the files to `.rst` files using `Pandoc`.
 
 - First, install Pandoc with Homebrew:
-    
-    `brew install pandoc` 
-    
+
+    `brew install pandoc`
+
 - Then run `pandoc -s <input .md file> -o <path/to/target_rst_file>`. For example, in the root directory run `pandoc -s README.md -o docs/source/get_started/introduction.rst`.This command will take content from `README.md` and create an `introduction.rst` file in the specified directory.
 
 After editing, run
