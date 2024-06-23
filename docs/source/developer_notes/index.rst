@@ -111,7 +111,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    * - :doc:`text_splitter`
      - To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.
    * - :doc:`db`
-     - Understanding the data modeling, processing, and storage as a whole. We will build a chatbot with enhanced memory and memoy retrieval in this note (RAG).
+     - Understanding the **data modeling, processing, and storage** as a whole. We will build a chatbot with enhanced memory and memoy retrieval in this note (RAG).
 
 
 ..  * - :doc:`data_pipeline`

@@ -406,7 +406,7 @@ class DialogTurn(DataClass):
         self.assistant_response_timestamp = assistant_response_timestamp
 
 
-# TODO: merge and check the overlap with db
+# TODO: This part and the Memory class is still WIP, and will need more work in the future.
 @dataclass
 class Conversation:
     __doc__ = r"""A conversation manages the dialog turns in a whole conversation as a session.
@@ -417,15 +417,23 @@ class Conversation:
     """
 
     id: str = field(
-        default_factory=lambda: str(uuid.uuid4())
+        default_factory=lambda: str(
+            uuid.uuid4(), metadata={"desc": "The id of the conversation"}
+        )
     )  # the id of the conversation
     name: Optional[str] = field(
         default=None, metadata={"desc": "The name of the conversation"}
     )
-    user_id: Optional[str] = None
-    dialog_turns: OrderedDict[int, DialogTurn] = field(default_factory=OrderedDict)
+    user_id: Optional[str] = field(
+        default=None, metadata={"desc": "The id of the user"}
+    )
+    dialog_turns: OrderedDict[int, DialogTurn] = field(
+        default_factory=OrderedDict, metadata={"desc": "The dialog turns"}
+    )
     # int is the order of the turn, starts from 0
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "Additional metadata"}
+    )
 
     created_at: Optional[datetime] = field(
         default_factory=datetime.now,
