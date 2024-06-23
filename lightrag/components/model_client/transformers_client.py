@@ -3,6 +3,8 @@
 from typing import Any, Dict, Union, List, Optional, Tuple
 import logging
 from functools import lru_cache
+import os
+import requests
 from lightrag.core.types import EmbedderOutput
 import torch.nn.functional as F
 
@@ -226,6 +228,25 @@ class TransformerReranker:
         else:
             raise ValueError(f"model {model_name} is not supported")
 
+class ZephyrClient: # local
+    API_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta"
+    
+    def __init__(self, payload: str, api_key: Optional[str] = None, API_URL: str = API_URL):
+
+        super().__init__()
+        self._api_key = api_key
+        self.API_URL = API_URL
+        self.payload = payload
+        self.headers = self.init_sync_client()
+
+    def init_sync_client(self):
+        api_key = self._api_key or os.getenv("HUGGING_FACE_API_KEY")
+        if not api_key:
+            raise ValueError("Environment variable HUGGING_FACE_API_KEY must be set")
+        headers = {"Authorization": api_key}
+        # response = requests.post(self.API_URL, headers=headers)
+        return headers
+    
 
 class TransformersClient(ModelClient):
     __doc__ = r"""LightRAG API client for transformers.
@@ -240,6 +261,9 @@ class TransformersClient(ModelClient):
         "BAAI/bge-reranker-base": {
             "type": ModelType.RERANKER,
         },
+        "HuggingFaceH4/zephyr-7b-beta": {
+            "type": ModelType.LLM,
+        },
     }
 
     def __init__(self, model_name: Optional[str] = None) -> None:
@@ -253,6 +277,8 @@ class TransformersClient(ModelClient):
             self.sync_client = self.init_sync_client()
         elif self._model_name == "BAAI/bge-reranker-base":
             self.reranker_client = self.init_reranker_client()
+        elif self._model_name =="HuggingFaceH4/zephyr-7b-beta":
+            self.sync_client = self.init_llm_client()
         self.async_client = None
 
     def init_sync_client(self):
@@ -261,6 +287,9 @@ class TransformersClient(ModelClient):
     def init_reranker_client(self):
         return TransformerReranker()
 
+    def init_llm_client(self):
+        return ZephyrClient()
+    
     def parse_embedding_response(self, response: Any) -> EmbedderOutput:
         embeddings: List[Embedding] = []
         for idx, emb in enumerate(response):
@@ -293,6 +322,15 @@ class TransformersClient(ModelClient):
                 scores, api_kwargs["top_k"]
             )
             return top_k_indices, top_k_scores
+        elif (  # llm
+            model_type == ModelType.LLM
+            and "model" in api_kwargs
+            and api_kwargs["model"] == "HuggingFaceH4/zephyr-7b-beta"
+        ):  
+            headers = self.sync_client.headers
+            input = api_kwargs["input"]
+            response = requests.post(self.API_URL, headers=headers, json=input)
+            return response.json()
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -309,6 +347,9 @@ class TransformersClient(ModelClient):
             assert "documents" in final_model_kwargs, "documents must be specified"
             assert "top_k" in final_model_kwargs, "top_k must be specified"
             final_model_kwargs["query"] = input
+            return final_model_kwargs
+        elif model_type == ModelType.LLM:
+            final_model_kwargs["input"] = input
             return final_model_kwargs
         else:
             raise ValueError(f"model_type {model_type} is not supported")
