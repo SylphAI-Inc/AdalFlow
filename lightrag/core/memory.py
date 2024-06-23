@@ -9,19 +9,20 @@ When memory becomes too large, we need to (1) compress (2) RAG to retrieve the m
 In this case, we only manage the memory for the current session.
 """
 
-from lightrag.core.component import Component
 from lightrag.core.types import (
-    DialogSession,
+    Conversation,
     DialogTurn,
     UserQuery,
     AssistantResponse,
 )
 
+from lightrag.core.db import LocalDB
 
-class Memory(Component):
+
+class Memory(LocalDB):
     def __init__(self):
         super().__init__()
-        self.memory = DialogSession()
+        self.memory = Conversation()
 
     def __call__(self) -> str:
         return self.memory.get_chat_history_str()

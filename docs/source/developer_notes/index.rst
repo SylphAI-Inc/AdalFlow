@@ -32,6 +32,7 @@ We have clear design phisolophy:
 
 .. toctree::
    :maxdepth: 1
+   :caption: Introduction
 
    lightrag_design_philosophy
 
@@ -62,8 +63,10 @@ Code path: ``lightrag.core``.
 
 
 .. create side bar navigation
+
 .. toctree::
    :maxdepth: 1
+   :caption: Base Classes
    :hidden:
 
    component
@@ -118,6 +121,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
 
 .. toctree::
    :maxdepth: 1
+   :caption: RAG Essentials
    :hidden:
 
    prompt
@@ -141,6 +145,14 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
       - Provide tools (function calls) to interact with the generator.
     * - :doc: `agent`
       - The ReactAgent.
+
+.. toctree::
+    :maxdepth: 1
+    :caption: Agent Essentials
+    :hidden:
+
+    tool_helper
+    agent
 
 .. Core functionals
 .. -------------------
@@ -173,8 +185,8 @@ Datasets and Evaulation
 
 .. toctree::
    :maxdepth: 1
+   :caption: Datasets and Evaulation
 
-   configs
 
    datasets
 
@@ -185,6 +197,7 @@ Optimizer & Trainer
 
 .. toctree::
    :maxdepth: 1
+   :caption: Optimizer & Trainer
 
    parameter
 
@@ -192,7 +205,7 @@ Optimizer & Trainer
    trainer
 
 
-Logging & Tracing
+Logging & Tracing & Configurations
 =============================
 Code path: ``lightrag.utils``.
 
@@ -207,7 +220,10 @@ Code path: ``lightrag.utils``.
 
 .. toctree::
    :maxdepth: 1
+   :caption: Logging & Tracing & Configurations
    :hidden:
+
 
    logging
    logging_tracing
+   configs

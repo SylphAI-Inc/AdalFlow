@@ -2,7 +2,7 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, TypeVar, Type, Tuple
+from typing import List, Dict, Any, Optional, TypeVar, Type
 import enum
 from dataclasses import (
     dataclass,
@@ -110,34 +110,28 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
     return signature
 
 
-class _DataClassMeta(type):
-    r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
+# class _DataClassMeta(type):
+#     r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
 
-    Args:
-        cls: The class object being created.
-            It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
-            <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
-        name: the name of the class
-        bases: A tuple of the base classes from which the class inherits.
-        dct: The dictionary of attributes and methods of the class.
-    """
+#     Args:
+#         cls: The class object being created.
+#             It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
+#             <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
+#         name: the name of the class
+#         bases: A tuple of the base classes from which the class inherits.
+#         dct: The dictionary of attributes and methods of the class.
+#     """
 
-    def __init__(
-        cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
-    ) -> None:
-        super(_DataClassMeta, cls).__init__(name, bases, dct)
-        # __name__ is lightrag.core.base_data_class, will always be the base class
-        # print("DataClassMeta init, class:", cls)
-        # print(
-        #     f"cls.__module__ = {cls.__module__}, __name__ = {__name__}, {cls.__module__ != __name__}"
-        # )
-        # print(f"{cls.__module__} is_dataclass(cls) = {is_dataclass(cls)} ")
-        if (
-            not is_dataclass(cls)
-            and cls.__module__ != __name__  # and bases != (object,)
-        ):  # Avoid decorating DataClass itself.
-            # print(f"dataclas : {cls}")
-            dataclass(cls)
+#     def __init__(
+#         cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
+#     ) -> None:
+#         super(_DataClassMeta, cls).__init__(name, bases, dct)
+
+#         if (
+#             not is_dataclass(cls)
+#             and cls.__module__ != __name__  # and bases != (object,)
+#         ):
+#             dataclass(cls)
 
 
 # TODO: we want the child class to work either with or without dataclass decorator,
@@ -615,73 +609,73 @@ class DynamicDataClassFactory:
         return dynamic_class
 
 
-if __name__ == "__main__":
-    from dataclasses import dataclass
+# if __name__ == "__main__":
+#     from dataclasses import dataclass
 
-    @dataclass
-    class Address:
-        street: str
-        city: str
-        postal_code: str
+#     @dataclass
+#     class Address:
+#         street: str
+#         city: str
+#         postal_code: str
 
-    @dataclass
-    class Person(DataClass):
-        name: str
-        age: int
-        address: Address
+#     @dataclass
+#     class Person(DataClass):
+#         name: str
+#         age: int
+#         address: Address
 
-    person = Person(
-        name="John Doe",
-        age=30,
-        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
-    )
-    print(person.to_yaml())
-    yaml_str = person.to_yaml()
-    print(yaml_str)
-    print("last char", repr(yaml_str[-2:]))
-    print(yaml.safe_load(yaml_str))
-    restored_person = Person.from_dict(yaml.safe_load(yaml_str))
-    print(restored_person)
+#     person = Person(
+#         name="John Doe",
+#         age=30,
+#         address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+#     )
+#     print(person.to_yaml())
+#     yaml_str = person.to_yaml()
+#     print(yaml_str)
+#     print("last char", repr(yaml_str[-2:]))
+#     print(yaml.safe_load(yaml_str))
+#     restored_person = Person.from_dict(yaml.safe_load(yaml_str))
+#     print(restored_person)
 
-    # test to_json
-    print(person.to_json())
-    json_str = person.to_json()
-    print(json_str)
-    print(json.loads(json_str))
-    restored_person = Person.from_dict(json.loads(json_str))
-    print(restored_person)
+#     # test to_json
+#     print(person.to_json())
+#     json_str = person.to_json()
+#     print(json_str)
+#     print(json.loads(json_str))
+#     restored_person = Person.from_dict(json.loads(json_str))
+#     print(restored_person)
 
-    # now try a list of nested dataclass
-    @dataclass
-    class Company(DataClass):
-        name: str
-        address: Address
-        employees: List[int]  # employee ids
+#     # now try a list of nested dataclass
+#     @dataclass
+#     class Company(DataClass):
+#         name: str
+#         address: Address
+#         employees: List[int]  # employee ids
 
-    company = Company(
-        name="ACME",
-        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
-        employees=[1, 2, 3],
-    )
-    print(company.to_yaml())
-    yaml_str = company.to_yaml()
-    default_yaml_str = yaml.dump(company, default_flow_style=False)
-    # load back
-    restored_company = Company.from_dict(yaml.safe_load(yaml_str))
-    print(restored_company)
-    # print("default yaml:", default_yaml_str)
-    # print(yaml.safe_load(default_yaml_str)), will fail as it is not a valid yaml string
+#     company = Company(
+#         name="ACME",
+#         address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+#         employees=[1, 2, 3],
+#     )
+#     print(company.to_yaml())
+#     yaml_str = company.to_yaml()
+#     default_yaml_str = yaml.dump(company, default_flow_style=False)
+#     # load back
+#     restored_company = Company.from_dict(yaml.safe_load(yaml_str))
+#     print(restored_company)
+#     # print("default yaml:", default_yaml_str)
+#     # print(yaml.safe_load(default_yaml_str)), will fail as it is not a valid yaml string
 
-    json_str = company.to_json()
-    print(json_str)
-    restored_company = Company.from_dict(json.loads(json_str))
-    print(restored_company)
-    print("to_dict:", company.to_dict())
-    print("to_dict_class:", Company.to_dict_class())
+#     json_str = company.to_json()
+#     print(json_str)
+#     restored_company = Company.from_dict(json.loads(json_str))
+#     print(restored_company)
+#     print("to_dict:", company.to_dict())
+#     print("to_dict_class:", Company.to_dict_class())
 
-    print(f"person to dict {person.to_dict()}")
-    print(f"person to dict default {person.__dict__}")
+#     print(f"person to dict {person.to_dict()}")
+#     print(f"person to dict default {person.__dict__}")
 
-    # default_json_str = json.dumps(company, indent=4)
-    # print(default_json_str)
-    # print(json.loads(default_json_str))
+# default_json_str = json.dumps(company, indent=4)
+# print(default_json_str)
+# print(json.loads(default_json_str))

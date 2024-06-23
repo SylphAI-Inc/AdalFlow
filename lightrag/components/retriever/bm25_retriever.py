@@ -43,7 +43,7 @@ def split_text_by_word_fn_then_lower_tokenized(x: str) -> List[str]:
     return final_tokens
 
 
-class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
+class BM25Retriever(Retriever[str, RetrieverStrQueryType]):
     __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
 
     It expects str as the final document type after ``document_map_func`` if the given document is not already in the format of List[str].
@@ -89,7 +89,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
 
     .. code-block:: python
 
-            from lightrag.components.retriever.bm25_retriever import InMemoryBM25Retriever
+            from lightrag.components.retriever.bm25_retriever import BM25Retriever
 
             documents = ["hello world", "world is beautiful", "today is a good day"]
 
@@ -97,7 +97,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
 
     .. code-block:: python
 
-            retriever = InMemoryBM25Retriever(top_k=1, documents=documents)
+            retriever = BM25Retriever(top_k=1, documents=documents)
             output = retriever("hello")
             print(output)
             # Output:
@@ -106,7 +106,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
     2. Pass the documents from the :meth:`build_index_from_documents` method:
 
     .. code-block:: python
-            retriever = InMemoryBM25Retriever(top_k=1)
+            retriever = BM25Retriever(top_k=1)
             retriever.build_index_from_documents(documents)
             output = retriever("hello")
 
@@ -115,7 +115,7 @@ class InMemoryBM25Retriever(Retriever[str, RetrieverStrQueryType]):
     .. code-block:: python
 
             retriever.save_to_file("bm25_index.json")
-            retriever2 = InMemoryBM25Retriever.load_from_file("bm25_index.json")
+            retriever2 = BM25Retriever.load_from_file("bm25_index.json")
             output = retriever2("hello")
             print(output)
 

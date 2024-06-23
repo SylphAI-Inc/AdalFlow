@@ -34,7 +34,7 @@ from .types import (
     UserQuery,
     AssistantResponse,
     DialogTurn,
-    DialogSession,
+    Conversation,
 )
 from .prompt_builder import Prompt
 from lightrag.utils.registry import EntityMapping
@@ -81,7 +81,7 @@ __all__ = [
     "UserQuery",
     "AssistantResponse",
     "DialogTurn",
-    "DialogSession",
+    "Conversation",
 ]
 
 for name in __all__:

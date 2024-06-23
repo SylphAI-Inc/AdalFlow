@@ -356,8 +356,9 @@ class DialogTurn(DataClass):
     user_id: Optional[str] = field(
         default=None, metadata={"desc": "The unique id of the user"}
     )
-    session_id: Optional[str] = field(
-        default=None, metadata={"desc": "The unique id of the dialog session"}
+    conversation_id: Optional[str] = field(
+        default=None,
+        metadata={"desc": "The unique id of the conversation it belongs to"},
     )
     order: Optional[int] = field(
         default=None,
@@ -405,21 +406,31 @@ class DialogTurn(DataClass):
         self.assistant_response_timestamp = assistant_response_timestamp
 
 
+# TODO: merge and check the overlap with db
 @dataclass
-class DialogSession:
-    __doc__ = r"""A dialog session manages the dialog turns in a whole conversation as a session.
+class Conversation:
+    __doc__ = r"""A conversation manages the dialog turns in a whole conversation as a session.
 
     This class is mainly used in-memory for the dialog system/app to manage active conversations.
     You won't need this class for past conversations which have already been persisted in a database as a form of
     record or history.
     """
 
-    id: str = field(default_factory=lambda: str(uuid.uuid4()))  # the id of the session
+    id: str = field(
+        default_factory=lambda: str(uuid.uuid4())
+    )  # the id of the conversation
+    name: Optional[str] = field(
+        default=None, metadata={"desc": "The name of the conversation"}
+    )
     user_id: Optional[str] = None
     dialog_turns: OrderedDict[int, DialogTurn] = field(default_factory=OrderedDict)
     # int is the order of the turn, starts from 0
     metadata: Optional[Dict[str, Any]] = None
-    session_start_timestamp: Optional[datetime] = field(default_factory=datetime.now)
+
+    created_at: Optional[datetime] = field(
+        default_factory=datetime.now,
+        metadata={"desc": "The timestamp of the conversation creation"},
+    )
 
     # InitVar type annotation is used for parameters that are used in __post_init__
     # but not meant to be fields in the dataclass.
