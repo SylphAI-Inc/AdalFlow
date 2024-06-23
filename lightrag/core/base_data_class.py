@@ -162,7 +162,7 @@ class DataClass:
 
     Describing:
 
-    We defined :ref:`DataClassFormatType<core-base_data_class_format_type>` to categorize DataClass description formats
+    We defined :ref:`DataClassFormatType <core-base_data_class_format_type>` to categorize DataClass description formats
     as input or output in LLM prompt.
 
 

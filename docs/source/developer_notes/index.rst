@@ -15,7 +15,7 @@ This is our tutorials before you move ahead to build use cases  (LLM application
 
 
 
-.. figure:: /_static/LLM_arch.png
+.. figure:: /_static/images/LLM_arch.png
    :alt: LLM application is no different from a mode training/eval workflow
    :align: center
    :width: 600px

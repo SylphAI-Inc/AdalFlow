@@ -49,7 +49,7 @@ If we want it to be more accurate, we move up to more expensive and more accurat
 Design pattern
 ------------------
 
-.. figure:: /_static/retriever.png
+.. figure:: /_static/images/retriever.png
     :align: center
     :alt: Retriever design
     :width: 620px

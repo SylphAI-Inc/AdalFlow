@@ -43,6 +43,18 @@ def split_text_by_word_fn_then_lower_tokenized(x: str) -> List[str]:
     return final_tokens
 
 
+def split_text_tokenized(x: str) -> List[str]:
+    tokenizer = Tokenizer()
+    # words = x.lower().split(" ")
+    tokens = tokenizer.encode(x)
+    # print(tokens)
+    final_tokens: List[str] = []
+    for token in tokens:
+        final_tokens.append(tokenizer.decode([token]))
+    # print(final_tokens)
+    return final_tokens
+
+
 class BM25Retriever(Retriever[str, RetrieverStrQueryType]):
     __doc__ = r"""Fast Implementation of Best Matching 25 ranking function.
 
