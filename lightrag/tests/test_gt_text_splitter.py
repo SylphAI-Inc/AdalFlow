@@ -1,7 +1,7 @@
 import unittest
 from lightrag.core.types import Document
-from lightrag.core.text_splitter import TextSplitter  # Import your TextSplitter
-from lightrag.core.document_splitter import DocumentSplitter  # Import the ground truth splitter
+from lightrag.components.data_process.text_splitter import TextSplitter  # Import your TextSplitter
+from lightrag.components.data_process.document_splitter import DocumentSplitter  # Import the ground truth splitter
 
 
 class TestTextSplitterComparison(unittest.TestCase):
