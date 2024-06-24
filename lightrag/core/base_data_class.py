@@ -18,6 +18,8 @@ import yaml
 import warnings
 import logging
 
+from lightrag.core.functional import dataclass_obj_to_dict, dataclass_obj_from_dict
+
 
 logger = logging.getLogger(__name__)
 
@@ -245,68 +247,75 @@ class DataClass:
             logging.warning(f"Field {field_name} does not exist in the dataclass")
         setattr(self, field_name, value)
 
-    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """More of an internal method used for serialization.
+    def to_dict(self, exclude: Optional[Dict[str, List[str]]] = None) -> Dict[str, Any]:
+        """Convert a dataclass object to a dictionary.
 
-        Converts the dataclass to a dictionary, optionally excluding specified fields.
-        Use this to save states of the instance, not advised to use in LLM prompt.
+        Supports nested dataclasses, lists, and dictionaries.
+        Allow exclude keys for each dataclass object.
+
+        Use cases:
+        - Decide what information will be included to be serialized to JSON or YAML that can be used in LLM prompt.
+        - Exclude sensitive information from the serialized output.
+        - Serialize the dataclass instance to a dictionary for saving states.
+
+        Args:
+            exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+
+
+        Example:
+
+        .. code-block:: python
+
+            from dataclasses import dataclass
+            from typing import List
+
+            @dataclass
+            class TrecData:
+                question: str
+                label: int
+
+            @dataclass
+            class TrecDataList(DataClass):
+
+                data: List[TrecData]
+                name: str
+
+            trec_data = TrecData(question="What is the capital of France?", label=0)
+            trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
+
+            trec_data_list.to_dict(exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
+
+            # Output:
+            # {'data': [{'question': 'What is the capital of France?'}]}
         """
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
-        if exclude is None:
-            exclude = []
-        exclude_set = set(exclude)
-
-        data = {
-            field.name: getattr(self, field.name)
-            for field in fields(self)
-            if field.name not in exclude_set
-        }
-        # Recursively convert nested dataclasses
-        for key, value in data.items():
-            if is_dataclass(value):
-                if hasattr(value, "to_dict"):
-                    data[key] = value.to_dict()
-                elif hasattr(value, "__dict__"):
-                    data[key] = value.__dict__
-                else:
-                    logging.warning(
-                        f"Field {key} is not a dataclass or does not have a to_dict method"
-                    )
-        return data
+        return dataclass_obj_to_dict(self, exclude)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
-        r"""
-        Create a dataclass instance from a dictionary.
+    def from_dict(cls: Type[T_co], data: Dict[str, Any]) -> T_co:
+        """Create a dataclass instance from a dictionary.
+
+        Supports nested dataclasses, lists, and dictionaries.
+
+        Example from the :meth:`to_dict` method.
+
+        ..code-block:: python
+
+            data_dict = trec_data_list.to_dict()
+            restored_data = TreDataList.from_dict(data_dict)
+
+            assert str(restored_data.__dict__) == str(trec_data_list.__dict__)
+
+        .. note::
+        If any required field is missing, it will raise an error.
+        Do not use the dict that has excluded required fields.
+
+        Use cases:
+        - Convert the json/yaml output from LLM prediction to a dataclass instance.
+        - Restore the dataclass instance from the serialized output used for states saving.
         """
-        # Recursively construct nested dataclasses
-        field_types = {f.name: f.type for f in fields(cls)}
-        init_kwargs = {}
-        for key, value in data.items():
-            if key not in field_types:
-                logging.warning(f"Field {key} does not exist in the dataclass")
-                continue
-            field_type = field_types[key]
-            if is_dataclass(field_type):
-                if isinstance(value, str):
-                    # Attempt to parse the string as JSON
-                    try:
-                        value = json.loads(value)
-                    except json.JSONDecodeError:
-                        logging.error(f"Error decoding JSON for field {key}")
-                        continue
-                if hasattr(field_type, "from_dict"):
-                    init_kwargs[key] = field_type.from_dict(value)
-                elif hasattr(field_type, "__dict__"):
-                    init_kwargs[key] = field_type(**value)
-                else:
-                    logging.warning(
-                        f"Field {key} is not a dataclass or does not have a from_dict method"
-                    )
-            else:
-                init_kwargs[key] = value
-        return cls(**init_kwargs)
+        return dataclass_obj_from_dict(cls, data)
 
     @classmethod
     def format_class_str(
@@ -609,8 +618,50 @@ class DynamicDataClassFactory:
         return dynamic_class
 
 
-# if __name__ == "__main__":
-#     from dataclasses import dataclass
+if __name__ == "__main__":
+    from dataclasses import dataclass
+
+    from typing import List
+
+
+@dataclass
+class Address:
+    street: str
+    city: str
+    zipcode: str
+
+
+@dataclass
+class Person(DataClass):
+    name: str
+    age: int
+    addresses: List[Address]
+    single_address: Address
+    dict_addresses: Dict[str, Address] = field(default_factory=dict)
+
+
+# Example instance of the nested dataclasses
+person = Person(
+    name="John Doe",
+    age=30,
+    addresses=[
+        Address(street="123 Main St", city="Anytown", zipcode="12345"),
+        Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+    ],
+    single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
+    dict_addresses={
+        "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
+        "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+    },
+)
+
+person_dict = person.to_dict()
+print(person_dict)
+
+# use exclude
+person_dict = person.to_dict(exclude={"Person": ["single_address", "dict_addresses"]})
+print("exclude", person_dict)
+
 
 #     @dataclass
 #     class Address:

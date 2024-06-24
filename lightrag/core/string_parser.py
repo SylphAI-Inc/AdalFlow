@@ -74,14 +74,14 @@ class JsonParser(Component):
 YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
 
 
-class YAMLParser(Component):
+class YamlParser(Component):
     __doc__ = r"""To extract YAML strings from text and parse them into a YAML object.
 
     Examples:
 
     .. code-block:: python
 
-        yaml_parser = YAMLParser()
+        yaml_parser = YamlParser()
         yaml_str = "```yaml\nkey: value\n```"
         yaml_obj = yaml_parser(yaml_str)
         print(yaml_obj)  # Expected to extract {"key": "value"}

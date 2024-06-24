@@ -10,7 +10,7 @@ import logging
 
 from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
-from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
+from lightrag.core.string_parser import YamlParser, ListParser, JsonParser
 from lightrag.core.base_data_class import DataClass, DataClassFormatType
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
@@ -102,7 +102,7 @@ class YamlOutputParser(OutputParser):
         data_class (Type): The dataclass to extract the schema for the YAML output.
         example (Type, optional): The example dataclass object to show in the prompt. Defaults to None.
         yaml_output_format_template (str, optional): The template for the YAML output format. Defaults to YAML_OUTPUT_FORMAT.
-        output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YAMLParser().
+        output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YamlParser().
 
     Examples:
 
@@ -156,7 +156,7 @@ class YamlOutputParser(OutputParser):
         template = template or YAML_OUTPUT_FORMAT
         self.data_class_for_yaml = data_class
         self.yaml_output_format_prompt = Prompt(template=template)
-        self.output_processors = output_processors or YAMLParser()
+        self.output_processors = output_processors or YamlParser()
         self.example = example
 
     def format_instructions(

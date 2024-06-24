@@ -80,7 +80,7 @@ class Prompt(Component):
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
-        self.prompt_kwargs = prompt_kwargs
+        self.prompt_kwargs = prompt_kwargs.copy()
 
     def __create_jinja2_template(self):
         r"""Create the Jinja2 template object."""
@@ -134,7 +134,7 @@ class Prompt(Component):
             logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
             prompt_str = self.jinja2_template.render(**pass_kwargs)
-            print("Prompt:")
+            print("Prompt:\n")
             print(prompt_str)
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")

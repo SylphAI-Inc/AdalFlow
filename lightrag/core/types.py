@@ -3,6 +3,7 @@
 from enum import Enum, auto
 from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence
 from collections import OrderedDict
+import json
 from dataclasses import (
     dataclass,
     field,
@@ -514,3 +515,63 @@ class StepOutput:
 
     def __str__(self):
         return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
+
+
+@dataclass
+class ToolOutput(DataClass):
+    __doc__ = (
+        r"""The output of a tool, which could be a function, a class, or a module."""
+    )
+    name: Optional[str] = field(default=None, metadata={"desc": "The name of the tool"})
+    raw_input: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "The raw input of the tool"}
+    )
+    raw_output: Optional[Any] = field(
+        default=None, metadata={"desc": "The raw output of the tool"}
+    )
+
+    str_content: Optional[str] = field(
+        default=None, metadata={"desc": "The string content of the tool output"}
+    )
+
+    def __str__(self):
+        return self.str_content
+
+
+@dataclass
+class ToolMetadata(DataClass):
+    __doc__ = (
+        r"""The metadata of a tool, which could be a function, a class, or a module."""
+    )
+    name: str = field(metadata={"desc": "The name of the tool"})
+    description: Optional[str] = field(
+        default=None, metadata={"desc": "The description of the tool"}
+    )
+    parameters: Dict[str, Any] = field(
+        default_factory=dict, metadata={"desc": "The schema of the parameters"}
+    )
+
+    def get_parameters_dict(self) -> dict:
+        parameters = {
+            k: v
+            for k, v in self.parameters.items()
+            if k in ["type", "properties", "required", "definitions"]
+        }
+        return parameters
+
+    @property
+    def tool_str(self) -> str:
+        """
+        Return a string representation of the tool.
+        """
+        return self.description
+
+    @property
+    def fn_schema_str(self) -> str:
+        # parameters = self.get_parameters_dict()
+        return json.dumps(self.parameters)
+
+    def get_name(self) -> str:
+        if self.name is None:
+            raise ValueError("name is None.")
+        return self.name

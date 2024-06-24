@@ -2,10 +2,121 @@
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Union, List, Tuple
+from typing import Dict, Any, Callable, Union, List, Tuple, Optional, Type
 import numpy as np
 import re
 import json
+
+
+def dataclass_obj_to_dict(
+    obj: Any, exclude: Optional[Dict[str, List[str]]] = None, parent_key: str = ""
+) -> Dict[str, Any]:
+    r"""Convert a dataclass object to a dictionary.
+
+    Supports nested dataclasses, lists, and dictionaries.
+    Allow exclude keys for each dataclass object.
+    Example:
+
+    .. code-block:: python
+
+       from dataclasses import dataclass
+       from typing import List
+
+       @dataclass
+       class TrecData:
+           question: str
+           label: int
+
+       @dataclass
+       class TrecDataList:
+
+           data: List[TrecData]
+           name: str
+
+       trec_data = TrecData(question="What is the capital of France?", label=0)
+       trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
+
+       dataclass_obj_to_dict(trec_data_list, exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
+
+       # Output:
+       # {'data': [{'question': 'What is the capital of France?'}]}
+
+    """
+    if exclude is None:
+        exclude = {}
+
+    obj_class_name = obj.__class__.__name__
+    current_exclude = exclude.get(obj_class_name, [])
+
+    if hasattr(obj, "__dataclass_fields__"):
+        return {
+            key: dataclass_obj_to_dict(value, exclude, parent_key=key)
+            for key, value in obj.__dict__.items()
+            if key not in current_exclude
+        }
+    elif isinstance(obj, list):
+        return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
+    elif isinstance(obj, dict):
+        return {
+            key: dataclass_obj_to_dict(value, exclude, parent_key)
+            for key, value in obj.items()
+        }
+    else:
+        return obj
+
+
+def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
+    r"""Convert a dictionary to a dataclass object.
+
+    Supports nested dataclasses, lists, and dictionaries.
+
+    .. note::
+        If any required field is missing, it will raise an error.
+        Do not use the dict that has excluded required fields.
+
+    Example:
+
+    .. code-block:: python
+
+       from dataclasses import dataclass
+       from typing import List
+
+       @dataclass
+       class TrecData:
+           question: str
+           label: int
+
+       @dataclass
+       class TrecDataList:
+
+           data: List[TrecData]
+           name: str
+
+       trec_data_dict = {"data": [{"question": "What is the capital of France?", "label": 0}], "name": "trec_data_list"}
+
+       dataclass_obj_from_dict(TrecDataList, trec_data_dict)
+
+       # Output:
+       # TrecDataList(data=[TrecData(question='What is the capital of France?', label=0)], name='trec_data_list')
+
+    """
+    if hasattr(cls, "__dataclass_fields__"):
+        fieldtypes = {f.name: f.type for f in cls.__dataclass_fields__.values()}
+        return cls(
+            **{
+                key: dataclass_obj_from_dict(fieldtypes[key], value)
+                for key, value in data.items()
+            }
+        )
+    elif isinstance(data, list):
+        return [dataclass_obj_from_dict(cls.__args__[0], item) for item in data]
+    elif isinstance(data, dict):
+        return {
+            key: dataclass_obj_from_dict(cls.__args__[1], value)
+            for key, value in data.items()
+        }
+    else:
+        return data
 
 
 def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict:
