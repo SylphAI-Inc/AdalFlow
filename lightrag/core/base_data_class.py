@@ -145,7 +145,7 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
 
 
 # 1. Support dataclass as field type, the nested dataclass using to_yaml, to_dict, or __dict__.
-@dataclass
+# @dataclass
 class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
 
@@ -318,6 +318,71 @@ class DataClass:
         return dataclass_obj_from_dict(cls, data)
 
     @classmethod
+    def from_json(cls: Type[T_co], json_str: str) -> T_co:
+        """Create a dataclass instance from a JSON string.
+
+        Args:
+            json_str (str): The JSON string to convert to a dataclass instance.
+
+        Example:
+
+        .. code-block:: python
+
+            json_str = '{"question": "What is the capital of France?", "label": 0}'
+            trec_data = TrecData.from_json(json_str)
+        """
+        try:
+            data = json.loads(json_str)
+            return cls.from_dict(data)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to load JSON string: {e}")
+
+    def to_json(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
+        r"""Convert the dataclass instance to a JSON string.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+        This can be important to llm prompt.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return json.dumps(self.to_dict(exclude), indent=4, sort_keys=False)
+
+    @classmethod
+    def from_yaml(cls: Type[T_co], yaml_str: str) -> T_co:
+        """Create a dataclass instance from a YAML string.
+
+        Args:
+            yaml_str (str): The YAML string to convert to a dataclass instance.
+
+        Example:
+
+        .. code-block:: python
+
+            yaml_str = 'question: What is the capital of France?\nlabel: 0'
+            trec_data = TrecData.from_yaml(yaml_str)
+        """
+        try:
+            data = yaml.safe_load(yaml_str)
+            return cls.from_dict(data)
+        except yaml.YAMLError as e:
+            raise ValueError(f"Failed to load YAML string: {e}")
+
+    def to_yaml(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
+        r"""Convert the dataclass instance to a YAML string.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return yaml.dump(
+            self.to_dict(exclude), default_flow_style=False, sort_keys=False
+        )
+
+    @classmethod
     def format_class_str(
         cls: "DataClass",
         format_type: DataClassFormatType,
@@ -439,119 +504,8 @@ class DataClass:
         """
         schema = cls.to_data_class_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
-        # # manually format the json string as the json.dump will always sort the keys
-        # # Which can impact the final model output
-        # json_content = []
-        # for key, value in signature_dict.items():
-        #     json_content.append(f'"{key}": "{value}"')
 
-        # # Join all parts with commas to form the complete JSON string
-        # json_output = ",\n".join(json_content)
-        # # return "{\n" + json_output + "\n}"
         return json.dumps(signature_dict, indent=4)
-
-    def to_yaml(self, exclude: Optional[List[str]] = None) -> str:
-        """
-        Convert the dataclass instance to a YAML string.
-
-        Manually formats each field to ensure proper YAML output without unwanted characters.
-
-        You can load it back to yaml object with:
-        >>> yaml.safe_load(yaml_string)
-        """
-        exclude = exclude or []
-        yaml_content = []
-        indent_str = " " * 2
-
-        for f in fields(self):
-            if f.name and exclude and f.name in exclude:
-                continue
-            value = getattr(self, f.name)
-            # Serialize value to a more controlled YAML format string
-            if isinstance(value, str):
-                # Directly format strings to ensure quotes are correctly placed
-                value_formatted = f'"{value}"'
-                yaml_content.append(f"{f.name}: {value_formatted}")
-            elif isinstance(value, (list, dict)):
-                value_formatted = yaml.dump(value, default_flow_style=False)
-                yaml_content.append(f"{f.name}: \n{value_formatted}")  # same line
-            # other class, check if they have to_dict method, other wise, use __dict__
-            elif (
-                hasattr(value, "to_yaml")
-                or hasattr(value, "to_dict")
-                or hasattr(value, "__dict__")
-            ):
-                if hasattr(value, "to_yaml"):
-                    value_formatted = value.to_yaml()
-                else:
-                    if hasattr(value, "to_dict"):
-                        value_formatted = yaml.dump(
-                            value.to_dict(), default_flow_style=False
-                        )
-                    else:
-                        value_formatted = yaml.dump(
-                            value.__dict__, default_flow_style=False
-                        )
-                # add indent to each line
-                value_formatted = indent_str + f"\n{indent_str}".join(
-                    value_formatted.split("\n")
-                )
-                value_formatted = value_formatted.rstrip().rstrip("\n...")
-                content = f"{f.name}: \n{value_formatted}"
-                yaml_content.append(content)
-            else:
-                # Use yaml.dump for other types but ensure the output is clean
-                value_formatted = (
-                    yaml.dump(value, default_flow_style=False).strip().rstrip("\n...")
-                )
-
-                yaml_content.append(f"{f.name}: {value_formatted}")
-        yaml_output = "\n".join(yaml_content)
-        return yaml_output
-
-    def to_json(self, exclude: Optional[List[str]] = None) -> str:
-        """
-        Convert the dataclass instance to a JSON string.
-
-        Manually formats each field to ensure proper JSON output without unwanted characters.
-
-        You can load it back to json object with:
-        >>> json.loads(json_string)
-        """
-        exclude = exclude or []
-        json_content = {}
-        for f in fields(self):
-            if f.name and exclude and f.name in exclude:
-                continue
-            value = getattr(self, f.name)
-            # Serialize each field according to its type
-            # For strings, integers, floats, booleans, directly assign
-            # For lists and dicts, use json.dumps to ensure proper formatting
-            if isinstance(value, (str, int, float, bool)):
-                json_content[f.name] = value
-            elif isinstance(value, (list, dict)):
-                # Convert lists and dictionaries to a string and then parse it back to ensure correct format
-                json_content[f.name] = json.loads(json.dumps(value))
-            # other class, check if they have to_dict method, other wise, use __dict__
-            elif (
-                hasattr(value, "to_json")
-                or hasattr(value, "to_dict")
-                or hasattr(value, "__dict__")
-            ):
-                if hasattr(value, "to_json"):
-                    json_content[f.name] = json.loads(value.to_json())
-                else:
-                    if hasattr(value, "to_dict"):
-                        json_content[f.name] = value.to_dict()
-                    else:
-                        json_content[f.name] = value.__dict__
-            else:
-                # Fallback for other types if necessary, can be customized further based on needs
-                json_content[f.name] = str(value)
-
-        # Convert the entire content dictionary to a JSON string
-        json_output = json.dumps(json_content, indent=4)
-        return json_output
 
     @classmethod
     def to_dict_class(cls, exclude: Optional[List[str]] = None) -> dict:
