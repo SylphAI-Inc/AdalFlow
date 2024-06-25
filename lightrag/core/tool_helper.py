@@ -3,217 +3,28 @@ Tool is LLM's extended capability which is one of the core design pattern of Age
 This helps to standardize the tool interface and metadata to communicate with the Agent.
 """
 
-from typing import Any, Optional, Dict, Callable, Awaitable, get_type_hints, Union
-from inspect import iscoroutinefunction, signature, Parameter
+from typing import Any, Optional, Dict, Callable, Awaitable, Union
+from inspect import iscoroutinefunction
 
-from dataclasses import dataclass, fields, is_dataclass, field
+from dataclasses import dataclass, field
 
 import json
 
-from lightrag.core.types import ToolMetadata, ToolOutput
+from lightrag.core.types import FunctionDefinition, ToolOutput, Function
 from lightrag.core import Component
+from lightrag.core.functional import get_fun_schema
 
 AsyncCallable = Callable[..., Awaitable[Any]]
 
 
-def get_fun_schema_1(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
-    r"""Get the schema of a function.
-    Examples:
-    def example_function(x: int, y: str = "default") -> int:
-        return x
-    schema = get_fun_schema("example_function", example_function)
-    print(json.dumps(schema, indent=4))
-    # Output:
-    {
-        "type": "object",
-        "properties": {
-            "x": {
-                "type": "int"
-            },
-            "y": {
-                "type": "str",
-                "default": "default"
-            }
-        },
-        "required": [
-            "x"
-        ]
-    }
-    """
-    sig = signature(func)
-    schema = {"type": "object", "properties": {}, "required": []}
-    type_hints = get_type_hints(func)
-
-    for name, parameter in sig.parameters.items():
-        print(f"name: {name}, parameter: {parameter}    {parameter.annotation}")
-        param_type = (
-            parameter.annotation.__name__
-            if parameter.annotation != Parameter.empty
-            else "Any"
-        )
-        # add type and default value if it exists
-        if parameter.default == Parameter.empty:
-            schema["required"].append(name)
-            schema["properties"][name] = {"type": param_type}
-        else:
-            schema["properties"][name] = {
-                "type": param_type,
-                "default": parameter.default,
-            }
-        # allow nested dataclasses
-        if is_dataclass(type_hints[name]):
-            print(f"type_hints[name]: {type_hints[name], name}")
-            for field_ in fields(type_hints[name]):
-                # format anything in the metadata
-                if "default" in field_.metadata:
-                    schema["properties"][name]["default"] = field_.metadata["default"]
-                for meta_field in field_.metadata:
-                    if meta_field != "default":
-                        schema["properties"][name][meta_field] = field_.metadata[
-                            meta_field
-                        ]
-
-        # add definitions if nested model exists
-        if hasattr(parameter.annotation, "__annotations__"):
-            schema["definitions"] = {name: get_fun_schema(name, parameter.annotation)}
-
-    return schema
-
-
-def get_fun_schema(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
-    r"""Get the schema of a function.
-    Examples:
-    def example_function(x: int, y: str = "default") -> int:
-        return x
-    schema = get_fun_schema("example_function", example_function)
-    print(json.dumps(schema, indent=4))
-    # Output:
-    {
-        "type": "object",
-        "properties": {
-            "x": {
-                "type": "int"
-            },
-            "y": {
-                "type": "str",
-                "default": "default"
-            }
-        },
-        "required": [
-            "x"
-        ]
-    }
-    """
-    sig = signature(func)
-    schema = {"type": "object", "properties": {}, "required": []}
-    type_hints = get_type_hints(func)
-
-    for param_name, parameter in sig.parameters.items():
-        param_type = (
-            parameter.annotation.__name__
-            if parameter.annotation != Parameter.empty
-            else "Any"
-        )
-        if parameter.default == Parameter.empty:
-            schema["required"].append(param_name)
-            schema["properties"][param_name] = {"type": param_type}
-        else:
-            schema["properties"][param_name] = {
-                "type": param_type,
-                "default": parameter.default,
-            }
-
-        # Check if the parameter is a dataclass
-        if is_dataclass(type_hints[param_name]):
-            schema["properties"][param_name] = get_dataclass_schema(
-                type_hints[param_name]
-            )
-
-    return schema
-
-
-def get_dataclass_schema(cls):
-    """Generate schema for a dataclass."""
-    schema = {"type": "object", "properties": {}, "required": []}
-    for field_ in fields(cls):
-        field_schema = {"type": field_.type.__name__}
-        if field_.default != field_.default_factory:
-            field_schema["default"] = field_.default
-        if field_.metadata:
-            field_schema.update(field_.metadata)
-        schema["properties"][field_.name] = field_schema
-        if field_.default == field_.default_factory:
-            schema["required"].append(field_.name)
-
-    return schema
-
-
-# def get_fun_schema(name: str, func: Callable[..., Any]) -> Dict[str, Any]:
-#     r"""Get the schema of a function.
-#     Examples:
-#     def example_function(x: int, y: str = "default") -> int:
-#         return x
-#     schema = get_fun_schema("example_function", example_function)
-#     print(json.dumps(schema, indent=4))
-#     # Output:
-#     {
-#         "type": "object",
-#         "properties": {
-#             "x": {
-#                 "type": "int"
-#             },
-#             "y": {
-#                 "type": "str",
-#                 "default": "default"
-#             }
-#         },
-#         "required": [
-#             "x"
-#         ]
-#     }
-#     """
-#     sig = signature(func)
-#     schema = {"type": "object", "properties": {}, "required": []}
-#     type_hints = get_type_hints(func)
-
-#     for name, parameter in sig.parameters.items():
-#         print(f"name: {name}, parameter: {parameter}    {parameter.annotation}")
-#         param_type = (
-#             parameter.annotation.__name__
-#             if parameter.annotation != Parameter.empty
-#             else "Any"
-#         )
-#         if parameter.default == Parameter.empty:
-#             schema["required"].append(name)
-#             schema["properties"][name] = {"type": param_type}
-#         else:
-#             schema["properties"][name] = {
-#                 "type": param_type,
-#                 "default": parameter.default,
-#             }
-#         # allow nested dataclasses
-#         if is_dataclass(type_hints[name]):
-#             print(f"type_hints[name]: {type_hints[name]}")
-#             for field_ in fields(type_hints[name]):
-#                 # format anything in the metadata
-#                 if "default" in field_.metadata:
-#                     schema["properties"][name]["default"] = field_.metadata["default"]
-#                 for meta_field in field_.metadata:
-#                     if meta_field != "default":
-#                         schema["properties"][name][meta_field] = field_.metadata[
-#                             meta_field
-#                         ]
-
-#         # add definitions if nested model exists
-#         if hasattr(parameter.annotation, "__annotations__"):
-#             schema["definitions"] = {name: get_fun_schema(name, parameter.annotation)}
-
-#     return schema
-
-
-# @dataclass
 class FunctionTool(Component):
     __doc__ = r"""
+
+    Handles:
+    * Create metadata by calling get_fun_schema.
+    * Parse the output of LLM.
+    * execute the function.
+
     There is almost no need to customize a FunctionTool, but you can do so if you want to.
     Support both positional and keyword arguments.
     NOTE:
@@ -234,7 +45,7 @@ class FunctionTool(Component):
     def __init__(
         self,
         fn: Union[Callable[..., Any], AsyncCallable],
-        metadata: Optional[ToolMetadata] = None,
+        definition: Optional[FunctionDefinition] = None,
     ):
         super().__init__()
         assert fn is not None, "fn must be provided"
@@ -243,47 +54,17 @@ class FunctionTool(Component):
         self._is_async = iscoroutinefunction(fn)
         print(f"self._is_async: {self._is_async}")
 
-        self.metadata = metadata or self._create_metadata()
+        self.definition = definition or self._create_fn_definition()
 
-    def _create_metadata(self) -> ToolMetadata:
+    def _create_fn_definition(self) -> FunctionDefinition:
         name = self.fn.__name__
         docstring = self.fn.__doc__
-        description = f"{name}{signature(self.fn)}\n{docstring}"
+        description = f"{docstring}"
+        # description = f"{name}{signature(self.fn)}\n{docstring}"
         fn_parameters = get_fun_schema(name, self.fn)
-        return ToolMetadata(
-            name=name, description=description, parameters=fn_parameters
+        return FunctionDefinition(
+            func_name=name, func_desc=description, func_parameters=fn_parameters
         )
-
-    # @classmethod
-    # def from_defaults(
-    #     cls,
-    #     fn: Optional[
-    #         Callable[..., Any]
-    #     ] = None,  # at least one of fn or async_fn must be provided
-    #     async_fn: Optional[AsyncCallable] = None,
-    #     name: Optional[str] = None,
-    #     description: Optional[
-    #         str
-    #     ] = None,  # if not provided, use function name, signature and docstring
-    #     tool_metadata: Optional[ToolMetadata] = None,
-    # ) -> "FunctionTool":
-    #     if tool_metadata is None:
-    #         name = name or fn.__name__
-    #         docstring = fn.__doc__
-    #         # sample_function(x, y, user: tests.test_tool.User = User(id=1, name='John'))
-    #         # two numbers together and returns the sum.
-    #         description = description or f"{name}{signature(fn)}\n{docstring}"
-
-    #         # fn_parameters are more readable than the above name, signature and docstring combination
-    #         fn_parameters = get_fun_schema(name, fn)
-
-    #         tool_metadata = ToolMetadata(
-    #             name=name, description=description, parameters=fn_parameters
-    #         )
-    #     return cls(fn=fn, metadata=tool_metadata, async_fn=async_fn)
-
-    # def __call__(self, *args: Any, **kwargs: Any) -> ToolOutput:
-    #     return self.call(*args, **kwargs)
 
     def call(self, *args: Any, **kwargs: Any) -> ToolOutput:
         if self._is_async:
@@ -325,7 +106,7 @@ if __name__ == "__main__":
         else:
             return json.dumps({"location": location, "temperature": "unknown"})
 
-    from lightrag.core.base_data_class import DataClass
+    from lightrag.core.base_data_class import DataClassFormatType
     from dataclasses import dataclass, field
 
     @dataclass
@@ -335,8 +116,14 @@ if __name__ == "__main__":
         )
         unit: str = field(metadata={"enum": ["celsius", "fahrenheit"]})
 
-    def get_current_weather(weather: Weather):
+    def get_current_weather(weather: Union[Weather, Dict[str, Dict]]):
         """Get the current weather in a given location"""
+        # LLM will work better with str and dict inputs.
+        if isinstance(weather, str):
+            weather = json.loads(weather)
+        if isinstance(weather, dict):
+            weather = Weather(**weather)
+
         if "tokyo" in weather.location.lower():
             return json.dumps(
                 {"location": "Tokyo", "temperature": "10", "unit": weather.unit}
@@ -352,8 +139,8 @@ if __name__ == "__main__":
         else:
             return json.dumps({"location": weather.location, "temperature": "unknown"})
 
-    weather_tool = FunctionTool(fn=get_current_weather_1)
-    print(weather_tool.metadata.to_json())
+    weather_tool = FunctionTool(fn=get_current_weather)
+    print("tool metadata", weather_tool.definition.to_json())
 
     # output = get_current_weather(
     #     weather=Weather(location="San Francisco", unit="celsius")
@@ -375,18 +162,13 @@ if __name__ == "__main__":
 
     # response = agent.chat("What is the weather in San Francisco?")
     # print(response)
-    @dataclass
-    class Function(DataClass):
-        name: str = field(metadata={"desc": "The name of the function"})
-        args: Dict[str, Any] = field(metadata={"desc": "The arguments of the function"})
 
     template = r"""<SYS>You have these tools available:
     <TOOLS>
     {% for tool in tools %}
-    {{ loop.index }}. ToolName: {{ tool.metadata.name }}
-        Tool Description: {{ tool.metadata.description }}
-        Tool Parameters: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
-    __________
+    {{ loop.index }}.
+    {{tool}}
+    ------------------------
     {% endfor %}
     </TOOLS>
     {{output_format_str}}
@@ -403,14 +185,22 @@ if __name__ == "__main__":
     enable_library_logging()
 
     model_kwargs = {"model": "gpt-3.5-turbo", "temperature": 0.3, "stream": False}
-
+    llama3_kwargs = {"model": "llama3-8b-8192"}
+    function_example = Function(
+        name="get_current_weather",
+        kwargs={"weather": Weather(location="San Francisco", unit="celsius")},
+    )
+    print("function example", function_example.to_json())
+    # generator, no matter what happens should generate the output
     generator = Generator(
-        model_client=ModelClientType.OPENAI(),
-        model_kwargs=model_kwargs,
+        model_client=ModelClientType.GROQ(),
+        model_kwargs=llama3_kwargs,
         template=template,
         prompt_kwargs={
-            "tools": [weather_tool],
-            "output_format_str": YamlOutputParser(Function).format_instructions(),
+            "tools": [weather_tool.definition.to_yaml()],
+            "output_format_str": YamlOutputParser(
+                Function  # , example=function_example
+            ).format_instructions(format_type=DataClassFormatType.SIGNATURE_YAML),
             # "output_format_str": Function.to_yaml_signature(),
         },
         output_processors=YamlOutputParser(Function),
@@ -439,9 +229,9 @@ if __name__ == "__main__":
     structured_output = Function.from_dict(output.data)
     print(f"structured_output: {structured_output}  ")
     # call the function
-    function_map = {"get_current_weather_1": get_current_weather_1}
+    function_map = {"get_current_weather": get_current_weather}
     function_name = structured_output.name
-    function_args = structured_output.args
+    function_args = structured_output.kwargs
     function = function_map[function_name]
     # {'name': 'get_current_weather', 'args': {'weather': {'location': 'San Francisco, CA', 'unit': 'celsius'}}}
     #  {'name': 'get_current_weather', 'args': {'location': 'San Francisco', 'unit': 'celsius'}}

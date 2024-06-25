@@ -21,10 +21,18 @@ workflow
 It is basically show LLM a list of choices and prompt it to choose one or few of them.
 
 1. Get a string format of available functions.
-2. Add the tools to the prompt, and instruct LLM to call the function with desired output format. The output format will need: function_name, parameters to call the function.
+2. Add the tools to the prompt, and instruct LLM to call the function with **desired output format**. The output format will need: function_name, parameters to call the function.
 3. Execute the LLM with the prompt and get the response.
 4. Parse the response to the designed format. Execute the function and get the output.
 5. Continue to the next step.
+
+Additionally, we will need to manage a map of the function calls.
+
+The basic function call is not complicated, but function calling can get more complicated:
+
+1. Support more complicated data types in the arguments, such as an object.
+2. There are different ways to call a function, the previous flow is more standard, but quite inflexible to extend to more complicated calls.
+3.
 
 
 1.Function formatting

@@ -97,9 +97,6 @@ User query:
 """
 
 
-# TODO: add better logging @xiaoyi
-
-
 class ReActAgent(Generator):
     __doc__ = r"""ReActAgent is a subclass of Generator that runs multiple and sequential functional call steps to generate the final response.
 
@@ -211,11 +208,7 @@ class ReActAgent(Generator):
 
         # convert all functions to FunctionTool, and track how to call each function, either call or acall
         self.tools = [
-            (
-                tool
-                if isinstance(tool, FunctionTool)
-                else FunctionTool.from_defaults(fn=tool)
-            )
+            (tool if isinstance(tool, FunctionTool) else FunctionTool(fn=tool))
             for tool in self.tools
         ]
         # pass the tools to the prompt
@@ -348,8 +341,8 @@ if __name__ == "__main__":
         return "python programming is a great way to learn programming"
 
     tools = [
-        FunctionTool.from_defaults(fn=multiply),
-        FunctionTool.from_defaults(fn=add),
+        FunctionTool(fn=multiply),
+        FunctionTool(fn=add),
         # FunctionTool.from_defaults(fn=search),
     ]
     llm_model_kwargs = {

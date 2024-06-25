@@ -2,12 +2,109 @@
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components."""
 
-from typing import Dict, Any, Callable, Union, List, Tuple, Optional, Type
+from typing import (
+    Dict,
+    Any,
+    Callable,
+    Union,
+    List,
+    Tuple,
+    Optional,
+    Type,
+    get_type_hints,
+)
+import logging
 import numpy as np
 import re
 import json
+import yaml
+from inspect import signature, Parameter
+from dataclasses import fields, is_dataclass
+
+log = logging.getLogger(__name__)
 
 
+########################################################################################
+# For FunctionTool component
+########################################################################################
+def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
+    r"""Get the schema of a function.
+    Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.
+
+    Examples:
+    def example_function(x: int, y: str = "default") -> int:
+        return x
+    schema = get_fun_schema("example_function", example_function)
+    print(json.dumps(schema, indent=4))
+    # Output:
+    {
+        "type": "object",
+        "properties": {
+            "x": {
+                "type": "int"
+            },
+            "y": {
+                "type": "str",
+                "default": "default"
+            }
+        },
+        "required": [
+            "x"
+        ]
+    }
+    """
+    sig = signature(func)
+    schema = {"type": "object", "properties": {}, "required": []}
+    type_hints = get_type_hints(func)
+
+    for param_name, parameter in sig.parameters.items():
+        param_type = type_hints.get(param_name, "Any")
+        if parameter.default == Parameter.empty:
+            schema["required"].append(param_name)
+            schema["properties"][param_name] = {**get_type_schema(param_type)}
+        else:
+            schema["properties"][param_name] = {
+                **get_type_schema(param_type),
+                "default": parameter.default,
+            }
+
+    return schema
+
+
+def get_type_schema(param_type: object) -> Dict[str, Any]:
+    if hasattr(param_type, "__origin__") and param_type.__origin__ is Union:
+        return {
+            "type": "Union",
+            "choices": [get_type_schema(arg) for arg in param_type.__args__],
+        }
+    elif is_dataclass(param_type):
+        return get_dataclass_schema(param_type)
+    elif hasattr(param_type, "__name__"):
+        return {"type": param_type.__name__}
+    else:
+        return {"type": "Any"}
+
+
+def get_dataclass_schema(cls):
+    """Generate schema for a dataclass."""
+    data_class_type = cls.__name__
+    schema = {"type": data_class_type, "properties": {}, "required": []}
+    for field_ in fields(cls):
+        field_schema = {"type": field_.type.__name__}
+        if field_.default != field_.default_factory:
+            field_schema["default"] = field_.default
+        if field_.metadata:
+            field_schema.update(field_.metadata)
+        schema["properties"][field_.name] = field_schema
+        if field_.default == field_.default_factory:
+            schema["required"].append(field_.name)
+
+    return schema
+
+
+########################################################################################
+# For Dataclass base class
+########################################################################################
 def dataclass_obj_to_dict(
     obj: Any, exclude: Optional[Dict[str, List[str]]] = None, parent_key: str = ""
 ) -> Dict[str, Any]:
@@ -57,11 +154,13 @@ def dataclass_obj_to_dict(
     elif isinstance(obj, list):
         return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
     elif isinstance(obj, dict):
+
         return {
             key: dataclass_obj_to_dict(value, exclude, parent_key)
             for key, value in obj.items()
         }
     else:
+
         return obj
 
 
@@ -101,6 +200,7 @@ def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
 
     """
     if hasattr(cls, "__dataclass_fields__"):
+        log.debug(f"{cls} is a dataclass.")
         fieldtypes = {f.name: f.type for f in cls.__dataclass_fields__.values()}
         return cls(
             **{
@@ -109,16 +209,67 @@ def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
             }
         )
     elif isinstance(data, list):
-        return [dataclass_obj_from_dict(cls.__args__[0], item) for item in data]
+        restored_data = []
+        for item in data:
+            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+                # restore the value to its dataclass type
+                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
+            else:
+                # Use the original data [Any]
+                restored_data.append(item)
+
+        return restored_data
+
     elif isinstance(data, dict):
-        return {
-            key: dataclass_obj_from_dict(cls.__args__[1], value)
-            for key, value in data.items()
-        }
+        for key, value in data.items():
+            if cls.__args__[1] and hasattr(cls.__args__[1], "__dataclass_fields__"):
+                # restore the value to its dataclass type
+                data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
+            else:
+                # Use the original data [Any]
+                data[key] = value
+        return data
+
     else:
+        log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
         return data
 
 
+def from_dict_to_json(data: Dict[str, Any], sort_keys: bool = False) -> str:
+    r"""Convert a dictionary to a JSON string."""
+    try:
+        return json.dumps(data, indent=4, sort_keys=sort_keys)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to convert dict to JSON: {e}")
+
+
+def from_dict_to_yaml(data: Dict[str, Any], sort_keys: bool = False) -> str:
+    r"""Convert a dictionary to a YAML string."""
+    try:
+        return yaml.dump(data, default_flow_style=False, sort_keys=sort_keys)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Failed to convert dict to YAML: {e}")
+
+
+def from_json_to_dict(json_str: str) -> Dict[str, Any]:
+    r"""Convert a JSON string to a dictionary."""
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to convert JSON to dict: {e}")
+
+
+def from_yaml_to_dict(yaml_str: str) -> Dict[str, Any]:
+    r"""Convert a YAML string to a dictionary."""
+    try:
+        return yaml.safe_load(yaml_str)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Failed to convert YAML to dict: {e}")
+
+
+########################################################################################
+# For ** component
+########################################################################################
 def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict:
     r"""
     The model configuration exclude the input itself.
@@ -136,6 +287,9 @@ def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict
     return pass_model_kwargs
 
 
+########################################################################################
+# For Tokenizer component
+########################################################################################
 VECTOR_TYPE = Union[List[float], np.ndarray]
 
 
