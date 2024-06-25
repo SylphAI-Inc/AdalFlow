@@ -13,7 +13,7 @@ In this tutorial, we will learn:
 
 #. How to implement ``LightRAG's TextSplitter``
 
-Why do we need the ``TextSplitter``
+Why do we need the TextSplitter
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 LLMs’s context window is limited and the performance often drops with very long and nonsense input.
 Shorter content is more manageable and fits memory constraint.
@@ -22,7 +22,7 @@ The goal of the text splitter is to chunk large data into smaller ones, potentia
 The ``TextSplitter`` is designed to efficiently process and chunk **plain text**. 
 It leverages configurable separators to facilitate the splitting of :obj:`document object <core.types.Document>` into smaller manageable document chunks.
 
-How does ``LightRAG's TextSplitter`` work
+How does it work
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ``TextSplitter`` supports 2 types of splitting. 
     
@@ -96,11 +96,7 @@ Here is an example of how ``chunk_size`` works with ``chunk_overlap``:
             }
 
     # set up the document splitter
-    text_splitter = TextSplitter(
-        split_by=text_splitter_settings["split_by"],
-        chunk_size=text_splitter_settings["chunk_size"],
-        chunk_overlap=text_splitter_settings["chunk_overlap"],
-        )
+    text_splitter = TextSplitter(**text_splitter_settings)
     doc1 = Document(
     text="Hello, this is lightrag. Please implement your splitter here.",
     id="doc1",
@@ -135,9 +131,7 @@ One more example on ``split_by=token``:
             }
 
     # set up the document splitter
-    text_splitter = TextSplitter(
-        ...
-        )
+    text_splitter = TextSplitter(**text_splitter_settings)
 
     doc1 = Document(
         text="Hello, this is lightrag. Please implement your splitter here.",
@@ -171,9 +165,7 @@ One more example on ``split_by=token``:
             }
 
     # set up the document splitter
-    text_splitter = TextSplitter(
-        ...
-        )
+    text_splitter = TextSplitter(**text_splitter_settings)
 
     doc1 = Document(
         text="Hello, this is lightrag. Please implement your splitter here.",
@@ -199,7 +191,7 @@ This splitting aligns with how models see text in the form of tokens. (`Referenc
 Simple text splitting(Type 1) can underestimate the number of tokens. Tokenizer reflects the real token numbers the models take in. 
 But the Tokenizer here only works at world level.
 
-How to implement ``LightRAG's TextSplitter``
+How to use it
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 What you need is to specify the arguments and input your documents this way:
 

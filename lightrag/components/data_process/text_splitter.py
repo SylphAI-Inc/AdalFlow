@@ -34,8 +34,8 @@ DocumentSplitterOutputType = List[Document]
 # customizable seperators map
 SEPARATORS = {"page": "\f", "passage": "\n\n", "word": " ", "sentence": ".", "token": ""}
 
-DEFAULT_CHUNK_SIZE = 1024
-DEFAULT_CHUNK_OVERLAP = 20
+DEFAULT_CHUNK_SIZE = 800
+DEFAULT_CHUNK_OVERLAP = 200
 
 class TextSplitter(Component):
     """  
@@ -56,7 +56,7 @@ class TextSplitter(Component):
     This aligns with how models see text in the form of tokens. (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_)
     
     Simple text splitting(Type 1) can underestimate the number of tokens. Tokenizer reflects the real token numbers the models take in. 
-    But the Tokenizer here only works at world level.
+    But the Tokenizer here only works at word level.
     
     * **Definitions**
     
@@ -72,7 +72,7 @@ class TextSplitter(Component):
     * **Overview**:
     ``TextSplitter`` first utilizes ``split_by`` to specify the text-splitting criterion and breaks the long text into smaller texts.
     Then we create a sliding window with length= ``chunk_size``. It moves at step= ``chunk_size`` - ``chunk_overlap``.
-    The texts inside each window will get concatenated to a smaller chunk. The generated chunks from the splitted text will be returned.
+    The texts inside each window will get merged to a smaller chunk. The generated chunks from the splitted text will be returned.
     
     * **Splitting Details**
     Type 1: 
@@ -110,7 +110,7 @@ class TextSplitter(Component):
     You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured 
     as a series of questions. If you need to customize :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`, please check `Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_.
     
-    * **Concatenating Details**
+    * **Merge Details**
     Type 1/Type 2 create a list of split texts. ``TextSplitter`` then reattaches the specified separator to each piece of the split text, except for the last segment.
     This approach maintains the original spacing and punctuation, which is critical in contexts like natural language processing where text formatting can impact interpretations and outcomes.
     E.g. "hello world!" split by "word" will be kept as "hello " and "world!"
@@ -123,7 +123,7 @@ class TextSplitter(Component):
     Example:
         .. code-block:: python
         
-            from lightrag.core.text_splitter import TextSplitter
+            from lightrag.components.data_process.text_splitter import TextSplitter
             from lightrag.core.types import Document
 
             # configure the splitter setting
@@ -134,11 +134,7 @@ class TextSplitter(Component):
                     }
 
             # set up the document splitter
-            text_splitter = TextSplitter(
-                split_by=text_splitter_settings["split_by"],
-                chunk_size=text_splitter_settings["chunk_size"],
-                chunk_overlap=text_splitter_settings["chunk_overlap"],
-                )
+            text_splitter = TextSplitter(**text_splitter_settings)
 
             doc1 = Document(
                 meta_data={"title": "Luna's Profile"},
@@ -159,7 +155,7 @@ class TextSplitter(Component):
             )
             documents = [doc1, doc2]
 
-            splitted_docs = (text_splitter.call(documents=documents))
+            splitted_docs = text_splitter.call(documents=documents)
 
             for doc in splitted_docs:
                 print("*" * 50)
@@ -192,28 +188,28 @@ class TextSplitter(Component):
 
         # variable value checks
         self.split_by = split_by
-        if split_by not in SEPARATORS:
-            options = ", ".join(f"'{key}'" for key in SEPARATORS.keys())
-            log.error(f"Invalid options for split_by. You must select from {options}.")
-            raise ValueError(f"Invalid options for split_by. You must select from {options}.")
-
-        if chunk_overlap >= chunk_size:
-            log.error(f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}")
-            raise ValueError(
-                f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
-            )
-            
-        if chunk_size <= 0:
-            log.error(f"chunk_size must be greater than 0. Received value: {chunk_size}")
-            raise ValueError(f"chunk_size must be greater than 0. Received value: {chunk_size}")
+        # Validate split_by is in SEPARATORS
+        options = ", ".join(f"'{key}'" for key in SEPARATORS.keys())
+        assert split_by in SEPARATORS, f"Invalid options for split_by. You must select from {options}."
+        # log.error(f"Invalid options for split_by. You must select from {options}.")
+        
+        # Validate chunk_overlap is less than chunk_size
+        assert chunk_overlap < chunk_size, f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
+        # log.error(f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}")
+        
+        # Validate chunk_size is greater than 0
+        assert chunk_size > 0, f"chunk_size must be greater than 0. Received value: {chunk_size}"
+        # log.error(f"chunk_size must be greater than 0. Received value: {chunk_size}")
         self.chunk_size = chunk_size
-        
-        if chunk_overlap < 0:
-            log.error(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
-            raise ValueError(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
-        self.chunk_overlap = chunk_overlap  
-        
+
+        # Validate chunk_overlap is non-negative
+        assert chunk_overlap >= 0, f"chunk_overlap must be non-negative. Received value: {chunk_overlap}"
+        # log.error(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
+        self.chunk_overlap = chunk_overlap
+
         self.batch_size = batch_size
+        
+        log.info(f"Initialized TextSplitter with split_by={self.split_by}, chunk_size={self.chunk_size}, chunk_overlap={self.chunk_overlap}, batch_size={self.batch_size}")
 
     def split_text(self, text: str) -> List[str]:
         """
@@ -229,10 +225,10 @@ class TextSplitter(Component):
         """
         log.info(f"Splitting text with split_by: {self.split_by}, chunk_size: {self.chunk_size}, chunk_overlap: {self.chunk_overlap}")
         separator = SEPARATORS[self.split_by]
-        splits = self._split_text(text, separator)
+        splits = self._split_text_into_units(text, separator)
         log.info(f"Text split into {len(splits)} parts.")
-        chunks = self._concatenate_splits(splits, self.chunk_size, self.chunk_overlap, separator)
-        log.info(f"Text concatenated into {len(chunks)} chunks.")
+        chunks = self._merge_units_to_chunks(splits, self.chunk_size, self.chunk_overlap, separator)
+        log.info(f"Text merged into {len(chunks)} chunks.")
         return chunks
 
     def call(self, documents: DocumentSplitterInputType) -> DocumentSplitterOutputType:
@@ -287,7 +283,7 @@ class TextSplitter(Component):
         log.info(f"Processed {len(documents)} documents into {len(split_docs)} split documents.")
         return split_docs
         
-    def _split_text(
+    def _split_text_into_units(
         self, text: str, separator: str) -> List[str]:
         """Split text based on the specified separator."""
         if self.split_by == "token":
@@ -297,11 +293,11 @@ class TextSplitter(Component):
             log.info(f"Text split by '{separator}' into {len(splits)} parts.")
         return splits
         
-    def _concatenate_splits(
+    def _merge_units_to_chunks(
         self, splits: List[str], chunk_size: int, chunk_overlap: int, separator: str
     ) -> List[str]:
         """
-        Concatenates split text chunks based on the specified chunk size and overlap.
+        Merge split text chunks based on the specified chunk size and overlap.
         """
         chunks = []
         # we use a window to get the text for each trunk, the window size is chunk_size, step is chunk_size - chunk_overlap 
@@ -314,7 +310,7 @@ class TextSplitter(Component):
             if idx+chunk_size >= len(splits):  
                 break
             current_splits = splits[idx:idx+chunk_size]
-            # add the separator between each unit and concatenate the string
+            # add the separator between each unit and merge the string
             # this won't be the last chunk, so we need to add the separator at the end
             chunk = separator.join(current_splits) + separator
             chunks.append(chunk)
@@ -323,7 +319,7 @@ class TextSplitter(Component):
             last_chunk = separator.join(splits[idx:]) 
             if len(last_chunk) > 0:
                 chunks.append(last_chunk)
-        log.info(f"Concatenated into {len(chunks)} chunks.")
+        log.info(f"Merged into {len(chunks)} chunks.")
         return chunks
     
     def _extra_repr(self) -> str:
