@@ -299,17 +299,22 @@ SAFE_BUILTINS = {
 }
 
 
-def sandbox_exec(code: str, context=SAFE_BUILTINS, timeout: int = 5) -> Dict:
+def sandbox_exec(
+    code: str, context: Optional[Dict[str, object]] = None, timeout: int = 5
+) -> Dict:
     r"""Execute code in a sandboxed environment with a timeout.
 
-    Works similar to eval(), but with timeout and context similar to parse_function_call_expr.
+    1. Works similar to eval(), but with timeout and context similar to parse_function_call_expr.
+    2. With more flexibility as you can write additional function in the code compared with simply the function call.
 
     Args:
         code (str): The code to execute. Has to be output=... or similar so that the result can be captured.
         context (Dict[str, Any]): The context to use for the execution.
         timeout (int): The execution timeout in seconds.
+
     """
     result = {"output": None, "error": None}
+    context = {**context, **SAFE_BUILTINS} if context else SAFE_BUILTINS
     try:
         compiled_code = compile(code, "<string>", "exec")
 
@@ -581,22 +586,29 @@ def generate_readable_key_for_function(fn: Callable) -> str:
 def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
     """
     Extract JSON string from text.
-    NOTE: Only handles the first JSON object found in the text. And it expects at least one JSON object in the text.
+    NOTE: Only handles the first JSON object or array found in the text. And it expects at least one JSON object in the text.
     If right brace is not found, we add one to the end of the string.
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
     text = text.strip().replace("{{", "{").replace("}}", "}")
-    start = text.find("{")
-    if start == -1:
-        raise ValueError(f"No JSON object found in the text: {text}")
+    text = text.replace("[[", "[").replace("]]", "]")
+    start_obj = text.find("{")
+    start_arr = text.find("[")
+    if start_obj == -1 and start_arr == -1:
+        raise ValueError(f"No JSON object or array found in the text: {text}")
 
+    start = min(
+        start_obj if start_obj != -1 else float("inf"),
+        start_arr if start_arr != -1 else float("inf"),
+    )
+    open_brace = text[start]
     # Attempt to find the matching closing brace
     brace_count = 0
     end = -1
     for i in range(start, len(text)):
-        if text[i] == "{":
+        if text[i] == open_brace:
             brace_count += 1
-        elif text[i] == "}":
+        elif text[i] == ("}" if open_brace == "{" else "]"):
             brace_count -= 1
 
         if brace_count == 0:
@@ -605,7 +617,8 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
 
     if end == -1 and add_missing_right_brace:
         # If no closing brace is found, but we are allowed to add one
-        text += "}"
+        log.debug("Adding missing right brace to the JSON string.")
+        text += "}" if open_brace == "{" else "]"
         end = len(text) - 1
     elif end == -1:
         raise ValueError(

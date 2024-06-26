@@ -33,6 +33,19 @@ def test_extract_json_str_no_json():
         extract_json_str(text)
 
 
+def test_extract_list_json_str():
+    text = '["item1", "item2"]'
+    assert extract_json_str(text) == '["item1", "item2"]', "Failed to extract list"
+
+
+def test_extract_json_arr_str():
+    text = '```json\n[\n    {\n        "action": "add(2, b=3)"\n    },\n    {\n        "action": "search(query=\'something\')"\n    }\n]\n```'
+    assert (
+        extract_json_str(text)
+        == '[\n    {\n        "action": "add(2, b=3)"\n    },\n    {\n        "action": "search(query=\'something\')"\n    }\n]'
+    )
+
+
 ##################################################
 # Test cases for fix_json_formatting function
 ##################################################

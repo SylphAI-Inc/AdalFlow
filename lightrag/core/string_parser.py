@@ -8,9 +8,12 @@ We design this these string_parser modules to be generic to any input text witho
 """
 
 from typing import Any, Dict, List
+import logging
 
 from lightrag.core.component import Component
 import lightrag.core.functional as F
+
+log = logging.getLogger(__name__)
 
 
 class ListParser(Component):
@@ -63,6 +66,7 @@ class JsonParser(Component):
         input = input.strip()
         try:
             json_str = F.extract_json_str(input, self.add_missing_right_brace)
+            log.debug(f"json_str: {json_str}")
             json_obj = F.parse_json_str_to_obj(json_str)
             return json_obj
         except Exception as e:
