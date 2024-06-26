@@ -5,16 +5,29 @@ This helps to standardize the tool interface and metadata to communicate with th
 
 from typing import Any, Optional, Dict, Callable, Awaitable, Union
 from inspect import iscoroutinefunction
+import logging
 
 from dataclasses import dataclass, field
 
 import json
 
-from lightrag.core.types import FunctionDefinition, ToolOutput, Function
+from lightrag.core.types import FunctionDefinition, FunctionOutput, Function
 from lightrag.core import Component
-from lightrag.core.functional import get_fun_schema
+from lightrag.core.functional import get_fun_schema, parse_function_call_expr
 
 AsyncCallable = Callable[..., Awaitable[Any]]
+
+log = logging.getLogger(__name__)
+
+
+def is_running_in_event_loop() -> bool:
+    try:
+        import asyncio
+
+        asyncio.get_running_loop()
+        return True
+    except RuntimeError:
+        return False
 
 
 class FunctionTool(Component):
@@ -31,16 +44,6 @@ class FunctionTool(Component):
     - at least one of fn or async_fn must be provided.
     - When both are provided, sync (call) will be used in __call__.
     """
-
-    # metadata: ToolMetadata = field(
-    #     default_factory=ToolMetadata, metadata={"desc": "Tool metadata"}
-    # )
-    # fn: Optional[Callable[..., Any]] = field(
-    #     default=None, metadata={"desc": "Synchronous function"}
-    # )
-    # async_fn: Optional[AsyncCallable] = field(
-    #     default=None, metadata={"desc": "Asynchronous function"}
-    # )
 
     def __init__(
         self,
@@ -66,25 +69,59 @@ class FunctionTool(Component):
             func_name=name, func_desc=description, func_parameters=fn_parameters
         )
 
-    def call(self, *args: Any, **kwargs: Any) -> ToolOutput:
+    @staticmethod
+    def parse_function_call_expr(expr: str, context_map: Optional[Dict] = None):
+        """Parse the function call expression into a dictionary."""
+        try:
+            func_name, args, kwargs = parse_function_call_expr(expr, context_map)
+            return Function(name=func_name, args=args, kwargs=kwargs)
+        except Exception as e:
+            log.error(f"Error parsing function call expression: {e}")
+            raise ValueError(f"Error: {e}")
+
+    def call(self, *args: Any, **kwargs: Any) -> FunctionOutput:
         if self._is_async:
             raise ValueError("FunctionTool is asynchronous, use acall instead")
-        tool_output = self.fn(*args, **kwargs)
-        return ToolOutput(
-            tool_name=self.metadata.name,
+        try:
+            tool_output = self.fn(*args, **kwargs)
+        except Exception as e:
+            log.error(f"Error at calling {self.fn}: {e}")
+            raise ValueError(f"Error: {e}")
+        return FunctionOutput(
+            name=self.definition.func_name,
             raw_input={"args": args, "kwargs": kwargs},
             raw_output=tool_output,
         )
 
-    async def acall(self, *args: Any, **kwargs: Any) -> ToolOutput:
+    async def acall(self, *args: Any, **kwargs: Any) -> FunctionOutput:
         if not self._is_async:
             raise ValueError("FunctionTool is not asynchronous, use call instead")
         tool_output = await self.fn(*args, **kwargs)
-        return ToolOutput(
-            tool_name=self.metadata.name,
+        return FunctionOutput(
+            name=self.definition.func_name,
             raw_input={"args": args, "kwargs": kwargs},
             raw_output=tool_output,
         )
+
+    def execute(self, *args, **kwargs) -> FunctionOutput:
+        r"""Execute the function synchronously or asynchronously based on the function type."""
+        if self._is_async:
+            import asyncio
+
+            if is_running_in_event_loop():
+                future = asyncio.run_coroutine_threadsafe(
+                    self.acall(*args, **kwargs), asyncio.get_running_loop()
+                )
+                result = future.result()
+            else:
+                result = asyncio.run(self.acall(*args, **kwargs))
+        else:
+            result = self.call(*args, **kwargs)
+        return result
+
+    def _extra_repr(self) -> str:
+        s = f"fn: {self.fn}, async: {self._is_async}, definition: {self.definition}"
+        return s
 
 
 if __name__ == "__main__":
@@ -199,7 +236,7 @@ if __name__ == "__main__":
         prompt_kwargs={
             "tools": [weather_tool.definition.to_yaml()],
             "output_format_str": YamlOutputParser(
-                Function  # , example=function_example
+                data_class=Function  # , example=function_example
             ).format_instructions(format_type=DataClassFormatType.SIGNATURE_YAML),
             # "output_format_str": Function.to_yaml_signature(),
         },

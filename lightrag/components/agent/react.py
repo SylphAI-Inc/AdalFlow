@@ -27,8 +27,14 @@ import logging
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
 from lightrag.core.tool_helper import FunctionTool, AsyncCallable
-from lightrag.core.string_parser import JsonParser, parse_function_call
-from lightrag.core.types import StepOutput, GeneratorOutput
+from lightrag.components.output_parsers import JsonOutputParser
+from lightrag.core.types import (
+    StepOutput,
+    GeneratorOutput,
+    Function,
+    FunctionOutput,
+    FunctionExpression,
+)
 from lightrag.core.model_client import ModelClient
 from lightrag.utils.logger import printc
 
@@ -39,37 +45,35 @@ DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
 {# role/task description #}
 You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
 {# REACT instructions #}
-Each step you will read the previous Thought, Action, and Observation(execution result of the action)steps and then provide the next Thought and Action.
-
-You only have access to the following tools:
+Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
+{# Tools #}
+{% if tools %}
+<TOOLS>
+You available tools are:
 {# tools #}
 {% for tool in tools %}
-{{ loop.index }}. ToolName: {{ tool.metadata.name }}
-    Tool Description: {{ tool.metadata.description }}
-    Tool Parameters: {{ tool.metadata.fn_schema_str }} {#tool args can be misleading, especially if we already have type hints and docstring in the function#}
+{{ loop.index }}.
+{{tool}}
+------------------------
 {% endfor %}
+</TOOLS>
+{% endif %}
 {# output is always more robust to use json than string #}
----
-Your output must be in valid JSON format(raw Python string format) with two keys:
-{
-    "thought": "<Why you are taking this action>",
-    "action": "ToolName(<args>, <kwargs>)"
-}
-- Must double quote the JSON str.
-- Inside of the JSON str, Must use escape double quote and escape backslash for string.
-For example:
-"action": "finish(\"John's.\")"
----
+<OUTPUT_FORMAT>
+{{output_format_str}}
+</OUTPUT_FORMAT>
+<TASK_SPEC>
 {# Specifications TODO: preference between the usage of llm tool vs the other tool #}
-Process:
-- Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
-- Call one available tool at a time to solve each subquery/subquestion. \
-- At step 'finish', join all subqueries answers and finish the task.
+- For simple queries, please directly call ``finish`` action and provide the answer.
+- For complex queries, here is the process:
+    - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
+    - Call one available tool at a time to solve each subquery/subquestion. \
+    - At step 'finish', join all subqueries answers and finish the task.
 Remember:
-- Action must call one of the above tools with Took Name. It can not be empty.
+- Action must call one of the above tools with name. It can not be empty.
 - Read the Tool Description and ensure your args and kwarg follow what each tool expects in types. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
-- When the initial query is simple, use minimum steps to answer the query.
+</TASK_SPEC>
 {#Examples can be here#}
 {# Check if there are any examples #}
 {% if examples %}
@@ -79,17 +83,22 @@ Remember:
 {% endfor %}
 </EXAMPLES>
 {% endif %}
-<</SYS>>
------------------
+
 {# Step History #}
+{% if step_history %}
+<STEPS>
 {% for history in step_history %}
-Step {{history.step}}:
+Step {{ loop.index }}.
 {
  "thought": "{{history.thought}}",
  "action": "{{history.action}}",
 }
-"observation": "{{history.observation}}"
+"answer": "{{history.observation}}"
+------------------------
 {% endfor %}
+</STEPS>
+{% endif %}<</SYS>>
+-----------------
 {% if input_str %}
 User query:
 {{ input_str }}
@@ -97,7 +106,7 @@ User query:
 """
 
 
-class ReActAgent(Generator):
+class ReActAgent(Component):
     __doc__ = r"""ReActAgent is a subclass of Generator that runs multiple and sequential functional call steps to generate the final response.
 
     Users need to set up:
@@ -150,28 +159,17 @@ class ReActAgent(Generator):
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
         *,
-        # the following arguments are inherited from Generator
+        # the following arguments are mainly for the planner
         model_client: ModelClient,
         model_kwargs: Dict = {},
-        template: Optional[str] = None,
-        prompt_kwargs: Optional[Dict] = {},
-        output_processors: Optional[Component] = None,
     ):
-        assert "model" in model_kwargs, "model must be provided in model_kwargs"
-        assert model_client, "model_client must be provided"
-        # assert tools and len(tools) > 0, "At least one tool must be provided"
+        super().__init__()
+        template = DEFAULT_REACT_AGENT_SYSTEM_PROMPT
 
-        template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
-        super().__init__(
-            template=template,
-            prompt_kwargs=prompt_kwargs,
-            output_processors=output_processors,
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-        )
         self.tools = deepcopy(tools)
         self.max_steps = max_steps
-        self.output_processors = output_processors or JsonParser()
+
+        self.use_llm_as_fallback = add_llm_as_fallback
 
         self._additional_llm_tool = (
             Generator(model_client=model_client, model_kwargs=model_kwargs)
@@ -180,9 +178,7 @@ class ReActAgent(Generator):
         )
 
         def llm_tool(input: str) -> str:
-            """
-            I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple.
-            """
+            """I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple."""
             # use the generator to answer the query
             try:
                 output: GeneratorOutput = self._additional_llm_tool(
@@ -197,9 +193,7 @@ class ReActAgent(Generator):
             return None
 
         def finish(answer: str) -> str:
-            """
-            Finish the task by joinging all subqueries answers.
-            """
+            """Finish the task with answer. I can be the only action for simple queries."""
             return answer
 
         if add_llm_as_fallback:
@@ -211,32 +205,31 @@ class ReActAgent(Generator):
             (tool if isinstance(tool, FunctionTool) else FunctionTool(fn=tool))
             for tool in self.tools
         ]
-        # pass the tools to the prompt
-        self.prompt.update_prompt_kwargs(tools=self.tools)
+        ouput_data_class = FunctionExpression
+        example = FunctionExpression.from_function(
+            thought="I have finished the task.",
+            func=finish,
+            answer="final answer: 'answer'",
+        )
+        output_parser = JsonOutputParser(data_class=ouput_data_class, example=example)
+        prompt_kwargs = {
+            "tools": [tool.definition.to_yaml() for tool in self.tools],
+            "output_format_str": output_parser.format_instructions(),
+        }
+        self.llm_planner = Generator(
+            template=template,
+            prompt_kwargs=prompt_kwargs,
+            output_processors=output_parser,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+        )
 
-        self.tools_map = {tool.metadata.name: tool for tool in self.tools}
+        self.tools_map = {tool.definition.func_name: tool for tool in self.tools}
         self.step_history: List[StepOutput] = []
 
     def reset(self):
         r"""Reset the agent to start a new query."""
         self.step_history = []
-
-    def _parse_text_response(
-        self, json_obj_response: Dict[str, Any], step: int
-    ) -> Optional[StepOutput]:
-        """
-        Parse the json output
-        """
-        try:
-            thought_key = "thought"
-            action_key = "action"
-            thought = json_obj_response.get(thought_key, "")
-            action = json_obj_response.get(action_key, "")
-            return StepOutput(step=step, thought=thought, action=action)
-        except Exception as e:
-            log.error(f"Error parsing response: {e}")
-            print(f"Error parsing response: {e}")
-            return None
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """
@@ -244,14 +237,15 @@ class ReActAgent(Generator):
         """
         action = action_step.action
         try:
-            fun_name, args, kwargs = parse_function_call(action, self.tools_map)
-            fun: Union[Callable, AsyncCallable] = self.tools_map[fun_name].fn
-            result = fun(*args, **kwargs)
-            action_step.fun_name = fun_name
-            action_step.fun_args = args
-            action_step.fun_kwargs = kwargs
-
-            action_step.observation = result
+            fun: Function = FunctionTool.parse_function_call_expr(
+                action, self.tools_map
+            )
+            fun_tool: FunctionTool = self.tools_map[fun.name]
+            result: FunctionOutput = fun_tool.execute(*fun.args, **fun.kwargs)
+            action_step.fun_name = fun.name
+            action_step.fun_args = fun.args
+            action_step.fun_kwargs = fun.kwargs
+            action_step.observation = result.raw_output
             return action_step
         except Exception as e:
             log.error(f"Error executing {action}: {e}")
@@ -268,19 +262,28 @@ class ReActAgent(Generator):
         prompt_kwargs["step_history"] = self.step_history
 
         # call the super class Generator to get the response
-        response: GeneratorOutput = super().call(
+        response: GeneratorOutput = self.llm_planner(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
-        parsed_response = self._parse_text_response(
-            json_obj_response=response.data, step=step
-        )
-        # execute the action
-        if parsed_response and parsed_response.action:
-            parsed_response = self._execute_action(parsed_response)
-            printc(f"Step {step}: \n{parsed_response}\n_______\n", color="blue")
-        else:
-            log.error(f"Failed to parse response for step {step}")
-        self.step_history.append(parsed_response)
+        step_output: StepOutput = None
+        try:
+            fun_expr: FunctionExpression = FunctionExpression.from_dict(response.data)
+            step_output = StepOutput(
+                step=step, thought=fun_expr.thought, action=fun_expr.action
+            )
+            # execute the action
+            if step_output and step_output.action:
+                step_output = self._execute_action(step_output)
+                printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
+            else:
+                log.error(f"Failed to parse response for step {step}")
+        except Exception as e:
+            log.error(f"Error running step {step}: {e}")
+            if step_output is None:
+                step_output = StepOutput(step=step, thought="", action="")
+            else:
+                step_output.observation = f"Error running step {step}: {e}"
+        self.step_history.append(step_output)
 
         return response
 
@@ -313,7 +316,7 @@ class ReActAgent(Generator):
         return answer
 
     def _extra_repr(self) -> str:
-        s = f"tools={self.tools}, max_steps={self.max_steps}, "
+        s = f"tools={self.tools}, max_steps={self.max_steps}, use_llm_as_fallback={self.use_llm_as_fallback}"
         s += super()._extra_repr()
         return s
 
@@ -321,6 +324,10 @@ class ReActAgent(Generator):
 if __name__ == "__main__":
     from components.model_client import GroqAPIClient
     from lightrag.utils import setup_env  # noqa
+
+    # from lightrag.utils import enable_library_logging
+
+    # enable_library_logging(level="DEBUG")
 
     def multiply(a: int, b: int) -> int:
         """
@@ -334,6 +341,12 @@ if __name__ == "__main__":
         """
         return a + b
 
+    def divide(a: float, b: float) -> float:
+        """
+        Divide two numbers.
+        """
+        return float(a) / b
+
     def search(query: str) -> str:
         """
         Search the web for the given query.
@@ -343,6 +356,7 @@ if __name__ == "__main__":
     tools = [
         FunctionTool(fn=multiply),
         FunctionTool(fn=add),
+        FunctionTool(fn=divide),
         # FunctionTool.from_defaults(fn=search),
     ]
     llm_model_kwargs = {
@@ -371,7 +385,7 @@ if __name__ == "__main__":
     queries = [
         # "What is 2 times 3?",
         # "What is 3 plus 4?",
-        # "What is the capital of France? and what is 4 times 5 then add 3?",  # this is actually two queries, or a multi-hop query
+        "What is the capital of France? and what is 465 times 321 then add 95297 and then divide by 13.2?",
         # "Li adapted her pet Apple in 2017 when Apple was only 2 months old, now we are at year 2024, how old is Li's pet Apple?",
         "Give me 5 words rhyming with cool, and make a 4-sentence poem using them",
     ]
@@ -382,14 +396,21 @@ if __name__ == "__main__":
     """
     import time
 
-    tools = []
+    generator = Generator(
+        model_client=GroqAPIClient(),
+        model_kwargs=llm_model_kwargs,
+    )
     for i in range(3):
         agent = ReActAgent(
-            tools=[],
+            tools=tools,
             max_steps=5,
             model_client=GroqAPIClient(),
             model_kwargs=llm_model_kwargs,
         )
+        agent.llm_planner.print_prompt()
+        print(agent)
+
+        # vs not using agent
     # print(agent.tools)
 
     average_time = 0
@@ -397,4 +418,7 @@ if __name__ == "__main__":
         t0 = time.time()
         answer = agent(query)
         average_time += time.time() - t0
+        answer_no_agent = generator(prompt_kwargs={"input_str": query})
+        print(f"Answer with agent: {answer}")
+        print(f"Answer without agent: {answer_no_agent}")
     print(f"Average time: {average_time / len(queries)}")

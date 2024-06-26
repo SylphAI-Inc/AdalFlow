@@ -1,3 +1,5 @@
+import pytest
+
 from lightrag.core.string_parser import (
     JsonParser,
 )
@@ -7,8 +9,6 @@ from lightrag.core.functional import (
     fix_json_missing_commas,
     fix_json_escaped_single_quotes,
 )
-
-import pytest
 
 
 ##################################################

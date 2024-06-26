@@ -238,7 +238,8 @@ class DataClass:
         for f in fields(self):
             if "desc" not in f.metadata:
                 warnings.warn(
-                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
+                    f"Class {  self.__class__.__name__} Field {f.name} is missing 'desc' in metadata",
+                    UserWarning,
                 )
 
     def set_field_value(self, field_name: str, value: Any):
@@ -337,6 +338,18 @@ class DataClass:
         except json.JSONDecodeError as e:
             raise ValueError(f"Failed to load JSON string: {e}")
 
+    def to_json_obj(self, exclude: Optional[Dict[str, List[str]]] = None) -> Any:
+        r"""Convert the dataclass instance to a JSON object.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+        This can be important to llm prompt.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return json.loads(self.to_json(exclude))
+
     def to_json(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
         r"""Convert the dataclass instance to a JSON string.
 
@@ -368,6 +381,17 @@ class DataClass:
             return cls.from_dict(data)
         except yaml.YAMLError as e:
             raise ValueError(f"Failed to load YAML string: {e}")
+
+    def to_yaml_obj(self, exclude: Optional[Dict[str, List[str]]] = None) -> Any:
+        r"""Convert the dataclass instance to a YAML object.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return yaml.safe_load(self.to_yaml(exclude))
 
     def to_yaml(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
         r"""Convert the dataclass instance to a YAML string.

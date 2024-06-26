@@ -1,7 +1,19 @@
 """Functional data classes to support functional components like Generator, Retriever, and Assistant."""
 
 from enum import Enum, auto
-from typing import List, Dict, Any, Optional, Union, Generic, TypeVar, Sequence, Literal
+from typing import (
+    List,
+    Dict,
+    Any,
+    Optional,
+    Union,
+    Generic,
+    TypeVar,
+    Sequence,
+    Literal,
+    Callable,
+    Awaitable,
+)
 from collections import OrderedDict
 from dataclasses import (
     dataclass,
@@ -13,9 +25,12 @@ from datetime import datetime
 import uuid
 import logging
 
-from lightrag.core.base_data_class import DataClass
+from lightrag.core.base_data_class import DataClass, required_field
 from lightrag.core.tokenizer import Tokenizer
-from lightrag.core.functional import is_normalized
+from lightrag.core.functional import (
+    is_normalized,
+    generate_function_call_expression_from_callable,
+)
 from lightrag.components.model_client import (
     CohereAPIClient,
     TransformersClient,
@@ -30,6 +45,9 @@ logger = logging.getLogger(__name__)
 T_co = TypeVar("T_co", covariant=True)
 
 
+#######################################################################################
+# Data modeling for ModelClient
+######################################################################################
 class ModelType(Enum):
     EMBEDDER = auto()
     LLM = auto()
@@ -69,6 +87,9 @@ def get_model_args(model_type: ModelType) -> List[str]:
         return []
 
 
+#######################################################################################
+# Data modeling for Embedder component
+######################################################################################
 @dataclass
 class Embedding:
     """
@@ -89,14 +110,6 @@ class Usage:
 
     prompt_tokens: int
     total_tokens: int
-
-
-@dataclass
-class TokenLogProb:
-    r"""similar to openai.ChatCompletionTokenLogprob"""
-
-    token: str
-    logprob: float
 
 
 @dataclass
@@ -154,6 +167,17 @@ BatchEmbedderInputType = EmbedderInputType
 BatchEmbedderOutputType = List[EmbedderOutputType]
 
 
+#######################################################################################
+# Data modeling for Generator component
+######################################################################################
+@dataclass
+class TokenLogProb:
+    r"""similar to openai.ChatCompletionTokenLogprob"""
+
+    token: str
+    logprob: float
+
+
 @dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
@@ -185,7 +209,245 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 
 GeneratorOutputType = GeneratorOutput[Any]
 
+#######################################################################################
+# Data modeling for Retriever component
+######################################################################################
 
+RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
+RetrieverStrQueryType = str
+RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
+RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
+
+RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
+RetrieverStrDocumentType = str  # for text retrieval
+RetrieverDocumentsType = Sequence[RetrieverDocumentType]
+
+
+@dataclass
+class RetrieverOutput(DataClass):
+    __doc__ = r"""Save the output of a single query in retrievers.
+
+    It is up to the subclass of Retriever to specify the type of query and document.
+    """
+
+    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
+    doc_scores: Optional[List[float]] = field(
+        default=None, metadata={"desc": "List of document scores"}
+    )
+    query: Optional[RetrieverQueryType] = field(
+        default=None, metadata={"desc": "The query used to retrieve the documents"}
+    )
+    documents: Optional[List[RetrieverDocumentType]] = field(
+        default=None, metadata={"desc": "List of retrieved documents"}
+    )
+
+
+RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
+
+
+#######################################################################################
+# Data modeling for function calls
+######################################################################################
+AsyncCallable = Callable[..., Awaitable[Any]]
+
+
+@dataclass
+class FunctionDefinition(DataClass):
+    __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
+
+    func_name: str = field(metadata={"desc": "The name of the tool"})
+    func_desc: Optional[str] = field(
+        default=None, metadata={"desc": "The description of the tool"}
+    )
+    func_parameters: Dict[str, object] = field(
+        default_factory=dict, metadata={"desc": "The schema of the parameters"}
+    )
+
+    def fn_schema_str(self, type: Literal["json", "yaml"] = "json") -> str:
+        r"""Get the function definition str to be used in the prompt.
+
+        You should also directly use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
+        """
+        if type == "json":
+            return self.to_json()
+        elif type == "yaml":
+            return self.to_yaml()
+        else:
+            raise ValueError(f"Unsupported type: {type}")
+
+
+@dataclass
+class Function(DataClass):
+    __doc__ = r"""The data modeling of a function call, including the name and keyword arguments.
+
+    You can use the exclude in :meth:`to_json` and :meth:`to_yaml` to exclude the `thought` field if you do not want to use chain-of-thought pattern.
+
+    Example:
+
+    .. code-block:: python
+
+        # assume the function is added in a context_map
+        # context_map = {"add": add}
+
+        def add(a, b):
+            return a + b
+
+        # call function add with arguments 1 and 2
+        fun = Function(name="add", kwargs={"a": 1, "b": 2})
+        # evaluate the function
+        result = context_map[fun.name](**fun.kwargs)
+
+        # or call with positional arguments
+        fun = Function(name="add", args=[1, 2])
+        result = context_map[fun.name](*fun.args)
+    """
+    thought: Optional[str] = field(
+        default=None, metadata={"desc": "Why the function is called"}
+    )
+    name: str = field(
+        default_factory=required_field, metadata={"desc": "The name of the function"}
+    )
+    args: Optional[List[object]] = field(
+        default=None, metadata={"desc": "The positional arguments of the function"}
+    )
+    kwargs: Dict[str, object] = field(
+        default_factory=required_field,
+        metadata={"desc": "The keyword arguments of the function"},
+    )
+
+
+@dataclass
+class FunctionExpression(DataClass):
+    __doc__ = r"""The data modeling of a function expression for a call, including the name and arguments.
+
+    Example:
+
+    .. code-block:: python
+
+        def add(a, b):
+            return a + b
+
+        # call function add with positional arguments 1 and 2
+        fun_expr = FunctionExpression(action="add(1, 2)")
+        # evaluate the expression
+        result = eval(fun_expr.action)
+        print(result)
+        # Output: 3
+
+        # call function add with keyword arguments
+        fun_expr = FunctionExpression(action="add(a=1, b=2)")
+        result = eval(fun_expr.action)
+        print(result)
+        # Output: 3
+
+    Why asking LLM to generate function expression (code snippet) for a function call?
+    - It is more efficient/compact to call a function.
+    - It is more flexible.
+        (1) for the full range of Python expressions, including arithmetic operations, nested function calls, and more.
+        (2) allow to pass variables as arguments.
+    - Ease of parsing using ``ast`` module.
+
+    The benefits are less failed function calls.
+    """
+    thought: Optional[str] = field(
+        default=None, metadata={"desc": "Why the function is called"}
+    )
+    action: str = field(
+        default_factory=required_field,
+        metadata={"desc": "FuncName(<args>, <kwargs>)"},
+    )
+
+    @classmethod
+    def from_function(
+        cls,
+        thought: Optional[str],
+        func: Union[Callable[..., Any], AsyncCallable],
+        *args,
+        **kwargs,
+    ) -> "FunctionExpression":
+        r"""Create a FunctionExpression object from a function.
+
+        Args:
+            fun (Union[Callable[..., Any], AsyncCallable]): The function to be converted
+
+        Returns:
+            FunctionExpression: The FunctionExpression object
+
+        Usage:
+        1. Create a FunctionExpression object from a function call:
+        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
+        3. This will be used as an example in prompt showing LLM how to call the function.
+        """
+        try:
+            action = generate_function_call_expression_from_callable(
+                func, *args, **kwargs
+            )
+        except Exception as e:
+            logger.error(f"Error generating function expression: {e}")
+            raise ValueError(f"Error generating function expression: {e}")
+        return cls(action=action, thought=thought)
+
+
+@dataclass
+class FunctionOutput(DataClass):
+    __doc__ = (
+        r"""The output of a tool, which could be a function, a class, or a module."""
+    )
+    name: Optional[str] = field(
+        default=None, metadata={"desc": "The name of the function"}
+    )
+    raw_input: Optional[Dict[str, Any]] = field(
+        default=None, metadata={"desc": "The raw input of the function"}
+    )
+    raw_output: Optional[Any] = field(
+        default=None, metadata={"desc": "The raw output of the function"}
+    )
+
+    str_content: Optional[str] = field(
+        default=None, metadata={"desc": "The string content of the function output"}
+    )
+
+    def __post_init__(self):
+        self.str_content = str(self.raw_output) if self.raw_output else None
+
+
+#######################################################################################
+# Data modeling for agent component
+######################################################################################
+@dataclass
+class StepOutput(DataClass):
+    __doc__ = r"""The output of a single step in the agent."""
+    step: int = field(
+        default=0, metadata={"desc": "The order of the step in the agent"}
+    )
+    thought: Optional[str] = field(
+        default="", metadata={"desc": "The thought of the agent in the step"}
+    )
+    action: str = field(
+        default="", metadata={"desc": "The action of the agent in the step"}
+    )
+    fun_name: Optional[str] = field(
+        default=None, metadata={"desc": "The function named parsed from action"}
+    )
+    fun_args: Optional[List[Any]] = field(
+        default=None,
+        metadata={"desc": "The function positional arguments parsed from action"},
+    )
+    fun_kwargs: Optional[Dict[str, Any]] = field(
+        default=None,
+        metadata={"desc": "The function keyword arguments parsed from action"},
+    )
+    observation: Optional[str] = field(
+        default=None, metadata={"desc": "The result of the action"}
+    )
+
+    def __str__(self):
+        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
+
+
+#######################################################################################
+# Data modeling for data processing pipleline such as Text splitting and Embedding
+######################################################################################
 @dataclass
 class Document(DataClass):
     __doc__ = r"""A text container with optional metadata and vector representation.
@@ -277,38 +539,9 @@ class Document(DataClass):
         )
 
 
-RetrieverQueryType = TypeVar("RetrieverQueryType", contravariant=True)
-RetrieverStrQueryType = str
-RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
-RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
-
-RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True)
-RetrieverStrDocumentType = str  # for text retrieval
-RetrieverDocumentsType = Sequence[RetrieverDocumentType]
-
-
-@dataclass
-class RetrieverOutput(DataClass):
-    __doc__ = r"""Save the output of a single query in retrievers.
-
-    It is up to the subclass of Retriever to specify the type of query and document.
-    """
-
-    doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
-    doc_scores: Optional[List[float]] = field(
-        default=None, metadata={"desc": "List of document scores"}
-    )
-    query: Optional[RetrieverQueryType] = field(
-        default=None, metadata={"desc": "The query used to retrieve the documents"}
-    )
-    documents: Optional[List[RetrieverDocumentType]] = field(
-        default=None, metadata={"desc": "List of retrieved documents"}
-    )
-
-
-RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
-
-
+#######################################################################################
+# Data modeling for dialog system
+######################################################################################
 @dataclass
 class UserQuery:
     query_str: str
@@ -406,61 +639,6 @@ class DialogTurn(DataClass):
         self.assistant_response_timestamp = assistant_response_timestamp
 
 
-@dataclass
-class ToolOutput(DataClass):
-    __doc__ = (
-        r"""The output of a tool, which could be a function, a class, or a module."""
-    )
-    name: Optional[str] = field(default=None, metadata={"desc": "The name of the tool"})
-    raw_input: Optional[Dict[str, Any]] = field(
-        default=None, metadata={"desc": "The raw input of the tool"}
-    )
-    raw_output: Optional[Any] = field(
-        default=None, metadata={"desc": "The raw output of the tool"}
-    )
-
-    str_content: Optional[str] = field(
-        default=None, metadata={"desc": "The string content of the tool output"}
-    )
-
-    def __str__(self):
-        return self.str_content
-
-
-@dataclass
-class FunctionDefinition(DataClass):
-    __doc__ = r"""The data modeling of a function definition, including the name, description, and parameters."""
-
-    func_name: str = field(metadata={"desc": "The name of the tool"})
-    func_desc: Optional[str] = field(
-        default=None, metadata={"desc": "The description of the tool"}
-    )
-    func_parameters: Dict[str, object] = field(
-        default_factory=dict, metadata={"desc": "The schema of the parameters"}
-    )
-
-    def fn_schema_str(self, type: Literal["json", "yaml"] = "json") -> str:
-        r"""Get the function definition str to be used in the prompt.
-
-        You should also directly use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
-        """
-        if type == "json":
-            return self.to_json()
-        elif type == "yaml":
-            return self.to_yaml()
-        else:
-            raise ValueError(f"Unsupported type: {type}")
-
-
-@dataclass
-class Function(DataClass):
-    __doc__ = r"""The data modeling of a function call, including the name and keyword arguments."""
-    name: str = field(metadata={"desc": "The name of the function"})
-    kwargs: Dict[str, object] = field(
-        metadata={"desc": "The keyword arguments of the function"}
-    )
-
-
 # TODO: This part and the Memory class is still WIP, and will need more work in the future.
 @dataclass
 class Conversation:
@@ -546,26 +724,3 @@ class Conversation:
 
     def update_dialog_turn(self, order: int, dialog_turn: DialogTurn):
         self.dialog_turns[order] = dialog_turn
-
-
-@dataclass
-class StepOutput:
-    __doc__ = r"""The output of a single step in the agent."""
-    step: int = field(
-        default=0, metadata={"desc": "The order of the step in the agent"}
-    )
-    thought: str = field(
-        default="", metadata={"desc": "The thought of the agent in the step"}
-    )
-    action: str = field(
-        default="", metadata={"desc": "The action of the agent in the step"}
-    )
-    fun_name: Optional[str] = None  # parsed from action
-    fun_args: Optional[List[Any]] = None  # parsed from action
-    fun_kwargs: Optional[Dict[str, Any]] = None  # parsed from action
-    observation: Optional[str] = (
-        None  # when step is created, observation is not available, the funtion result
-    )
-
-    def __str__(self):
-        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
