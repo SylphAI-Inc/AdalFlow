@@ -200,8 +200,6 @@ class JsonOutputParser(OutputParser):
         self,
         data_class: DataClass,
         example: DataClass = None,
-        template: Optional[str] = None,
-        output_processors: Optional[Component] = None,
     ):
         super().__init__()
         if not is_dataclass(data_class):
@@ -211,14 +209,17 @@ class JsonOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
-        template = template or JSON_OUTPUT_FORMAT
+        template = JSON_OUTPUT_FORMAT
         self.data_class_for_json = data_class
         self.json_output_format_prompt = Prompt(template=template)
-        self.output_processors = output_processors or JsonParser()
+        self.output_processors = JsonParser()
         self.example = example
 
+    # TODO: make exclude works with both
     def format_instructions(
-        self, format_type: Optional[DataClassFormatType] = None
+        self,
+        format_type: Optional[DataClassFormatType] = None,
+        exclude: List[str] = None,
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the JSON output format.
 
@@ -228,10 +229,12 @@ class JsonOutputParser(OutputParser):
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
-        schema = self.data_class_for_json.format_class_str(format_type=format_type)
+        schema = self.data_class_for_json.format_class_str(
+            format_type=format_type, exclude=exclude
+        )
         try:
             example_str = self.example.format_example_str(
-                format_type=DataClassFormatType.EXAMPLE_JSON
+                format_type=DataClassFormatType.EXAMPLE_JSON, exclude=exclude
             )
             log.debug(f"{__class__.__name__} example_str: {example_str}")
 

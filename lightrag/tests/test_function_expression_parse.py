@@ -4,6 +4,7 @@ import pytest
 from lightrag.core.functional import evaluate_ast_node, parse_function_call_expr
 
 from dataclasses import dataclass
+import numpy as np
 
 
 @dataclass
@@ -14,6 +15,10 @@ class Point:
 
 def add_points(p1: Point, p2: Point) -> Point:
     return Point(p1.x + p2.x, p1.y + p2.y)
+
+
+def numpy_sum(arr: np.ndarray) -> int:
+    return np.sum(arr)
 
 
 class TestAstEvaluation:
@@ -30,6 +35,11 @@ class TestAstEvaluation:
             "divide": lambda a, b: a / b,
             "Point": Point,
             "add_points": add_points,
+            "np": np,  # Adding numpy to the context map
+            "array": np.array,
+            "sum": np.sum,
+            "mean": np.mean,
+            "numpy_sum": numpy_sum,
         }
 
     def test_evaluate_constant(self):
@@ -147,6 +157,26 @@ class TestAstEvaluation:
         assert kwargs == {}
         result = self.context_map[func_name](*args, **kwargs)
         assert result == Point(4, 6)
+
+    def test_evaluate_numpy_array(self):
+        node = ast.parse("array([1, 2, 3, 4])", mode="eval").body
+        result = evaluate_ast_node(node, self.context_map)
+        np.testing.assert_array_equal(result, np.array([1, 2, 3, 4]))
+
+    def test_evaluate_numpy_sum(self):
+        node = ast.parse("sum(array([1, 2, 3, 4]))", mode="eval").body
+        result = evaluate_ast_node(node, self.context_map)
+        assert result == 10
+
+    def test_evaluate_numpy_mean(self):
+        node = ast.parse("mean(array([1, 2, 3, 4]))", mode="eval").body
+        result = evaluate_ast_node(node, self.context_map)
+        assert result == 2.5
+
+    def test_evaluate_numpy_sum_2d(self):
+        node = ast.parse("numpy_sum(arr=np.array([[1, 2], [3, 4]]))", mode="eval").body
+        result = evaluate_ast_node(node, self.context_map)
+        assert result == 10
 
 
 if __name__ == "__main__":

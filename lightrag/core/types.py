@@ -304,14 +304,13 @@ class Function(DataClass):
     thought: Optional[str] = field(
         default=None, metadata={"desc": "Why the function is called"}
     )
-    name: str = field(
-        default_factory=required_field, metadata={"desc": "The name of the function"}
-    )
+    name: str = field(default="", metadata={"desc": "The name of the function"})
     args: Optional[List[object]] = field(
-        default=None, metadata={"desc": "The positional arguments of the function"}
+        default_factory=list,
+        metadata={"desc": "The positional arguments of the function"},
     )
-    kwargs: Dict[str, object] = field(
-        default_factory=required_field,
+    kwargs: Optional[Dict[str, object]] = field(
+        default_factory=dict,
         metadata={"desc": "The keyword arguments of the function"},
     )
 
@@ -354,7 +353,10 @@ class FunctionExpression(DataClass):
     )
     action: str = field(
         default_factory=required_field,
-        metadata={"desc": "FuncName(<args>, <kwargs>)"},
+        # metadata={"desc": "FuncName(<args>, <kwargs>)"},
+        metadata={
+            "desc": "Formatted as FuncName(<args>, <kwargs>), where FuncName is the function name, <args> are positional arguments, and <kwargs> are keyword arguments in key=value form. Example: 'FuncName(1, b=2)' calls 'FuncName' with positional argument 1 and keyword argument b=2."
+        },
     )
 
     @classmethod

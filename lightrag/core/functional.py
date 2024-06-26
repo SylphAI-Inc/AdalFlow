@@ -166,6 +166,9 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
             raise ValueError(
                 f"Error: {e}, {node.id} does not exist in the context_map."
             )
+    elif isinstance(node, ast.Attribute):  # e.g. math.pi
+        value = evaluate_ast_node(node.value, context_map)
+        return getattr(value, node.attr)
 
     elif isinstance(
         node, ast.Call
@@ -180,6 +183,9 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
             return output.raw_output
         return output
     else:
+        # directly evaluate the node
+        # print(f"Unsupported AST node type: {type(node)}")
+        # return eval(compile(ast.Expression(node), filename="<ast>", mode="eval"))
         raise ValueError(f"Unsupported AST node type: {type(node)}")
 
 
@@ -237,6 +243,100 @@ def generate_function_call_expression_from_callable(
         full_args_str = args_str or kwargs_str
 
     return f"{func_name}({full_args_str})"
+
+
+import threading
+
+# Define a list of safe built-ins
+SAFE_BUILTINS = {
+    "abs": abs,
+    "all": all,
+    "any": any,
+    "bin": bin,
+    "bool": bool,
+    "bytearray": bytearray,
+    "bytes": bytes,
+    "callable": callable,
+    "chr": chr,
+    "complex": complex,
+    "dict": dict,
+    "divmod": divmod,
+    "enumerate": enumerate,
+    "filter": filter,
+    "float": float,
+    "format": format,
+    "frozenset": frozenset,
+    "getattr": getattr,
+    "hasattr": hasattr,
+    "hash": hash,
+    "hex": hex,
+    "int": int,
+    "isinstance": isinstance,
+    "issubclass": issubclass,
+    "iter": iter,
+    "len": len,
+    "list": list,
+    "map": map,
+    "max": max,
+    "min": min,
+    "next": next,
+    "object": object,
+    "oct": oct,
+    "ord": ord,
+    "pow": pow,
+    "range": range,
+    "repr": repr,
+    "reversed": reversed,
+    "round": round,
+    "set": set,
+    "slice": slice,
+    "sorted": sorted,
+    "str": str,
+    "sum": sum,
+    "tuple": tuple,
+    "type": type,
+    "zip": zip,
+}
+
+
+def sandbox_exec(code: str, context=SAFE_BUILTINS, timeout: int = 5) -> Dict:
+    r"""Execute code in a sandboxed environment with a timeout.
+
+    Works similar to eval(), but with timeout and context similar to parse_function_call_expr.
+
+    Args:
+        code (str): The code to execute. Has to be output=... or similar so that the result can be captured.
+        context (Dict[str, Any]): The context to use for the execution.
+        timeout (int): The execution timeout in seconds.
+    """
+    result = {"output": None, "error": None}
+    try:
+        compiled_code = compile(code, "<string>", "exec")
+
+        # Result dictionary to store execution results
+
+        # Define a target function for the thread
+        def target():
+            try:
+                # Execute the code
+                exec(compiled_code, context, result)
+            except Exception as e:
+                result["error"] = e
+
+        # Create a thread to execute the code
+        thread = threading.Thread(target=target)
+        thread.start()
+        thread.join(timeout)
+
+        # Check if the thread is still alive (timed out)
+        if thread.is_alive():
+            result["error"] = TimeoutError("Execution timed out")
+            raise TimeoutError("Execution timed out")
+    except Exception as e:
+        print(f"Errpr at sandbox_exec: {e}")
+        raise e
+
+    return result
 
 
 ########################################################################################

@@ -2,7 +2,7 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, TypeVar, Type
+from typing import List, Dict, Any, Optional, TypeVar, Type, Union
 import enum
 from dataclasses import (
     dataclass,
@@ -146,6 +146,11 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
 
 # 1. Support dataclass as field type, the nested dataclass using to_yaml, to_dict, or __dict__.
 # @dataclass
+ExcludeType = Optional[
+    Union[List[str], Dict[str, List[str]]]
+]  # fields of the current data class
+
+
 class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
 
@@ -248,7 +253,7 @@ class DataClass:
             logging.warning(f"Field {field_name} does not exist in the dataclass")
         setattr(self, field_name, value)
 
-    def to_dict(self, exclude: Optional[Dict[str, List[str]]] = None) -> Dict[str, Any]:
+    def to_dict(self, exclude: ExcludeType = None) -> Dict[str, Any]:
         """Convert a dataclass object to a dictionary.
 
         Supports nested dataclasses, lists, and dictionaries.
@@ -291,6 +296,8 @@ class DataClass:
         """
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
+        if exclude and isinstance(exclude, List):
+            exclude = {self.__class__.__name__: exclude}
         return dataclass_obj_to_dict(self, exclude)
 
     @classmethod
@@ -338,7 +345,7 @@ class DataClass:
         except json.JSONDecodeError as e:
             raise ValueError(f"Failed to load JSON string: {e}")
 
-    def to_json_obj(self, exclude: Optional[Dict[str, List[str]]] = None) -> Any:
+    def to_json_obj(self, exclude: ExcludeType = None) -> Any:
         r"""Convert the dataclass instance to a JSON object.
 
         :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
@@ -350,7 +357,7 @@ class DataClass:
         """
         return json.loads(self.to_json(exclude))
 
-    def to_json(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
+    def to_json(self, exclude: ExcludeType = None) -> str:
         r"""Convert the dataclass instance to a JSON string.
 
         :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
@@ -382,7 +389,7 @@ class DataClass:
         except yaml.YAMLError as e:
             raise ValueError(f"Failed to load YAML string: {e}")
 
-    def to_yaml_obj(self, exclude: Optional[Dict[str, List[str]]] = None) -> Any:
+    def to_yaml_obj(self, exclude: ExcludeType = None) -> Any:
         r"""Convert the dataclass instance to a YAML object.
 
         :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
@@ -393,7 +400,7 @@ class DataClass:
         """
         return yaml.safe_load(self.to_yaml(exclude))
 
-    def to_yaml(self, exclude: Optional[Dict[str, List[str]]] = None) -> str:
+    def to_yaml(self, exclude: ExcludeType = None) -> str:
         r"""Convert the dataclass instance to a YAML string.
 
         :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
@@ -601,44 +608,43 @@ if __name__ == "__main__":
 
     from typing import List
 
+    @dataclass
+    class Address:
+        street: str
+        city: str
+        zipcode: str
 
-@dataclass
-class Address:
-    street: str
-    city: str
-    zipcode: str
+    @dataclass
+    class Person(DataClass):
+        name: str
+        age: int
+        addresses: List[Address]
+        single_address: Address
+        dict_addresses: Dict[str, Address] = field(default_factory=dict)
 
+    # Example instance of the nested dataclasses
+    person = Person(
+        name="John Doe",
+        age=30,
+        addresses=[
+            Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        ],
+        single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
+        dict_addresses={
+            "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        },
+    )
 
-@dataclass
-class Person(DataClass):
-    name: str
-    age: int
-    addresses: List[Address]
-    single_address: Address
-    dict_addresses: Dict[str, Address] = field(default_factory=dict)
+    person_dict = person.to_dict()
+    print(person_dict)
 
-
-# Example instance of the nested dataclasses
-person = Person(
-    name="John Doe",
-    age=30,
-    addresses=[
-        Address(street="123 Main St", city="Anytown", zipcode="12345"),
-        Address(street="456 Elm St", city="Othertown", zipcode="67890"),
-    ],
-    single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
-    dict_addresses={
-        "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
-        "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
-    },
-)
-
-person_dict = person.to_dict()
-print(person_dict)
-
-# use exclude
-person_dict = person.to_dict(exclude={"Person": ["single_address", "dict_addresses"]})
-print("exclude", person_dict)
+    # use exclude
+    person_dict = person.to_dict(
+        exclude={"Person": ["single_address", "dict_addresses"]}
+    )
+    print("exclude", person_dict)
 
 
 #     @dataclass
