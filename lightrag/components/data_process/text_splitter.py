@@ -39,40 +39,45 @@ DEFAULT_CHUNK_OVERLAP = 200
 
 class TextSplitter(Component):
     """  
-    Text Splitter for Chunking Documents in Batch
+    Text Splitter for Chunking Documents
 
-    The ``TextSplitter`` is designed for splitting plain text into manageable chunks.
-    It supports 2 types of splitting. 
-    
-    * Type 1: Specify the exact text splitting point such as space<" "> and periods<".">. It is intuitive:
-    "Hello, world!" -> ["Hello, " ,"world!"]
-    
-    * Type 2: Use :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`. It works as:
-    "Hello, world!" -> ['Hello', ',', ' world', '!'] 
-    
-    .. note::
-        The punctuation is considered as a token.
-        
-    This aligns with how models see text in the form of tokens. (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_)
-    
-    Simple text splitting(Type 1) can underestimate the number of tokens. Tokenizer reflects the real token numbers the models take in. 
-    But the Tokenizer here only works at word level.
-    
-    * **Definitions**
-    
-    ``split_by``: Specifies the text-splitting criterion using predefined keys like "word", "sentence", "page", "passage", and "token". The splitter utilizes the corresponding separator from the ``SEPARATORS`` dictionary.
-    
-    ``SEPARATORS``: Maps ``split_by`` criterions to their exact text separators, e.g., spaces<" "> for "word" or periods<"."> for "sentence".
-    
-    Usage: **SEPARATORS[``split_by``]=separator**
-    
-    .. note::
-        For option ``token``, its separator is "" because we directly split by a tokenizer, instead of text point.
-    
-    * **Overview**:
     ``TextSplitter`` first utilizes ``split_by`` to specify the text-splitting criterion and breaks the long text into smaller texts.
     Then we create a sliding window with length= ``chunk_size``. It moves at step= ``chunk_size`` - ``chunk_overlap``.
     The texts inside each window will get merged to a smaller chunk. The generated chunks from the splitted text will be returned.
+
+    **Splitting Types**
+
+    ``TextSplitter`` supports 2 types of splitting. 
+        
+    * **Type 1:** Specify the exact text splitting point such as space<" "> and periods<".">. It is intuitive, for example, split_by "word":
+
+    :: 
+
+        "Hello, world!" -> ["Hello, " ,"world!"]
+
+    * **Type 2:** Use :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`. It works as:
+
+    ::
+
+        "Hello, world!" -> ['Hello', ',', ' world', '!']
+
+    This aligns with how models see text in the form of tokens (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_),
+    Tokenizer reflects the real token numbers the models take in and helps the developers control budgets.
+
+    **Definitions**
+        
+    * **split_by** specifies the split rule, i.e. the smallest unit during splitting. We support ``"word"``, ``"sentence"``, ``"page"``, ``"passage"``, and ``"token"``. The splitter utilizes the corresponding separator from the ``SEPARATORS`` dictionary.
+    For Type 1 splitting, we apply ``Python str.split()`` to break the text.
+
+    * **SEPARATORS**: Maps ``split_by`` criterions to their exact text separators, e.g., spaces <" "> for "word" or periods <"."> for "sentence".
+
+    .. note::
+        For option ``token``, its separator is "" because we directly split by a tokenizer, instead of text point.
+
+    * **chunk_size** is the the maximum number of units in each chunk. 
+
+    * **chunk_overlap** is the number of units that each chunk should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis.
+
     
     * **Splitting Details**
     Type 1: 
@@ -91,76 +96,55 @@ class TextSplitter(Component):
     
     .. note::
         Developers need to determine how to assign text to each data chunk for the embedding and retrieval tasks.
-        The ``TextSplitter`` ``split_by`` cases:
-        
-        - "word": Splits the text at every space (" "), treating spaces as the boundaries between words.
-        
-        - "sentence": Splits the text at every period ("."), treating these as the ends of sentences.
-        
-        - "page": Splits the text at form feed characters ("\\f"), which are often used to represent page breaks in documents.
-        
-        - "passage": Splits the text at double newline characters ("\\n\\n"), useful for distinguishing between paragraphs or sections.
 
     Type 2:
     We implement a tokenizer using ``cl100k_base`` encoding that aligns with how models see text in the form of tokens.
     E.g. "tiktoken is great!" -> ["t", "ik", "token", " is", " great", "!"] This helps developers control the token usage and budget better.
-    
-    
-    * **Customization**
-    You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured 
-    as a series of questions. If you need to customize :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`, please check `Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_.
     
     * **Merge Details**
     Type 1/Type 2 create a list of split texts. ``TextSplitter`` then reattaches the specified separator to each piece of the split text, except for the last segment.
     This approach maintains the original spacing and punctuation, which is critical in contexts like natural language processing where text formatting can impact interpretations and outcomes.
     E.g. "hello world!" split by "word" will be kept as "hello " and "world!"
     
-    * **Use Cases**
+    * **Customization**
+    You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured 
+    as a series of questions. If you need to customize :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`, please check `Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_.
+    
+    * **Integration with Other Document Types**
     This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
-    
-    To handle PDF content, developers need to first extract the text using tools like ``PyPDF2`` or ``PDFMiner`` before splitting.
-    
-    Example:
-        .. code-block:: python
+    For **PDFs**, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.
+    ``LightRAG``'s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
         
-            from lightrag.components.data_process.text_splitter import TextSplitter
-            from lightrag.core.types import Document
+    Example:
+    
+    .. code-block:: python
 
-            # configure the splitter setting
-            text_splitter_settings = {
-                    "split_by": "word",
-                    "chunk_size": 20,
-                    "chunk_overlap": 2,
-                    }
+        from lightrag.components.data_process.text_splitter import TextSplitter
+        from lightrag.core.types import Document
 
-            # set up the document splitter
-            text_splitter = TextSplitter(**text_splitter_settings)
+        # Configure the splitter settings
+        text_splitter = TextSplitter(
+            split_by="word",
+            chunk_size=5,
+            chunk_overlap=1
+        )
 
-            doc1 = Document(
-                meta_data={"title": "Luna's Profile"},
-                text="lots of more nonsense text." * 2
-                + "Luna is a domestic shorthair." 
-                + "lots of nonsense text." * 3,
-                id="doc1",
-                )
-            doc2 = Document(
-                meta_data={"title": "Luna's Hobbies"},
-                text="lots of more nonsense text." * 2
-                + "Luna loves to eat lickable treats."
-                + "lots of more nonsense text." * 2
-                + "Luna loves to play cat wand." 
-                + "lots of more nonsense text." * 2
-                + "Luna likes to sleep all the afternoon",
-                id="doc2",
-            )
-            documents = [doc1, doc2]
+        # Example document
+        doc = Document(
+            text="Example text. More example text. Even more text to illustrate.",
+            id="doc1"
+        )
 
-            splitted_docs = text_splitter.call(documents=documents)
+        # Execute the splitting
+        splitted_docs = text_splitter.call(documents=[doc])
 
-            for doc in splitted_docs:
-                print("*" * 50)
-                print(doc)
-                print("*" * 50)
+        for doc in splitted_docs:
+            print(doc)
+
+        # Output:
+        # Document(id=44a8aa37-0d16-40f0-9ca4-2e25ae5336c8, text='Example text. More example text. ', meta_data=None, vector=[], parent_doc_id=doc1, order=0, score=None)
+        # Document(id=ca0af45b-4f88-49b5-97db-163da9868ea4, text='text. Even more text to ', meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)
+        # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text='to illustrate.', meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)
     """
     def __init__(
         self,

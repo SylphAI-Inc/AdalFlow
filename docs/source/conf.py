@@ -36,7 +36,6 @@ project = "LightRAG"
 copyright = "2024, SylphAI"
 author = "SylphAI"
 
-
 # -- General configuration ---------------------------------------------------
 
 # Add any Sphinx extension module names here, as strings. They can be

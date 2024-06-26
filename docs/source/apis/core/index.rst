@@ -7,22 +7,19 @@ Overview
 ----------
 .. autosummary::
 
-   core.base_data_class
-   core.model_client
+   core.base_data_class  
    core.component
-   core.data_components
    core.db
    core.default_prompt_template
-   core.document_splitter
    core.embedder
    core.functional
    core.generator
    core.memory
+   core.model_client
    core.parameter
    core.prompt_builder
    core.retriever
    core.string_parser
-   core.text_splitter
    core.tokenizer
    core.tool_helper
    core.types
@@ -50,8 +47,6 @@ Data Handling
    core.base_data_class   
    core.types
 
-
-   core.data_components
    core.db
 
 Prompts and Templates
@@ -62,10 +57,10 @@ Prompts and Templates
    core.default_prompt_template
    core.prompt_builder
 
-Document Processing
--------------------
-.. toctree::
-   :maxdepth: 1
+.. Document Processing
+.. -------------------
+.. .. toctree::
+..    :maxdepth: 1
 
    .. core.document_splitter
    core.text_splitter

@@ -137,10 +137,10 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
    :widths: 20 80
    :header-rows: 1
 
-    * - :doc: `tool_helper`
-      - Provide tools (function calls) to interact with the generator.
-    * - :doc: `agent`
-      - The ReactAgent.
+  * - :doc: `tool_helper`
+    - Provide tools (function calls) to interact with the generator.
+  * - :doc: `agent`
+    - The ReactAgent.
 
 .. Core functionals
 .. -------------------

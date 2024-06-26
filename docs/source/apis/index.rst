@@ -17,7 +17,6 @@ The core section of the LightRAG API documentation provides detailed information
    core.data_components
    core.db
    core.default_prompt_template
-   core.document_splitter
    core.embedder
    core.functional
    core.generator
@@ -26,7 +25,6 @@ The core section of the LightRAG API documentation provides detailed information
    core.prompt_builder
    core.retriever
    core.string_parser
-   core.text_splitter
    core.tokenizer
    core.tool_helper
    core.types
@@ -41,9 +39,9 @@ The components section of the LightRAG API documentation outlines the detailed s
 
    components.agent
    components.model_client
- 
+   componnets.data_process
    .. components.reasoning
-
+   
    components.retriever
    components.output_parsers
 
