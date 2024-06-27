@@ -37,15 +37,15 @@ log = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-class _IncompatibleKeys(
-    namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
-):
-    def __repr__(self):
-        if not self.missing_keys and not self.unexpected_keys:
-            return "<All keys matched successfully>"
-        return super().__repr__()
+# class _IncompatibleKeys(
+#     namedtuple("IncompatibleKeys", ["missing_keys", "unexpected_keys"])
+# ):
+#     def __repr__(self):
+#         if not self.missing_keys and not self.unexpected_keys:
+#             return "<All keys matched successfully>"
+#         return super().__repr__()
 
-    __str__ = __repr__
+#     __str__ = __repr__
 
 
 def _addindent(s_, numSpaces):
@@ -750,9 +750,10 @@ class Component:
                     self.__class__.__name__, "\n\t".join(error_msgs)
                 )
             )
-        return _IncompatibleKeys(
-            missing_keys=missing_keys, unexpected_keys=unexpected_keys
-        )
+        return namedtuple("_IncompatibleKeys", ["missing_keys", "unexpected_keys"])
+        # return _IncompatibleKeys(
+        #     missing_keys=missing_keys, unexpected_keys=unexpected_keys
+        # )
 
     # def apply(self: "Component", fn: Callable[["Component", Any], None]) -> None:
     #     r"""

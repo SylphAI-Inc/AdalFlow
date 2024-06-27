@@ -1,5 +1,5 @@
 from .bm25_retriever import (
-    InMemoryBM25Retriever,
+    BM25Retriever,
     split_text_by_word_fn,
     split_text_by_word_fn_then_lower_tokenized,
 )
@@ -23,7 +23,7 @@ PostgresRetriever = LazyImport(
 )
 
 __all__ = [
-    "InMemoryBM25Retriever",
+    "BM25Retriever",
     "LLMRetriever",
     "FAISSRetriever",
     "RerankerRetriever",

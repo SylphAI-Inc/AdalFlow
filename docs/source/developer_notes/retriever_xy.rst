@@ -5,7 +5,7 @@ In this tutorial, we will explain each component in ``LightRAG's Retriever`` and
 
 LLMs develop fast, but they have limitations.
 
-**Content Window Limit:** Although the trend is, LLM models' content window keeps growing, there is still a context limit. 
+**Content Window Limit:** Although the trend is, LLM models' content window keeps growing, there is still a context limit.
 
 **Signal to Noise Ratio** Meanwhile, LLMs perform better when the provided contents are relevant to the task.
 
@@ -18,8 +18,8 @@ The common solution for Retrieval is to chunk the documents into smaller context
 1. Document Splitter
 ----------------------
 
-The DocumentSplitter in LightRAG is designed to preprocess text by splitting long documents into smaller chunks. 
-This improves the performance of embedding models and ensures they operate within their maximum context length limits. 
+The DocumentSplitter in LightRAG is designed to preprocess text by splitting long documents into smaller chunks.
+This improves the performance of embedding models and ensures they operate within their maximum context length limits.
 
 ``LightRAG's DocumentSplitter`` splits a list of documents (:obj:`core.base_data_class.Document`) into a list of shorter documents.
 The document object to manage id, document content,optional meta data, document's embedding vectors, etc.
@@ -50,16 +50,16 @@ Check the following table for ``split_by`` options:
      - ``<space>``
      - ``Hello, world. This is LightRAG.`` to ``['Hello, ', 'world. ', 'This ', 'is ', 'LightRAG.']``
 
-We will use ``word`` in our example. 
+We will use ``word`` in our example.
 
-* ``split_length`` is the the maximum number of units in each split. 
+* ``split_length`` is the the maximum number of units in each split.
 
 * ``split_overlap`` is the number of units that each split should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis. In ``LightRAG`` we use ``windowed`` function in ``more-itertools`` package to build a sliding window for the texts to keep the overlaps. The window step size = ``split_length - split_overlap``.
 
 After splitting the long text into a list and using a sliding window to generate the text lists with specified overlap length, the text list will be concatenated into text pieces again.
 Here is a quick example:
 
-``Review: The theater service is terrible. The movie is good.`` Set ``split_by: word``, ``split_length: 6``, ``split_overlap: 2``. 
+``Review: The theater service is terrible. The movie is good.`` Set ``split_by: word``, ``split_length: 6``, ``split_overlap: 2``.
 
 With our ``DocumentSplitter`` logic, the output will be: ``Review: The theater service is terrible.``, ``is terrible. The movie is good.``
 It prevents the model of misunderstand the context. If we don't have overlap, the second sentence will be ``The movie is good.`` and the embedding model might only consider this document is merely ``Positive``.
@@ -119,7 +119,7 @@ Now you can use the splitter to create document chunks.
 ----------------
 
 Now we have splitted long documents to shorter ones, the next part is to retrieve the relevant documents.
-But how can we find "relevant" texts? A commonly applied approach in the NLP field is Embedding. 
+But how can we find "relevant" texts? A commonly applied approach in the NLP field is Embedding.
 
 For ``Embedder`` tutorial, please check `Embedder <./embedder.html>`_.
 
@@ -127,9 +127,9 @@ For ``Embedder`` tutorial, please check `Embedder <./embedder.html>`_.
 ------------------------
 Given a query, the retriever is responsible to fetch the relevant documents.
 Now we have document splitter and embedder, we can check the retrievers now.
-LightRAG provides ``FAISSRetriever``, ``InMemoryBM25Retriever``, and ``LLMRetriever``.
-These retrievers are built on the basic :class:`Retriever`, with default index building and retrieve phases. 
-All these retrievers return a list of ``RetrieverOutput``, including indexes, scores, query and documents. 
+LightRAG provides ``FAISSRetriever``, ``BM25Retriever``, and ``LLMRetriever``.
+These retrievers are built on the basic :class:`Retriever`, with default index building and retrieve phases.
+All these retrievers return a list of ``RetrieverOutput``, including indexes, scores, query and documents.
 
 #. FAISSRetriever
 
@@ -164,7 +164,7 @@ Here is an example:
     import os
     os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
-    # To use ``FAISSRetriever``, we need to prepare the embeddings 
+    # To use ``FAISSRetriever``, we need to prepare the embeddings
     # for documents or chunks following the previous steps.
 
     # configure the splitter setting
@@ -184,7 +184,7 @@ Here is an example:
     doc1 = Document(
         meta_data={"title": "Luna's Profile"},
         text="lots of more nonsense text." * 50
-        + "Luna is a domestic shorthair." 
+        + "Luna is a domestic shorthair."
         + "lots of nonsense text." * 100
         + "Luna loves to eat Tuna."
         + "lots of nonsense text." * 50,
@@ -195,7 +195,7 @@ Here is an example:
         text="lots of more nonsense text." * 50
         + "Luna loves to eat lickable treats."
         + "lots of more nonsense text." * 50
-        + "Luna loves to play cat wand." 
+        + "Luna loves to play cat wand."
         + "lots of more nonsense text." * 50
         + "Luna likes to sleep all the afternoon",
         id="doc2",
@@ -238,7 +238,7 @@ Here is an example:
     )
 
     # build indexes for the documents
-    faiss_retriever.build_index_from_documents(embeddings) 
+    faiss_retriever.build_index_from_documents(embeddings)
 
     # set up queries
     queries = ["what does luna like to eat?"]
@@ -256,7 +256,7 @@ Here is an example:
         for idx in result.doc_indexes:
             print(f"Document ID: {splitted_docs[idx].id} - Title: {splitted_docs[idx].meta_data['title']}")
             print(f"Text: {splitted_docs[idx].text}")  # Print first 200 characters of the document text
-            
+
         print(f"*" * 50)
 
     # **************************************************
@@ -264,14 +264,14 @@ Here is an example:
     # Query: what does luna like to eat?
     # Document Indexes: [8 2], Scores: [0.741 0.724]
     # Document ID: e3f04c8b-68ae-4dde-844a-439037e58842 - Title: Luna's Hobbies
-    # Text: text. Luna loves to eat lickable treats.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more 
+    # Text: text. Luna loves to eat lickable treats.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more
     # Document ID: f2d0f52a-4e69-4cc5-8f78-4499fa22525d - Title: Luna's Profile
-    # Text: text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots 
+    # Text: text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots
     # **************************************************
 
-#. InMemoryBM25Retriever
+#. BM25Retriever
 
-The ``InMemoryBM25Retriever`` leverages the `Okapi BM25 algorithm(Best Matching 25 ranking) <https://en.wikipedia.org/wiki/Okapi_BM25>`_, a widely-used ranking function in information retrieval that is particularly effective in contexts where document relevance to a query is crucial. 
+The ``BM25Retriever`` leverages the `Okapi BM25 algorithm(Best Matching 25 ranking) <https://en.wikipedia.org/wiki/Okapi_BM25>`_, a widely-used ranking function in information retrieval that is particularly effective in contexts where document relevance to a query is crucial.
 
 This retriever is initialized with parameters that fine-tune its behavior:
 
@@ -281,7 +281,7 @@ This retriever is initialized with parameters that fine-tune its behavior:
 ``alpha``: Sets a cutoff for the IDF scores, filtering out terms that are too common to be informative.
 IDF refers to `Inverse document frequency <https://en.wikipedia.org/wiki/Tf%E2%80%93idf>`_. It measures how much information the word provides.
 Lower the IDF score means the word is used a lot and less important in the document.
-Please check :class:`InMemoryBM25Retriever` to see how we calculate the IDF score.
+Please check :class:`BM25Retriever` to see how we calculate the IDF score.
 ``split_function``: Tokenization is customizable via the ``split_function``, which defaults to splitting text by tokens. Here's an example using a custom tokenizer:
 The following example shows how the token splitting works. This tokenizer converts text into a series of token IDs, which are numeric representations of the tokens.
 
@@ -300,31 +300,31 @@ The following example shows how the token splitting works. This tokenizer conver
 
 Tokenization can be customized through ``split_function``.
 
-Similar to ``FAISSRetriever``, developers can build index from documents. In ``InMemoryBM25Retriever`` allows direct documents inputs without need for preparing embeddings beforehand.
+Similar to ``FAISSRetriever``, developers can build index from documents. In ``BM25Retriever`` allows direct documents inputs without need for preparing embeddings beforehand.
 The ``build_index_from_documents`` first tokenizes the documents, then analyzes each to compute token frequencies necessary for IDF calculation.
 And we filter the IDF based on the specified ``alpha``.
-The ``t2d`` represents the token and its frequency in documents. 
+The ``t2d`` represents the token and its frequency in documents.
 For example, t2d={"apple":{0:1}} means, the word apple appears once in the 0th document.
 With the frequency we can calculate idf. The ``idf`` dictionary is to record the idf score for each token, such as {"apple": 0.9}, it means in the corpus, the token apple has idf score=0.9.
 
 ``load_index``, ``save_index`` and ``reset_index`` are supported.
 
 
-When a query is received, each token of the query is first transformed into its corresponding token using the same ``split_function`` configured during initialization. 
+When a query is received, each token of the query is first transformed into its corresponding token using the same ``split_function`` configured during initialization.
 
 If a token from the query also appears in the documents of the corpus,
-the retriever iterates over the documents containing the token, 
-applying the BM25 formula to calculate and accumulate scores based on the token's frequency. 
-For instance, document 1 = "apple, apple, banana", document 2 = "apple, orange". 
+the retriever iterates over the documents containing the token,
+applying the BM25 formula to calculate and accumulate scores based on the token's frequency.
+For instance, document 1 = "apple, apple, banana", document 2 = "apple, orange".
 If the query is "apple, orange", the score of document 1 be the accumulated score from 2 "apple". The score of document 2 will be the accumulated score from "apple" and "orange".
-The document's score increases for each occurrence of these tokens. 
-This cumulative scoring approach ensures that documents containing more query-related tokens are ranked higher. 
-Finally, the ``k`` documents with the highest cumulative scores are identified and returned in a ``RetrieverOutput``, 
+The document's score increases for each occurrence of these tokens.
+This cumulative scoring approach ensures that documents containing more query-related tokens are ranked higher.
+Finally, the ``k`` documents with the highest cumulative scores are identified and returned in a ``RetrieverOutput``,
 which means most relevant to the query.
 
 #. LLMRetriever
 
-Unlike ``FAISSRetriever`` and ``InMemoryBM25Retriever``, the ``LLMRetriever`` utilizes LLM models to perform retrieval.
+Unlike ``FAISSRetriever`` and ``BM25Retriever``, the ``LLMRetriever`` utilizes LLM models to perform retrieval.
 
 This model-driven approach does not rely on traditional similarity/IDF scores but instead uses the model's understanding of the content.
 
@@ -359,7 +359,7 @@ Here is an example for ``LLMRetriever``:
     documents = [
         Document(id="doc1", meta_data={"title": "Luna's Profile"}, text=
                 "lots of more nonsense text." * 50
-                + "Luna is a domestic shorthair." 
+                + "Luna is a domestic shorthair."
                 + "lots of nonsense text." * 50
                 + "Luna loves to eat Tuna."
                 + "lots of nonsense text." * 50),
@@ -367,7 +367,7 @@ Here is an example for ``LLMRetriever``:
                 "lots of more nonsense text." * 50
                 + "Luna loves to eat lickable treats."
                 + "lots of more nonsense text." * 50
-                + "Luna loves to play cat wand." 
+                + "Luna loves to play cat wand."
                 + "lots of more nonsense text." * 50
                 + "Luna likes to sleep all the afternoon"),
     ]
@@ -420,9 +420,9 @@ Here is an example for ``LLMRetriever``:
     # **************************************************
     # Query: what does luna like to eat?
     # Document ID: 557cc52b-a2b7-4780-bbc3-f1be8330c167 - Title: Luna's Profile
-    # Text: text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.Luna loves to eat Tuna.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense 
+    # Text: text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.Luna loves to eat Tuna.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense
     # **************************************************
     # Query: what does Luna look like?
     # Document ID: 7de4b00a-e539-4df0-adc9-b4c312bed365 - Title: Luna's Profile
-    # Text: text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense 
+    # Text: text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.lots of more nonsense text.Luna is a domestic shorthair.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense text.lots of nonsense
     # **************************************************

@@ -50,7 +50,7 @@ class Generator(Component):
         model_kwargs: Dict[str, Any] = {},
         # args for the prompt
         template: Optional[str] = None,
-        preset_prompt_kwargs: Optional[Dict] = {},
+        prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
         output_processors: Optional[Component] = None,
         # args for the trainable parameters
@@ -63,8 +63,8 @@ class Generator(Component):
         - chat_history_str
         - context_str
         - steps_str
-        You can preset the prompt kwargs to fill in the variables in the prompt using preset_prompt_kwargs.
-        But you can replace the prompt and set any variables you want and use the preset_prompt_kwargs to fill in the variables.
+        You can preset the prompt kwargs to fill in the variables in the prompt using prompt_kwargs.
+        But you can replace the prompt and set any variables you want and use the prompt_kwargs to fill in the variables.
         """
 
         if not isinstance(model_client, ModelClient):
@@ -73,15 +73,20 @@ class Generator(Component):
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        try:
+            prompt_kwargs = deepcopy(prompt_kwargs)
+        except Exception as e:
+            log.warning(f"Error copying the prompt_kwargs: {e}")
+            prompt_kwargs = prompt_kwargs
 
         super().__init__(
             model_kwargs=model_kwargs,
             template=template,
-            preset_prompt_kwargs=preset_prompt_kwargs,
+            prompt_kwargs=prompt_kwargs,
             trainable_params=trainable_params,
         )
 
-        self._init_prompt(template, preset_prompt_kwargs)
+        self._init_prompt(template, prompt_kwargs)
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client
@@ -98,18 +103,16 @@ class Generator(Component):
                     f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
                 )
             # Create a Parameter object and assign it as an attribute with the same name as the value of param
-            default_value = self.preset_prompt_kwargs.get(param, None)
+            default_value = self.prompt_kwargs.get(param, None)
             setattr(self, param, Parameter[Union[str, None]](data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
 
-    def _init_prompt(self, template: str, preset_prompt_kwargs: Dict):
-        r"""Initialize the prompt with the template and preset_prompt_kwargs."""
+    def _init_prompt(self, template: str, prompt_kwargs: Dict):
+        r"""Initialize the prompt with the template and prompt_kwargs."""
         self.template = template
-        self.preset_prompt_kwargs = preset_prompt_kwargs
-        self.prompt = Prompt(
-            template=template, preset_prompt_kwargs=preset_prompt_kwargs
-        )
+        self.prompt_kwargs = prompt_kwargs
+        self.prompt = Prompt(template=template, prompt_kwargs=prompt_kwargs)
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
