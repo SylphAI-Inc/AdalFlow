@@ -21,7 +21,8 @@ Overview
    core.retriever
    core.string_parser
    core.tokenizer
-   core.tool_helper
+   core.func_tool
+   core.tool_manager
    core.types
 
 
@@ -44,7 +45,7 @@ Data Handling
 .. toctree::
    :maxdepth: 1
 
-   core.base_data_class   
+   core.base_data_class
    core.types
 
    core.db
@@ -82,14 +83,13 @@ Generation and Utilities
    core.functional
    core.memory
 
-Parsing and Tokenization
 ------------------------
 .. toctree::
    :maxdepth: 1
 
    core.string_parser
    core.tokenizer
-   core.tool_helper
+   core.func_tool
 
 Parameters
 ------------------------

@@ -183,7 +183,7 @@ Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` t
 As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
 with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
 It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
-As an example, :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever` has the following key attributes to index.
+As an example, :class:`components.retriever.bm25_retriever.BM25Retriever` has the following key attributes to index.
 
 .. code:: python
 
@@ -194,7 +194,7 @@ Retriever in Action
 --------------------
 All of our retrievers are  subclassed from the base retriever, and they are located in the ``components.retriever`` module.
 You can skim through their implementations here: :ref:`retriever<components-retriever>`.
-Currently only :class:`components.retriever.faiss_retriever.InMemoryBM25Retriever` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
+Currently only :class:`components.retriever.faiss_retriever.BM25Retriever` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
 The ``FAISSRetriever`` will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.
 
 In this note, we will use the following documents and queries for demonstration:
@@ -307,7 +307,7 @@ You can check the retriever for more type of scores.
 
 BM25Retriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
-So the semantic search works pretty well. We will see how :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever` works in comparison.
+So the semantic search works pretty well. We will see how :class:`components.retriever.bm25_retriever.BM25Retriever` works in comparison.
 We reimplemented the code in [9]_ with one improvement: instead of using ``text.split(" ")``, we use tokenizer to split the text. Here is a comparison of how they different:
 
 .. code-block:: python
@@ -328,11 +328,11 @@ We prepare the retriever:
 
 .. code-block:: python
 
-    from lightrag.components.retriever import InMemoryBM25Retriever
+    from lightrag.components.retriever import BM25Retriever
 
     document_map_func = lambda x: x["content"]
 
-    bm25_retriever = InMemoryBM25Retriever(top_k=2, documents=documents, document_map_func=document_map_func)
+    bm25_retriever = BM25Retriever(top_k=2, documents=documents, document_map_func=document_map_func)
     print(bm25_retriever)
 
 It takes ``document_map_func`` to map the documents to the text format the retriever can work with.
@@ -340,7 +340,7 @@ The output is:
 
 .. code-block::
 
-    InMemoryBM25Retriever(top_k=2, k1=1.5, b=0.75, epsilon=0.25, use_tokenizer=True, total_documents=4)
+    BM25Retriever(top_k=2, k1=1.5, b=0.75, epsilon=0.25, use_tokenizer=True, total_documents=4)
 
 Now we call the retriever exactly the same way as we did with the FAISS retriever:
 
@@ -613,6 +613,6 @@ Additionally, ``LocalDB`` help us keep track of our initial documents and its tr
    - :class:`core.retriever.Retriever`
    - :ref:`core.types<core-types>`
    - :class:`components.retriever.faiss_retriever.FAISSRetriever`
-   - :class:`components.retriever.bm25_retriever.InMemoryBM25Retriever`
+   - :class:`components.retriever.bm25_retriever.BM25Retriever`
    - :class:`components.retriever.reranker_retriever.RerankerRetriever`
    - :class:`components.retriever.llm_retriever.LLMRetriever`

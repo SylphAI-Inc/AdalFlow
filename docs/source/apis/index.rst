@@ -26,7 +26,8 @@ The core section of the LightRAG API documentation provides detailed information
    core.retriever
    core.string_parser
    core.tokenizer
-   core.tool_helper
+   core.func_tool
+   core.tool_manager
    core.types
 
 

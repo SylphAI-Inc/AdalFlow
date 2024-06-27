@@ -10,7 +10,7 @@ from lightrag.core.model_client import ModelClient
 from lightrag.core import Generator, GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.core.base_data_class import DataClass
-from lightrag.core.string_parser import YAMLParser
+from lightrag.core.string_parser import YamlParser
 
 from lightrag.components.output_parsers import YAML_OUTPUT_FORMAT
 
@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 LLM_AUGMENTER_TEMPLATE = r"""Given inputs and outputs, you will fill in any field that is missing value.
 - null or '' means the field is missing.
-- Understand the reasoning between inputs and outputs fields. If the 'thought/reasoning' field is null, you will fill in the reasoning 
+- Understand the reasoning between inputs and outputs fields. If the 'thought/reasoning' field is null, you will fill in the reasoning
   between the inputs and existing outputs and explain it well.
 - You answer will only include the missing fields along with your values
 - {{yaml_format_str}}
@@ -64,7 +64,7 @@ class LLMAugmenter(Component):
         self.generator = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            output_processors=YAMLParser(),
+            output_processors=YamlParser(),
             template=LLM_AUGMENTER_TEMPLATE,
             preset_prompt_kwargs={
                 "task_context_str": task_context_str,

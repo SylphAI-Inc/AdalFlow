@@ -18,8 +18,8 @@ def remove_file(directory: str):
         for filename in os.listdir(directory):
             module_file = os.path.join(directory, "modules.rst")
             os.remove(module_file)
-    except:
-        print(f"No files to remove in {directory}")
+    except Exception:
+        print(f"No modules.rst to remove in {directory}")
 
     # remove components.rst, core.rst, prompt.rst, ...
     try:
@@ -27,8 +27,8 @@ def remove_file(directory: str):
             name = directory.split("/")[-1] + ".rst"
             module_file = os.path.join(directory, name)
             os.remove(module_file)
-    except:
-        print(f"No files to remove in {directory}")
+    except Exception:
+        print(f"No {name} to remove in {directory}")
 
     # remove api files to avoid showing duplicated section
 
@@ -41,11 +41,11 @@ def remove_file(directory: str):
         "components.model_client.google_client.rst",
         "components.model_client.transformers_client.rst",
         "components.retriever.llm_retriever.rst",
-        "components.agent.react_agent.rst",
+        "components.agent.react.rst",
         "components.model_client.anthropic_client.rst",
         "components.output_parsers.outputs.rst",
         "components.model_client.cohere_client.rst",
-        "components.retriever.reranker_retriever.rst"
+        "components.retriever.reranker_retriever.rst",
     ]
     try:
         for filename in os.listdir(directory):
@@ -53,8 +53,8 @@ def remove_file(directory: str):
                 filepath = os.path.join(directory, filename)
                 os.remove(filepath)
                 print(f"{filepath} is removed")
-    except:
-        print(f"{filepath} not existing")
+    except Exception:
+        print(f"No target files to remove in {directory}")
 
 
 remove_file("./source/apis/components")

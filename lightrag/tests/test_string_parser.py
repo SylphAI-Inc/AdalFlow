@@ -1,3 +1,5 @@
+import pytest
+
 from lightrag.core.string_parser import (
     JsonParser,
 )
@@ -7,8 +9,6 @@ from lightrag.core.functional import (
     fix_json_missing_commas,
     fix_json_escaped_single_quotes,
 )
-
-import pytest
 
 
 ##################################################
@@ -31,6 +31,19 @@ def test_extract_json_str_no_json():
     text = "No JSON here"
     with pytest.raises(ValueError):
         extract_json_str(text)
+
+
+def test_extract_list_json_str():
+    text = '["item1", "item2"]'
+    assert extract_json_str(text) == '["item1", "item2"]', "Failed to extract list"
+
+
+def test_extract_json_arr_str():
+    text = '```json\n[\n    {\n        "action": "add(2, b=3)"\n    },\n    {\n        "action": "search(query=\'something\')"\n    }\n]\n```'
+    assert (
+        extract_json_str(text)
+        == '[\n    {\n        "action": "add(2, b=3)"\n    },\n    {\n        "action": "search(query=\'something\')"\n    }\n]'
+    )
 
 
 ##################################################
@@ -111,6 +124,23 @@ def test_json_parser_fix_missing_commas():
         "name": "John",
         "age": 30,
         "attributes": {"height": 180, "weight": 70},
+    }
+
+
+def test_json_parser_numpy_array():
+    text = """```json
+{
+    "name": "numpy_sum",
+    "kwargs": {
+        "arr": [[1, 2], [3, 4]]
+    }
+}
+```"""
+    parser = JsonParser()
+    result = parser(text)
+    assert result == {
+        "name": "numpy_sum",
+        "kwargs": {"arr": [[1, 2], [3, 4]]},
     }
 
 

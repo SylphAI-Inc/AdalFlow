@@ -20,7 +20,7 @@ Initialization:
 
 import logging
 import sys
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Literal
 import inspect
 import os
 from datetime import datetime
@@ -49,7 +49,7 @@ log = logging.getLogger(__name__)
 
 
 def _get_log_config(
-    level: str = "INFO",
+    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     filepath: str = "./logs/app.log",
     enable_console: bool = True,
     enable_file: bool = True,
@@ -97,7 +97,7 @@ def _get_log_config(
 
 
 def enable_library_logging(
-    level: str = "INFO",
+    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     enable_console: bool = True,
     enable_file: bool = False,
     save_dir: Optional[str] = None,
@@ -168,7 +168,7 @@ def enable_library_logging(
 
 def get_logger(
     name: str,
-    level: str = "INFO",
+    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     # filename: str = "./logs/app.log",
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,

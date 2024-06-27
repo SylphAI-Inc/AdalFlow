@@ -2,7 +2,7 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, TypeVar, Type, Tuple
+from typing import List, Dict, Any, Optional, TypeVar, Type, Union
 import enum
 from dataclasses import (
     dataclass,
@@ -17,6 +17,8 @@ import json
 import yaml
 import warnings
 import logging
+
+from lightrag.core.functional import dataclass_obj_to_dict, dataclass_obj_from_dict
 
 
 logger = logging.getLogger(__name__)
@@ -110,34 +112,28 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
     return signature
 
 
-class _DataClassMeta(type):
-    r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
+# class _DataClassMeta(type):
+#     r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
 
-    Args:
-        cls: The class object being created.
-            It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
-            <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
-        name: the name of the class
-        bases: A tuple of the base classes from which the class inherits.
-        dct: The dictionary of attributes and methods of the class.
-    """
+#     Args:
+#         cls: The class object being created.
+#             It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
+#             <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
+#         name: the name of the class
+#         bases: A tuple of the base classes from which the class inherits.
+#         dct: The dictionary of attributes and methods of the class.
+#     """
 
-    def __init__(
-        cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
-    ) -> None:
-        super(_DataClassMeta, cls).__init__(name, bases, dct)
-        # __name__ is lightrag.core.base_data_class, will always be the base class
-        # print("DataClassMeta init, class:", cls)
-        # print(
-        #     f"cls.__module__ = {cls.__module__}, __name__ = {__name__}, {cls.__module__ != __name__}"
-        # )
-        # print(f"{cls.__module__} is_dataclass(cls) = {is_dataclass(cls)} ")
-        if (
-            not is_dataclass(cls)
-            and cls.__module__ != __name__  # and bases != (object,)
-        ):  # Avoid decorating DataClass itself.
-            # print(f"dataclas : {cls}")
-            dataclass(cls)
+#     def __init__(
+#         cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
+#     ) -> None:
+#         super(_DataClassMeta, cls).__init__(name, bases, dct)
+
+#         if (
+#             not is_dataclass(cls)
+#             and cls.__module__ != __name__  # and bases != (object,)
+#         ):
+#             dataclass(cls)
 
 
 # TODO: we want the child class to work either with or without dataclass decorator,
@@ -149,7 +145,12 @@ class _DataClassMeta(type):
 
 
 # 1. Support dataclass as field type, the nested dataclass using to_yaml, to_dict, or __dict__.
-@dataclass
+# @dataclass
+ExcludeType = Optional[
+    Union[List[str], Dict[str, List[str]]]
+]  # fields of the current data class
+
+
 class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
 
@@ -168,7 +169,7 @@ class DataClass:
 
     Describing:
 
-    We defined :ref:`DataClassFormatType <core-base_data_class_format_type>` to categorize DataClass description formats 
+    We defined :ref:`DataClassFormatType <core-base_data_class_format_type>` to categorize DataClass description formats
     as input or output in LLM prompt.
 
 
@@ -242,7 +243,8 @@ class DataClass:
         for f in fields(self):
             if "desc" not in f.metadata:
                 warnings.warn(
-                    f"Field {f.name} is missing 'desc' in metadata", UserWarning
+                    f"Class {  self.__class__.__name__} Field {f.name} is missing 'desc' in metadata",
+                    UserWarning,
                 )
 
     def set_field_value(self, field_name: str, value: Any):
@@ -251,68 +253,165 @@ class DataClass:
             logging.warning(f"Field {field_name} does not exist in the dataclass")
         setattr(self, field_name, value)
 
-    def to_dict(self, exclude: Optional[List[str]] = None) -> dict:
-        """More of an internal method used for serialization.
+    def to_dict(self, exclude: ExcludeType = None) -> Dict[str, Any]:
+        """Convert a dataclass object to a dictionary.
 
-        Converts the dataclass to a dictionary, optionally excluding specified fields.
-        Use this to save states of the instance, not advised to use in LLM prompt.
+        Supports nested dataclasses, lists, and dictionaries.
+        Allow exclude keys for each dataclass object.
+
+        Use cases:
+        - Decide what information will be included to be serialized to JSON or YAML that can be used in LLM prompt.
+        - Exclude sensitive information from the serialized output.
+        - Serialize the dataclass instance to a dictionary for saving states.
+
+        Args:
+            exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+
+
+        Example:
+
+        .. code-block:: python
+
+            from dataclasses import dataclass
+            from typing import List
+
+            @dataclass
+            class TrecData:
+                question: str
+                label: int
+
+            @dataclass
+            class TrecDataList(DataClass):
+
+                data: List[TrecData]
+                name: str
+
+            trec_data = TrecData(question="What is the capital of France?", label=0)
+            trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
+
+            trec_data_list.to_dict(exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
+
+            # Output:
+            # {'data': [{'question': 'What is the capital of France?'}]}
         """
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
-        if exclude is None:
-            exclude = []
-        exclude_set = set(exclude)
-
-        data = {
-            field.name: getattr(self, field.name)
-            for field in fields(self)
-            if field.name not in exclude_set
-        }
-        # Recursively convert nested dataclasses
-        for key, value in data.items():
-            if is_dataclass(value):
-                if hasattr(value, "to_dict"):
-                    data[key] = value.to_dict()
-                elif hasattr(value, "__dict__"):
-                    data[key] = value.__dict__
-                else:
-                    logging.warning(
-                        f"Field {key} is not a dataclass or does not have a to_dict method"
-                    )
-        return data
+        if exclude and isinstance(exclude, List):
+            exclude = {self.__class__.__name__: exclude}
+        return dataclass_obj_to_dict(self, exclude)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]):
-        r"""
-        Create a dataclass instance from a dictionary.
+    def from_dict(cls: Type[T_co], data: Dict[str, Any]) -> T_co:
+        """Create a dataclass instance from a dictionary.
+
+        Supports nested dataclasses, lists, and dictionaries.
+
+        Example from the :meth:`to_dict` method.
+
+        ..code-block:: python
+
+            data_dict = trec_data_list.to_dict()
+            restored_data = TreDataList.from_dict(data_dict)
+
+            assert str(restored_data.__dict__) == str(trec_data_list.__dict__)
+
+        .. note::
+        If any required field is missing, it will raise an error.
+        Do not use the dict that has excluded required fields.
+
+        Use cases:
+        - Convert the json/yaml output from LLM prediction to a dataclass instance.
+        - Restore the dataclass instance from the serialized output used for states saving.
         """
-        # Recursively construct nested dataclasses
-        field_types = {f.name: f.type for f in fields(cls)}
-        init_kwargs = {}
-        for key, value in data.items():
-            if key not in field_types:
-                logging.warning(f"Field {key} does not exist in the dataclass")
-                continue
-            field_type = field_types[key]
-            if is_dataclass(field_type):
-                if isinstance(value, str):
-                    # Attempt to parse the string as JSON
-                    try:
-                        value = json.loads(value)
-                    except json.JSONDecodeError:
-                        logging.error(f"Error decoding JSON for field {key}")
-                        continue
-                if hasattr(field_type, "from_dict"):
-                    init_kwargs[key] = field_type.from_dict(value)
-                elif hasattr(field_type, "__dict__"):
-                    init_kwargs[key] = field_type(**value)
-                else:
-                    logging.warning(
-                        f"Field {key} is not a dataclass or does not have a from_dict method"
-                    )
-            else:
-                init_kwargs[key] = value
-        return cls(**init_kwargs)
+        return dataclass_obj_from_dict(cls, data)
+
+    @classmethod
+    def from_json(cls: Type[T_co], json_str: str) -> T_co:
+        """Create a dataclass instance from a JSON string.
+
+        Args:
+            json_str (str): The JSON string to convert to a dataclass instance.
+
+        Example:
+
+        .. code-block:: python
+
+            json_str = '{"question": "What is the capital of France?", "label": 0}'
+            trec_data = TrecData.from_json(json_str)
+        """
+        try:
+            data = json.loads(json_str)
+            return cls.from_dict(data)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to load JSON string: {e}")
+
+    def to_json_obj(self, exclude: ExcludeType = None) -> Any:
+        r"""Convert the dataclass instance to a JSON object.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+        This can be important to llm prompt.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return json.loads(self.to_json(exclude))
+
+    def to_json(self, exclude: ExcludeType = None) -> str:
+        r"""Convert the dataclass instance to a JSON string.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+        This can be important to llm prompt.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return json.dumps(self.to_dict(exclude), indent=4, sort_keys=False)
+
+    @classmethod
+    def from_yaml(cls: Type[T_co], yaml_str: str) -> T_co:
+        """Create a dataclass instance from a YAML string.
+
+        Args:
+            yaml_str (str): The YAML string to convert to a dataclass instance.
+
+        Example:
+
+        .. code-block:: python
+
+            yaml_str = 'question: What is the capital of France?\nlabel: 0'
+            trec_data = TrecData.from_yaml(yaml_str)
+        """
+        try:
+            data = yaml.safe_load(yaml_str)
+            return cls.from_dict(data)
+        except yaml.YAMLError as e:
+            raise ValueError(f"Failed to load YAML string: {e}")
+
+    def to_yaml_obj(self, exclude: ExcludeType = None) -> Any:
+        r"""Convert the dataclass instance to a YAML object.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return yaml.safe_load(self.to_yaml(exclude))
+
+    def to_yaml(self, exclude: ExcludeType = None) -> str:
+        r"""Convert the dataclass instance to a YAML string.
+
+        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.
+
+        Args:
+
+        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.
+        """
+        return yaml.dump(
+            self.to_dict(exclude), default_flow_style=False, sort_keys=False
+        )
 
     @classmethod
     def format_class_str(
@@ -436,119 +535,8 @@ class DataClass:
         """
         schema = cls.to_data_class_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
-        # # manually format the json string as the json.dump will always sort the keys
-        # # Which can impact the final model output
-        # json_content = []
-        # for key, value in signature_dict.items():
-        #     json_content.append(f'"{key}": "{value}"')
 
-        # # Join all parts with commas to form the complete JSON string
-        # json_output = ",\n".join(json_content)
-        # # return "{\n" + json_output + "\n}"
         return json.dumps(signature_dict, indent=4)
-
-    def to_yaml(self, exclude: Optional[List[str]] = None) -> str:
-        """
-        Convert the dataclass instance to a YAML string.
-
-        Manually formats each field to ensure proper YAML output without unwanted characters.
-
-        You can load it back to yaml object with:
-        >>> yaml.safe_load(yaml_string)
-        """
-        exclude = exclude or []
-        yaml_content = []
-        indent_str = " " * 2
-
-        for f in fields(self):
-            if f.name and exclude and f.name in exclude:
-                continue
-            value = getattr(self, f.name)
-            # Serialize value to a more controlled YAML format string
-            if isinstance(value, str):
-                # Directly format strings to ensure quotes are correctly placed
-                value_formatted = f'"{value}"'
-                yaml_content.append(f"{f.name}: {value_formatted}")
-            elif isinstance(value, (list, dict)):
-                value_formatted = yaml.dump(value, default_flow_style=False)
-                yaml_content.append(f"{f.name}: \n{value_formatted}")  # same line
-            # other class, check if they have to_dict method, other wise, use __dict__
-            elif (
-                hasattr(value, "to_yaml")
-                or hasattr(value, "to_dict")
-                or hasattr(value, "__dict__")
-            ):
-                if hasattr(value, "to_yaml"):
-                    value_formatted = value.to_yaml()
-                else:
-                    if hasattr(value, "to_dict"):
-                        value_formatted = yaml.dump(
-                            value.to_dict(), default_flow_style=False
-                        )
-                    else:
-                        value_formatted = yaml.dump(
-                            value.__dict__, default_flow_style=False
-                        )
-                # add indent to each line
-                value_formatted = indent_str + f"\n{indent_str}".join(
-                    value_formatted.split("\n")
-                )
-                value_formatted = value_formatted.rstrip().rstrip("\n...")
-                content = f"{f.name}: \n{value_formatted}"
-                yaml_content.append(content)
-            else:
-                # Use yaml.dump for other types but ensure the output is clean
-                value_formatted = (
-                    yaml.dump(value, default_flow_style=False).strip().rstrip("\n...")
-                )
-
-                yaml_content.append(f"{f.name}: {value_formatted}")
-        yaml_output = "\n".join(yaml_content)
-        return yaml_output
-
-    def to_json(self, exclude: Optional[List[str]] = None) -> str:
-        """
-        Convert the dataclass instance to a JSON string.
-
-        Manually formats each field to ensure proper JSON output without unwanted characters.
-
-        You can load it back to json object with:
-        >>> json.loads(json_string)
-        """
-        exclude = exclude or []
-        json_content = {}
-        for f in fields(self):
-            if f.name and exclude and f.name in exclude:
-                continue
-            value = getattr(self, f.name)
-            # Serialize each field according to its type
-            # For strings, integers, floats, booleans, directly assign
-            # For lists and dicts, use json.dumps to ensure proper formatting
-            if isinstance(value, (str, int, float, bool)):
-                json_content[f.name] = value
-            elif isinstance(value, (list, dict)):
-                # Convert lists and dictionaries to a string and then parse it back to ensure correct format
-                json_content[f.name] = json.loads(json.dumps(value))
-            # other class, check if they have to_dict method, other wise, use __dict__
-            elif (
-                hasattr(value, "to_json")
-                or hasattr(value, "to_dict")
-                or hasattr(value, "__dict__")
-            ):
-                if hasattr(value, "to_json"):
-                    json_content[f.name] = json.loads(value.to_json())
-                else:
-                    if hasattr(value, "to_dict"):
-                        json_content[f.name] = value.to_dict()
-                    else:
-                        json_content[f.name] = value.__dict__
-            else:
-                # Fallback for other types if necessary, can be customized further based on needs
-                json_content[f.name] = str(value)
-
-        # Convert the entire content dictionary to a JSON string
-        json_output = json.dumps(json_content, indent=4)
-        return json_output
 
     @classmethod
     def to_dict_class(cls, exclude: Optional[List[str]] = None) -> dict:
@@ -618,70 +606,111 @@ class DynamicDataClassFactory:
 if __name__ == "__main__":
     from dataclasses import dataclass
 
+    from typing import List
+
     @dataclass
     class Address:
         street: str
         city: str
-        postal_code: str
+        zipcode: str
 
     @dataclass
     class Person(DataClass):
         name: str
         age: int
-        address: Address
+        addresses: List[Address]
+        single_address: Address
+        dict_addresses: Dict[str, Address] = field(default_factory=dict)
 
+    # Example instance of the nested dataclasses
     person = Person(
         name="John Doe",
         age=30,
-        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+        addresses=[
+            Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        ],
+        single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
+        dict_addresses={
+            "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        },
     )
-    print(person.to_yaml())
-    yaml_str = person.to_yaml()
-    print(yaml_str)
-    print("last char", repr(yaml_str[-2:]))
-    print(yaml.safe_load(yaml_str))
-    restored_person = Person.from_dict(yaml.safe_load(yaml_str))
-    print(restored_person)
 
-    # test to_json
-    print(person.to_json())
-    json_str = person.to_json()
-    print(json_str)
-    print(json.loads(json_str))
-    restored_person = Person.from_dict(json.loads(json_str))
-    print(restored_person)
+    person_dict = person.to_dict()
+    print(person_dict)
 
-    # now try a list of nested dataclass
-    @dataclass
-    class Company(DataClass):
-        name: str
-        address: Address
-        employees: List[int]  # employee ids
-
-    company = Company(
-        name="ACME",
-        address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
-        employees=[1, 2, 3],
+    # use exclude
+    person_dict = person.to_dict(
+        exclude={"Person": ["single_address", "dict_addresses"]}
     )
-    print(company.to_yaml())
-    yaml_str = company.to_yaml()
-    default_yaml_str = yaml.dump(company, default_flow_style=False)
-    # load back
-    restored_company = Company.from_dict(yaml.safe_load(yaml_str))
-    print(restored_company)
-    # print("default yaml:", default_yaml_str)
-    # print(yaml.safe_load(default_yaml_str)), will fail as it is not a valid yaml string
+    print("exclude", person_dict)
 
-    json_str = company.to_json()
-    print(json_str)
-    restored_company = Company.from_dict(json.loads(json_str))
-    print(restored_company)
-    print("to_dict:", company.to_dict())
-    print("to_dict_class:", Company.to_dict_class())
 
-    print(f"person to dict {person.to_dict()}")
-    print(f"person to dict default {person.__dict__}")
+#     @dataclass
+#     class Address:
+#         street: str
+#         city: str
+#         postal_code: str
 
-    # default_json_str = json.dumps(company, indent=4)
-    # print(default_json_str)
-    # print(json.loads(default_json_str))
+#     @dataclass
+#     class Person(DataClass):
+#         name: str
+#         age: int
+#         address: Address
+
+#     person = Person(
+#         name="John Doe",
+#         age=30,
+#         address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+#     )
+#     print(person.to_yaml())
+#     yaml_str = person.to_yaml()
+#     print(yaml_str)
+#     print("last char", repr(yaml_str[-2:]))
+#     print(yaml.safe_load(yaml_str))
+#     restored_person = Person.from_dict(yaml.safe_load(yaml_str))
+#     print(restored_person)
+
+#     # test to_json
+#     print(person.to_json())
+#     json_str = person.to_json()
+#     print(json_str)
+#     print(json.loads(json_str))
+#     restored_person = Person.from_dict(json.loads(json_str))
+#     print(restored_person)
+
+#     # now try a list of nested dataclass
+#     @dataclass
+#     class Company(DataClass):
+#         name: str
+#         address: Address
+#         employees: List[int]  # employee ids
+
+#     company = Company(
+#         name="ACME",
+#         address=Address(street="123 Main St", city="Anytown", postal_code="12345"),
+#         employees=[1, 2, 3],
+#     )
+#     print(company.to_yaml())
+#     yaml_str = company.to_yaml()
+#     default_yaml_str = yaml.dump(company, default_flow_style=False)
+#     # load back
+#     restored_company = Company.from_dict(yaml.safe_load(yaml_str))
+#     print(restored_company)
+#     # print("default yaml:", default_yaml_str)
+#     # print(yaml.safe_load(default_yaml_str)), will fail as it is not a valid yaml string
+
+#     json_str = company.to_json()
+#     print(json_str)
+#     restored_company = Company.from_dict(json.loads(json_str))
+#     print(restored_company)
+#     print("to_dict:", company.to_dict())
+#     print("to_dict_class:", Company.to_dict_class())
+
+#     print(f"person to dict {person.to_dict()}")
+#     print(f"person to dict default {person.__dict__}")
+
+# default_json_str = json.dumps(company, indent=4)
+# print(default_json_str)
+# print(json.loads(default_json_str))

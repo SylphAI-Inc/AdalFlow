@@ -5,12 +5,12 @@ as user query can impact the output. Test your code well!
 """
 
 from dataclasses import is_dataclass
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import logging
 
 from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
-from lightrag.core.string_parser import YAMLParser, ListParser, JsonParser
+from lightrag.core.string_parser import YamlParser, ListParser, JsonParser
 from lightrag.core.base_data_class import DataClass, DataClassFormatType
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
@@ -42,8 +42,7 @@ Here is an example:
 {% endif %}
 -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
 -Use double quotes for the keys and string values.
--Follow the JSON formatting conventions.
-"""
+-Follow the JSON formatting conventions."""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
 ```
@@ -58,8 +57,7 @@ Here is an example:
 
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
 -Follow the YAML formatting conventions with an indent of 2 spaces.
--Quote the string values properly.
-"""
+-Quote the string values properly."""
 
 LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python list.
 -Each element can be of any Python data type such as string, integer, float, list, dictionary, etc.
@@ -98,11 +96,14 @@ class OutputParser(Component):
 class YamlOutputParser(OutputParser):
     __doc__ = r"""YAML output parser using dataclass for schema extraction.
 
+    .. note::
+        Only use yaml for simple dataclass objects. For complex objects, use JSON.
+
     Args:
         data_class (Type): The dataclass to extract the schema for the YAML output.
         example (Type, optional): The example dataclass object to show in the prompt. Defaults to None.
         yaml_output_format_template (str, optional): The template for the YAML output format. Defaults to YAML_OUTPUT_FORMAT.
-        output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YAMLParser().
+        output_processors (Component, optional): The output processors to parse the YAML string to JSON object. Defaults to YamlParser().
 
     Examples:
 
@@ -139,9 +140,7 @@ class YamlOutputParser(OutputParser):
     def __init__(
         self,
         data_class: DataClass,
-        example: DataClass = None,
-        template: Optional[str] = None,
-        output_processors: Optional[Component] = None,
+        examples: List[DataClass] = None,
     ):
 
         super().__init__()
@@ -149,15 +148,14 @@ class YamlOutputParser(OutputParser):
             raise ValueError(f"Provided class is not a dataclass: {data_class}")
 
         # ensure example is instance of data class and initiated
-        if example is not None and not isinstance(example, data_class):
+        if examples is not None and not isinstance(examples[0], data_class):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
-        template = template or YAML_OUTPUT_FORMAT
         self.data_class_for_yaml = data_class
-        self.yaml_output_format_prompt = Prompt(template=template)
-        self.output_processors = output_processors or YAMLParser()
-        self.example = example
+        self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
+        self.output_processors = YamlParser()
+        self.examples = examples
 
     def format_instructions(
         self, format_type: Optional[DataClassFormatType] = None
@@ -172,10 +170,15 @@ class YamlOutputParser(OutputParser):
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
         schema = self.data_class_for_yaml.format_class_str(format_type=format_type)
         # convert example to string, convert data class to yaml string
+        example_str = ""
         try:
-            example_str = self.example.format_example_str(
-                format_type=DataClassFormatType.EXAMPLE_YAML
-            )
+            for example in self.examples:
+                per_example_str = example.format_example_str(
+                    format_type=DataClassFormatType.EXAMPLE_YAML
+                )
+                example_str += f"{per_example_str}\n________\n"
+            # remove the last new line
+            example_str = example_str[:-1]
             log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
@@ -188,7 +191,7 @@ class YamlOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class_for_yaml={self.data_class_for_yaml}"
+        s = f"data_class_for_yaml={self.data_class_for_yaml}, examples={self.examples}"
         return s
 
 
@@ -197,8 +200,6 @@ class JsonOutputParser(OutputParser):
         self,
         data_class: DataClass,
         example: DataClass = None,
-        template: Optional[str] = None,
-        output_processors: Optional[Component] = None,
     ):
         super().__init__()
         if not is_dataclass(data_class):
@@ -208,14 +209,17 @@ class JsonOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
-        template = template or JSON_OUTPUT_FORMAT
+        template = JSON_OUTPUT_FORMAT
         self.data_class_for_json = data_class
         self.json_output_format_prompt = Prompt(template=template)
-        self.output_processors = output_processors or JsonParser()
+        self.output_processors = JsonParser()
         self.example = example
 
+    # TODO: make exclude works with both
     def format_instructions(
-        self, format_type: Optional[DataClassFormatType] = None
+        self,
+        format_type: Optional[DataClassFormatType] = None,
+        exclude: List[str] = None,
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the JSON output format.
 
@@ -225,10 +229,12 @@ class JsonOutputParser(OutputParser):
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
-        schema = self.data_class_for_json.format_class_str(format_type=format_type)
+        schema = self.data_class_for_json.format_class_str(
+            format_type=format_type, exclude=exclude
+        )
         try:
             example_str = self.example.format_example_str(
-                format_type=DataClassFormatType.EXAMPLE_JSON
+                format_type=DataClassFormatType.EXAMPLE_JSON, exclude=exclude
             )
             log.debug(f"{__class__.__name__} example_str: {example_str}")
 
@@ -300,3 +306,13 @@ class BooleanOutputParser(OutputParser):
                 return output
         # when parsing is failed
         return None
+
+
+if __name__ == "__main__":
+
+    yaml_str = r"""'thought': 'The user wants a poem using the rhyming words'.\n'action': 'llm_tool(input="Create a 4-sentence poem using the words: rule, tool, fool, pool, school")'"""
+    # parse the yaml string to a dictionary
+    import yaml
+
+    yaml_dict = yaml.safe_load(yaml_str)
+    print(yaml_dict)

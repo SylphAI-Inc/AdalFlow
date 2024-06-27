@@ -49,6 +49,7 @@ cohere = "^5.5.8"
 langchain = "^0.2.5"
 langchain-community = "^0.2.5"
 langchain-openai = "^0.1.8"
+pydot = "^2.0.0"
 
 
 [tool.poetry.group.doc.dependencies]
@@ -59,6 +60,7 @@ sphinx = "^7.3.7"
 nbsphinx = "^0.9.4"
 nbconvert = "^7.16.4"
 pandoc = "^2.3"
+readthedocs-sphinx-search = "^0.3.2"
 
 
 [build-system]
