@@ -45,6 +45,12 @@ cd docs
 make html
 ```
 
+Build with more options:
+
+```
+sphinx-build -b html source build -v
+```
+
 ### **4. View the Documentation**
 
 After building the documentation, you can use any browser to view it by opening the `index.html` file located in `docs/build/html`.

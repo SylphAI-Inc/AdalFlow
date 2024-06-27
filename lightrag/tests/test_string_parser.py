@@ -127,6 +127,23 @@ def test_json_parser_fix_missing_commas():
     }
 
 
+def test_json_parser_numpy_array():
+    text = """```json
+{
+    "name": "numpy_sum",
+    "kwargs": {
+        "arr": [[1, 2], [3, 4]]
+    }
+}
+```"""
+    parser = JsonParser()
+    result = parser(text)
+    assert result == {
+        "name": "numpy_sum",
+        "kwargs": {"arr": [[1, 2], [3, 4]]},
+    }
+
+
 def test_json_parser_handling_decode_error():
     parser = JsonParser()
     # Deliberately malformed JSON that is also problematic for YAML

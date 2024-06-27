@@ -45,7 +45,6 @@ class ToolManager(Component):
     ):
         super().__init__()
         # super(LocalDB, self).__init__()
-        self.name = "FunctionExecutor"
         self.tools = [
             (
                 FunctionTool(fn=deepcopy(tool))
@@ -55,7 +54,7 @@ class ToolManager(Component):
             for tool in tools
         ]
         self._context_map = {tool.definition.func_name: tool for tool in self.tools}
-        self._additional_context = deepcopy(additional_context) or {}
+        self._additional_context = additional_context or {}
         self.context = {**self._context_map, **self._additional_context}
         log.info(
             f"Initialized ToolManager with {len(self.tools)} tools and additional context {self._additional_context}"
@@ -102,7 +101,7 @@ class ToolManager(Component):
             raise ValueError(f"Error {e} executing function expression: {expr}")
 
     def execute_func_expr_via_sandbox(self, expr: FunctionExpression) -> FunctionOutput:
-        r"""Execute the function expression via sandbox. Support both sync and async functions."""
+        r"""Execute the function expression via sandbox. Only support sync functions."""
         func_output = FunctionOutput(
             name=expr.action, input=expr, output=None, error=None
         )
@@ -125,7 +124,7 @@ class ToolManager(Component):
         return func_output
 
     def execute_func_expr_via_eval(self, expr: FunctionExpression) -> FunctionOutput:
-        r"""Execute the function expression via eval. Support both sync and async functions."""
+        r"""Execute the function expression via eval. Only support sync functions."""
         try:
             result = eval(expr.action, self.context)
             return FunctionOutput(
@@ -139,5 +138,5 @@ class ToolManager(Component):
             raise ValueError(f"Error {e} executing function expression: {expr}")
 
     def _extra_repr(self) -> str:
-        s = f"Tools: {len(self.tools)}, Additional Context: {self._additional_context}"
+        s = f"Tools: {self.tools}, Additional Context: {self._additional_context}"
         return s

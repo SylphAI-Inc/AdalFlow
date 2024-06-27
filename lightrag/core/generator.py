@@ -73,15 +73,20 @@ class Generator(Component):
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+        try:
+            prompt_kwargs = deepcopy(prompt_kwargs)
+        except Exception as e:
+            log.warning(f"Error copying the prompt_kwargs: {e}")
+            prompt_kwargs = prompt_kwargs
 
         super().__init__(
             model_kwargs=model_kwargs,
             template=template,
-            prompt_kwargs=deepcopy(prompt_kwargs),
+            prompt_kwargs=prompt_kwargs,
             trainable_params=trainable_params,
         )
 
-        self._init_prompt(template, deepcopy(prompt_kwargs))
+        self._init_prompt(template, prompt_kwargs)
 
         self.model_kwargs = model_kwargs.copy()
         # init the model client

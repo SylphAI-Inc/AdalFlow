@@ -590,8 +590,7 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
     If right brace is not found, we add one to the end of the string.
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
-    text = text.strip().replace("{{", "{").replace("}}", "}")
-    text = text.replace("[[", "[").replace("]]", "]")
+    text = text.strip()
     start_obj = text.find("{")
     start_arr = text.find("[")
     if start_obj == -1 and start_arr == -1:

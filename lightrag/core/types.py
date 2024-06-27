@@ -355,7 +355,11 @@ class FunctionExpression(DataClass):
         default_factory=required_field,
         # metadata={"desc": "FuncName(<args>, <kwargs>)"},
         metadata={
-            "desc": "Formatted as FuncName(<args>, <kwargs>), where FuncName is the function name, <args> are positional arguments, and <kwargs> are keyword arguments in key=value form. Example: 'FuncName(1, b=2)' calls 'FuncName' with positional argument 1 and keyword argument b=2."
+            "desc": """FuncName(<kwargs>) \
+                Valid function call expression. \
+                Example: "FuncName(a=1, b=2)" \
+                Follow the data type specified in the function parameters.\
+                e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
         },
     )
 
