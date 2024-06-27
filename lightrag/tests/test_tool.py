@@ -30,10 +30,10 @@ def test_function_tool_sync():
     )
 
     output = tool(1, 2)  # Using __call__ which proxies to call()
-    assert output.raw_output == 3
+    assert output.output == 3
     assert output.name == "add", "The name should be set to the function name"
-    assert "args" in output.raw_input
-    assert output.raw_input["args"] == (1, 2)
+    assert hasattr(output.input, "args")
+    assert output.input.args == (1, 2)
 
 
 def test_function_tool_async():
@@ -43,10 +43,10 @@ def test_function_tool_async():
     import asyncio
 
     output = asyncio.run(tool.acall(3, 4))
-    assert output.raw_output == 7
+    assert output.output == 7
     assert output.name == "async_add", "The name should be set to the function name"
-    assert "args" in output.raw_input
-    assert output.raw_input["args"] == (3, 4)
+    assert hasattr(output.input, "args")
+    assert output.input.args == (3, 4)
 
     # call with sync call with raise ValueError
     with pytest.raises(ValueError):
