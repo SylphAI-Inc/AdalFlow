@@ -1,7 +1,8 @@
 import pytest
 from dataclasses import dataclass
 
-from lightrag.core.tool_helper import FunctionTool, FunctionDefinition
+from lightrag.core.func_tool import FunctionTool
+from lightrag.core.types import FunctionDefinition
 
 
 @dataclass

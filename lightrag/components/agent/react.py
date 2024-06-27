@@ -1,23 +1,4 @@
-"""
-https://arxiv.org/abs/2210.03629, published in Mar, 2023
-
-Agent is not a model or LLM model.
-Agent is better defined as a system that uses LLM models to plan and replan steps that each involves the usage of various tools,
-such as function calls, another LLM model based on the context and history (memory) to complete a task autonomously.
-
-
-REact agent can be useful for
-- Multi-hop reasoning [Q&A], including dividing the query into subqueries and answering them one by one.
-- Plan the usage of the given tools: highly flexible. Retriever, Generator modules or any other functions can all be wrapped as tools.
-
-The initial ReAct paper does not support different types of tools. We have greatly extended the flexibility of tool adaption, even including an llm tool
-to answer questions that cant be answered or better be answered by llm using its world knowledge.
-- Every react agent can be given a different tasks, different tools, and different LLM models to complete the task.
-- 'finish' tool is defined to finish the task by joining all subqueries answers.
-
-Reference:
-[1] LLM Agent survey: https://github.com/Paitesanshi/LLM-Agent-Survey
-"""
+"""Implementation of ReAct."""
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from copy import deepcopy
@@ -26,7 +7,8 @@ import logging
 
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
-from lightrag.core.tool_helper import FunctionTool, AsyncCallable
+from lightrag.core.func_tool import FunctionTool, AsyncCallable
+from lightrag.core.tool_manager import ToolManager
 from lightrag.components.output_parsers import JsonOutputParser
 from lightrag.core.types import (
     StepOutput,
@@ -43,7 +25,8 @@ log = logging.getLogger(__name__)
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
 {# role/task description #}
-You task is to answer user's query with minimum steps and maximum accuracy using the tools provided.
+You are a helpful assistant.
+Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action.
 {# Tools #}
@@ -64,14 +47,13 @@ You available tools are:
 </OUTPUT_FORMAT>
 <TASK_SPEC>
 {# Specifications TODO: preference between the usage of llm tool vs the other tool #}
-- For simple queries, please directly call ``finish`` action and provide the answer.
-- For complex queries, here is the process:
+- For simple queries: Directly call the ``finish`` action and provide the answer.
+- For complex queries:
     - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
     - Call one available tool at a time to solve each subquery/subquestion. \
     - At step 'finish', join all subqueries answers and finish the task.
 Remember:
 - Action must call one of the above tools with name. It can not be empty.
-- Read the Tool Description and ensure your args and kwarg follow what each tool expects in types. e.g. (a=1, b=2) if it is keyword argument or (1, 2) if it is positional.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
 </TASK_SPEC>
 {#Examples can be here#}
@@ -84,6 +66,12 @@ Remember:
 </EXAMPLES>
 {% endif %}
 
+<</SYS>>
+-----------------
+{% if input_str %}
+User query:
+{{ input_str }}
+{% endif %}
 {# Step History #}
 {% if step_history %}
 <STEPS>
@@ -91,23 +79,18 @@ Remember:
 Step {{ loop.index }}.
 {
  "thought": "{{history.thought}}",
- "action": "{{history.action}}",
+ "action": "{{history.action.action}}",
 }
-"answer": "{{history.observation}}"
+"Observation": "{{history.observation}}"
 ------------------------
 {% endfor %}
 </STEPS>
-{% endif %}<</SYS>>
------------------
-{% if input_str %}
-User query:
-{{ input_str }}
 {% endif %}
 """
 
 
 class ReActAgent(Component):
-    __doc__ = r"""ReActAgent is a subclass of Generator that runs multiple and sequential functional call steps to generate the final response.
+    __doc__ = r"""ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.
 
     Users need to set up:
     - tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
@@ -126,8 +109,8 @@ class ReActAgent(Component):
 
     .. code-block:: python
         from core.openai_client import OpenAIClient
-        from components.agent.react_agent import ReActAgent
-        from core.tool_helper import FunctionTool
+        from components.agent.react import ReActAgent
+        from core.func_tool import FunctionTool
         # define the tools
         def multiply(a: int, b: int) -> int:
             '''Multiply two numbers.'''
@@ -150,6 +133,9 @@ class ReActAgent(Component):
         model_kwargs={"model": "gpt-3.5-turbo"},
         preset_prompt_kwargs=preset_prompt_kwargs,
         )
+
+    Reference:
+    [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.
     """
 
     def __init__(
@@ -166,14 +152,44 @@ class ReActAgent(Component):
         super().__init__()
         template = DEFAULT_REACT_AGENT_SYSTEM_PROMPT
 
-        self.tools = deepcopy(tools)
         self.max_steps = max_steps
 
-        self.use_llm_as_fallback = add_llm_as_fallback
+        self.add_llm_as_fallback = add_llm_as_fallback
 
-        self._additional_llm_tool = (
+        self._init_tools(tools, model_client, model_kwargs)
+
+        ouput_data_class = FunctionExpression
+        example = FunctionExpression.from_function(
+            thought="I have finished the task.",
+            func=self._finish,
+            answer="final answer: 'answer'",
+        )
+        output_parser = JsonOutputParser(data_class=ouput_data_class, example=example)
+        prompt_kwargs = {
+            "tools": self.tool_manager.yaml_definitions,
+            "output_format_str": output_parser.format_instructions(),
+        }
+        self.planner = Generator(
+            template=template,
+            prompt_kwargs=prompt_kwargs,
+            output_processors=output_parser,
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+        )
+
+        self.step_history: List[StepOutput] = []
+
+    def _init_tools(
+        self,
+        tools: List[Union[Callable, AsyncCallable, FunctionTool]],
+        model_client: ModelClient,
+        model_kwargs: Dict,
+    ):
+        r"""Initialize the tools."""
+        tools = deepcopy(tools)
+        _additional_llm_tool = (
             Generator(model_client=model_client, model_kwargs=model_kwargs)
-            if add_llm_as_fallback
+            if self.add_llm_as_fallback
             else None
         )
 
@@ -181,7 +197,7 @@ class ReActAgent(Component):
             """I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple."""
             # use the generator to answer the query
             try:
-                output: GeneratorOutput = self._additional_llm_tool(
+                output: GeneratorOutput = _additional_llm_tool(
                     prompt_kwargs={"input_str": input}
                 )
                 response = output.data if output else None
@@ -193,39 +209,15 @@ class ReActAgent(Component):
             return None
 
         def finish(answer: str) -> str:
-            """Finish the task with answer. I can be the only action for simple queries."""
+            """Finish the task with answer."""
             return answer
 
-        if add_llm_as_fallback:
-            self.tools.append(llm_tool)
-        self.tools.append(finish)
+        self._finish = finish
 
-        # convert all functions to FunctionTool, and track how to call each function, either call or acall
-        self.tools = [
-            (tool if isinstance(tool, FunctionTool) else FunctionTool(fn=tool))
-            for tool in self.tools
-        ]
-        ouput_data_class = FunctionExpression
-        example = FunctionExpression.from_function(
-            thought="I have finished the task.",
-            func=finish,
-            answer="final answer: 'answer'",
-        )
-        output_parser = JsonOutputParser(data_class=ouput_data_class, example=example)
-        prompt_kwargs = {
-            "tools": [tool.definition.to_yaml() for tool in self.tools],
-            "output_format_str": output_parser.format_instructions(),
-        }
-        self.llm_planner = Generator(
-            template=template,
-            prompt_kwargs=prompt_kwargs,
-            output_processors=output_parser,
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-        )
-
-        self.tools_map = {tool.definition.func_name: tool for tool in self.tools}
-        self.step_history: List[StepOutput] = []
+        if self.add_llm_as_fallback:
+            tools.append(llm_tool)
+        tools.append(finish)
+        self.tool_manager = ToolManager(tools=tools)
 
     def reset(self):
         r"""Reset the agent to start a new query."""
@@ -237,15 +229,14 @@ class ReActAgent(Component):
         """
         action = action_step.action
         try:
-            fun: Function = FunctionTool.parse_function_call_expr(
-                action, self.tools_map
-            )
-            fun_tool: FunctionTool = self.tools_map[fun.name]
-            result: FunctionOutput = fun_tool.execute(*fun.args, **fun.kwargs)
+
+            fun: Function = self.tool_manager.parse_function_call_expr(action)
+            result: FunctionOutput = self.tool_manager.execute_function(fun)
+            # TODO: optimize the action_step
             action_step.fun_name = fun.name
             action_step.fun_args = fun.args
             action_step.fun_kwargs = fun.kwargs
-            action_step.observation = result.raw_output
+            action_step.observation = result.output
             return action_step
         except Exception as e:
             log.error(f"Error executing {action}: {e}")
@@ -261,16 +252,23 @@ class ReActAgent(Component):
         # add the step_history to the prompt_kwargs
         prompt_kwargs["step_history"] = self.step_history
 
+        log.debug(
+            f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
+        )
+
         # call the super class Generator to get the response
-        response: GeneratorOutput = self.llm_planner(
+        response: GeneratorOutput = self.planner(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
         step_output: StepOutput = None
         try:
             fun_expr: FunctionExpression = FunctionExpression.from_dict(response.data)
             step_output = StepOutput(
-                step=step, thought=fun_expr.thought, action=fun_expr.action
+                step=step, thought=fun_expr.thought, action=fun_expr
             )
+            # print the func expr
+            log.debug(f"Step {step}: {fun_expr}")
+
             # execute the action
             if step_output and step_output.action:
                 step_output = self._execute_action(step_output)
@@ -316,13 +314,14 @@ class ReActAgent(Component):
         return answer
 
     def _extra_repr(self) -> str:
-        s = f"tools={self.tools}, max_steps={self.max_steps}, use_llm_as_fallback={self.use_llm_as_fallback}"
+        s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}"
         s += super()._extra_repr()
         return s
 
 
 if __name__ == "__main__":
     from components.model_client import GroqAPIClient
+    from lightrag.core.types import ModelClientType
     from lightrag.utils import setup_env  # noqa
 
     # from lightrag.utils import enable_library_logging
@@ -365,6 +364,10 @@ if __name__ == "__main__":
         "temperature": 0.0,
     }
 
+    gpt_3_5_turbo_model_kwargs = {
+        "model": "gpt-3.5-turbo",
+    }
+
     examples = [
         # r"""
         # User: What is 9 - 3?
@@ -400,17 +403,17 @@ if __name__ == "__main__":
         model_client=GroqAPIClient(),
         model_kwargs=llm_model_kwargs,
     )
-    for i in range(3):
-        agent = ReActAgent(
-            tools=tools,
-            max_steps=5,
-            model_client=GroqAPIClient(),
-            model_kwargs=llm_model_kwargs,
-        )
-        agent.llm_planner.print_prompt()
-        print(agent)
+    # for i in range(3):
+    agent = ReActAgent(
+        tools=tools,
+        max_steps=5,
+        model_client=ModelClientType.GROQ(),
+        model_kwargs=llm_model_kwargs,
+    )
+    # agent.llm_planner.print_prompt()
+    # print(agent)
 
-        # vs not using agent
+    # vs not using agent
     # print(agent.tools)
 
     average_time = 0

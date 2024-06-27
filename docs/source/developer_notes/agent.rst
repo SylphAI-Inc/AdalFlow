@@ -23,4 +23,4 @@ In LightRAG, agents are simply a generator which can use tools, take multiple st
 .. admonition:: API References
    :class: highlight
 
-   - :class:`components.agent.react_agent.ReactAgent`
+   - :class:`components.agent.react.ReactAgent`

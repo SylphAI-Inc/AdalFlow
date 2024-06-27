@@ -390,6 +390,9 @@ class FunctionExpression(DataClass):
         return cls(action=action, thought=thought)
 
 
+# saves the output of a function tool.
+
+
 @dataclass
 class FunctionOutput(DataClass):
     __doc__ = (
@@ -398,19 +401,21 @@ class FunctionOutput(DataClass):
     name: Optional[str] = field(
         default=None, metadata={"desc": "The name of the function"}
     )
-    raw_input: Optional[Dict[str, Any]] = field(
-        default=None, metadata={"desc": "The raw input of the function"}
+    input: Optional[Union[Function, FunctionExpression]] = field(
+        default=None, metadata={"desc": "The Function or FunctionExpression object"}
     )
-    raw_output: Optional[Any] = field(
-        default=None, metadata={"desc": "The raw output of the function"}
+    parsed_input: Optional[Function] = field(
+        default=None,
+        metadata={
+            "desc": "The parsed Function object if the input is FunctionExpression"
+        },
     )
-
-    str_content: Optional[str] = field(
-        default=None, metadata={"desc": "The string content of the function output"}
+    output: Optional[object] = field(
+        default=None, metadata={"desc": "The output of the function execution"}
     )
-
-    def __post_init__(self):
-        self.str_content = str(self.raw_output) if self.raw_output else None
+    error: Optional[str] = field(
+        default=None, metadata={"desc": "The error message if any"}
+    )
 
 
 #######################################################################################

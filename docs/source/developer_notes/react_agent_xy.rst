@@ -19,7 +19,7 @@ Introduction
 -----------------------
 Before explaining ``LightRAG Agent`` implementation, here is a quick introduction of ReAct Agent.
 
-To solve a query, the `ReAct Agent <https://arxiv.org/pdf/2210.03629>`_, like its name(``Re``- Reason; ``Act`` - Act), 
+To solve a query, the `ReAct Agent <https://arxiv.org/pdf/2210.03629>`_, like its name(``Re``- Reason; ``Act`` - Act),
 first uses LLM to analyze the context and plan actions to answer the query(reasoning).
 Then it takes actions to utilize external resources(action). For more details, please see the :ref:`deep-dive`.
 
@@ -27,13 +27,13 @@ LightRAG's Implementation
 -----------------------------------------------------
 Next, let's look at how ``LightRAG`` makes the implementation convenient. In ``LightRAG``, the ReAct agent is a type of :ref:`generator` that runs multiple sequential steps to generate the final response, with designed prompt, external functions(named as ``tools``) and ``JsonParser output_processors``.
 
-1. **Prompt:** We have a easy-to-customizable prompt template designed for ReAct agent that takes in 
-``tools``, few shot ``examples``, ``history``, and ``user query``. 
-The ``history`` will be automatically managed by the agent. ``user query`` will be handled in each single turn. 
-Hence when initializing an agent, we only need to set up the ``tools`` and the ``examples`` in the ``preset_prompt_kwargs`` for the system prompt and 
+1. **Prompt:** We have a easy-to-customizable prompt template designed for ReAct agent that takes in
+``tools``, few shot ``examples``, ``history``, and ``user query``.
+The ``history`` will be automatically managed by the agent. ``user query`` will be handled in each single turn.
+Hence when initializing an agent, we only need to set up the ``tools`` and the ``examples`` in the ``preset_prompt_kwargs`` for the system prompt and
 use ``user query`` in each agent call. :ref:`Prompt <DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
 
-2. **Tools:** ReAct Agent needs to plan the tool to use, which means it needs to access the tools' descriptions. 
+2. **Tools:** ReAct Agent needs to plan the tool to use, which means it needs to access the tools' descriptions.
 ``LightRAG`` provides dynamic tool handling, using ``FunctionTool`` to encapsulate tool functionalities. The metadata(function name, description, and parameters) will be extracted and passed to the prompt automatically. This process not only makes tool integration more seamless but also enhances developer efficiency by allowing straightforward definition and management of tools.
 
 Here is the example to illustrate the usage of ``FunctionTool``. It's easy to set up using ``from_defaults``.
@@ -73,19 +73,19 @@ Here is the example to illustrate the usage of ``FunctionTool``. It's easy to se
     # Function parameter: {"type": "object", "properties": {"a": {"type": "int"}, "b": {"type": "int"}}, "required": ["a", "b"]}
 
 The agent will then call these external functions based on the function descriptions.
-In addition to user-defined tools, the :class:`ReActAgent <components.agent.react_agent.ReActAgent>` built-in ``llm_tool``
+In addition to user-defined tools, the :class:`ReActAgent <components.agent.react.ReActAgent>` built-in ``llm_tool``
 for leveraging LLM's internal knowledge, and ``finish`` for completing processes. ``llm_tool`` uses the same model with the agent. Developers have the flexibility to enable or disable these as needed.
 
 3. **Output Parser:** ``LightRAG`` requests the model to output intermediate Thought and Action as JSON, which facilitates better error handling and easier data manipulation than strings. For example,
-    
+
 .. code-block:: json
-    
+
     {
         "thought": "<Why you are taking this action>",
         "action": "ToolName(<args>, <kwargs>)"
     }
 
-This format allows the ``LightRAG`` JSON parser to efficiently decode the model's output and extract arguments. 
+This format allows the ``LightRAG`` JSON parser to efficiently decode the model's output and extract arguments.
 The parsed data is then utilized by the ``StepOutput`` class to manage the flow of thought, action and observation.
 
 4. **Example:** Let's see a Q&A agent example:
@@ -93,7 +93,7 @@ The parsed data is then utilized by the ``StepOutput`` class to manage the flow 
 .. code-block:: python
 
     from lightrag.core.tool_helper import FunctionTool
-    from lightrag.components.agent.react_agent import ReActAgent
+    from lightrag.components.agent.react import ReActAgent
     from lightrag.components.model_client import OpenAIClient
     from lightrag.components.model_client import GroqAPIClient
 
@@ -121,8 +121,8 @@ The parsed data is then utilized by the ``StepOutput`` class to manage the flow 
     #    print(f"Function name: {name}")
     #    print(f"Function description: {description}")
     #    print(f"Function parameter: {parameter}")
-        
-        
+
+
     examples = [
             """
             User: What is 9 - 3?
@@ -147,13 +147,13 @@ The parsed data is then utilized by the ``StepOutput`` class to manage the flow 
         preset_prompt_kwargs=preset_prompt_kwargs
         )
 
-    import time        
+    import time
     queries = ["What is 3 add 4?", "3*9=?"]
     average_time = 0
     for query in queries:
         t0 = time.time()
         answer = agent(query)
-    
+
     # Answer: The answer is 7.
     # Answer: The answer is 27.
 
@@ -166,7 +166,7 @@ ReAct Agent Deep Dive
 ---------------------------
 Please read this section if you need more information on ReAct agent.
 
-`ReAct Agent <https://arxiv.org/pdf/2210.03629>`_, like its name(``Re``- Reason; ``Act`` - Act), is a framework generating reasoning and taking actions in an interleaved manner. The reasoning step guides the model to action plans and the action step allows the agent to interact with external sources such as knowledge bases. 
+`ReAct Agent <https://arxiv.org/pdf/2210.03629>`_, like its name(``Re``- Reason; ``Act`` - Act), is a framework generating reasoning and taking actions in an interleaved manner. The reasoning step guides the model to action plans and the action step allows the agent to interact with external sources such as knowledge bases.
 
 The paper shows:
 1. ReAct with few-shot prompt and Wikipedia API interaction outperforms chain-of-thought on `HotpotQA <https://arxiv.org/pdf/1809.09600>`_ (Question and Answering) and `Fever <https://arxiv.org/pdf/1803.05355v3>`_ (Fact Verification).
@@ -184,7 +184,7 @@ The environment contains user query, step histories, observations, and external 
 
 At each step, the agent:
 
-- **[Thought]** In response to the environment and user query, the agent uses its LLM to generate a strategic thought that outlines a plan or hypothesis guiding the subsequent action. 
+- **[Thought]** In response to the environment and user query, the agent uses its LLM to generate a strategic thought that outlines a plan or hypothesis guiding the subsequent action.
 
 - **[Action]** The agent executes the action.
 
@@ -192,9 +192,9 @@ The environment will be updated:
 
 - **[Observation]** The observation is created after the action is done.
 
-Then the agent iteratively generates thoughts based on latest observation and context(previous steps), takes actions and gets new observations. 
+Then the agent iteratively generates thoughts based on latest observation and context(previous steps), takes actions and gets new observations.
 
-The termination condition is: 
+The termination condition is:
 
 * The agent finds the answer and takes "finish" action.
 
@@ -202,10 +202,10 @@ The termination condition is:
 
 **2. Action Space**
 
-Now we understand the 3 different stages: Thought, Action, Observation. Let's focus on Action, one of agents' uniqueness. 
+Now we understand the 3 different stages: Thought, Action, Observation. Let's focus on Action, one of agents' uniqueness.
 
 Actions refer to the tools the agent uses to interact with the environment and creates observations.
-Note: the paper defines Thought(or reasoning trace) as a *language level action* but it is not included in the action space because it doesn't impact the environment. 
+Note: the paper defines Thought(or reasoning trace) as a *language level action* but it is not included in the action space because it doesn't impact the environment.
 
 Use ``HotpotQA`` dataset as an example, what external source do we need to answer questions?
 
@@ -213,11 +213,11 @@ Use ``HotpotQA`` dataset as an example, what external source do we need to answe
 
 In the `ReAct paper <https://arxiv.org/pdf/2210.03629>`_, researchers include 3 actions in the "action space" (simplified version here):
 
-* search[entity], returns the first 5 sentences from the corresponding entity wiki page if it exists, or else suggests top-5 similar entities. 
+* search[entity], returns the first 5 sentences from the corresponding entity wiki page if it exists, or else suggests top-5 similar entities.
 
-* lookup[string], simulating Ctrl+F functionality on the browser. 
+* lookup[string], simulating Ctrl+F functionality on the browser.
 
-* finish[answer], which would finish the current task with answer. 
+* finish[answer], which would finish the current task with answer.
 
 **3. Components**
 
@@ -227,5 +227,5 @@ With the workflow and action space, next, let's focus on the components needed t
 
 * **function call:** In the implementation, each action is essentially a function to call. Clear functionality definition is important for the agent to determine which action to take next.
 
-* **parser:** The agent is built on LLMs. It takes in the prompt with context, generates thought and determine the action to take in text response. 
+* **parser:** The agent is built on LLMs. It takes in the prompt with context, generates thought and determine the action to take in text response.
 To really call functions, we need to parse the text response to get the parameters for the determined function.

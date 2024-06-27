@@ -28,7 +28,8 @@ The core section of the LightRAG API documentation provides detailed information
    core.string_parser
    core.text_splitter
    core.tokenizer
-   core.tool_helper
+   core.func_tool
+   core.tool_manager
    core.types
 
 
@@ -41,7 +42,7 @@ The components section of the LightRAG API documentation outlines the detailed s
 
    components.agent
    components.model_client
- 
+
    .. components.reasoning
 
    components.retriever
