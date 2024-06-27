@@ -513,7 +513,7 @@ The output is:
     -Follow the JSON formatting conventions.
 
 
-With Function output format
+Function Output Format
 **************************************************
 
 .. code-block:: python
@@ -616,7 +616,7 @@ However, we see it failed three function execution:
     If users prefer to use Function, to incress the success rate, make sure your function arguments are dict based for class object. You can always convert it to a class from a dict.
 
 
-Function output format
+FunctionExpression Output Format
 **************************************************
 We will adapt the above code easily using tool manager to use ``FunctionExpression`` as the output format.
 We will use FunctionExpression this time in the parser. And we added the necessary context to handle the local variable `x`, `y`, and `np.array`.
@@ -809,5 +809,5 @@ The output has one failed run, that is the ``add_point`` as it always like to us
    - :class:`core.types.Function`
    - :class:`core.types.FunctionExpression`
    - :class:`core.types.FunctionOutput`
-   - :class:`core.tool_manager.FunctionTool`
+   - :class:`core.func_tool.FunctionTool`
    - :class:`core.tool_manager.ToolManager`
