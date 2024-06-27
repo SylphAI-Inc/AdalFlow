@@ -21,7 +21,7 @@ import logging
 
 from lightrag.core.component import Component
 from lightrag.core.types import Document
-from lightrag.components.retriever.bm25_retriever import split_text_tokenized
+from lightrag.core.tokenizer import Tokenizer
 
 # TODO:
 # More splitters such as PDF/JSON/HTML Splitter can be built on TextSplitter.
@@ -36,6 +36,8 @@ SEPARATORS = {"page": "\f", "passage": "\n\n", "word": " ", "sentence": ".", "to
 
 DEFAULT_CHUNK_SIZE = 800
 DEFAULT_CHUNK_OVERLAP = 200
+
+tokenizer = Tokenizer()
 
 class TextSplitter(Component):
     """  
@@ -271,10 +273,10 @@ class TextSplitter(Component):
         self, text: str, separator: str) -> List[str]:
         """Split text based on the specified separator."""
         if self.split_by == "token":
-            splits = split_text_tokenized(text)
+            splits = tokenizer.encode(text)
         else:
             splits = text.split(separator)
-            log.info(f"Text split by '{separator}' into {len(splits)} parts.")
+        log.info(f"Text split by '{separator}' into {len(splits)} parts.")
         return splits
         
     def _merge_units_to_chunks(
@@ -296,13 +298,24 @@ class TextSplitter(Component):
             current_splits = splits[idx:idx+chunk_size]
             # add the separator between each unit and merge the string
             # this won't be the last chunk, so we need to add the separator at the end
-            chunk = separator.join(current_splits) + separator
+            if self.split_by == "token":
+                chunk = current_splits # if token, then keep the original form
+            else:
+                chunk = separator.join(current_splits) + separator
             chunks.append(chunk)
         
         if idx < len(splits):
-            last_chunk = separator.join(splits[idx:]) 
+            if self.split_by == "token":
+                last_chunk = splits[idx:]  # if token, then keep the original form
+            else:
+                last_chunk = separator.join(splits[idx:])  # if not token, then join into string
             if len(last_chunk) > 0:
                 chunks.append(last_chunk)
+        
+        if self.split_by=="token":
+            # decode each chunk here
+            chunks = [tokenizer.decode(chunk) for chunk in chunks]
+            
         log.info(f"Merged into {len(chunks)} chunks.")
         return chunks
     

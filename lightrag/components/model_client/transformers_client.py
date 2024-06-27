@@ -13,6 +13,7 @@ from transformers import (
     AutoTokenizer,
     AutoModel,
     AutoModelForSequenceClassification,
+    AutoModelForCausalLM
 )
 
 from lightrag.core.model_client import ModelClient
@@ -222,7 +223,48 @@ class TransformerReranker:
         else:
             raise ValueError(f"model {model_name} is not supported")
 
+class TransformerLLM:
+    models: Dict[str, type] = {}
 
+    def __init__(self, model_name: Optional[str] = "HuggingFaceH4/zephyr-7b-beta"):
+        super().__init__()
+
+        if model_name is not None:
+            self.init_model(model_name=model_name)
+    
+    def init_model(self, model_name: str):
+        try:
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name)
+            # register the model
+            self.models[model_name] = self.model
+            log.info(f"Done loading model {model_name}")
+
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+    
+    def call(self, input: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False ):
+        model = self.models.get("HuggingFaceH4/zephyr-7b-beta", None)
+        if model is None:
+            # initialize the model
+            self.init_model("HuggingFaceH4/zephyr-7b-beta")
+        prompt = input
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        generate_ids = self.model.generate(inputs.input_ids)
+        response = self.tokenizer.batch_decode(generate_ids, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)[0]
+        return response
+
+    def __call__(self, **kwargs):
+        if "model" not in kwargs:
+            raise ValueError("model is required")
+        model_name = kwargs["model"]
+        if model_name == "HuggingFaceH4/zephyr-7b-beta":
+            return self.call(kwargs["input"])
+        else:
+            raise ValueError(f"model {model_name} is not supported")
+        
+        
 class TransformersClient(ModelClient):
     __doc__ = r"""LightRAG API client for transformers.
 
@@ -236,6 +278,9 @@ class TransformersClient(ModelClient):
         "BAAI/bge-reranker-base": {
             "type": ModelType.RERANKER,
         },
+        "HuggingFaceH4/zephyr-7b-beta": {
+            "type": ModelType.LLM
+        }
     }
 
     def __init__(self, model_name: Optional[str] = None) -> None:
@@ -249,6 +294,8 @@ class TransformersClient(ModelClient):
             self.sync_client = self.init_sync_client()
         elif self._model_name == "BAAI/bge-reranker-base":
             self.reranker_client = self.init_reranker_client()
+        elif self._model_name == "HuggingFaceH4/zephyr-7b-beta":
+            self.llm_client = self.init_llm_client()
         self.async_client = None
 
     def init_sync_client(self):
@@ -256,6 +303,9 @@ class TransformersClient(ModelClient):
 
     def init_reranker_client(self):
         return TransformerReranker()
+    
+    def init_llm_client(self):
+        return TransformerLLM()
 
     def parse_embedding_response(self, response: Any) -> EmbedderOutput:
         embeddings: List[Embedding] = []
@@ -289,6 +339,15 @@ class TransformersClient(ModelClient):
                 scores, api_kwargs["top_k"]
             )
             return top_k_indices, top_k_scores
+        elif ( # LLM
+            model_type == ModelType.LLM
+            and "model" in api_kwargs
+            and api_kwargs["model"] == "HuggingFaceH4/zephyr-7b-beta"
+        ):
+            if not hasattr(self, "llm_client") or self.llm_client is None:
+                self.llm_client = self.init_llm_client()
+            response = self.llm_client(**api_kwargs)
+            return response
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -305,6 +364,10 @@ class TransformersClient(ModelClient):
             assert "documents" in final_model_kwargs, "documents must be specified"
             assert "top_k" in final_model_kwargs, "top_k must be specified"
             final_model_kwargs["query"] = input
+            return final_model_kwargs
+        elif model_type == ModelType.LLM:
+            assert "model" in final_model_kwargs, "model must be specified"
+            final_model_kwargs["input"] = input
             return final_model_kwargs
         else:
             raise ValueError(f"model_type {model_type} is not supported")
