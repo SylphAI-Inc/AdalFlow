@@ -6,7 +6,7 @@ on:
       - xiaoyi_doc
   workflow_dispatch:
 
-permissions:  # Set permissions for all jobs
+permissions:
   contents: write
   actions: read
 
@@ -37,7 +37,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages  # Deploy to the gh-pages branch
-          publish_dir: docs/build/  # Publish from the docs/build/ directory
+          publish_branch: gh-pages
+          publish_dir: docs/build/
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
