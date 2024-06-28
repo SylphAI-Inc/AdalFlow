@@ -12,6 +12,10 @@ from typing import (
     Optional,
     Type,
     get_type_hints,
+    get_origin,
+    get_args,
+    Set,
+    Sequence,
 )
 import logging
 import numpy as np
@@ -19,336 +23,21 @@ import re
 import json
 import yaml
 import ast
+import threading
+
 from inspect import signature, Parameter
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, MISSING, Field
 
 log = logging.getLogger(__name__)
 
-
-########################################################################################
-# For FunctionTool component
-########################################################################################
-def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
-    r"""Get the schema of a function.
-    Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.
-
-    Examples:
-    def example_function(x: int, y: str = "default") -> int:
-        return x
-    schema = get_fun_schema("example_function", example_function)
-    print(json.dumps(schema, indent=4))
-    # Output:
-    {
-        "type": "object",
-        "properties": {
-            "x": {
-                "type": "int"
-            },
-            "y": {
-                "type": "str",
-                "default": "default"
-            }
-        },
-        "required": [
-            "x"
-        ]
-    }
-    """
-    sig = signature(func)
-    schema = {"type": "object", "properties": {}, "required": []}
-    type_hints = get_type_hints(func)
-
-    for param_name, parameter in sig.parameters.items():
-        param_type = type_hints.get(param_name, "Any")
-        if parameter.default == Parameter.empty:
-            schema["required"].append(param_name)
-            schema["properties"][param_name] = {**get_type_schema(param_type)}
-        else:
-            schema["properties"][param_name] = {
-                **get_type_schema(param_type),
-                "default": parameter.default,
-            }
-
-    return schema
-
-
-def get_type_schema(param_type: object) -> Dict[str, Any]:
-    if hasattr(param_type, "__origin__") and param_type.__origin__ is Union:
-        return {
-            "type": "Union",
-            "choices": [get_type_schema(arg) for arg in param_type.__args__],
-        }
-    elif is_dataclass(param_type):
-        return get_dataclass_schema(param_type)
-    elif hasattr(param_type, "__name__"):
-        return {"type": param_type.__name__}
-    else:
-        return {"type": "Any"}
-
-
-def get_dataclass_schema(cls):
-    """Generate schema for a dataclass."""
-    data_class_type = cls.__name__
-    schema = {"type": data_class_type, "properties": {}, "required": []}
-    for field_ in fields(cls):
-        field_schema = {"type": field_.type.__name__}
-        if field_.default != field_.default_factory:
-            field_schema["default"] = field_.default
-        if field_.metadata:
-            field_schema.update(field_.metadata)
-        schema["properties"][field_.name] = field_schema
-        if field_.default == field_.default_factory:
-            schema["required"].append(field_.name)
-
-    return schema
-
-
-# For parse function call for FunctionTool component
-def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
-    """
-    Recursively evaluates an AST node and returns the corresponding Python object.
-
-    Args:
-        node (ast.AST): The AST node to evaluate. This node can represent various parts of Python expressions,
-                        such as literals, identifiers, lists, dictionaries, and function calls.
-        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.
-                                      This context is used to resolve names and execute functions.
-
-    Returns:
-        Any: The result of evaluating the node. The type of the returned object depends on the nature of the node:
-             - Constants return their literal value.
-             - Names are looked up in the context_map.
-             - Lists and tuples return their contained values as a list or tuple.
-             - Dictionaries return a dictionary with keys and values evaluated.
-             - Function calls invoke the function with evaluated arguments and return its result.
-
-    Raises:
-        ValueError: If the node type is unsupported, a ValueError is raised indicating the inability to evaluate the node.
-    """
-    if isinstance(node, ast.Constant):
-        return node.value
-    elif isinstance(node, ast.Dict):
-        return {
-            evaluate_ast_node(k): evaluate_ast_node(v)
-            for k, v in zip(node.keys, node.values)
-        }
-    elif isinstance(node, ast.List):
-        return [evaluate_ast_node(elem) for elem in node.elts]
-    elif isinstance(node, ast.Tuple):
-        return tuple(evaluate_ast_node(elem) for elem in node.elts)
-    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
-        return -evaluate_ast_node(node.operand, context_map)  # unary minus
-    elif isinstance(
-        node, ast.BinOp
-    ):  # support "multiply(2024-2017, 12)", the "2024-2017" is a "BinOp" node
-        left = evaluate_ast_node(node.left, context_map)
-        right = evaluate_ast_node(node.right, context_map)
-        if isinstance(node.op, ast.Add):
-            return left + right
-        elif isinstance(node.op, ast.Sub):
-            return left - right
-        elif isinstance(node.op, ast.Mult):
-            return left * right
-        elif isinstance(node.op, ast.Div):
-            return left / right
-        elif isinstance(node.op, ast.Mod):
-            return left % right
-        elif isinstance(node.op, ast.Pow):
-            return left**right
-        else:
-            raise ValueError(f"Unsupported binary operator: {type(node.op)}")
-    elif isinstance(node, ast.Name):  # variable name
-        try:
-            output_fun = context_map[node.id]
-            return output_fun
-        # TODO: raise the error back to the caller so that the llm can get the error message
-        except KeyError as e:
-            raise ValueError(
-                f"Error: {e}, {node.id} does not exist in the context_map."
-            )
-    elif isinstance(node, ast.Attribute):  # e.g. math.pi
-        value = evaluate_ast_node(node.value, context_map)
-        return getattr(value, node.attr)
-
-    elif isinstance(
-        node, ast.Call
-    ):  # another fun or class as argument and value, e.g. add( multiply(4,5), 3)
-        func = evaluate_ast_node(node.func, context_map)
-        args = [evaluate_ast_node(arg, context_map) for arg in node.args]
-        kwargs = {
-            kw.arg: evaluate_ast_node(kw.value, context_map) for kw in node.keywords
-        }
-        output = func(*args, **kwargs)
-        if hasattr(output, "raw_output"):
-            return output.raw_output
-        return output
-    else:
-        # directly evaluate the node
-        # print(f"Unsupported AST node type: {type(node)}")
-        # return eval(compile(ast.Expression(node), filename="<ast>", mode="eval"))
-        raise ValueError(f"Unsupported AST node type: {type(node)}")
-
-
-def parse_function_call_expr(
-    function_expr: str, context_map: Dict[str, Any] = None
-) -> Tuple[str, List[Any], Dict[str, Any]]:
-    """
-    Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.
-    Args:
-        function_expr (str): The string representing the function
-        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.
-                                      This context is used to resolve names and execute functions.
-    """
-    function_expr = function_expr.strip()
-    # Parse the string into an AST
-    tree = ast.parse(function_expr, mode="eval")
-
-    if isinstance(tree.body, ast.Call):
-        # Extract the function name
-        func_name = tree.body.func.id if isinstance(tree.body.func, ast.Name) else None
-
-        # Prepare the list of arguments and keyword arguments
-        args = [evaluate_ast_node(arg, context_map) for arg in tree.body.args]
-        keywords = {
-            kw.arg: evaluate_ast_node(kw.value, context_map)
-            for kw in tree.body.keywords
-        }
-
-        return func_name, args, keywords
-    else:
-        raise ValueError("Provided string is not a function call.")
-
-
-def generate_function_call_expression_from_callable(
-    func: Callable[..., Any], *args: Any, **kwargs: Any
-) -> str:
-    """
-    Generate a function call expression string from a callable function and its arguments.
-
-    Args:
-        func (Callable[..., Any]): The callable function.
-        *args (Any): Positional arguments to be passed to the function.
-        **kwargs (Any): Keyword arguments to be passed to the function.
-
-    Returns:
-        str: The function call expression string.
-    """
-    func_name = func.__name__
-    args_str = ", ".join(repr(arg) for arg in args)
-    kwargs_str = ", ".join(f"{k}={repr(v)}" for k, v in kwargs.items())
-
-    if args_str and kwargs_str:
-        full_args_str = f"{args_str}, {kwargs_str}"
-    else:
-        full_args_str = args_str or kwargs_str
-
-    return f"{func_name}({full_args_str})"
-
-
-import threading
-
-# Define a list of safe built-ins
-SAFE_BUILTINS = {
-    "abs": abs,
-    "all": all,
-    "any": any,
-    "bin": bin,
-    "bool": bool,
-    "bytearray": bytearray,
-    "bytes": bytes,
-    "callable": callable,
-    "chr": chr,
-    "complex": complex,
-    "dict": dict,
-    "divmod": divmod,
-    "enumerate": enumerate,
-    "filter": filter,
-    "float": float,
-    "format": format,
-    "frozenset": frozenset,
-    "getattr": getattr,
-    "hasattr": hasattr,
-    "hash": hash,
-    "hex": hex,
-    "int": int,
-    "isinstance": isinstance,
-    "issubclass": issubclass,
-    "iter": iter,
-    "len": len,
-    "list": list,
-    "map": map,
-    "max": max,
-    "min": min,
-    "next": next,
-    "object": object,
-    "oct": oct,
-    "ord": ord,
-    "pow": pow,
-    "range": range,
-    "repr": repr,
-    "reversed": reversed,
-    "round": round,
-    "set": set,
-    "slice": slice,
-    "sorted": sorted,
-    "str": str,
-    "sum": sum,
-    "tuple": tuple,
-    "type": type,
-    "zip": zip,
-}
-
-
-def sandbox_exec(
-    code: str, context: Optional[Dict[str, object]] = None, timeout: int = 5
-) -> Dict:
-    r"""Execute code in a sandboxed environment with a timeout.
-
-    1. Works similar to eval(), but with timeout and context similar to parse_function_call_expr.
-    2. With more flexibility as you can write additional function in the code compared with simply the function call.
-
-    Args:
-        code (str): The code to execute. Has to be output=... or similar so that the result can be captured.
-        context (Dict[str, Any]): The context to use for the execution.
-        timeout (int): The execution timeout in seconds.
-
-    """
-    result = {"output": None, "error": None}
-    context = {**context, **SAFE_BUILTINS} if context else SAFE_BUILTINS
-    try:
-        compiled_code = compile(code, "<string>", "exec")
-
-        # Result dictionary to store execution results
-
-        # Define a target function for the thread
-        def target():
-            try:
-                # Execute the code
-                exec(compiled_code, context, result)
-            except Exception as e:
-                result["error"] = e
-
-        # Create a thread to execute the code
-        thread = threading.Thread(target=target)
-        thread.start()
-        thread.join(timeout)
-
-        # Check if the thread is still alive (timed out)
-        if thread.is_alive():
-            result["error"] = TimeoutError("Execution timed out")
-            raise TimeoutError("Execution timed out")
-    except Exception as e:
-        print(f"Errpr at sandbox_exec: {e}")
-        raise e
-
-    return result
+ExcludeType = Optional[Dict[str, List[str]]]
 
 
 ########################################################################################
-# For Dataclass base class
+# For Dataclass base class and all schema related functions
 ########################################################################################
 def dataclass_obj_to_dict(
-    obj: Any, exclude: Optional[Dict[str, List[str]]] = None, parent_key: str = ""
+    obj: Any, exclude: ExcludeType = None, parent_key: str = ""
 ) -> Dict[str, Any]:
     r"""Convert a dataclass object to a dictionary.
 
@@ -507,6 +196,416 @@ def from_yaml_to_dict(yaml_str: str) -> Dict[str, Any]:
         return yaml.safe_load(yaml_str)
     except yaml.YAMLError as e:
         raise ValueError(f"Failed to convert YAML to dict: {e}")
+
+
+def is_dataclass_instance(obj):
+    return hasattr(obj, "__dataclass_fields__")
+
+
+def get_type_schema(type_obj, exclude: ExcludeType = None) -> str:
+    """Retrieve the type name, handling complex and nested types."""
+    origin = get_origin(type_obj)
+    if origin is Union:
+        # Handle Optional[Type] and other unions
+        args = get_args(type_obj)
+        types = [get_type_schema(arg, exclude) for arg in args if arg is not type(None)]
+        return (
+            f"Optional[{types[0]}]" if len(types) == 1 else f"Union[{', '.join(types)}]"
+        )
+    elif origin in {List, list}:
+        args = get_args(type_obj)
+        if args:
+            inner_type = get_type_schema(args[0], exclude)
+            return f"List[{inner_type}]"
+        else:
+            return "List"
+
+    elif origin in {Dict, dict}:
+        args = get_args(type_obj)
+        if args and len(args) >= 2:
+            key_type = get_type_schema(args[0], exclude)
+            value_type = get_type_schema(args[1], exclude)
+            return f"Dict[{key_type}, {value_type}]"
+        else:
+            return "Dict"
+    elif origin in {Set, set}:
+        args = get_args(type_obj)
+        return f"Set[{get_type_schema(args[0], exclude)}]" if args else "Set"
+
+    elif origin is Sequence:
+        args = get_args(type_obj)
+        return f"Sequence[{get_type_schema(args[0], exclude)}]" if args else "Sequence"
+
+    elif origin in {Tuple, tuple}:
+        args = get_args(type_obj)
+        if args:
+            return f"Tuple[{', '.join(get_type_schema(arg, exclude) for arg in args)}]"
+        return "Tuple"
+
+    elif is_dataclass(type_obj):
+        # Recursively handle nested dataclasses
+        return get_dataclass_schema(type_obj, exclude)
+    return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
+
+
+def get_dataclass_schema(
+    cls, exclude: ExcludeType = None
+) -> Dict[str, Dict[str, object]]:
+    """Generate a schema dictionary for a dataclass including nested structures.
+
+    1. Support customized dataclass with required_field function.
+    2. Support nested dataclasses, even with generics like List, Dict, etc.
+    3. Support metadata in the dataclass fields.
+    """
+    if not is_dataclass(cls):
+        raise ValueError("Provided class is not a dataclass")
+
+    schema = {"type": cls.__name__, "properties": {}, "required": []}
+    # get the exclude list for the current class
+    current_exclude = exclude.get(cls.__name__, []) if exclude else []
+    for f in fields(cls):
+        if f.name in current_exclude:
+            continue
+        field_schema = {"type": f.type.__name__}
+
+        # check required field
+        is_required = _is_required_field(f)
+        if is_required:
+            schema["required"].append(f.name)
+        # prepare field schema
+        field_schema = {"type": get_type_schema(f.type, exclude)}
+        # add metadata to the field schema
+        if f.metadata:
+            field_schema.update(f.metadata)
+        # handle nested dataclasses and complex types
+
+        schema["properties"][f.name] = field_schema
+
+    return schema
+
+
+def _is_required_field(f: Field) -> bool:
+    r"""Determine if the field of dataclass is required or optional.
+    Customized for required_field function."""
+    # Determine if the field is required or optional
+    # Using __name__ to check for function identity
+    if f.default is MISSING and (
+        f.default_factory is MISSING
+        or (
+            hasattr(f.default_factory, "__name__")
+            and f.default_factory.__name__ == "required_field"
+        )
+    ):
+        return True
+    return False
+
+
+def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, str]:
+    r"""Convert the value from get_data_class_schema to a string description."""
+
+    signature = {}
+    schema_to_use = schema.get("properties", {})
+    required_fields = schema.get("required", [])
+    for field_name, field_info in schema_to_use.items():
+        field_signature = field_info.get("desc", "")
+        # add type to the signature
+        if field_info["type"]:
+            field_signature += f" ({field_info['type']})"
+        # add required/optional to the signature
+        if field_name in required_fields:
+            field_signature += " (required)"
+        else:
+            field_signature += " (optional)"
+
+        signature[field_name] = field_signature
+    return signature
+
+
+########################################################################################
+# For FunctionTool component
+# It uses get_type_schema and get_dataclass_schema to generate the schema of arguments.
+########################################################################################
+def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
+    r"""Get the schema of a function.
+    Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.
+
+    Examples:
+    def example_function(x: int, y: str = "default") -> int:
+        return x
+    schema = get_fun_schema("example_function", example_function)
+    print(json.dumps(schema, indent=4))
+    # Output:
+    {
+        "type": "object",
+        "properties": {
+            "x": {
+                "type": "int"
+            },
+            "y": {
+                "type": "str",
+                "default": "default"
+            }
+        },
+        "required": [
+            "x"
+        ]
+    }
+    """
+    sig = signature(func)
+    schema = {"type": "object", "properties": {}, "required": []}
+    type_hints = get_type_hints(func)
+
+    for param_name, parameter in sig.parameters.items():
+        param_type = type_hints.get(param_name, "Any")
+        if parameter.default == Parameter.empty:
+            schema["required"].append(param_name)
+            schema["properties"][param_name] = {"type": get_type_schema(param_type)}
+        else:
+            schema["properties"][param_name] = {
+                "type": get_type_schema(param_type),
+                "default": parameter.default,
+            }
+
+    return schema
+
+
+# For parse function call for FunctionTool component
+def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
+    """
+    Recursively evaluates an AST node and returns the corresponding Python object.
+
+    Args:
+        node (ast.AST): The AST node to evaluate. This node can represent various parts of Python expressions,
+                        such as literals, identifiers, lists, dictionaries, and function calls.
+        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.
+                                      This context is used to resolve names and execute functions.
+
+    Returns:
+        Any: The result of evaluating the node. The type of the returned object depends on the nature of the node:
+             - Constants return their literal value.
+             - Names are looked up in the context_map.
+             - Lists and tuples return their contained values as a list or tuple.
+             - Dictionaries return a dictionary with keys and values evaluated.
+             - Function calls invoke the function with evaluated arguments and return its result.
+
+    Raises:
+        ValueError: If the node type is unsupported, a ValueError is raised indicating the inability to evaluate the node.
+    """
+    if isinstance(node, ast.Constant):
+        return node.value
+    elif isinstance(node, ast.Dict):
+        return {
+            evaluate_ast_node(k): evaluate_ast_node(v)
+            for k, v in zip(node.keys, node.values)
+        }
+    elif isinstance(node, ast.List):
+        return [evaluate_ast_node(elem) for elem in node.elts]
+    elif isinstance(node, ast.Tuple):
+        return tuple(evaluate_ast_node(elem) for elem in node.elts)
+    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub):
+        return -evaluate_ast_node(node.operand, context_map)  # unary minus
+    elif isinstance(
+        node, ast.BinOp
+    ):  # support "multiply(2024-2017, 12)", the "2024-2017" is a "BinOp" node
+        left = evaluate_ast_node(node.left, context_map)
+        right = evaluate_ast_node(node.right, context_map)
+        if isinstance(node.op, ast.Add):
+            return left + right
+        elif isinstance(node.op, ast.Sub):
+            return left - right
+        elif isinstance(node.op, ast.Mult):
+            return left * right
+        elif isinstance(node.op, ast.Div):
+            return left / right
+        elif isinstance(node.op, ast.Mod):
+            return left % right
+        elif isinstance(node.op, ast.Pow):
+            return left**right
+        else:
+            raise ValueError(f"Unsupported binary operator: {type(node.op)}")
+    elif isinstance(node, ast.Name):  # variable name
+        try:
+            output_fun = context_map[node.id]
+            return output_fun
+        # TODO: raise the error back to the caller so that the llm can get the error message
+        except KeyError as e:
+            raise ValueError(
+                f"Error: {e}, {node.id} does not exist in the context_map."
+            )
+    elif isinstance(node, ast.Attribute):  # e.g. math.pi
+        value = evaluate_ast_node(node.value, context_map)
+        return getattr(value, node.attr)
+
+    elif isinstance(
+        node, ast.Call
+    ):  # another fun or class as argument and value, e.g. add( multiply(4,5), 3)
+        func = evaluate_ast_node(node.func, context_map)
+        args = [evaluate_ast_node(arg, context_map) for arg in node.args]
+        kwargs = {
+            kw.arg: evaluate_ast_node(kw.value, context_map) for kw in node.keywords
+        }
+        output = func(*args, **kwargs)
+        if hasattr(output, "raw_output"):
+            return output.raw_output
+        return output
+    else:
+        # directly evaluate the node
+        # print(f"Unsupported AST node type: {type(node)}")
+        # return eval(compile(ast.Expression(node), filename="<ast>", mode="eval"))
+        raise ValueError(f"Unsupported AST node type: {type(node)}")
+
+
+def parse_function_call_expr(
+    function_expr: str, context_map: Dict[str, Any] = None
+) -> Tuple[str, List[Any], Dict[str, Any]]:
+    """
+    Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.
+    Args:
+        function_expr (str): The string representing the function
+        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.
+                                      This context is used to resolve names and execute functions.
+    """
+    function_expr = function_expr.strip()
+    # Parse the string into an AST
+    tree = ast.parse(function_expr, mode="eval")
+
+    if isinstance(tree.body, ast.Call):
+        # Extract the function name
+        func_name = tree.body.func.id if isinstance(tree.body.func, ast.Name) else None
+
+        # Prepare the list of arguments and keyword arguments
+        args = [evaluate_ast_node(arg, context_map) for arg in tree.body.args]
+        keywords = {
+            kw.arg: evaluate_ast_node(kw.value, context_map)
+            for kw in tree.body.keywords
+        }
+
+        return func_name, args, keywords
+    else:
+        raise ValueError("Provided string is not a function call.")
+
+
+def generate_function_call_expression_from_callable(
+    func: Callable[..., Any], *args: Any, **kwargs: Any
+) -> str:
+    """
+    Generate a function call expression string from a callable function and its arguments.
+
+    Args:
+        func (Callable[..., Any]): The callable function.
+        *args (Any): Positional arguments to be passed to the function.
+        **kwargs (Any): Keyword arguments to be passed to the function.
+
+    Returns:
+        str: The function call expression string.
+    """
+    func_name = func.__name__
+    args_str = ", ".join(repr(arg) for arg in args)
+    kwargs_str = ", ".join(f"{k}={repr(v)}" for k, v in kwargs.items())
+
+    if args_str and kwargs_str:
+        full_args_str = f"{args_str}, {kwargs_str}"
+    else:
+        full_args_str = args_str or kwargs_str
+
+    return f"{func_name}({full_args_str})"
+
+
+# Define a list of safe built-ins
+SAFE_BUILTINS = {
+    "abs": abs,
+    "all": all,
+    "any": any,
+    "bin": bin,
+    "bool": bool,
+    "bytearray": bytearray,
+    "bytes": bytes,
+    "callable": callable,
+    "chr": chr,
+    "complex": complex,
+    "dict": dict,
+    "divmod": divmod,
+    "enumerate": enumerate,
+    "filter": filter,
+    "float": float,
+    "format": format,
+    "frozenset": frozenset,
+    "getattr": getattr,
+    "hasattr": hasattr,
+    "hash": hash,
+    "hex": hex,
+    "int": int,
+    "isinstance": isinstance,
+    "issubclass": issubclass,
+    "iter": iter,
+    "len": len,
+    "list": list,
+    "map": map,
+    "max": max,
+    "min": min,
+    "next": next,
+    "object": object,
+    "oct": oct,
+    "ord": ord,
+    "pow": pow,
+    "range": range,
+    "repr": repr,
+    "reversed": reversed,
+    "round": round,
+    "set": set,
+    "slice": slice,
+    "sorted": sorted,
+    "str": str,
+    "sum": sum,
+    "tuple": tuple,
+    "type": type,
+    "zip": zip,
+}
+
+
+def sandbox_exec(
+    code: str, context: Optional[Dict[str, object]] = None, timeout: int = 5
+) -> Dict:
+    r"""Execute code in a sandboxed environment with a timeout.
+
+    1. Works similar to eval(), but with timeout and context similar to parse_function_call_expr.
+    2. With more flexibility as you can write additional function in the code compared with simply the function call.
+
+    Args:
+        code (str): The code to execute. Has to be output=... or similar so that the result can be captured.
+        context (Dict[str, Any]): The context to use for the execution.
+        timeout (int): The execution timeout in seconds.
+
+    """
+    result = {"output": None, "error": None}
+    context = {**context, **SAFE_BUILTINS} if context else SAFE_BUILTINS
+    try:
+        compiled_code = compile(code, "<string>", "exec")
+
+        # Result dictionary to store execution results
+
+        # Define a target function for the thread
+        def target():
+            try:
+                # Execute the code
+                exec(compiled_code, context, result)
+            except Exception as e:
+                result["error"] = e
+
+        # Create a thread to execute the code
+        thread = threading.Thread(target=target)
+        thread.start()
+        thread.join(timeout)
+
+        # Check if the thread is still alive (timed out)
+        if thread.is_alive():
+            result["error"] = TimeoutError("Execution timed out")
+            raise TimeoutError("Execution timed out")
+    except Exception as e:
+        print(f"Errpr at sandbox_exec: {e}")
+        raise e
+
+    return result
 
 
 ########################################################################################

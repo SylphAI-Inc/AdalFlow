@@ -318,7 +318,7 @@ If we use async function, we can use ``acall``.
 ``execute`` is a wrapper that you can call a function in both sync and async way regardless of the function type.
 Check out the API documentation for more details.
 
-1. ToolManager
+2. ToolManager
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Using ``ToolManager`` on all the above function:
 
@@ -736,7 +736,7 @@ We will slightly adapt the output format instruction to get it output json array
     <OUTPUT_FORMAT>
     Here is how you call one function.
     {{output_format_str}}
-    -Awlays return a List using `[]` of the above JSON objects, even if its just one item.
+    -Always return a List using `[]` of the above JSON objects, even if its just one item.
     </OUTPUT_FORMAT>
     <SYS>
     {{input_str}}

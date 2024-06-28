@@ -62,7 +62,7 @@ class MultipleFunctionDefinition(DataClass):
 
 
 # optionally to define schma yourself, this can be used to generate FunctionDefinition
-print(MultipleFunctionDefinition.to_data_class_schema_str())
+print(MultipleFunctionDefinition.to_schema_str())
 # use function tool
 
 template = r"""<SYS>You have these tools available:
@@ -118,7 +118,7 @@ multple_function_call_template = r"""<SYS>You have these tools available:
 <OUTPUT_FORMAT>
 Here is how you call one function.
 {{output_format_str}}
--Awlays return a List using `[]` of the above JSON objects, even if its just one item.
+-Always return a List using `[]` of the above JSON objects, even if its just one item.
 </OUTPUT_FORMAT>
 <SYS>
 {{input_str}}
@@ -143,14 +143,14 @@ class FunctionCall(Component):
 
     def prepare_single_function_call_generator(self):
         tool_manager = ToolManager(tools=functions)
-        func_parser = JsonOutputParser(data_class=Function)
+        func_parser = JsonOutputParser(
+            data_class=Function, exclude_fields=["thought", "args"]
+        )
 
         model_kwargs = {"model": "gpt-3.5-turbo"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
         }
         generator = Generator(
             model_client=ModelClientType.OPENAI(),
@@ -196,16 +196,16 @@ class FunctionCallWithFunctionExpression(Component):
                 "Point": Point,
             },
         )
-        func_parser = JsonOutputParser(data_class=FunctionExpression)
-        instructions = func_parser.format_instructions(exclude=["thought"])
+        func_parser = JsonOutputParser(
+            data_class=FunctionExpression, exclude_fields=["thought", "args"]
+        )
+        instructions = func_parser.format_instructions()
         print(instructions)
 
         model_kwargs = {"model": "gpt-4o"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
             "context_str": tool_manager._additional_context,
         }
         generator = Generator(
@@ -296,17 +296,17 @@ class MultiFunctionCallWithFunctionExpression(Component):
             func=add_points, p1=Point(x=1, y=2), p2=Point(x=3, y=4)
         )
         func_parser = JsonOutputParser(
-            data_class=FunctionExpression, examples=[example]
+            data_class=FunctionExpression,
+            examples=[example],
+            exclude_fields=["thought"],
         )
-        instructions = func_parser.format_instructions(exclude=["thought"])
+        instructions = func_parser.format_instructions()
         print(instructions)
 
         model_kwargs = {"model": "gpt-4o"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
         }
         generator = Generator(
             model_client=ModelClientType.OPENAI(),

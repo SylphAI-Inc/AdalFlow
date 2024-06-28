@@ -12,6 +12,8 @@ from lightrag.core.component import Component
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.string_parser import YamlParser, ListParser, JsonParser
 from lightrag.core.base_data_class import DataClass, DataClassFormatType
+from lightrag.core.base_data_class import ExcludeType
+
 
 # TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
 # setup: Why couldn't the bicycle stand up by itself?
@@ -141,6 +143,7 @@ class YamlOutputParser(OutputParser):
         self,
         data_class: DataClass,
         examples: List[DataClass] = None,
+        exclude_fields: ExcludeType = None,
     ):
 
         super().__init__()
@@ -152,6 +155,7 @@ class YamlOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
+        self._exclude_fields = exclude_fields
         self.data_class_for_yaml = data_class
         self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
         self.output_processors = YamlParser()
@@ -160,7 +164,6 @@ class YamlOutputParser(OutputParser):
     def format_instructions(
         self,
         format_type: Optional[DataClassFormatType] = None,
-        exclude: List[str] = None,
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format.
 
@@ -172,14 +175,15 @@ class YamlOutputParser(OutputParser):
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
         schema = self.data_class_for_yaml.format_class_str(
-            format_type=format_type, exclude=exclude
+            format_type=format_type, exclude=self._exclude_fields
         )
         # convert example to string, convert data class to yaml string
         example_str = ""
         try:
             for example in self.examples:
                 per_example_str = example.format_example_str(
-                    format_type=DataClassFormatType.EXAMPLE_YAML
+                    format_type=DataClassFormatType.EXAMPLE_YAML,
+                    exclude=self._exclude_fields,
                 )
                 example_str += f"{per_example_str}\n________\n"
             # remove the last new line
@@ -205,6 +209,7 @@ class JsonOutputParser(OutputParser):
         self,
         data_class: DataClass,
         examples: List[DataClass] = None,
+        exclude_fields: ExcludeType = None,
     ):
         super().__init__()
         if not is_dataclass(data_class):
@@ -214,6 +219,7 @@ class JsonOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
+        self._exclude_fields = exclude_fields
         template = JSON_OUTPUT_FORMAT
         self.data_class_for_json = data_class
         self.json_output_format_prompt = Prompt(template=template)
@@ -224,7 +230,6 @@ class JsonOutputParser(OutputParser):
     def format_instructions(
         self,
         format_type: Optional[DataClassFormatType] = None,
-        exclude: List[str] = None,
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the JSON output format.
 
@@ -235,13 +240,14 @@ class JsonOutputParser(OutputParser):
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
         schema = self.data_class_for_json.format_class_str(
-            format_type=format_type, exclude=exclude
+            format_type=format_type, exclude=self._exclude_fields
         )
         example_str = ""
         try:
             for example in self.examples:
                 per_example_str = example.format_example_str(
-                    format_type=DataClassFormatType.EXAMPLE_JSON
+                    format_type=DataClassFormatType.EXAMPLE_JSON,
+                    exclude=self._exclude_fields,
                 )
                 example_str += f"{per_example_str}\n________\n"
             # remove the last new line
@@ -256,7 +262,7 @@ class JsonOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class_for_json={self.data_class_for_json}, examples={self.examples}"
+        s = f"data_class_for_json={self.data_class_for_json}, examples={self.examples}, exclude_fields={self._exclude_fields}"
         return s
 
 

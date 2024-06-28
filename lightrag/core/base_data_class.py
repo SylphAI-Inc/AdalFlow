@@ -2,14 +2,14 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, TypeVar, Type, Union
+from typing import List, Dict, Any, Optional, Union, Callable
 import enum
+from copy import deepcopy
 from dataclasses import (
     dataclass,
     field,
     fields,
     make_dataclass,
-    MISSING,
     is_dataclass,
 )
 
@@ -18,12 +18,15 @@ import yaml
 import warnings
 import logging
 
-from lightrag.core.functional import dataclass_obj_to_dict, dataclass_obj_from_dict
+from lightrag.core.functional import (
+    dataclass_obj_to_dict,
+    dataclass_obj_from_dict,
+    get_dataclass_schema,
+    convert_schema_to_signature,
+)
 
 
 logger = logging.getLogger(__name__)
-
-T_co = TypeVar("T_co", covariant=True)
 
 
 class DataClassFormatType(enum.Enum):
@@ -38,78 +41,22 @@ class DataClassFormatType(enum.Enum):
     EXAMPLE_JSON = "example_json"
 
 
-def required_field(name):
-    r"""
-    A patch for `TypeError: non-default argument follows default argument`
-
-    Use default_factory=required_field to make a field required if field before has used default
-    or default_factory before it.
-
-    With this patch, our dataclass schema will make this a required field in string description.
+def required_field(name: Optional[str] = None) -> Callable[[], Any]:
     """
-    raise TypeError(f"The '{name}' field is required and was not provided.")
+    A factory function to create a required field in a dataclass.
+    The returned callable raises a TypeError when invoked, indicating a required field was not provided.
 
+    Args:
+        name (Optional[str], optional): The name of the required field. Defaults to None
 
-def _get_data_class_schema(
-    data_class: Type, exclude: Optional[List[str]] = None
-) -> Dict[str, Dict[str, Any]]:
-    r"""Helper function to get the schema of a DataClass in type of Dict."""
+    Returns:
+        Callable[[], Any]: A callable that raises TypeError when called, indicating a missing required field.
+    """
 
-    if not is_dataclass(data_class):
-        raise ValueError("Provided class is not a dataclass")
-    schema: Dict[str, Dict] = {}
-    if exclude is None:
-        exclude = []
-    for f in fields(data_class):
-        field_name = f.name
-        if field_name in exclude:
-            continue
+    def raise_error():
+        raise TypeError(f"The '{name}' field is required and was not provided.")
 
-        field_info = {
-            "type": f.type.__name__,
-        }
-        # add description if available
-        if "desc" in f.metadata or "description" in f.metadata:
-            field_info["desc"] = f.metadata.get("desc", f.metadata.get("description"))
-
-        # Determine if the field is required or optional
-        # Using __name__ to check for function identity
-        if f.default is MISSING and (
-            f.default_factory is MISSING
-            or (
-                hasattr(f.default_factory, "__name__")
-                and f.default_factory.__name__ == "required_field"
-            )
-        ):
-            field_info["required"] = True
-        else:
-            field_info["required"] = False
-            # if f.default is not MISSING:
-            #     field_info["default"] = f.default
-            # elif f.default_factory is not MISSING:
-            #     field_info["default"] = f.default_factory()
-
-        schema[field_name] = field_info
-
-    return schema
-
-
-def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, str]:
-    r"""Convert the value from _get_data_class_schema to a string description."""
-
-    signature = {}
-    for field_name, field_info in schema.items():
-        field_signature = field_info.get("desc", "")
-        # add type to the signature
-        if field_info["type"]:
-            field_signature += f" ({field_info['type']})"
-
-        if field_info["required"]:
-            field_signature += " (required)"
-        else:
-            field_signature += " (optional)"
-        signature[field_name] = field_signature
-    return signature
+    return raise_error
 
 
 # class _DataClassMeta(type):
@@ -141,14 +88,11 @@ def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, 
 # but if the child has dataclass decorator, it will not work.
 # class DataClass(metaclass=_DataClassMeta):
 # class OutputDataClass(DataClass):
-# before we do more tests, we keep the base and child class manually decorated with dataclass
+# before we do more tests, we keep the child class manually decorated with dataclass
 
 
-# 1. Support dataclass as field type, the nested dataclass using to_yaml, to_dict, or __dict__.
-# @dataclass
-ExcludeType = Optional[
-    Union[List[str], Dict[str, List[str]]]
-]  # fields of the current data class
+# Dict is for the nested dataclasses, e.g. {"Person": ["name", "age"], "Address": ["city"]}
+ExcludeType = Optional[Union[List[str], Dict[str, List[str]]]]
 
 
 class DataClass:
@@ -177,7 +121,7 @@ class DataClass:
 
     `Signature` is more token effcient than schema, and schema as it is always a json string, when you want LLMs to output yaml, it can be misleading if you describe the data structure in json.
 
-    - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_data_class_schema_str` as string and :meth:`to_data_class_schema` as dict.
+    - DataClassFormatType.SCHEMA: a more standard way to describe the data structure in Json string, :meth:`to_schema` as string and :meth:`to_schema` as dict.
     - DataClassFormatType.SIGNATURE_JSON: emitating a json object with field name as key and description as value, :meth:`to_json_signature` as string.
     - DataClassFormatType.SIGNATURE_YAML: emitating a yaml object with field name as key and description as value, :meth:`to_yaml_signature` as string.
 
@@ -241,17 +185,11 @@ class DataClass:
     def __post_init__(self):
         # TODO: use desription in the field
         for f in fields(self):
-            if "desc" not in f.metadata:
+            if "desc" not in f.metadata or "desription" not in f.metadata:
                 warnings.warn(
                     f"Class {  self.__class__.__name__} Field {f.name} is missing 'desc' in metadata",
                     UserWarning,
                 )
-
-    def set_field_value(self, field_name: str, value: Any):
-        r"""Set the value of a field in the dataclass instance."""
-        if field_name not in self.__dict__:  # check if the field exists
-            logging.warning(f"Field {field_name} does not exist in the dataclass")
-        setattr(self, field_name, value)
 
     def to_dict(self, exclude: ExcludeType = None) -> Dict[str, Any]:
         """Convert a dataclass object to a dictionary.
@@ -296,12 +234,17 @@ class DataClass:
         """
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
+        excluded: Optional[Dict[str, List[str]]] = None
         if exclude and isinstance(exclude, List):
-            exclude = {self.__class__.__name__: exclude}
-        return dataclass_obj_to_dict(self, exclude)
+            excluded = {self.__class__.__name__: exclude}
+        elif exclude and isinstance(exclude, Dict):
+            excluded = deepcopy(exclude)
+        else:
+            excluded = None
+        return dataclass_obj_to_dict(self, excluded)
 
     @classmethod
-    def from_dict(cls: Type[T_co], data: Dict[str, Any]) -> T_co:
+    def from_dict(cls, data: Dict[str, Any]) -> "DataClass":
         """Create a dataclass instance from a dictionary.
 
         Supports nested dataclasses, lists, and dictionaries.
@@ -326,7 +269,7 @@ class DataClass:
         return dataclass_obj_from_dict(cls, data)
 
     @classmethod
-    def from_json(cls: Type[T_co], json_str: str) -> T_co:
+    def from_json(cls, json_str: str) -> "DataClass":
         """Create a dataclass instance from a JSON string.
 
         Args:
@@ -370,7 +313,7 @@ class DataClass:
         return json.dumps(self.to_dict(exclude), indent=4, sort_keys=False)
 
     @classmethod
-    def from_yaml(cls: Type[T_co], yaml_str: str) -> T_co:
+    def from_yaml(cls, yaml_str: str) -> "DataClass":
         """Create a dataclass instance from a YAML string.
 
         Args:
@@ -414,96 +357,33 @@ class DataClass:
         )
 
     @classmethod
-    def format_class_str(
-        cls: "DataClass",
-        format_type: DataClassFormatType,
-        exclude: Optional[List[str]] = None,
-    ) -> str:
-        """Generate formatted output based on the type of operation and class/instance context.
-
-        Args:
-            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
-
-        Returns:
-            str: A string representing the formatted output.
-
-        Examples:
-
-        .. code-block:: python
-
-            # Define a dataclass
-            from lightrag.core import DataClass
-
-        """
-        assert format_type in [
-            DataClassFormatType.SIGNATURE_JSON,
-            DataClassFormatType.SIGNATURE_YAML,
-            DataClassFormatType.SCHEMA,
-        ], "format_class_str is only for class formats"
-        if not is_dataclass(cls):
-            raise ValueError(f"{cls.__name__} must be a dataclass to use format_str.")
-
-        # Check the type of format required and whether it's called on an instance or class
-        if format_type == DataClassFormatType.SIGNATURE_JSON:
-            return cls.to_json_signature(exclude)
-        elif format_type == DataClassFormatType.SIGNATURE_YAML:
-            return cls.to_yaml_signature(exclude)
-
-        elif format_type == DataClassFormatType.SCHEMA:
-            return cls.to_data_class_schema_str(exclude)
+    def to_schema(cls, exclude: ExcludeType = None) -> Dict[str, Dict[str, Any]]:
+        """Generate a Json schema which is more detailed than the signature."""
+        # convert exclude to dict if it is a list
+        excluded: Optional[Dict[str, List[str]]] = None
+        if exclude and isinstance(exclude, List):
+            excluded = {cls.__name__: exclude}
+        elif exclude and isinstance(exclude, Dict):
+            excluded = deepcopy(exclude)
         else:
-            raise ValueError(f"Unsupported format type: {format_type}")
-
-    def format_example_str(
-        self, format_type: DataClassFormatType, exclude: Optional[List[str]] = None
-    ) -> str:
-        """Generate formatted output based on the type of operation and class/instance context.
-
-        Args:
-            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
-
-        Returns:
-            str: A string representing the formatted output.
-
-        """
-        if not is_dataclass(self):
-            raise ValueError(f"{self.__name__} must be a dataclass to use format_str.")
-
-        assert format_type in [
-            DataClassFormatType.EXAMPLE_JSON,
-            DataClassFormatType.EXAMPLE_YAML,
-        ], "format_str is only for example formats"
-
-        # Check the type of format required and whether it's called on an instance or class
-        if format_type == DataClassFormatType.EXAMPLE_JSON:
-            return self.to_json(exclude)
-        elif format_type == DataClassFormatType.EXAMPLE_YAML:
-            return self.to_yaml(exclude)
-        else:
-            raise ValueError(f"Unsupported format type: {format_type}")
+            excluded = None
+        return get_dataclass_schema(cls, excluded)
 
     @classmethod
-    def to_data_class_schema(
-        cls, exclude: Optional[List[str]] = None
-    ) -> Dict[str, Dict[str, Any]]:
+    def to_schema_str(cls, exclude: ExcludeType = None) -> str:
         """Generate a Json schema which is more detailed than the signature."""
-        return _get_data_class_schema(cls, exclude)
-
-    @classmethod
-    def to_data_class_schema_str(cls, exclude: Optional[List[str]] = None) -> str:
-        """Generate a Json schema which is more detailed than the signature."""
-        schema = cls.to_data_class_schema(exclude)
+        schema = cls.to_schema(exclude)
         return json.dumps(schema, indent=4)
 
     @classmethod
-    def to_yaml_signature(cls, exclude: Optional[List[str]] = None) -> str:
+    def to_yaml_signature(cls, exclude: ExcludeType = None) -> str:
         r"""Generate a YAML signature for the class from desc in metadata.
 
         Used mostly as LLM prompt to describe the output data format.
         """
         # NOTE: we manually format the yaml string as the yaml.dump will always sort the keys
         # Which can impact the final model output
-        schema = cls.to_data_class_schema(exclude)
+        schema = cls.to_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
         yaml_content = []
         for key, value in signature_dict.items():
@@ -511,10 +391,9 @@ class DataClass:
 
         yaml_output = "\n".join(yaml_content)
         return yaml_output
-        # return yaml.dump(signature_dict, default_flow_style=False)
 
     @classmethod
-    def to_json_signature(cls, exclude: Optional[List[str]] = None) -> str:
+    def to_json_signature(cls, exclude: ExcludeType = None) -> str:
         """Generate a JSON `signature`(json string) for the class from desc in metadata.
 
         Used mostly as LLM prompt to describe the output data format.
@@ -533,7 +412,7 @@ class DataClass:
         >>> #    "name": "The name of the person (str) (required)"
         >>> #}'
         """
-        schema = cls.to_data_class_schema(exclude)
+        schema = cls.to_schema(exclude)
         signature_dict = convert_schema_to_signature(schema)
 
         return json.dumps(signature_dict, indent=4)
@@ -545,7 +424,61 @@ class DataClass:
         Converts the dataclass to a dictionary, optionally excluding specified fields.
         Use this to save states of the class in serialization, not advised to use in LLM prompt.
         """
-        return cls.to_data_class_schema(exclude)
+        return cls.to_schema(exclude)
+
+    @classmethod
+    def format_class_str(
+        cls,
+        format_type: DataClassFormatType,
+        exclude: ExcludeType = None,
+    ) -> str:
+        """Generate formatted output based on the type of operation and class/instance context.
+
+        Args:
+            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
+
+        Returns:
+            str: A string representing the formatted output.
+
+        Examples:
+
+        .. code-block:: python
+
+            # Define a dataclass
+            from lightrag.core import DataClass
+
+        """
+
+        if format_type == DataClassFormatType.SIGNATURE_JSON:
+            return cls.to_json_signature(exclude)
+        elif format_type == DataClassFormatType.SIGNATURE_YAML:
+            return cls.to_yaml_signature(exclude)
+
+        elif format_type == DataClassFormatType.SCHEMA:
+            return cls.to_schema_str(exclude)
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
+
+    def format_example_str(
+        self, format_type: DataClassFormatType, exclude: ExcludeType = None
+    ) -> str:
+        """Generate formatted output based on the type of operation and class/instance context.
+
+        Args:
+            format_type (DataClassFormatType): Specifies the format and type (schema, signature, example).
+
+        Returns:
+            str: A string representing the formatted output.
+
+        """
+
+        # Check the type of format required and whether it's called on an instance or class
+        if format_type == DataClassFormatType.EXAMPLE_JSON:
+            return self.to_json(exclude)
+        elif format_type == DataClassFormatType.EXAMPLE_YAML:
+            return self.to_yaml(exclude)
+        else:
+            raise ValueError(f"Unsupported format type: {format_type}")
 
 
 """Reserved for Agent to automatically create a dataclass and to manipulate the code"""
@@ -560,7 +493,6 @@ class DynamicDataClassFactory:
         "field_name": {
             "value": field_value,
             "desc": "Field description",
-            "prefix": "Field prefix",
         },
 
     }
@@ -570,8 +502,8 @@ class DynamicDataClassFactory:
     .. code-block:: python
 
         data = {
-            "age": {"value": 30, "desc": "The age of the person", "prefix": "Age:"},
-            "name": {"value": "John Doe", "desc": "The name of the person", "prefix": "Name:"},
+            "age": {"value": 30, "desc": "The age of the person"},
+            "name": {"value": "John Doe", "desc": "The name of the person"},
         }
 
         DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
@@ -583,65 +515,186 @@ class DynamicDataClassFactory:
     """
 
     @staticmethod
-    def create_from_dict(data: dict, base_class=DataClass):
+    def create_from_dict(data: dict, base_class=DataClass, class_name="DynamicOutputs"):
         fields_spec = []
         for key, value_dict in data.items():
             field_type = type(value_dict["value"])
             default_value = value_dict["value"]
             metadata = {
                 "desc": value_dict.get("desc", "No description provided"),
-                "prefix": value_dict.get("prefix", ""),
             }
             fields_spec.append(
                 (key, field_type, field(default=default_value, metadata=metadata))
             )
 
-        dynamic_class = make_dataclass(
-            "DynamicOutputs", fields_spec, bases=(base_class,)
-        )
+        dynamic_class = make_dataclass(class_name, fields_spec, bases=(base_class,))
 
         return dynamic_class
 
 
-# if __name__ == "__main__":
-#     from dataclasses import dataclass
+if __name__ == "__main__":
+    from dataclasses import dataclass
 
-#     from typing import List
+    from typing import List
 
-#     @dataclass
-#     class Address:
-#         street: str
-#         city: str
-#         zipcode: str
+    @dataclass
+    class Address:
+        street: str
+        city: str
+        zipcode: str
 
-#     @dataclass
-#     class Person(DataClass):
-#         name: str
-#         age: int
-#         addresses: List[Address]
-#         single_address: Address
-#         dict_addresses: Dict[str, Address] = field(default_factory=dict)
+    @dataclass
+    class Person(DataClass):
+        name: Optional[str] = field(
+            metadata={"desc": "The name of the person"}, default=None
+        )
+        age: int = field(
+            metadata={"desc": "The age of the person"}, default_factory=required_field()
+        )
+        addresses: List[Address] = field(
+            default_factory=list, metadata={"desc": "The list of addresses"}
+        )
+        single_address: Optional[Address] = field(
+            default=None, metadata={"desc": "The single address"}
+        )
+        dict_addresses: Dict[str, Address] = field(default_factory=dict)
 
-#     # Example instance of the nested dataclasses
-#     person = Person(
-#         name="John Doe",
-#         age=30,
-#         addresses=[
-#             Address(street="123 Main St", city="Anytown", zipcode="12345"),
-#             Address(street="456 Elm St", city="Othertown", zipcode="67890"),
-#         ],
-#         single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
-#         dict_addresses={
-#             "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
-#             "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
-#         },
-#     )
+    # Example instance of the nested dataclasses
+    person = Person(
+        name="John Doe",
+        age=30,
+        addresses=[
+            Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        ],
+        single_address=Address(street="123 Main St", city="Anytown", zipcode="12345"),
+        dict_addresses={
+            "home": Address(street="123 Main St", city="Anytown", zipcode="12345"),
+            "work": Address(street="456 Elm St", city="Othertown", zipcode="67890"),
+        },
+    )
 
-#     person_dict = person.to_dict()
-#     print(person_dict)
+    person_dict = person.to_dict()
+    print(person_dict)
 
-#     # use exclude
-#     person_dict = person.to_dict(
-#         exclude={"Person": ["single_address", "dict_addresses"]}
-#     )
-#     print("exclude", person_dict)
+    class_schema = {
+        "name": {"type": "str", "required": True},
+        "age": {"type": "int", "required": True},
+        "addresses": {"type": "List", "required": True},
+        "single_address": {"type": "Address", "required": True},
+        "dict_addresses": {"type": "Dict", "required": False},
+    }
+    class_schema_2 = {
+        "type": "Person",
+        "properties": {
+            "name": {"type": "str", "desc": "The name of the person"},
+            "age": {"type": "int"},
+            "addresses": {"type": "List"},
+            "single_address": {"type": "Address"},
+            "dict_addresses": {"type": "Dict", "default": "default_factory=dict"},
+        },
+        "required": ["name", "age", "addresses", "single_address"],
+    }
+    class_schema_3 = {
+        "type": "Person",
+        "properties": {
+            "name": {"type": "Optional[str]", "desc": "The name of the person"},
+            "age": {"type": "int", "desc": "The age of the person"},
+            "addresses": {"type": "List", "desc": "The list of addresses"},
+            "single_address": {
+                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "desc": "The single address",
+            },
+            "dict_addresses": {"type": "Dict"},
+        },
+        "required": ["age"],
+    }
+
+    class_schema_4 = {
+        "type": "Person",
+        "properties": {
+            "name": {"type": "Optional[str]", "desc": "The name of the person"},
+            "age": {"type": "int", "desc": "The age of the person"},
+            "addresses": {
+                "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "desc": "The list of addresses",
+            },
+            "single_address": {
+                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "desc": "The single address",
+            },
+            "dict_addresses": {
+                "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
+            },
+        },
+        "required": ["age"],
+    }
+
+    # {'type': 'Person', 'properties': {'name': {'type': 'Optional', 'default': None, 'desc': 'The name of the person'}, 'age': {'type': 'int', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The age of the person'}, 'addresses': {'type': 'List', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The list of addresses'}, 'single_address': {'type': 'Optional', 'default': None, 'desc': 'The single address'}, 'dict_addresses': {'type': 'Dict', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>}}, 'required': []}
+
+    # use exclude
+    person_dict = person.to_dict(
+        exclude={"Person": ["single_address", "dict_addresses"]}
+    )
+    print("exclude", person_dict)
+
+    print("class schema", Person.to_schema())  # does not work on instance
+    class_json_signature = {
+        "name": "The name of the person (Optional[str]) (optional)",
+        "age": "The age of the person (int) (required)",
+        "addresses": "The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+        "single_address": "The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+        "dict_addresses": " (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+    }
+    class_yaml_signature = """
+    name: The name of the person (Optional[str]) (optional)
+    age: The age of the person (int) (required)
+    addresses: The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    single_address: The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    dict_addresses:  (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    """
+    print("class_json_signature", Person.to_json_signature())
+    print("class_yaml_signature", Person.to_yaml_signature())
+
+    exclude_name = {
+        "type": "Person",
+        "properties": {
+            "age": {"type": "int", "desc": "The age of the person"},
+            "addresses": {
+                "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "desc": "The list of addresses",
+            },
+            "single_address": {
+                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "desc": "The single address",
+            },
+            "dict_addresses": {
+                "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
+            },
+        },
+        "required": ["age"],
+    }
+    exclude_name_and_city = {
+        "type": "Person",
+        "properties": {
+            "age": {"type": "int", "desc": "The age of the person"},
+            "addresses": {
+                "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
+                "desc": "The list of addresses",
+            },
+            "single_address": {
+                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
+                "desc": "The single address",
+            },
+            "dict_addresses": {
+                "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]"
+            },
+        },
+        "required": ["age"],
+    }
+
+    print(
+        "class schema exclude",
+        Person.to_schema(exclude={"Person": ["name"], "Address": ["city"]}),
+    )
+    # print("class instance", get_dataclass_schema(person))

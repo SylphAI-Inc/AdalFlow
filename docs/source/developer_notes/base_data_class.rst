@@ -7,7 +7,7 @@ DataClass
 
    `Li Yin <https://github.com/liyin2015>`_
 
-In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library. 
+In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
 The data in particular is a multi-dimensional matrix such as such as weights, biases, and even inputs and predictions.
 In LLM applications, you can think of the data as a freeform data class with various fields and types of data.
 For instance:
@@ -25,7 +25,7 @@ It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `Hu
 The unique thing is all data or tools interact with LLMs via prompt and text prediction, which is a single ``str``.
 
 Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert from string) of the data.
-But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module. 
+But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module.
 The reasons are:
 
 1. ``dataclasses`` module's `dataclass` decorator, along with `field` (`metadata`, `default`) can be especially helpful to describe the data format to LLMs. `dataclass` also saves users time on writing the boilerplate code such as `__init__`, `__repr__`, `__str__` etc.
@@ -42,9 +42,9 @@ Here is how users can define a data class with our customized methods in LightRA
         DataClass,
         required_field,
     )
-    from dataclasses import field
+    from dataclasses import field, dataclass
 
-
+    @dataclass
     class MyOutputs(DataClass):
         name: str = field(
             default="John Doe",  # Optional field
@@ -58,7 +58,7 @@ Here is how users can define a data class with our customized methods in LightRA
 .. note::
 
     `required_field` is a helper function to mark the field as required. Otherwise, using either `default` or `default_factory` will make the field optional.
-
+     ``Optional`` type hint will not affect the field's required status. You can use this to work with static type checkers such as `mypy` if you want to.
 .. Now, let's see  how we design class and instance methods to describe the data format and the data instance to LLMs.
 
 
@@ -72,7 +72,7 @@ We need to describe either the input/output data format to give LLMs context on 
 What we want to let LLM know about our input/output data format:
 In particular, it is important for LLMs to know these five things about the data format:
 
-1. **Description** of what this field is for.  We use `desc` key in the `metadata` of `field` to describe this field. Example: 
+1. **Description** of what this field is for.  We use `desc` key in the `metadata` of `field` to describe this field. Example:
 
 .. code-block:: python
 
@@ -83,8 +83,8 @@ In particular, it is important for LLMs to know these five things about the data
 2. **Required/Optional**. We use either `default` or `default_factory` to mark the field as optional except when our specialized function :func:`core.base_data_class.required_field` is used in `default_factory`, which marks the field as required.
 3. **Field Data Type** such as `str`, `int`, `float`, `bool`, `List`, `Dict`, etc.
 4. **Order of the fields** matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.
-5. The ablility to **exclude** some fields from the output. 
-   
+5. The ablility to **exclude** some fields from the output.
+
 We provide two ways: (1) ``schema`` and (2) ``signature`` to describe the data format in particular.
 
 **Schema**
@@ -92,11 +92,11 @@ We provide two ways: (1) ``schema`` and (2) ``signature`` to describe the data f
 ``schema`` will be a dict or json string and it is more verbose compared with ``signature``.
 ``signature`` imitates the exact data format (`yaml` or `json`) that you want LLMs to generate.
 
-Here is a quick example on our ``schema`` for  the ``MyOutputs`` data class using the `to_data_class_schema` method:
+Here is a quick example on our ``schema`` for  the ``MyOutputs`` data class using the `to_schema` method:
 
 .. code-block:: python
 
-   MyOutputs.to_data_class_schema()
+   MyOutputs.to_schema()
 
 The output will be a dict:
 
@@ -115,7 +115,7 @@ The output will be a dict:
         }
     }
 
-You can use `to_data_class_schema_str` to have the json string output.
+You can use `to_schema_str` to have the json string output.
 
 In comparison with the schema used in other libraries:
 
@@ -177,7 +177,7 @@ All of the above methods support `exclude` parameter to exclude some fields from
 
 Data Instance or say Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To better demonstrate either the data format or provide examples seen in few-shot In-context learning, 
+To better demonstrate either the data format or provide examples seen in few-shot In-context learning,
 we provide two methods: `to_json` and `to_yaml` to convert the data instance to json or yaml string.
 
 First, let's create an instance of the `MyOutputs` and get the json and yaml string of the instance:
@@ -260,7 +260,7 @@ Here is a real-world example:
             return super().from_dict(data)
 
 .. note::
-    
+
     If you are looking for data types we used to support each component or any other class like `Optimizer`, you can check out the :ref:`core.types<core-types>` file.
 
 
