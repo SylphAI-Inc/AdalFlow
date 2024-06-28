@@ -35,7 +35,7 @@ JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON inst
 {{schema}}
 ```
 {% if example %}
-Here is an example:
+Examples:
 ```
 {{example}}
 ```
@@ -49,7 +49,7 @@ YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML inst
 {{schema}}
 ```
 {% if example %}
-Here is an example:
+Examples:
 ```
 {{example}}
 ```
@@ -158,7 +158,9 @@ class YamlOutputParser(OutputParser):
         self.examples = examples
 
     def format_instructions(
-        self, format_type: Optional[DataClassFormatType] = None
+        self,
+        format_type: Optional[DataClassFormatType] = None,
+        exclude: List[str] = None,
     ) -> str:
         r"""Return the formatted instructions to use in prompt for the YAML output format.
 
@@ -166,9 +168,12 @@ class YamlOutputParser(OutputParser):
             format_type (DataClassFormatType, optional): The format type to show in the prompt.
                 Defaults to DataClassFormatType.SIGNATURE_YAML for less token usage.
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
+            exclude (List[str], optional): The fields to exclude from the schema of the data class.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
-        schema = self.data_class_for_yaml.format_class_str(format_type=format_type)
+        schema = self.data_class_for_yaml.format_class_str(
+            format_type=format_type, exclude=exclude
+        )
         # convert example to string, convert data class to yaml string
         example_str = ""
         try:
@@ -199,13 +204,13 @@ class JsonOutputParser(OutputParser):
     def __init__(
         self,
         data_class: DataClass,
-        example: DataClass = None,
+        examples: List[DataClass] = None,
     ):
         super().__init__()
         if not is_dataclass(data_class):
             raise ValueError(f"Provided class is not a dataclass: {data_class}")
 
-        if example is not None and not isinstance(example, data_class):
+        if examples is not None and not isinstance(examples[0], data_class):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
@@ -213,7 +218,7 @@ class JsonOutputParser(OutputParser):
         self.data_class_for_json = data_class
         self.json_output_format_prompt = Prompt(template=template)
         self.output_processors = JsonParser()
-        self.example = example
+        self.examples = examples
 
     # TODO: make exclude works with both
     def format_instructions(
@@ -232,10 +237,15 @@ class JsonOutputParser(OutputParser):
         schema = self.data_class_for_json.format_class_str(
             format_type=format_type, exclude=exclude
         )
+        example_str = ""
         try:
-            example_str = self.example.format_example_str(
-                format_type=DataClassFormatType.EXAMPLE_JSON, exclude=exclude
-            )
+            for example in self.examples:
+                per_example_str = example.format_example_str(
+                    format_type=DataClassFormatType.EXAMPLE_JSON
+                )
+                example_str += f"{per_example_str}\n________\n"
+            # remove the last new line
+            example_str = example_str[:-1]
             log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
@@ -246,7 +256,7 @@ class JsonOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class_for_json={self.data_class_for_json}"
+        s = f"data_class_for_json={self.data_class_for_json}, examples={self.examples}"
         return s
 
 
@@ -306,13 +316,3 @@ class BooleanOutputParser(OutputParser):
                 return output
         # when parsing is failed
         return None
-
-
-if __name__ == "__main__":
-
-    yaml_str = r"""'thought': 'The user wants a poem using the rhyming words'.\n'action': 'llm_tool(input="Create a 4-sentence poem using the words: rule, tool, fool, pool, school")'"""
-    # parse the yaml string to a dictionary
-    import yaml
-
-    yaml_dict = yaml.safe_load(yaml_str)
-    print(yaml_dict)
