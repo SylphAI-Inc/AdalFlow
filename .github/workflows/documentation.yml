@@ -39,5 +39,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: xiaoyi_doc  # Deploy to the xiaoyi_doc branch
           publish_dir: docs/build/  # Publish from the docs/build/ directory
+          destination_dir: docs  # Ensure the files are placed in the correct directory
           # user_name: github-actions[bot]
           # user_email: github-actions[bot]@users.noreply.github.com
