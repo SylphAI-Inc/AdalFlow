@@ -3,11 +3,11 @@ name: Documentation
 on:
   push:
     branches:
-      - xiaoyi_doc  # Specifies the branch for which the action should run on push
+      - xiaoyi_doc
   pull_request:
     branches:
-      - xiaoyi_doc  # Specifies the branch for which the action should run on pull requests
-  workflow_dispatch:  # Allows manual triggering of the workflow
+      - xiaoyi_doc
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -18,17 +18,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'  # Set the Python version to match your local environment
       - name: Install dependencies
         run: |
           pip install -r ./docs/requirements.txt
+          pip freeze  # List installed packages to verify installation
       - name: Sphinx build
         run: |
           sphinx-build -b html docs/source/ docs/build/
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/xiaoyi_doc' }}  # Ensure it deploys only when changes are pushed to xiaoyi_doc
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/xiaoyi_doc' }}
         with:
-          publish_branch: gh-pages  # The output is still pushed to gh-pages branch
+          publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/build/
           force_orphan: true
