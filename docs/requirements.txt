@@ -8,3 +8,4 @@ PyYAML
 readthedocs-sphinx-search==0.3.2
 numpy
 tqdm
+tiktoken

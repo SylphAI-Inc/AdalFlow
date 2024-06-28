@@ -6,10 +6,6 @@ on:
       - xiaoyi_doc
   workflow_dispatch:
 
-permissions:  # This sets permissions for all jobs
-  contents: write
-  actions: read
-
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -18,22 +14,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: List docs directory
-        run: ls -l ./docs
-      - name: Display requirements.txt
-        run: cat ./docs/requirements.txt
+
       - name: Install dependencies
         run: |
           pip install -r ./docs/requirements.txt
-          pip freeze
+          pip freeze  # Display installed packages for debugging
+
       - name: Sphinx build
         run: |
-          sphinx-build -b html docs/source/ docs/build/
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/xiaoyi_doc' }}
-        with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/build/
-          force_orphan: true
+          # Building the documentation in the specified directory
+          sphinx-build -b html docs/source/ ./docs/build/
+          # Optionally, list output files for debugging
+          ls -l ./docs/build/
