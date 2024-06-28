@@ -7,3 +7,4 @@ nbconvert==7.16.4
 PyYAML
 readthedocs-sphinx-search==0.3.2
 numpy
+tqdm
