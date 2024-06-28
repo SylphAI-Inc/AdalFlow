@@ -7,4 +7,4 @@ nbconvert==7.16.4
 pandoc==2.3
 readthedocs-sphinx-search==0.3.2
 numpy  # Include any other dependencies required by your main project if they are used in the docs.
-yaml
+PyYAML
