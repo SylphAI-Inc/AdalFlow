@@ -17,9 +17,9 @@ jobs:
 
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r ./docs/requirements.txt
-          pip freeze  # Display installed packages for debugging
-
+          pip freeze
       - name: Sphinx build
         run: |
           # Building the documentation in the specified directory
