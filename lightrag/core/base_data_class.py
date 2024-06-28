@@ -41,7 +41,7 @@ class DataClassFormatType(enum.Enum):
     EXAMPLE_JSON = "example_json"
 
 
-def required_field(name: Optional[str] = None) -> Callable[[], Any]:
+def required_field() -> Callable[[], Any]:
     """
     A factory function to create a required field in a dataclass.
     The returned callable raises a TypeError when invoked, indicating a required field was not provided.
@@ -51,44 +51,28 @@ def required_field(name: Optional[str] = None) -> Callable[[], Any]:
 
     Returns:
         Callable[[], Any]: A callable that raises TypeError when called, indicating a missing required field.
+
+    Example:
+
+    .. code-block:: python
+
+        from dataclasses import dataclass
+        from lightrag.core.base_data_class import required_field, DataClass
+
+        @dataclass
+        class Person(DataClass):
+            name: str = field(default=None)
+            age: int = field(default_factory=required_field())# allow required field after optional field
     """
 
-    def raise_error():
-        raise TypeError(f"The '{name}' field is required and was not provided.")
+    def required_field_error():
+        """This function is returned by required_field and raises an error indicating the field is required."""
+        raise TypeError("This field is required and was not provided.")
 
-    return raise_error
-
-
-# class _DataClassMeta(type):
-#     r"""Internal metaclass for DataClass to ensure both DataClass and its inherited classes are dataclasses.
-
-#     Args:
-#         cls: The class object being created.
-#             It will be <class 'lightrag.core.base_data_class.DataClass'> for base class and
-#             <class 'lightrag.core.types.GeneratorOutput'> for inherited class for instance.
-#         name: the name of the class
-#         bases: A tuple of the base classes from which the class inherits.
-#         dct: The dictionary of attributes and methods of the class.
-#     """
-
-#     def __init__(
-#         cls: Type[Any], name: str, bases: Tuple[type, ...], dct: Dict[str, Any]
-#     ) -> None:
-#         super(_DataClassMeta, cls).__init__(name, bases, dct)
-
-#         if (
-#             not is_dataclass(cls)
-#             and cls.__module__ != __name__  # and bases != (object,)
-#         ):
-#             dataclass(cls)
-
-
-# TODO: we want the child class to work either with or without dataclass decorator,
-# using metaclass with DataClassMeta works if both base and child does not have dataclass decorator
-# but if the child has dataclass decorator, it will not work.
-# class DataClass(metaclass=_DataClassMeta):
-# class OutputDataClass(DataClass):
-# before we do more tests, we keep the child class manually decorated with dataclass
+    required_field_error.__name__ = (
+        "required_field"  # Set the function's name explicitly
+    )
+    return required_field_error
 
 
 # Dict is for the nested dataclasses, e.g. {"Person": ["name", "age"], "Address": ["city"]}
@@ -418,7 +402,7 @@ class DataClass:
         return json.dumps(signature_dict, indent=4)
 
     @classmethod
-    def to_dict_class(cls, exclude: Optional[List[str]] = None) -> dict:
+    def to_dict_class(cls, exclude: ExcludeType = None) -> Dict[str, Any]:
         """More of an internal used class method for serialization.
 
         Converts the dataclass to a dictionary, optionally excluding specified fields.
