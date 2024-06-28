@@ -6,23 +6,38 @@ on:
       - xiaoyi_doc
   workflow_dispatch:
 
+permissions:  # Set permissions for all jobs
+  contents: write
+  actions: read
+
 jobs:
-  docs:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r ./docs/requirements.txt
           pip freeze  # Display installed packages for debugging
 
-      - name: Sphinx build
+      - name: Build documentation
         run: |
-          # Building the documentation in the specified directory
-          sphinx-build -b html docs/source/ ./docs/build/
-          # Optionally, list output files for debugging
-          ls -l ./docs/build/
+          sphinx-build -b html docs/source/ docs/build/
+          ls -l docs/build/  # List output files for debugging
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: xiaoyi_doc  # Deploy to the xiaoyi_doc branch
+          publish_dir: docs/build/  # Publish from the docs/build/ directory
+          # user_name: github-actions[bot]
+          # user_email: github-actions[bot]@users.noreply.github.com
