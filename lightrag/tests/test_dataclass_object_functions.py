@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 from collections import OrderedDict
 
-from lightrag.core.functional import dataclass_obj_to_dict, dataclass_obj_from_dict
+from lightrag.core.functional import custom_asdict, dataclass_obj_from_dict
 from lightrag.core.base_data_class import DataClass
 
 
@@ -52,7 +52,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
 
     def test_simple_data(self):
         simple = SimpleData(name="John", age=30, score=95.5)
-        simple_dict = dataclass_obj_to_dict(simple)
+        simple_dict = custom_asdict(simple)
         expected_dict = {"name": "John", "age": 30, "score": 95.5}
         self.assertEqual(simple_dict, expected_dict)
 
@@ -62,7 +62,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
     def test_nested_data(self):
         simple = SimpleData(name="John", age=30, score=95.5)
         nested = NestedData(simple=simple, description="Test description")
-        nested_dict = dataclass_obj_to_dict(nested)
+        nested_dict = custom_asdict(nested)
         expected_dict = {
             "simple": {"name": "John", "age": 30, "score": 95.5},
             "description": "Test description",
@@ -76,7 +76,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
         simple1 = SimpleData(name="John", age=30, score=95.5)
         simple2 = SimpleData(name="Jane", age=25, score=88.0)
         list_data = ListData(items=[simple1, simple2], total=2)
-        list_data_dict = dataclass_obj_to_dict(list_data)
+        list_data_dict = custom_asdict(list_data)
         expected_dict = {
             "items": [
                 {"name": "John", "age": 30, "score": 95.5},
@@ -93,7 +93,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
         simple1 = SimpleData(name="John", age=30, score=95.5)
         simple2 = SimpleData(name="Jane", age=25, score=88.0)
         dict_data = DictData(mappings={"first": simple1, "second": simple2}, count=2)
-        dict_data_dict = dataclass_obj_to_dict(dict_data)
+        dict_data_dict = custom_asdict(dict_data)
         expected_dict = {
             "mappings": {
                 "first": {"name": "John", "age": 30, "score": 95.5},
@@ -113,7 +113,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
             ordered_mappings=OrderedDict([("first", simple1), ("second", simple2)]),
             count=2,
         )
-        ordered_dict_data_dict = dataclass_obj_to_dict(ordered_dict_data)
+        ordered_dict_data_dict = custom_asdict(ordered_dict_data)
         expected_dict = {
             "ordered_mappings": OrderedDict(
                 [
@@ -146,7 +146,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
             dict_data=dict_data,
             ordered_dict_data=ordered_dict_data,
         )
-        complex_data_dict = dataclass_obj_to_dict(complex_data)
+        complex_data_dict = custom_asdict(complex_data)
         expected_dict = {
             "nested": {
                 "simple": {"name": "John", "age": 30, "score": 95.5},
@@ -185,7 +185,7 @@ class TestDataclassFuncConversion(unittest.TestCase):
 
     def test_exclude(self):
         simple = SimpleData(name="John", age=30, score=95.5)
-        simple_dict = dataclass_obj_to_dict(simple, exclude={"SimpleData": ["age"]})
+        simple_dict = custom_asdict(simple, exclude={"SimpleData": ["age"]})
         expected_dict = {"name": "John", "score": 95.5}
         self.assertEqual(simple_dict, expected_dict)
 
@@ -556,6 +556,7 @@ count: 2
     score: 88.0
 count: 2
 """
+        print(ordered_dict_data_yaml)
         self.assertEqual(ordered_dict_data_yaml, expected_yaml)
 
         reconstructed_ordered_dict_data = OrderedDictData.from_dict(

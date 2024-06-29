@@ -149,11 +149,11 @@ def _asdict_inner(obj, dict_factory, exclude):
 #         }
 #     else:
 #         return deepcopy(obj)
-# def validate_data(data: Dict[str, Any], fieldtypes: Dict[str, Any]) -> bool:
-#     required_fields = {
-#         name for name, type in fieldtypes.items() if _is_required_field(type)
-#     }
-#     return required_fields <= data.keys()
+def validate_data(data: Dict[str, Any], fieldtypes: Dict[str, Any]) -> bool:
+    required_fields = {
+        name for name, type in fieldtypes.items() if _is_required_field(type)
+    }
+    return required_fields <= data.keys()
 
 
 def is_potential_dataclass(t):
@@ -270,6 +270,16 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
     else:
         log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
         return data
+
+
+# Custom representer for OrderedDict
+def represent_ordereddict(dumper, data):
+    value = []
+    for item_key, item_value in data.items():
+        node_key = dumper.represent_data(item_key)
+        node_value = dumper.represent_data(item_value)
+        value.append((node_key, node_value))
+    return yaml.MappingNode("tag:yaml.org,2002:map", value)
 
 
 def from_dict_to_json(data: Dict[str, Any], sort_keys: bool = False) -> str:
