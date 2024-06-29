@@ -1,4 +1,4 @@
-A Guideline on LLM Evaluation
+LLM Evaluation
 ====================================
 
 .. admonition:: Author
