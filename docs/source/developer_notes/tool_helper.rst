@@ -277,7 +277,7 @@ And we prefer to use ``yaml`` format here as it is more token efficient:
 
 
 We choose to describe the function not only with the docstring which is `Sum the elements of an array.` but also with the function signature which is `numpy_sum(arr: numpy.ndarray) -> float`.
-This quitely gives the LLM a view of the function at the code level and it helps with the function call.
+This will give the LLM a view of the function at the code level and it helps with the function call.
 
 .. note::
     Users should better use type hints and a good docstring to help LLM understand the function better.
@@ -431,14 +431,14 @@ The output is:
 
 We have two ways to instruct LLM to call the function:
 
-(1) using the function name and arguments, we will leverage ``Function`` as LLM's output data type.
+1. Using the function name and arguments, we will leverage ``Function`` as LLM's output data type.
 
 .. code-block:: python
 
     from lightrag.core.types import Function
 
     output_data_class = Function
-    output_format_str = output_data_class.to_json_signature(exclude=["thought", "kwargs"])
+    output_format_str = output_data_class.to_json_signature(exclude=["thought", "args"])
 
     renered_prompt= prompt(output_format_str=output_format_str)
     print(renered_prompt)
@@ -452,7 +452,6 @@ The output is:
     <OUTPUT_FORMAT>
     {
         "name": "The name of the function (str) (optional)",
-        "args": "The positional arguments of the function (Optional) (optional)",
         "kwargs": "The keyword arguments of the function (Optional) (optional)"
     }
     </OUTPUT_FORMAT>
@@ -462,7 +461,7 @@ The output is:
 
 
 
-(2) using the function call expression for which we will use ``FunctionExpression``.
+2. Using the function call expression for which we will use ``FunctionExpression``.
 
 .. code-block:: python
 
@@ -493,7 +492,7 @@ We will use :class:`components.output_parsers.outputs.JsonOutputParser` to strea
     from lightrag.components.output_parsers import JsonOutputParser
 
     func_parser = JsonOutputParser(data_class=Function)
-    instructions = func_parser.format_instructions(exclude=["thought"])
+    instructions = func_parser.format_instructions(exclude=["thought", "args"])
     print(instructions)
 
 The output is:
@@ -504,7 +503,6 @@ The output is:
     ```
     {
         "name": "The name of the function (str) (optional)",
-        "args": "The positional arguments of the function (Optional) (optional)",
         "kwargs": "The keyword arguments of the function (Optional) (optional)"
     }
     ```
@@ -513,8 +511,9 @@ The output is:
     -Follow the JSON formatting conventions.
 
 
-With Function output format
+Function Output Format
 **************************************************
+Now, let's prepare our generator with the above prompt, ``Function`` data class, and ``JsonOutputParser``.
 
 .. code-block:: python
 
@@ -616,7 +615,7 @@ However, we see it failed three function execution:
     If users prefer to use Function, to incress the success rate, make sure your function arguments are dict based for class object. You can always convert it to a class from a dict.
 
 
-Function output format
+FunctionExpression Output Format
 **************************************************
 We will adapt the above code easily using tool manager to use ``FunctionExpression`` as the output format.
 We will use FunctionExpression this time in the parser. And we added the necessary context to handle the local variable `x`, `y`, and `np.array`.
@@ -737,13 +736,49 @@ We will slightly adapt the output format instruction to get it output json array
     <OUTPUT_FORMAT>
     Here is how you call one function.
     {{output_format_str}}
-    Awlays return a List using `[]` of the above JSON objects. You can have length of 1 or more.
-    Do not call multiple functions in one action field.
+    -Always return a List using `[]` of the above JSON objects, even if its just one item.
     </OUTPUT_FORMAT>
     <SYS>
     {{input_str}}
     You:
     """
+
+As LLM has problem calling ``add_point``, we will add one example and we will generate it with :meth:`core.types.FunctionExpression.from_function`.
+We will update our outputparser to use the example:
+
+.. code-block:: python
+
+    example = FunctionExpression.from_function(
+            func=add_points, p1=Point(x=1, y=2), p2=Point(x=3, y=4)
+    )
+    func_parser = JsonOutputParser(
+            data_class=FunctionExpression, examples=[example]
+    )
+
+Here is the updated output format in the prompt:
+
+.. code-block::
+
+    <OUTPUT_FORMAT>
+    Here is how you call one function.
+    Your output should be formatted as a standard JSON instance with the following schema:
+    ```
+    {
+        "action": "FuncName(<kwargs>)                 Valid function call expression.                 Example: \"FuncName(a=1, b=2)\"                 Follow the data type specified in the function parameters.                e.g. for Type object with x,y properties, use \"ObjectType(x=1, y=2) (str) (required)"
+    }
+    ```
+    Here is an example:
+    ```
+    {
+        "action": "add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))"
+    }
+    ```
+    -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+    -Use double quotes for the keys and string values.
+    -Follow the JSON formatting conventions.
+    Awlays return a List using `[]` of the above JSON objects. You can have length of 1 or more.
+    Do not call multiple functions in one action field.
+    </OUTPUT_FORMAT>
 
 This case, we will show the response from using `execute_func_expr_via_sandbox` to execute the function expression.
 
@@ -769,20 +804,20 @@ This case, we will show the response from using `execute_func_expr_via_sandbox` 
                 f"Failed to execute the function for query: {query}, func: {result.data}, error: {e}"
             )
 
-The output has one failed run, that is the ``add_point`` as it always like to use ``Dict`` to represent the data, even if it is a data class.
+By using an example to help with calling ``add_point``, we can now successfully execute all function calls.
 
 .. code-block:: python
 
     0 Query: add 2 and 3 and search for something
     --------------------------------------------------
-    Function_expr: [FunctionExpression(thought=None, action='add(a=2, b=3)')]
+    Function_expr: [FunctionExpression(thought=None, action='add(a=2, b=3)'), FunctionExpression(thought=None, action='search(query="something")')]
     Function output: FunctionOutput(name='add(a=2, b=3)', input=FunctionExpression(thought=None, action='add(a=2, b=3)'), parsed_input=None, output=FunctionOutput(name='add', input=Function(thought=None, name='add', args=(), kwargs={'a': 2, 'b': 3}), parsed_input=None, output=5, error=None), error=None)
+    Function output: FunctionOutput(name='search(query="something")', input=FunctionExpression(thought=None, action='search(query="something")'), parsed_input=None, output=FunctionOutput(name='search', input=Function(thought=None, name='search', args=(), kwargs={'query': 'something'}), parsed_input=None, output=['result1something', 'result2something'], error=None), error=None)
 
     2 Query: add points (1, 2) and (3, 4) and sum numpy array with arr = np.array([[1, 2], [3, 4]])
     --------------------------------------------------
-    Function_expr: [FunctionExpression(thought=None, action='add_points(p1={"x": 1, "y": 2}, p2={"x": 3, "y": 4})'), FunctionExpression(thought=None, action='numpy_sum(arr=[[1, 2], [3, 4]])')]
-    Error at calling <function add_points at 0x10ec604a0>: 'dict' object has no attribute 'x'
-    Function output: FunctionOutput(name='add_points(p1={"x": 1, "y": 2}, p2={"x": 3, "y": 4})', input=FunctionExpression(thought=None, action='add_points(p1={"x": 1, "y": 2}, p2={"x": 3, "y": 4})'), parsed_input=None, output=FunctionOutput(name='add_points', input=Function(thought=None, name='add_points', args=(), kwargs={'p1': {'x': 1, 'y': 2}, 'p2': {'x': 3, 'y': 4}}), parsed_input=None, output=None, error="'dict' object has no attribute 'x'"), error=None)
+    Function_expr: [FunctionExpression(thought=None, action='add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))'), FunctionExpression(thought=None, action='numpy_sum(arr=[[1, 2], [3, 4]])')]
+    Function output: FunctionOutput(name='add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))', input=FunctionExpression(thought=None, action='add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))'), parsed_input=None, output=FunctionOutput(name='add_points', input=Function(thought=None, name='add_points', args=(), kwargs={'p1': Point(x=1, y=2), 'p2': Point(x=3, y=4)}), parsed_input=None, output=Point(x=4, y=6), error=None), error=None)
     Function output: FunctionOutput(name='numpy_sum(arr=[[1, 2], [3, 4]])', input=FunctionExpression(thought=None, action='numpy_sum(arr=[[1, 2], [3, 4]])'), parsed_input=None, output=FunctionOutput(name='numpy_sum', input=Function(thought=None, name='numpy_sum', args=(), kwargs={'arr': [[1, 2], [3, 4]]}), parsed_input=None, output=10, error=None), error=None)
 
     4 Query: multiply 2 with local variable x and divide 2 by 3
@@ -793,9 +828,8 @@ The output has one failed run, that is the ``add_point`` as it always like to us
 
     6 Query: Add 5 to variable y
     --------------------------------------------------
-    Function_expr: [FunctionExpression(thought=None, action='add(a=5, b=y)')]
-    Function output: FunctionOutput(name='add(a=5, b=y)', input=FunctionExpression(thought=None, action='add(a=5, b=y)'), parsed_input=None, output=FunctionOutput(name='add', input=Function(thought=None, name='add', args=(), kwargs={'a': 5, 'b': 0}), parsed_input=None, output=5, error=None), error=None)
-
+    Function_expr: [FunctionExpression(thought=None, action='add(a=y, b=5)')]
+    Function output: FunctionOutput(name='add(a=y, b=5)', input=FunctionExpression(thought=None, action='add(a=y, b=5)'), parsed_input=None, output=FunctionOutput(name='add', input=Function(thought=None, name='add', args=(), kwargs={'a': 0, 'b': 5}), parsed_input=None, output=5, error=None), error=None)
 
 .. admonition:: References
    :class: highlight
@@ -809,5 +843,9 @@ The output has one failed run, that is the ``add_point`` as it always like to us
    - :class:`core.types.Function`
    - :class:`core.types.FunctionExpression`
    - :class:`core.types.FunctionOutput`
-   - :class:`core.tool_manager.FunctionTool`
+   - :class:`core.func_tool.FunctionTool`
    - :class:`core.tool_manager.ToolManager`
+   - :func:`core.functional.get_fun_schema`
+   - :func:`core.functional.parse_function_call_expr`
+   - :func:`core.functional.sandbox_execute`
+   - :func:`core.functional.generate_function_call_expression_from_callable`

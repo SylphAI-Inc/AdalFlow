@@ -366,8 +366,8 @@ class FunctionExpression(DataClass):
     @classmethod
     def from_function(
         cls,
-        thought: Optional[str],
         func: Union[Callable[..., Any], AsyncCallable],
+        thought: Optional[str] = None,
         *args,
         **kwargs,
     ) -> "FunctionExpression":
