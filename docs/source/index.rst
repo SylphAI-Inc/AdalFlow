@@ -69,7 +69,19 @@ It is light, modular, and robust.
          qa = SimpleQA()
          answer = qa("What is LightRAG?")
 
-LightRAG
+
+Why LightRAG?
+
+
+Clarity and Simplicity
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+We understand that developers building real-world Large Language Model (LLM) applications are the real heroes. Just like AI researchers and engineers who build models on top of PyTorch, developers require **Maximum Flexibility and Customizability**: Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
+
+- We maintain no more than two levels of subclasses.
+- Each core abstract class is designed to be robust and flexible.
+- We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
 Here is the printed out structure of ``qa``:
 
@@ -90,62 +102,27 @@ Here is the printed out structure of ``qa``:
       )
    )
 
-
-
-
-**Why LightRAG?**
-
-
-1. **Clarity and Simplicity**
-
-   We understand that developers building real-world Large Language Model (LLM) applications are the real heroes. Just like AI researchers and engineers who build models on top of PyTorch, developers require **Maximum Flexibility and Customizability**: Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
-
-   - We maintain no more than two levels of subclasses.
-   - Each core abstract class is designed to be robust and flexible.
-   - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
-
-
-2. **Control and Transparency**
-
-   Coming from a deep AI research background, we understand that the more control and transparency developers have over their prompts, the better. In default:
-
-   - LightRAG simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
-   - LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format.
-
-3. **Suitted for Both Researchers and Production Engineers**
-
-   On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
-   Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production.
-   With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data.
-   Researchers will want their code to be adapted into more products too.
-
-
-
-
-
-**LightRAG library structures as follows:**
-
-#TODO: One diagram to make people understand lightrag faster
-
-* `core` - Base abstractions, core functions, and core components like `Generator` and `Embedder` to support more advanced components.
-* `components` - Components that are built on top of the core directive. Users will install relevant depencides on their own for some components.
-
-
-
-
-:doc:`get_started/index`
+Control and Transparency
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:doc:`developer_notes/index`
+Coming from a deep AI research background, we understand that the more control and transparency developers have over their prompts, the better. In default:
 
-:doc:`apis/index`
+- LightRAG simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
+- LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
+
+It is the future of LLM applications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
+Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production.
+With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data.
+Researchers will want their code to be adapted into more products too.
+
 
 .. toctree::
    :glob:
    :maxdepth: 1
-   :caption: New Users
    :hidden:
-
 
    get_started/index
 
@@ -155,17 +132,11 @@ Here is the printed out structure of ``qa``:
 .. toctree::
    :glob:
    :maxdepth: 1
+   :hidden:
 
    developer_notes/index
    .. :caption: Tutorials - How each part works
    .. :hidden:
-
-
-
-
-
-
-
 
 
 .. toctree::
@@ -177,8 +148,8 @@ Here is the printed out structure of ``qa``:
 
 
 .. toctree::
+   :glob:
    :maxdepth: 1
-   :caption: API Reference
    :hidden:
 
    apis/index

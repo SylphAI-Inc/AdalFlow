@@ -9,9 +9,11 @@ Developer Notes
 Learn LightRAG design phisolophy and the `why` and `how-to` (customize and integrate) behind each core part within the LightRAG library.
 This is our tutorials before you move ahead to build use cases  (LLM applications) end to end.
 
-.. note::
+.. raw::
 
-   You can read interchangably between :ref:`Use Cases <use_cases>`.
+  .. note::
+
+    You can read interchangably between :ref:`Use Cases <use_cases>`.
 
 
 
@@ -43,10 +45,9 @@ We have clear design phisolophy: :doc:`lightrag_design_philosophy`.
 
 
 Building
-=============================
-
+-------------------
 Base classes
----------------
+~~~~~~~~~~~~~~~~~~~~~~
 Code path: ``lightrag.core``.
 
 .. list-table::
@@ -74,9 +75,10 @@ Code path: ``lightrag.core``.
    base_data_class
 
 RAG Essentials
--------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RAG components
-~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^
+
 
 Code path: ``lightrag.core``. For abstract classes:
 
@@ -101,8 +103,8 @@ Code path: ``lightrag.core``. For abstract classes:
    * - :doc:`retriever`
      - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
 
-Data, Processing, and storage
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Data Pipeline and Storage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Data Processing: including transformer, pipeline, and storage. Code path: ``lightrag.components.data_process``, ``lightrag.core.db``, and ``lightrag.database``.
 Components work on a sequence of ``Document`` and return a sequence of ``Document``.
@@ -140,7 +142,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
 
 
 Agent Essentials
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Agent in ``components.agent`` is LLM great with reasoning, planning, and using tools to interact and accomplish tasks.
 
 .. list-table::
@@ -187,7 +189,7 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
 
 Optimizing
-=============================
+-------------------
 
 Datasets and Evaulation
 
@@ -214,7 +216,7 @@ Optimizer & Trainer
 
 
 Logging & Tracing & Configurations
-=============================
+------------------------------------
 Code path: ``lightrag.utils``.
 
 .. list-table::
