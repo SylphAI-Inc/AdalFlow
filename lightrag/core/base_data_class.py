@@ -179,7 +179,7 @@ class DataClass:
     def __post_init__(self):
 
         for f in fields(self):
-            if "desc" not in f.metadata or "desription" not in f.metadata:
+            if "desc" not in f.metadata and "description" not in f.metadata:
                 warnings.warn(
                     f"Class {  self.__class__.__name__} Field {f.name} is missing 'desc' in metadata",
                     UserWarning,
