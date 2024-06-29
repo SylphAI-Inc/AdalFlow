@@ -7,10 +7,25 @@ DataClass
 
    `Li Yin <https://github.com/liyin2015>`_
 
-In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
-The data in particular is a multi-dimensional matrix such as such as weights, biases, and even inputs and predictions.
-In LLM applications, you can think of the data as a freeform data class with various fields and types of data.
-For instance:
+In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
+Tensor wraps a multi-dimensional matrix to better support its operations and computations.
+In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
+:class:`core.base_data_class.DataClass` is designed to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+
+.. figure:: /_static/images/dataclass.png
+    :align: center
+    :alt: DataClass
+    :width: 680px
+
+    DataClass is to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+
+
+Design
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In Python, data is typically represented as a class with attributes.
+Python's native ``dataclasses`` module is lightweight and flexible to further help users define a data class.
+
+in Python is a decorator that can be used to automatically generate special methods such as `__init__`, `__repr__`, `__str__` etc. for a class.
 
 .. code-block:: python
 
@@ -24,7 +39,7 @@ For instance:
 It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `HuggingFace` ``Dataset``.
 The unique thing is all data or tools interact with LLMs via prompt and text prediction, which is a single ``str``.
 
-Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert from string) of the data.
+Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert back from string) of the data.
 But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module.
 The reasons are:
 
@@ -263,6 +278,22 @@ Here is a real-world example:
 
     If you are looking for data types we used to support each component or any other class like `Optimizer`, you can check out the :ref:`core.types<core-types>` file.
 
+
+
+.. admonition:: References
+   :class: highlight
+
+   1. Full-text search on PostgreSQL: https://www.postgresql.org/docs/current/textsearch.html
+
+
+
+.. admonition:: API References
+   :class: highlight
+
+   - :class:`core.base_data_class.DataClass`
+   - :class:`core.base_data_class.DataClassFormatType`
+   - :func:`core.functional.custom_asdict`
+   - :ref:`core.base_data_class<core-base_data_class>`
 
 
 .. Document

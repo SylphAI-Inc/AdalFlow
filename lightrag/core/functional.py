@@ -24,6 +24,7 @@ import json
 import yaml
 import ast
 import threading
+from copy import deepcopy
 
 from inspect import signature, Parameter
 from dataclasses import fields, is_dataclass, MISSING, Field
@@ -36,66 +37,148 @@ ExcludeType = Optional[Dict[str, List[str]]]
 ########################################################################################
 # For Dataclass base class and all schema related functions
 ########################################################################################
-def dataclass_obj_to_dict(
-    obj: Any, exclude: ExcludeType = None, parent_key: str = ""
+# TODO: Combine asdict from dataclass to support exclude fields
+
+
+def custom_asdict(
+    obj, *, dict_factory=dict, exclude: ExcludeType = None
 ) -> Dict[str, Any]:
-    r"""Convert a dataclass object to a dictionary.
+    """Equivalent to asdict() from dataclasses module but with exclude fields.
 
-    Supports nested dataclasses, lists, and dictionaries.
-    Allow exclude keys for each dataclass object.
-    Example:
+    Return the fields of a dataclass instance as a new dictionary mapping
+    field names to field values, while allowing certain fields to be excluded.
 
-    .. code-block:: python
-
-       from dataclasses import dataclass
-       from typing import List
-
-       @dataclass
-       class TrecData:
-           question: str
-           label: int
-
-       @dataclass
-       class TrecDataList:
-
-           data: List[TrecData]
-           name: str
-
-       trec_data = TrecData(question="What is the capital of France?", label=0)
-       trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
-
-       dataclass_obj_to_dict(trec_data_list, exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
-
-       # Output:
-       # {'data': [{'question': 'What is the capital of France?'}]}
-
+    If given, 'dict_factory' will be used instead of built-in dict.
+    The function applies recursively to field values that are
+    dataclass instances. This will also look into built-in containers:
+    tuples, lists, and dicts.
     """
-    if exclude is None:
-        exclude = {}
+    if not is_dataclass_instance(obj):
+        raise TypeError("custom_asdict() should be called on dataclass instances")
+    return _asdict_inner(obj, dict_factory, exclude or {})
 
-    obj_class_name = obj.__class__.__name__
-    current_exclude = exclude.get(obj_class_name, [])
 
-    if hasattr(obj, "__dataclass_fields__"):
-        return {
-            key: dataclass_obj_to_dict(value, exclude, parent_key=key)
-            for key, value in obj.__dict__.items()
-            if key not in current_exclude
-        }
-    elif isinstance(obj, list):
-        return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
+def _asdict_inner(obj, dict_factory, exclude):
+    if is_dataclass_instance(obj):
+        result = []
+        for f in fields(obj):
+            if f.name in exclude.get(obj.__class__.__name__, []):
+                continue
+            value = _asdict_inner(getattr(obj, f.name), dict_factory, exclude)
+            result.append((f.name, value))
+        return dict_factory(result)
+    elif isinstance(obj, tuple) and hasattr(obj, "_fields"):
+        return type(obj)(*[_asdict_inner(v, dict_factory, exclude) for v in obj])
+    elif isinstance(obj, (list, tuple)):
+        return type(obj)(_asdict_inner(v, dict_factory, exclude) for v in obj)
     elif isinstance(obj, dict):
-
-        return {
-            key: dataclass_obj_to_dict(value, exclude, parent_key)
-            for key, value in obj.items()
-        }
+        return type(obj)(
+            (
+                _asdict_inner(k, dict_factory, exclude),
+                _asdict_inner(v, dict_factory, exclude),
+            )
+            for k, v in obj.items()
+        )
     else:
+        return deepcopy(obj)
 
-        return obj
+
+# def dataclass_obj_to_dict(
+#     obj: Any, exclude: ExcludeType = None, parent_key: str = ""
+# ) -> Dict[str, Any]:
+#     r"""Convert a dataclass object to a dictionary With exclude fields.
+
+#     Equivalent to asdict() from dataclasses module but with exclude fields.
+
+#     Supports nested dataclasses, lists, and dictionaries.
+#     Allow exclude keys for each dataclass object.
+#     Example:
+
+#     .. code-block:: python
+
+#        from dataclasses import dataclass
+#        from typing import List
+
+#        @dataclass
+#        class TrecData:
+#            question: str
+#            label: int
+
+#        @dataclass
+#        class TrecDataList:
+
+#            data: List[TrecData]
+#            name: str
+
+#        trec_data = TrecData(question="What is the capital of France?", label=0)
+#        trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
+
+#        dataclass_obj_to_dict(trec_data_list, exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
+
+#        # Output:
+#        # {'data': [{'question': 'What is the capital of France?'}]}
+
+#     """
+#     if not is_dataclass_instance(obj):
+#         raise ValueError(
+#             f"dataclass_obj_to_dict() should be called with a dataclass instance."
+#         )
+#     if exclude is None:
+#         exclude = {}
+
+#     obj_class_name = obj.__class__.__name__
+#     current_exclude = exclude.get(obj_class_name, [])
+
+#     if hasattr(obj, "__dataclass_fields__"):
+#         return {
+#             key: dataclass_obj_to_dict(value, exclude, parent_key=key)
+#             for key, value in obj.__dict__.items()
+#             if key not in current_exclude
+#         }
+#     elif isinstance(obj, list):
 
 
-def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
+#         return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
+#     elif isinstance(obj, set):
+#         return {dataclass_obj_to_dict(item, exclude, parent_key) for item in obj}
+#     elif isinstance(obj, tuple):
+#         return (dataclass_obj_to_dict(item, exclude, parent_key) for item in obj)
+#     elif isinstance(obj, dict):
+#         return {
+#             key: dataclass_obj_to_dict(value, exclude, parent_key)
+#             for key, value in obj.items()
+#         }
+#     else:
+#         return deepcopy(obj)
+# def validate_data(data: Dict[str, Any], fieldtypes: Dict[str, Any]) -> bool:
+#     required_fields = {
+#         name for name, type in fieldtypes.items() if _is_required_field(type)
+#     }
+#     return required_fields <= data.keys()
+
+
+def is_potential_dataclass(t):
+    """Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional."""
+    origin = get_origin(t)
+    if origin is Union:
+        # This checks if any of the arguments in a Union (which is what Optional is) is a dataclass
+        return any(is_dataclass(arg) for arg in get_args(t) if arg is not type(None))
+    return is_dataclass(t)
+
+
+def extract_dataclass_type(type_hint):
+    """Extract the actual dataclass type from a type hint that could be Optional or other generic."""
+    origin = get_origin(type_hint)
+    if origin in (Union, Optional):
+        # Unpack Optional[SomeClass] or Union[SomeClass, None]
+        args = get_args(type_hint)
+        for arg in args:
+            if arg is not type(None) and is_dataclass(arg):
+                return arg
+    return type_hint if is_dataclass(type_hint) else None
+
+
+def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
     r"""Convert a dictionary to a dataclass object.
 
     Supports nested dataclasses, lists, and dictionaries.
@@ -130,16 +213,23 @@ def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
        # TrecDataList(data=[TrecData(question='What is the capital of France?', label=0)], name='trec_data_list')
 
     """
-    if hasattr(cls, "__dataclass_fields__"):
-        log.debug(f"{cls} is a dataclass.")
-        fieldtypes = {f.name: f.type for f in cls.__dataclass_fields__.values()}
-        return cls(
+
+    if is_dataclass(cls) or is_potential_dataclass(
+        cls
+    ):  # Optional[Address] will be false, and true for each check
+
+        log.debug(
+            f"{is_dataclass(cls)} of {cls}, {is_potential_dataclass(cls)} of {cls}"
+        )
+        cls_type = extract_dataclass_type(cls)
+        fieldtypes = {f.name: f.type for f in cls_type.__dataclass_fields__.values()}
+        return cls_type(
             **{
                 key: dataclass_obj_from_dict(fieldtypes[key], value)
                 for key, value in data.items()
             }
         )
-    elif isinstance(data, list):
+    elif isinstance(data, (list, tuple)):
         restored_data = []
         for item in data:
             if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
@@ -148,6 +238,18 @@ def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
             else:
                 # Use the original data [Any]
                 restored_data.append(item)
+
+        return restored_data
+
+    elif isinstance(data, set):
+        restored_data = set()
+        for item in data:
+            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+                # restore the value to its dataclass type
+                restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
+            else:
+                # Use the original data [Any]
+                restored_data.add(item)
 
         return restored_data
 
@@ -244,7 +346,8 @@ def get_type_schema(type_obj, exclude: ExcludeType = None) -> str:
 
     elif is_dataclass(type_obj):
         # Recursively handle nested dataclasses
-        return get_dataclass_schema(type_obj, exclude)
+        output = str(get_dataclass_schema(type_obj, exclude))
+        return output
     return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
 
 
@@ -266,14 +369,14 @@ def get_dataclass_schema(
     for f in fields(cls):
         if f.name in current_exclude:
             continue
-        field_schema = {"type": f.type.__name__}
+        # prepare field schema, it weill be done recursively for nested dataclasses
+        field_schema = {"type": get_type_schema(f.type, exclude)}
 
         # check required field
         is_required = _is_required_field(f)
         if is_required:
             schema["required"].append(f.name)
-        # prepare field schema
-        field_schema = {"type": get_type_schema(f.type, exclude)}
+
         # add metadata to the field schema
         if f.metadata:
             field_schema.update(f.metadata)

@@ -19,7 +19,8 @@ import warnings
 import logging
 
 from lightrag.core.functional import (
-    dataclass_obj_to_dict,
+    # dataclass_obj_to_dict,
+    custom_asdict,
     dataclass_obj_from_dict,
     get_dataclass_schema,
     convert_schema_to_signature,
@@ -81,6 +82,8 @@ ExcludeType = Optional[Union[List[str], Dict[str, List[str]]]]
 
 class DataClass:
     __doc__ = r"""The base data class for all data types that interact with LLMs.
+
+    Please only exclude optional fields in the exclude dictionary.
 
     Designed to streamline the handling, serialization, and description of data within our applications, especially to LLM prompt.
     We explicitly handle this instead of relying on 3rd party libraries such as pydantic or marshmallow to have better
@@ -225,7 +228,7 @@ class DataClass:
             excluded = deepcopy(exclude)
         else:
             excluded = None
-        return dataclass_obj_to_dict(self, excluded)
+        return custom_asdict(self, exclude=excluded)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "DataClass":
@@ -538,7 +541,7 @@ if __name__ == "__main__":
         addresses: List[Address] = field(
             default_factory=list, metadata={"desc": "The list of addresses"}
         )
-        single_address: Optional[Address] = field(
+        single_address: Address = field(
             default=None, metadata={"desc": "The single address"}
         )
         dict_addresses: Dict[str, Address] = field(default_factory=dict)
@@ -558,43 +561,7 @@ if __name__ == "__main__":
         },
     )
 
-    person_dict = person.to_dict()
-    print(person_dict)
-
-    class_schema = {
-        "name": {"type": "str", "required": True},
-        "age": {"type": "int", "required": True},
-        "addresses": {"type": "List", "required": True},
-        "single_address": {"type": "Address", "required": True},
-        "dict_addresses": {"type": "Dict", "required": False},
-    }
-    class_schema_2 = {
-        "type": "Person",
-        "properties": {
-            "name": {"type": "str", "desc": "The name of the person"},
-            "age": {"type": "int"},
-            "addresses": {"type": "List"},
-            "single_address": {"type": "Address"},
-            "dict_addresses": {"type": "Dict", "default": "default_factory=dict"},
-        },
-        "required": ["name", "age", "addresses", "single_address"],
-    }
-    class_schema_3 = {
-        "type": "Person",
-        "properties": {
-            "name": {"type": "Optional[str]", "desc": "The name of the person"},
-            "age": {"type": "int", "desc": "The age of the person"},
-            "addresses": {"type": "List", "desc": "The list of addresses"},
-            "single_address": {
-                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
-                "desc": "The single address",
-            },
-            "dict_addresses": {"type": "Dict"},
-        },
-        "required": ["age"],
-    }
-
-    class_schema_4 = {
+    schema = {
         "type": "Person",
         "properties": {
             "name": {"type": "Optional[str]", "desc": "The name of the person"},
@@ -604,7 +571,7 @@ if __name__ == "__main__":
                 "desc": "The list of addresses",
             },
             "single_address": {
-                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+                "type": "{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}",
                 "desc": "The single address",
             },
             "dict_addresses": {
@@ -613,72 +580,153 @@ if __name__ == "__main__":
         },
         "required": ["age"],
     }
+    # schema = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "name": {"type": "Optional[str]", "desc": "The name of the person"},
+    #         "age": {"type": "int", "desc": "The age of the person"},
+    #         "addresses": {
+    #             "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The list of addresses",
+    #         },
+    #         "single_address": {
+    #             "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The single address",
+    #         },
+    #         "dict_addresses": {
+    #             "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
+    #         },
+    #     },
+    #     "required": ["age"],
+    # }
 
-    # {'type': 'Person', 'properties': {'name': {'type': 'Optional', 'default': None, 'desc': 'The name of the person'}, 'age': {'type': 'int', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The age of the person'}, 'addresses': {'type': 'List', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The list of addresses'}, 'single_address': {'type': 'Optional', 'default': None, 'desc': 'The single address'}, 'dict_addresses': {'type': 'Dict', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>}}, 'required': []}
+    schema = Person.to_schema()
+    print(schema)
 
-    # use exclude
-    person_dict = person.to_dict(
-        exclude={"Person": ["single_address", "dict_addresses"]}
-    )
-    print("exclude", person_dict)
+    # person_dict = person.to_dict()
+    # print(person_dict)
+    # print(person)
+    # restored_person = Person.from_dict(person_dict)
+    # print(restored_person)
 
-    print("class schema", Person.to_schema())  # does not work on instance
-    class_json_signature = {
-        "name": "The name of the person (Optional[str]) (optional)",
-        "age": "The age of the person (int) (required)",
-        "addresses": "The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
-        "single_address": "The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
-        "dict_addresses": " (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
-    }
-    class_yaml_signature = """
-    name: The name of the person (Optional[str]) (optional)
-    age: The age of the person (int) (required)
-    addresses: The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
-    single_address: The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
-    dict_addresses:  (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
-    """
-    print("class_json_signature", Person.to_json_signature())
-    print("class_yaml_signature", Person.to_yaml_signature())
+    # class_schema = {
+    #     "name": {"type": "str", "required": True},
+    #     "age": {"type": "int", "required": True},
+    #     "addresses": {"type": "List", "required": True},
+    #     "single_address": {"type": "Address", "required": True},
+    #     "dict_addresses": {"type": "Dict", "required": False},
+    # }
+    # class_schema_2 = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "name": {"type": "str", "desc": "The name of the person"},
+    #         "age": {"type": "int"},
+    #         "addresses": {"type": "List"},
+    #         "single_address": {"type": "Address"},
+    #         "dict_addresses": {"type": "Dict", "default": "default_factory=dict"},
+    #     },
+    #     "required": ["name", "age", "addresses", "single_address"],
+    # }
+    # class_schema_3 = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "name": {"type": "Optional[str]", "desc": "The name of the person"},
+    #         "age": {"type": "int", "desc": "The age of the person"},
+    #         "addresses": {"type": "List", "desc": "The list of addresses"},
+    #         "single_address": {
+    #             "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The single address",
+    #         },
+    #         "dict_addresses": {"type": "Dict"},
+    #     },
+    #     "required": ["age"],
+    # }
 
-    exclude_name = {
-        "type": "Person",
-        "properties": {
-            "age": {"type": "int", "desc": "The age of the person"},
-            "addresses": {
-                "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
-                "desc": "The list of addresses",
-            },
-            "single_address": {
-                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
-                "desc": "The single address",
-            },
-            "dict_addresses": {
-                "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
-            },
-        },
-        "required": ["age"],
-    }
-    exclude_name_and_city = {
-        "type": "Person",
-        "properties": {
-            "age": {"type": "int", "desc": "The age of the person"},
-            "addresses": {
-                "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
-                "desc": "The list of addresses",
-            },
-            "single_address": {
-                "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
-                "desc": "The single address",
-            },
-            "dict_addresses": {
-                "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]"
-            },
-        },
-        "required": ["age"],
-    }
+    # class_schema_4 = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "name": {"type": "Optional[str]", "desc": "The name of the person"},
+    #         "age": {"type": "int", "desc": "The age of the person"},
+    #         "addresses": {
+    #             "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The list of addresses",
+    #         },
+    #         "single_address": {
+    #             "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The single address",
+    #         },
+    #         "dict_addresses": {
+    #             "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
+    #         },
+    #     },
+    #     "required": ["age"],
+    # }
 
-    print(
-        "class schema exclude",
-        Person.to_schema(exclude={"Person": ["name"], "Address": ["city"]}),
-    )
-    # print("class instance", get_dataclass_schema(person))
+    # # {'type': 'Person', 'properties': {'name': {'type': 'Optional', 'default': None, 'desc': 'The name of the person'}, 'age': {'type': 'int', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The age of the person'}, 'addresses': {'type': 'List', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>, 'desc': 'The list of addresses'}, 'single_address': {'type': 'Optional', 'default': None, 'desc': 'The single address'}, 'dict_addresses': {'type': 'Dict', 'default': <dataclasses._MISSING_TYPE object at 0x10116df90>}}, 'required': []}
+
+    # # use exclude
+    # person_dict = person.to_dict(
+    #     exclude={"Person": ["single_address", "dict_addresses"]}
+    # )
+    # print("exclude", person_dict)
+
+    # print("class schema", Person.to_schema())  # does not work on instance
+    # class_json_signature = {
+    #     "name": "The name of the person (Optional[str]) (optional)",
+    #     "age": "The age of the person (int) (required)",
+    #     "addresses": "The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+    #     "single_address": "The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+    #     "dict_addresses": " (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)",
+    # }
+    # class_yaml_signature = """
+    # name: The name of the person (Optional[str]) (optional)
+    # age: The age of the person (int) (required)
+    # addresses: The list of addresses (List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    # single_address: The single address (Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    # dict_addresses:  (Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]) (optional)
+    # """
+    # print("class_json_signature", Person.to_json_signature())
+    # print("class_yaml_signature", Person.to_yaml_signature())
+
+    # exclude_name = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "age": {"type": "int", "desc": "The age of the person"},
+    #         "addresses": {
+    #             "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The list of addresses",
+    #         },
+    #         "single_address": {
+    #             "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]",
+    #             "desc": "The single address",
+    #         },
+    #         "dict_addresses": {
+    #             "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'city': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'city', 'zipcode']}]"
+    #         },
+    #     },
+    #     "required": ["age"],
+    # }
+    # exclude_name_and_city = {
+    #     "type": "Person",
+    #     "properties": {
+    #         "age": {"type": "int", "desc": "The age of the person"},
+    #         "addresses": {
+    #             "type": "List[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
+    #             "desc": "The list of addresses",
+    #         },
+    #         "single_address": {
+    #             "type": "Optional[{'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]",
+    #             "desc": "The single address",
+    #         },
+    #         "dict_addresses": {
+    #             "type": "Dict[str, {'type': 'Address', 'properties': {'street': {'type': 'str'}, 'zipcode': {'type': 'str'}}, 'required': ['street', 'zipcode']}]"
+    #         },
+    #     },
+    #     "required": ["age"],
+    # }
+
+    # print(
+    #     "class schema exclude",
+    #     Person.to_schema(exclude={"Person": ["name"], "Address": ["city"]}),
+    # )
+    # # print("class instance", get_dataclass_schema(person))
