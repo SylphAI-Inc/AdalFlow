@@ -12,6 +12,10 @@ from typing import (
     Optional,
     Type,
     get_type_hints,
+    get_origin,
+    get_args,
+    Set,
+    Sequence,
 )
 import logging
 import numpy as np
@@ -19,14 +23,426 @@ import re
 import json
 import yaml
 import ast
+import threading
+from copy import deepcopy
+
 from inspect import signature, Parameter
-from dataclasses import fields, is_dataclass
+from dataclasses import fields, is_dataclass, MISSING, Field
 
 log = logging.getLogger(__name__)
+
+ExcludeType = Optional[Dict[str, List[str]]]
+
+
+########################################################################################
+# For Dataclass base class and all schema related functions
+########################################################################################
+
+
+def custom_asdict(
+    obj, *, dict_factory=dict, exclude: ExcludeType = None
+) -> Dict[str, Any]:
+    """Equivalent to asdict() from dataclasses module but with exclude fields.
+
+    Return the fields of a dataclass instance as a new dictionary mapping
+    field names to field values, while allowing certain fields to be excluded.
+
+    If given, 'dict_factory' will be used instead of built-in dict.
+    The function applies recursively to field values that are
+    dataclass instances. This will also look into built-in containers:
+    tuples, lists, and dicts.
+    """
+    if not is_dataclass_instance(obj):
+        raise TypeError("custom_asdict() should be called on dataclass instances")
+    return _asdict_inner(obj, dict_factory, exclude or {})
+
+
+def _asdict_inner(obj, dict_factory, exclude):
+    if is_dataclass_instance(obj):
+        result = []
+        for f in fields(obj):
+            if f.name in exclude.get(obj.__class__.__name__, []):
+                continue
+            value = _asdict_inner(getattr(obj, f.name), dict_factory, exclude)
+            result.append((f.name, value))
+        return dict_factory(result)
+    elif isinstance(obj, tuple) and hasattr(obj, "_fields"):
+        return type(obj)(*[_asdict_inner(v, dict_factory, exclude) for v in obj])
+    elif isinstance(obj, (list, tuple)):
+        return type(obj)(_asdict_inner(v, dict_factory, exclude) for v in obj)
+    elif isinstance(obj, dict):
+        return type(obj)(
+            (
+                _asdict_inner(k, dict_factory, exclude),
+                _asdict_inner(v, dict_factory, exclude),
+            )
+            for k, v in obj.items()
+        )
+    else:
+        return deepcopy(obj)
+
+
+# def dataclass_obj_to_dict(
+#     obj: Any, exclude: ExcludeType = None, parent_key: str = ""
+# ) -> Dict[str, Any]:
+#     r"""Convert a dataclass object to a dictionary With exclude fields.
+
+#     Equivalent to asdict() from dataclasses module but with exclude fields.
+
+#     Supports nested dataclasses, lists, and dictionaries.
+#     Allow exclude keys for each dataclass object.
+#     Example:
+
+#     .. code-block:: python
+
+#        from dataclasses import dataclass
+#        from typing import List
+
+#        @dataclass
+#        class TrecData:
+#            question: str
+#            label: int
+
+#        @dataclass
+#        class TrecDataList:
+
+#            data: List[TrecData]
+#            name: str
+
+#        trec_data = TrecData(question="What is the capital of France?", label=0)
+#        trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
+
+#        dataclass_obj_to_dict(trec_data_list, exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
+
+#        # Output:
+#        # {'data': [{'question': 'What is the capital of France?'}]}
+
+#     """
+#     if not is_dataclass_instance(obj):
+#         raise ValueError(
+#             f"dataclass_obj_to_dict() should be called with a dataclass instance."
+#         )
+#     if exclude is None:
+#         exclude = {}
+
+#     obj_class_name = obj.__class__.__name__
+#     current_exclude = exclude.get(obj_class_name, [])
+
+#     if hasattr(obj, "__dataclass_fields__"):
+#         return {
+#             key: dataclass_obj_to_dict(value, exclude, parent_key=key)
+#             for key, value in obj.__dict__.items()
+#             if key not in current_exclude
+#         }
+#     elif isinstance(obj, list):
+
+
+#         return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
+#     elif isinstance(obj, set):
+#         return {dataclass_obj_to_dict(item, exclude, parent_key) for item in obj}
+#     elif isinstance(obj, tuple):
+#         return (dataclass_obj_to_dict(item, exclude, parent_key) for item in obj)
+#     elif isinstance(obj, dict):
+#         return {
+#             key: dataclass_obj_to_dict(value, exclude, parent_key)
+#             for key, value in obj.items()
+#         }
+#     else:
+#         return deepcopy(obj)
+def validate_data(data: Dict[str, Any], fieldtypes: Dict[str, Any]) -> bool:
+    required_fields = {
+        name for name, type in fieldtypes.items() if _is_required_field(type)
+    }
+    return required_fields <= data.keys()
+
+
+def is_potential_dataclass(t):
+    """Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional."""
+    origin = get_origin(t)
+    if origin is Union:
+        # This checks if any of the arguments in a Union (which is what Optional is) is a dataclass
+        return any(is_dataclass(arg) for arg in get_args(t) if arg is not type(None))
+    return is_dataclass(t)
+
+
+def extract_dataclass_type(type_hint):
+    """Extract the actual dataclass type from a type hint that could be Optional or other generic."""
+    origin = get_origin(type_hint)
+    if origin in (Union, Optional):
+        # Unpack Optional[SomeClass] or Union[SomeClass, None]
+        args = get_args(type_hint)
+        for arg in args:
+            if arg is not type(None) and is_dataclass(arg):
+                return arg
+    return type_hint if is_dataclass(type_hint) else None
+
+
+def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
+    r"""Convert a dictionary to a dataclass object.
+
+    Supports nested dataclasses, lists, and dictionaries.
+
+    .. note::
+        If any required field is missing, it will raise an error.
+        Do not use the dict that has excluded required fields.
+
+    Example:
+
+    .. code-block:: python
+
+       from dataclasses import dataclass
+       from typing import List
+
+       @dataclass
+       class TrecData:
+           question: str
+           label: int
+
+       @dataclass
+       class TrecDataList:
+
+           data: List[TrecData]
+           name: str
+
+       trec_data_dict = {"data": [{"question": "What is the capital of France?", "label": 0}], "name": "trec_data_list"}
+
+       dataclass_obj_from_dict(TrecDataList, trec_data_dict)
+
+       # Output:
+       # TrecDataList(data=[TrecData(question='What is the capital of France?', label=0)], name='trec_data_list')
+
+    """
+
+    if is_dataclass(cls) or is_potential_dataclass(
+        cls
+    ):  # Optional[Address] will be false, and true for each check
+
+        log.debug(
+            f"{is_dataclass(cls)} of {cls}, {is_potential_dataclass(cls)} of {cls}"
+        )
+        cls_type = extract_dataclass_type(cls)
+        fieldtypes = {f.name: f.type for f in cls_type.__dataclass_fields__.values()}
+        return cls_type(
+            **{
+                key: dataclass_obj_from_dict(fieldtypes[key], value)
+                for key, value in data.items()
+            }
+        )
+    elif isinstance(data, (list, tuple)):
+        restored_data = []
+        for item in data:
+            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+                # restore the value to its dataclass type
+                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
+            else:
+                # Use the original data [Any]
+                restored_data.append(item)
+
+        return restored_data
+
+    elif isinstance(data, set):
+        restored_data = set()
+        for item in data:
+            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+                # restore the value to its dataclass type
+                restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
+            else:
+                # Use the original data [Any]
+                restored_data.add(item)
+
+        return restored_data
+
+    elif isinstance(data, dict):
+        for key, value in data.items():
+            if (
+                hasattr(cls, "__args__")
+                and len(cls.__args__) > 1
+                and cls.__args__[1]
+                and hasattr(cls.__args__[1], "__dataclass_fields__")
+            ):
+                # restore the value to its dataclass type
+                data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
+            else:
+                # Use the original data [Any]
+                data[key] = value
+        return data
+
+    else:
+        log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
+        return data
+
+
+# Custom representer for OrderedDict
+def represent_ordereddict(dumper, data):
+    value = []
+    for item_key, item_value in data.items():
+        node_key = dumper.represent_data(item_key)
+        node_value = dumper.represent_data(item_value)
+        value.append((node_key, node_value))
+    return yaml.MappingNode("tag:yaml.org,2002:map", value)
+
+
+def from_dict_to_json(data: Dict[str, Any], sort_keys: bool = False) -> str:
+    r"""Convert a dictionary to a JSON string."""
+    try:
+        return json.dumps(data, indent=4, sort_keys=sort_keys)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to convert dict to JSON: {e}")
+
+
+def from_dict_to_yaml(data: Dict[str, Any], sort_keys: bool = False) -> str:
+    r"""Convert a dictionary to a YAML string."""
+    try:
+        return yaml.dump(data, default_flow_style=False, sort_keys=sort_keys)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Failed to convert dict to YAML: {e}")
+
+
+def from_json_to_dict(json_str: str) -> Dict[str, Any]:
+    r"""Convert a JSON string to a dictionary."""
+    try:
+        return json.loads(json_str)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to convert JSON to dict: {e}")
+
+
+def from_yaml_to_dict(yaml_str: str) -> Dict[str, Any]:
+    r"""Convert a YAML string to a dictionary."""
+    try:
+        return yaml.safe_load(yaml_str)
+    except yaml.YAMLError as e:
+        raise ValueError(f"Failed to convert YAML to dict: {e}")
+
+
+def is_dataclass_instance(obj):
+    return hasattr(obj, "__dataclass_fields__")
+
+
+def get_type_schema(type_obj, exclude: ExcludeType = None) -> str:
+    """Retrieve the type name, handling complex and nested types."""
+    origin = get_origin(type_obj)
+    if origin is Union:
+        # Handle Optional[Type] and other unions
+        args = get_args(type_obj)
+        types = [get_type_schema(arg, exclude) for arg in args if arg is not type(None)]
+        return (
+            f"Optional[{types[0]}]" if len(types) == 1 else f"Union[{', '.join(types)}]"
+        )
+    elif origin in {List, list}:
+        args = get_args(type_obj)
+        if args:
+            inner_type = get_type_schema(args[0], exclude)
+            return f"List[{inner_type}]"
+        else:
+            return "List"
+
+    elif origin in {Dict, dict}:
+        args = get_args(type_obj)
+        if args and len(args) >= 2:
+            key_type = get_type_schema(args[0], exclude)
+            value_type = get_type_schema(args[1], exclude)
+            return f"Dict[{key_type}, {value_type}]"
+        else:
+            return "Dict"
+    elif origin in {Set, set}:
+        args = get_args(type_obj)
+        return f"Set[{get_type_schema(args[0], exclude)}]" if args else "Set"
+
+    elif origin is Sequence:
+        args = get_args(type_obj)
+        return f"Sequence[{get_type_schema(args[0], exclude)}]" if args else "Sequence"
+
+    elif origin in {Tuple, tuple}:
+        args = get_args(type_obj)
+        if args:
+            return f"Tuple[{', '.join(get_type_schema(arg, exclude) for arg in args)}]"
+        return "Tuple"
+
+    elif is_dataclass(type_obj):
+        # Recursively handle nested dataclasses
+        output = str(get_dataclass_schema(type_obj, exclude))
+        return output
+    return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
+
+
+def get_dataclass_schema(
+    cls, exclude: ExcludeType = None
+) -> Dict[str, Dict[str, object]]:
+    """Generate a schema dictionary for a dataclass including nested structures.
+
+    1. Support customized dataclass with required_field function.
+    2. Support nested dataclasses, even with generics like List, Dict, etc.
+    3. Support metadata in the dataclass fields.
+    """
+    if not is_dataclass(cls):
+        raise ValueError(
+            "Provided class is not a dataclass, please decorate your class with @dataclass"
+        )
+
+    schema = {"type": cls.__name__, "properties": {}, "required": []}
+    # get the exclude list for the current class
+    current_exclude = exclude.get(cls.__name__, []) if exclude else []
+    for f in fields(cls):
+        if f.name in current_exclude:
+            continue
+        # prepare field schema, it weill be done recursively for nested dataclasses
+        field_schema = {"type": get_type_schema(f.type, exclude)}
+
+        # check required field
+        is_required = _is_required_field(f)
+        if is_required:
+            schema["required"].append(f.name)
+
+        # add metadata to the field schema
+        if f.metadata:
+            field_schema.update(f.metadata)
+        # handle nested dataclasses and complex types
+
+        schema["properties"][f.name] = field_schema
+
+    return schema
+
+
+def _is_required_field(f: Field) -> bool:
+    r"""Determine if the field of dataclass is required or optional.
+    Customized for required_field function."""
+    # Determine if the field is required or optional
+    # Using __name__ to check for function identity
+    if f.default is MISSING and (
+        f.default_factory is MISSING
+        or (
+            hasattr(f.default_factory, "__name__")
+            and f.default_factory.__name__ == "required_field"
+        )
+    ):
+        return True
+    return False
+
+
+def convert_schema_to_signature(schema: Dict[str, Dict[str, Any]]) -> Dict[str, str]:
+    r"""Convert the value from get_data_class_schema to a string description."""
+
+    signature = {}
+    schema_to_use = schema.get("properties", {})
+    required_fields = schema.get("required", [])
+    for field_name, field_info in schema_to_use.items():
+        field_signature = field_info.get("desc", "")
+        # add type to the signature
+        if field_info["type"]:
+            field_signature += f" ({field_info['type']})"
+        # add required/optional to the signature
+        if field_name in required_fields:
+            field_signature += " (required)"
+        else:
+            field_signature += " (optional)"
+
+        signature[field_name] = field_signature
+    return signature
 
 
 ########################################################################################
 # For FunctionTool component
+# It uses get_type_schema and get_dataclass_schema to generate the schema of arguments.
 ########################################################################################
 def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
     r"""Get the schema of a function.
@@ -62,43 +478,12 @@ def get_fun_schema(name: str, func: Callable[..., object]) -> Dict[str, object]:
         param_type = type_hints.get(param_name, "Any")
         if parameter.default == Parameter.empty:
             schema["required"].append(param_name)
-            schema["properties"][param_name] = {**get_type_schema(param_type)}
+            schema["properties"][param_name] = {"type": get_type_schema(param_type)}
         else:
             schema["properties"][param_name] = {
-                **get_type_schema(param_type),
+                "type": get_type_schema(param_type),
                 "default": parameter.default,
             }
-
-    return schema
-
-
-def get_type_schema(param_type: object) -> Dict[str, Any]:
-    if hasattr(param_type, "__origin__") and param_type.__origin__ is Union:
-        return {
-            "type": "Union",
-            "choices": [get_type_schema(arg) for arg in param_type.__args__],
-        }
-    elif is_dataclass(param_type):
-        return get_dataclass_schema(param_type)
-    elif hasattr(param_type, "__name__"):
-        return {"type": param_type.__name__}
-    else:
-        return {"type": "Any"}
-
-
-def get_dataclass_schema(cls):
-    """Generate schema for a dataclass."""
-    data_class_type = cls.__name__
-    schema = {"type": data_class_type, "properties": {}, "required": []}
-    for field_ in fields(cls):
-        field_schema = {"type": field_.type.__name__}
-        if field_.default != field_.default_factory:
-            field_schema["default"] = field_.default
-        if field_.metadata:
-            field_schema.update(field_.metadata)
-        schema["properties"][field_.name] = field_schema
-        if field_.default == field_.default_factory:
-            schema["required"].append(field_.name)
 
     return schema
 
@@ -245,8 +630,6 @@ def generate_function_call_expression_from_callable(
     return f"{func_name}({full_args_str})"
 
 
-import threading
-
 # Define a list of safe built-ins
 SAFE_BUILTINS = {
     "abs": abs,
@@ -342,171 +725,6 @@ def sandbox_exec(
         raise e
 
     return result
-
-
-########################################################################################
-# For Dataclass base class
-########################################################################################
-def dataclass_obj_to_dict(
-    obj: Any, exclude: Optional[Dict[str, List[str]]] = None, parent_key: str = ""
-) -> Dict[str, Any]:
-    r"""Convert a dataclass object to a dictionary.
-
-    Supports nested dataclasses, lists, and dictionaries.
-    Allow exclude keys for each dataclass object.
-    Example:
-
-    .. code-block:: python
-
-       from dataclasses import dataclass
-       from typing import List
-
-       @dataclass
-       class TrecData:
-           question: str
-           label: int
-
-       @dataclass
-       class TrecDataList:
-
-           data: List[TrecData]
-           name: str
-
-       trec_data = TrecData(question="What is the capital of France?", label=0)
-       trec_data_list = TrecDataList(data=[trec_data], name="trec_data_list")
-
-       dataclass_obj_to_dict(trec_data_list, exclude={"TrecData": ["label"], "TrecDataList": ["name"]})
-
-       # Output:
-       # {'data': [{'question': 'What is the capital of France?'}]}
-
-    """
-    if exclude is None:
-        exclude = {}
-
-    obj_class_name = obj.__class__.__name__
-    current_exclude = exclude.get(obj_class_name, [])
-
-    if hasattr(obj, "__dataclass_fields__"):
-        return {
-            key: dataclass_obj_to_dict(value, exclude, parent_key=key)
-            for key, value in obj.__dict__.items()
-            if key not in current_exclude
-        }
-    elif isinstance(obj, list):
-        return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]
-    elif isinstance(obj, dict):
-
-        return {
-            key: dataclass_obj_to_dict(value, exclude, parent_key)
-            for key, value in obj.items()
-        }
-    else:
-
-        return obj
-
-
-def dataclass_obj_from_dict(cls: Type[Any], data: Dict[str, Any]) -> Any:
-    r"""Convert a dictionary to a dataclass object.
-
-    Supports nested dataclasses, lists, and dictionaries.
-
-    .. note::
-        If any required field is missing, it will raise an error.
-        Do not use the dict that has excluded required fields.
-
-    Example:
-
-    .. code-block:: python
-
-       from dataclasses import dataclass
-       from typing import List
-
-       @dataclass
-       class TrecData:
-           question: str
-           label: int
-
-       @dataclass
-       class TrecDataList:
-
-           data: List[TrecData]
-           name: str
-
-       trec_data_dict = {"data": [{"question": "What is the capital of France?", "label": 0}], "name": "trec_data_list"}
-
-       dataclass_obj_from_dict(TrecDataList, trec_data_dict)
-
-       # Output:
-       # TrecDataList(data=[TrecData(question='What is the capital of France?', label=0)], name='trec_data_list')
-
-    """
-    if hasattr(cls, "__dataclass_fields__"):
-        log.debug(f"{cls} is a dataclass.")
-        fieldtypes = {f.name: f.type for f in cls.__dataclass_fields__.values()}
-        return cls(
-            **{
-                key: dataclass_obj_from_dict(fieldtypes[key], value)
-                for key, value in data.items()
-            }
-        )
-    elif isinstance(data, list):
-        restored_data = []
-        for item in data:
-            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
-                # restore the value to its dataclass type
-                restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
-            else:
-                # Use the original data [Any]
-                restored_data.append(item)
-
-        return restored_data
-
-    elif isinstance(data, dict):
-        for key, value in data.items():
-            if cls.__args__[1] and hasattr(cls.__args__[1], "__dataclass_fields__"):
-                # restore the value to its dataclass type
-                data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
-            else:
-                # Use the original data [Any]
-                data[key] = value
-        return data
-
-    else:
-        log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
-        return data
-
-
-def from_dict_to_json(data: Dict[str, Any], sort_keys: bool = False) -> str:
-    r"""Convert a dictionary to a JSON string."""
-    try:
-        return json.dumps(data, indent=4, sort_keys=sort_keys)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to convert dict to JSON: {e}")
-
-
-def from_dict_to_yaml(data: Dict[str, Any], sort_keys: bool = False) -> str:
-    r"""Convert a dictionary to a YAML string."""
-    try:
-        return yaml.dump(data, default_flow_style=False, sort_keys=sort_keys)
-    except yaml.YAMLError as e:
-        raise ValueError(f"Failed to convert dict to YAML: {e}")
-
-
-def from_json_to_dict(json_str: str) -> Dict[str, Any]:
-    r"""Convert a JSON string to a dictionary."""
-    try:
-        return json.loads(json_str)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to convert JSON to dict: {e}")
-
-
-def from_yaml_to_dict(yaml_str: str) -> Dict[str, Any]:
-    r"""Convert a YAML string to a dictionary."""
-    try:
-        return yaml.safe_load(yaml_str)
-    except yaml.YAMLError as e:
-        raise ValueError(f"Failed to convert YAML to dict: {e}")
 
 
 ########################################################################################

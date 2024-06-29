@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 import numpy as np
 import time
 import asyncio
 from lightrag.utils import setup_env  # noqa
-from lightrag.core import Component
+from lightrag.core import Component, DataClass
 from lightrag.core.types import Function, FunctionExpression
 from lightrag.core.tool_manager import ToolManager
 from lightrag.components.output_parsers import JsonOutputParser
@@ -55,6 +55,14 @@ def add_points(p1: Point, p2: Point) -> Point:
     return Point(p1.x + p2.x, p1.y + p2.y)
 
 
+@dataclass  # TODO: data class schema, need to go all the way down to the subclass
+class MultipleFunctionDefinition(DataClass):
+    a: Point = field(metadata={"desc": "First number"})
+    b: int = field(metadata={"desc": "Second number"})
+
+
+# optionally to define schma yourself, this can be used to generate FunctionDefinition
+print(MultipleFunctionDefinition.to_schema_str())
 # use function tool
 
 template = r"""<SYS>You have these tools available:
@@ -110,8 +118,7 @@ multple_function_call_template = r"""<SYS>You have these tools available:
 <OUTPUT_FORMAT>
 Here is how you call one function.
 {{output_format_str}}
-Awlays return a List using `[]` of the above JSON objects. You can have length of 1 or more.
-Do not call multiple functions in one action field.
+-Always return a List using `[]` of the above JSON objects, even if its just one item.
 </OUTPUT_FORMAT>
 <SYS>
 {{input_str}}
@@ -136,16 +143,14 @@ class FunctionCall(Component):
 
     def prepare_single_function_call_generator(self):
         tool_manager = ToolManager(tools=functions)
-        func_parser = JsonOutputParser(data_class=Function)
-        instructions = func_parser.format_instructions(exclude=["thought"])
-        print(instructions)
+        func_parser = JsonOutputParser(
+            data_class=Function, exclude_fields=["thought", "args"]
+        )
 
         model_kwargs = {"model": "gpt-3.5-turbo"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
         }
         generator = Generator(
             model_client=ModelClientType.OPENAI(),
@@ -191,16 +196,16 @@ class FunctionCallWithFunctionExpression(Component):
                 "Point": Point,
             },
         )
-        func_parser = JsonOutputParser(data_class=FunctionExpression)
-        instructions = func_parser.format_instructions(exclude=["thought"])
+        func_parser = JsonOutputParser(
+            data_class=FunctionExpression, exclude_fields=["thought", "args"]
+        )
+        instructions = func_parser.format_instructions()
         print(instructions)
 
         model_kwargs = {"model": "gpt-4o"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
             "context_str": tool_manager._additional_context,
         }
         generator = Generator(
@@ -287,16 +292,21 @@ class MultiFunctionCallWithFunctionExpression(Component):
                 "Point": Point,
             },
         )
-        func_parser = JsonOutputParser(data_class=FunctionExpression)
-        instructions = func_parser.format_instructions(exclude=["thought"])
+        example = FunctionExpression.from_function(
+            func=add_points, p1=Point(x=1, y=2), p2=Point(x=3, y=4)
+        )
+        func_parser = JsonOutputParser(
+            data_class=FunctionExpression,
+            examples=[example],
+            exclude_fields=["thought"],
+        )
+        instructions = func_parser.format_instructions()
         print(instructions)
 
         model_kwargs = {"model": "gpt-4o"}
         prompt_kwargs = {
             "tools": tool_manager.yaml_definitions,
-            "output_format_str": func_parser.format_instructions(
-                exclude=["thought", "args"]
-            ),
+            "output_format_str": func_parser.format_instructions(),
         }
         generator = Generator(
             model_client=ModelClientType.OPENAI(),
@@ -317,13 +327,13 @@ class MultiFunctionCallWithFunctionExpression(Component):
             print(f"{'-'*50}")
             try:
                 result = generator(prompt_kwargs=prompt_kwargs)
-                # print(f"LLM raw output: {result.raw_response}")
+                print(f"LLM raw output: {result.raw_response}")
                 func_expr: List[FunctionExpression] = [
                     FunctionExpression.from_dict(item) for item in result.data
                 ]
                 print(f"Function_expr: {func_expr}")
                 for expr in func_expr:
-                    func_output = tool_manager.execute_func_expr_via_sandbox(expr)
+                    func_output = tool_manager.execute_func_expr_via_eval(expr)
                     print(f"Function output: {func_output}")
             except Exception as e:
                 print(
@@ -342,6 +352,9 @@ if __name__ == "__main__":
     # generator, tool_manager = fc.prepare_single_function_call_generator()
     # fc.run_function_call(generator, tool_manager)  # 15.92s
     # asyncio.run(fc.run_async_function_call(generator, tool_manager))  # 7.8s
+
+    output = eval("add(a=y, b=5)", {"y": 3, "add": add})
+    print(output)
 
     mul_fc = MultiFunctionCallWithFunctionExpression()
     generator, tool_manager = mul_fc.prepare_single_function_call_generator()

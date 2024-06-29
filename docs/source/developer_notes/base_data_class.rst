@@ -7,205 +7,553 @@ DataClass
 
    `Li Yin <https://github.com/liyin2015>`_
 
-In PyTorch, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library. 
-The data in particular is a multi-dimensional matrix such as such as weights, biases, and even inputs and predictions.
-In LLM applications, you can think of the data as a freeform data class with various fields and types of data.
-For instance:
+In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
+Tensor wraps a multi-dimensional matrix to better support its operations and computations.
+In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
+:class:`core.base_data_class.DataClass` is designed to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+
+.. figure:: /_static/images/dataclass.png
+    :align: center
+    :alt: DataClass
+    :width: 680px
+
+    DataClass is to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+
+
+Design
+----------------
+In Python, data is typically represented as a class with attributes.
+To interact with LLM, we need great way to describe the data format and the data instance to LLMs and be able to convert back to data instance from the text prediction.
+This overlaps with the serialization and deserialization of the data in the conventional programming.
+Packages like ``Pydantic`` or ``Marshmallow`` can covers the seralization and deserialization, but it will end up with more complexity and less transparency to users.
+LLM prompts are known to be sensitive, the details, controllability, and transparency of the data format are crucial here.
+
+We eventually created a base class :class:`core.base_data_class.DataClass` to handle data that will interact with LLMs, which builds on top of Python's native ``dataclasses`` module.
+Here are our reasoning:
+
+1. ``dataclasses`` module is lightweight, flexible, and is already widely used in Python for data classes.
+2.  Using ``field`` (`metadata`, `default`, `default_factory`) in `dataclasses` adds more ways to describe the data.
+3.  ``asdict()`` from `dataclasses` is already good at converting a data class instance to a dictionary for serialization.
+4.  Getting data class schmea for data class is feasible.
+
+
+Here is how users typically use the ``dataclasses`` module:
 
 .. code-block:: python
 
-    from dataclasses import dataclass
+    from dataclasses import dataclass, field
 
     @dataclass
     class TrecData:
-        question: str
-        label: int
+        question: str = field(
+            metadata={"desc": "The question asked by the user"}
+        ) # Required field, you have to provide the question field at the instantiation
+        label: int = field(
+            metadata={"desc": "The label of the question"}, default=0
+        ) # Optional field
 
-It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `HuggingFace` ``Dataset``.
-The unique thing is all data or tools interact with LLMs via prompt and text prediction, which is a single ``str``.
+``DataClass`` covers the following:
 
-Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert from string) of the data.
-But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module. 
-The reasons are:
+1. Generate the class ``schema`` and ``signature`` (less verbose) to describe the data format to LLMs.
+2. Convert the data instance to a json or yaml string to show the data example to LLMs.
+3. Load the data instance from a json or yaml string to get the data instance back to be processed in the program.
 
-1. ``dataclasses`` module's `dataclass` decorator, along with `field` (`metadata`, `default`) can be especially helpful to describe the data format to LLMs. `dataclass` also saves users time on writing the boilerplate code such as `__init__`, `__repr__`, `__str__` etc.
+We also made the effort to provide more control:
 
-2. `dataclasses` native module is more lightweight, flexible, and user-friendly than `Pydantic`.
-
-3. Though we need more customization on ``BaseClass`` compared with directly using `Pydantic`, we will enjoy more transparency and control over the data format.
-
-Here is how users can define a data class with our customized methods in LightRAG:
-
-.. code-block:: python
-
-    from lightrag.core.base_data_class import (
-        DataClass,
-        required_field,
-    )
-    from dataclasses import field
+1. **Keep the ordering of your data fields.** We provided :func:`core.base_data_class.required_field` with ``default_factory`` to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.
+2. **Exclude some fields from the output.**  All serialization methods support `exclude` parameter to exclude some fields even for nested dataclasses.
+3. **Allow nested dataclasses, lists, and dictionaries.** All methods support nested dataclasses, lists, and dictionaries.
 
 
-    class MyOutputs(DataClass):
-        name: str = field(
-            default="John Doe",  # Optional field
-            metadata={"desc": "The name of the person", "prefix": "Name:"},
-        )
-        age: int = field(
-            default_factory=required_field, # Required field
-            metadata={"desc": "The age of the person", "prefix": "Age:"},
-        )
+Describing the Data Format
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 70
+
+   * - **Name**
+     - **Description**
+   * - ``to_schema(cls, exclude) -> Dict``
+     - Generate a JSON schema which is more detailed than the signature.
+   * - ``to_schema_str(cls, exclude) -> str``
+     - Generate a JSON schema string which is more detailed than the signature.
+   * - ``to_yaml_signature(cls, exclude) -> str``
+     - Generate a YAML signature for the class from descriptions in metadata.
+   * - ``to_json_signature(cls, exclude) -> str``
+     - Generate a JSON signature (JSON string) for the class from descriptions in metadata.
+   * - ``format_class_str(cls, format_type, exclude) -> str``
+     - Generate data format string, covers ``to_schema_str``, ``to_yaml_signature``, and ``to_json_signature``.
+
+Work with Data Instance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 70
+
+   * - **Name**
+     - **Description**
+   * - ``from_dict(cls, data: Dict) -> "DataClass"``
+     - Create a dataclass instance from a dictionary. Supports nested dataclasses, lists, and dictionaries.
+   * - ``to_dict(self, exclude: ExcludeType) -> Dict``
+     - Convert a dataclass object to a dictionary. Supports nested dataclasses, lists, and dictionaries. Allows exclusion of specific fields.
+   * - ``to_json_obj(self, exclude: ExcludeType) -> Any``
+     - Convert the dataclass instance to a JSON object, maintaining the order of fields.
+   * - ``to_json(self, exclude: ExcludeType) -> str``
+     - Convert the dataclass instance to a JSON string, maintaining the order of fields.
+   * - ``to_yaml_obj(self, exclude: ExcludeType) -> Any``
+     - Convert the dataclass instance to a YAML object, maintaining the order of fields.
+   * - ``to_yaml(self, exclude: ExcludeType) -> str``
+     - Convert the dataclass instance to a YAML string, maintaining the order of fields.
+   * - ``from_json(cls, json_str: str) -> "DataClass"``
+     - Create a dataclass instance from a JSON string.
+   * - ``from_yaml(cls, yaml_str: str) -> "DataClass"``
+     - Create a dataclass instance from a YAML string.
+   * - ``format_example_str(self, format_type, exclude) -> str``
+     - Generate data examples string, covers ``to_json`` and ``to_yaml``.
+
+We have :class:`core.base_data_class.DataClassFormatType` to specify the format type for the data format methods.
 
 .. note::
 
-    `required_field` is a helper function to mark the field as required. Otherwise, using either `default` or `default_factory` will make the field optional.
+    To use ``DataClass``, you have to decorate your class with the ``dataclass`` decorator from the ``dataclasses`` module.
 
-.. Now, let's see  how we design class and instance methods to describe the data format and the data instance to LLMs.
+.. in Python is a decorator that can be used to automatically generate special methods such as `__init__`, `__repr__`, `__str__` etc. for a class.
 
+.. .. code-block:: python
 
-Describe data to LLMs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Data Format
-^^^^^^^^^^^^^^^^^^^^^^^^^
+..     from dataclasses import dataclass
 
-We need to describe either the input/output data format to give LLMs context on how to understand the input data and to generate the output data.
+..     @dataclass
+..     class TrecData:
+..         question: str
+..         label: int
 
-What we want to let LLM know about our input/output data format:
-In particular, it is important for LLMs to know these five things about the data format:
+.. It is exactly a single input data item in a typical PyTorch ``Dataset`` or a `HuggingFace` ``Dataset``.
+.. The unique thing is all data or tools interact with LLMs via prompt and text prediction, which is a single ``str``.
 
-1. **Description** of what this field is for.  We use `desc` key in the `metadata` of `field` to describe this field. Example: 
+.. Most existing libraries use `Pydantic` to handle the serialization(convert to string) and deserialization(convert back from string) of the data.
+.. But, in LightRAG, we in particular designed :class:`core.base_data_class.DataClass` using native `dataclasses` module.
+.. The reasons are:
+
+.. 1. ``dataclasses`` module's `dataclass` decorator, along with `field` (`metadata`, `default`) can be especially helpful to describe the data format to LLMs. `dataclass` also saves users time on writing the boilerplate code such as `__init__`, `__repr__`, `__str__` etc.
+
+.. 2. `dataclasses` native module is more lightweight, flexible, and user-friendly than `Pydantic`.
+
+.. 3. Though we need more customization on ``BaseClass`` compared with directly using `Pydantic`, we will enjoy more transparency and control over the data format.
+DataClass in Action
+------------------------
+Say you have a few of ``TrecData`` structued as follows that you want to engage with LLMs:
 
 .. code-block:: python
 
-    thought: str = field(
-        metadata={"desc": "The reasoning or thought behind the question."}
-    )
+    from dataclasses import dataclass, field
 
-2. **Required/Optional**. We use either `default` or `default_factory` to mark the field as optional except when our specialized function :func:`core.base_data_class.required_field` is used in `default_factory`, which marks the field as required.
-3. **Field Data Type** such as `str`, `int`, `float`, `bool`, `List`, `Dict`, etc.
-4. **Order of the fields** matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.
-5. The ablility to **exclude** some fields from the output. 
-   
-We provide two ways: (1) ``schema`` and (2) ``signature`` to describe the data format in particular.
+    @dataclass
+    class Question:
+        question: str = field(
+            metadata={"desc": "The question asked by the user"}
+        )
+        metadata: dict = field(
+            metadata={"desc": "The metadata of the question"}, default_factory=dict
+        )
+
+    @dataclass
+    class TrecData:
+        question: Question = field(
+            metadata={"desc": "The question asked by the user"}
+        ) # Required field, you have to provide the question field at the instantiation
+        label: int = field(
+            metadata={"desc": "The label of the question"}, default=0
+        ) # Optional field
+
+Describe the data format to LLMs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We will create ``TrecData2`` class that subclasses from `DataClass`.
+You decide to add a field ``metadata`` to the ``TrecData`` class to store the metadata of the question.
+For your own reason, you want ``metadata`` to be a required field and you want to keep the ordering of your fields while being converted to strings.
+``DataClass`` will help you achieve this using :func:`core.base_data_class.required_field` on the `default_factory` of the field.
+Normally, this is not possible with the native `dataclasses` module as it will raise an error if you put a required field after an optional field.
+
+.. note::
+
+    **Order of the fields** matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.
+
+.. code-block:: python
+
+    from lightrag.core import DataClass, required_field
+
+    @dataclass
+    class TrecData2(DataClass):
+        question: Question = field(
+            metadata={"desc": "The question asked by the user"}
+        ) # Required field, you have to provide the question field at the instantiation
+        label: int = field(
+            metadata={"desc": "The label of the question"}, default=0
+        ) # Optional field
+        metadata: dict = field(
+            metadata={"desc": "The metadata of the question"}, default_factory=required_field()
+        ) # required field
 
 **Schema**
 
-``schema`` will be a dict or json string and it is more verbose compared with ``signature``.
-``signature`` imitates the exact data format (`yaml` or `json`) that you want LLMs to generate.
-
-Here is a quick example on our ``schema`` for  the ``MyOutputs`` data class using the `to_data_class_schema` method:
+Now, let us see the schema of the ``TrecData2`` class:
 
 .. code-block:: python
 
-   MyOutputs.to_data_class_schema()
+    print(TrecData2.to_schema())
 
-The output will be a dict:
+The output will be:
 
-.. code-block:: json
-
-    {
-        "name": {
-            "type": "str",
-            "desc": "The name of the person",
-            "required": false
-        },
-        "age": {
-            "type": "int",
-            "desc": "The age of the person",
-            "required": true
-        }
-    }
-
-You can use `to_data_class_schema_str` to have the json string output.
-
-In comparison with the schema used in other libraries:
-
-.. code-block:: json
+.. code-block::
 
     {
+        "type": "TrecData2",
         "properties": {
-            "name": {
-                "title": "Name",
-                "description": "The name of the user",
-                "default": "John Doe",
-                "type": "string",
+            "question": {
+                "type": "{'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}, 'metadata': {'type': 'dict', 'desc': 'The metadata of the question'}}, 'required': ['question']}",
+                "desc": "The question asked by the user",
             },
-            "age": {
-                "title": "Age",
-                "description": "The age of the user",
-                "type": "integer",
-            },
+            "label": {"type": "int", "desc": "The label of the question"},
+            "metadata": {"type": "dict", "desc": "The metadata of the question"},
         },
-        "required": ["age"],
+        "required": ["question", "metadata"],
     }
 
-Even our ``schema`` is more token efficient as you can see. We opted out of the `default` field as it is more of a fallback value in the program
-rather than a description of the data format to LLMs.
+As you can see, it handles the nested dataclass `Question` and the required field `metadata` correctly.
+
+
+
+.. note::
+
+    ``Optional`` type hint will not affect the field's required status. You can use this to work with static type checkers such as `mypy` if you want to.
+
+**Signature**
+
+As schema can be rather verbose, and sometimes it works better to be more concise, and to mimick the output data structure that you want.
+Say, you want LLM to generate a ``yaml`` or ``json`` string and later you can convert it back to a dictionary or even your data instance.
+We can do so using the signature:
+
+.. code-block:: python
+
+    print(TrecData2.to_json_signature())
+
+The json signature output will be:
+
+.. code-block::
+
+    {
+        "question": "The question asked by the user ({'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}, 'metadata': {'type': 'dict', 'desc': 'The metadata of the question'}}, 'required': ['question']}) (required)",
+        "label": "The label of the question (int) (optional)",
+        "metadata": "The metadata of the question (dict) (required)"
+    }
+
+To yaml signature:
+
+.. code-block::
+
+    question: The question asked by the user ({'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}, 'metadata': {'type': 'dict', 'desc': 'The metadata of the question'}}, 'required': ['question']}) (required)
+    label: The label of the question (int) (optional)
+    metadata: The metadata of the question (dict) (required)
 
 .. note::
 
     If you use ``schema`` (json string) to instruct LLMs to output `yaml` data, the LLMs might get confused and can potentially output `json` data instead.
 
+**Exclude**
 
-**Signature**
-
-``signature`` is a string that imitates the exact data format (here we support `yaml` or `json`) that you want LLMs to generate.
-
-Let's use class methods ``to_json_signature`` and ``to_yaml_signature`` to generate the signature for the ``MyOutputs`` data class:
+Now, if you decide to not show some fields in the output, you can use the `exclude` parameter in the methods.
+Let's exclude both the ``metadata`` from class ``TrecData2`` and the ``metadata`` from class ``Question``:
 
 .. code-block:: python
 
-    print(MyOutputs.to_json_signature())
-    print(MyOutputs.to_yaml_signature())
+    json_signature_exclude = TrecData2.to_json_signature(exclude={"TrecData2": ["metadata"], "Question": ["metadata"]})
+    print(json_signature_exclude)
 
-The json signature output will be:
+The output will be:
 
-.. code-block:: json
+.. code-block::
 
     {
-        "name": "The name of the person (str) (optional)",
-        "age": "The age of the person (int) (required)"
+        "question": "The question asked by the user ({'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}}, 'required': ['question']}) (required)",
+        "label": "The label of the question (int) (optional)"
     }
 
-The yaml signature output will be:
-
-.. code-block:: yaml
-
-    name: The name of the person (str) (optional)
-    age: The age of the person (int) (required)
-
-All of the above methods support `exclude` parameter to exclude some fields from the output.
-
-Data Instance or say Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-To better demonstrate either the data format or provide examples seen in few-shot In-context learning, 
-we provide two methods: `to_json` and `to_yaml` to convert the data instance to json or yaml string.
-
-First, let's create an instance of the `MyOutputs` and get the json and yaml string of the instance:
+If you only want to exclude the ``metadata`` from class ``TrecData2``- the outer class, you can pass a list of strings simply:
 
 .. code-block:: python
 
-    instance = MyOutputs(name="Jane Doe", age=25)
-    print(instance.to_json())
-    print(instance.to_yaml())
+    json_signature_exclude = TrecData2.to_json_signature(exclude=["metadata"])
+    print(json_signature_exclude)
 
-The json output will be:
+The output will be:
 
-.. code-block:: json
+.. code-block::
 
     {
-        "name": "Jane Doe",
-        "age": 25
+        "question": "The question asked by the user ({'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}, 'metadata': {'type': 'dict', 'desc': 'The metadata of the question'}}, 'required': ['question']}) (required)",
+        "label": "The label of the question (int) (optional)"
     }
-You can use `json.loads` to convert the json string back to a dictionary.
 
-The yaml output will be:
+The ``exclude`` parameter works the same across all methods.
 
-.. code-block:: yaml
+**DataClassFormatType**
 
-    name: "John Doe"
-    age: 25
+For data class format, we have :class:``core.base_data_class.DataClassFormatType`` along with ``format_class_str`` method to specify the format type for the data format methods.
 
-You can use `yaml.safe_load` to convert the yaml string back to a dictionary.
+.. code-block:: python
+
+    from lightrag.core import DataClassFormatType
+
+    json_signature = TrecData2.format_class_str(DataClassFormatType.SIGNATURE_JSON)
+    print(json_signature)
+
+    yaml_signature = TrecData2.format_class_str(DataClassFormatType.SIGNATURE_YAML)
+    print(yaml_signature)
+
+    schema = TrecData2.format_class_str(DataClassFormatType.SCHEMA)
+    print(schema)
+
+.. Describe data to LLMs
+.. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. Data Format
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. We need to describe either the input/output data format to give LLMs context on how to understand the input data and to generate the output data.
+
+.. What we want to let LLM know about our input/output data format:
+.. In particular, it is important for LLMs to know these five things about the data format:
+
+.. 1. **Description** of what this field is for.  We use `desc` key in the `metadata` of `field` to describe this field. Example:
+
+.. .. code-block:: python
+
+..     thought: str = field(
+..         metadata={"desc": "The reasoning or thought behind the question."}
+..     )
+
+.. 2. **Required/Optional**. We use either `default` or `default_factory` to mark the field as optional except when our specialized function :func:`core.base_data_class.required_field` is used in `default_factory`, which marks the field as required.
+.. 3. **Field Data Type** such as `str`, `int`, `float`, `bool`, `List`, `Dict`, etc.
+.. 4. **Order of the fields** matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.
+.. 5. The ablility to **exclude** some fields from the output.
+
+.. We provide two ways: (1) ``schema`` and (2) ``signature`` to describe the data format in particular.
+
+.. **Schema**
+
+.. ``schema`` will be a dict or json string and it is more verbose compared with ``signature``.
+.. ``signature`` imitates the exact data format (`yaml` or `json`) that you want LLMs to generate.
+
+.. Here is a quick example on our ``schema`` for  the ``MyOutputs`` data class using the `to_schema` method:
+
+.. .. code-block:: python
+
+..    MyOutputs.to_schema()
+
+.. The output will be a dict:
+
+.. .. code-block:: json
+
+..     {
+..         "name": {
+..             "type": "str",
+..             "desc": "The name of the person",
+..             "required": false
+..         },
+..         "age": {
+..             "type": "int",
+..             "desc": "The age of the person",
+..             "required": true
+..         }
+..     }
+
+.. You can use `to_schema_str` to have the json string output.
+
+.. In comparison with the schema used in other libraries:
+
+.. .. code-block:: json
+
+..     {
+..         "properties": {
+..             "name": {
+..                 "title": "Name",
+..                 "description": "The name of the user",
+..                 "default": "John Doe",
+..                 "type": "string",
+..             },
+..             "age": {
+..                 "title": "Age",
+..                 "description": "The age of the user",
+..                 "type": "integer",
+..             },
+..         },
+..         "required": ["age"],
+..     }
+
+.. Even our ``schema`` is more token efficient as you can see. We opted out of the `default` field as it is more of a fallback value in the program
+.. rather than a description of the data format to LLMs.
+
+
+
+
+.. **Signature**
+
+.. ``signature`` is a string that imitates the exact data format (here we support `yaml` or `json`) that you want LLMs to generate.
+
+.. Let's use class methods ``to_json_signature`` and ``to_yaml_signature`` to generate the signature for the ``MyOutputs`` data class:
+
+.. .. code-block:: python
+
+..     print(MyOutputs.to_json_signature())
+..     print(MyOutputs.to_yaml_signature())
+
+.. The json signature output will be:
+
+.. .. code-block:: json
+
+..     {
+..         "name": "The name of the person (str) (optional)",
+..         "age": "The age of the person (int) (required)"
+..     }
+
+.. The yaml signature output will be:
+
+.. .. code-block:: yaml
+
+..     name: The name of the person (str) (optional)
+..     age: The age of the person (int) (required)
+
+.. All of the above methods support `exclude` parameter to exclude some fields from the output.
+
+Show data examples & parse string to data instance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our functionality on data instance will help you show data examples to LLMs.
+This is mainly done via ``to_dict`` method, which you can further convert to json or yaml string.
+To convert the raw string back to the data instance, either from json or yaml string, we leverage class method ``from_dict``.
+So it is important for ``DataClass`` to be able to ensure the reconstructed data instance is the same as the original data instance.
+Here is how you can do it with a ``DataClass`` subclass:
+
+.. code-block:: python
+
+    example = TrecData2(Question("What is the capital of France?"), 1, {"key": "value"})
+    print(example)
+
+    dict_example = TrecData2.to_dict(example)
+    print(dict_example)
+
+    reconstructed = TrecData2.from_dict(dict_example)
+    print(reconstructed)
+
+    print(reconstructed == example)
+
+The output will be:
+
+.. code-block:: python
+
+    TrecData2(question=Question(question='What is the capital of France?', metadata={}), label=1, metadata={'key': 'value'})
+    {'question': {'question': 'What is the capital of France?', 'metadata': {}}, 'label': 1, 'metadata': {'key': 'value'}}
+    TrecData2(question=Question(question='What is the capital of France?', metadata={}), label=1, metadata={'key': 'value'})
+    True
+
+On top of ``from_dict`` and ``to_dict``, we make sure you can also directly work with:
+
+*  ``from_yaml`` (from yaml string to reconstruct instance) and ``to_yaml`` (a yaml string)
+*  ``from_json`` (from json string to reconstruct instance) and ``to_json`` (a json string)
+
+Here is how it works with ``DataClass`` subclass:
+
+.. code-block:: python
+
+    json_str = TrecData2.to_json(example)
+    print(json_str)
+
+    yaml_str = TrecData2.to_yaml(example)
+    print(yaml_str)
+
+    reconstructed_from_json = TrecData2.from_json(json_str)
+    print(reconstructed_from_json)
+    print(reconstructed_from_json == example)
+
+    reconstructed_from_yaml = TrecData2.from_yaml(yaml_str)
+    print(reconstructed_from_yaml)
+    print(reconstructed_from_yaml == example)
+
+The output will be:
+
+.. code-block::
+
+    {
+        "question": {
+            "question": "What is the capital of France?",
+            "metadata": {}
+        },
+        "label": 1,
+        "metadata": {
+            "key": "value"
+        }
+    }
+    question:
+    question: What is the capital of France?
+    metadata: {}
+    label: 1
+    metadata:
+    key: value
+
+    TrecData2(question=Question(question='What is the capital of France?', metadata={}), label=1, metadata={'key': 'value'})
+    True
+    TrecData2(question=Question(question='What is the capital of France?', metadata={}), label=1, metadata={'key': 'value'})
+    True
+
+
+Similarly, (1) all ``to_dict``, ``to_json``, and ``to_yaml`` works with `exclude` parameter to exclude some fields from the output,
+(2) you can use ``DataClassFormatType`` along with ``format_example_str`` method to specify the format type for the data example methods.
+
+.. code-block:: python
+
+    from lightrag.core import DataClassFormatType
+
+    example_str = TrecData2.format_example_str(example, DataClassFormatType.EXAMPLE_JSON)
+    print(example_str)
+
+    example_str = TrecData2.format_example_str(example, DataClassFormatType.EXAMPLE_YAML)
+    print(example_str)
+
+
+.. Let's create an instance of ``TrecData2`` and get the json and yaml string of the instance:
+
+
+
+.. To better demonstrate either the data format or provide examples seen in few-shot In-context learning,
+.. we provide two methods: `to_json` and `to_yaml` to convert the data instance to json or yaml string.
+
+.. First, let's create an instance of the `MyOutputs` and get the json and yaml string of the instance:
+
+.. .. code-block:: python
+
+..     instance = MyOutputs(name="Jane Doe", age=25)
+..     print(instance.to_json())
+..     print(instance.to_yaml())
+
+.. The json output will be:
+
+.. .. code-block:: json
+
+..     {
+..         "name": "Jane Doe",
+..         "age": 25
+..     }
+.. You can use `json.loads` to convert the json string back to a dictionary.
+
+.. The yaml output will be:
+
+.. .. code-block:: yaml
+
+..     name: "John Doe"
+..     age: 25
+
+.. You can use `yaml.safe_load` to convert the yaml string back to a dictionary.
 
 
 
@@ -216,20 +564,8 @@ Load data from dataset as example
 As we need to load or create an instance from a dataset,  which is typically from Pytorch dataset or huggingface dataset and each data point is in
 the form of a dictionary.
 
-Let's create an instance of the `MyOutputs` from a dictionary:
-
-.. code-block:: python
-
-    data = {"name": "Jane Doe", "age": 25}
-    print(MyOutputs.from_dict(data))
-
-    # Output
-    # MyOutputs(name='Jane Doe', age=25)
-
-In most cases, your dataset's key and the field name might not directly match.
-Instead of providing a mapping argument in the library, we suggest users to customize `from_dict` method for more **control** and **flexibility**.
-
-Here is a real-world example:
+How you want to describe your data format to LLMs might not match to the existing dataset's key and the field name.
+You can simply do a bit customization to map the dataset's key to the field name in your data class.
 
 .. code-block:: python
 
@@ -260,9 +596,25 @@ Here is a real-world example:
             return super().from_dict(data)
 
 .. note::
-    
+
     If you are looking for data types we used to support each component or any other class like `Optimizer`, you can check out the :ref:`core.types<core-types>` file.
 
+
+
+.. admonition:: References
+   :class: highlight
+
+   1. Dataclasses: https://docs.python.org/3/library/dataclasses.html
+
+
+
+.. admonition:: API References
+   :class: highlight
+
+   - :class:`core.base_data_class.DataClass`
+   - :class:`core.base_data_class.DataClassFormatType`
+   - :func:`core.functional.custom_asdict`
+   - :ref:`core.base_data_class<core-base_data_class>`
 
 
 .. Document

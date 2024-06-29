@@ -292,8 +292,8 @@ class ReActAgent(Component):
         model_kwargs: Optional[Dict] = {},
     ) -> Any:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
-        prompt_kwargs = deepcopy(promt_kwargs)
-        prompt_kwargs["input_str"] = input
+        prompt_kwargs = {**promt_kwargs, "input_str": input}
+        # prompt_kwargs["input_str"] = input
         printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1
