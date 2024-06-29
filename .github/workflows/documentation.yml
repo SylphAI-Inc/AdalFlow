@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - xiaoyi_doc  # Ensure this is the branch where you commit documentation updates
-  # workflow_dispatch:  # Allows manual triggering of the workflow
 
 permissions:
   contents: write
@@ -31,8 +30,11 @@ jobs:
 
       - name: Build documentation
         run: |
-          sphinx-build -b html ./docs/source/ ./docs/build/
+          sphinx-build -b html ./docs/source/ ./docs/build/ -v
           ls -l ./docs/build/  # List output files for debugging
+
+      - name: Create .nojekyll file
+        run: touch ./docs/build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
