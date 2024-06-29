@@ -170,7 +170,7 @@ class DataClass:
     """
 
     def __post_init__(self):
-        # TODO: use desription in the field
+
         for f in fields(self):
             if "desc" not in f.metadata or "desription" not in f.metadata:
                 warnings.warn(
@@ -580,6 +580,20 @@ if __name__ == "__main__":
         },
         "required": ["age"],
     }
+
+    {
+        "type": "TrecData2",
+        "properties": {
+            "question": {
+                "type": "{'type': 'Question', 'properties': {'question': {'type': 'str', 'desc': 'The question asked by the user'}, 'metadata': {'type': 'dict', 'desc': 'The metadata of the question'}}, 'required': ['question']}",
+                "desc": "The question asked by the user",
+            },
+            "label": {"type": "int", "desc": "The label of the question"},
+            "metadata": {"type": "dict", "desc": "The metadata of the question"},
+        },
+        "required": ["question", "metadata"],
+    }
+
     # schema = {
     #     "type": "Person",
     #     "properties": {
@@ -602,6 +616,18 @@ if __name__ == "__main__":
 
     schema = Person.to_schema()
     print(schema)
+
+    class NaviePerson(DataClass):
+        name: str = field(metadata={"desc": "The name of the person"})
+        age: int
+        addresses: List[Address]
+        single_address: Address
+        dict_addresses: Dict[str, Address]
+
+    navie_person = NaviePerson()
+
+    # schema = NaviePerson.to_schema()
+    # print(schema)
 
     # person_dict = person.to_dict()
     # print(person_dict)

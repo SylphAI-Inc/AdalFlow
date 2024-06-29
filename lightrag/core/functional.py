@@ -37,7 +37,6 @@ ExcludeType = Optional[Dict[str, List[str]]]
 ########################################################################################
 # For Dataclass base class and all schema related functions
 ########################################################################################
-# TODO: Combine asdict from dataclass to support exclude fields
 
 
 def custom_asdict(
@@ -255,7 +254,12 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
 
     elif isinstance(data, dict):
         for key, value in data.items():
-            if cls.__args__[1] and hasattr(cls.__args__[1], "__dataclass_fields__"):
+            if (
+                hasattr(cls, "__args__")
+                and len(cls.__args__) > 1
+                and cls.__args__[1]
+                and hasattr(cls.__args__[1], "__dataclass_fields__")
+            ):
                 # restore the value to its dataclass type
                 data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
             else:
@@ -361,7 +365,9 @@ def get_dataclass_schema(
     3. Support metadata in the dataclass fields.
     """
     if not is_dataclass(cls):
-        raise ValueError("Provided class is not a dataclass")
+        raise ValueError(
+            "Provided class is not a dataclass, please decorate your class with @dataclass"
+        )
 
     schema = {"type": cls.__name__, "properties": {}, "required": []}
     # get the exclude list for the current class
