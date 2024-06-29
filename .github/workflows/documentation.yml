@@ -22,11 +22,15 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
+      - name: Install Poetry
         run: |
-          pip install --upgrade pip
-          pip install -r ./docs/requirements.txt
-          pip freeze  # Display installed packages for debugging
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies using Poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
 
       - name: Build documentation
         run: |
