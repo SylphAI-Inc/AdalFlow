@@ -1,7 +1,13 @@
 Data & RAG
 ====================
 
-    The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
+
+The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
 We will conver:
 
 * Data models on how to represent important data.

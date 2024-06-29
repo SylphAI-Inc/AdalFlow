@@ -1,6 +1,11 @@
 Retriever
 ============
 
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 Context
 ------------------
 
