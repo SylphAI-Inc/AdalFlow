@@ -238,31 +238,61 @@ class TransformerLLM:
             self.model = AutoModelForCausalLM.from_pretrained(model_name)
             # register the model
             self.models[model_name] = self.model
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             log.info(f"Done loading model {model_name}")
-
+            # Set pad token if it's not already set
+            if self.tokenizer.pad_token is None:
+                self.tokenizer.pad_token = self.tokenizer.eos_token  # common fallback
+                self.model.config.pad_token_id = self.tokenizer.eos_token_id  # ensure consistency in the model config
         except Exception as e:
             log.error(f"Error loading model {model_name}: {e}")
             raise e
+        
+    def parse_chat_completion(self, input_text: str, response: str):
+        parsed_response = response.replace(input_text, "").strip()  # Safely handle cases where input_text might not be in response
+        
+        return parsed_response if parsed_response else response
     
-    def call(self, input: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False ):
-        model = self.models.get("HuggingFaceH4/zephyr-7b-beta", None)
-        if model is None:
-            # initialize the model
-            self.init_model("HuggingFaceH4/zephyr-7b-beta")
-        prompt = input
-        inputs = self.tokenizer(prompt, return_tensors="pt")
-        generate_ids = self.model.generate(inputs.input_ids)
-        response = self.tokenizer.batch_decode(generate_ids, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)[0]
-        return response
+    def call(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False, max_length: int = 150):
+        if not self.model:
+            log.error("Model is not initialized.")
+            raise ValueError("Model is not initialized.")
+        
+        # Ensure tokenizer has pad token; set it if not
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+            self.model.config.pad_token_id = self.tokenizer.eos_token_id  # Sync model config pad token id
 
-    def __call__(self, **kwargs):
-        if "model" not in kwargs:
-            raise ValueError("model is required")
-        model_name = kwargs["model"]
-        if model_name == "HuggingFaceH4/zephyr-7b-beta":
-            return self.call(kwargs["input"])
-        else:
-            raise ValueError(f"model {model_name} is not supported")
+        # Process inputs with attention mask and padding
+        inputs = self.tokenizer(input_text, return_tensors="pt", padding=True).to(self.device)
+        # inputs = self.tokenizer(input_text, return_tensors="pt", padding="longest", truncation=True).to(self.device)
+
+        with torch.no_grad():  # Ensures no gradients are calculated to save memory and computations
+            generate_ids = self.model.generate(
+            inputs['input_ids'],
+            attention_mask=inputs['attention_mask'],
+            max_length=max_length  # Control the output length more precisely
+        )
+        response = self.tokenizer.decode(generate_ids[0], skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)
+        parsed_response = self.parse_chat_completion(input_text, response)
+        return parsed_response
+
+    def __call__(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False, max_length: int = 150):
+        return self.call(input_text, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces, max_length=max_length)
+    
+    
+    # def call(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False):
+    #     if not self.model:
+    #         log.error("Model is not initialized.")
+    #         raise ValueError("Model is not initialized.")
+
+    #     inputs = self.tokenizer(input_text, return_tensors="pt")
+    #     generate_ids = self.model.generate(inputs.input_ids, max_length=30)
+    #     response = self.tokenizer.batch_decode(generate_ids, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)[0]
+    #     return response
+
+    # def __call__(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False):
+    #     return self.call(input_text, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)
         
         
 class TransformersClient(ModelClient):

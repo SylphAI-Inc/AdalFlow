@@ -15,6 +15,10 @@ TransformerEmbedder = LazyImport(
     "lightrag.components.model_client.transformers_client.TransformerEmbedder",
     OptionalPackages.TRANSFORMERS,
 )
+TransformerLLM = LazyImport(
+    "lightrag.components.model_client.transformers_client.TransformerLLM",
+    OptionalPackages.TRANSFORMERS,
+)
 TransformersClient = LazyImport(
     "lightrag.components.model_client.transformers_client.TransformersClient",
     OptionalPackages.TRANSFORMERS,
@@ -49,6 +53,7 @@ __all__ = [
     "CohereAPIClient",
     "TransformerReranker",
     "TransformerEmbedder",
+    "TransformerLLM",
     "TransformersClient",
     "AnthropicAPIClient",
     "GroqAPIClient",
