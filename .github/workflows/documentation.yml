@@ -3,8 +3,8 @@ name: Documentation
 on:
   push:
     branches:
-      - xiaoyi_doc
-  workflow_dispatch:
+      - xiaoyi_doc  # Ensure this is the branch where you commit documentation updates
+  # workflow_dispatch:  # Allows manual triggering of the workflow
 
 permissions:
   contents: write
@@ -13,6 +13,7 @@ permissions:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,14 +31,20 @@ jobs:
 
       - name: Build documentation
         run: |
-          sphinx-build -b html docs/source/ docs/build/
-          ls -l docs/build/  # List output files for debugging
+          sphinx-build -b html ./docs/source/ ./docs/build/
+          ls -l ./docs/build/  # List output files for debugging
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: docs/build/
-          user_name: github-actions[bot]
+          publish_branch: gh-pages  # Ensure this is the branch for GitHub Pages
+          publish_dir: ./docs/build/
+          user_name: github-actions[bot]  # Automated commit user name
           user_email: github-actions[bot]@users.noreply.github.com
+
+      - name: Debug Output
+        run: |
+          pwd  # Print the current working directory
+          ls -l  # List files in the current directory
+          cat ./docs/source/conf.py  # Show Sphinx config file for debugging
