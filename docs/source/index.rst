@@ -41,7 +41,7 @@ It is light, modular, and robust.
 
          from lightrag.core import Component, Generator
          from lightrag.components.model_client import GroqAPIClient
-         from lightrag.utils import setup_env
+         from lightrag.utils import setup_env #noqa
 
 
          class SimpleQA(Component):
@@ -70,7 +70,6 @@ It is light, modular, and robust.
          answer = qa("What is LightRAG?")
 
 
-Why LightRAG?
 
 
 Clarity and Simplicity

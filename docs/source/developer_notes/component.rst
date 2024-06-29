@@ -1,5 +1,10 @@
 Component
 ============
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 What you will learn?
 
 1. What is ``Component`` and why is it designed this way?
