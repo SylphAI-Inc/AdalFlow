@@ -44,6 +44,28 @@ Or, you can load it yourself:
 
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
+3. Install SDKs
+
+LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, (2) FAISS and Transformers.
+You can find all optional packages at :class:`utils.lazy_import.OptionalPackages`.
+Make sure to install the necessary SDKs for the components you plan to use.
+Here is the list of our tested versions:
+
+.. code-block::
+
+    openai = "^1.12.0"
+    groq = "^0.5.0"
+    faiss-cpu = "^1.8.0"
+    sqlalchemy = "^2.0.30"
+    cohere = "^5.5.8"
+    pgvector = "^0.2.5"
+    anthropic = "^0.26.0"
+    google-generativeai = "^0.5.4"
+
+
+
+
+
 
 .. Poetry Installation
 .. --------------------------
