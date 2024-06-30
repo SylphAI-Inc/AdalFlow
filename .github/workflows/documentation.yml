@@ -34,15 +34,6 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      # - name: Check working directory and conf.py existence
-      #   run: |
-      #     echo "Current Working Directory: $(pwd)"
-      #     ls -la ./docs/source/
-      #     if [ -f "./docs/source/conf.py" ]; then
-      #       echo "conf.py found."
-      #     else
-      #       echo "conf.py not found."
-      #     fi
 
       - name: Build documentation with detailed logging
         run: |
