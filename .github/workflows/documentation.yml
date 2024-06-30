@@ -60,9 +60,9 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
-      - name: Debug Output
-        run: |
-          pwd  # Print the current working directory
-          ls -l  # List files in the build directory
-          cat ./source/conf.py  # Show Sphinx config file for debugging
-        working-directory: ${{ github.workspace }}/docs/build
+      # - name: Debug Output
+      #   run: |
+      #     pwd  # Print the current working directory
+      #     ls -l  # List files in the build directory
+      #     cat ./source/conf.py  # Show Sphinx config file for debugging
+      #   working-directory: ${{ github.workspace }}/docs/build
