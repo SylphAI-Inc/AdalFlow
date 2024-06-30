@@ -34,15 +34,20 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      - name: Check working directory and conf.py existence
+      # - name: Check working directory and conf.py existence
+      #   run: |
+      #     echo "Current Working Directory: $(pwd)"
+      #     ls -la ./docs/source/
+      #     if [ -f "./docs/source/conf.py" ]; then
+      #       echo "conf.py found."
+      #     else
+      #       echo "conf.py not found."
+      #     fi
+      - name: Print effective Sphinx config
         run: |
-          echo "Current Working Directory: $(pwd)"
-          ls -la ./docs/source/
-          if [ -f "./docs/source/conf.py" ]; then
-            echo "conf.py found."
-          else
-            echo "conf.py not found."
-          fi
+          CONF_PY="$(pwd)/docs/source/conf.py"
+          echo "Using conf.py located at: $CONF_PY"
+          poetry run python -c "from sphinx.config import Config; config = Config.read('${CONF_PY}'); print(config.values)"
 
       - name: Build documentation
         run: |
