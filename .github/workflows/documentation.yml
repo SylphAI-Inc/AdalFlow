@@ -17,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Ensure full git history is fetched
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,34 +34,25 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      - name: List installed packages
+      - name: Check working directory and conf.py existence
         run: |
-          poetry run pip list
-
-      - name: Print Sphinx version
-        run: |
-          poetry run sphinx-build --version
+          echo "Current Working Directory: $(pwd)"
+          ls -la ./docs/source/
+          if [ -f "./docs/source/conf.py" ]; then
+            echo "conf.py found."
+          else
+            echo "conf.py not found."
+          fi
 
       - name: Build documentation
         run: |
-          echo "Current Working Directory: $(pwd)"
           echo "Python path before Sphinx build: $PYTHONPATH"
           poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
-          echo "Listing detailed contents of build directory:"
+        working-directory: ${{ github.workspace }}
+
+      - name: List built documentation
+        run: |
           find ./docs/build/ -type f
-
-      - name: Test module import
-        run: |
-          poetry run python -c "import lightrag; print('Lightrag module loaded from:', lightrag.__file__)"
-
-      - name: Print effective Sphinx conf
-        run: |
-          poetry run python -c "from sphinx.config import Config; config = Config.read('./docs/source/conf.py'); print(config.values)"
-
-      - name: Check API documentation files
-        run: |
-          echo "Checking API documentation directory for components:"
-          ls -la ./docs/build/apis/components/
 
       - name: Create .nojekyll file
         run: |
