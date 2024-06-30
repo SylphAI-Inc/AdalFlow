@@ -1,4 +1,4 @@
-LightRAG Class Hierarchy Visualization
+LightRAG Class Hierarchy
 =============================
 
 .. raw:: html

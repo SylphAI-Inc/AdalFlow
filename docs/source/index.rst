@@ -2,9 +2,9 @@
 Introduction
 =======================
 
-
-LightRAG is the "PyTorch" library for building large langage model(LLM) applications. We help developers on both building and optimimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
+LightRAG is the `PyTorch` library for building large language model (LLM) applications. We help developers with both building and optimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
 It is light, modular, and robust.
+
 
 
 .. grid:: 1
@@ -70,25 +70,24 @@ It is light, modular, and robust.
 
 
 
-Clarity and Simplicity
+Simplicity and Customizability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
-As a library, we provide them the foundamental building blocks with 100% clarity and simplicity.
+As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
 
-.. We support them with require **Maximum Flexibility and Customizability**:
-
-.. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
-
-- Two foundamental and powerful base classes: ``component`` for the pipeline and ``DataClass`` for the data interaction with LLMs.
+- Two fundamental and powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
 - We end up with less than two levels of subclasses. :doc:`developer_notes/class_hierarchy`.
-- The result is a library with bare minimum abstraction with maximum flexibility and customizability.
+- The result is a library with bare minimum abstraction, providing developers with maximum customizability.
 
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
 .. - `Class Hierarchy Visualization <developer_notes/class_hierarchy.html>`_
+.. We support them with require **Maximum Flexibility and Customizability**:
 
-Similar to PyTorch module, our ``component`` gives us a great visualization on the pipeline structure.
+.. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
+
+Similar to the `PyTorch` module, our ``Component`` provides excellent visualization of the pipeline structure.
 
 .. code-block::
 
@@ -107,13 +106,22 @@ Similar to PyTorch module, our ``component`` gives us a great visualization on t
       )
    )
 
-Control and Transparency
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Maximum Controllability and Robustness
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Our simplicity did not come from doing 'less'.
+On the contrary, we have to do 'more' and go 'deeper' and 'wider' on any topic to offer developers maximum control and robustness.
 
-Coming from a deep AI research background, we understand that the more control and transparency developers have over their prompts, the better. In default:
+- LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on API features such as tools and JSON format with components like ``Prompt``, ``OutputParser``, ``FunctionTool``, and ``ToolManager``.
+- Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in ``ModelClient`` and ``Retriever``.
+- All integrations, such as different API SDKs, are formed as optional packages but all within the same library. You can easily switch to any models from different providers that we officially support.
 
-- LightRAG simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
-- LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
+
+
+.. Coming from a deep AI research background, we understand that the more control and transparency developers have over their prompts, the better. In default:
+
+.. - LightRAG simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
+
+.. - LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
 
 It is the future of LLM applications
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

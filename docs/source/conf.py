@@ -25,8 +25,8 @@ sys.path.insert(0, os.path.abspath("../../lightrag"))
 # -- Project information -----------------------------------------------------
 
 project = "LightRAG"
-copyright = "2024, SylphAI"
-author = "SylphAI"
+copyright = "2024, SylphAI, Inc"
+author = "SylphAI, Inc"
 
 
 # -- General configuration ---------------------------------------------------
