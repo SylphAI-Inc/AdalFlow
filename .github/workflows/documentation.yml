@@ -49,11 +49,11 @@ jobs:
           echo "Using conf.py located at: $CONF_PY"
           poetry run python -c "from sphinx.config import Config; config = Config.read('${CONF_PY}'); print(config.values)"
 
-      - name: Build documentation
+      - name: Build documentation with detailed logging
         run: |
-          echo "Python path before Sphinx build: $PYTHONPATH"
+          echo "Building documentation from: $(pwd)/docs/source"
           poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
-        working-directory: ${{ github.workspace }}
+
 
       - name: List built documentation
         run: |
