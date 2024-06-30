@@ -10,7 +10,7 @@ To install the package, run:
 
 
 
-1. Set up API keys via Environment Variables
+1. **Set up API keys via Environment Variables**
 
 ``.env`` file is recommended.
 You can have it at your project root directory.
@@ -26,7 +26,7 @@ Here are an example:
     HF_TOKEN=YOUR_API_KEY_IF_YOU_USE_HF
 
 
-2. Load Environment Variables
+2. **Load Environment Variables**
 
 
 You can add the following import:
@@ -44,7 +44,7 @@ Or, you can load it yourself:
 
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
-3. Install SDKs
+3. **Install Optional Packages**
 
 LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, (2) FAISS and Transformers.
 You can find all optional packages at :class:`utils.lazy_import.OptionalPackages`.
