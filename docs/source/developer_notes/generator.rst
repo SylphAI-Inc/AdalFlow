@@ -1,10 +1,16 @@
 .. _generator:
 
-Generator 
+Generator
 =========
+
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 *The Center of it All*
 
-Generator is the most essential functional component in LightRAG. 
+Generator is the most essential functional component in LightRAG.
 It is a user-facing orchestration component with a simple and unified interface for LLM prediction.
 It orchestrates the following components along with their required arguments:
 
@@ -20,7 +26,7 @@ GeneratorOutput
 ^^^^^^^^^^^^^^^
 Different from all other components, we can not alway enforce LLM to output the right format.
 We in particular created a :class:`core.types.GeneratorOutput` (a subclass of ``DataClass``) to store `data` (parsed response), `error` (error message if either the model inference SDKs fail or the output parsing fail) and `raw_response` (raw string response for reference) for any LLM predictions.
-It is in developers' hands to process the output accordingly. 
+It is in developers' hands to process the output accordingly.
 
 GeneratorInAction
 ^^^^^^^^^^^^^^^^^
@@ -38,7 +44,7 @@ In particular, we provide two tracing methods to help you develop and improve th
 to lose track of the prompt changes when your current change actually makes the performance much worse.
 
 We created a `GeneratorStateLogger` to handle the logging and saving into json files. To further simplify developers's process,
-we provides a class decorator `trace_generator_states` where a single line of code can be added to any of your task component. 
+we provides a class decorator `trace_generator_states` where a single line of code can be added to any of your task component.
 It will automatically track any attributes of type `Generator`.
 
 .. code-block:: python
@@ -54,7 +60,7 @@ It will automatically track any attributes of type `Generator`.
             self.generator_2 = Generator(...)
         def call(...):
 
-In default, a dir from the current working directory will be created to store the log files. 
+In default, a dir from the current working directory will be created to store the log files.
 The project name in defaul is `SimpleQA` and the log file will be named as `generator_state_trace.json`
 where both the `generator` and `generator_2` will be logged.
 The structure of log directory is as follows:
@@ -147,7 +153,7 @@ Here is an example log file:
         }
     ]
     }
-    
+
 2. Trace all failed LLM predictions for further improvement.
 
 Similarly, :class:`tracing.generator_call_logger.GeneratorCallLogger` is created to log generator call input arguments and output results.

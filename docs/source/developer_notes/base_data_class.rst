@@ -495,11 +495,11 @@ The output will be:
         }
     }
     question:
-    question: What is the capital of France?
-    metadata: {}
+        question: What is the capital of France?
+        metadata: {}
     label: 1
     metadata:
-    key: value
+        key: value
 
     TrecData2(question=Question(question='What is the capital of France?', metadata={}), label=1, metadata={'key': 'value'})
     True
@@ -569,6 +569,7 @@ You can simply do a bit customization to map the dataset's key to the field name
 
 .. code-block:: python
 
+    @dataclass
     class OutputFormat(DataClass):
         thought: str = field(
             metadata={

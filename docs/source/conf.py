@@ -21,21 +21,12 @@ sys.path.insert(0, os.path.abspath("../../lightrag"))
 #   sys.path.insert(0, dir[0])
 # #   print(dir[0])
 
-import lightrag
-
-import lightrag.components
-import lightrag.core
-import lightrag.eval
-import lightrag.utils
-import lightrag.tracing
-import lightrag.optim
 
 # -- Project information -----------------------------------------------------
 
 project = "LightRAG"
-copyright = "2024, SylphAI"
-author = "SylphAI"
-
+copyright = "2024, SylphAI, Inc"
+author = "SylphAI, Inc"
 
 # -- General configuration ---------------------------------------------------
 
@@ -56,12 +47,14 @@ extensions = [
     "sphinx_design",
     "sphinx_copybutton",
     "nbsphinx",
-    "sphinx_search.extension"
+    "sphinx_search.extension",
     # "myst_nb",
     # "sphinx.builders.changes",
     # 'recommonmark',
     # 'myst_parser'
 ]
+
+html_show_sphinx = False
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -135,4 +128,6 @@ autodoc_default_options = {
 
 
 def setup(app):
-    app.add_css_file("css/custom.css")  # Add custom CSS file to the Sphinx configuration
+    app.add_css_file(
+        "css/custom.css"
+    )  # Add custom CSS file to the Sphinx configuration

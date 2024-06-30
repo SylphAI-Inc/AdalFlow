@@ -1,5 +1,10 @@
 Function calls
 ===========================
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 Tools are means LLM can use to interact with the world beyond of its internal knowledge. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
 Deciding when, which, and how to use a tool, and even to creating a tool is an agentic behavior:
 Function calls is a process of showing LLM a list of funciton definitions and prompt it to choose one or few of them.

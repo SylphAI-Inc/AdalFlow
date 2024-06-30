@@ -1,9 +1,14 @@
 Prompt
 ============
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 We strick to maximize developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
 
 For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
-often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and 
+often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and
 intermediate step history from agents.
 
 Prompt template
@@ -11,7 +16,7 @@ Prompt template
 
 Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 7 important sections. We leverage `jinjia2` template for **programmable prompt** right along with string.
 
-The default template comes  with 7 variables: `task_desc_str`, `output_format_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`. 
+The default template comes  with 7 variables: `task_desc_str`, `output_format_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
 
 A jinjia2 template will rendered with :ref:`Prompt<core-prompt_builder>` class. If some fields being empty, that section will be empty in the final prompt string.
 
@@ -54,7 +59,7 @@ A jinjia2 template will rendered with :ref:`Prompt<core-prompt_builder>` class. 
     {% endif %}
     """
 
-Across our library, here our advanced features: 
+Across our library, here our advanced features:
 
 - Various output formats where the `output_format_str` variable is used to pass the output format to the model.
 
@@ -108,19 +113,19 @@ Prompt and Special Tokens context
 ----------------------------------
 
 
-Each section other than `task_desc_str` is encapulated in a special token. Different model can have different special tokens. 
+Each section other than `task_desc_str` is encapulated in a special token. Different model can have different special tokens.
 Here is one example of `Llama3 Documentation <https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/>`_ prompts formatted with special tokens:
 
-input string to the LLM model and minimize the token consumption. 
+input string to the LLM model and minimize the token consumption.
 We enable advanced features without relying on API provider's prompt manipulation such as `OpenAI`'s tools or assistant APIs.
 
-.. code-block:: 
+.. code-block::
    :linenos:
 
     <|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
     You are a helpful AI assistant for travel tips and recommendations<|eot_id|>
-    
+
     <|start_header_id|>user<|end_header_id|>
     What can you help me with?<|eot_id|>
 
@@ -164,6 +169,3 @@ Output yaml or json format can lead to different performance. We have better luc
 
 Resources:
 1. `Jinja2`:
-
-
-
