@@ -50,6 +50,14 @@ jobs:
           echo "Listing detailed contents of build directory:"
           find ./docs/build/ -type f
 
+      - name: Test module import
+        run: |
+          poetry run python -c "import lightrag; print('Lightrag module loaded from:', lightrag.__file__)"
+
+      - name: Print effective Sphinx conf
+        run: |
+          poetry run python -c "from sphinx.config import Config; config = Config.read('./docs/source/conf.py'); print(config.values)"
+
       - name: Check API documentation files
         run: |
           echo "Checking API documentation directory for components:"
