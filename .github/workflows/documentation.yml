@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure full git history is fetched
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,10 +44,16 @@ jobs:
 
       - name: Build documentation
         run: |
+          echo "Current Working Directory: $(pwd)"
           echo "Python path before Sphinx build: $PYTHONPATH"
           poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
-          echo "Listing built documentation:"
-          ls -l ./docs/build/
+          echo "Listing detailed contents of build directory:"
+          find ./docs/build/ -type f
+
+      - name: Check API documentation files
+        run: |
+          echo "Checking API documentation directory for components:"
+          ls -la ./docs/build/apis/components/
 
       - name: Create .nojekyll file
         run: |
@@ -55,13 +63,13 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages  # Ensure this is the branch for GitHub Pages
+          publish_branch: gh-pages
           publish_dir: ./docs/build/
-          user_name: github-actions[bot]  # Automated commit user name
+          user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
       - name: Debug Output
         run: |
           pwd  # Print the current working directory
-          ls -l  # List files in the current directory
+          ls -l ./docs/build/  # List files in the build directory
           cat ./docs/source/conf.py  # Show Sphinx config file for debugging
