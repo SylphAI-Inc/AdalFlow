@@ -173,8 +173,7 @@ class TextSplitter(Component):
         super().__init__()
 
         self.split_by = split_by
-        options = ", ".join(f"'{key}'" for key in SEPARATORS.keys())
-        assert split_by in SEPARATORS, f"Invalid options for split_by. You must select from {options}."
+        assert split_by in SEPARATORS, f"Invalid options for split_by. You must select from {list(SEPARATORS.keys())}."
         
         assert chunk_overlap < chunk_size, f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
         

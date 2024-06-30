@@ -32,13 +32,24 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
+      - name: List installed packages
+        run: |
+          poetry run pip list
+
+      - name: Print Sphinx version
+        run: |
+          poetry run sphinx-build --version
+
       - name: Build documentation
         run: |
-          sphinx-build -b html ./docs/source/ ./docs/build/ -v
-          ls -l ./docs/build/  # List output files for debugging
+          echo "Python path before Sphinx build: $PYTHONPATH"
+          poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
+          echo "Listing built documentation:"
+          ls -l ./docs/build/
 
       - name: Create .nojekyll file
-        run: touch ./docs/build/.nojekyll
+        run: |
+          touch ./docs/build/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
