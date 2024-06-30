@@ -1,4 +1,4 @@
-LightRAG Design Philosophy
+Design Philosophy
 ====================================
 
 Right from the begining, `LightRAG` follows three fundamental principles.
