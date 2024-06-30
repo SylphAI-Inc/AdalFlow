@@ -1,13 +1,14 @@
 .. _developer_notes:
 
 
-Developer Notes
+Tutorials
 =============================
 
-*Why and How each part works*
+*Why and How Each Part works*
 
-Learn LightRAG design phisolophy and the `why` and `how-to` (customize and integrate) behind each core part within the LightRAG library.
-This is our tutorials before you move ahead to build use cases  (LLM applications) end to end.
+Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
+These are our most important tutorials before you move ahead to build use cases  (LLM applications) end to end.
+
 
 .. raw::
 
@@ -22,24 +23,22 @@ This is our tutorials before you move ahead to build use cases  (LLM application
    :align: center
    :width: 600px
 
-   LLM application is no different from a mode training/eval workflow
+   LLM application is no different from a mode training/evaluation workflow
 
    .. :height: 100px
    .. :width: 200px
 
-LightRAG library focus on providing building blocks for developers to **build** and **optimize** the `task pipeline`.
-We have clear design phisolophy: :doc:`lightrag_design_philosophy`.
 
+The `LightRAG` library focuses on providing building blocks for developers to **build** and **optimize** the task pipeline.
+We have a clear :doc:`lightrag_design_philosophy`, which results in this :doc:`class_hierarchy`.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Introduction
+   :hidden:
 
-..    :maxdepth: 1
-..    :hidden:
-
-..    lightrag_design_philosophy
-
-
-
-..  llm_intro
+   lightrag_design_philosophy
+   class_hierarchy
 
 
 

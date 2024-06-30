@@ -127,7 +127,9 @@ On the contrary, we have to do 'more' and go 'deeper' and 'wider' on any topic t
 
 .. - LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
 
-It is the future of LLM applications
+.. It is the future of LLM applications
+
+Unites both Research and Production
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
