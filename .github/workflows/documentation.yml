@@ -34,23 +34,22 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-      - name: Debug current directory and Build documentation using Makefile
+      - name: Build documentation using Makefile
         run: |
           echo "Building documentation from: $(pwd)"
           ls -l  # Debug: List current directory contents
-          cd docs
-          poetry run make html
+          poetry run make -C docs html
         working-directory: ${{ github.workspace }}
 
       - name: List built documentation
         run: |
-          find ./docs/build/ -type f
+          find ./build/ -type f
         working-directory: ${{ github.workspace }}/docs
 
       - name: Create .nojekyll file
         run: |
-          touch ./docs/build/.nojekyll
-        working-directory: ${{ github.workspace }}/docs
+          touch .nojekyll
+        working-directory: ${{ github.workspace }}/docs/build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -64,6 +63,6 @@ jobs:
       - name: Debug Output
         run: |
           pwd  # Print the current working directory
-          ls -l ./docs/build/  # List files in the build directory
-          cat ./docs/source/conf.py  # Show Sphinx config file for debugging
-        working-directory: ${{ github.workspace }}
+          ls -l  # List files in the build directory
+          cat ./source/conf.py  # Show Sphinx config file for debugging
+        working-directory: ${{ github.workspace }}/docs/build
