@@ -10,6 +10,20 @@
 .theme-version {
   display: none;
 }
+.bd-sidebar-primary {
+  width: 100%; /* Full width by default */
+}
+
+/* Adjust width for larger screens */
+@media (min-width: 768px) { /* Example breakpoint for tablets and larger */
+  .bd-sidebar-primary {
+      width: 270px; /* Adjust the width for larger screens */
+  }
+}
+
+/* .copyright {
+  text-align: center;
+} */
 p {
     font-size: 0.9em;
     margin-bottom: 1.15rem;

@@ -66,8 +66,6 @@ It is light, modular, and robust.
                return await self.generator.acall({"input_str": query})
 
 
-         qa = SimpleQA()
-         answer = qa("What is LightRAG?")
 
 
 
@@ -75,14 +73,22 @@ It is light, modular, and robust.
 Clarity and Simplicity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
+As a library, we provide them the foundamental building blocks with 100% clarity and simplicity.
 
-We understand that developers building real-world Large Language Model (LLM) applications are the real heroes. Just like AI researchers and engineers who build models on top of PyTorch, developers require **Maximum Flexibility and Customizability**: Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
+.. We support them with require **Maximum Flexibility and Customizability**:
 
-- We maintain no more than two levels of subclasses.
-- Each core abstract class is designed to be robust and flexible.
-- We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
+.. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
 
-Here is the printed out structure of ``qa``:
+- Two foundamental and powerful base classes: ``component`` for the pipeline and ``DataClass`` for the data interaction with LLMs.
+- We end up with less than two levels of subclasses. :doc:`developer_notes/class_hierarchy`.
+- The result is a library with bare minimum abstraction with maximum flexibility and customizability.
+
+.. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
+
+.. - `Class Hierarchy Visualization <developer_notes/class_hierarchy.html>`_
+
+Similar to PyTorch module, our ``component`` gives us a great visualization on the pipeline structure.
 
 .. code-block::
 
