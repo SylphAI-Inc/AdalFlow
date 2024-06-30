@@ -69,8 +69,10 @@ It is light, modular, and robust.
 
 
 
+.. and Customizability
 
-Simplicity and Customizability
+
+Simplicity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
@@ -106,7 +108,9 @@ Similar to the `PyTorch` module, our ``Component`` provides excellent visualizat
       )
    )
 
-Maximum Controllability and Robustness
+.. and Robustness
+
+Controllability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Our simplicity did not come from doing 'less'.
 On the contrary, we have to do 'more' and go 'deeper' and 'wider' on any topic to offer developers maximum control and robustness.
