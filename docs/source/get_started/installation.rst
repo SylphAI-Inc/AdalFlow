@@ -1,41 +1,46 @@
 Installation
 ============
 
-LightRAG can be installed either as a package using pip or set up for development by cloning from GitHub. Follow the appropriate instructions below based on your needs.
+LightRAG is available in Python.
 
-Pip Installation
---------------------------------
+1. Install LightRAG
+~~~~~~~~~~~~~~~~~~~~
 
-For general users who simply want to use LightRAG, the easiest method is to install it directly via pip:
+To install the package, run:
 
 .. code-block:: bash
 
    pip install lightrag
 
-After installing the package, you need to set up your environment variables for the project to function properly:
 
-1. **Create an Environment File:**
 
-   Create a `.env` file in your project directory (where your scripts using LightRAG will run):
+2. Set up API keys
+~~~~~~~~~~~~~~~~~~~
 
-   .. code-block:: bash
+``.env`` file is recommended.
+You can have it at your project root directory.
+Here are an example:
 
-      touch .env
-      # Open .env and add necessary configurations such as API keys
+.. code-block:: bash
 
-2. **Configure Your `.env` File:**
+    OPENAI_API_KEY=YOUR_API_KEY_IF_YOU_USE_OPENAI
+    GROQ_API_KEY=YOUR_API_KEY_IF_YOU_USE_GROQ
+    ANTHROPIC_API_KEY=YOUR_API_KEY_IF_YOU_USE_ANTHROPIC
+    GOOGLE_API_KEY=YOUR_API_KEY_IF_YOU_USE_GOOGLE
+    COHERE_API_KEY=YOUR_API_KEY_IF_YOU_USE_COHERE
+    HF_TOKEN=YOUR_API_KEY_IF_YOU_USE_HF
 
-   Add the necessary API keys and other configurations required by LightRAG. This usually includes setting up credentials for accessing various APIs that LightRAG interacts with.
 
-3. **Load Environment Variables:**
+3. Load environment variables
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-   Make sure your application or scripts load the environment variables from the `.env` file at runtime. If you are using Python, libraries like `python-dotenv` can be used:
+You can add the following import:
 
-   .. code-block:: bash
+.. code-block:: python
 
-      pip install python-dotenv
+   from lightrag.utils import setup_env #noqa
 
-Then, in your Python script, ensure you load the variables:
+Or, you can load it yourself:
 
 .. code-block:: python
 
@@ -44,39 +49,63 @@ Then, in your Python script, ensure you load the variables:
 
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
+4. Install Optional Packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Poetry Installation
---------------------------
 
-Developers and contributors who need access to the source code or wish to contribute to the project should set up their environment as follows:
+LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, (2) FAISS and Transformers.
+You can find all optional packages at :class:`utils.lazy_import.OptionalPackages`.
+Make sure to install the necessary SDKs for the components you plan to use.
+Here is the list of our tested versions:
 
-1. **Clone the Repository:**
+.. code-block::
 
-   Start by cloning the LightRAG repository to your local machine:
+    openai = "^1.12.0"
+    groq = "^0.5.0"
+    faiss-cpu = "^1.8.0"
+    sqlalchemy = "^2.0.30"
+    cohere = "^5.5.8"
+    pgvector = "^0.2.5"
+    anthropic = "^0.26.0"
+    google-generativeai = "^0.5.4"
 
-   .. code-block:: bash
 
-      git clone https://github.com/SylphAI-Inc/LightRAG
-      cd LightRAG
 
-2. **Configure API Keys:**
 
-   Copy the example environment file and add your API keys:
 
-   .. code-block:: bash
 
-      cp .env.example .env
-      # Open .env and fill in your API keys
+.. Poetry Installation
+.. --------------------------
 
-3. **Install Dependencies:**
+.. Developers and contributors who need access to the source code or wish to contribute to the project should set up their environment as follows:
 
-   Use Poetry to install the dependencies and set up the virtual environment:
+.. 1. **Clone the Repository:**
 
-   .. code-block:: bash
+..    Start by cloning the LightRAG repository to your local machine:
 
-      poetry install
-      poetry shell
+..    .. code-block:: bash
 
-4. **Verification:**
+..       git clone https://github.com/SylphAI-Inc/LightRAG
+..       cd LightRAG
 
-   Now, you should be able to run any file within the repository or execute tests to confirm everything is set up correctly.
+.. 2. **Configure API Keys:**
+
+..    Copy the example environment file and add your API keys:
+
+..    .. code-block:: bash
+
+..       cp .env.example .env
+..       # Open .env and fill in your API keys
+
+.. 3. **Install Dependencies:**
+
+..    Use Poetry to install the dependencies and set up the virtual environment:
+
+..    .. code-block:: bash
+
+..       poetry install
+..       poetry shell
+
+.. 4. **Verification:**
+
+..    Now, you should be able to run any file within the repository or execute tests to confirm everything is set up correctly.
