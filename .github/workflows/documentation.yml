@@ -1,0 +1,83 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - xiaoyi_doc  # Ensure this is the branch where you commit documentation updates
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Ensure full git history is fetched
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies using Poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: List installed packages
+        run: |
+          poetry run pip list
+
+      - name: Print Sphinx version
+        run: |
+          poetry run sphinx-build --version
+
+      - name: Build documentation
+        run: |
+          echo "Current Working Directory: $(pwd)"
+          echo "Python path before Sphinx build: $PYTHONPATH"
+          poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
+          echo "Listing detailed contents of build directory:"
+          find ./docs/build/ -type f
+
+      - name: Test module import
+        run: |
+          poetry run python -c "import lightrag; print('Lightrag module loaded from:', lightrag.__file__)"
+
+      - name: Print effective Sphinx conf
+        run: |
+          poetry run python -c "from sphinx.config import Config; config = Config.read('./docs/source/conf.py'); print(config.values)"
+
+      - name: Check API documentation files
+        run: |
+          echo "Checking API documentation directory for components:"
+          ls -la ./docs/build/apis/components/
+
+      - name: Create .nojekyll file
+        run: |
+          touch ./docs/build/.nojekyll
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+
+      - name: Debug Output
+        run: |
+          pwd  # Print the current working directory
+          ls -l ./docs/build/  # List files in the build directory
+          cat ./docs/source/conf.py  # Show Sphinx config file for debugging
