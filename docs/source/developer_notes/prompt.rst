@@ -5,11 +5,59 @@ Prompt
 
    `Li Yin <https://github.com/liyin2015>`_
 
+Context
+----------------
+
+The prompt refers to the text input to the LLM models.
+When sent to an LLM, the model uses the prompt to auto-regressively generate the next tokens, continuing the process until it reaches a specified stopping criterion.
+The prompt itself plays a crucial role in the performance of the desired tasks.
+Researchers often use `special tokens` to separate different sections of the prompt, such as the system message, user message, and assistant message.
+Ideally, developers should format this prompt with special tokens specific to the model's at training time.
+However, many proprietary APIs did not disclose their special tokens, and requires users to send them in the forms of messages of different roles.
+
+In LLM applications, the first thing you need is to
+
+Design
+----------------
+
+The prompt refers to the text input to the LLM models.
+You can use any of Python's native string formatting.
+The ``format()`` with kwargs is the one that allows you to use placeholders and treat them as key-word arguments.
+
+.. code-block:: python
+   :linenos:
+
+    # percent(%) formatting
+    name = "Alice"
+    age = 20
+    print("My name is %s, and I am %d years old." % (name, age))
+
+    # format() method with kwargs
+    print("My name is {name}, and I am {age} years old.".format(name=name, age=age))
+
+    # f-string
+    print(f"My name is {name}, and I am {age} years old.")
+
+    # Templates
+    from string import Template
+    t = Template('My name is $name, and I am $age years old.')
+    print(t.substitute(name=name, age=age))
+
+
+
+
+
 We strick to maximize developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
 
 For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
 often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and
 intermediate step history from agents.
+
+
+
+**Data Flow in LLM applications**
+
+**Benefits of using Jinja2**
 
 Prompt template
 ---------------------
@@ -166,6 +214,14 @@ Output yaml or json format can lead to different performance. We have better luc
 - Few-shot works so well in some case, but it can lead to regression in some cases.
 - It is not fun to be a prompt engineer! But what can we do for now.
 
+.. admonition:: References
+   :class: highlight
 
-Resources:
-1. `Jinja2`:
+   1. Jinja2: https://jinja.palletsprojects.com/en/3.1.x/
+   2. Llama3 special tokens: https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/
+
+.. admonition:: API References
+   :class: highlight
+
+   - :class:`core.prompt_builder.Prompt`
+   - :constant:`core.prompt_builder.DEFAULT_LIGHTRAG_SYSTEM_PROMPT`

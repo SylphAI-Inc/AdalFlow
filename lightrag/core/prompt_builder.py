@@ -33,7 +33,7 @@ def get_jinja2_environment():
 
 
 class Prompt(Component):
-    __doc__ = r"""A component that renders a text string from a template using Jinja2 templates.
+    __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
     In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
 
@@ -92,7 +92,7 @@ class Prompt(Component):
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
     def update_prompt_kwargs(self, **kwargs):
-        r"""Update the preset prompt kwargs after Prompt is initialized."""
+        r"""Update the initial prompt kwargs after Prompt is initialized."""
         self.prompt_kwargs.update(kwargs)
 
     def get_prompt_variables(self) -> List[str]:
@@ -109,7 +109,7 @@ class Prompt(Component):
         return meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
-        r"""Compose the final prompt kwargs by combining the preset_prompt_kwargs and the provided kwargs."""
+        r"""Compose the final prompt kwargs by combining the initial and the provided kwargs at runtime."""
         composed_kwargs = {key: None for key in self.prompt_variables}
         if self.prompt_kwargs:
             composed_kwargs.update(self.prompt_kwargs)
