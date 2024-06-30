@@ -9,9 +9,10 @@ Overview
 
    components.agent
    components.model_client
+   components.data_process
  
    .. components.reasoning
-
+   
    components.retriever
    components.output_parsers
 
@@ -36,6 +37,13 @@ Model Clients
    :maxdepth: 1
 
    components.model_client
+
+Data Process
+----------------
+.. toctree::
+   :maxdepth: 1
+
+   components.data_process
 
 .. Embedders
 .. ---------
