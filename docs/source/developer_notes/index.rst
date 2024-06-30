@@ -28,18 +28,15 @@ This is our tutorials before you move ahead to build use cases  (LLM application
    .. :width: 200px
 
 LightRAG library focus on providing building blocks for developers to **build** and **optimize** the `task pipeline`.
-We have clear design phisolophy: :doc:`lightrag_design_philosophy`.
+We have clear design phisolophy: :doc:`lightrag_design_philosophy` which results this :doc:`class_hierarchy`.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Introduction
+   :hidden:
 
-
-..    :maxdepth: 1
-..    :hidden:
-
-..    lightrag_design_philosophy
-
-
-
-..  llm_intro
+   lightrag_design_philosophy
+   class_hierarchy
 
 
 
