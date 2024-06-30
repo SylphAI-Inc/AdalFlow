@@ -34,12 +34,12 @@ jobs:
           poetry config virtualenvs.create false
           poetry install
 
-
-      - name: Build documentation with detailed logging
+      - name: Build documentation using Makefile
         run: |
-          echo "Building documentation from: $(pwd)/docs/source"
-          poetry run sphinx-build -b html ./docs/source/ ./docs/build/ -vvv
-
+          echo "Building documentation from: $(pwd)"
+          cd docs
+          poetry run make html
+        working-directory: ${{ github.workspace }}/docs
 
       - name: List built documentation
         run: |
