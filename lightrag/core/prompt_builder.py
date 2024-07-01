@@ -33,7 +33,7 @@ def get_jinja2_environment():
 
 
 class Prompt(Component):
-    __doc__ = r"""A component that renders a text string from a template using Jinja2 templates.
+    __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
     In default, we use the :ref:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core-default_prompt_template>`  as the template.
 
@@ -66,7 +66,6 @@ class Prompt(Component):
 
     def __init__(
         self,
-        *,
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
     ):
@@ -92,7 +91,7 @@ class Prompt(Component):
             raise ValueError(f"Invalid Jinja2 template: {e}")
 
     def update_prompt_kwargs(self, **kwargs):
-        r"""Update the preset prompt kwargs after Prompt is initialized."""
+        r"""Update the initial prompt kwargs after Prompt is initialized."""
         self.prompt_kwargs.update(kwargs)
 
     def get_prompt_variables(self) -> List[str]:
@@ -109,7 +108,7 @@ class Prompt(Component):
         return meta.find_undeclared_variables(parsed_content)
 
     def compose_prompt_kwargs(self, **kwargs) -> Dict:
-        r"""Compose the final prompt kwargs by combining the preset_prompt_kwargs and the provided kwargs."""
+        r"""Compose the final prompt kwargs by combining the initial and the provided kwargs at runtime."""
         composed_kwargs = {key: None for key in self.prompt_variables}
         if self.prompt_kwargs:
             composed_kwargs.update(self.prompt_kwargs)
@@ -141,7 +140,7 @@ class Prompt(Component):
 
     def call(self, **kwargs) -> str:
         """
-        Renders the prompt template with the provided variables.
+        Renders the prompt template with keyword arguments.
         """
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
@@ -175,39 +174,3 @@ class Prompt(Component):
         exclude = ["jinja2_template"]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
-
-
-# if __name__ == "__main__":
-#     import logging
-
-#     logging.basicConfig(level=logging.DEBUG)
-#     prompt = Prompt(
-#         preset_prompt_kwargs={"task_desc_str": "You are a helpful assistant."}
-#     )
-#     print(prompt)
-#     prompt.print_prompt_template()
-#     prompt.print_prompt(context_str="This is a context string.")
-#     prompt.call(context_str="This is a context string.")
-#     states = prompt.state_dict()
-#     print(f"states: {states}")
-#     named_params = prompt.named_parameters()
-#     print(f"named_params: {named_params}")
-#     for name, param in named_params:
-#         print(f"{name}: {param}")
-
-#     # get dict of prompt
-#     prompt_dict = prompt.to_dict()
-#     print(f"prompt_dict: {prompt_dict}")
-#     prompt_state = prompt.state_dict()
-#     print(f"prompt_state: {prompt_state}")
-
-# EXAMPLES_TEMPLATE = r"""
-# {% if examples %}
-# {% for example in examples %}
-# {{loop.index}}. {{example}}
-# {% endfor %}
-# {% endif %}
-# """
-# examples_prompt = Prompt(template=EXAMPLES_TEMPLATE)
-# examples_str = examples_prompt.call(examples=["Example 1", "Example 2"])
-# prompt.print_prompt(examples_str=examples_str)

@@ -4,7 +4,7 @@
 Tutorials
 =============================
 
-*Why and How Each Part works*
+.. *Why and How Each Part works*
 
 Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
 These are our most important tutorials before you move ahead to build use cases  (LLM applications) end to end.
@@ -47,7 +47,8 @@ Building
 -------------------
 Base classes
 ~~~~~~~~~~~~~~~~~~~~~~
-Code path: ``lightrag.core``.
+Code path: :ref:`lightrag.core <apis-core>`.
+
 
 .. list-table::
    :widths: 20 80
@@ -56,9 +57,9 @@ Code path: ``lightrag.core``.
    * - Base Class
      - Description
    * - :doc:`component`
-     - Similar to ``Module`` in `PyTorch`, it standardizes the interface of all components with `call`, `acall`, and `__call__` methods, handles states, and serialization. Components can be easily chained togehter via `Sequential` for now.
+     - The building block for task pipeline. It standardizes the interface of all components with `call`, `acall`, and `__call__` methods, handles state serialization, nested components, and parameters for optimization. Components can be easily chained together via ``Sequential``.
    * - :doc:`base_data_class`
-     - Leverages the ``dataclasses`` module in Python to ease the data interaction with prompt and serialization.
+     - The base class for data. It eases the data interaction with LLMs for both prompt formatting and output parsing.
 
 
 
@@ -79,10 +80,10 @@ RAG components
 ^^^^^^^^^^^^^^^^^^^
 
 
-Code path: ``lightrag.core``. For abstract classes:
+Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
 
-- ``ModelClient``: the functional subclass is in ``lightrag.components.model_client``.
-- ``Retriever``: the functional subclass is in ``lightrag.components.retriever``. It works hand-in-hand with the ``LocalDB`` and Cloud DB in ``lightrag.database``.
+- ``ModelClient``: the functional subclass is in :ref:`lightrag.components.model_client<components-model_client>`.
+- ``Retriever``: the functional subclass is in :ref:`lightrag.components.retriever<components-retriever>`.
 
 
 .. list-table::
@@ -92,11 +93,13 @@ Code path: ``lightrag.core``. For abstract classes:
    * - Part
      - Description
    * - :doc:`prompt`
-     - Built on ``jinja2``, it programmablly and flexibly format prompt(text) as **input to the generator**.
+     - Built on `jinja2`, it programmatically and flexibly formats prompts as input to the generator.
    * - :doc:`model_client`
      - ``ModelClient`` is the protocol and base class for LightRAG to **integrate all models**, either APIs or local, LLMs or Embedding models or any others.
    * - :doc:`generator`
      - The **center component** that orchestrates the model client(LLMs in particular), prompt, and output processors for format parsing or any post processing.
+   * - :doc:`output_parsers`
+     - The component that parses the output string to structured data.
    * - :doc:`embedder`
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
@@ -133,6 +136,7 @@ Components work on a sequence of ``Document`` and return a sequence of ``Documen
    prompt
    model_client
    generator
+   output_parsers
    embedder
    retriever
    text_splitter
