@@ -1,3 +1,5 @@
+.. _apis-utils:
+
 Utils
 =============================
 
@@ -31,4 +33,3 @@ Setup_env
    :maxdepth: 1
 
    utils.setup_env
-

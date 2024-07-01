@@ -1,3 +1,5 @@
+.. _apis-core:
+
 Core
 ===================
 
@@ -7,7 +9,7 @@ Overview
 ----------
 .. autosummary::
 
-   core.base_data_class  
+   core.base_data_class
    core.component
    core.db
    core.default_prompt_template

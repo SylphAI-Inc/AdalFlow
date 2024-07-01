@@ -3,33 +3,51 @@
 Generator
 =========
 
-.. admonition:: Author
-   :class: highlight
+.. .. admonition:: Author
+..    :class: highlight
 
-   `Li Yin <https://github.com/liyin2015>`_
+..    `Li Yin <https://github.com/liyin2015>`_
 
 *The Center of it All*
 
-Generator is the most essential functional component in LightRAG.
-It is a user-facing orchestration component with a simple and unified interface for LLM prediction.
-It orchestrates the following components along with their required arguments:
+Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.
 
-- ``Prompt``
+Design
+---------------------------------------
 
-- ``ModelClient``
+:class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
 
-- Output processors to process the raw string response to desired format.
+- Model Agnostic: The Generator should be able to call any LLM model with the same prompt.
+- Unified Interface: It should manage the pipeline of prompt(input)->model call -> output parsing.
+- Unified Output: This will make it easy to log and save records of all LLM predictions.
+- Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.
 
-By switching out the model client, you can call any LLM model on your prompt, either API or local.
+Therefore, it orchestrates the following components:
+
+- ``Prompt``: by taking in ``template`` (string) and ``prompt_kwargs`` (dict) to format the prompt at initialization. When the ``template`` is not given, it defaults to ``DEFAULT_LIGHTRAG_SYSTEM_PROMPT``.
+
+- ``ModelClient``: by taking in already instantiated ``model_client`` and ``model_kwargs`` to call the model. Switching out the model client will allow you to call any LLM model on the same prompt and output parsing.
+
+- ``output_processors``: component or chained components via ``Sequential`` to process the raw response to desired format. If no output processor provided, it is decided by Model client, often return raw string response (from the first response message).
+
+Generator supports both ``call`` (``__call__``) and ``acall`` method. It takes in run time ``prompt_kwargs``(dict) and ``model_kwargs``(dict) to allow to control the prompt fully at call time and the model arguments from the initial model client.
 
 GeneratorOutput
-^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 Different from all other components, we can not alway enforce LLM to output the right format.
-We in particular created a :class:`core.types.GeneratorOutput` (a subclass of ``DataClass``) to store `data` (parsed response), `error` (error message if either the model inference SDKs fail or the output parsing fail) and `raw_response` (raw string response for reference) for any LLM predictions.
+We in particular created a :class:`GeneratorOutput<core.types.GeneratorOutput>` (a subclass of ``DataClass``) to store `data` (parsed response), `error` (error message if either the model inference SDKs fail or the output parsing fail) and `raw_response` (raw string response for reference) for any LLM predictions.
 It is in developers' hands to process the output accordingly.
 
-GeneratorInAction
-^^^^^^^^^^^^^^^^^
+Generator In Action
+---------------------------------------
+
+**Initiation in code**
+
+**Initiation from dict config**
+
+
+**
+
 Beside of these examples, LLM is like water, even in our library, we have components that have adpated Generator to other various functionalities.
 
 - :class:`components.retriever.llm_retriever.LLMRetriever` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.

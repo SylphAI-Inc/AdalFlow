@@ -1,24 +1,34 @@
 [tool.poetry]
 name = "lightrag"
 
-packages = [
-    { include = "core", from = "." },
-    { include = "components", from = "." },
-    { include = "eval", from = "." },
-    { include = "utils", from = "." },
-    { include = "tracing", from = "." },
-    { include = "optim", from = "." },
-    { include = "icl", from = "." },
-]
-version = "0.1.0"
+version = "0.0.0-alpha.7"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
-authors = ["Li Yin <li.yin.gravity@gmail.com>"]
+authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
+repository = "https://github.com/SylphAI-Inc/LightRAG"
+
 license = "MIT"
+maintainers = ["Xiaoyi Gu <xiaoyi@sylphai.com>", "Li Yin <li@sylphai.com>"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
+keywords = ["LLM", "NLP", "RAG", "devtools", "retrieval", "agent"]
+
+include = [
+    "lightrag/core/*",
+    "lightrag/components/*",
+    "lightrag/eval/*",
+    "lightrag/utils/*",
+    "lightrag/tracing/*",
+    "lightrag/optim/*",
+    # "lightrag/icl/*",
+]
+
+
+packages = [{ include = "lightrag", from = "." }]
 
 
 [tool.poetry.dependencies]
@@ -49,6 +59,7 @@ openai = "^1.12.0"
 groq = "^0.5.0"        # should only be installed if groq client is used
 faiss-cpu = "^1.8.0"
 sqlalchemy = "^2.0.30"
+
 
 [tool.ruff]
 exclude = ["images"]

@@ -1,3 +1,5 @@
+.. _apis-components:
+
 Components
 ==============
 
@@ -10,9 +12,9 @@ Overview
    components.agent
    components.model_client
    components.data_process
- 
+
    .. components.reasoning
-   
+
    components.retriever
    components.output_parsers
 
@@ -65,4 +67,3 @@ Retrievers
    :maxdepth: 1
 
    components.retriever
-

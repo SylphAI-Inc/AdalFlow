@@ -17,7 +17,6 @@ from lightrag.components.data_process import (
     ToEmbeddings,
     DocumentSplitter,
 )
-from lightrag.utils import setup_env  # noqa
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users

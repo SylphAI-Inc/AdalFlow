@@ -3,8 +3,6 @@ from lightrag.core.types import Document
 from lightrag.components.retriever import LLMRetriever
 from lightrag.components.model_client import OpenAIClient
 
-import utils.setup_env
-
 
 def test_llm_retriever():
     # TODO: directly pass Generator class is more intuitive than the generator_kwargs

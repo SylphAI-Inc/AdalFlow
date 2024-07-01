@@ -5,167 +5,247 @@ Prompt
 
    `Li Yin <https://github.com/liyin2015>`_
 
-We strick to maximize developers' control towards the final experience and performance, simplify the development process, and minimize the token consumption.
+Context
+----------------
 
-For the major chat models, we eventually will only send two messages to the model: the system message and the user message. The user message is simple,
-often you have a message `{'role': 'user', 'content': 'Hello, how are you?'}`. The system message is more complex, it contains the task description, tools, examples, chat history, context, and
-intermediate step history from agents.
+The prompt refers to the text input to the LLM models.
+When sent to an LLM, the model uses the prompt to auto-regressively generate the next tokens, continuing the process until it reaches a specified stopping criterion.
+The prompt itself plays a crucial role in the performance of the desired tasks.
+Researchers often use `special tokens` [1]_ to separate different sections of the prompt, such as the system message, user message, and assistant message.
+Ideally, developers should format this prompt with special tokens specific to the model's at training time.
+However, many proprietary APIs did not disclose their special tokens, and requires users to send them in the forms of messages of different roles.
 
-Prompt template
----------------------
+Design
+----------------
 
-Our `DEFAULT_LIGHTRAG_SYSTEM_PROMPT` templates the system prompt with 7 important sections. We leverage `jinjia2` template for **programmable prompt** right along with string.
+`LightRAG` seeks to maximize developers' control over the prompt.
+Thus, in most cases, we help developers gather different sections and form them into one prompt.
+This prompt will then be send to the LLM as a single message.
+The default role of the message we use is `system`.
+Though it is not a special token, we use ``<SYS></SYS>`` to represent the system message in the prompt, which works quite well.
 
-The default template comes  with 7 variables: `task_desc_str`, `output_format_str`, `tools_str`, `examples_str`, `chat_history_str`, `context_str`, and `steps_str`.
 
-A jinjia2 template will rendered with :ref:`Prompt<core-prompt_builder>` class. If some fields being empty, that section will be empty in the final prompt string.
+.. code-block:: python
+
+    simple_prompt = r"""<SYS> You are a helpful assistant. </SYS> User: What can you help me with?"""
+
+If it is `Llama3` model, the final text sent to the model for tokenization will be:
+
+.. code-block:: python
+
+   final_prompt = r"""<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+   {{simple_prompt}} <|eot_id|>"""
+
+And the LLM will return the following text:
+
+.. code-block:: python
+
+   prediction = r"""<|start_header_id|>assistant<|end_header_id|> You can ask me anything you want. <|eot_id|><|end_of_text|>"""
+
+Data Flow in LLM applications
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: /_static/images/LightRAG_dataflow.png
+    :align: center
+    :alt: Data Flow in LLM applications
+    :width: 620px
+
+    Data flow in LLM applications
+
+Look at the most complicated case: We will have user query, retrieved context, task description, definition of tools, few-shot examples, past conversation history, step history from the agent, and the output format specification.
+All these different parts need to be formatted into a single prompt.
+We have to do all this with flexibility and also make it easy for developers to read.
+
+
+
+Why Jinja2?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To format the prompt, you can use any of Python's native string formatting.
 
 .. code-block:: python
    :linenos:
 
-    DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{# task desc #}
-    {% if task_desc_str %}
-    {{task_desc_str}}
-    {% endif %}
-    {# tools #}
-    {% if tools_str %}
-    <TOOLS>
-    {{tools_str}}
-    </TOOLS>
-    {% endif %}
-    {# example #}
-    {% if examples_str %}
-    <EXAMPLES>
-    {{examples_str}}
-    </EXAMPLES>
-    {% endif %}
-    {# chat history #}
-    {% if chat_history_str %}
-    <CHAT_HISTORY>
-    {{chat_history_str}}
-    </CHAT_HISTORY>
-    {% endif %}
-    {#contex#}
-    {% if context_str %}
-    <CONTEXT>
-    {{context_str}}
-    </CONTEXT>
-    {% endif %}
-    {# steps #}
-    {% if steps_str %}
-    <STEPS>
-    {{steps_str}}
-    </STEPS>
-    {% endif %}
-    """
+    # percent(%) formatting
+    print("<SYS>%s</SYS> User: %s" % (task_desc_str, input_str))
 
-Across our library, here our advanced features:
+    # format() method with kwargs
+    print(
+        "<SYS>{task_desc_str}</SYS> User: {input_str}".format(
+            task_desc_str=task_desc_str, input_str=input_str
+        )
+    )
 
-- Various output formats where the `output_format_str` variable is used to pass the output format to the model.
+    # f-string
+    print(f"<SYS>{task_desc_str}</SYS> User: {input_str}")
 
-- Few-shot and Many-shots In-context Learning (ICL) where the `examples_str` variable is used to pass the examples to the model.
+    # Templates
+    from string import Template
 
-- Tools/Function Calls where the `tools_str` variable is used to pass the tools to the model.
+    t = Template("<SYS>$task_desc_str</SYS> User: $input_str")
+    print(t.substitute(task_desc_str=task_desc_str, input_str=input_str))
 
-- Memory where the `chat_history_str` variable is used to pass the memory to the model.
 
-- Retrieval augmented generation(RAG) where the `context_str`` variable is used to pass the retrieved context.
+We opted for `Jinja2` [1]_ as the templating engine for the prompt.
+Besides the placeholders using ``{{}}`` for keyword arguments, Jinja2 also allow users to write code similar to Python syntax.
+This includes conditionals, loops, filters, and even comments, which are lacking in Python's native string formatting.
+Here is one example of using `Jinja2` to format the prompt:
 
-- Agent with multiple step planning and replanning capabilities, where the `steps_str` variable is used to pass the previous steps to the model.
-
-**Note: this means in default our out-of-box components would not support API providers's tools/function calls as we only send the system and user messages to the model.
-But it should not stop you from implementing them yourself.**
-
-Prompt class
----------------------
-We designed a :ref:`Prompt<core-prompt_builder>` class  to render the `template` with the variables to string as the final system prompt. In the simplest case, the string is empty and we will only send
-a user message to the model. And in most cases, you want to add at least the `task_desc_str` to the system message.
-
-The cool thing about our `Prompt` system is how flexible it can be. If you need to put another `template` for say `task_desc_str`, you can do that using the `Prompt` class.
-For example, your task is to instruct the llm to choose `top_k` from the given choices, you can define a new template like this:
 
 .. code-block:: python
-   :linenos:
 
-   from core.prompt_builder import Prompt
+   def jinja2_template_example(**kwargs):
+      from jinja2 import Template
 
-   task_desc_template = r"""
-   Choose the top {{top_k}} from the following choices: {{choices}}
-   """
-   top_k = 3
-   choices = ['apple', 'banana', 'orange', 'grape']
-   task_desc_prompt = Prompt(template=task_desc_template, preset_prompt_kwargs={'top_k': top_k, 'choices': choices})
-   task_desc_str = task_desc_prompt.call()
-   prompt = Prompt(preset_prompt_kwargs={'task_desc_str': task_desc_str})
-   prompt.print_prompt()
+      template = r"""<SYS>{{ task_desc_str }}</SYS>
+   {# tools #}
+   {% if tools %}
+   <TOOLS>
+   {% for tool in tools %}
+   {{loop.index}}. {{ tool }}
+   {% endfor %}
+   </TOOLS>
+   {% endif %}
+   User: {{ input_str }}"""
+      t = Template(template, trim_blocks=True, lstrip_blocks=True)
+      print(t.render(**kwargs))
 
-The output would be:
+Let's call it with and without tools:
 
-.. code-block:: xml
-   :linenos:
+.. code-block:: python
 
-   Choose the top 3 from the following choices: ['apple', 'banana', 'orange', 'grape']
+   jinja2_template_example(task_desc_str=task_desc_str, input_str=input_str)
+   jinja2_template_example(
+        task_desc_str=task_desc_str, input_str=input_str, tools=tools
+    )
 
-
-
-
-Prompt and Special Tokens context
-----------------------------------
-
-
-Each section other than `task_desc_str` is encapulated in a special token. Different model can have different special tokens.
-Here is one example of `Llama3 Documentation <https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/>`_ prompts formatted with special tokens:
-
-input string to the LLM model and minimize the token consumption.
-We enable advanced features without relying on API provider's prompt manipulation such as `OpenAI`'s tools or assistant APIs.
+The printout would be:
 
 .. code-block::
-   :linenos:
 
-    <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+   <SYS>You are a helpful assitant</SYS>
+   User: What is the capital of France?
 
-    You are a helpful AI assistant for travel tips and recommendations<|eot_id|>
+And with tools:
 
-    <|start_header_id|>user<|end_header_id|>
-    What can you help me with?<|eot_id|>
+.. code-block::
 
-    <|start_header_id|>assistant<|end_header_id|>
+   <SYS>You are a helpful assitant</SYS>
+   <TOOLS>
+   1. google
+   2. wikipedia
+   3. wikidata
+   </TOOLS>
+   User: What is the capital of France?
+
+We can see how easy and flexible to programmatically format the prompt with `Jinja2`.
 
 
 
+Prompt class
+----------------
 
 
-Here is how you customize a new prompt:
+We created our :class:`Prompt Component<core.prompt_builder.Prompt>` to render the prompt with the string ``template`` and ``prompt_kwargs``.
+It is a simple component, but it is quite handy.
+Let's use the same template as above:
 
 .. code-block:: python
-   :linenos:
 
-    from core.prompt_builder import Prompt
+   from lightrag.core.prompt_builder import Prompt
 
-    new_template = r"""
-    <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-    {{task_desc_str}}
-    Your context: {{context_str}} <|eot_id|>
+   prompt = Prompt(
+      template=template,
+      prompt_kwargs={
+         "task_desc_str": task_desc_str,
+         "tools": tools,
+      },
+   )
+   print(prompt)
+   print(prompt(input_str=input_str)) # takes the rest arguments in keyword arguments
 
-    <|start_header_id|>user<|end_header_id|>
-    {{query_str}}<|eot_id|>
+The ``Prompt`` class allow us to preset some of the prompt arguments at initialization, and then we can call the prompt with the rest of the arguments.
+Also, by subclassing ``Component``, we can easily visualize this component with ``print``.
+Here is the output:
 
-    <|start_header_id|>assistant<|end_header_id|>
-    """
+.. code-block::
+
+   Prompt(
+      template: <SYS>{{ task_desc_str }}</SYS>
+      {# tools #}
+      {% if tools %}
+      <TOOLS>
+      {% for tool in tools %}
+      {{loop.index}}. {{ tool }}
+      {% endfor %}
+      </TOOLS>
+      {% endif %}
+      User: {{ input_str }}, prompt_kwargs: {'task_desc_str': 'You are a helpful assitant', 'tools': ['google', 'wikipedia', 'wikidata']}, prompt_variables: ['input_str', 'tools', 'task_desc_str']
+   )
+
+As with all components, you can use ``to_dict`` and ``from_dict`` to serialize and deserialize the component.
+
+Default Prompt Template
+-------------------------
+
+In default, the ``Prompt`` class uses the :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>` as its string template if no template is provided.
+This default template allows you to conditionally passing seven important variables designed from the data flow diagram above.
+These varaibles are:
+
+.. code-block:: python
+
+   LIGHTRAG_DEFAULT_PROMPT_ARGS = [
+      "task_desc_str",  # task description
+      "output_format_str",  # output format of the task
+      "tools_str",  # tools used in the task
+      "examples_str",  # examples of the task
+      "chat_history_str",  # chat history of the user
+      "context_str",  # context of the user query
+      "steps_str",  # used in agent steps
+      "input_str",  # user query or input
+   ]
+
+Now, let's see the minimum case where we only have the user query:
+
+.. code-block:: python
+
+   prompt = Prompt()
+   output = prompt(input_str=input_str)
+   print(output)
+
+The output will be the bare minimum with only the user query and a prefix for assistant to respond:
+
+.. code-block::
+
+   <User>
+   What is the capital of France?
+   </User>
+   You:
+
+.. note::
+
+   In reality, we barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator`` component together with the ``ModelClient`` that we will introduce next.
 
 
-    prompt = Prompt(template=new_template)
 
 
-Prompt Engineering experience
--------------------------------
-There is not robust prompt, and it is one of the most sensitive creatures in the AI world.
-Here are some tips:
-- Even the output format matters, the order of your output fields, the formating.
-Output yaml or json format can lead to different performance. We have better luck with yaml format.
-- Few-shot works so well in some case, but it can lead to regression in some cases.
-- It is not fun to be a prompt engineer! But what can we do for now.
+.. Prompt Engineering experience
+.. -------------------------------
+.. There is no robust prompt, and it is one of the most sensitive creatures in the AI world.
+.. Here are some tips:
 
+.. - Even the output format matters, the order of your output fields, the formating. Output yaml or json format can lead to different performance. We have better luck with yaml format.
+.. - Few-shot works so well in some case, but it can lead to regression in some cases.
+.. - It is not fun to be a prompt engineer! But what can we do for now.
 
-Resources:
-1. `Jinja2`:
+.. admonition:: References
+   :class: highlight
+
+   .. [1] Jinja2: https://jinja.palletsprojects.com/en/3.1.x/
+   .. [2] Llama3 special tokens: https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/
+
+.. admonition:: API References
+   :class: highlight
+
+   - :class:`core.prompt_builder.Prompt`
+   - :const:`core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT`

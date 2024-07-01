@@ -28,7 +28,7 @@ However, in real-world LLM applications, we can not avoid to deal with data stor
 4. When it comes to applications where states matter, like games and chatbots, we need to store the states and conversational history.
 
 
-.. figure:: /_static/database.png
+.. figure:: /_static/images/database.png
     :align: center
     :alt: Data model and database
     :width: 620px

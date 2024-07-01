@@ -1,6 +1,5 @@
 from lightrag.core import Component, Generator
 from lightrag.components.model_client import GroqAPIClient
-from lightrag.utils import setup_env  # noqa
 
 
 class SimpleQA(Component):
