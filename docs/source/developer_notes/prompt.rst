@@ -19,10 +19,11 @@ Design
 ----------------
 
 `LightRAG` seeks to maximize developers' control over the prompt.
-Thus, in most cases we help developers gather together different sections and form them into one prompt.
+Thus, in most cases, we help developers gather different sections and form them into one prompt.
 This prompt will then be send to the LLM as a single message.
 The default role of the message we use is `system`.
 Though it is not a special token, we use ``<SYS></SYS>`` to represent the system message in the prompt, which works quite well.
+
 
 .. code-block:: python
 
@@ -53,7 +54,8 @@ Data Flow in LLM applications
 
 Look at the most complicated case: We will have user query, retrieved context, task description, definition of tools, few-shot examples, past conversation history, step history from the agent, and the output format specification.
 All these different parts need to be formatted into a single prompt.
-We have to do all this with flexiblity and also easy for developers to read.
+We have to do all this with flexibility and also make it easy for developers to read.
+
 
 
 Why Jinja2?
@@ -85,9 +87,10 @@ To format the prompt, you can use any of Python's native string formatting.
 
 
 We opted for `Jinja2` [1]_ as the templating engine for the prompt.
-Besides of the placeholders using ``{{}}`` for key-word arguments, Jinja2 also allow users to write code similar to Python syntax.
-This includes conditionals, loops, filters, and even comments that is lacked from Python's native string formatting.
+Besides the placeholders using ``{{}}`` for keyword arguments, Jinja2 also allow users to write code similar to Python syntax.
+This includes conditionals, loops, filters, and even comments, which are lacking in Python's native string formatting.
 Here is one example of using `Jinja2` to format the prompt:
+
 
 .. code-block:: python
 
@@ -144,8 +147,7 @@ Prompt class
 
 
 We created our :class:`Prompt Component<core.prompt_builder.Prompt>` to render the prompt with the string ``template`` and ``prompt_kwargs``.
-It is a rather simple component, but it is rather handy.
-
+It is a simple component, but it is quite handy.
 Let's use the same template as above:
 
 .. code-block:: python
@@ -163,7 +165,7 @@ Let's use the same template as above:
    print(prompt(input_str=input_str)) # takes the rest arguments in keyword arguments
 
 The ``Prompt`` class allow us to preset some of the prompt arguments at initialization, and then we can call the prompt with the rest of the arguments.
-Also, by subclassing ``Component``, we get to easily visualize this component with ``print``.
+Also, by subclassing ``Component``, we can easily visualize this component with ``print``.
 Here is the output:
 
 .. code-block::
@@ -181,12 +183,13 @@ Here is the output:
       User: {{ input_str }}, prompt_kwargs: {'task_desc_str': 'You are a helpful assitant', 'tools': ['google', 'wikipedia', 'wikidata']}, prompt_variables: ['input_str', 'tools', 'task_desc_str']
    )
 
-As all components, you can use ``to_dict`` and ``from_dict`` to serialize and deserialize the component.
+As with all components, you can use ``to_dict`` and ``from_dict`` to serialize and deserialize the component.
 
 Default Prompt Template
 -------------------------
-In default, ``Prompt`` class uses the :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>` as its string template if no template is provided.
-This default template will allow you conditionally passing seven important variables designed from the data flow diagram above.
+
+In default, the ``Prompt`` class uses the :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>` as its string template if no template is provided.
+This default template allows you to conditionally passing seven important variables designed from the data flow diagram above.
 These varaibles are:
 
 .. code-block:: python
@@ -210,7 +213,7 @@ Now, let's see the minimum case where we only have the user query:
    output = prompt(input_str=input_str)
    print(output)
 
-The output will be bare minimum with only the user query and a prefix for assistant to respond:
+The output will be the bare minimum with only the user query and a prefix for assistant to respond:
 
 .. code-block::
 
@@ -221,7 +224,7 @@ The output will be bare minimum with only the user query and a prefix for assist
 
 .. note::
 
-   We barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator`` component.
+   In reality, we barely need to use the raw ``Prompt`` class directly as it is orchestrated by the ``Generator`` component together with the ``ModelClient`` that we will introduce next.
 
 
 
