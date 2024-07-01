@@ -38,6 +38,6 @@ traces/
 *.log
 storage/
 *.pkl
-*.png
-*.dot
-*.svg
+/*.png
+/*.dot
+/*.svg
