@@ -12,11 +12,16 @@ repos:
     rev: 24.4.2
     hooks:
       - id: black
-        args: ["--line-length=88"]
+        args: ['--line-length=88']
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.4.2
     hooks:
       # Run the linter.
       - id: ruff
-        args: ["--fix", "--extend-ignore=E402"]
+        args: ['--fix', '--extend-ignore=E402']
+  # - repo: https://github.com/pycqa/flake8
+  #   rev: 4.0.1
+  #   hooks:
+  #     - id: flake8
+  #       args: ['--max-line-length=88']

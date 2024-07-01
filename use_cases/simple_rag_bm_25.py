@@ -13,8 +13,6 @@ from lightrag.core.types import Document
 from lightrag.components.retriever import BM25Retriever
 from lightrag.components.model_client import OpenAIClient
 
-import utils.setup_env  # noqa
-
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
 class RAG(Component):

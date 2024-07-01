@@ -20,6 +20,9 @@
       width: 270px; /* Adjust the width for larger screens */
   }
 }
+.pre {
+  color: #0a7d91; /* Change the color of ```` blocks */
+}
 
 /* .copyright {
   text-align: center;

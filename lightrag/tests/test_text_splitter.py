@@ -1,6 +1,7 @@
 import unittest
 from lightrag.core.types import Document
-from lightrag.components.data_process.text_splitter import TextSplitter 
+from lightrag.components.data_process.text_splitter import TextSplitter
+
 
 class TestTextSplitter(unittest.TestCase):
 
@@ -58,5 +59,6 @@ class TestTextSplitter(unittest.TestCase):
     #     with self.assertRaises(ValueError):
     #         self.splitter.call([Document(text=None, id="1")])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

@@ -1,13 +1,6 @@
 import unittest
 import torch
 
-from lightrag.components.model_client import (
-    TransformersClient,
-    TransformerReranker,
-    TransformerLLM,
-    TransformerEmbedder,
-)
-from lightrag.core.types import ModelType
 
 # Set the number of threads for PyTorch, avoid segementation fault
 torch.set_num_threads(1)
@@ -102,27 +95,25 @@ class TestTransformerModelClient(unittest.TestCase):
     #     )
     #     self.assertEqual(type(output), tuple)
 
-
     # def test_transformer_llm_response(self):
     #     """Test the TransformerLLM model with zephyr-7b-beta for generating a response."""
     #     transformer_llm_model = "HuggingFaceH4/zephyr-7b-beta"
     #     transformer_llm_model_component = TransformerLLM(model_name=transformer_llm_model)
-        
+
     #     # Define a sample input
     #     input_text = "Hello, what's the weather today?"
-        
+
     #     # Test generating a response, providing the 'model' keyword
     #     # response = transformer_llm_model_component(input=input_text, model=transformer_llm_model)
     #     response = transformer_llm_model_component(input_text=input_text)
 
-        
     #     # Check if the response is valid
     #     self.assertIsInstance(response, str, "The response should be a string.")
     #     self.assertTrue(len(response) > 0, "The response should not be empty.")
-        
+
     #     # Optionally, print the response for visual verification during testing
     #     print(f"Generated response: {response}")
 
-        
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

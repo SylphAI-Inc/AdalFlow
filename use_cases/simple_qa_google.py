@@ -7,8 +7,6 @@ from lightrag.core.component import Component
 
 from lightrag.components.model_client import GoogleGenAIClient
 
-import utils.setup_env
-
 
 class SimpleQA(Component):
     def __init__(self):

@@ -5,8 +5,6 @@ from lightrag.core.embedder import Embedder
 from lightrag.core.component import Component
 from lightrag.components.model_client import OpenAIClient
 
-import utils.setup_env
-
 
 class SimpleEmbedder(Component):
     """
@@ -50,6 +48,7 @@ if __name__ == "__main__":
 
         start_time = time.time()
         results = await asyncio.gather(*tasks)
+        print(results)
         end_time = time.time()
 
         print(f"Total time for 10 async calls: {end_time - start_time} seconds")
