@@ -39,10 +39,8 @@ It is light, modular, and robust.
 
       .. code-block:: python
 
-         from lightrag.core import Component, Generator
-         from lightrag.components.model_client import GroqAPIClient
-         from lightrag.utils import setup_env #noqa
-
+         from lightrag.core.component import Component, Generator
+         from lightrag.components.model_client import OpenAIClient
 
          class SimpleQA(Component):
             def __init__(self):
