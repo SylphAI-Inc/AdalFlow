@@ -804,6 +804,58 @@ def generate_readable_key_for_function(fn: Callable) -> str:
 ########################################################################################
 # For Parser components
 ########################################################################################
+def extract_first_int(text: str) -> int:
+    """Extract the first integer from the provided text.
+
+    Args:
+        text (str): The text containing potential integer data.
+
+    Returns:
+        int: The extracted integer.
+
+    Raises:
+        ValueError: If no integer is found in the text.
+    """
+    match = re.search(r"\b\d+\b", text)
+    if match:
+        return int(match.group())
+    raise ValueError("No integer found in the text.")
+
+
+def extract_first_float(text: str) -> float:
+    """Extract the first float from the provided text.
+
+    Args:
+        text (str): The text containing potential float data.
+
+    Returns:
+        float: The extracted float.
+
+    Raises:
+        ValueError: If no float is found in the text.
+    """
+    match = re.search(r"\b\d+\.\d+\b", text)
+    if match:
+        return float(match.group())
+    raise ValueError("No float found in the text.")
+
+
+def extract_first_boolean(text: str) -> bool:
+    """Extract the first boolean from the provided text.
+
+    Args:
+        text (str): The text containing potential boolean data.
+
+    Returns:
+        bool: The extracted boolean.
+
+    Raises:
+        ValueError: If no boolean is found in the text.
+    """
+    match = re.search(r"\b(?:true|false|True|False)\b", text)
+    if match:
+        return match.group().lower() == "true"
+    raise ValueError("No boolean found in the text.")
 
 
 def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
@@ -932,7 +984,7 @@ def extract_yaml_str(text: str) -> str:
 
         yaml_str = ""
         if match:
-            yaml_str = match.group("yaml")
+            yaml_str = match.group("yaml").strip()
         else:
             yaml_str = text.strip()
         return yaml_str
@@ -978,40 +1030,41 @@ def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
         raise ImportError("Please pip install PyYAML.") from exc
 
 
-def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
-    r"""Parse a JSON string to a Python object.
+def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
+    r"""Parse a varietry of json format string to Python object.
 
     json_str: has to be a valid JSON string. Either {} or [].
     """
     json_str = json_str.strip()
+    # 1st attemp with json.loads
     try:
         json_obj = json.loads(json_str)
         return json_obj
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        log.info(
+            f"Got invalid JSON object with json.loads. Error: {e}. Got JSON string: {json_str}"
+        )
         # 2nd attemp after fixing the json string
         try:
-            print("Trying to fix potential missing commas...")
+            log.info("Trying to fix potential missing commas...")
             json_str = fix_json_missing_commas(json_str)
-            print("Trying to fix scaped single quotes...")
+            log.info("Trying to fix scaped single quotes...")
             json_str = fix_json_escaped_single_quotes(json_str)
-            print(f"Fixed JSON string: {json_str}")
+            log.info(f"Fixed JSON string: {json_str}")
             json_obj = json.loads(json_str)
             return json_obj
         except json.JSONDecodeError:
             # 3rd attemp using yaml
             try:
-                import yaml
 
                 # NOTE: parsing again with pyyaml
                 #       pyyaml is less strict, and allows for trailing commas
                 #       right now we rely on this since guidance program generates
                 #       trailing commas
-                print("Parsing JSON string with PyYAML...")
+                log.info("Parsing JSON string with PyYAML...")
                 json_obj = yaml.safe_load(json_str)
                 return json_obj
             except yaml.YAMLError as e:
                 raise ValueError(
-                    f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
+                    f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
-            except NameError as exc:
-                raise ImportError("Please pip install PyYAML.") from exc
