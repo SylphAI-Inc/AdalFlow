@@ -1,16 +1,15 @@
 
 [tool.poetry]
-name = "lightrag"
-version = "0.0.0-alpha.2"
-readme = "README.md"
+name = "lightrag-project"
+version = "0.1.0"
 description = "A project to develop and test the lightrag library"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 packages = [{ from = "_lightrag", include = "lightrag" }]          # empty packages list
 
 [tool.poetry.dependencies]
-python = ">=3.10, <4.0"
-# lightrag = { path = "./lightrag", develop = true }
+python = ">=3.11, <4.0"
+lightrag = { path = "lightrag", develop = true }
 torch = "^2.3.1"
 flagembedding = "^1.2.10"
 # cohere = "^5.5.7"
