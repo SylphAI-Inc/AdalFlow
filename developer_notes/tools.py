@@ -3,7 +3,6 @@ from typing import List
 import numpy as np
 import time
 import asyncio
-from lightrag.utils import setup_env  # noqa
 from lightrag.core import Component, DataClass
 from lightrag.core.types import Function, FunctionExpression
 from lightrag.core.tool_manager import ToolManager

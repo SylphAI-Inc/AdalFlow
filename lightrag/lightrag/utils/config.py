@@ -6,19 +6,19 @@ Config format: json
 Example:
     {  # attribute and its config to recreate the component
         "document_splitter": {
-            "entity_name": "DocumentSplitter",
-            "entity_config": {
+            "component_name": "DocumentSplitter",
+            "component_config": {
                 "split_by": "word",
                 "split_length": 400,
                 "split_overlap": 200,
             },
         },
         "to_embeddings": {
-            "entity_name": "ToEmbeddings",
-            "entity_config": {
+            "component_name": "ToEmbeddings",
+            "component_config": {
                 "embedder": {
-                    "entity_name": "Embedder",
-                    "entity_config": {
+                    "component_name": "Embedder",
+                    "component_config": {
                         "model_client": {
                             "entity_name": "OpenAIClient",
                             "entity_config": {},
