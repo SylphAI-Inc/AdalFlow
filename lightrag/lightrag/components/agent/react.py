@@ -164,7 +164,7 @@ class ReActAgent(Component):
             func=self._finish,
             answer="final answer: 'answer'",
         )
-        output_parser = JsonOutputParser(data_class=ouput_data_class, examples=example)
+        output_parser = JsonOutputParser(data_class=ouput_data_class, example=example)
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
@@ -320,7 +320,7 @@ class ReActAgent(Component):
 
 
 if __name__ == "__main__":
-    from lightrag.components.model_client import GroqAPIClient
+    from components.model_client import GroqAPIClient
     from lightrag.core.types import ModelClientType
     from lightrag.utils import setup_env  # noqa
 

@@ -1,8 +1,8 @@
-from .react import DEFAULT_REACT_AGENT_SYSTEM_PROMPT, ReActAgent
+from .react import DEFAULT_REACT_AGENT_SYSTEM_PROMPT, ReactAgent
 from lightrag.utils.registry import EntityMapping
 
 __all__ = [
-    "ReActAgent",
+    "ReactAgent",
     "DEFAULT_REACT_AGENT_SYSTEM_PROMPT",
 ]
 
