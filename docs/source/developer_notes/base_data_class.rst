@@ -440,7 +440,7 @@ Here is how you can do it with a ``DataClass`` subclass:
     example = TrecData2(Question("What is the capital of France?"), 1, {"key": "value"})
     print(example)
 
-    dict_example = TrecData2.to_dict(example)
+    dict_example = example.to_dict()
     print(dict_example)
 
     reconstructed = TrecData2.from_dict(dict_example)
@@ -466,10 +466,10 @@ Here is how it works with ``DataClass`` subclass:
 
 .. code-block:: python
 
-    json_str = TrecData2.to_json(example)
+    json_str = example.to_json()
     print(json_str)
 
-    yaml_str = TrecData2.to_yaml(example)
+    yaml_str = example.to_yaml(example)
     print(yaml_str)
 
     reconstructed_from_json = TrecData2.from_json(json_str)
@@ -514,10 +514,10 @@ Similarly, (1) all ``to_dict``, ``to_json``, and ``to_yaml`` works with `exclude
 
     from lightrag.core import DataClassFormatType
 
-    example_str = TrecData2.format_example_str(example, DataClassFormatType.EXAMPLE_JSON)
+    example_str = example.format_example_str(DataClassFormatType.EXAMPLE_JSON)
     print(example_str)
 
-    example_str = TrecData2.format_example_str(example, DataClassFormatType.EXAMPLE_YAML)
+    example_str = example.format_example_str(DataClassFormatType.EXAMPLE_YAML)
     print(example_str)
 
 
@@ -580,7 +580,7 @@ You can simply do a bit customization to map the dataset's key to the field name
         class_index: int = field(metadata={"desc": "class_index in range[0, 5]"})
 
         @classmethod
-        def from_dict(cls, data: Dict[str, Any]):
+        def from_dict(cls, data: Dict[str, object]):
             _COARSE_LABELS_DESC = [
                 "Abbreviation",
                 "Entity",
