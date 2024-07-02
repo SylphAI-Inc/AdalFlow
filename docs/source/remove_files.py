@@ -40,12 +40,13 @@ def remove_file(directory: str):
         "components.retriever.bm25_retriever.rst",
         "components.model_client.google_client.rst",
         "components.model_client.transformers_client.rst",
+        "components.model_client.utils.rst",
         "components.retriever.llm_retriever.rst",
         "components.agent.react.rst",
         "components.model_client.anthropic_client.rst",
         "components.output_parsers.outputs.rst",
         "components.model_client.cohere_client.rst",
-        "components.retriever.reranker_retriever.rst",
+        "components.retriever.reranker_retriever.rst",   
     ]
     try:
         for filename in os.listdir(directory):
