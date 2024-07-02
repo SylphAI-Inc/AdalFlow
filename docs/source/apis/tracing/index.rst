@@ -1,3 +1,5 @@
+.. _apis-tracing:
+
 Tracing
 ==============
 

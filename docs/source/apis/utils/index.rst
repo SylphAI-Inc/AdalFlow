@@ -1,3 +1,5 @@
+.. _apis-utils:
+
 Utils
 =============================
 
@@ -7,6 +9,8 @@ Overview
 
    utils.logger
    utils.serialization
+   utils.config
+   utils.registry
    utils.setup_env
 
 Logger
@@ -29,4 +33,3 @@ Setup_env
    :maxdepth: 1
 
    utils.setup_env
-

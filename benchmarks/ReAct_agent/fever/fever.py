@@ -9,26 +9,25 @@ Use the default prompt without any example.
 import dotenv
 from components.api_client.openai_client import OpenAIClient
 from components.agent.react_agent import ReActAgent
-from core.tool_helper import FunctionTool
+from core.func_tool import FunctionTool
 from components.api_client import GroqAPIClient
 import time
 from benchmarks.ReAct_agent.utils.tools import search, lookup, normalize_answer
 from eval.evaluators import AnswerMacthEvaluator
 import logging
 import json
-from typing import List, Union, Callable, Optional, Any, Dict
-from core.tool_helper import FunctionTool, AsyncCallable
+from typing import List, Optional, Any, Dict
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(filename='./logs/fever.log', level=logging.INFO)
+logging.basicConfig(filename="./logs/fever.log", level=logging.INFO)
 
 # load evironment
 dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 
 # Reference: paper's instruction prompt. (we use our default DEFAULT_REACT_AGENT_SYSTEM_PROMPT)
-# instruction = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types: 
+# instruction = """Solve a question answering task with interleaving Thought, Action, Observation steps. Thought can reason about the current situation, and Action can be three types:
 # (1) Search[entity], which searches the exact entity on Wikipedia and returns the first paragraph if it exists. If not, it will return some similar entities to search.
 # (2) Lookup[keyword], which returns the next sentence containing keyword in the current passage.
 # (3) Finish[answer], which returns the answer and finishes the task.
@@ -41,7 +40,7 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 FEVER_REACT_AGENT_SYSTEM_PROMPT = r"""
 {# role/task description #}
-You task is to determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION. 
+You task is to determine if there is Observation that SUPPORTS or REFUTES a Claim, or if there is NOT ENOUGH INFORMATION.
 Your can only answer SUPPORTS, REFUTES or NOT ENOUGH INFORMATION, and nothing else.
 {# REACT instructions #}
 Each step you will read the previous Thought, Action, and Observation(execution result of the action)steps and then provide the next Thought and Action.
@@ -127,7 +126,7 @@ examples = [
     Observation 3: The song peaked at number two on the Billboard Hot 100 in the United States, where it was certified Gold for 500,000 units shipped.
     Thought 4: It only says the song peaked at number two on the Billboard Hot 100, but not if it was in 2003. I am not sure if this claim is true or not.
     Action 4: finish("NOT ENOUGH INFO")
-    """
+    """,
 ]
 
 
@@ -142,21 +141,29 @@ def config_agent(model_kwargs: Dict, examples: Optional[List[str]] = []) -> ReAc
     Returns:
         ReActAgent: the configured agent
     """
-    
-    preset_prompt_kwargs = {'examples': examples} if len(examples) else {}
-    
+
+    preset_prompt_kwargs = {"examples": examples} if len(examples) else {}
+
     # set up tools
-    tools = [FunctionTool.from_defaults(fn=search), FunctionTool.from_defaults(fn=lookup)]
-    model_client = OpenAIClient if 'gpt' in model_kwargs.get('model', '') else GroqAPIClient
-    
+    tools = [
+        FunctionTool.from_defaults(fn=search),
+        FunctionTool.from_defaults(fn=lookup),
+    ]
+    model_client = (
+        OpenAIClient if "gpt" in model_kwargs.get("model", "") else GroqAPIClient
+    )
+
     return ReActAgent(
-        tools=tools, max_steps=7, model_client=model_client,
-        model_kwargs=model_kwargs, preset_prompt_kwargs=preset_prompt_kwargs,
-        template=FEVER_REACT_AGENT_SYSTEM_PROMPT
+        tools=tools,
+        max_steps=7,
+        model_client=model_client,
+        model_kwargs=model_kwargs,
+        preset_prompt_kwargs=preset_prompt_kwargs,
+        template=FEVER_REACT_AGENT_SYSTEM_PROMPT,
     )
 
 
-def run_query(agent: ReActAgent, question: str, gt_answer:str) -> Dict[str, float]:
+def run_query(agent: ReActAgent, question: str, gt_answer: str) -> Dict[str, float]:
     """
     Run queries and calculate the evaluation metrics
     """
@@ -164,19 +171,27 @@ def run_query(agent: ReActAgent, question: str, gt_answer:str) -> Dict[str, floa
     pred_answer = agent(question)
     pred_answer = normalize_answer(pred_answer)
     elapsed_time = time.time() - start_time
-    
-    logger.info(f"Question: {question}, \ngt_answer: {gt_answer}, \npred_answer: {pred_answer}\n")
 
-    em = EM_evaluator.compute_match_acc_single_query(pred_answer=pred_answer, gt_answer=gt_answer)
-    fm = FM_evaluator.compute_match_acc_single_query(pred_answer=pred_answer, gt_answer=gt_answer)
-    
-    return {
-        "EM": em,
-        "FM": fm,
-        "time": elapsed_time
-    }
-    
-def experiment(num_questions: int, dataset: List[Dict[str, Any]], model_kwargs: Dict, examples: Optional[List[str]] = []) -> Dict[str, float]:
+    logger.info(
+        f"Question: {question}, \ngt_answer: {gt_answer}, \npred_answer: {pred_answer}\n"
+    )
+
+    em = EM_evaluator.compute_match_acc_single_query(
+        pred_answer=pred_answer, gt_answer=gt_answer
+    )
+    fm = FM_evaluator.compute_match_acc_single_query(
+        pred_answer=pred_answer, gt_answer=gt_answer
+    )
+
+    return {"EM": em, "FM": fm, "time": elapsed_time}
+
+
+def experiment(
+    num_questions: int,
+    dataset: List[Dict[str, Any]],
+    model_kwargs: Dict,
+    examples: Optional[List[str]] = [],
+) -> Dict[str, float]:
     """
     Perform react agent experiment, evaluation metrics are Exact Match and Fuzzy Match
 
@@ -189,19 +204,19 @@ def experiment(num_questions: int, dataset: List[Dict[str, Any]], model_kwargs: 
     Returns:
         Dict[str, float]: return the evaluations
     """
-    
+
     logger.info(f"model_kwargs: {model_kwargs}")
-    
+
     # Initialize the agent once if configuration does not need to change each iteration
     react_agent = config_agent(model_kwargs=model_kwargs, examples=examples)
     total_metrics = {"N": 0, "EM": 0, "FM": 0, "time": 0}
     for i in range(num_questions):
         question = dataset[i]["claim"]
         gt_answer = normalize_answer(dataset[i]["label"])
-        
+
         result = run_query(react_agent, question, gt_answer)
 
-        total_metrics["N"] += 1 # number of questions
+        total_metrics["N"] += 1  # number of questions
         total_metrics["EM"] += result["EM"]
         total_metrics["FM"] += result["FM"]
         total_metrics["time"] += result["time"]
@@ -213,54 +228,60 @@ def experiment(num_questions: int, dataset: List[Dict[str, Any]], model_kwargs: 
     return average_metrics
 
 
-
 # setup evaluators
 EM_evaluator = AnswerMacthEvaluator(type="exact_match")
 FM_evaluator = AnswerMacthEvaluator(type="fuzzy_match")
 
 # load test data
-file = open('./tests/benchmark/ReAct_agent/paper_data/paper_dev_10.json')
+file = open("./tests/benchmark/ReAct_agent/paper_data/paper_dev_10.json")
 dataset = json.load(file)
 
 # define the arguments, follow the paper's argument settings
 gpt_3_turbo_model_kwargs = {
-        "model": "gpt-3.5-turbo",
-        "temperature": 0.0,
-        "max_tokens": 100,
-        "top_p": 1,
-        "frequency_penalty":0.0,
-        "presence_penalty":0.0,
-    }
+    "model": "gpt-3.5-turbo",
+    "temperature": 0.0,
+    "max_tokens": 100,
+    "top_p": 1,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+}
 
 gpt_4o_model_kwargs = {
-        "model": "gpt-4o",
-        "temperature": 0.0,
-        "max_tokens": 100,
-        "top_p": 1,
-        "frequency_penalty":0.0,
-        "presence_penalty":0.0,
-    }
+    "model": "gpt-4o",
+    "temperature": 0.0,
+    "max_tokens": 100,
+    "top_p": 1,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+}
 gpt_4_turbo_model_kwargs = {
-        "model": "gpt-4-turbo-preview",
-        "temperature": 0.0,
-        "max_tokens": 100,
-        "top_p": 1,
-        "frequency_penalty":0.0,
-        "presence_penalty":0.0,
-    }
+    "model": "gpt-4-turbo-preview",
+    "temperature": 0.0,
+    "max_tokens": 100,
+    "top_p": 1,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+}
 
 llama3_model_kwargs = {
-        "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
-        "temperature": 0.0,
-    }
+    "model": "llama3-70b-8192",  # llama3 is not good with string formatting, llama3 8b is also bad at following instruction, 70b is better but still not as good as gpt-3.5-turbo
+    "temperature": 0.0,
+}
 
 num_questions = 10
 # gpt_3_5_zero_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_3_turbo_model_kwargs)
 # gpt_3_5_3_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_3_turbo_model_kwargs, examples=examples)
 # gpt_3_5_6_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_3_turbo_model_kwargs, examples=examples)
 
-gpt_4o_zero_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_4o_model_kwargs)
-gpt_4o_3_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_4o_model_kwargs, examples=examples)
+gpt_4o_zero_shot = experiment(
+    num_questions=num_questions, dataset=dataset, model_kwargs=gpt_4o_model_kwargs
+)
+gpt_4o_3_shot = experiment(
+    num_questions=num_questions,
+    dataset=dataset,
+    model_kwargs=gpt_4o_model_kwargs,
+    examples=examples,
+)
 
 # gpt_4_turbo_zero_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_4_turbo_model_kwargs)
 # gpt_4_turbo_3_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=gpt_4_turbo_model_kwargs, examples=examples)
@@ -268,17 +289,16 @@ gpt_4o_3_shot = experiment(num_questions=num_questions, dataset=dataset, model_k
 # llama3_zero_shot = experiment(num_questions=num_questions, dataset=dataset, model_kwargs=llama3_model_kwargs)
 # llama3_3_shot = experiment(num_questions=num_questions, dataset=dataset,  model_kwargs=llama3_model_kwargs, examples=examples)
 
-# print(f"gpt_3_5_zero_shot: {gpt_3_5_zero_shot}")    
-# print(f"gpt_3_5_3_shot: {gpt_3_5_3_shot}")    
-# print(f"gpt_3_5_6_shot: {gpt_3_5_6_shot}")  
+# print(f"gpt_3_5_zero_shot: {gpt_3_5_zero_shot}")
+# print(f"gpt_3_5_3_shot: {gpt_3_5_3_shot}")
+# print(f"gpt_3_5_6_shot: {gpt_3_5_6_shot}")
 print(f"gpt_4o_zero_shot: {gpt_4o_zero_shot}")
 print(f"gpt_4o_3_shot: {gpt_4o_3_shot}")
 # print(f"gpt_4_turbo_zero_shot: {gpt_4_turbo_zero_shot}")
 # print(f"gpt_4_turbo_3_shot: {gpt_4_turbo_3_shot}")
-# print(f"llama3_zero_shot: {llama3_zero_shot}")    
-# print(f"llama3_3_shot: {llama3_3_shot}")    
+# print(f"llama3_zero_shot: {llama3_zero_shot}")
+# print(f"llama3_3_shot: {llama3_3_shot}")
 
-  
 
 """
 NOTE: llama3 time might not accurate because it has request limit error

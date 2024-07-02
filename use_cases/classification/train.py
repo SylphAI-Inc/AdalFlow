@@ -4,9 +4,7 @@ from copy import deepcopy
 from torch.utils.data import DataLoader
 
 from lightrag.components.model_client import (
-    GroqAPIClient,
     OpenAIClient,
-    GoogleGenAIClient,
 )
 from lightrag.optim import BootstrapFewShot
 from lightrag.optim.sampler import RandomSampler, ClassSampler
@@ -14,7 +12,7 @@ from lightrag.optim.llm_augment import LLMAugmenter
 from lightrag.optim.llm_optimizer import LLMOptimizer
 
 from lightrag.core.component import Component
-from lightrag.utils import save, load, save_json, load_json, save_json_from_dict
+from lightrag.utils.file_io import save, save_json
 
 
 from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
@@ -334,7 +332,7 @@ class TrecTrainer(Component):
         self.few_shot_optimizer_random.init()
         save(
             self.task.state_dict(),
-            f"use_cases/classification/checkpoints/task_start",
+            "use_cases/classification/checkpoints/task_start",
         )
 
         acc, macro_f1, best_weights_per_class = self.eval()
@@ -344,7 +342,7 @@ class TrecTrainer(Component):
         print(
             f"Test Accuracy Start: {acc_test}, F1: {macro_f1_test}, score: {acc_test, macro_f1_test}, weights_per_class: {weights_per_class_test}"
         )
-        start_shots = 3
+        # start_shots = 3
 
         def get_replace_shots(
             start_shot: int,
@@ -386,7 +384,7 @@ class TrecTrainer(Component):
                 print(f"best_weights_per_class: {best_weights_per_class}")
             else:
                 self.few_shot_optimizer_random.reset_parameter()
-                print(f"reset_parameter")
+                print("reset_parameter")
 
         acc, macro_f1, weights_per_class = self.test()
         print(
@@ -396,7 +394,7 @@ class TrecTrainer(Component):
     def train_instruction(self, max_steps: int = 5) -> None:
         # better to provide a manual instruction
         # TODO: how to save the states.
-        top_5_instructions = []
+        # top_5_instructions = []
         self.task.train()
         best_score: float = 0.0
         for i, train_batch in enumerate(self.data_loader):
@@ -415,7 +413,7 @@ class TrecTrainer(Component):
                 print(f"best_parameters: {self.params['generator.task_desc_str']}")
             else:
                 self.instruction_optimier.reset_parameter()
-                print(f"reset_parameter")
+                print("reset_parameter")
         # test the best instruction
         acc, macro_f1, weights_per_class = self.test()
         print(
@@ -424,12 +422,12 @@ class TrecTrainer(Component):
         # save the best instruction
         save(
             self.task.state_dict(),
-            f"use_cases/classification/checkpoints/task_instruction/state_dict",
+            "use_cases/classification/checkpoints/task_instruction/state_dict",
         )
         # save all instructions history from the optimizer
         save(
             self.instruction_optimier.instruction_history,
-            f"use_cases/classification/checkpoints/task_instruction/instruction_history",
+            "use_cases/classification/checkpoints/task_instruction/instruction_history",
         )
 
     def train(self, shots: int, max_steps: int = 5, start_shots: int = 3) -> None:
@@ -443,7 +441,7 @@ class TrecTrainer(Component):
         self.few_shot_optimizer.init()
         save(
             self.task.state_dict(),
-            f"use_cases/classification/checkpoints/task_start",
+            "use_cases/classification/checkpoints/task_start",
         )
 
         acc, macro_f1, best_weights_per_class = self.eval()  # 6 shots, class_balanced
@@ -516,7 +514,7 @@ class TrecTrainer(Component):
                 print(f"best_weights_per_class: {best_weights_per_class}")
             else:
                 self.few_shot_optimizer.reset_parameter()
-                print(f"reset_parameter")
+                print("reset_parameter")
 
         # # final evaluation
         acc, macro_f1, weights_per_class = self.test()
@@ -527,7 +525,6 @@ class TrecTrainer(Component):
 
 
 if __name__ == "__main__":
-    import sys
 
     from use_cases.classification.config_log import log
     from lightrag.utils import save_json
@@ -550,7 +547,7 @@ if __name__ == "__main__":
     # and to debug components
     save_json(
         trainer.to_dict(),
-        f"use_cases/classification/traces/trainer_states.json",
+        "use_cases/classification/traces/trainer_states.json",
     )
     log.info(f"trainer to dict: {trainer.to_dict()}")
     # or log a str representation, mostly just the structure of the trainer

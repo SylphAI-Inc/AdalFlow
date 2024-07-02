@@ -22,11 +22,12 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/core --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates	
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/eval --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/utils --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/tracing --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/lightrag/core --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/lightrag/eval --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../lightrag/lightrag/optim --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/lightrag/tracing --separate --force
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
