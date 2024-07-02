@@ -47,6 +47,11 @@ def remove_file(directory: str):
         "components.output_parsers.outputs.rst",
         "components.model_client.cohere_client.rst",
         "components.retriever.reranker_retriever.rst",   
+        "components.data_process.data_components.rst",
+        "components.data_process.text_splitter.rst",
+        "components.memory.memory.rst",
+        "components.retriever.postgres_retriever.rst"
+        
     ]
     try:
         for filename in os.listdir(directory):
