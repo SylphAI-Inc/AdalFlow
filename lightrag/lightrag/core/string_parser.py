@@ -1,4 +1,7 @@
-"""
+"""Extract and convert JSON, YAML, and list strings to Python objects.
+
+It can be used as output_processor for generator.
+
 LLM applications requires lots of string processing. Such as the text output needed to be parsed into:
 (1) JSON format or other formats
 (2) SQL/Python valid format
@@ -7,7 +10,7 @@ LLM applications requires lots of string processing. Such as the text output nee
 We design this these string_parser modules to be generic to any input text without differentiating them as input text or output text.
 """
 
-from typing import Any, Dict, List
+from typing import Dict, List, Union
 import logging
 
 from lightrag.core.component import Component
@@ -15,9 +18,15 @@ import lightrag.core.functional as F
 
 log = logging.getLogger(__name__)
 
+LIST_PARSER_OUTPUT_TYPE = List[object]
+
 
 class ListParser(Component):
-    __doc__ = r"""To extract list strings from text and parse them into a list object.
+    __doc__ = r"""Extracts list `[...]` strings from text and parses them into a list object.
+
+    Args:
+        add_missing_right_bracket (bool, optional): Add a missing right bracket to the list string. Defaults to True.
+
 
     Examples:
 
@@ -32,7 +41,7 @@ class ListParser(Component):
         super().__init__()
         self.add_missing_right_bracket = add_missing_right_bracket
 
-    def __call__(self, input: str) -> List[Any]:
+    def __call__(self, input: str) -> LIST_PARSER_OUTPUT_TYPE:
         input = input.strip()
         try:
             list_str = F.extract_list_str(input, self.add_missing_right_bracket)
@@ -42,11 +51,14 @@ class ListParser(Component):
             raise ValueError(f"Error: {e}")
 
 
-JSON_PARSER_OUTPUT_TYPE = Dict[str, object]
+JSON_PARSER_OUTPUT_TYPE = Union[Dict[str, object], List[object]]
 
 
 class JsonParser(Component):
-    __doc__ = r"""To extract JSON strings from text and parse them into a JSON object.
+    __doc__ = r"""Extracts JSON strings `{...}` or `[...]` from text and parses them into a JSON object.
+
+    It can output either a dictionary or a list as they are both valid JSON objects.
+
 
     Examples:
 
@@ -73,7 +85,7 @@ class JsonParser(Component):
             raise ValueError(f"Error: {e}")
 
 
-YAML_PARSER_OUTPUT_TYPE = Dict[str, object]
+YAML_PARSER_OUTPUT_TYPE = JSON_PARSER_OUTPUT_TYPE
 
 
 class YamlParser(Component):

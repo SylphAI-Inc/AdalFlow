@@ -1,8 +1,4 @@
-"""The most commonly used output parsers for the Generator.
-
-Note: Even with OutputParser for output_format_str formatting and the response parsing, it is not 100% guaranteed
-as user query can impact the output. Test your code well!
-"""
+"""The most commonly used output parsers for the Generator."""
 
 from dataclasses import is_dataclass
 from typing import Dict, Any, Optional, List
@@ -14,13 +10,6 @@ from lightrag.core.string_parser import YamlParser, ListParser, JsonParser
 from lightrag.core.base_data_class import DataClass, DataClassFormatType
 from lightrag.core.base_data_class import ExcludeType
 
-
-# TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.
-# setup: Why couldn't the bicycle stand up by itself?
-# punchline: Because it was two-tired.
-#
-# setup: What do you call a fake noodle?
-# punchline: An impasta.
 
 __all__ = [
     "OutputParser",
@@ -156,7 +145,7 @@ class YamlOutputParser(OutputParser):
                 f"Provided example is not an instance of the data class: {data_class}"
             )
         self._exclude_fields = exclude_fields
-        self.data_class_for_yaml = data_class
+        self.data_class_for_yaml: DataClass = data_class
         self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
         self.output_processors = YamlParser()
         self.examples = examples
@@ -221,7 +210,7 @@ class JsonOutputParser(OutputParser):
             )
         self._exclude_fields = exclude_fields
         template = JSON_OUTPUT_FORMAT
-        self.data_class_for_json = data_class
+        self.data_class_for_json: DataClass = data_class
         self.json_output_format_prompt = Prompt(template=template)
         self.output_processors = JsonParser()
         self.examples = examples

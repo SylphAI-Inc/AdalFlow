@@ -801,11 +801,27 @@ def generate_readable_key_for_function(fn: Callable) -> str:
     return f"{module_name}.{function_name}"
 
 
+########################################################################################
+# For Parser components
+########################################################################################
+
+
 def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
-    """
-    Extract JSON string from text.
-    NOTE: Only handles the first JSON object or array found in the text. And it expects at least one JSON object in the text.
+    """Extract JSON string from text.
+
+    It will extract the first JSON object or array found in the text by searching for { or [.
     If right brace is not found, we add one to the end of the string.
+
+    Args:
+        text (str): The text containing potential JSON data.
+        add_missing_right_brace (bool): Whether to add a missing right brace if it is missing.
+
+    Returns:
+        str: The extracted JSON string.
+
+    Raises:
+        ValueError: If no JSON object or array is found or if the JSON extraction is incomplete
+                    without the option to add a missing brace
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
     text = text.strip()
@@ -846,8 +862,9 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
 
 
 def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
-    """
-    Extract the first complete list string from the provided text. If the list string is incomplete
+    """Extract the first complete list string from the provided text.
+
+    If the list string is incomplete
     (missing the closing bracket), an option allows adding a closing bracket at the end.
 
     Args:
@@ -894,7 +911,18 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
 def extract_yaml_str(text: str) -> str:
     r"""Extract YAML string from text.
 
-    In default, we use regex pattern to match yaml code blocks within triple backticks with optional yaml or yml prefix.
+    .. note::
+        As yaml string does not have a format like JSON which we can extract from {} or [],
+        it is crucial to have a format such as ```yaml``` or ```yml``` to indicate the start of the yaml string.
+
+    Args:
+        text (str): The text containing potential YAML data.
+
+    Returns:
+        str: The extracted YAML string.
+
+    Raises:
+        ValueError: If no YAML string is found in the text.
     """
     try:
         yaml_re_pattern: re.Pattern = re.compile(
@@ -932,8 +960,8 @@ def fix_json_escaped_single_quotes(json_str: str) -> str:
 
 
 def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
-    r"""
-    Parse a YAML string to a Python object.
+    r"""Parse a YAML string to a Python object.
+
     yaml_str: has to be a valid YAML string.
     """
     yaml_str = yaml_str.strip()
@@ -952,6 +980,7 @@ def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
 
 def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
     r"""Parse a JSON string to a Python object.
+
     json_str: has to be a valid JSON string. Either {} or [].
     """
     json_str = json_str.strip()

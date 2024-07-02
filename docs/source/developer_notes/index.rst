@@ -45,6 +45,7 @@ We have a clear :doc:`lightrag_design_philosophy`, which results in this :doc:`c
 
 Building
 -------------------
+
 Base classes
 ~~~~~~~~~~~~~~~~~~~~~~
 Code path: :ref:`lightrag.core <apis-core>`.
@@ -96,11 +97,11 @@ Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
    * - :doc:`prompt`
      - Built on `jinja2`, it programmatically and flexibly formats prompts as input to the generator.
    * - :doc:`model_client`
-     - ``ModelClient`` is the protocol and base class for LightRAG to **integrate all models**, either APIs or local, LLMs or Embedding models or any others.
+     - The standard `protocol` to intergrate LLMs, Embedding models, ranking models, etc into respective `orchestrator` components, either via APIs or local to reach to `model agnostic`.
    * - :doc:`generator`
-     - The orchestrator for LLM prediction. It streamlines three components: `ModelClient`, `Prompt`, and `output_processors` and works with optimizer for prompt optimization.
+     - The `orchestrator` for LLM prediction. It streamlines three components: `ModelClient`, `Prompt`, and `output_processors` and works with optimizer for prompt optimization.
    * - :doc:`output_parsers`
-     - The component that parses the output string to structured data.
+     - The `interpreter` of the LLM output. The component that parses the output string to structured data.
    * - :doc:`embedder`
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
@@ -196,11 +197,24 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 Optimizing
 -------------------
 
-Datasets and Evaulation
+Evaluating
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`datasets`
+     - The datasets used in the evaluation.
+   * - :doc:`evaluation`
+     - The evaluation metrics and methods.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Datasets and Evaulation
+   :caption: Evaluating
+   :hidden:
 
 
    datasets
@@ -208,11 +222,27 @@ Datasets and Evaulation
    evaluation
 
 
-Optimizer & Trainer
+Training
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Tutorials in this section are coming soon!**
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`parameter`
+     - The parameter class to optimize.
+   * - :doc:`optimizer`
+     - The optimizer to optimize the parameters.
+   * - :doc:`trainer`
+     - The trainer to train the model.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Optimizer & Trainer
+   :caption: Training
+   :hidden:
 
    parameter
 
@@ -222,7 +252,7 @@ Optimizer & Trainer
 
 Logging & Tracing & Configurations
 ------------------------------------
-Code path: ``lightrag.utils``.
+Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-tracing>`.
 
 .. list-table::
    :widths: 20 80
