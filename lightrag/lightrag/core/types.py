@@ -205,9 +205,11 @@ class GeneratorOutput(DataClass, Generic[T_co]):
     raw_response: Optional[str] = field(
         default=None, metadata={"desc": "Raw string response from the model"}
     )  # parsed from model client response
+    metadata: Optional[Dict[str, object]] = field(
+        default=None, metadata={"desc": "Additional metadata"}
+    )
 
 
-GeneratorInputType = str
 GeneratorOutputType = GeneratorOutput[object]
 
 #######################################################################################

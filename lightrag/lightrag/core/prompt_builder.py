@@ -133,7 +133,7 @@ class Prompt(Component):
             logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
             prompt_str = self.jinja2_template.render(**pass_kwargs)
-            print("Prompt:\n")
+            print("Prompt:\n______________________")
             print(prompt_str)
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")

@@ -24,6 +24,158 @@ class SimpleQA(Component):
         return await self.generator.acall({"input_str": query})
 
 
-qa = SimpleQA()
-answer = qa("What is LightRAG?")
-print(qa)
+def minimum_generator():
+    from lightrag.core import Generator
+    from lightrag.components.model_client import GroqAPIClient
+
+    generator = Generator(
+        model_client=GroqAPIClient(),
+        model_kwargs={"model": "llama3-8b-8192"},
+    )
+    print(generator)
+    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
+    generator.print_prompt(**prompt_kwargs)
+    output = generator(
+        prompt_kwargs=prompt_kwargs,
+    )
+    print(output)
+
+
+def use_a_json_parser():
+    from lightrag.core import Generator
+    from lightrag.core.types import GeneratorOutput
+    from lightrag.components.model_client import OpenAIClient
+    from lightrag.core.string_parser import JsonParser
+
+    output_format_str = """Your output should be formatted as a standard JSON object with two keys:
+    {
+        "explaination": "A brief explaination of the concept in one sentence.",
+        "example": "An example of the concept in a sentence."
+    }
+    """
+
+    generator = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={"model": "gpt-3.5-turbo"},
+        prompt_kwargs={"output_format_str": output_format_str},
+        output_processors=JsonParser(),
+    )
+
+    prompt_kwargs = {"input_str": "What is LLM?"}
+    generator.print_prompt(**prompt_kwargs)
+
+    output: GeneratorOutput = generator(prompt_kwargs=prompt_kwargs)
+    print(output)
+    print(type(output.data))
+    print(output.data)
+
+
+def use_its_own_template():
+    from lightrag.core import Generator
+    from lightrag.components.model_client import GroqAPIClient
+
+    template = r"""<SYS>{{task_desc_str}}</SYS>
+    User: {{input_str}}
+    You:"""
+    generator = Generator(
+        model_client=GroqAPIClient(),
+        model_kwargs={"model": "llama3-8b-8192"},
+        template=template,
+        prompt_kwargs={"task_desc_str": "You are a helpful assistant"},
+    )
+
+    prompt_kwargs = {"input_str": "What is LLM?"}
+
+    generator.print_prompt(
+        **prompt_kwargs,
+    )
+    output = generator(
+        prompt_kwargs=prompt_kwargs,
+    )
+    print(output)
+
+
+def use_model_client_enum_to_switch_client():
+    from lightrag.core import Generator
+    from lightrag.core.types import ModelClientType
+
+    generator = Generator(
+        model_client=ModelClientType.OPENAI(),  # or ModelClientType.GROQ()
+        model_kwargs={"model": "gpt-3.5-turbo"},
+    )
+    print(generator)
+    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
+    generator.print_prompt(**prompt_kwargs)
+    output = generator(
+        prompt_kwargs=prompt_kwargs,
+    )
+    print(output)
+
+
+def create_purely_from_config():
+
+    from lightrag.utils.config import new_component
+    from lightrag.core import Generator
+
+    config = {
+        "generator": {
+            "component_name": "Generator",
+            "component_config": {
+                "model_client": {
+                    "component_name": "GroqAPIClient",
+                    "component_config": {},
+                },
+                "model_kwargs": {
+                    "model": "llama3-8b-8192",
+                },
+            },
+        }
+    }
+
+    generator: Generator = new_component(config["generator"])
+    print(generator)
+
+    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
+    generator.print_prompt(**prompt_kwargs)
+    output = generator(
+        prompt_kwargs=prompt_kwargs,
+    )
+    print(output)
+
+
+def create_purely_from_config_2():
+
+    from lightrag.core import Generator
+
+    config = {
+        "model_client": {
+            "component_name": "GroqAPIClient",
+            "component_config": {},
+        },
+        "model_kwargs": {
+            "model": "llama3-8b-8192",
+        },
+    }
+
+    generator: Generator = Generator.from_config(config)
+    print(generator)
+
+    prompt_kwargs = {"input_str": "What is LLM? Explain in one sentence."}
+    generator.print_prompt(**prompt_kwargs)
+    output = generator(
+        prompt_kwargs=prompt_kwargs,
+    )
+    print(output)
+
+
+if __name__ == "__main__":
+    qa = SimpleQA()
+    answer = qa("What is LightRAG?")
+    print(qa)
+
+    minimum_generator()
+    use_a_json_parser()
+    use_its_own_template()
+    use_model_client_enum_to_switch_client()
+    create_purely_from_config()
+    create_purely_from_config_2()

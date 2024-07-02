@@ -10,7 +10,6 @@ from lightrag.core.types import (
 from lightrag.core.component import Component
 from lightrag.core.parameter import Parameter
 from lightrag.core.prompt_builder import Prompt
-from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
@@ -146,7 +145,7 @@ class Generator(Component):
     #     prompt_text = self.prompt.call(**kwargs)
     #     return prompt_text
 
-    def update_default_model_kwargs(self, **model_kwargs) -> Dict:
+    def _compose_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
         The model configuration exclude the input itself.
         Combine the default model, model_kwargs with the passed model_kwargs.
@@ -156,7 +155,11 @@ class Generator(Component):
         combine_kwargs(model_kwargs) => {"temperature": 0.5, "model": "gpt-3.5-turbo"}
 
         """
-        return compose_model_kwargs(self.model_kwargs, model_kwargs)
+        combined_model_kwargs = self.model_kwargs.copy()
+
+        if model_kwargs:
+            combined_model_kwargs.update(model_kwargs)
+        return combined_model_kwargs
 
     def print_prompt(self, **kwargs) -> str:
         self.prompt.print_prompt(**kwargs)
@@ -197,7 +200,7 @@ class Generator(Component):
         system_prompt_str = self.prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
-        composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
+        composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
@@ -229,10 +232,16 @@ class Generator(Component):
         log.info(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        completion = self.model_client.call(
-            api_kwargs=api_kwargs, model_type=self.model_type
-        )
-        output = self._post_call(completion)
+        output: GeneratorOutputType = None
+        # call the model client
+        try:
+            completion = self.model_client.call(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+            output = self._post_call(completion)
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            output = GeneratorOutput(error=str(e))
 
         log.info(f"output: {output}")
         return output

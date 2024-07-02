@@ -141,7 +141,9 @@ class DataClass:
 
         # Define a dataclass
         from lightrag.core import DataClass
+        from dataclasses import dataclass, field
 
+        @dataclass
         class MyOutputs(DataClass):
             age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
             name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
