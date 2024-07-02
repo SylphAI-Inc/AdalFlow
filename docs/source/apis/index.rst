@@ -10,26 +10,28 @@ Core
 The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.
 
 .. autosummary::
-
-   core.base_data_class
-   core.model_client
    core.component
-   core.data_components
-   core.db
+   core.base_data_class
    core.default_prompt_template
-   core.embedder
+   core.model_client
+   
+   .. core.data_components
+
+   core.db
    core.functional
+   
    core.generator
-   core.memory
-   core.parameter
-   core.prompt_builder
-   core.retriever
    core.string_parser
+   core.embedder
+   core.retriever
+   .. core.memory
+
+   core.prompt_builder
    core.tokenizer
    core.func_tool
    core.tool_manager
    core.types
-
+   core.parameter
 
 Components
 -----------
@@ -38,13 +40,28 @@ The components section of the LightRAG API documentation outlines the detailed s
 
 .. autosummary::
 
-   components.agent
-   components.model_client
-   componnets.data_process
-   .. components.reasoning
-   
-   components.retriever
-   components.output_parsers
+   components.agent.react
+
+   components.model_client.anthropic_client
+   components.model_client.cohere_client
+   components.model_client.google_client
+   components.model_client.groq_client
+   components.model_client.openai_client
+   components.model_client.transformers_client
+   components.model_client.utils
+
+   components.data_process.data_components
+   components.data_process.text_splitter
+
+   components.reasoning.chain_of_thought
+
+   components.retriever.bm25_retriever
+   components.retriever.faiss_retriever
+   components.retriever.llm_retriever
+   components.retriever.postgres_retriever
+   components.retriever.reranker_retriever
+
+   components.output_parsers.outputs
 
 
 Evaluation
