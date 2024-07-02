@@ -21,7 +21,7 @@ Design
     :alt: LightRAG generator design
     :width: 700px
 
-    Generator-The orchestrator of LLM prediction
+    Generator-The orchestrator for LLM prediction
 
 :class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
 
@@ -214,8 +214,8 @@ We intialized the prompt with one variable `task_desc_str` and it is further com
 
 .. code-block:: python
 
-    template = r"""<SYS>{task_desc_str}</SYS>
-    User: {input_str}
+    template = r"""<SYS>{{task_desc_str}}</SYS>
+    User: {{input_str}}
     You:"""
     generator = Generator(
         model_client=GroqAPIClient(),
