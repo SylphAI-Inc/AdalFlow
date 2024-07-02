@@ -97,6 +97,7 @@ Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
    * - :doc:`model_client`
      - ``ModelClient`` is the protocol and base class for LightRAG to **integrate all models**, either APIs or local, LLMs or Embedding models or any others.
    * - :doc:`generator`
+     - The orchestrator for LLM prediction. It streamlines three components: `ModelClient`, `Prompt`, and `output_processors` and works with optimizer for prompt optimization.
      - The **center component** that orchestrates the model client(LLMs in particular), prompt, and output processors for format parsing or any post processing.
    * - :doc:`output_parsers`
      - The component that parses the output string to structured data.
