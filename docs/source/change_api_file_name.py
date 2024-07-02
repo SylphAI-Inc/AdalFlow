@@ -1,12 +1,14 @@
 import os
 import re
 
-def update_file_content(directory):
-    module_name = directory.split("/")[-1]
-    
+def update_file_content(directory: str):
+    module_name = directory.split("/")[-1] if "_autosummary" not in directory else "components"
+    # print(f"directory: {directory}; module_name {module_name}")
     for filename in os.listdir(directory):
+        # print(filename)
         if filename.endswith(".rst") and "index" not in filename:
             filepath = os.path.join(directory, filename)
+            # print(filepath)
             with open(filepath, "r+", encoding='utf-8') as file:
                 lines = file.readlines()
                 modified = False  # To track if modifications have been made
@@ -20,6 +22,7 @@ def update_file_content(directory):
                         if line.startswith(module_name):
                             # Replace the full module path with only the last segment
                             new_title = line.split('.')[-1]
+                            # print(f"new_title: {new_title}")
                             lines[i] = new_title + '\n'  # Update the title line
                             modified = True  # Mark that modification has been made
                             # No need to break since we are preserving the rest of the content
@@ -31,14 +34,7 @@ def update_file_content(directory):
                     file.truncate()  # Ensure the file is cut off at the new end if it's shorter
                     print(f"Updated {filepath}")
                 
-# def rename_files(directory):
-#     remove_prefix = directory.split("/")[-1] + "."
-#     for filename in os.listdir(directory):
-#         if filename.endswith(".rst") and remove_prefix in filename:
-#             new_filename = filename.replace(remove_prefix, '')
-#             os.rename(os.path.join(directory, filename), os.path.join(directory, new_filename))
-#             print(f"Renamed {filename} to {new_filename}")
-            
+
 
 if __name__ == "__main__":
     # Specify the directory or directories you want to process
@@ -49,8 +45,7 @@ if __name__ == "__main__":
         "./source/apis/eval",
         "./source/apis/tracing",
         "./source/apis/optim",
+        # "./source/apis/components/_autosummary",
     ]
     for diretory in directories:
-        update_file_content(diretory)
-        # rename_files(diretory)
-    #     rename_and_update_files(dir)
+        update_file_content(diretory)   
