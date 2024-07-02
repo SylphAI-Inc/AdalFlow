@@ -1,0 +1,68 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - xiaoyi_doc  # Ensure this is the branch where you commit documentation updates
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies using Poetry
+        run: |
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Build documentation using Makefile
+        run: |
+          echo "Building documentation from: $(pwd)"
+          ls -l  # Debug: List current directory contents
+          poetry run make -C docs html
+        working-directory: ${{ github.workspace }}
+
+      - name: List built documentation
+        run: |
+          find ./build/ -type f
+        working-directory: ${{ github.workspace }}/docs
+
+      - name: Create .nojekyll file
+        run: |
+          touch .nojekyll
+        working-directory: ${{ github.workspace }}/docs/build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./docs/build/
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+
+      # - name: Debug Output
+      #   run: |
+      #     pwd  # Print the current working directory
+      #     ls -l  # List files in the build directory
+      #     cat ./source/conf.py  # Show Sphinx config file for debugging
+      #   working-directory: ${{ github.workspace }}/docs/build

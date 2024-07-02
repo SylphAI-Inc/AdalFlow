@@ -1,7 +1,13 @@
 Data & RAG
 ====================
 
-    The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
+
+The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
 We will conver:
 
 * Data models on how to represent important data.
@@ -22,7 +28,7 @@ However, in real-world LLM applications, we can not avoid to deal with data stor
 4. When it comes to applications where states matter, like games and chatbots, we need to store the states and conversational history.
 
 
-.. figure:: /_static/database.png
+.. figure:: /_static/images/database.png
     :align: center
     :alt: Data model and database
     :width: 620px

@@ -7,8 +7,6 @@ from lightrag.core.component import Component
 
 from lightrag.components.model_client import AnthropicAPIClient
 
-import lightrag.utils.setup_env
-
 
 class SimpleQA(Component):
     def __init__(self):

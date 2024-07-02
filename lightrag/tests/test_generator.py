@@ -1,4 +1,3 @@
-import pytest
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, Mock
 import os
@@ -7,15 +6,17 @@ import shutil
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.generator import Generator
 
+
 from lightrag.core.model_client import ModelClient
 from lightrag.tracing import GeneratorStateLogger
-import lightrag.utils.setup_env
 
 
 class TestGenerator(IsolatedAsyncioTestCase):
     def setUp(self):
         # Assuming that OpenAIClient is correctly mocked and passed to Generator
-        with patch("core.model_client.ModelClient", spec=ModelClient) as MockAPI:
+        with patch(
+            "lightrag.core.model_client.ModelClient", spec=ModelClient
+        ) as MockAPI:
             mock_api_client = Mock(ModelClient)
             MockAPI.return_value = mock_api_client
             mock_api_client.call.return_value = "Generated text response"
@@ -75,7 +76,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         # Update the prompt variable and value
         preset_prompt_kwargs = {"input_str": "Hello, updated world!"}
         generator = Generator(
-            model_client=self.mock_api_client, preset_prompt_kwargs=preset_prompt_kwargs
+            model_client=self.mock_api_client, prompt_kwargs=preset_prompt_kwargs
         )
 
         prompt_logger.log_prompt(generator=generator, name="Test Generator")
@@ -84,7 +85,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             prompt_logger._trace_map["Test Generator"][1].prompt_states["data"][
-                "preset_prompt_kwargs"
+                "prompt_kwargs"
             ]["input_str"],
             "Hello, updated world!",
         )

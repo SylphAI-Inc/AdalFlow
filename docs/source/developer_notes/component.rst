@@ -1,11 +1,17 @@
 Component
 ============
+
+.. .. admonition:: Author
+..    :class: highlight
+
+..    `Li Yin <https://github.com/liyin2015>`_
+
 What you will learn?
 
 1. What is ``Component`` and why is it designed this way?
 2. How to use ``Component`` along with helper classes like ``FunComponent`` and ``Sequential``?
 
-Component
+Design
 ---------------------------------------
  :ref:`Component<core-component>` is to LLM task pipelines what ``nn.Module`` is to PyTorch models.
 
@@ -59,6 +65,25 @@ Here is the comparison of writing a PyTorch model and a LightRAG task component.
                 def call(self, query: str) -> str:
                     return self.doc(prompt_kwargs={"input_str": query}).data
 
+
+As the foundamental building block in LLM task pipeline, the component is designed to serve five main purposes:
+
+1. **Standarize the interface for all components.** This includes the `__init__` method, the `call` method for synchronous call, the `acall` method for asynchronous call, and the `__call__` which in default calls the `call` method.
+2. **Provide a unified way to visualize the structure of the task pipeline** via `__repr__` method. And subclass can additional add `_extra_repr` method to add more information than the default `__repr__` method.
+3. **Tracks, adds all subcomponents and parameters automatically and recursively** to assistant the building and optimizing process of the task pipeline.
+4. **Manages the states and serialization**, with `state_dict` and `load_state_dict` methods in particular for parameters and `to_dict` method for serialization of all the states fall into the component's attributes, from subcomponents to parameters, to any other attributes of various data type.
+5. **Make all components configurable from using `json` or `yaml` files**. This is especially useful for experimenting or building data processing pipelines.
+
+These features are key to keep LightRAG pipeline transparent, flexible, and easy to use.
+By subclassing from the `Component` class, you will get most of these features out of the box.
+
+
+Component in Action
+---------------------------------------
+
+.. Transparency
+.. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 In this note, we are creating an AI doctor to answer medical questions.
 Run the ``DocQA`` on a query:
 
@@ -73,22 +98,8 @@ The response is:
 
     As a doctor, the best treatment for a headache would depend on the underlying cause of the headache. Typically, over-the-counter pain relievers such as acetaminophen, ibuprofen, or aspirin can help to alleviate the pain. However, if the headache is severe or persistent, it is important to see a doctor for further evaluation and to determine the most appropriate treatment option. Other treatment options may include prescription medications, lifestyle modifications, stress management techniques, and relaxation techniques.
 
-As the foundamental building block in LLM task pipeline, the component is designed to serve four main purposes:
-
-1. **Standarize the interface for all components.** This includes the `__init__` method, the `call` method for synchronous call, the `acall` method for asynchronous call, and the `__call__` which in default calls the `call` method.
-2. **Provide a unified way to visualize the structure of the task pipeline** via `__repr__` method. And subclass can additional add `_extra_repr` method to add more information than the default `__repr__` method.
-3. **Tracks, adds all subcomponents and parameters automatically and recursively** to assistant the building and optimizing process of the task pipeline.
-4. **Manages the states and serialization**, with `state_dict` and `load_state_dict` methods in particular for parameters and `to_dict` method for serialization of all the states fall into the component's attributes, from subcomponents to parameters, to any other attributes of various data type.
-
-
-Here are the benefits of using the Component class:
-
-- Transparency.
-- Flexibility.
-- Searialization and deserialization.
-
-.. Transparency
-.. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Print the structure
+~~~~~~~~~~~~~~~~~~~~~
 
 We can easily visualize the structure via `print`:
 
@@ -103,15 +114,16 @@ The printout:
 
 
     DocQA(
-    (doc): Generator(
-        model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
-        (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
-        (model_client): OpenAIClient()
+        (doc): Generator(
+            model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
+            (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+            (model_client): OpenAIClient()
+        )
     )
-    )
 
 
-
+Configure from file
+~~~~~~~~~~~~~~~~~~~~~
 
 
 
@@ -144,7 +156,8 @@ You can easily save the detailed states:
 To adds even more flexibility, we provide :class:`core.component.FunComponent` and :class:`core.component.Sequential` for more advanced use cases.
 
 
-**Searalization and deserialization**
+Searalization and deserialization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We provide ``is_pickable`` method to check if the component is pickable.
 And any of your component, it is a good practise to ensure it is pickable.
@@ -239,12 +252,12 @@ The structure of the sequence using ``print(seq)``:
     Sequential(
     (0): EnhanceQueryComponent()
     (1): DocQA(
-        (doc): Generator(
-        model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
-        (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
-        (model_client): OpenAIClient()
+            (doc): Generator(
+            model_kwargs={'model': 'gpt-3.5-turbo'}, model_type=ModelType.LLM
+            (prompt): Prompt(template: <SYS> You are a doctor </SYS> User: {{input_str}}, prompt_variables: ['input_str'])
+            (model_client): OpenAIClient()
+            )
         )
-    )
     )
 
 .. admonition:: API reference

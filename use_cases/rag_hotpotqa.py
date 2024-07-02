@@ -8,15 +8,13 @@ from lightrag.core.generator import Generator, GeneratorOutput
 from lightrag.core.types import Document
 
 from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Sequential, Component
+from lightrag.core.component import Component
 from lightrag.eval import (
     RetrieverRecall,
     RetrieverRelevance,
     AnswerMatchAcc,
     LLMasJudge,
-    DEFAULT_LLM_EVALUATOR_PROMPT,
 )
-from lightrag.core.prompt_builder import Prompt
 
 from use_cases.rag import RAG
 

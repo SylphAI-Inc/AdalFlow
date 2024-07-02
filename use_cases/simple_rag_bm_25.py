@@ -1,19 +1,17 @@
 from typing import Any, List, Optional
 
-from core.generator import Generator
-from core.data_components import (
+from lightrag.core.generator import Generator
+from lightrag.components.data_process.data_components import (
     RetrieverOutputToContextStr,
 )
 
-from core.string_parser import JsonParser
-from core.component import Component, Sequential
-from core.db import LocalDB
-from core.types import Document
+from lightrag.core.string_parser import JsonParser
+from lightrag.core.component import Component, Sequential
+from lightrag.core.db import LocalDB
+from lightrag.core.types import Document
 
-from components.retriever import InMemoryBM25Retriever
-from components.model_client import OpenAIClient
-
-import utils.setup_env  # noqa
+from lightrag.components.retriever import BM25Retriever
+from lightrag.components.model_client import OpenAIClient
 
 
 # TODO: RAG can potentially be a component itsefl and be provided to the users
@@ -31,7 +29,7 @@ class RAG(Component):
             "stream": False,
         }
 
-        self.retriever = InMemoryBM25Retriever(
+        self.retriever = BM25Retriever(
             top_k=self.retriever_settings["top_k"],
         )
         self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)

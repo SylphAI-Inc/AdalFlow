@@ -5,12 +5,33 @@
     --pst-color-logo: #2EB5EB;
     --bs-gray-500:#adb5bd;
 
+
+}
+.theme-version {
+  display: none;
+}
+.bd-sidebar-primary {
+  width: 100%; /* Full width by default */
+}
+
+/* Adjust width for larger screens */
+@media (min-width: 768px) { /* Example breakpoint for tablets and larger */
+  .bd-sidebar-primary {
+      width: 270px; /* Adjust the width for larger screens */
   }
+}
+.pre {
+  color: #0a7d91; /* Change the color of ```` blocks */
+}
+
+/* .copyright {
+  text-align: center;
+} */
 p {
     font-size: 0.9em;
     margin-bottom: 1.15rem;
   }
-  
+
 html[data-theme=light] {
     --pst-color-secondary: #3d3d3d; /*change the secondary color, header link to gray */
     --pst-color-link-hover: #25262; /*change the side bar link color to black */
@@ -27,7 +48,7 @@ h1{
     font-size: 2rem; /* make the h1 in the code smaller */
 }
 /* .bd-page-width {
-    max-width: 100%; 
+    max-width: 100%;
   } */
 
 .sig-name {
