@@ -1,3 +1,5 @@
+.. _apis-components:
+
 Components
 ==============
 
@@ -9,7 +11,8 @@ Overview
 
    components.agent
    components.model_client
- 
+   components.data_process
+
    .. components.reasoning
 
    components.retriever
@@ -31,11 +34,18 @@ Agents
    components.agent
 
 Model Clients
------------
+-----------------
 .. toctree::
    :maxdepth: 1
 
    components.model_client
+
+Data Process
+----------------
+.. toctree::
+   :maxdepth: 1
+
+   components.data_process
 
 .. Embedders
 .. ---------
@@ -57,4 +67,3 @@ Retrievers
    :maxdepth: 1
 
    components.retriever
-

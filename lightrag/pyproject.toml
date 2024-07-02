@@ -1,30 +1,38 @@
 [tool.poetry]
 name = "lightrag"
 
-packages = [
-    { include = "core", from = "." },
-    { include = "components", from = "." },
-    { include = "eval", from = "." },
-    { include = "utils", from = "." },
-    { include = "tracing", from = "." },
-    { include = "optim", from = "." },
-    { include = "icl", from = "." },
-]
-version = "0.1.0"
+version = "0.0.0-alpha.7"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
-authors = ["Li Yin <li.yin.gravity@gmail.com>"]
+authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
+repository = "https://github.com/SylphAI-Inc/LightRAG"
+
 license = "MIT"
+maintainers = ["Xiaoyi Gu <xiaoyi@sylphai.com>", "Li Yin <li@sylphai.com>"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+keywords = ["LLM", "NLP", "RAG", "devtools", "retrieval", "agent"]
+
+include = [
+    "lightrag/core/*",
+    "lightrag/components/*",
+    "lightrag/eval/*",
+    "lightrag/utils/*",
+    "lightrag/tracing/*",
+    "lightrag/optim/*",
+    # "lightrag/icl/*",
 ]
 
-# [[tool.poetry.packages]]
-# include = "lightrag"
+
+packages = [{ include = "lightrag", from = "." }]
+
 
 [tool.poetry.dependencies]
-python = ">=3.11, <4.0"
+python = ">=3.10, <4.0"
 
 python-dotenv = "^1.0.1"
 backoff = "^2.2.1"
@@ -33,32 +41,24 @@ jsonlines = "^4.0.0"
 tiktoken = "^0.7.0"
 numpy = "^1.26.4"
 
-# TODO: decide if we need people to install faiss, or openai, or groq separatelypython = ">=3.11, <4.0"
-
-openai = "^1.12.0"
-groq = "^0.5.0"      # should only be installed if groq client is used
-faiss-cpu = "^1.8.0"
-# matplotlib = "^3.8.4"
-# colorama = "^0.4.6"
-
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.1.1"
 pytest-mock = "^3.14.0"
+transformers = "^4.41.2"
+torch = "^2.3.1"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
+types-pyyaml = "^6.0.12.20240311" # for mypy
+
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.7.0"
-
-
-# [tool.poetry.group.doc.dependencies]
-# datasets = ">=2.14.6, <=2.19.1"
-# sphinx = "^7.3.7"
-# sphinx-rtd-theme = "^2.0.0"
-# pydata-sphinx-theme = "0.15.2"
-# sphinx-design = "^0.6.0"
+openai = "^1.12.0"
+groq = "^0.5.0"        # should only be installed if groq client is used
+faiss-cpu = "^1.8.0"
+sqlalchemy = "^2.0.30"
 
 
 [tool.ruff]

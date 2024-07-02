@@ -14,27 +14,19 @@ import os
 import sys
 
 
-sys.path.insert(0, os.path.abspath('../../'))
-sys.path.insert(0, os.path.abspath("../../lightrag"))
+sys.path.insert(0, os.path.abspath("../../"))
+sys.path.insert(0, os.path.abspath("../../lightrag/lightrag"))
 # # need to insert the paths
 # for dir in os.walk('../../lightrag'):
 #   sys.path.insert(0, dir[0])
 # #   print(dir[0])
 
-import lightrag
-
-import lightrag.components
-import lightrag.core
-import lightrag.eval
-import lightrag.utils
-import lightrag.tracing
 
 # -- Project information -----------------------------------------------------
 
 project = "LightRAG"
-copyright = "2024, SylphAI"
-author = "SylphAI"
-
+copyright = "2024, SylphAI, Inc"
+author = "SylphAI, Inc"
 
 # -- General configuration ---------------------------------------------------
 
@@ -54,10 +46,15 @@ extensions = [
     "sphinx.ext.autosectionlabel",
     "sphinx_design",
     "sphinx_copybutton",
+    "nbsphinx",
+    "sphinx_search.extension",
+    # "myst_nb",
     # "sphinx.builders.changes",
     # 'recommonmark',
     # 'myst_parser'
 ]
+
+html_show_sphinx = False
 
 
 # Add any paths that contain templates here, relative to this directory.
@@ -78,7 +75,7 @@ exclude_patterns = ["lightrag/tests", "test_*", "../li_test"]
 html_theme = "pydata_sphinx_theme"
 
 
-html_logo = "../../images/LightRAG-logo-doc.jpeg"
+html_logo = "./_static/images/LightRAG-logo-doc.jpeg"
 
 # These options are for the sphinx_rtd_theme
 html_theme_options = {
@@ -105,7 +102,7 @@ html_static_path = ["_static"]  # Only for CSS, JS, images, etc.
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = "LightRAG"
 # this will be the logo shown on the browser header
-html_favicon = "../../images/LightRAG-logo-circle.png"
+html_favicon = "./_static/images/LightRAG-logo-circle.png"
 
 # In Sphinx documentation, the configuration option add_module_names in the conf.py file controls
 # whether module names are prefixed before object names in the documentation. This setting is particularly
@@ -131,4 +128,6 @@ autodoc_default_options = {
 
 
 def setup(app):
-    app.add_css_file("custom.css")  # Add custom CSS file to the Sphinx configuration
+    app.add_css_file(
+        "css/custom.css"
+    )  # Add custom CSS file to the Sphinx configuration

@@ -1,23 +1,17 @@
 from typing import Dict, Any
-from dataclasses import dataclass, field
+from dataclasses import field
 import os
 
-from lightrag.utils import setup_env
 import re
 
-import logging
 
 from lightrag.core.component import Component, Sequential, fun_to_component
-from lightrag.core.generator import Generator, GeneratorOutput
+from lightrag.core.generator import Generator
 from lightrag.components.model_client import (
     GroqAPIClient,
-    OpenAIClient,
-    GoogleGenAIClient,
-    AnthropicAPIClient,
 )
 from lightrag.core.prompt_builder import Prompt
 from lightrag.components.output_parsers import YamlOutputParser
-from lightrag.core.string_parser import JsonParser
 
 from lightrag.tracing import trace_generator_states, trace_generator_call
 
@@ -28,7 +22,6 @@ from use_cases.classification.data import (
 
 
 from lightrag.core.base_data_class import DataClass
-from use_cases.classification.data import _COARSE_LABELS_DESC, _COARSE_LABELS
 from use_cases.classification.utils import get_script_dir
 from use_cases.classification.config_log import log
 
@@ -100,6 +93,27 @@ def get_tracing_path():
     return os.path.join(get_script_dir(), "traces")
 
 
+openai_model_kwargs = {
+    "model": "gpt-3.5-turbo",
+    "temperature": 0.0,
+    "top_p": 1,
+    "frequency_penalty": 0,
+    "presence_penalty": 0,
+    "n": 1,
+}  # noqa: F841
+google_model_kwargs = {
+    "model": "gemini-1.5-pro-latest",
+    "temperature": 0.0,
+    "top_p": 1,
+}  # noqa: F841
+anthropic_model_kwargs = {
+    "model": "claude-3-opus-20240229",
+    "temperature": 0.0,
+    "top_p": 1,
+    "max_tokens": 1024,
+}  # noqa: F841
+
+
 @trace_generator_states(save_dir=get_tracing_path())
 @trace_generator_call(save_dir=get_tracing_path(), error_only=True)
 class TRECClassifier(Component):
@@ -153,25 +167,6 @@ class TRECClassifier(Component):
             "frequency_penalty": 0,
             "presence_penalty": 0,
             "n": 1,
-        }
-        openai_model_kwargs = {
-            "model": "gpt-3.5-turbo",
-            "temperature": 0.0,
-            "top_p": 1,
-            "frequency_penalty": 0,
-            "presence_penalty": 0,
-            "n": 1,
-        }
-        google_model_kwargs = {
-            "model": "gemini-1.5-pro-latest",
-            "temperature": 0.0,
-            "top_p": 1,
-        }
-        anthropic_model_kwargs = {
-            "model": "claude-3-opus-20240229",
-            "temperature": 0.0,
-            "top_p": 1,
-            "max_tokens": 1024,
         }
 
         @fun_to_component

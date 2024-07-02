@@ -1,5 +1,10 @@
 Embedder
 ============
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 What you will learn?
 
 1. What is ``Embedder`` and why is it designed this way?
@@ -62,10 +67,10 @@ We find the ``model_kwargs`` from the OpenAI API documentation. We setup `query`
 
 **Visualize structure**: we use ``print(embedder)``. The output will be:
 
-.. code-block:: 
+.. code-block::
 
     Embedder(
-    model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'}, 
+    model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
     (model_client): OpenAIClient()
     )
 
@@ -78,7 +83,8 @@ Run the embedder and print the length and embedding dimension of the output.
     print(output.length, output.embedding_dim, output.is_normalized)
     # 1 256 True
 
-** Embed batch queries**:
+
+**Embed batch queries**:
 
 .. code-block:: python
 
@@ -94,11 +100,6 @@ Set up the embedder with the local model.
 
     from lightrag.core.embedder import Embedder
     from lightrag.components.model_client import TransformersClient
-
-    model_kwargs = {
-        "model": "thenlper/gte-base",
-        "device": "cpu",
-    }
 
     model_kwargs = {"model": "thenlper/gte-base"}
     local_embedder = Embedder(model_client=TransformersClient(), model_kwargs=model_kwargs)
@@ -126,6 +127,7 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
     from typing import List
     from lightrag.core.component import Component
     from copy import deepcopy
+
     class DecreaseEmbeddingDim(Component):
         def __init__(self, old_dim: int, new_dim: int,  normalize: bool = True):
             super().__init__()
@@ -143,7 +145,7 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
                     new_embedding = normalize_vector(new_embedding)
                 embedding.embedding = new_embedding
             return output
-        
+
         def _extra_repr(self) -> str:
             repr_str = f"old_dim={self.old_dim}, new_dim={self.new_dim}, normalize={self.normalize}"
             return repr_str
@@ -162,10 +164,10 @@ Putting it all together, we can create a new embedder with the output processor.
 
 The structure looks like:
 
-.. code-block:: 
+.. code-block::
 
     Embedder(
-    model_kwargs={'model': 'thenlper/gte-base'}, 
+    model_kwargs={'model': 'thenlper/gte-base'},
     (model_client): TransformersClient()
     (output_processors): DecreaseEmbeddingDim(old_dim=768, new_dim=256, normalize=True)
     )
@@ -191,7 +193,7 @@ The BatchEmbedder orchestrates the ``Embedder`` and handles the batching process
 .. code-block:: python
 
     from lightrag.core.embedder import BatchEmbedder
-   
+
     batch_embedder = BatchEmbedder(embedder=local_embedder, batch_size=100)
 
     queries = [query] * 1000

@@ -1,15 +1,15 @@
 from lightrag.core.component import Component
 from lightrag.core.generator import Generator
-from lightrag.components.model_client import GroqAPIClient, OpenAIClient
-from lightrag.components.output_parsers import YamlOutputParser, ListOutputParser
+from lightrag.components.model_client import GroqAPIClient
+from lightrag.components.output_parsers import YamlOutputParser
+from dataclasses import dataclass
 
 
 from lightrag.core.base_data_class import DataClass, field
 from lightrag.core.types import GeneratorOutput
 
-from lightrag.utils import setup_env
 
-
+@dataclass
 class JokeOutput(DataClass):
     setup: str = field(metadata={"desc": "question to set up a joke"}, default="")
     punchline: str = field(metadata={"desc": "answer to resolve the joke"}, default="")

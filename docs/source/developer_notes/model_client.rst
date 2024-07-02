@@ -1,5 +1,11 @@
 ModelClient
 ============
+
+.. admonition:: Author
+   :class: highlight
+
+   `Li Yin <https://github.com/liyin2015>`_
+
 What you will learn?
 
 1. What is ``ModelClient`` and why is it designed this way?
@@ -10,7 +16,7 @@ What you will learn?
 Because so, by switching off ``ModelClient``  in a ``Generator`` or ``Embedder`` component, you can make your prompt or ``Retriever`` model-agnostic.
 
 
-.. figure:: /_static/model_client.png
+.. figure:: /_static/images/model_client.png
     :align: center
     :alt: ModelClient
     :width: 400px
@@ -22,8 +28,8 @@ Because so, by switching off ``ModelClient``  in a ``Generator`` or ``Embedder``
     All users are encouraged to customize your own ``ModelClient`` whenever you need to do so. You can refer our code in ``components.model_client`` dir.
 
 Model Inference SDKs
--------------------
-With cloud API providers like OpenAI, Groq, Anthropic, it often comes with a `sync` and an `async` client via their SDKs. 
+------------------------
+With cloud API providers like OpenAI, Groq, Anthropic, it often comes with a `sync` and an `async` client via their SDKs.
 For example:
 
 .. code-block:: python
@@ -33,7 +39,7 @@ For example:
     sync_client = OpenAI()
     async_client = AsyncOpenAI()
 
-    # sync call using APIs 
+    # sync call using APIs
     response = sync_client.chat.completions.create(...)
 
 For local models, such as using `huggingface transformers`, you need to create this model inference SDKs yourself.
@@ -141,7 +147,7 @@ This is how `OpenAIClient` implements these methods along with ``__init__`` meth
     class OpenAIClient(ModelClient):
 
         def __init__(self, api_key: Optional[str] = None):
-  
+
             super().__init__()
             self._api_key = api_key
             self.sync_client = self.init_sync_client()
@@ -175,7 +181,7 @@ This is how ``TransformerClient`` does the same thing:
             }
 
         def init_sync_client(self):
-            return TransformerEmbedder()    
+            return TransformerEmbedder()
 
 
 Second. we use `convert_inputs_to_api_kwargs` for subclass to convert LightRAG inputs into the `api_kwargs` (SDKs arguments).
@@ -184,7 +190,7 @@ Second. we use `convert_inputs_to_api_kwargs` for subclass to convert LightRAG i
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -198,11 +204,11 @@ This is how `OpenAIClient` implements this method:
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: API_INPUT_TYPE = None,  # user input
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
-   
+
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
@@ -314,8 +320,8 @@ Here is an example to use ``OpenAIClient`` directly, first on LLM model:
 
     prompt = f"User: {query}\n"
     model_kwargs = {"model": "gpt-3.5-turbo", "temperature": 0.5, "max_tokens": 100}
-    api_kwargs = openai_client.convert_inputs_to_api_kwargs(input=prompt, 
-                                                            model_kwargs=model_kwargs, 
+    api_kwargs = openai_client.convert_inputs_to_api_kwargs(input=prompt,
+                                                            model_kwargs=model_kwargs,
                                                             model_type=model_type)
     print(f"api_kwargs: {api_kwargs}")
 
@@ -325,10 +331,10 @@ Here is an example to use ``OpenAIClient`` directly, first on LLM model:
 
 The output will be:
 
-.. code-block:: 
+.. code-block::
 
     api_kwargs: {'model': 'gpt-3.5-turbo', 'temperature': 0.5, 'max_tokens': 100, 'messages': [{'role': 'system', 'content': 'User: What is the capital of France?\n'}]}
-    response_text: The capital of France is Paris.  
+    response_text: The capital of France is Paris.
 
 Then on Embedder model:
 

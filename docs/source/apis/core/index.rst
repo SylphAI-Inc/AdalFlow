@@ -1,3 +1,5 @@
+.. _apis-core:
+
 Core
 ===================
 
@@ -8,22 +10,21 @@ Overview
 .. autosummary::
 
    core.base_data_class
-   core.model_client
    core.component
-   core.data_components
    core.db
    core.default_prompt_template
-   core.document_splitter
    core.embedder
    core.functional
    core.generator
    core.memory
+   core.model_client
    core.parameter
    core.prompt_builder
    core.retriever
    core.string_parser
    core.tokenizer
-   core.tool_helper
+   core.func_tool
+   core.tool_manager
    core.types
 
 
@@ -46,11 +47,9 @@ Data Handling
 .. toctree::
    :maxdepth: 1
 
-   core.base_data_class   
+   core.base_data_class
    core.types
 
-
-   core.data_components
    core.db
 
 Prompts and Templates
@@ -61,12 +60,13 @@ Prompts and Templates
    core.default_prompt_template
    core.prompt_builder
 
-Document Processing
--------------------
-.. toctree::
-   :maxdepth: 1
+.. Document Processing
+.. -------------------
+.. .. toctree::
+..    :maxdepth: 1
 
-   core.document_splitter
+   .. core.document_splitter
+   core.text_splitter
 
 Embedding and Retrieval
 -----------------------
@@ -85,14 +85,13 @@ Generation and Utilities
    core.functional
    core.memory
 
-Parsing and Tokenization
 ------------------------
 .. toctree::
    :maxdepth: 1
 
    core.string_parser
    core.tokenizer
-   core.tool_helper
+   core.func_tool
 
 Parameters
 ------------------------

@@ -35,7 +35,7 @@ Setup & Build Documentation
 
 **2. Install Necessary Packages**
 
-LightRAG's documentation style is `pydata_sphinx_theme <https://pydata-sphinx-theme.readthedocs.io/en/stable/>`_ (version: 0.15.2).
+LightRAG's documentation style is `pydata_sphinx_theme <https://pydata-sphinx-theme.readthedocs.io/en/stable/>`_ (version: 0.15.3).
 
 Install by ``pip``:
 

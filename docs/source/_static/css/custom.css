@@ -1,0 +1,115 @@
+/* custom.css */
+
+:root {
+    --pst-color-info: 23, 162, 184;
+    --pst-color-logo: #2EB5EB;
+    --bs-gray-500:#adb5bd;
+
+
+}
+.theme-version {
+  display: none;
+}
+.bd-sidebar-primary {
+  width: 100%; /* Full width by default */
+}
+
+/* Adjust width for larger screens */
+@media (min-width: 768px) { /* Example breakpoint for tablets and larger */
+  .bd-sidebar-primary {
+      width: 270px; /* Adjust the width for larger screens */
+  }
+}
+.pre {
+  color: #0a7d91; /* Change the color of ```` blocks */
+}
+
+/* .copyright {
+  text-align: center;
+} */
+p {
+    font-size: 0.9em;
+    margin-bottom: 1.15rem;
+  }
+
+html[data-theme=light] {
+    --pst-color-secondary: #3d3d3d; /*change the secondary color, header link to gray */
+    --pst-color-link-hover: #25262; /*change the side bar link color to black */
+    --pst-color-table-row-hover-bg: #f8f9fa; /*change the table row hover color to light gray */
+    --sd-color-secondary: gray; /*change the secondary color to black */
+    --sd-color-secondary-highlight: gray; /*change the secondary highlight color to black */
+  }
+
+.bd-main .bd-content .bd-article-container {
+    max-width: 100%;  /* default is 60em */
+  }
+
+h1{
+    font-size: 2rem; /* make the h1 in the code smaller */
+}
+/* .bd-page-width {
+    max-width: 100%;
+  } */
+
+.sig-name {
+    color: black; /* set the class name and attributes to black */
+}
+.caption-text {
+  font-size: 14px;  /* Sets the smallest font size */
+  color: gray;     /* Sets the color to gray */
+}
+.bd-links__title {
+  /* remove the "section navigation" string*/
+  display: none;
+}
+
+table {
+  width: auto; /* Override fit-content which breaks Styler user guide ipynb */
+}
+
+/* Main index page overview cards */
+
+.intro-card {
+  padding: 30px 10px 20px 10px;
+}
+
+.intro-card .sd-card-img-top {
+  margin: 10px;
+  height: 52px;
+  background: none !important;
+}
+
+.intro-card .sd-card-title {
+  color: var(--pst-color-primary);
+  font-size: var(--pst-font-size-h5);
+  padding: 1rem 0rem 0.5rem 0rem;
+}
+
+.intro-card .sd-card-footer {
+  border: none !important;
+}
+
+.intro-card .sd-card-footer p.sd-card-text {
+  max-width: 220px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.intro-card .sd-btn-secondary {
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+.intro-card .sd-btn-secondary:hover {
+  background-color: #5a6268 !important;
+  border-color: #545b62 !important;
+}
+
+.card, .card img {
+  background-color: var(--pst-color-background);
+}
+
+/* Remove hover effect from table rows */
+table tr:hover {
+  background-color: transparent !important;
+}
