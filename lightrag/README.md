@@ -1,4 +1,4 @@
-# LightRAG
+<!-- # LightRAG
 [1000 lines of code are all you need](https://github.com/Sylph-AI/LightRAG/blob/main/lightrag/light_rag.py). No lock-in to vendors and frameworks, only the best practices of **productionable RAG and Agent**.
 
 ## What is LightRAG?
@@ -63,4 +63,4 @@ To add a new use case, you can add a new folder in `use_cases/` with the name `a
 2. Setup API keys by make a copy of `.env.example` to `.env` and fill in the necessary API keys.
 3. Setup the Python environment using `poetry install`. And activate the environment using `poetry shell`.
 4. (For contributors only) Install pre-commit into your git hooks using `pre-commit install`, which will automatically check the code standard on every commit.
-5. Now you should run any file in the repo.
+5. Now you should run any file in the repo. -->

@@ -15,7 +15,7 @@ import sys
 
 
 sys.path.insert(0, os.path.abspath("../../"))
-sys.path.insert(0, os.path.abspath("../../lightrag"))
+sys.path.insert(0, os.path.abspath("../../lightrag/lightrag"))
 # # need to insert the paths
 # for dir in os.walk('../../lightrag'):
 #   sys.path.insert(0, dir[0])

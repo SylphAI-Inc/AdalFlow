@@ -1,13 +1,6 @@
 import unittest
 import torch
 
-from lightrag.components.model_client import (
-    TransformersClient,
-    TransformerReranker,
-    TransformerLLM,
-    TransformerEmbedder,
-)
-from lightrag.core.types import ModelType
 
 # Set the number of threads for PyTorch, avoid segementation fault
 torch.set_num_threads(1)

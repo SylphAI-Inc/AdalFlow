@@ -17,9 +17,11 @@ To install the package, run:
 2. Set up API keys
 ~~~~~~~~~~~~~~~~~~~
 
-``.env`` file is recommended.
+A ``.env`` file is recommended.
 You can have it at your project root directory.
-Here are an example:
+Here is an example:
+
+
 
 .. code-block:: bash
 
@@ -34,13 +36,13 @@ Here are an example:
 3. Load environment variables
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can add the following import:
+You can use the following import:
 
 .. code-block:: python
 
    from lightrag.utils import setup_env #noqa
 
-Or, you can load it yourself:
+Or, you can load it yourself with ``python-dotenv``:
 
 .. code-block:: python
 
@@ -53,10 +55,11 @@ This setup ensures that LightRAG can access all necessary configurations during 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, (2) FAISS and Transformers.
+LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, and (2) FAISS and Transformers.
 You can find all optional packages at :class:`utils.lazy_import.OptionalPackages`.
 Make sure to install the necessary SDKs for the components you plan to use.
 Here is the list of our tested versions:
+
 
 .. code-block::
 

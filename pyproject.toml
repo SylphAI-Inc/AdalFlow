@@ -6,10 +6,7 @@ readme = "README.md"
 description = "A project to develop and test the lightrag library"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
-
-packages = [
-    { include = "lightrag", from = "." }
-]
+packages = [{ from = "_lightrag", include = "lightrag" }]          # empty packages list
 
 [tool.poetry.dependencies]
 python = ">=3.10, <4.0"
