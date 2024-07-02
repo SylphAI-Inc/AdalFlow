@@ -42,7 +42,7 @@ class ListParser(Component):
             raise ValueError(f"Error: {e}")
 
 
-JASON_PARSER_OUTPUT_TYPE = Dict[str, Any]
+JSON_PARSER_OUTPUT_TYPE = Dict[str, object]
 
 
 class JsonParser(Component):
@@ -62,7 +62,7 @@ class JsonParser(Component):
         super().__init__()
         self.add_missing_right_brace = add_missing_right_brace
 
-    def call(self, input: str) -> JASON_PARSER_OUTPUT_TYPE:
+    def call(self, input: str) -> JSON_PARSER_OUTPUT_TYPE:
         input = input.strip()
         try:
             json_str = F.extract_json_str(input, self.add_missing_right_brace)
@@ -73,7 +73,7 @@ class JsonParser(Component):
             raise ValueError(f"Error: {e}")
 
 
-YAML_PARSER_OUTPUT_TYPE = Dict[str, Any]
+YAML_PARSER_OUTPUT_TYPE = Dict[str, object]
 
 
 class YamlParser(Component):

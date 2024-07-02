@@ -936,6 +936,7 @@ def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
     Parse a YAML string to a Python object.
     yaml_str: has to be a valid YAML string.
     """
+    yaml_str = yaml_str.strip()
     try:
         import yaml
 
@@ -950,8 +951,7 @@ def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
 
 
 def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
-    r"""
-    Parse a JSON string to a Python object.
+    r"""Parse a JSON string to a Python object.
     json_str: has to be a valid JSON string. Either {} or [].
     """
     json_str = json_str.strip()
