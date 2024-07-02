@@ -1,3 +1,6 @@
+"""Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction. 
+
+It is a pipeline that consists of three subcomponents."""
 from typing import Any, Dict, List, Optional, Union
 from copy import deepcopy
 import logging

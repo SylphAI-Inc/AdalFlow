@@ -1,3 +1,6 @@
+"""
+Tokenizer from tiktoken.
+"""
 import tiktoken
 from typing import List
 

@@ -1,3 +1,8 @@
+"""This is the default system prompt template used in the LightRAG.
+
+Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
+"""
+
 # TODO: potentially make a data class for this
 LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "task_desc_str",  # task description
@@ -75,5 +80,5 @@ You:
 """
 """This is the default system prompt template used in the LightRAG.
 
-Use :ref:`Prompt<core-prompt_builder>` class  to manage it.
+Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
 """
