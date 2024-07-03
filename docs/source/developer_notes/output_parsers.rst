@@ -8,7 +8,6 @@ Context
 
 LLMs output text in string format.
 Parsing is the process of `extracting` and `converting` the string to desired data structure per the use case.
-
 This desired data structure can be:
 
 - simple data types like string, int, float, boolean, etc.
