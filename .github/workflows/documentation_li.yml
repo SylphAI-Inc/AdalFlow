@@ -51,6 +51,10 @@ jobs:
           touch .nojekyll
         working-directory: ${{ github.workspace }}/docs/build
 
+      - name: Copy CNAME file
+        run: |
+          cp ${{ github.workspace }}/CNAME ${{ github.workspace }}/docs/build/CNAME
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:

@@ -1,6 +1,6 @@
 Class Hierarchy
 =============================
-From the plot of the `LightRAG` library's class hierarchy, we can see the library is well-centered around two base classes: `Component` and `DataClass`, and it has no more than two levels of subclasses.
+From the plot of the `LightRAG` library's class hierarchy, we can see the library is well-centered around two base classes: `Component` and `DataClass`, and it maintains a class inheritance hierarchy with no more than two levels.
 This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability.
 
 .. raw:: html
