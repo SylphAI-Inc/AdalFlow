@@ -1,6 +1,6 @@
 .. _eval-llm_as_judge:
 
-eval.llm\_as\_judge
+llm\_as\_judge
 ==========================
 
 .. automodule:: eval.llm_as_judge

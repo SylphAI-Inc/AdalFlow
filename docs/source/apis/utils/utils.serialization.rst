@@ -1,6 +1,6 @@
 .. _utils-serialization:
 
-utils.serialization
+serialization
 ==========================
 
 .. automodule:: utils.serialization

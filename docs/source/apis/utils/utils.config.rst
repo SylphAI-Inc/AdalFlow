@@ -1,6 +1,6 @@
 .. _utils-config:
 
-utils.config
+config
 ===================
 
 .. automodule:: utils.config

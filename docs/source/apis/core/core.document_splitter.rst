@@ -1,6 +1,6 @@
 .. _core-document_splitter:
 
-core.document\_splitter
+document\_splitter
 ==============================
 
 .. automodule:: core.document_splitter

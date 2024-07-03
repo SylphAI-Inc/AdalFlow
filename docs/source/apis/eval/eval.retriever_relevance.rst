@@ -1,6 +1,6 @@
 .. _eval-retriever_relevance:
 
-eval.retriever\_relevance
+retriever\_relevance
 ================================
 
 .. automodule:: eval.retriever_relevance

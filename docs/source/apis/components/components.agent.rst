@@ -1,6 +1,6 @@
 .. _components-agent:
 
-components.agent
+agent
 ========================
 
 Submodules

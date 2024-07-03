@@ -1,6 +1,6 @@
 .. _core-string_parser:
 
-core.string\_parser
+string\_parser
 ==========================
 
 .. automodule:: core.string_parser

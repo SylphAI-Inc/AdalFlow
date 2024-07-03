@@ -1,6 +1,6 @@
 .. _components-memory:
 
-components.memory
+memory
 =========================
 
 Submodules

@@ -1,6 +1,6 @@
 .. _tracing-decorators:
 
-tracing.decorators
+decorators
 =========================
 
 .. automodule:: tracing.decorators

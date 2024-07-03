@@ -1,6 +1,6 @@
 .. _core-embedder:
 
-core.embedder
+embedder
 ====================
 
 .. automodule:: core.embedder

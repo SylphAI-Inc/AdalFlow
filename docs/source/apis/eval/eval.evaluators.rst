@@ -1,6 +1,6 @@
 .. _eval-evaluators:
 
-eval.evaluators
+evaluators
 ======================
 
 .. automodule:: eval.evaluators

@@ -1,6 +1,6 @@
 .. _core-memory:
 
-core.memory
+memory
 ==================
 
 .. automodule:: core.memory

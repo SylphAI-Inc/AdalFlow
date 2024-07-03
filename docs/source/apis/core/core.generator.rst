@@ -1,6 +1,6 @@
 .. _core-generator:
 
-core.generator
+generator
 =====================
 
 .. automodule:: core.generator

@@ -1,6 +1,6 @@
 .. _components-data_process-document_splitter:
 
-components.data\_process.document\_splitter
+document\_splitter
 ==================================================
 
 .. automodule:: components.data_process.document_splitter

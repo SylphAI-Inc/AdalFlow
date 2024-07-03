@@ -1,6 +1,6 @@
 .. _core-functional:
 
-core.functional
+functional
 ======================
 
 .. automodule:: core.functional

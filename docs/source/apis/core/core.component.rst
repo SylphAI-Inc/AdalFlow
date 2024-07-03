@@ -1,6 +1,6 @@
 .. _core-component:
 
-core.component
+component
 =====================
 
 .. automodule:: core.component

@@ -1,6 +1,6 @@
 .. _core-db:
 
-core.db
+db
 ==============
 
 .. automodule:: core.db
