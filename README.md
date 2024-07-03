@@ -1,7 +1,11 @@
-# Introduction
+![LightRAG Logo](docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
-LightRAG is the `PyTorch` library for building large language model (LLM) applications. We help developers with both building and optimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
-It is light, modular, and robust.
+⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡
+
+We help developers with both building and optimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
+It is *light*, *modular*, and *robust*.
+
+
 
 **PyTorch**
 
@@ -58,46 +62,46 @@ class SimpleQA(Component):
       return await self.generator.acall({"input_str": query})
 ```
 
-## Simplicity
+## Quick Install
 
-Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
-As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
+Install LightRAG with pip:
 
-* Two fundamental and powerful base classes: Component for the pipeline and DataClass for data interaction with LLMs.
-* We end up with less than two levels of subclasses. Class Hierarchy Visualization.
-* The result is a library with bare minimum abstraction, providing developers with maximum customizability.
-
-Similar to the PyTorch module, our Component provides excellent visualization of the pipeline structure.
-
-```
-SimpleQA(
-   (generator): Generator(
-      model_kwargs={'model': 'llama3-8b-8192'},
-      (prompt): Prompt(
-         template: <SYS>
-               You are a helpful assistant.
-               </SYS>
-               User: {{input_str}}
-               You:
-               , prompt_variables: ['input_str']
-      )
-      (model_client): GroqAPIClient()
-   )
-)
+```bash
+pip install lightrag
 ```
 
-## Controllability
+Please refer to the [full installation guide](https://lightrag.sylph.ai/get_started/installation.html) for more details.
 
-Our simplicity did not come from doing 'less'.
-On the contrary, we have to do 'more' and go 'deeper' and 'wider' on any topic to offer developers maximum control and robustness.
 
-* LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on API features such as tools and JSON format with components like Prompt, OutputParser, FunctionTool, and ToolManager.
-* Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in ModelClient and Retriever.
-* All integrations, such as different API SDKs, are formed as optional packages but all within the same library. You can easily switch to any models from different providers that we officially support.
 
-## Future of LLM Applications
+You can place the above code in your project's root ``__init__.py`` file.
+This setup ensures that LightRAG can access all necessary configurations during runtime.
 
-On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
-Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production.
-With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data.
-Researchers will want their code to be adapted into more products too.
+# Documentation
+
+LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
+
+- [Introduction](https://lightrag.sylph.ai/)
+- [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
+- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
+- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
+- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
+- [API reference](https://lightrag.sylph.ai/apis/index.html)
+
+
+
+## Contributors
+
+[![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
+
+# Citation
+
+```bibtex
+@software{Yin-LightRAG-2024,
+  author = {Yin, Li},
+  title = {{LightRAG: The PyTorch Library for Large language Model (LLM) Applications}},
+  month = {7},
+  year = {2024},
+  url = {https://github.com/SylphAI-Inc/LightRAG}
+}
+```
