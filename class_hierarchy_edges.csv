@@ -1,3 +1,6 @@
+Component,BooleanParser
+Component,IntParser
+Component,FloatParser
 Component,ListParser
 Component,JsonParser
 Component,YamlParser
@@ -15,7 +18,6 @@ Component,FunComponent
 Component,ReActAgent
 Component,OutputParser
 Component,TextSplitter
-Component,DocumentSplitter
 Component,ToEmbeddings
 Component,RetrieverOutputToContextStr
 Component,DefaultLLMJudge
@@ -56,8 +58,6 @@ DataClass,DialogTurn
 DataClass,Instruction
 DataClass,GeneratorStatesRecord
 DataClass,GeneratorCallRecord
-Generator,CoTGenerator
-Generator,CoTGeneratorWithJsonOutput
 OutputParser,YamlOutputParser
 OutputParser,JsonOutputParser
 OutputParser,ListOutputParser
