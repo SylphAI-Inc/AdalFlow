@@ -3,7 +3,7 @@ name: Documentation
 on:
   push:
     branches:
-      - xiaoyi_doc  # Ensure this is the branch where you commit documentation updates
+      - release  # Trigger the workflow when changes are pushed to the release branch
 
 permissions:
   contents: write
@@ -17,52 +17,53 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch all history for all branches and tags
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.11'  # Ensure the Python version is correct
 
       - name: Install Poetry
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
 
       - name: Install dependencies using Poetry
         run: |
-          poetry config virtualenvs.create false
-          poetry install
+          poetry config virtualenvs.create false  # Avoid creating a virtual environment
+          poetry install  # Install dependencies as specified in pyproject.toml
 
       - name: Build documentation using Makefile
         run: |
           echo "Building documentation from: $(pwd)"
           ls -l  # Debug: List current directory contents
-          poetry run make -C docs html
+          poetry run make -C docs html  # Run Makefile in docs directory to build HTML docs
         working-directory: ${{ github.workspace }}
 
       - name: List built documentation
         run: |
-          find ./build/ -type f
+          find ./build/ -type f  # List all files in the build directory
         working-directory: ${{ github.workspace }}/docs
 
       - name: Create .nojekyll file
         run: |
-          touch .nojekyll
+          touch .nojekyll  # Prevent GitHub Pages from ignoring files that start with an underscore
         working-directory: ${{ github.workspace }}/docs/build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./docs/build/
-          user_name: github-actions[bot]
-          user_email: github-actions[bot]@users.noreply.github.com
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
+          publish_branch: gh-pages  # Target branch for GitHub Pages deployment
+          publish_dir: ./docs/build/  # Directory containing the built documentation
+          user_name: github-actions[bot]  # Username for the commit
+          user_email: github-actions[bot]@users.noreply.github.com  # Email for the commit
 
-      # - name: Debug Output
-      #   run: |
-      #     pwd  # Print the current working directory
-      #     ls -l  # List files in the build directory
-      #     cat ./source/conf.py  # Show Sphinx config file for debugging
-      #   working-directory: ${{ github.workspace }}/docs/build
+# Uncomment below for debugging purposes
+#      - name: Debug Output
+#        run: |
+#          pwd  # Print the current working directory
+#          ls -l ./build/  # List files in the build directory
+#          cat ./source/conf.py  # Display the Sphinx configuration file
+#        working-directory: ${{ github.workspace }}/docs/build

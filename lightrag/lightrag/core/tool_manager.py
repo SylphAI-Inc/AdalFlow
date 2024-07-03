@@ -1,3 +1,6 @@
+"""
+The ToolManager manages a list of tools, context, and all ways to execute functions.
+"""
 from typing import List, Dict, Optional, Any, Callable, Awaitable, Union
 import logging
 from copy import deepcopy

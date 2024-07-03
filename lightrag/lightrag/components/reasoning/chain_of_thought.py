@@ -1,4 +1,6 @@
 """
+Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.
+
 https://arxiv.org/abs/2201.11903, published in Jan, 2023
 
 Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer. You can achieve it in two ways:
