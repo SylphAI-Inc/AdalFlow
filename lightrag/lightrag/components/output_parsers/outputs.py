@@ -191,7 +191,7 @@ class YamlOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class={self.data_class}, examples={self.examples}"
+        s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}"
         return s
 
 

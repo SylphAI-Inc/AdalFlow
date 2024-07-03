@@ -503,3 +503,6 @@ The output will be:
    - :ref:`OutputParser<components-output_parsers>`
    - :class:`components.output_parsers.outputs.JsonOutputParser`
    - :class:`components.output_parsers.outputs.YamlOutputParser`
+   - :class:`components.output_parsers.outputs.OutputParser`
+   - :class:`components.output_parsers.outputs.BooleanOutputParser`
+   - :class:`components.output_parsers.outputs.ListOutputParser`
