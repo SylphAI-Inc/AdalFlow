@@ -1,4 +1,4 @@
-![LightRAG Logo](../docs/source/_static/images/LightRAG-logo-doc.jpeg)
+![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 
 ## ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
