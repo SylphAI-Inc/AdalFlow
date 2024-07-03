@@ -73,6 +73,7 @@ exclude_patterns = ["lightrag/tests", "test_*", "../li_test"]
 # a list of builtin themes.
 
 html_theme = "pydata_sphinx_theme"
+html_show_sourcelink = False
 
 
 html_logo = "./_static/images/LightRAG-logo-doc.jpeg"

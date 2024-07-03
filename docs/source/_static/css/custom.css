@@ -23,6 +23,12 @@
 .pre {
   color: #0a7d91; /* Change the color of ```` blocks */
 }
+/* hide on this page */
+/* #pst-page-navigation-heading-2 {
+  display: none;
+}  */
+
+
 
 /* .copyright {
   text-align: center;
