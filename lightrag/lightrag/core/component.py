@@ -1,3 +1,5 @@
+"""Component is to LLM task pipelines what nn.Module is to PyTorch models."""
+
 from collections import OrderedDict, namedtuple
 from typing import (
     Callable,

@@ -34,8 +34,11 @@ apidoc:
 	@python $(SOURCEDIR)/remove_string.py
 	@echo "Removing duplicated files"
 	@python $(SOURCEDIR)/remove_files.py
-
-
+	@echo "Renaming and updating file"
+	@python $(SOURCEDIR)/change_api_file_name.py
+	# @echo "Renaming and updating file"
+	# @python $(SOURCEDIR)/change_api_file_name_autosummary.py
+	
 
 html: apidoc
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

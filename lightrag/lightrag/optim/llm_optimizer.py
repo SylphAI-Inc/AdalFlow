@@ -1,5 +1,7 @@
 r"""
-Based and optimized from ORPO llm optimizer: https://arxiv.org/abs/2309.03409
+Based and optimized from ORPO llm optimizer.
+
+https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
