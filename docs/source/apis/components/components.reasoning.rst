@@ -1,6 +1,6 @@
 .. _components-reasoning:
 
-components.reasoning
+reasoning
 ============================
 
 Submodules

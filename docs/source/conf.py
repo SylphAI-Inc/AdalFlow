@@ -86,8 +86,13 @@ html_theme_options = {
     # "titles_only": False,
     "icon_links": [
         {
+            "name": "GitHub",
+            "url": "https://github.com/SylphAI-Inc/LightRAG",  # Replace with your GitHub URL
+            "icon": "fa-brands fa-github",
+        },
+        {
             "name": "Discord",
-            "url": "https://discord.gg/hmZWFEUd",
+            "url": "https://discord.gg/ezzszrRZvT",
             "icon": "fa-brands fa-discord",
         },
     ],

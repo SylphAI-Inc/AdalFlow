@@ -801,11 +801,80 @@ def generate_readable_key_for_function(fn: Callable) -> str:
     return f"{module_name}.{function_name}"
 
 
-def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
+########################################################################################
+# For Parser components
+########################################################################################
+def extract_first_int(text: str) -> int:
+    """Extract the first integer from the provided text.
+
+    Args:
+        text (str): The text containing potential integer data.
+
+    Returns:
+        int: The extracted integer.
+
+    Raises:
+        ValueError: If no integer is found in the text.
     """
-    Extract JSON string from text.
-    NOTE: Only handles the first JSON object or array found in the text. And it expects at least one JSON object in the text.
+    match = re.search(r"\b\d+\b", text)
+    if match:
+        return int(match.group())
+    raise ValueError("No integer found in the text.")
+
+
+def extract_first_float(text: str) -> float:
+    """Extract the first float from the provided text.
+
+    Args:
+        text (str): The text containing potential float data.
+
+    Returns:
+        float: The extracted float.
+
+    Raises:
+        ValueError: If no float is found in the text.
+    """
+    match = re.search(r"\b\d+(\.\d+)?\b", text)
+
+    if match:
+        return float(match.group())
+    raise ValueError("No float found in the text.")
+
+
+def extract_first_boolean(text: str) -> bool:
+    """Extract the first boolean from the provided text.
+
+    Args:
+        text (str): The text containing potential boolean data.
+
+    Returns:
+        bool: The extracted boolean.
+
+    Raises:
+        ValueError: If no boolean is found in the text.
+    """
+    match = re.search(r"\b(?:true|false|True|False)\b", text)
+    if match:
+        return match.group().lower() == "true"
+    raise ValueError("No boolean found in the text.")
+
+
+def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
+    """Extract JSON string from text.
+
+    It will extract the first JSON object or array found in the text by searching for { or [.
     If right brace is not found, we add one to the end of the string.
+
+    Args:
+        text (str): The text containing potential JSON data.
+        add_missing_right_brace (bool): Whether to add a missing right brace if it is missing.
+
+    Returns:
+        str: The extracted JSON string.
+
+    Raises:
+        ValueError: If no JSON object or array is found or if the JSON extraction is incomplete
+                    without the option to add a missing brace
     """
     # NOTE: this regex parsing is taken from langchain.output_parsers.pydantic
     text = text.strip()
@@ -846,8 +915,9 @@ def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:
 
 
 def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
-    """
-    Extract the first complete list string from the provided text. If the list string is incomplete
+    """Extract the first complete list string from the provided text.
+
+    If the list string is incomplete
     (missing the closing bracket), an option allows adding a closing bracket at the end.
 
     Args:
@@ -864,6 +934,8 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
     text = text.strip()
     start = text.find("[")
     if start == -1:
+        log.error("No list found in the text.")
+        # return None
         raise ValueError("No list found in the text.")
 
     # Attempt to find the matching closing bracket
@@ -884,6 +956,8 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
         text += "]"
         end = len(text) - 1
     elif end == -1:
+        log.error("Incomplete list found and add_missing_right_bracket is False.")
+        # return None
         raise ValueError(
             "Incomplete list found and add_missing_right_bracket is False."
         )
@@ -894,7 +968,18 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
 def extract_yaml_str(text: str) -> str:
     r"""Extract YAML string from text.
 
-    In default, we use regex pattern to match yaml code blocks within triple backticks with optional yaml or yml prefix.
+    .. note::
+        As yaml string does not have a format like JSON which we can extract from {} or [],
+        it is crucial to have a format such as ```yaml``` or ```yml``` to indicate the start of the yaml string.
+
+    Args:
+        text (str): The text containing potential YAML data.
+
+    Returns:
+        str: The extracted YAML string.
+
+    Raises:
+        ValueError: If no YAML string is found in the text.
     """
     try:
         yaml_re_pattern: re.Pattern = re.compile(
@@ -904,7 +989,7 @@ def extract_yaml_str(text: str) -> str:
 
         yaml_str = ""
         if match:
-            yaml_str = match.group("yaml")
+            yaml_str = match.group("yaml").strip()
         else:
             yaml_str = text.strip()
         return yaml_str
@@ -932,10 +1017,11 @@ def fix_json_escaped_single_quotes(json_str: str) -> str:
 
 
 def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
-    r"""
-    Parse a YAML string to a Python object.
+    r"""Parse a YAML string to a Python object.
+
     yaml_str: has to be a valid YAML string.
     """
+    yaml_str = yaml_str.strip()
     try:
         import yaml
 
@@ -949,40 +1035,41 @@ def parse_yaml_str_to_obj(yaml_str: str) -> Dict[str, Any]:
         raise ImportError("Please pip install PyYAML.") from exc
 
 
-def parse_json_str_to_obj(json_str: str) -> Dict[str, Any]:
-    r"""
-    Parse a JSON string to a Python object.
+def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
+    r"""Parse a varietry of json format string to Python object.
+
     json_str: has to be a valid JSON string. Either {} or [].
     """
     json_str = json_str.strip()
+    # 1st attemp with json.loads
     try:
         json_obj = json.loads(json_str)
         return json_obj
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        log.info(
+            f"Got invalid JSON object with json.loads. Error: {e}. Got JSON string: {json_str}"
+        )
         # 2nd attemp after fixing the json string
         try:
-            print("Trying to fix potential missing commas...")
+            log.info("Trying to fix potential missing commas...")
             json_str = fix_json_missing_commas(json_str)
-            print("Trying to fix scaped single quotes...")
+            log.info("Trying to fix scaped single quotes...")
             json_str = fix_json_escaped_single_quotes(json_str)
-            print(f"Fixed JSON string: {json_str}")
+            log.info(f"Fixed JSON string: {json_str}")
             json_obj = json.loads(json_str)
             return json_obj
         except json.JSONDecodeError:
             # 3rd attemp using yaml
             try:
-                import yaml
 
                 # NOTE: parsing again with pyyaml
                 #       pyyaml is less strict, and allows for trailing commas
                 #       right now we rely on this since guidance program generates
                 #       trailing commas
-                print("Parsing JSON string with PyYAML...")
+                log.info("Parsing JSON string with PyYAML...")
                 json_obj = yaml.safe_load(json_str)
                 return json_obj
             except yaml.YAMLError as e:
                 raise ValueError(
-                    f"Got invalid JSON object. Error: {e}. Got JSON string: {json_str}"
+                    f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
-            except NameError as exc:
-                raise ImportError("Please pip install PyYAML.") from exc

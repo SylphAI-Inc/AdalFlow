@@ -1,6 +1,6 @@
 .. _components-model_client:
 
-components.model\_client
+model\_client
 ================================
 
 Submodules

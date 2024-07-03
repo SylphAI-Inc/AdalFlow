@@ -1,6 +1,6 @@
 .. _optim-optimizer:
 
-optim.optimizer
+optimizer
 ======================
 
 .. automodule:: optim.optimizer

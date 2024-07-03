@@ -1,6 +1,6 @@
 .. _optim-sampler:
 
-optim.sampler
+sampler
 ====================
 
 .. automodule:: optim.sampler
