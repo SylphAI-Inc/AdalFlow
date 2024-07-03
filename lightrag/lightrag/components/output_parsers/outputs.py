@@ -51,10 +51,7 @@ Examples:
 -Quote the string values properly."""
 
 LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python list.
--Each element can be of any Python data type such as string, integer, float, list, dictionary, etc.
--You can also have nested lists and dictionaries.
--Please do not add anything other than valid Python list output!
-"""
+- Start the list with '[' and end with ']'"""
 
 
 YAML_OUTPUT_PARSER_OUTPUT_TYPE = Dict[str, Any]
@@ -139,13 +136,18 @@ class YamlOutputParser(OutputParser):
         if not is_dataclass(data_class):
             raise ValueError(f"Provided class is not a dataclass: {data_class}")
 
+        if not issubclass(data_class, DataClass):
+            raise ValueError(
+                f"Provided class is not a subclass of DataClass: {data_class}"
+            )
+
         # ensure example is instance of data class and initiated
         if examples is not None and not isinstance(examples[0], data_class):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
         self._exclude_fields = exclude_fields
-        self.data_class_for_yaml: DataClass = data_class
+        self.data_class: DataClass = data_class
         self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
         self.output_processors = YamlParser()
         self.examples = examples
@@ -163,7 +165,7 @@ class YamlOutputParser(OutputParser):
             exclude (List[str], optional): The fields to exclude from the schema of the data class.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
-        schema = self.data_class_for_yaml.format_class_str(
+        schema = self.data_class.format_class_str(
             format_type=format_type, exclude=self._exclude_fields
         )
         # convert example to string, convert data class to yaml string
@@ -189,7 +191,7 @@ class YamlOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class_for_yaml={self.data_class_for_yaml}, examples={self.examples}"
+        s = f"data_class={self.data_class}, examples={self.examples}"
         return s
 
 
@@ -204,13 +206,18 @@ class JsonOutputParser(OutputParser):
         if not is_dataclass(data_class):
             raise ValueError(f"Provided class is not a dataclass: {data_class}")
 
+        if not issubclass(data_class, DataClass):
+            raise ValueError(
+                f"Provided class is not a subclass of DataClass: {data_class}"
+            )
+
         if examples is not None and not isinstance(examples[0], data_class):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
         self._exclude_fields = exclude_fields
         template = JSON_OUTPUT_FORMAT
-        self.data_class_for_json: DataClass = data_class
+        self.data_class: DataClass = data_class
         self.json_output_format_prompt = Prompt(template=template)
         self.output_processors = JsonParser()
         self.examples = examples
@@ -228,7 +235,7 @@ class JsonOutputParser(OutputParser):
                 Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
-        schema = self.data_class_for_json.format_class_str(
+        schema = self.data_class.format_class_str(
             format_type=format_type, exclude=self._exclude_fields
         )
         example_str = ""
@@ -244,6 +251,7 @@ class JsonOutputParser(OutputParser):
             log.debug(f"{__class__.__name__} example_str: {example_str}")
 
         except Exception:
+            log.error(f"Error in formatting example for {__class__.__name__}")
             example_str = None
         return self.json_output_format_prompt(schema=schema, example=example_str)
 
@@ -251,7 +259,7 @@ class JsonOutputParser(OutputParser):
         return self.output_processors(input)
 
     def _extra_repr(self) -> str:
-        s = f"data_class_for_json={self.data_class_for_json}, examples={self.examples}, exclude_fields={self._exclude_fields}"
+        s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}"""
         return s
 
 

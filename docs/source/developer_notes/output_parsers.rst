@@ -141,7 +141,7 @@ Thus, ``JsonOutputParser`` and ``YamlOutputParser`` both takes the following arg
 - ``examples``: the examples of the data class instance if you want to show the examples in the prompt.
 - ``exclude``: the fields to exclude from both the data format and the examples.
 
-.. TODO: a summary table
+.. TODO: a summary table and a diagram
 
 Parser in Action
 ------------------
@@ -327,6 +327,164 @@ The output will be:
 Output Parsers in Action
 --------------------------
 
+
+We will create the following simple ``DataClass`` with one example.
+And we will demonstrate how to use ``JsonOutputParser`` and ``YamlOutputParser`` to parse another example to dict object.
+
+.. code-block:: python
+
+    from dataclasses import dataclass, field
+    from lightrag.core import DataClass
+
+    @dataclass
+    class User(DataClass):
+        id: int = field(default=1, metadata={"description": "User ID"})
+        name: str = field(default="John", metadata={"description": "User name"})
+
+    user_example = User(id=1, name="John")
+
+**JsonOutputParser**
+
+Here is how to use ``JsonOutputParser``:
+
+.. code-block:: python
+
+    from lightrag.components.output_parsers import JsonOutputParser
+
+    parser = JsonOutputParser(data_class=User, examples=[user_example])
+    print(parser)
+
+The structure of it:
+
+.. code-block::
+
+    JsonOutputParser(
+        data_class=User, examples=[json_output_parser.<locals>.User(id=1, name='John')], exclude_fields=None
+        (json_output_format_prompt): Prompt(
+            template: Your output should be formatted as a standard JSON instance with the following schema:
+            ```
+            {{schema}}
+            ```
+            {% if example %}
+            Examples:
+            ```
+            {{example}}
+            ```
+            {% endif %}
+            -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+            -Use double quotes for the keys and string values.
+            -Follow the JSON formatting conventions., prompt_variables: ['example', 'schema']
+        )
+        (output_processors): JsonParser()
+    )
+
+The output format string will be:
+
+.. code-block::
+
+    Your output should be formatted as a standard JSON instance with the following schema:
+    ```
+    {
+        "id": " (int) (optional)",
+        "name": " (str) (optional)"
+    }
+    ```
+    Examples:
+    ```
+    {
+        "id": 1,
+        "name": "John"
+    }
+    ________
+    ```
+    -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+    -Use double quotes for the keys and string values.
+    -Follow the JSON formatting conventions.
+
+Call the parser with the following string:
+
+.. code-block:: python
+
+    user_to_parse = '{"id": 2, "name": "Jane"}'
+    parsed_user = parser(user_to_parse)
+    print(parsed_user)
+
+The output will be:
+
+.. code-block:: python
+
+    {'id': 2, 'name': 'Jane'}
+
+**YamlOutputParser**
+
+The steps are totally the same as the ``JsonOutputParser``.
+
+.. code-block:: python
+
+    from lightrag.components.output_parsers import YamlOutputParser
+
+    parser = YamlOutputParser(data_class=User, examples=[user_example])
+    print(parser)
+
+The structure of it:
+
+.. code-block::
+
+    YamlOutputParser(
+    data_class=<class '__main__.yaml_output_parser.<locals>.User'>, examples=[yaml_output_parser.<locals>.User(id=1, name='John')]
+    (yaml_output_format_prompt): Prompt(
+        template: Your output should be formatted as a standard YAML instance with the following schema:
+        ```
+        {{schema}}
+        ```
+        {% if example %}
+        Examples:
+        ```
+        {{example}}
+        ```
+        {% endif %}
+
+        -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+        -Follow the YAML formatting conventions with an indent of 2 spaces.
+        -Quote the string values properly., prompt_variables: ['schema', 'example']
+    )
+    (output_processors): YamlParser()
+    )
+
+The output format string will be:
+
+.. code-block::
+
+    Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    id:  (int) (optional)
+    name:  (str) (optional)
+    ```
+    Examples:
+    ```
+    id: 1
+    name: John
+
+    ________
+    ```
+
+    -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+    -Follow the YAML formatting conventions with an indent of 2 spaces.
+    -Quote the string values properly.
+
+Now, let us parse the following string:
+
+.. code-block:: python
+
+    user_to_parse = "id: 2\nname: Jane"
+    parsed_user = parser(user_to_parse)
+    print(parsed_user)
+
+The output will be:
+
+.. code-block:: python
+
+    {'id': 2, 'name': 'Jane'}
 .. # todo
 .. Evaluate Format following
 .. --------------------------

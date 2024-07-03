@@ -227,6 +227,50 @@ def yaml_parser():
     print(parser(yaml_list_str))
 
 
+def json_output_parser():
+    from dataclasses import dataclass, field
+    from lightrag.components.output_parsers import JsonOutputParser
+    from lightrag.core import DataClass
+
+    @dataclass
+    class User(DataClass):
+        id: int = field(default=1, metadata={"description": "User ID"})
+        name: str = field(default="John", metadata={"description": "User name"})
+
+    user_example = User(id=1, name="John")
+
+    user_to_parse = '{"id": 2, "name": "Jane"}'
+
+    parser = JsonOutputParser(data_class=User, examples=[user_example])
+    print(parser)
+    output_format_str = parser.format_instructions()
+    print(output_format_str)
+    parsed_user = parser(user_to_parse)
+    print(parsed_user)
+
+
+def yaml_output_parser():
+    from dataclasses import dataclass, field
+    from lightrag.components.output_parsers import YamlOutputParser
+    from lightrag.core import DataClass
+
+    @dataclass
+    class User(DataClass):
+        id: int = field(default=1, metadata={"description": "User ID"})
+        name: str = field(default="John", metadata={"description": "User name"})
+
+    user_example = User(id=1, name="John")
+
+    user_to_parse = "id: 2\nname: Jane"
+
+    parser = YamlOutputParser(data_class=User, examples=[user_example])
+    print(parser)
+    output_format_str = parser.format_instructions()
+    print(output_format_str)
+    parsed_user = parser(user_to_parse)
+    print(parsed_user)
+
+
 if __name__ == "__main__":
     examples_of_different_ways_to_parse_string()
     int_parser()
@@ -235,3 +279,5 @@ if __name__ == "__main__":
     list_parser()
     json_parser()
     yaml_parser()
+    json_output_parser()
+    yaml_output_parser()
