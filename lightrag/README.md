@@ -1,9 +1,9 @@
 ![LightRAG Logo](../docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 
-⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡
+## ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
 
-We help developers with both building and optimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
+*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
 
 
@@ -75,18 +75,15 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 
 
 
-You can place the above code in your project's root ``__init__.py`` file.
-This setup ensures that LightRAG can access all necessary configurations during runtime.
-
 # Documentation
 
 LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
 
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
+- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html): Design based on three principles: Simplicity over complexity, Quality over quantity, and Optimizing over building.
+- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction will developers with maximum customizability and simplicity.
+- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html): Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 
