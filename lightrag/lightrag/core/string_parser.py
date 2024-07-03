@@ -144,6 +144,7 @@ class ListParser(Component):
             return list_obj
         except Exception as e:
             log.error(f"Error at parsing list string with json.loads: {e}")
+            raise ValueError(f"Error: {e}")
 
 
 JSON_PARSER_OUTPUT_TYPE = Union[Dict[str, object], List[object]]

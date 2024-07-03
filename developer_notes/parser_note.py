@@ -120,5 +120,118 @@ def examples_of_different_ways_to_parse_string():
     print(nested_dict_str, type(eval_nested), eval_nested)
 
 
+def int_parser():
+    from lightrag.core.string_parser import IntParser
+
+    int_str = "42"
+    int_str_2 = "42.0"
+    int_str_3 = "42.7"
+    int_str_4 = "the answer is 42.75"
+
+    # it will all return 42
+    parser = IntParser()
+    print(parser)
+    print(parser(int_str))
+    print(parser(int_str_2))
+    print(parser(int_str_3))
+    print(parser(int_str_4))
+
+
+def float_parser():
+    from lightrag.core.string_parser import FloatParser
+
+    float_str = "42.0"
+    float_str_2 = "42"
+    float_str_3 = "42.7"
+    float_str_4 = "the answer is 42.75"
+
+    # it will all return 42.0
+    parser = FloatParser()
+    print(parser(float_str))
+    print(parser(float_str_2))
+    print(parser(float_str_3))
+    print(parser(float_str_4))
+
+
+def bool_parser():
+    from lightrag.core.string_parser import BooleanParser
+
+    bool_str = "True"
+    bool_str_2 = "False"
+    bool_str_3 = "true"
+    bool_str_4 = "false"
+    # bool_str_5 = "1"  # will fail
+    # bool_str_6 = "0"  # will fail
+    # bool_str_7 = "yes"  # will fail
+    # bool_str_8 = "no"  # will fail
+
+    # it will all return True/False
+    parser = BooleanParser()
+    print(parser(bool_str))
+    print(parser(bool_str_2))
+    print(parser(bool_str_3))
+    print(parser(bool_str_4))
+    # print(parser(bool_str_5))
+    # print(parser(bool_str_6))
+    # print(parser(bool_str_7))
+    # print(parser(bool_str_8))
+
+
+def list_parser():
+
+    from lightrag.core.string_parser import ListParser
+
+    list_str = '["key", "value"]'
+    list_str_2 = 'prefix["key", 2]...'
+    list_str_3 = '[{"key": "value"}, {"key": "value"}]'
+    # dict_str = '{"key": "value"}'
+
+    parser = ListParser()
+    print(parser(list_str))
+    print(parser(list_str_2))
+    print(parser(list_str_3))
+    # print(parser(dict_str)) # will raise ValueError
+
+
+def json_parser():
+    from lightrag.core.string_parser import JsonParser
+
+    dict_str = '{"key": "value"}'
+    nested_dict_str = (
+        '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}}'
+    )
+    list_str = '["key", 2]'
+    list_dict_str = '[{"key": "value"}, {"key": "value"}]'
+
+    parser = JsonParser()
+    print(parser)
+    print(parser(dict_str))
+    print(parser(nested_dict_str))
+    print(parser(list_str))
+    print(parser(list_dict_str))
+
+
+def yaml_parser():
+    from lightrag.core.string_parser import YamlParser
+
+    yaml_dict_str = "key: value"
+    yaml_nested_dict_str = (
+        "name: John\nage: 30\nattributes:\n  height: 180\n  weight: 70"
+    )
+    yaml_list_str = "- key\n- value"
+
+    parser = YamlParser()
+    print(parser)
+    print(parser(yaml_dict_str))
+    print(parser(yaml_nested_dict_str))
+    print(parser(yaml_list_str))
+
+
 if __name__ == "__main__":
     examples_of_different_ways_to_parse_string()
+    int_parser()
+    float_parser()
+    bool_parser()
+    list_parser()
+    json_parser()
+    yaml_parser()

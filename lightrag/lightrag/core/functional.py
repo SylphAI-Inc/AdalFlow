@@ -834,7 +834,8 @@ def extract_first_float(text: str) -> float:
     Raises:
         ValueError: If no float is found in the text.
     """
-    match = re.search(r"\b\d+\.\d+\b", text)
+    match = re.search(r"\b\d+(\.\d+)?\b", text)
+
     if match:
         return float(match.group())
     raise ValueError("No float found in the text.")
@@ -933,6 +934,8 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
     text = text.strip()
     start = text.find("[")
     if start == -1:
+        log.error("No list found in the text.")
+        # return None
         raise ValueError("No list found in the text.")
 
     # Attempt to find the matching closing bracket
@@ -953,6 +956,8 @@ def extract_list_str(text: str, add_missing_right_bracket: bool = True) -> str:
         text += "]"
         end = len(text) - 1
     elif end == -1:
+        log.error("Incomplete list found and add_missing_right_bracket is False.")
+        # return None
         raise ValueError(
             "Incomplete list found and add_missing_right_bracket is False."
         )
