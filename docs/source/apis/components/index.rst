@@ -9,14 +9,28 @@ Overview
 ----------
 .. autosummary::
 
-   components.agent
-   components.model_client
-   components.data_process
+   components.agent.react
 
-   .. components.reasoning
+   components.model_client.anthropic_client
+   components.model_client.cohere_client
+   components.model_client.google_client
+   components.model_client.groq_client
+   components.model_client.openai_client
+   components.model_client.transformers_client
+   components.model_client.utils
 
-   components.retriever
-   components.output_parsers
+   components.data_process.data_components
+   components.data_process.text_splitter
+
+   components.reasoning.chain_of_thought
+
+   components.retriever.bm25_retriever
+   components.retriever.faiss_retriever
+   components.retriever.llm_retriever
+   components.retriever.postgres_retriever
+   components.retriever.reranker_retriever
+
+   components.output_parsers.outputs
 
 
 Output Parsers
