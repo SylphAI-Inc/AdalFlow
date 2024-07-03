@@ -3,7 +3,7 @@ name: Documentation
 on:
   push:
     branches:
-      - release  # Trigger the workflow when changes are pushed to the release branch
+      - release # Trigger the workflow when changes are pushed to the release branch
 
 permissions:
   contents: write
@@ -17,12 +17,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch all history for all branches and tags
+          fetch-depth: 0 # Fetch all history for all branches and tags
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'  # Ensure the Python version is correct
+          python-version: '3.11' # Ensure the Python version is correct
 
       - name: Install Poetry
         run: |
@@ -51,14 +51,18 @@ jobs:
           touch .nojekyll  # Prevent GitHub Pages from ignoring files that start with an underscore
         working-directory: ${{ github.workspace }}/docs/build
 
+      - name: Copy CNAME file
+        run: |
+          cp ${{ github.workspace }}/CNAME ${{ github.workspace }}/docs/build/CNAME
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
-          publish_branch: gh-pages  # Target branch for GitHub Pages deployment
-          publish_dir: ./docs/build/  # Directory containing the built documentation
-          user_name: github-actions[bot]  # Username for the commit
-          user_email: github-actions[bot]@users.noreply.github.com  # Email for the commit
+          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub token for authentication
+          publish_branch: gh-pages # Target branch for GitHub Pages deployment
+          publish_dir: ./docs/build/ # Directory containing the built documentation
+          user_name: github-actions[bot] # Username for the commit
+          user_email: github-actions[bot]@users.noreply.github.com # Email for the commit
 
 # Uncomment below for debugging purposes
 #      - name: Debug Output
