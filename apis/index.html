@@ -396,8 +396,6 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
-</ul>
-<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.anthropic_client.html">anthropic_client</a></li>
@@ -440,26 +438,6 @@ document.write(`
 </details></li>
 </ul>
 </details></li>
-</ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim/optim.sampler.html">sampler</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_optimizer.html">llm_optimizer</a></li>
-</ul>
-</details></li>
-</ul>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
-</ul>
-</details></li>
-</ul>
-<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.retriever_recall.html">retriever_recall</a></li>
@@ -467,15 +445,28 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_augment.html">llm_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.sampler.html">sampler</a></li>
 </ul>
-<ul class="nav bd-sidenav">
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils/utils.logger.html">logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/utils.serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/utils.registry.html">registry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.file_io.html">file_io</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.registry.html">registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.setup_env.html">setup_env</a></li>
 </ul>
 </details></li>
 </ul>
@@ -607,32 +598,38 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
 <td><p>Cohere ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<td><p>Google GenAI ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
 <td><p>Groq ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
 <td><p>Huggingface transformers ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
 <td><p>Helpers for model client for integrating models and parsing the output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
 <td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
 <td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
 <td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<td><p>Leverage a postgres database to store and retrieve documents.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
@@ -668,12 +665,6 @@ The API reference is organized by subdirectories.</p>
 <h2>Optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.optimizer.html#module-optim.optimizer" title="optim.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.optimizer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.sampler.html#module-optim.sampler" title="optim.sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.sampler</span></code></a></p></td>
-<td><p>The sampler here is designed to sample examples in few-shots ICL.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer" title="optim.few_shot_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.few_shot_optimizer</span></code></a></p></td>
 <td><p></p></td>
 </tr>
@@ -682,6 +673,12 @@ The API reference is organized by subdirectories.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.llm_optimizer.html#module-optim.llm_optimizer" title="optim.llm_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.llm_optimizer</span></code></a></p></td>
 <td><p>Based and optimized from ORPO llm optimizer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.optimizer.html#module-optim.optimizer" title="optim.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.optimizer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.sampler.html#module-optim.sampler" title="optim.sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.sampler</span></code></a></p></td>
+<td><p>The sampler here is designed to sample examples in few-shots ICL.</p></td>
 </tr>
 </tbody>
 </table>
@@ -725,16 +722,6 @@ The API reference is organized by subdirectories.</p>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
-</div>
-<div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
 </div>
@@ -792,9 +779,7 @@ The API reference is organized by subdirectories.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizer">Optimizer</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing">Tracing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a><ul class="nav section-nav flex-column">
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a></li>
 </ul>
   </nav></div>
 
