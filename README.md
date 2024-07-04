@@ -167,22 +167,22 @@ qa2.generator.print_prompt(
 The output will be:
 
 ```
-You are a helpful assistant.
-<OUTPUT_FORMAT>
-Your output should be formatted as a standard JSON instance with the following schema:
-```
-{
-    "explaination": "A brief explaination of the concept in one sentence. (str) (required)",
-    "example": "An example of the concept in a sentence. (str) (required)"
-}
-```
--Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
--Use double quotes for the keys and string values.
--Follow the JSON formatting conventions.
-</OUTPUT_FORMAT>
-</SYS>
-User: What is LLM?
-You:
+   You are a helpful assistant.
+   <OUTPUT_FORMAT>
+   Your output should be formatted as a standard JSON instance with the following schema:
+   ```
+   {
+      "explaination": "A brief explaination of the concept in one sentence. (str) (required)",
+      "example": "An example of the concept in a sentence. (str) (required)"
+   }
+   ```
+   -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+   -Use double quotes for the keys and string values.
+   -Follow the JSON formatting conventions.
+   </OUTPUT_FORMAT>
+   </SYS>
+   User: What is LLM?
+   You:
 ```
 
 
