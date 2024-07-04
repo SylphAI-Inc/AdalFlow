@@ -33,14 +33,6 @@ jobs:
         run: |
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
           poetry install  # Install dependencies as specified in pyproject.toml
-          
-      - name: Check Current 'document.yaml' Configuration
-        run: |
-          echo "Checking in default docs directory:"
-          cat docs/document.yaml || echo "No document.yaml in default docs directory."
-          echo "Checking in alternative directory:"
-          cat path/to/alternative/document.yaml || echo "No document.yaml in alternative directory."
-        working-directory: ${{ github.workspace }}
 
       - name: Build documentation using Makefile
         run: |
