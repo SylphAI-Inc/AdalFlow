@@ -54,7 +54,7 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="output_parsers" href="components.output_parsers.html" />
+    <link rel="next" title="components.model_client.groq_client" href="None/components.model_client.groq_client.html" />
     <link rel="prev" title="parameter" href="../core/core.parameter.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -396,14 +396,20 @@ document.write(`
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
-</ul>
-</details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.agent.react.html">components.agent.react</a></li>
-</ul>
-</details></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.agent.react.html">components.agent.react</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.data_process.data_components.html">components.data_process.data_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.memory.memory.html">components.memory.memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="None/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
@@ -413,15 +419,31 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.utils.html">components.model_client.utils</a></li>
 </ul>
 </details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.agent.react.html">components.agent.react</a></li>
+</ul>
+</details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.data_components.html">components.data_process.data_components</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.memory.memory.html">components.memory.memory</a></li>
 </ul>
 </details></li>
 </ul>
@@ -520,41 +542,33 @@ document.write(`
                   
   <section id="components">
 <span id="apis-components"></span><h1>Components<a class="headerlink" href="#components" title="Link to this heading">#</a></h1>
-<p>The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.</p>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<section id="modelclient">
+<h2>ModelClient<a class="headerlink" href="#modelclient" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
-<td><p>Implementation of ReAct.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<td><p>Groq ModelClient integration.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
 <td><p>Anthropic ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
-<td><p>Cohere ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
-<td><p>Groq ModelClient integration.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<td><p>Cohere ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
 <td><p>Huggingface transformers ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
-<td><p>Helpers for model client for integrating models and parsing the output.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
-<td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
-<td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
-<td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
-</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="retriever">
+<h2>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
@@ -564,51 +578,66 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
-<td><p>The most commonly used output parsers for the Generator.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
 </section>
 <section id="output-parsers">
 <h2>Output Parsers<a class="headerlink" href="#output-parsers" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="components.output_parsers.html">output_parsers</a></li>
-</ul>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<td><p>The most commonly used output parsers for the Generator.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
-<section id="agents">
-<h2>Agents<a class="headerlink" href="#agents" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="components.agent.html">agent</a></li>
-</ul>
-</div>
-</section>
-<section id="model-clients">
-<h2>Model Clients<a class="headerlink" href="#model-clients" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="components.model_client.html">model_client</a></li>
-</ul>
+<section id="agent">
+<h2>Agent<a class="headerlink" href="#agent" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation of ReAct.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
 <section id="data-process">
 <h2>Data Process<a class="headerlink" href="#data-process" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="components.data_process.html">data_process</a></li>
-</ul>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
+<td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="_autosummary/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
+<td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </section>
-<section id="retrievers">
-<h2>Retrievers<a class="headerlink" href="#retrievers" title="Link to this heading">#</a></h2>
+<section id="memory">
+<h2>Memory<a class="headerlink" href="#memory" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.memory.memory.html#module-components.memory.memory" title="components.memory.memory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.memory.memory</span></code></a></p></td>
+<td><p>Memory for user-assistant conversations.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Reasoning</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
+<td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="components.retriever.html">retriever</a></li>
-</ul>
 </div>
 </section>
 </section>
@@ -633,11 +662,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="components.output_parsers.html"
+       href="None/components.model_client.groq_client.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">output_parsers</p>
+        <p class="prev-next-title">components.model_client.groq_client</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -659,12 +688,14 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modelclient">ModelClient</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever">Retriever</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-parsers">Output Parsers</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agents">Agents</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-clients">Model Clients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent">Agent</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-process">Data Process</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retrievers">Retrievers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#memory">Memory</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
 </ul>
   </nav></div>
 
