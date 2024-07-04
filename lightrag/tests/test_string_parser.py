@@ -1,14 +1,22 @@
 import pytest
+import unittest
 
 from lightrag.core.string_parser import (
     JsonParser,
+    IntParser,
+    FloatParser,
+    BooleanParser,
 )
 
 from lightrag.core.functional import (
     extract_json_str,
     fix_json_missing_commas,
     fix_json_escaped_single_quotes,
+    extract_yaml_str,
 )
+from lightrag.utils.logger import enable_library_logging
+
+enable_library_logging()
 
 
 ##################################################
@@ -149,7 +157,8 @@ def test_json_parser_handling_decode_error():
     # Deliberately malformed JSON that is also problematic for YAML
     text = '{"name": "John", "age": 30, "attributes": {"height": 180, "weight": 70}]}'
     with pytest.raises(ValueError) as excinfo:
-        parser(text)
+        output = parser(text)
+        print(f"output: {output}")
     assert "Got invalid JSON object" in str(excinfo.value)
 
 
@@ -162,7 +171,133 @@ def test_json_parser_escape_single_quotes():
     "action": "ask_for_information("company information and founder\'s profile")"
     }
     """
+    # "ask_for_information(\"company information and founder's profile\")"
     with pytest.raises(ValueError) as excinfo:
         result = parser(text)
         print(f"result: {result}")
     assert "Got invalid JSON object" in str(excinfo.value)
+
+
+class TestExtractYamlStr(unittest.TestCase):
+
+    def test_extract_yaml_with_triple_backticks(self):
+        text = """```yaml
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+```"""
+        expected = """
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+"""
+        result = extract_yaml_str(text)
+        print(f"triple backticks result: {result}")
+        self.assertEqual(result, expected.strip())
+
+    def test_extract_yaml_with_triple_backticks_no_yaml(self):
+        text = """```
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+```"""
+        expected = """
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+"""
+        result = extract_yaml_str(text)
+        self.assertEqual(result, expected.strip())
+
+    def test_extract_yaml_without_triple_backticks(self):
+        text = """
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+"""
+        expected = """
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70
+"""
+        result = extract_yaml_str(text)
+        self.assertEqual(result, expected.strip())
+
+    def test_no_yaml_string_found(self):
+        text = """Some random text without YAML format."""
+        expected = "Some random text without YAML format."
+        result = extract_yaml_str(text)
+        self.assertEqual(result, expected.strip())
+
+    def test_incomplete_yaml_format(self):
+        text = """```yaml
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70"""
+        expected = """
+name: John
+age: 30
+attributes:
+  height: 180
+  weight: 70"""
+        result = extract_yaml_str(text)
+        self.assertEqual(result, expected.strip())
+
+
+class TestBooleanParser(unittest.TestCase):
+    def setUp(self):
+        self.parser = BooleanParser()
+
+    def test_true(self):
+        self.assertTrue(self.parser("true"))
+        self.assertTrue(self.parser("True"))
+        self.assertTrue(self.parser("...true..."))
+
+    def test_false(self):
+        self.assertFalse(self.parser("false"))
+        self.assertFalse(self.parser("False"))
+        self.assertFalse(self.parser("...false..."))
+
+    def test_no_boolean(self):
+        with self.assertRaises(ValueError):
+            self.parser("no boolean here")
+
+
+class TestIntParser(unittest.TestCase):
+    def setUp(self):
+        self.parser = IntParser()
+
+    def test_integer(self):
+        self.assertEqual(self.parser("123"), 123)
+        self.assertEqual(self.parser("...123..."), 123)
+
+    def test_no_integer(self):
+        with self.assertRaises(ValueError):
+            self.parser("no integer here")
+
+
+class TestFloatParser(unittest.TestCase):
+    def setUp(self):
+        self.parser = FloatParser()
+
+    def test_float(self):
+        self.assertEqual(self.parser("123.45"), 123.45)
+        self.assertEqual(self.parser("...123.45..."), 123.45)
+
+    def test_no_float(self):
+        with self.assertRaises(ValueError):
+            self.parser("no float here")

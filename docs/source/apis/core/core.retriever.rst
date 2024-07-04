@@ -1,6 +1,6 @@
 .. _core-retriever:
 
-core.retriever
+retriever
 =====================
 
 .. automodule:: core.retriever

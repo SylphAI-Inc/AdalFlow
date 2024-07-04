@@ -1,6 +1,6 @@
 .. _core-model_client:
 
-core.model\_client
+model\_client
 =========================
 
 .. automodule:: core.model_client

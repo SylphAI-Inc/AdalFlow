@@ -54,7 +54,7 @@ Or, you can load it yourself with ``python-dotenv``:
 You can place the above code in your project's root ``__init__.py`` file.
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
-1. Install Optional Packages
+4. Install Optional Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

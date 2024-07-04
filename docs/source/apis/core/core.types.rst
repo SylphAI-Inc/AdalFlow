@@ -1,6 +1,6 @@
 .. _core-types:
 
-core.types
+types
 =================
 
 .. automodule:: core.types

@@ -1,6 +1,6 @@
 .. _core-data_components:
 
-core.data\_components
+data\_components
 ============================
 
 .. automodule:: core.data_components

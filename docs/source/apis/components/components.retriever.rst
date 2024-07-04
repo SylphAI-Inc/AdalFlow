@@ -1,6 +1,6 @@
 .. _components-retriever:
 
-components.retriever
+retriever
 ============================
 
 Submodules

@@ -1,6 +1,6 @@
 .. _components-output_parsers:
 
-components.output\_parsers
+output\_parsers
 ==================================
 
 Submodules

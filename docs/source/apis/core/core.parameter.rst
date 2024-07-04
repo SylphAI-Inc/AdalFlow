@@ -1,6 +1,6 @@
 .. _core-parameter:
 
-core.parameter
+parameter
 =====================
 
 .. automodule:: core.parameter

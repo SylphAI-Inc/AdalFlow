@@ -41,7 +41,6 @@ It is light, modular, and robust.
 
          from lightrag.core import Component, Generator
          from lightrag.components.model_client import GroqAPIClient
-         from lightrag.utils import setup_env #noqa
 
 
          class SimpleQA(Component):
@@ -158,6 +157,7 @@ Researchers will want their code to be adapted into more products too.
    .. :hidden:
 
 
+.. Hide the use cases for now
 .. toctree::
    :maxdepth: 1
    :caption: Use Cases - How different parts are used to build various LLM applications
@@ -185,11 +185,10 @@ Researchers will want their code to be adapted into more products too.
 
 ..    resources/index
 
+.. hide the for contributors now
+..    :glob:
+..    :maxdepth: 1
+..    :caption: For Contributors
+..    :hidden:
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :caption: For Contributors
-   :hidden:
-
-   contributor/index
+..    contributor/index

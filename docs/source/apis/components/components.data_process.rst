@@ -1,6 +1,6 @@
 .. _components-data_process:
 
-components.data\_process
+data\_process
 ================================
 
 Submodules

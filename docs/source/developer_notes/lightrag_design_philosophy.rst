@@ -4,7 +4,17 @@ Design Philosophy
 Right from the begining, `LightRAG` follows three fundamental principles.
 
 
-Principle 1: Quality over Quantity
+Principle 1:  Simplicity over Complexity
+-----------------------------------------------------------------------
+We put these three hard rules while designing LightRAG:
+
+- Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.
+- We minimize the lines of code instead of maximizing the lines of code.
+- Go *deep* and *wide* in order to *simplify*.  The clarity we achieve is not the result of being easy, but the result of being deep.
+
+
+
+Principle 2: Quality over Quantity
 -----------------------------------------------------------------------
 
  The Quality of core building blocks over the Quantity of integrations.
@@ -14,7 +24,7 @@ This goes for the prompt, the model client, the retriever, the optimizer, and th
 
 
 
-Principle 2: Optimizing over Building
+Principle 3: Optimizing over Building
 -----------------------------------------------------------------------
 
  We help users build the task pipeline, but we want to help with optimizing even more so.
@@ -28,20 +38,14 @@ to ease the existing frustrations of optimizing the task pipeline.
 
 
 
-Principle 3: Practicality over Showmanship
------------------------------------------------------------------------
-We put these three hard rules while designing LightRAG:
-
-- Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.
-- We minimize the lines of code instead of maximizing the lines of code.
-- Go `deep` and `wide` in order to `simplify`.  The clarity we achieve is not the result of being easy, but the result of being deep.
 
 
 
-Our deep understanding of LLM workflow
+Our understanding of LLM workflow
 -----------------------------------------------------------------------
 
-The above principles are distilled from our deep understanding of the LLM workflow.
+The above principles are distilled from our experiences and continuous learning about the LLM workflow.
+
 
 
 **Developers are the ultimate heroes**

@@ -1,25 +1,31 @@
 API Reference
 =============
 
-Welcome to the LightRAG API reference! This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.
+Welcome to the `LightRAG`.
+The API reference is organized by subdirectories.
+
+..  This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.
 
 
 Core
 ----------
+All base/abstract classes, core components like generator, embedder, and basic functions are here.
 
-The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.
+
+.. The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system.
+.. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.
 
 .. autosummary::
    core.component
    core.base_data_class
    core.default_prompt_template
    core.model_client
-   
+
    .. core.data_components
 
    core.db
    core.functional
-   
+
    core.generator
    core.string_parser
    core.embedder
@@ -35,8 +41,10 @@ The core section of the LightRAG API documentation provides detailed information
 
 Components
 -----------
+Functional components like model client, retriever, agent, local data processing, and output parsers are here.
 
-The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.
+.. The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components.
+.. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.
 
 .. autosummary::
 

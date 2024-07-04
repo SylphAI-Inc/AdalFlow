@@ -1,6 +1,6 @@
 .. _utils-logger:
 
-utils.logger
+logger
 ===================
 
 .. automodule:: utils.logger

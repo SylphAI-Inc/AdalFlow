@@ -1,6 +1,6 @@
 .. _core-tokenizer:
 
-core.tokenizer
+tokenizer
 =====================
 
 .. automodule:: core.tokenizer

@@ -1,6 +1,6 @@
 .. _utils-registry:
 
-utils.registry
+registry
 =====================
 
 .. automodule:: utils.registry
