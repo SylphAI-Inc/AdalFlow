@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Core" href="core/index.html" />
-    <link rel="prev" title="Introduction to BaseDataClass" href="../tutorials/introduction_to_basedataclass.html" />
+    <link rel="prev" title="Use Cases" href="../tutorials/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -178,13 +178,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -231,7 +224,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -312,13 +317,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -352,7 +350,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -507,10 +517,11 @@ document.write(`
                   
   <section id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
-<p>Welcome to the LightRAG API reference! This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.</p>
+<p>Welcome to the <cite>LightRAG</cite>.
+The API reference is organized by subdirectories.</p>
 <section id="core">
 <h2>Core<a class="headerlink" href="#core" title="Link to this heading">#</a></h2>
-<p>The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.</p>
+<p>All base/abstract classes, core components like generator, embedder, and basic functions are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.component.html#module-core.component" title="core.component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.component</span></code></a></p></td>
@@ -535,7 +546,7 @@ document.write(`
 <td><p>Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="core/core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
-<td><p>LLM applications requires lots of string processing.</p></td>
+<td><p>Extract and convert common string to Python objects.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
 <td><p>The component that orchestrates model client (Embedding models in particular) and output processors.</p></td>
@@ -567,7 +578,7 @@ document.write(`
 </section>
 <section id="components">
 <h2>Components<a class="headerlink" href="#components" title="Link to this heading">#</a></h2>
-<p>The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.</p>
+<p>Functional components like model client, retriever, agent, local data processing, and output parsers are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
@@ -724,12 +735,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../tutorials/introduction_to_basedataclass.html"
+       href="../tutorials/index.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Introduction to BaseDataClass</p>
+        <p class="prev-next-title">Use Cases</p>
       </div>
     </a>
     <a class="right-next"

@@ -173,13 +173,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -226,7 +219,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -305,13 +310,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -345,7 +343,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -453,7 +463,7 @@ document.write(`
 <span class="k">class</span> <span class="nc">DefaultLLMJudge</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</span>
 
-<span class="s2">    You can use any any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.</span>
+<span class="s2">    You can use any of your template to adapt to more tasks and sometimes you can directly ask LLM to output a score in range [0, 1] instead of only True or False.</span>
 
 <span class="s2">    A call on the LLM judge equalize to _compute_single_item method.</span>
 
@@ -495,8 +505,8 @@ document.write(`
 
 <span class="sd">        Args:</span>
 <span class="sd">            question (str): Question string.</span>
-<span class="sd">            pred_answer (str): Predicted answer string.</span>
 <span class="sd">            gt_answer (str): Ground truth answer string.</span>
+<span class="sd">            pred_answer (str): Predicted answer string.</span>
 <span class="sd">            judgement_query (str): Judgement query string.</span>
 
 <span class="sd">        Returns:</span>
@@ -543,7 +553,7 @@ document.write(`
 <span class="sd">        &gt;&gt;&gt; judgement_query = &quot;For the question, does the predicted answer contain the ground truth answer?&quot;</span>
 <span class="sd">        &gt;&gt;&gt; llm_judge = LLMasJudge()</span>
 <span class="sd">        &gt;&gt;&gt; avg_judgement, judgement_list = llm_judge.compute(</span>
-<span class="sd">        questions, pred_answers, gt_answers, judgement_query</span>
+<span class="sd">        questions, gt_answers, pred_answers, judgement_query</span>
 <span class="sd">        )</span>
 <span class="sd">        &gt;&gt;&gt; avg_judgement</span>
 <span class="sd">        2 / 3</span>
@@ -562,8 +572,8 @@ document.write(`
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">questions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">pred_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">gt_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">pred_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">judgement_query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
@@ -571,19 +581,21 @@ document.write(`
 
 <span class="sd">        Args:</span>
 <span class="sd">            questions (List[str]): List of question strings.</span>
-<span class="sd">            pred_answers (List[str]): List of predicted answer strings.</span>
 <span class="sd">            gt_answers (List[str]): List of ground truth answer strings.</span>
+<span class="sd">            pred_answers (List[str]): List of predicted answer strings.</span>
 <span class="sd">            judgement_query (str): Judgement query string.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            List[bool]: Judgement results.</span>
+<span class="sd">            tuple:</span>
+<span class="sd">                - float: Average judgement score.</span>
+<span class="sd">                - List[bool]: Judgement results for each query.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">judgement_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">,</span> <span class="n">gt_answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
-            <span class="n">questions</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">,</span> <span class="n">gt_answers</span>
+        <span class="k">for</span> <span class="n">question</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">pred_answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="n">questions</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">pred_answers</span>
         <span class="p">):</span>
             <span class="n">judgement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span><span class="p">(</span>
-                <span class="n">question</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">judgement_query</span>
+                <span class="n">question</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">,</span> <span class="n">judgement_query</span>
             <span class="p">)</span>
             <span class="n">judgement_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">judgement</span><span class="p">)</span>
 
@@ -606,7 +618,7 @@ document.write(`
     <span class="p">)</span>
     <span class="n">llm_judge</span> <span class="o">=</span> <span class="n">LLMasJudge</span><span class="p">()</span>
     <span class="n">avg_judgement</span><span class="p">,</span> <span class="n">judgement_list</span> <span class="o">=</span> <span class="n">llm_judge</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span>
-        <span class="n">questions</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">judgement_query</span>
+        <span class="n">questions</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">,</span> <span class="n">judgement_query</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">avg_judgement</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">judgement_list</span><span class="p">)</span>

@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Parameter" href="parameter.html" />
-    <link rel="prev" title="Agent" href="agent.html" />
+    <link rel="prev" title="Datasets" href="datasets.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -176,13 +176,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -229,7 +222,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -310,13 +315,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -350,7 +348,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -379,7 +389,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">OutputParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
@@ -390,14 +400,16 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Datasets and Evaulation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">LLM Evaluation</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Optimizer &amp; Trainer</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
 <ul class="nav bd-sidenav">
@@ -524,28 +536,36 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 </div>
 <p>If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in LightRAG to assess both the quality of the retrieved context and the quality of the final generated answer.</p>
 <ul class="simple">
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code>: This evaluator is used to evaluate the performance of the retriever component of the RAG pipeline. It has metric functions to compute the recall and context relevance of the retriever.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMacthEvaluator</span></code>: This evaluator is used to evaluate the performance of the generator component of the RAG pipeline. It has metric functions to compute the exact match and fuzzy match accuracy of the generated answer.</p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code>: This evaluator uses an LLM to get the judgement of the predicted answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It has a metric function to compute the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.</p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a>: This is used to evaluate the recall of the retriever component of the RAG pipeline.</p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRelevance</span></code></a>: This is used to evaluate the relevance of the retrieved context to the query.</p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMatchAcc</span></code></a>: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.</p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a>: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.</p></li>
 </ul>
 <p>For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">eval.evaluators</span> <span class="kn">import</span> <span class="n">RetrieverEvaluator</span>
-<span class="linenos"> 2</span><span class="n">retrieved_context</span> <span class="o">=</span> <span class="s2">&quot;Apple is founded before Google.&quot;</span> <span class="c1"># Retrieved context</span>
-<span class="linenos"> 3</span><span class="n">gt_context</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Apple is founded in 1976.&quot;</span><span class="p">,</span>
-<span class="linenos"> 4</span>              <span class="s2">&quot;Google is founded in 1998.&quot;</span><span class="p">,</span>
-<span class="linenos"> 5</span>              <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">]</span> <span class="c1"># Ground truth context</span>
-<span class="linenos"> 6</span><span class="n">retriever_evaluator</span> <span class="o">=</span> <span class="n">RetrieverEvaluator</span><span class="p">()</span> <span class="c1"># Initialize the RetrieverEvaluator</span>
-<span class="linenos"> 7</span><span class="n">recall</span> <span class="o">=</span> <span class="n">retriever_evaluator</span><span class="o">.</span><span class="n">compute_recall_single_query</span><span class="p">(</span>
-<span class="linenos"> 8</span>    <span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span>
-<span class="linenos"> 9</span><span class="p">)</span> <span class="c1"># Compute the recall of the retriever</span>
-<span class="linenos">10</span><span class="n">relevance</span> <span class="o">=</span> <span class="n">retriever_evaluator</span><span class="o">.</span><span class="n">compute_context_relevance_single_query</span><span class="p">(</span>
-<span class="linenos">11</span>    <span class="n">retrieved_context</span><span class="p">,</span> <span class="n">gt_context</span>
-<span class="linenos">12</span><span class="p">)</span> <span class="c1"># Compute the relevance of the retriever</span>
-<span class="linenos">13</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">recall</span><span class="si">}</span><span class="s2">, Relevance: </span><span class="si">{</span><span class="n">relevance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="linenos">14</span><span class="c1"># Recall: 0.3333333333333333, Relevance: 1.0</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">lightrag.eval</span> <span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
+<span class="linenos"> 2</span><span class="n">retrieved_contexts</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 3</span>    <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
+<span class="linenos"> 4</span>    <span class="s2">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;</span><span class="p">,</span>
+<span class="linenos"> 5</span><span class="p">]</span>
+<span class="linenos"> 6</span><span class="n">gt_contexts</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos"> 7</span>    <span class="p">[</span>
+<span class="linenos"> 8</span>        <span class="s2">&quot;Apple is founded in 1976.&quot;</span><span class="p">,</span>
+<span class="linenos"> 9</span>        <span class="s2">&quot;Google is founded in 1998.&quot;</span><span class="p">,</span>
+<span class="linenos">10</span>        <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
+<span class="linenos">11</span>    <span class="p">],</span>
+<span class="linenos">12</span>    <span class="p">[</span><span class="s2">&quot;Feburary has 28 days in common years&quot;</span><span class="p">,</span> <span class="s2">&quot;Feburary has 29 days in leap years&quot;</span><span class="p">],</span>
+<span class="linenos">13</span><span class="p">]</span>
+<span class="linenos">14</span><span class="n">retriever_recall</span> <span class="o">=</span> <span class="n">RetrieverRecall</span><span class="p">()</span>
+<span class="linenos">15</span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_recall</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the recall of the retriever</span>
+<span class="linenos">16</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Recall: </span><span class="si">{</span><span class="n">avg_recall</span><span class="si">}</span><span class="s2">, Recall List: </span><span class="si">{</span><span class="n">recall_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">17</span><span class="c1"># Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]</span>
+<span class="linenos">18</span><span class="n">retriever_relevance</span> <span class="o">=</span> <span class="n">RetrieverRelevance</span><span class="p">()</span>
+<span class="linenos">19</span><span class="n">avg_relevance</span><span class="p">,</span> <span class="n">relevance_list</span> <span class="o">=</span> <span class="n">retriever_relevance</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">retrieved_contexts</span><span class="p">,</span> <span class="n">gt_contexts</span><span class="p">)</span> <span class="c1"># Compute the relevance of the retriever</span>
+<span class="linenos">20</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relevance: </span><span class="si">{</span><span class="n">avg_relevance</span><span class="si">}</span><span class="s2">, Relevance List: </span><span class="si">{</span><span class="n">relevance_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">21</span><span class="c1"># Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]</span>
 </pre></div>
 </div>
-<p>For a more detailed instructions on how to use these evaluators to evaluate RAG pipelines, you can refer to the tutorial on <a class="reference internal" href="../tutorials/eval_a_rag.html"><span class="doc">Evaluating a RAG Pipeline</span></a>, where we provide a step-by-step guide on how to use these evaluators to evaluate a RAG pipeline on HotpotQA dataset.</p>
+<p>For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on <a class="reference internal" href="../tutorials/eval_a_rag.html"><span class="doc">Evaluating a RAG Pipeline</span></a>.</p>
 <p>If you intent to use metrics that are not available in the LightRAG library, you can also implement your own custom metric functions or use other libraries such as <a class="reference external" href="https://docs.ragas.io/en/stable/getstarted/index.html">RAGAS</a> to compute the desired metrics for evaluating RAG pipelines.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id13" role="doc-footnote">
@@ -591,12 +611,12 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="agent.html"
+       href="datasets.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Agent</p>
+        <p class="prev-next-title">Datasets</p>
       </div>
     </a>
     <a class="right-next"

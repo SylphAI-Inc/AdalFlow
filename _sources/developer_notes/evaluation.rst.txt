@@ -73,31 +73,39 @@ If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BE
 
 If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in LightRAG to assess both the quality of the retrieved context and the quality of the final generated answer.
 
-- :class:`RetrieverEvaluator <eval.evaluators.RetrieverEvaluator>`: This evaluator is used to evaluate the performance of the retriever component of the RAG pipeline. It has metric functions to compute the recall and context relevance of the retriever.
-- :class:`AnswerMacthEvaluator <eval.evaluators.AnswerMacthEvaluator>`: This evaluator is used to evaluate the performance of the generator component of the RAG pipeline. It has metric functions to compute the exact match and fuzzy match accuracy of the generated answer.
-- :class:`LLMasJudge <eval.evaluators.LLMasJudge>`: This evaluator uses an LLM to get the judgement of the predicted answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It has a metric function to compute the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
+- :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
+- :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
+- :class:`AnswerMatchAcc <eval.answer_match_acc>`: This calculates the exact match accuracy or fuzzy match accuracy of the generated answers by comparing them to the ground truth answers.
+- :class:`LLMasJudge <eval.llm_as_judge>`: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.
 
 For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.
 
 .. code-block:: python
     :linenos:
 
-    from eval.evaluators import RetrieverEvaluator
-    retrieved_context = "Apple is founded before Google." # Retrieved context
-    gt_context = ["Apple is founded in 1976.",
-                  "Google is founded in 1998.",
-                  "Apple is founded before Google."] # Ground truth context
-    retriever_evaluator = RetrieverEvaluator() # Initialize the RetrieverEvaluator
-    recall = retriever_evaluator.compute_recall_single_query(
-        retrieved_context, gt_context
-    ) # Compute the recall of the retriever
-    relevance = retriever_evaluator.compute_context_relevance_single_query(
-        retrieved_context, gt_context
-    ) # Compute the relevance of the retriever
-    print(f"Recall: {recall}, Relevance: {relevance}")
-    # Recall: 0.3333333333333333, Relevance: 1.0
+    from lightrag.eval import RetrieverRecall, RetrieverRelevance
+    retrieved_contexts = [
+        "Apple is founded before Google.",
+        "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
+    ]
+    gt_contexts = [
+        [
+            "Apple is founded in 1976.",
+            "Google is founded in 1998.",
+            "Apple is founded before Google.",
+        ],
+        ["Feburary has 28 days in common years", "Feburary has 29 days in leap years"],
+    ]
+    retriever_recall = RetrieverRecall()
+    avg_recall, recall_list = retriever_recall.compute(retrieved_contexts, gt_contexts) # Compute the recall of the retriever
+    print(f"Recall: {avg_recall}, Recall List: {recall_list}")
+    # Recall: 0.6666666666666666, Recall List: [0.3333333333333333, 1.0]
+    retriever_relevance = RetrieverRelevance()
+    avg_relevance, relevance_list = retriever_relevance.compute(retrieved_contexts, gt_contexts) # Compute the relevance of the retriever
+    print(f"Relevance: {avg_relevance}, Relevance List: {relevance_list}")
+    # Relevance: 0.803030303030303, Relevance List: [1.0, 0.6060606060606061]
 
-For a more detailed instructions on how to use these evaluators to evaluate RAG pipelines, you can refer to the tutorial on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`, where we provide a step-by-step guide on how to use these evaluators to evaluate a RAG pipeline on HotpotQA dataset.
+For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
 If you intent to use metrics that are not available in the LightRAG library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 

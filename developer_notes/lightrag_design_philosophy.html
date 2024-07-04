@@ -176,13 +176,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -229,7 +222,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -310,13 +315,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -350,7 +348,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -379,7 +389,7 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
 <li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
 <li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">OutputParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
@@ -390,14 +400,16 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
 <li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Datasets and Evaulation</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Optimizer &amp; Trainer</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
 <ul class="nav bd-sidenav">
@@ -463,16 +475,25 @@ document.write(`
   <section id="design-philosophy">
 <h1>Design Philosophy<a class="headerlink" href="#design-philosophy" title="Link to this heading">#</a></h1>
 <p>Right from the begining, <cite>LightRAG</cite> follows three fundamental principles.</p>
-<section id="principle-1-quality-over-quantity">
-<h2>Principle 1: Quality over Quantity<a class="headerlink" href="#principle-1-quality-over-quantity" title="Link to this heading">#</a></h2>
+<section id="principle-1-simplicity-over-complexity">
+<h2>Principle 1:  Simplicity over Complexity<a class="headerlink" href="#principle-1-simplicity-over-complexity" title="Link to this heading">#</a></h2>
+<p>We put these three hard rules while designing LightRAG:</p>
+<ul class="simple">
+<li><p>Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.</p></li>
+<li><p>We minimize the lines of code instead of maximizing the lines of code.</p></li>
+<li><p>Go <em>deep</em> and <em>wide</em> in order to <em>simplify</em>.  The clarity we achieve is not the result of being easy, but the result of being deep.</p></li>
+</ul>
+</section>
+<section id="principle-2-quality-over-quantity">
+<h2>Principle 2: Quality over Quantity<a class="headerlink" href="#principle-2-quality-over-quantity" title="Link to this heading">#</a></h2>
 <blockquote>
 <div><p>The Quality of core building blocks over the Quantity of integrations.</p>
 </div></blockquote>
 <p>We aim to provide developers with well-designed core building blocks that are  <strong>easy</strong> to understand, <strong>transparent</strong> to debug, and <strong>flexible</strong> enough to customize.
 This goes for the prompt, the model client, the retriever, the optimizer, and the trainer.</p>
 </section>
-<section id="principle-2-optimizing-over-building">
-<h2>Principle 2: Optimizing over Building<a class="headerlink" href="#principle-2-optimizing-over-building" title="Link to this heading">#</a></h2>
+<section id="principle-3-optimizing-over-building">
+<h2>Principle 3: Optimizing over Building<a class="headerlink" href="#principle-3-optimizing-over-building" title="Link to this heading">#</a></h2>
 <blockquote>
 <div><p>We help users build the task pipeline, but we want to help with optimizing even more so.</p>
 </div></blockquote>
@@ -480,18 +501,9 @@ This goes for the prompt, the model client, the retriever, the optimizer, and th
 This means beyond giving developers transparency and control, providing them with great <cite>logging</cite>, <cite>observability</cite>, <cite>configurability</cite>, <cite>optimizers</cite>,  and <cite>trainers</cite>
 to ease the existing frustrations of optimizing the task pipeline.</p>
 </section>
-<section id="principle-3-practicality-over-showmanship">
-<h2>Principle 3: Practicality over Showmanship<a class="headerlink" href="#principle-3-practicality-over-showmanship" title="Link to this heading">#</a></h2>
-<p>We put these three hard rules while designing LightRAG:</p>
-<ul class="simple">
-<li><p>Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.</p></li>
-<li><p>We minimize the lines of code instead of maximizing the lines of code.</p></li>
-<li><p>Go <cite>deep</cite> and <cite>wide</cite> in order to <cite>simplify</cite>.  The clarity we achieve is not the result of being easy, but the result of being deep.</p></li>
-</ul>
-</section>
-<section id="our-deep-understanding-of-llm-workflow">
-<h2>Our deep understanding of LLM workflow<a class="headerlink" href="#our-deep-understanding-of-llm-workflow" title="Link to this heading">#</a></h2>
-<p>The above principles are distilled from our deep understanding of the LLM workflow.</p>
+<section id="our-understanding-of-llm-workflow">
+<h2>Our understanding of LLM workflow<a class="headerlink" href="#our-understanding-of-llm-workflow" title="Link to this heading">#</a></h2>
+<p>The above principles are distilled from our experiences and continuous learning about the LLM workflow.</p>
 <p><strong>Developers are the ultimate heroes</strong></p>
 <p>LLMs are like <cite>water</cite>, they can almost do anything, from GenAI applications such as <cite>chatbot</cite>, <cite>translation</cite>, <cite>summarization</cite>, <cite>code generation</cite>, <cite>autonomous agent</cite> to classical NLP tasks like <cite>text classification</cite>, and <cite>named entity recognition</cite>.
 They interact with the world beyond the model’s internal knowledge via <cite>retriever</cite>, <cite>memory</cite>, and <cite>tools</cite> (<cite>function calls</cite>).
@@ -565,10 +577,10 @@ However, researchers are still trying to understand prompt engineering, the proc
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-1-quality-over-quantity">Principle 1: Quality over Quantity</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-2-optimizing-over-building">Principle 2: Optimizing over Building</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-3-practicality-over-showmanship">Principle 3: Practicality over Showmanship</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#our-deep-understanding-of-llm-workflow">Our deep understanding of LLM workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-1-simplicity-over-complexity">Principle 1:  Simplicity over Complexity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-2-quality-over-quantity">Principle 2: Quality over Quantity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#principle-3-optimizing-over-building">Principle 3: Optimizing over Building</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#our-understanding-of-llm-workflow">Our understanding of LLM workflow</a></li>
 </ul>
   </nav></div>
 

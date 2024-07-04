@@ -173,13 +173,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -226,7 +219,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -305,13 +310,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -345,7 +343,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -407,11 +417,7 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for components.output_parsers.outputs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The most commonly used output parsers for the Generator.</span>
-
-<span class="sd">Note: Even with OutputParser for output_format_str formatting and the response parsing, it is not 100% guaranteed</span>
-<span class="sd">as user query can impact the output. Test your code well!</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;The most commonly used output parsers for the Generator.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">is_dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
@@ -423,13 +429,6 @@ document.write(`
 <span class="kn">from</span> <span class="nn">lightrag.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
 <span class="kn">from</span> <span class="nn">lightrag.core.base_data_class</span> <span class="kn">import</span> <span class="n">ExcludeType</span>
 
-
-<span class="c1"># TODO: might be worth to parse a list of yaml or json objects. For instance, a list of jokes.</span>
-<span class="c1"># setup: Why couldn&#39;t the bicycle stand up by itself?</span>
-<span class="c1"># punchline: Because it was two-tired.</span>
-<span class="c1">#</span>
-<span class="c1"># setup: What do you call a fake noodle?</span>
-<span class="c1"># punchline: An impasta.</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;OutputParser&quot;</span><span class="p">,</span>
@@ -471,10 +470,7 @@ document.write(`
 <span class="s2">-Quote the string values properly.&quot;&quot;&quot;</span>
 
 <span class="n">LIST_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard Python list.</span>
-<span class="s2">-Each element can be of any Python data type such as string, integer, float, list, dictionary, etc.</span>
-<span class="s2">-You can also have nested lists and dictionaries.</span>
-<span class="s2">-Please do not add anything other than valid Python list output!</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">- Start the list with &#39;[&#39; and end with &#39;]&#39;&quot;&quot;&quot;</span>
 
 
 <span class="n">YAML_OUTPUT_PARSER_OUTPUT_TYPE</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
@@ -570,13 +566,18 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Provided class is not a subclass of DataClass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
         <span class="c1"># ensure example is instance of data class and initiated</span>
         <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data_class</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided example is not an instance of the data class: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_yaml</span> <span class="o">=</span> <span class="n">data_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yaml_output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
@@ -596,7 +597,7 @@ document.write(`
 <span class="sd">            exclude (List[str], optional): The fields to exclude from the schema of the data class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">format_type</span> <span class="o">=</span> <span class="n">format_type</span> <span class="ow">or</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_YAML</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_yaml</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
             <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span>
         <span class="p">)</span>
         <span class="c1"># convert example to string, convert data class to yaml string</span>
@@ -626,7 +627,7 @@ document.write(`
 
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class_for_yaml=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_yaml</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 
@@ -644,13 +645,18 @@ document.write(`
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Provided class is not a subclass of DataClass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data_class</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided example is not an instance of the data class: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">JSON_OUTPUT_FORMAT</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_json</span> <span class="o">=</span> <span class="n">data_class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">json_output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">JsonParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
@@ -670,7 +676,7 @@ document.write(`
 <span class="sd">                Options: DataClassFormatType.SIGNATURE_YAML, DataClassFormatType.SIGNATURE_JSON, DataClassFormatType.SCHEMA.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">format_type</span> <span class="o">=</span> <span class="n">format_type</span> <span class="ow">or</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_json</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
             <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span>
         <span class="p">)</span>
         <span class="n">example_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -686,6 +692,7 @@ document.write(`
             <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> example_str: </span><span class="si">{</span><span class="n">example_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in formatting example for </span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">example_str</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_output_format_prompt</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="n">example_str</span><span class="p">)</span></div>
 
@@ -697,7 +704,7 @@ document.write(`
 
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class_for_json=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class_for_json</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 

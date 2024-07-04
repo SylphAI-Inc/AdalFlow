@@ -173,13 +173,6 @@
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
       
@@ -226,7 +219,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -305,13 +310,6 @@ document.write(`
   </a>
 </li>
 
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../contributor/index.html">
-    For Contributors
-  </a>
-</li>
-
   </ul>
 </nav></div>
           
@@ -345,7 +343,19 @@ document.write(`
           
           
           
-          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
@@ -1285,13 +1295,91 @@ document.write(`
 
 
 
+<span class="c1">########################################################################################</span>
+<span class="c1"># For Parser components</span>
+<span class="c1">########################################################################################</span>
+<div class="viewcode-block" id="extract_first_int">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_int">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_first_int</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first integer from the provided text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential integer data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: The extracted integer.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no integer is found in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b\d+\b&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No integer found in the text.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_first_float">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_float">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_first_float</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first float from the provided text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential float data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: The extracted float.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no float is found in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b\d+(\.\d+)?\b&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No float found in the text.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_first_boolean">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_first_boolean">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_first_boolean</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first boolean from the provided text.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential boolean data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: The extracted boolean.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no boolean is found in the text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\b(?:true|false|True|False)\b&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No boolean found in the text.&quot;</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="extract_json_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_json_str">[docs]</a>
 <span class="k">def</span> <span class="nf">extract_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extract JSON string from text.</span>
-<span class="sd">    NOTE: Only handles the first JSON object or array found in the text. And it expects at least one JSON object in the text.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract JSON string from text.</span>
+
+<span class="sd">    It will extract the first JSON object or array found in the text by searching for { or [.</span>
 <span class="sd">    If right brace is not found, we add one to the end of the string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential JSON data.</span>
+<span class="sd">        add_missing_right_brace (bool): Whether to add a missing right brace if it is missing.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The extracted JSON string.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no JSON object or array is found or if the JSON extraction is incomplete</span>
+<span class="sd">                    without the option to add a missing brace</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># NOTE: this regex parsing is taken from langchain.output_parsers.pydantic</span>
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
@@ -1335,8 +1423,9 @@ document.write(`
 <div class="viewcode-block" id="extract_list_str">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_list_str">[docs]</a>
 <span class="k">def</span> <span class="nf">extract_list_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Extract the first complete list string from the provided text. If the list string is incomplete</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the first complete list string from the provided text.</span>
+
+<span class="sd">    If the list string is incomplete</span>
 <span class="sd">    (missing the closing bracket), an option allows adding a closing bracket at the end.</span>
 
 <span class="sd">    Args:</span>
@@ -1353,6 +1442,8 @@ document.write(`
     <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="n">start</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;No list found in the text.&quot;</span><span class="p">)</span>
+        <span class="c1"># return None</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No list found in the text.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Attempt to find the matching closing bracket</span>
@@ -1373,6 +1464,8 @@ document.write(`
         <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
         <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="k">elif</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Incomplete list found and add_missing_right_bracket is False.&quot;</span><span class="p">)</span>
+        <span class="c1"># return None</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Incomplete list found and add_missing_right_bracket is False.&quot;</span>
         <span class="p">)</span>
@@ -1386,7 +1479,18 @@ document.write(`
 <span class="k">def</span> <span class="nf">extract_yaml_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract YAML string from text.</span>
 
-<span class="sd">    In default, we use regex pattern to match yaml code blocks within triple backticks with optional yaml or yml prefix.</span>
+<span class="sd">    .. note::</span>
+<span class="sd">        As yaml string does not have a format like JSON which we can extract from {} or [],</span>
+<span class="sd">        it is crucial to have a format such as ```yaml``` or ```yml``` to indicate the start of the yaml string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential YAML data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The extracted YAML string.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no YAML string is found in the text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">yaml_re_pattern</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
@@ -1396,7 +1500,7 @@ document.write(`
 
         <span class="n">yaml_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-            <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;yaml&quot;</span><span class="p">)</span>
+            <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;yaml&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">yaml_str</span>
@@ -1433,10 +1537,11 @@ document.write(`
 <div class="viewcode-block" id="parse_yaml_str_to_obj">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">[docs]</a>
 <span class="k">def</span> <span class="nf">parse_yaml_str_to_obj</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Parse a YAML string to a Python object.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a YAML string to a Python object.</span>
+
 <span class="sd">    yaml_str: has to be a valid YAML string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">yaml_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">import</span> <span class="nn">yaml</span>
 
@@ -1453,43 +1558,44 @@ document.write(`
 
 <div class="viewcode-block" id="parse_json_str_to_obj">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_json_str_to_obj">[docs]</a>
-<span class="k">def</span> <span class="nf">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Parse a JSON string to a Python object.</span>
+<span class="k">def</span> <span class="nf">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse a varietry of json format string to Python object.</span>
+
 <span class="sd">    json_str: has to be a valid JSON string. Either {} or [].</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">json_str</span> <span class="o">=</span> <span class="n">json_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># 1st attemp with json.loads</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json_obj</span>
-    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Got invalid JSON object with json.loads. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># 2nd attemp after fixing the json string</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trying to fix potential missing commas...&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to fix potential missing commas...&quot;</span><span class="p">)</span>
             <span class="n">json_str</span> <span class="o">=</span> <span class="n">fix_json_missing_commas</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trying to fix scaped single quotes...&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to fix scaped single quotes...&quot;</span><span class="p">)</span>
             <span class="n">json_str</span> <span class="o">=</span> <span class="n">fix_json_escaped_single_quotes</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fixed JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fixed JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">json_obj</span>
         <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
             <span class="c1"># 3rd attemp using yaml</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">yaml</span>
 
                 <span class="c1"># NOTE: parsing again with pyyaml</span>
                 <span class="c1">#       pyyaml is less strict, and allows for trailing commas</span>
                 <span class="c1">#       right now we rely on this since guidance program generates</span>
                 <span class="c1">#       trailing commas</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsing JSON string with PyYAML...&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Parsing JSON string with PyYAML...&quot;</span><span class="p">)</span>
                 <span class="n">json_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">json_obj</span>
             <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Got invalid JSON object. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please pip install PyYAML.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+                    <span class="sa">f</span><span class="s2">&quot;Got invalid JSON object with yaml.safe_load. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
 
 </pre></div>
 
