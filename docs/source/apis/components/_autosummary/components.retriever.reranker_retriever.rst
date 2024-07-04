@@ -1,4 +1,6 @@
-﻿components.retriever.reranker\_retriever
+.. _components-retriever-reranker_retriever:
+
+reranker_retriever
 ========================================
 
 .. automodule:: components.retriever.reranker_retriever

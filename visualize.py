@@ -163,7 +163,7 @@ def process_directory(directory):
 
 # Directory containing your Python files
 def light_rag_paths():
-    Light_rag_directory = "/Users/liyin/Documents/test/LightRAG/lightrag"
+    Light_rag_directory = "/Users/liyin/Documents/test/LightRAG/lightrag/lightrag"
 
     paths = ["core", "components", "utils", "eval", "optim", "tracing"]
     for path in paths:

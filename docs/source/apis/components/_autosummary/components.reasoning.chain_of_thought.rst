@@ -1,4 +1,6 @@
-﻿components.reasoning.chain\_of\_thought
+.. _components-reasoning-chain_of_thought:
+
+chain_of_thought
 =======================================
 
 .. automodule:: components.reasoning.chain_of_thought

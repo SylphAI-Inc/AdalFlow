@@ -1,4 +1,4 @@
-.. _eval-evaluators:
+_eval-evaluators:
 
 evaluators
 ======================

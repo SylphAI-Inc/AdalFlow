@@ -1,6 +1,6 @@
 .. _eval-retriever_recall:
 
-retriever\_recall
+retriever_recall
 =============================
 
 .. automodule:: eval.retriever_recall

@@ -1,6 +1,6 @@
 .. _core-prompt_builder:
 
-prompt\_builder
+prompt_builder
 ===========================
 
 .. automodule:: core.prompt_builder

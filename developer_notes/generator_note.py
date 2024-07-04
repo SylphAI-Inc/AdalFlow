@@ -1,5 +1,12 @@
+from dataclasses import dataclass, field
+
 from lightrag.core import Component, Generator
 from lightrag.components.model_client import GroqAPIClient
+from lightrag.core import DataClass, fun_to_component, Sequential
+from lightrag.components.output_parsers import JsonOutputParser
+from lightrag.utils import setup_env
+
+setup_env()
 
 
 class SimpleQA(Component):
@@ -21,6 +28,47 @@ class SimpleQA(Component):
         return self.generator({"input_str": query})
 
     async def acall(self, query):
+        return await self.generator.acall({"input_str": query})
+
+
+@dataclass
+class QAOutput(DataClass):
+    explaination: str = field(
+        metadata={"desc": "A brief explaination of the concept in one sentence."}
+    )
+    example: str = field(metadata={"desc": "An example of the concept in a sentence."})
+
+
+@fun_to_component
+def to_qa_output(data: dict) -> QAOutput:
+    return QAOutput.from_dict(data)
+
+
+class QA(Component):
+    def __init__(self):
+        super().__init__()
+        template = r"""<SYS>
+        You are a helpful assistant.
+        <OUTPUT_FORMAT>
+        {{output_format_str}}
+        </OUTPUT_FORMAT>
+        </SYS>
+        User: {{input_str}}
+        You:
+        """
+        parser = JsonOutputParser(data_class=QAOutput)
+        self.generator = Generator(
+            model_client=GroqAPIClient(),
+            model_kwargs={"model": "llama3-8b-8192"},
+            template=template,
+            prompt_kwargs={"output_format_str": parser.format_instructions()},
+            output_processors=Sequential(parser, to_qa_output),
+        )
+
+    def call(self, query: str):
+        return self.generator.call({"input_str": query})
+
+    async def acall(self, query: str):
         return await self.generator.acall({"input_str": query})
 
 
@@ -169,13 +217,18 @@ def create_purely_from_config_2():
 
 
 if __name__ == "__main__":
-    qa = SimpleQA()
-    answer = qa("What is LightRAG?")
-    print(qa)
+    qa1 = SimpleQA()
+    answer = qa1("What is LightRAG?")
+    print(qa1)
 
-    minimum_generator()
-    use_a_json_parser()
-    use_its_own_template()
-    use_model_client_enum_to_switch_client()
-    create_purely_from_config()
-    create_purely_from_config_2()
+    qa2 = QA()
+    answer = qa2("What is LLM?")
+    print(qa2)
+    print(answer)
+
+    # minimum_generator()
+    # use_a_json_parser()
+    # use_its_own_template()
+    # use_model_client_enum_to_switch_client()
+    # create_purely_from_config()
+    # create_purely_from_config_2()

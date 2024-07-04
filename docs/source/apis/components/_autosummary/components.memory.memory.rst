@@ -1,4 +1,6 @@
-﻿components.memory.memory
+.. _components-memory-memory:
+
+memory
 ========================
 
 .. automodule:: components.memory.memory

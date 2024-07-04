@@ -1,4 +1,6 @@
-﻿components.model\_client.transformers\_client
+.. _components-model_client-transformers_client:
+
+transformers_client
 =============================================
 
 .. automodule:: components.model_client.transformers_client

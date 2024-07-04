@@ -1,10 +1,8 @@
-from core.generator import Generator
-from core.component import Component
+from lightrag.core.generator import Generator
+from lightrag.core.component import Component
 
-from components.api_client import GroqAPIClient
-from tracing.decorators import trace_generator_states, trace_generator_call
-
-import utils.setup_env
+from lightrag.components.model_client import GroqAPIClient
+from lightrag.tracing.decorators import trace_generator_states, trace_generator_call
 
 
 @trace_generator_states()
@@ -35,7 +33,7 @@ class SimpleQA(Component):
 
 
 if __name__ == "__main__":
-    from utils import enable_library_logging, get_logger
+    from lightrag.utils import enable_library_logging, get_logger
 
     enable_library_logging(enable_file=False, level="DEBUG")
     log = get_logger(__name__, level="INFO")
