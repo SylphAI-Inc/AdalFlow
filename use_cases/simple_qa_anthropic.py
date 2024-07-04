@@ -14,7 +14,7 @@ class SimpleQA(Component):
         self.generator = Generator(
             model_client=AnthropicAPIClient(),
             model_kwargs={"model": "claude-3-opus-20240229", "max_tokens": 1000},
-            preset_prompt_kwargs={
+            prompt_kwargs={
                 "task_desc_str": "You are a helpful assistant and with a great sense of humor."
             },
         )
