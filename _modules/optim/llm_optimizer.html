@@ -476,7 +476,7 @@ document.write(`
 
 <span class="c1"># @dataclass</span>
 <div class="viewcode-block" id="Instruction">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.Instruction">[docs]</a>
 <span class="k">class</span> <span class="nc">Instruction</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="c1"># prefix will be the same as text</span>
     <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The instruction text&quot;</span><span class="p">})</span>
@@ -496,7 +496,7 @@ document.write(`
 <span class="c1"># TODO: combine few-shot with llm optimizer</span>
 <span class="c1"># TODO: support multi processors and multiple proposals at the same time</span>
 <div class="viewcode-block" id="LLMOptimizer">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.LLMOptimizer">[docs]</a>
 <span class="k">class</span> <span class="nc">LLMOptimizer</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Default LLM optimizer for task instruction.</span>
 
@@ -532,13 +532,13 @@ document.write(`
         <span class="p">}</span>
 
 <div class="viewcode-block" id="LLMOptimizer.reset">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.LLMOptimizer.reset">[docs]</a>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">instruction_history</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="LLMOptimizer.propose">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.propose">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.LLMOptimizer.propose">[docs]</a>
     <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Propose a new instruction using the generator.&quot;&quot;&quot;</span>
         <span class="n">max_run</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
@@ -555,7 +555,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LLMOptimizer.update_parameter">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.update_parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.LLMOptimizer.update_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">update_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the proposed instruction to the current instruction to complete the optimization step.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proposed</span><span class="p">)</span>
@@ -566,7 +566,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LLMOptimizer.reset_parameter">
-<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset_parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.llm_optimizer.html#optim.LLMOptimizer.reset_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The proposed is not leading to a better instruction, reset the parameter.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proposed</span> <span class="o">=</span> <span class="kc">None</span>

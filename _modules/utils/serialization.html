@@ -431,7 +431,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ObjectTypes">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.ObjectTypes">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.ObjectTypes">[docs]</a>
 <span class="k">class</span> <span class="nc">ObjectTypes</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">CLASS</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">INSTANCE</span> <span class="o">=</span> <span class="mi">2</span>
@@ -440,7 +440,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="check_object">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.check_object">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.check_object">[docs]</a>
 <span class="k">def</span> <span class="nf">check_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectTypes</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">ObjectTypes</span><span class="o">.</span><span class="n">CLASS</span>
@@ -453,7 +453,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="default">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.default">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.default">[docs]</a>
 <span class="k">def</span> <span class="nf">default</span><span class="p">(</span><span class="n">o</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Customized JSON serializer.</span>
 
@@ -508,7 +508,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="serialize">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.serialize">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialize">[docs]</a>
 <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize the object to a json string.</span>
 
@@ -524,7 +524,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="deserialize">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.deserialize">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.deserialize">[docs]</a>
 <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Deserialize the JSON string back to an object.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">object_hook</span><span class="o">=</span><span class="n">_deserialize_object_hook</span><span class="p">)</span></div>
@@ -542,7 +542,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="to_dict">
-<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.serialization.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.serialization.html#utils.to_dict">[docs]</a>
 <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert the object to a dictionary.</span>
 

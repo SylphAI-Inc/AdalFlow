@@ -455,7 +455,7 @@ document.write(`
 
 <span class="c1"># completion parsing functions and you can combine them into one singple chat completion parser</span>
 <div class="viewcode-block" id="get_first_message_content">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">[docs]</a>
 <span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When we only need the content of the first message.</span>
 <span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
@@ -464,7 +464,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="get_all_messages_content">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">[docs]</a>
 <span class="k">def</span> <span class="nf">get_all_messages_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When the n &gt; 1, get all the messages content.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">]</span></div>
@@ -472,7 +472,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="get_probabilities">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">[docs]</a>
 <span class="k">def</span> <span class="nf">get_probabilities</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TokenLogProb</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the probabilities of each token in the completion.&quot;&quot;&quot;</span>
     <span class="n">log_probs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -490,7 +490,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient">[docs]</a>
 <span class="k">class</span> <span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the OpenAI API client.</span>
 
@@ -535,7 +535,7 @@ document.write(`
         <span class="p">)</span>
 
 <div class="viewcode-block" id="OpenAIClient.init_sync_client">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -544,7 +544,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.init_async_client">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -553,7 +553,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.parse_chat_completion">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str.&quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -562,7 +562,7 @@ document.write(`
         <span class="c1"># return completion.choices[0].message.content</span>
 
 <div class="viewcode-block" id="OpenAIClient.parse_embedding_response">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">CreateEmbeddingResponse</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
@@ -578,7 +578,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.convert_inputs_to_api_kwargs">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -611,7 +611,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.call">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call">[docs]</a>
     <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
         <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
         <span class="p">(</span>
@@ -637,7 +637,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.acall">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall">[docs]</a>
     <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
         <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
         <span class="p">(</span>
@@ -666,7 +666,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.from_dict">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -677,7 +677,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OpenAIClient.to_dict">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the component to a dictionary.&quot;&quot;&quot;</span>
         <span class="c1"># TODO: not exclude but save yes or no for recreating the clients</span>

@@ -453,7 +453,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClassFormatType">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClassFormatType">[docs]</a>
 <span class="k">class</span> <span class="nc">DataClassFormatType</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The format type for the DataClass schema.&quot;&quot;&quot;</span>
 
@@ -472,7 +472,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="required_field">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.required_field">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.required_field">[docs]</a>
 <span class="k">def</span> <span class="nf">required_field</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A factory function to create a required field in a dataclass.</span>
@@ -513,7 +513,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass">[docs]</a>
 <span class="k">class</span> <span class="nc">DataClass</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The base data class for all data types that interact with LLMs.</span>
 
@@ -615,7 +615,7 @@ document.write(`
                 <span class="p">)</span>
 
 <div class="viewcode-block" id="DataClass.to_dict">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a dataclass object to a dictionary.</span>
 
@@ -670,7 +670,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.from_dict">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a dictionary.</span>
@@ -698,7 +698,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.from_json">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_json">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.from_json">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_json</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a JSON string.</span>
@@ -721,7 +721,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_json_obj">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_obj">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_json_obj">[docs]</a>
     <span class="k">def</span> <span class="nf">to_json_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a JSON object.</span>
 
@@ -736,7 +736,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_json">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_json">[docs]</a>
     <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a JSON string.</span>
 
@@ -751,7 +751,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.from_yaml">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_yaml">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.from_yaml">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;DataClass&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a dataclass instance from a YAML string.</span>
@@ -774,7 +774,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_yaml_obj">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_yaml_obj">[docs]</a>
     <span class="k">def</span> <span class="nf">to_yaml_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a YAML object.</span>
 
@@ -788,7 +788,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_yaml">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_yaml">[docs]</a>
     <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a YAML string.</span>
 
@@ -804,7 +804,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_schema">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_schema">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a Json schema which is more detailed than the signature.&quot;&quot;&quot;</span>
@@ -820,7 +820,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_schema_str">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema_str">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_schema_str">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">to_schema_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a Json schema which is more detailed than the signature.&quot;&quot;&quot;</span>
@@ -829,7 +829,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_yaml_signature">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_yaml_signature">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">to_yaml_signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a YAML signature for the class from desc in metadata.</span>
@@ -849,7 +849,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_json_signature">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_signature">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_json_signature">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">to_json_signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a JSON `signature`(json string) for the class from desc in metadata.</span>
@@ -877,7 +877,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.to_dict_class">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict_class">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.to_dict_class">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">to_dict_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;More of an internal used class method for serialization.</span>
@@ -889,7 +889,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.format_class_str">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_class_str">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.format_class_str">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">format_class_str</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
@@ -925,7 +925,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DataClass.format_example_str">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_example_str">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DataClass.format_example_str">[docs]</a>
     <span class="k">def</span> <span class="nf">format_example_str</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -954,7 +954,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DynamicDataClassFactory">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DynamicDataClassFactory">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">DynamicDataClassFactory</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
@@ -986,7 +986,7 @@ document.write(`
 <span class="s2">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DynamicDataClassFactory.create_from_dict">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.create_from_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.DynamicDataClassFactory.create_from_dict">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">create_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">base_class</span><span class="o">=</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;DynamicOutputs&quot;</span><span class="p">):</span>
         <span class="n">fields_spec</span> <span class="o">=</span> <span class="p">[]</span>

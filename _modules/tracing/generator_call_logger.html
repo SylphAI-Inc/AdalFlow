@@ -435,7 +435,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallRecord">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallRecord">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">GeneratorCallRecord</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
@@ -446,7 +446,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallLogger">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger">[docs]</a>
 <span class="k">class</span> <span class="nc">GeneratorCallLogger</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Log the generator calls.</span>
 
@@ -483,20 +483,20 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span>
 
 <div class="viewcode-block" id="GeneratorCallLogger.get_log_location">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.get_log_location">[docs]</a>
     <span class="k">def</span> <span class="nf">get_log_location</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.get_calls">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_calls">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.get_calls">[docs]</a>
     <span class="k">def</span> <span class="nf">get_calls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the generator call records for generator with name.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.register_generator">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.register_generator">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.register_generator">[docs]</a>
     <span class="k">def</span> <span class="nf">register_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Register a generator with a name and a jsonl file to log its calls.</span>
 
@@ -515,7 +515,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.save_meta_data">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.save_meta_data">[docs]</a>
     <span class="k">def</span> <span class="nf">save_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the _generator_names_to_files to a json file.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
@@ -523,7 +523,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.load_meta_data">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load_meta_data">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.load_meta_data">[docs]</a>
     <span class="k">def</span> <span class="nf">load_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the _generator_names_to_files from a json file.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
@@ -535,7 +535,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.load">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.load">[docs]</a>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">GeneratorCallRecord</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the generator call records.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span><span class="p">:</span>
@@ -547,7 +547,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorCallLogger.log_call">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.log_call">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.GeneratorCallLogger.log_call">[docs]</a>
     <span class="k">def</span> <span class="nf">log_call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>

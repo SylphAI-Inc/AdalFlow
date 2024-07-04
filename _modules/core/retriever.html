@@ -440,7 +440,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Retriever">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever">[docs]</a>
 <span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The base class for all retrievers.</span>
 
@@ -467,14 +467,14 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Retriever.reset_index">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.reset_index">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize/reset any attributes/states for the index.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;reset_index is not implemented&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Retriever.build_index_from_documents">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.build_index_from_documents">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.build_index_from_documents">[docs]</a>
     <span class="k">def</span> <span class="nf">build_index_from_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="n">RetrieverDocumentsType</span><span class="p">,</span>
@@ -488,7 +488,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Retriever.save_to_file">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.save_to_file">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.save_to_file">[docs]</a>
     <span class="k">def</span> <span class="nf">save_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Save the state, including the index to a file.</span>
 
@@ -499,7 +499,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Retriever.load_from_file">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.load_from_file">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.load_from_file">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the state, including index from a file to restore the retriever.</span>
@@ -510,7 +510,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Retriever.call">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>
@@ -521,7 +521,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Retriever.acall">
-<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.retriever.Retriever.acall">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.retriever.html#core.Retriever.acall">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>

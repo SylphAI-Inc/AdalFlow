@@ -439,7 +439,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Embedder">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.Embedder">[docs]</a>
 <span class="k">class</span> <span class="nc">Embedder</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A user-facing component that orchestrates an embedder model via the model client and output processors.</span>
@@ -488,7 +488,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">output_processors</span>
 
 <div class="viewcode-block" id="Embedder.from_config">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder.from_config">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.Embedder.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Embedder&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an Embedder from a configuration dictionary.</span>
@@ -516,7 +516,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Embedder.update_default_model_kwargs">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder.update_default_model_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.Embedder.update_default_model_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">update_default_model_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">compose_model_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span></div>
 
@@ -550,7 +550,7 @@ document.write(`
         <span class="k">return</span> <span class="n">embedding_output</span>
 
 <div class="viewcode-block" id="Embedder.call">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.Embedder.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">EmbedderInputType</span><span class="p">,</span>
@@ -570,7 +570,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Embedder.acall">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder.acall">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.Embedder.acall">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">EmbedderInputType</span><span class="p">,</span>
@@ -593,7 +593,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BatchEmbedder">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.BatchEmbedder">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.BatchEmbedder">[docs]</a>
 <span class="k">class</span> <span class="nc">BatchEmbedder</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Adds batching to the embedder component.</span>
 
@@ -608,7 +608,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
 
 <div class="viewcode-block" id="BatchEmbedder.call">
-<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.embedder.html#core.BatchEmbedder.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">BatchEmbedderInputType</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BatchEmbedderOutputType</span><span class="p">:</span>

@@ -421,7 +421,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="EntityMapping">
-<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.registry.EntityMapping">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.EntityMapping">[docs]</a>
 <span class="k">class</span> <span class="nc">EntityMapping</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A registry for entities, components,classes, function.</span>
 
@@ -430,21 +430,21 @@ document.write(`
     <span class="n">_registry</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="EntityMapping.register">
-<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.registry.EntityMapping.register">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.EntityMapping.register">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">entity_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">):</span>
         <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">entity_cls</span></div>
 
 
 <div class="viewcode-block" id="EntityMapping.get">
-<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.registry.EntityMapping.get">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.EntityMapping.get">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="EntityMapping.get_all">
-<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.registry.EntityMapping.get_all">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.registry.html#utils.EntityMapping.get_all">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_all</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Type</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_registry</span></div>
