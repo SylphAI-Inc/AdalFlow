@@ -3,7 +3,7 @@
 memory
 =========================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::

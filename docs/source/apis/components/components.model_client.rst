@@ -3,7 +3,7 @@
 model_client
 ================================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::

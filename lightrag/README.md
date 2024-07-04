@@ -95,11 +95,12 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 # Citation
 
 ```bibtex
-@software{Yin-LightRAG-2024,
-  author = {Yin, Li},
-  title = {{LightRAG: The PyTorch Library for Large language Model (LLM) Applications}},
+@software{Yin2024LightRAG,
+  author = {Li Yin},
+  title = {{LightRAG: The PyTorch Library for Large Language Model (LLM) Applications}},
   month = {7},
   year = {2024},
+  doi = {10.5281/zenodo.12639531},
   url = {https://github.com/SylphAI-Inc/LightRAG}
 }
 ```

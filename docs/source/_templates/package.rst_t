@@ -31,7 +31,7 @@ Subpackages
 {% endif %}
 
 {%- if submodules %}
-Submodules
+Overview
 ----------
 
 .. autosummary::

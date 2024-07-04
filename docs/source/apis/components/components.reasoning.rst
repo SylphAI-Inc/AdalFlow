@@ -3,7 +3,7 @@
 reasoning
 ============================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::

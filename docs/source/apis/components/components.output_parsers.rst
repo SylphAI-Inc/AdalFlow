@@ -3,7 +3,7 @@
 output_parsers
 ==================================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::

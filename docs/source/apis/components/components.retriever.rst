@@ -3,7 +3,7 @@
 retriever
 ============================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::

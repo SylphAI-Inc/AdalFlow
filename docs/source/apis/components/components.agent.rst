@@ -3,7 +3,7 @@
 agent
 ========================
 
-Submodules
+Overview
 ----------
 
 .. autosummary::
