@@ -1,0 +1,1762 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>core.component &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/core/component';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">core.component</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for core.component</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Component is to LLM task pipelines what nn.Module is to PyTorch models.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">overload</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
+
+
+<span class="kn">from</span> <span class="nn">lightrag.core.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">lightrag.utils.serialization</span> <span class="kn">import</span> <span class="n">default</span>
+<span class="kn">from</span> <span class="nn">lightrag.utils.config</span> <span class="kn">import</span> <span class="n">new_component</span>
+
+<span class="kn">from</span> <span class="nn">lightrag.utils.registry</span> <span class="kn">import</span> <span class="n">EntityMapping</span>
+
+<span class="c1"># import networkx as nx</span>
+<span class="c1"># from pyvis.network import Network</span>
+
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># import itertools</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># class _IncompatibleKeys(</span>
+<span class="c1">#     namedtuple(&quot;IncompatibleKeys&quot;, [&quot;missing_keys&quot;, &quot;unexpected_keys&quot;])</span>
+<span class="c1"># ):</span>
+<span class="c1">#     def __repr__(self):</span>
+<span class="c1">#         if not self.missing_keys and not self.unexpected_keys:</span>
+<span class="c1">#             return &quot;&lt;All keys matched successfully&gt;&quot;</span>
+<span class="c1">#         return super().__repr__()</span>
+
+<span class="c1">#     __str__ = __repr__</span>
+
+
+<span class="k">def</span> <span class="nf">_addindent</span><span class="p">(</span><span class="n">s_</span><span class="p">,</span> <span class="n">numSpaces</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">s_</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># don&#39;t do anything for single-line stuff</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s_</span>
+    <span class="n">first</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[(</span><span class="n">numSpaces</span> <span class="o">*</span> <span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">s</span><span class="p">]</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">first</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">s</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+
+<div class="viewcode-block" id="Component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component">[docs]</a>
+<span class="k">class</span> <span class="nc">Component</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for all LLM task pipeline components.</span>
+
+<span class="sd">    Such as ``Prompt``, ``ModelClient``, ``Embedder``, ``Retriever``, ``Generator``, etc.</span>
+<span class="sd">    Your task pipeline should subclass this.</span>
+
+<span class="sd">    Components can also contain other Components, allowing to nest them in</span>
+<span class="sd">    a tree structure. You can assign the subcomponents as regular attributes::</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from lightrag.core import Component, Generator</span>
+<span class="sd">        from lightrag.components.model_client import OpenAIClient</span>
+
+<span class="sd">        template_doc = r&quot;&lt;SYS&gt; You are a doctor &lt;/SYS&gt; User: {{input_str}}&quot;</span>
+
+<span class="sd">        class DocQA(Component):</span>
+<span class="sd">        def __init__(self):</span>
+<span class="sd">            super(DocQA, self).__init__()</span>
+<span class="sd">            self.doc = Generator(</span>
+<span class="sd">                template=template_doc,</span>
+<span class="sd">                model_client=OpenAIClient(),</span>
+<span class="sd">                model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="sd">            )</span>
+
+<span class="sd">        def call(self, query: str) -&gt; str:</span>
+<span class="sd">            return self.doc(query).data</span>
+
+<span class="sd">        # instantiate the component</span>
+<span class="sd">        doc_qa = DocQA()</span>
+<span class="sd">        print(doc_qa)</span>
+
+<span class="sd">    The print will be:</span>
+
+<span class="sd">    .. code-block::</span>
+
+<span class="sd">        DocQA(</span>
+<span class="sd">        (doc): Generator(</span>
+<span class="sd">            model_kwargs={&#39;model&#39;: &#39;gpt-3.5-turbo&#39;}, model_type=ModelType.LLM</span>
+<span class="sd">            (system_prompt): Prompt(template: &lt;SYS&gt; You are a doctor &lt;/SYS&gt; User: {{input_str}}, prompt_variables: [&#39;input_str&#39;])</span>
+<span class="sd">            (model_client): OpenAIClient()</span>
+<span class="sd">        )</span>
+<span class="sd">        )</span>
+
+<span class="sd">    We follow the same design pattern as PyTorch&#39;s ``nn.Module.``</span>
+<span class="sd">    Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases,</span>
+<span class="sd">    our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.</span>
+<span class="sd">    Besides, (1) instead of `forward` and `backward` functions, we have `call` and `acall` functions for sync and async calls.</span>
+<span class="sd">    (2) we provide `to_dict` to handle serialization of the whole component states on top of `state_dict`.</span>
+
+<span class="sd">    We purposly avoid using the name &quot;Module&quot; to avoid confusion with PyTorch&#39;s nn.Module.</span>
+<span class="sd">    As we consider &#39;Component&#39; to be an extension to &#39;Moduble&#39; as if you use a local llm model</span>
+<span class="sd">    for the Generator, you might need the &#39;Module&#39; within the &#39;Component&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># Version of the component</span>
+    <span class="c1"># TODO: the type of module, is it OrderedDict or just Dict?</span>
+    <span class="n">_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]]</span>
+    <span class="n">_init_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Store the init arguments</span>
+    <span class="c1"># _execution_graph: List[str] = []  # This will store the graph of execution.</span>
+    <span class="c1"># _graph = nx.DiGraph()</span>
+    <span class="c1"># _last_called = None  # Tracks the last component called</span>
+    <span class="n">_parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]]</span>
+    <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="c1"># def _generate_unique_name(self):</span>
+    <span class="c1">#     # Generate a unique identifier that includes the class name</span>
+    <span class="c1">#     return f&quot;{self.__class__.__name__}_{uuid.uuid4().hex[:8]}&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_components&quot;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_parameters&quot;</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;training&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># only for tracking the init args</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_init_args&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_init_args</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Component.train">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.train">[docs]</a>
+    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sets the component in training mode.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mode should be a boolean&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">():</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="Component.eval">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.eval">[docs]</a>
+    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sets the component in evaluation mode.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__dir__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Useful to handle json serialization.</span>
+
+<span class="sd">        Use dir() to get the list of attributes of the component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">component_attrs</span> <span class="o">=</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">component_attrs</span> <span class="o">+</span> <span class="n">attrs</span> <span class="o">+</span> <span class="n">parameters</span> <span class="o">+</span> <span class="n">components</span>
+
+        <span class="c1"># Elimiate attrs that are not legal python variable names</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Component.is_picklable">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.is_picklable">[docs]</a>
+    <span class="k">def</span> <span class="nf">is_picklable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Test if the given object is picklable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj: The object to test.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the object is picklable, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">io</span>
+
+            <span class="c1"># Create a BytesIO buffer to simulate file I/O</span>
+            <span class="n">buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">()</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+            <span class="c1"># Try to serialize the object to the buffer</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+            <span class="c1"># Reset the buffer&#39;s position to the beginning</span>
+            <span class="n">buffer</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># Try to deserialize the object from the buffer</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">PicklingError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Object is not picklable: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Component.pickle_to_file">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.pickle_to_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">pickle_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pickle the component to a file.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="n">file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.load_from_pickle">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_from_pickle">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the component from a file.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Component.to_dict">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the component to a dictionary object for serialization, including more states of the component than state_dict.</span>
+
+<span class="sd">        Each data if of format: {&quot;type&quot;: type, &quot;data&quot;: data}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="n">exclude</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="n">exclude</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">{},</span>
+        <span class="p">}</span>  <span class="c1"># Add the type of the component</span>
+        <span class="n">data_dict</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="c1"># Handle unserializable objects by pickling them</span>
+                <span class="n">data_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;_pickle_data&quot;</span><span class="p">:</span> <span class="n">pickle</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_process_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Process values recursively for serialization.&quot;&quot;&quot;</span>
+        <span class="c1"># if isinstance(value, dict):</span>
+        <span class="c1">#     # Recurse into dictionaries</span>
+        <span class="c1">#     return {k: self._process_value(v) for k, v in sorted(value.items())}</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">{</span>
+                    <span class="s2">&quot;_ordered_dict&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_value</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()],</span>
+                <span class="p">}</span>
+            <span class="c1"># return {k: self._process_value(v) for k, v in sorted(value.items())}</span>
+            <span class="c1"># no sorting</span>
+            <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># Recursively process list items</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># return sorted(self._process_value(v) for v in value)</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="c1"># If elements are not comparable, process them without sorting</span>
+                <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;to_dict&quot;</span><span class="p">):</span>
+            <span class="c1"># Check if the object has a to_dict method</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempt_to_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_attempt_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Attempt to call to_dict on an object, handling both instances and class types.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># call our customized json serializer</span>
+            <span class="k">return</span> <span class="n">default</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calling to_dict for object </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Fallback to a simpler representation</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
+
+<div class="viewcode-block" id="Component.from_dict">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance from previously serialized data</span>
+<span class="sd">        using :meth:`~to_dict` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set the attributes of the class</span>
+        <span class="c1"># Instantiate the class with _init_args</span>
+
+        <span class="c1"># obj = cls(**data.get(&quot;_init_args&quot;, {}))</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>  <span class="c1"># Create a new instance without calling __init__</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_restore_value</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="Component.from_config">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.from_config">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the component from a configuration dictionary.&quot;&quot;&quot;</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="c1"># check arguments that are a component</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;component_name&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_component</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_restore_value</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Restore the original value from the serialized value.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;_pickle_data&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="c1"># Handle unpickling</span>
+                <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="nb">bytes</span><span class="o">.</span><span class="n">fromhex</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;_pickle_data&quot;</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="s2">&quot;_ordered_dict&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;_ordered_dict&quot;</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">Component</span><span class="o">.</span><span class="n">_restore_value</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">Component</span><span class="o">.</span><span class="n">_restore_value</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;type&quot;</span> <span class="ow">in</span> <span class="n">value</span> <span class="ow">and</span> <span class="s2">&quot;data&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="c1"># this is likely a class instance, restore using from_dict</span>
+                <span class="n">class_name</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span>
+                <span class="n">class_type</span> <span class="o">=</span> <span class="n">EntityMapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">class_type</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Restoring class using from_dict </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">return</span> <span class="n">class_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;Error restoring class using from_dict </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, value</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="p">)</span>
+                        <span class="k">return</span> <span class="n">class_type</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown class type: </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">value</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># Recursively process the dictionary</span>
+                <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">Component</span><span class="o">.</span><span class="n">_restore_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">Component</span><span class="o">.</span><span class="n">_restore_value</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Component.load_state_pickle">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_state_pickle">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load_state_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Component&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the state of the component from a file using pickle.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.register_parameter">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.register_parameter">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add a parameter to the component.</span>
+
+<span class="sd">        The parameter can be accessed as an attribute using given name.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the parameter. The parameter can be accessed using this name.</span>
+<span class="sd">            param (Parameter): parameter to be added.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;_parameters&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="s2">&quot;cant assign parameter before Component.__init__() call&quot;</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;parameter name can</span><span class="se">\&#39;</span><span class="s1">t contain &quot;.&quot;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;parameter name can</span><span class="se">\&#39;</span><span class="s1">t be empty string &quot;&quot;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;attribute &#39;</span><span class="si">{}</span><span class="s2">&#39; already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;cannot assign&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">param</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; object to parameter &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;(Parameter or None required)&quot;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span></div>
+
+
+<div class="viewcode-block" id="Component.parameters">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns an iterator over module parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            recursive (bool): if True, then yields parameters of this component and all subcomponents.</span>
+<span class="sd">                Otherwise, yields only parameters that are direct members of this component.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Parameter: module parameter</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; for param in model.parameters():</span>
+<span class="sd">            &gt;&gt;&gt;     print(param)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">param</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_named_members</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">get_members_fn</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">remove_duplicate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper method for yielding various names + members of the component.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            get_members_fn (Callable): callable to extract the members from the component.</span>
+<span class="sd">            prefix (str): prefix to prepend to all parameter names.</span>
+<span class="sd">            recursive (bool): if True, then yields parameters of this component and all subcomponents.</span>
+<span class="sd">                Otherwise, yields only parameters that are direct members of this component.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Tuple[str, Any]: Tuple containing the name and member</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; for name, param in model._named_members(model.named_parameters):</span>
+<span class="sd">            &gt;&gt;&gt;     print(name, param)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">memo</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">named_components</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">remove_duplicate</span><span class="o">=</span><span class="n">remove_duplicate</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">recursive</span>
+            <span class="k">else</span> <span class="p">[(</span><span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span><span class="p">)]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">component_prefix</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+            <span class="n">members</span> <span class="o">=</span> <span class="n">get_members_fn</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">members</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">memo</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">remove_duplicate</span><span class="p">:</span>
+                    <span class="n">memo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">component_prefix</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span> <span class="k">if</span> <span class="n">component_prefix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">k</span>
+                <span class="k">yield</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span>
+
+<div class="viewcode-block" id="Component.named_parameters">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_parameters">[docs]</a>
+    <span class="k">def</span> <span class="nf">named_parameters</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">remove_duplicate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix (str): prefix to prepend to all parameter names.</span>
+<span class="sd">            recursive (bool): if True, then yields parameters of this component and all subcomponents.</span>
+<span class="sd">                Otherwise, yields only parameters that are direct members of this component.</span>
+<span class="sd">                are direct members of this component.</span>
+<span class="sd">            remove_duplicate (bool): if True, then yields only unique parameters.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Tuple[str, Parameter]: Tuple containing the name and parameter</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; for name, param in model.named_parameters():</span>
+<span class="sd">            &gt;&gt;&gt;     print(name, param)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_named_members</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">component</span><span class="p">:</span> <span class="n">component</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+            <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">,</span>
+            <span class="n">remove_duplicate</span><span class="o">=</span><span class="n">remove_duplicate</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">gen</span></div>
+
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def visualize_graph_html(filename=&quot;graph.html&quot;):</span>
+    <span class="c1">#     nt = Network(directed=True)</span>
+    <span class="c1">#     nt.from_nx(Component._graph)</span>
+    <span class="c1">#     for edge in nt.edges:</span>
+    <span class="c1">#         edge[&quot;title&quot;] = edge[&quot;label&quot;]</span>
+    <span class="c1">#         edge[&quot;value&quot;] = (</span>
+    <span class="c1">#             10  # You can adjust the &#39;value&#39; to set the width of the edges</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     nt.show_buttons(</span>
+    <span class="c1">#         filter_=[&quot;physics&quot;]</span>
+    <span class="c1">#     )  # Optional: Show interactive buttons to adjust physics and other settings</span>
+    <span class="c1">#     nt.show(</span>
+    <span class="c1">#         filename, notebook=False</span>
+    <span class="c1">#     )  # Make sure to set notebook=False for non-notebook environments</span>
+
+    <span class="c1"># @staticmethod</span>
+    <span class="c1"># def visualize_graph():</span>
+    <span class="c1">#     pos = nx.spring_layout(Component._graph)</span>
+    <span class="c1">#     nx.draw(</span>
+    <span class="c1">#         Component._graph,</span>
+    <span class="c1">#         pos,</span>
+    <span class="c1">#         with_labels=True,</span>
+    <span class="c1">#         node_color=&quot;lightblue&quot;,</span>
+    <span class="c1">#         node_size=2000,</span>
+    <span class="c1">#         edge_color=&quot;gray&quot;,</span>
+    <span class="c1">#         linewidths=1,</span>
+    <span class="c1">#         font_size=15,</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     plt.show()</span>
+
+    <span class="c1"># TODO: do we need to disable this format of calling instead use call and acall extensively?</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;In default, we use sync call.&quot;&quot;&quot;</span>
+        <span class="c1"># Register the edge if this call follows another component&#39;s call</span>
+        <span class="c1"># component_name = self._get_name()</span>
+        <span class="c1"># input_repr = repr(args) + &quot; &quot; + repr(kwargs)</span>
+
+        <span class="c1"># if Component._last_called is not None:</span>
+        <span class="c1">#     Component._graph.add_edge(</span>
+        <span class="c1">#         Component._last_called, component_name, label=input_repr[0:50]</span>
+        <span class="c1">#     )</span>
+
+        <span class="c1"># Component._last_called = component_name</span>
+
+        <span class="c1"># self._execution_graph.append(</span>
+        <span class="c1">#     f&quot;{self._get_name()} called with input {input_repr}&quot;</span>
+        <span class="c1"># )</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Log output</span>
+        <span class="c1"># self._execution_graph.append(f&quot;{self._get_name()} output {repr(output)}&quot;)</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+<div class="viewcode-block" id="Component.call">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is missing the required &#39;call&#39; method.&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.acall">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.acall">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;API call, file io.&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Component.add_component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.add_component">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sa">r</span><span class="s2">&quot;Add a child component to the current component.&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Component</span><span class="p">)</span> <span class="ow">and</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;component should be an instance of Component, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">component</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;name should be a string, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; already exists&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;.&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;component name can</span><span class="se">\&#39;</span><span class="s1">t contain &quot;.&quot;&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;component name can</span><span class="se">\&#39;</span><span class="s1">t be empty string &quot;&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">component</span></div>
+
+
+<div class="viewcode-block" id="Component.register_component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.register_component">[docs]</a>
+    <span class="k">def</span> <span class="nf">register_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Alias for add_component</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.get_subcomponent">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.get_subcomponent">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_subcomponent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Component.named_children">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_children">[docs]</a>
+    <span class="k">def</span> <span class="nf">named_children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Component&quot;</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over immediate children components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">memo</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">component</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">memo</span><span class="p">:</span>
+                <span class="n">memo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span></div>
+
+
+<div class="viewcode-block" id="Component.children">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.children">[docs]</a>
+    <span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over immediate children components.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">named_children</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">component</span></div>
+
+
+<div class="viewcode-block" id="Component.components">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.components">[docs]</a>
+    <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an iterator over all components in the Module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">named_children</span><span class="p">():</span>
+            <span class="k">yield</span> <span class="n">component</span></div>
+
+
+<div class="viewcode-block" id="Component.named_components">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_components">[docs]</a>
+    <span class="k">def</span> <span class="nf">named_components</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">remove_duplicate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself.</span>
+
+<span class="sd">        This can be used to represent the state of the component in a dictionary format.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            memo (Optional[Set[&quot;Component&quot;]]): a memo to store the set of components already added to the result</span>
+<span class="sd">            prefix (str): a prefix to prepend to all component names</span>
+<span class="sd">            remove_duplicate (bool): if True, then yields only unique components</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Tuple[str, &quot;Component&quot;]: Tuple containing the name and component</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; qa = Generator(template=&quot;User {{input}}&quot;, model_client=GroqAPIClient(), model_kwargs={&quot;model&quot;: &quot;llama3-8b-8192&quot;})</span>
+<span class="sd">            &gt;&gt;&gt; for idx, c in enumerate(qa.named_components()):</span>
+<span class="sd">            ...     print(f&quot;{idx} -&gt; {c}&quot;)</span>
+
+<span class="sd">            0 -&gt; (&#39;&#39;, Generator(</span>
+<span class="sd">            model_kwargs={&#39;model&#39;: &#39;llama3-8b-8192&#39;}, model_type=ModelType.LLM</span>
+<span class="sd">            (system_prompt): Prompt(template: User: {{input}}, prompt_variables: [&#39;input&#39;])</span>
+<span class="sd">            (model_client): GroqAPIClient()</span>
+<span class="sd">            ))</span>
+<span class="sd">            1 -&gt; (&#39;system_prompt&#39;, Prompt(template: User: {{input}}, prompt_variables: [&#39;input&#39;]))</span>
+<span class="sd">            2 -&gt; (&#39;model_client&#39;, GroqAPIClient())</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">memo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">memo</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">memo</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">remove_duplicate</span><span class="p">:</span>
+                <span class="n">memo</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">prefix</span><span class="p">,</span> <span class="bp">self</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">subcomponent_prefix</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;.&quot;</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">name</span>
+                <span class="k">yield from</span> <span class="n">component</span><span class="o">.</span><span class="n">named_components</span><span class="p">(</span>
+                    <span class="n">memo</span><span class="p">,</span> <span class="n">subcomponent_prefix</span><span class="p">,</span> <span class="n">remove_duplicate</span>
+                <span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_save_to_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">,</span> <span class="n">prefix</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Saves the state of the component to a dictionary.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            destination (Dict[str, Any]): the dictionary to which the state is saved.</span>
+<span class="sd">            prefix (str): a prefix to add to the keys in the state_dict.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">destination</span><span class="p">[</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+
+    <span class="c1"># TODO: test it + add example</span>
+<div class="viewcode-block" id="Component.state_dict">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.state_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns a dictionary containing references to the whole state of the component.</span>
+
+<span class="sd">        Parameters are included for now.</span>
+
+<span class="sd">        ..note:</span>
+<span class="sd">            The returned object is a shallow copy. It cantains references</span>
+<span class="sd">            to the component&#39;s parameters and subcomponents.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            destination (Dict[str, Any]): If provided, the state of component will be copied into it.</span>
+<span class="sd">            And the same object is returned.</span>
+<span class="sd">            Othersie, an ``OrderedDict`` will be created and returned.</span>
+
+<span class="sd">            prefix (str): a prefix to add to the keys in the state_dict.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Any]: a dictionary containing the state of the component.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">destination</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+            <span class="n">destination</span><span class="o">.</span><span class="n">_metadata</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: ignore[attr-defined]</span>
+        <span class="n">local_metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_version</span><span class="p">)</span>
+        <span class="c1"># to do when local data where be needed</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="s2">&quot;_metadata&quot;</span><span class="p">):</span>
+            <span class="n">destination</span><span class="o">.</span><span class="n">_metadata</span><span class="p">[</span><span class="n">prefix</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">local_metadata</span>  <span class="c1"># type: ignore[index]</span>
+
+        <span class="c1"># save its own state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_to_state_dict</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="c1"># save the state of all subcomponents</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">component</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(</span><span class="n">destination</span><span class="o">=</span><span class="n">destination</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">destination</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_load_from_state_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">state_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="c1"># local_metadata=None,</span>
+        <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">missing_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="n">unexpected_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
+        <span class="c1"># error_msgs: List[str] = [],</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copies parameters from :attr:`state_dict` into this component but not its descendants.</span>
+
+<span class="sd">        This is called on every subcomponent&quot;&quot;&quot;</span>
+        <span class="n">local_state</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">local_state</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">name</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="p">:</span>
+                <span class="n">input_param</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_param</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="n">input_param</span> <span class="o">=</span> <span class="n">input_param</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="n">input_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">param</span><span class="o">.</span><span class="n">update_value</span><span class="p">(</span><span class="n">input_param</span><span class="p">)</span>  <span class="c1"># update the value of the parameter</span>
+            <span class="k">elif</span> <span class="n">strict</span><span class="p">:</span>
+                <span class="n">missing_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># deal with unexpected keys</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">state_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">):</span>
+                    <span class="n">input_name</span> <span class="o">=</span> <span class="n">key</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="p">:]</span>
+                    <span class="n">input_name</span> <span class="o">=</span> <span class="n">input_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="p">(</span>
+                        <span class="n">input_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span>
+                        <span class="ow">and</span> <span class="n">input_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">local_state</span>
+                    <span class="p">):</span>
+                        <span class="n">unexpected_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Component.load_state_dict">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_state_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy parameters from :attr:`state_dict` into this component and its descendants.</span>
+
+<span class="sd">        If :attr:`strict` is ``True``, then</span>
+<span class="sd">        the keys of :attr:`state_dict` must exactly match the keys</span>
+<span class="sd">        returned by this component&#39;s :meth:`~state_dict` function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">state_dict</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;state_dict should be a mapping, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">missing_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unexpected_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">error_msgs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># metadata = getattr(state_dict, &quot;_metadata&quot;, None)</span>
+        <span class="n">state_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+            <span class="n">state_dict</span>
+        <span class="p">)</span>  <span class="c1"># To prevent modification of the original state_dict</span>
+        <span class="c1"># if metadata is not None:</span>
+        <span class="c1">#     state_dict._metadata = metadata</span>
+
+        <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span> <span class="n">local_state_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="n">component</span><span class="o">.</span><span class="n">_load_from_state_dict</span><span class="p">(</span>
+                <span class="n">local_state_dict</span><span class="p">,</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+                <span class="n">strict</span><span class="o">=</span><span class="n">strict</span><span class="p">,</span>
+                <span class="n">missing_keys</span><span class="o">=</span><span class="n">missing_keys</span><span class="p">,</span>
+                <span class="n">unexpected_keys</span><span class="o">=</span><span class="n">unexpected_keys</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">child</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">child_prefix</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                    <span class="n">child_state_dict</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="n">k</span><span class="p">:</span> <span class="n">v</span>
+                        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">local_state_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">k</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">child_prefix</span><span class="p">)</span>
+                    <span class="p">}</span>
+                    <span class="n">load</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">child_state_dict</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">child_prefix</span><span class="p">)</span>
+
+        <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">)</span>
+        <span class="c1"># del load</span>
+        <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unexpected_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">error_msgs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">&quot;Unexpected key(s) in state_dict: </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unexpected_keys</span><span class="p">)</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">error_msgs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+                    <span class="mi">0</span><span class="p">,</span>
+                    <span class="s2">&quot;Missing key(s) in state_dict: </span><span class="si">{}</span><span class="s2">. &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Error(s) in loading state_dict for </span><span class="si">{}</span><span class="s2">:</span><span class="se">\n\t</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_msgs</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;_IncompatibleKeys&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;missing_keys&quot;</span><span class="p">,</span> <span class="s2">&quot;unexpected_keys&quot;</span><span class="p">])</span></div>
+
+        <span class="c1"># return _IncompatibleKeys(</span>
+        <span class="c1">#     missing_keys=missing_keys, unexpected_keys=unexpected_keys</span>
+        <span class="c1"># )</span>
+
+    <span class="c1"># def apply(self: &quot;Component&quot;, fn: Callable[[&quot;Component&quot;, Any], None]) -&gt; None:</span>
+    <span class="c1">#     r&quot;&quot;&quot;</span>
+    <span class="c1">#     Applies a function to all subcomponents.</span>
+    <span class="c1">#     # TODO: in what situation we need function apply?</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     for name, component in self.children():</span>
+    <span class="c1">#         component.apply(fn)</span>
+    <span class="c1">#     fn(self)</span>
+    <span class="c1">#     return self</span>
+
+    <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">remove_from</span><span class="p">(</span><span class="o">*</span><span class="n">dicts_or_sets</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dicts_or_sets</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">d</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                        <span class="k">del</span> <span class="n">d</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">d</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># set parameter</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_parameters&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                    <span class="s2">&quot;cant assign parameter before Component.__init__() call&quot;</span>
+                <span class="p">)</span>
+            <span class="n">remove_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">params</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;cannot assign &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39; object to parameter &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; (Parameter or None required)&quot;</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># set component</span>
+
+            <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;_components&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Component</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">components</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                        <span class="s2">&quot;cant assign component before Component.__init__() call&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">remove_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+                <span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># set attribute</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;_parameters&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_parameters&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;_components&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">:</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_components&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parameters</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__delattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normally implemented by subcomponents to print additional positional or keyword arguments.</span>
+<span class="sd">        # NOTE: Dont add components as it will have its own __repr__</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># return self._name</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># We treat the extra repr like the sub-module, one item per line</span>
+        <span class="n">extra_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">extra_repr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extra_repr</span><span class="p">()</span>
+        <span class="c1"># empty string will be split into list [&#39;&#39;]</span>
+        <span class="k">if</span> <span class="n">extra_repr</span><span class="p">:</span>
+            <span class="n">extra_lines</span> <span class="o">=</span> <span class="n">extra_repr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">child_lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">mod_str</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
+            <span class="n">mod_str</span> <span class="o">=</span> <span class="n">_addindent</span><span class="p">(</span><span class="n">mod_str</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">child_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;(&quot;</span> <span class="o">+</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;): &quot;</span> <span class="o">+</span> <span class="n">mod_str</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">extra_lines</span> <span class="o">+</span> <span class="n">child_lines</span>
+
+        <span class="n">main_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_name</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;(&quot;</span>
+        <span class="k">if</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="c1"># simple one-liner info, which most builtin Modules will use</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">extra_lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">child_lines</span><span class="p">:</span>
+                <span class="n">main_str</span> <span class="o">+=</span> <span class="n">extra_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">main_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="n">main_str</span> <span class="o">+=</span> <span class="s2">&quot;)&quot;</span>
+        <span class="k">return</span> <span class="n">main_str</span>
+
+    <span class="k">def</span> <span class="nf">_get_init_args</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the initialization arguments.&quot;&quot;&quot;</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="fm">__init__</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span>
+        <span class="n">init_args</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">param</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;self&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span> <span class="o">==</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                <span class="n">init_args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="k">else</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">init_args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">param</span><span class="o">.</span><span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">init_args</span></div>
+
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">Component</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Sequential">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential">[docs]</a>
+<span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A sequential container.</span>
+
+<span class="s2">    Components will be added to it in the order they are passed to the constructor.</span>
+<span class="s2">    Output of the previous component is input to the next component as positional argument.</span>
+
+<span class="s2">    Examples:</span>
+<span class="s2">    1. Use list as input:</span>
+<span class="s2">        &gt;&gt;&gt; seq = Sequential([component1, component2])</span>
+<span class="s2">    2. Use positional arguments:</span>
+<span class="s2">        &gt;&gt;&gt; seq = Sequential(component1, component2)</span>
+<span class="s2">    3. Use both:</span>
+<span class="s2">        &gt;&gt;&gt; seq = Sequential(component1, [component2, component3])</span>
+<span class="s2">    4. Add components:</span>
+<span class="s2">        &gt;&gt;&gt; seq.append(component4)</span>
+<span class="s2">    5. Get a component:</span>
+<span class="s2">        &gt;&gt;&gt; seq[0]</span>
+<span class="s2">    6. Delete a component:</span>
+<span class="s2">        &gt;&gt;&gt; del seq[0]</span>
+<span class="s2">    7. Iterate over components:</span>
+<span class="s2">        &gt;&gt;&gt; for component in seq:</span>
+<span class="s2">        &gt;&gt;&gt;     print(component)</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">_components</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Component</span><span class="p">]</span>  <span class="c1"># type: ignore[assignment]</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="nd">@overload</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">:</span> <span class="s2">&quot;OrderedDict[str, Component]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OrderedDict</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">module</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">module</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">module</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_item_by_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>  <span class="c1"># type: ignore[misc, type-var]</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the idx-th item of the iterator.&quot;&quot;&quot;</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="o">-</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> is out of range&quot;</span><span class="p">)</span>
+        <span class="n">idx</span> <span class="o">%=</span> <span class="n">size</span>
+        <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="n">islice</span><span class="p">(</span><span class="n">iterator</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;Sequential&quot;</span><span class="p">,</span> <span class="n">Component</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="n">idx</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item_by_idx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">idx</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item_by_idx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">component</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">slice</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">idx</span><span class="p">]:</span>
+                <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_item_by_idx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">idx</span><span class="p">)</span>
+            <span class="nb">delattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="c1"># To preserve numbering</span>
+        <span class="n">str_indices</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">))]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_components</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">str_indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Component</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Sequential.append">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential.append">[docs]</a>
+    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Sequential&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Appends a component to the end of the Sequential.&quot;&quot;&quot;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_component</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="n">component</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+    <span class="c1"># def __add__(self, other) -&gt; &quot;Sequential&quot;:</span>
+    <span class="c1">#     if not isinstance(other, Sequential):</span>
+    <span class="c1">#         ret = Sequential()</span>
+    <span class="c1">#         for layer in self:</span>
+    <span class="c1">#             ret.append(layer)</span>
+    <span class="c1">#         for layer in other:</span>
+    <span class="c1">#             ret.append(layer)</span>
+    <span class="c1">#         return ret</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         raise ValueError(</span>
+    <span class="c1">#             &quot;add operator supports only objects &quot;</span>
+    <span class="c1">#             f&quot;of Sequential class, but {str(type(other))} is given.&quot;</span>
+    <span class="c1">#         )</span>
+
+<div class="viewcode-block" id="Sequential.call">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">input</span></div>
+</div>
+
+
+
+<span class="c1"># TODO: support async call</span>
+<div class="viewcode-block" id="FunComponent">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent">[docs]</a>
+<span class="k">class</span> <span class="nc">FunComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Component that wraps a function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (Callable): The function to be wrapped.</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    function = lambda x: x + 1</span>
+<span class="sd">    fun_component = FunComponent(function)</span>
+<span class="sd">    print(fun_component(1))  # 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">afun</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span> <span class="o">=</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FunComponent.call">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">fun</span> <span class="o">=</span> <span class="n">EntityMapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_extra_repr</span><span class="p">()</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;fun_name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="fun_to_component">
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.fun_to_component">[docs]</a>
+<span class="k">def</span> <span class="nf">fun_to_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunComponent</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Component with</span>
+<span class="sd">    its own class name.</span>
+
+<span class="sd">    Can be used as both a decorator and a function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fun (Callable): The function to be wrapped.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        FunComponent: The component that wraps the function.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    1. As a decorator:</span>
+<span class="sd">        &gt;&gt;&gt; @fun_to_component</span>
+<span class="sd">        &gt;&gt;&gt; def my_function(x):</span>
+<span class="sd">        &gt;&gt;&gt;     return x + 1</span>
+<span class="sd">        &gt;&gt;&gt; # is equivalent to</span>
+<span class="sd">        &gt;&gt;&gt; class MyFunctionComponent(FunComponent):</span>
+<span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
+<span class="sd">        &gt;&gt;&gt;         super().__init__(my_function)</span>
+
+<span class="sd">    2. As a function:</span>
+<span class="sd">        &gt;&gt;&gt; my_function_component = fun_to_component(my_function)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Split the function name by underscores, capitalize each part, and join them back together</span>
+    <span class="n">class_name</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;Component&quot;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Class name: </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s2">, function name: </span><span class="si">{</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># register the function</span>
+    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">fun</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
+    <span class="c1"># Define a new component class dynamically</span>
+    <span class="n">component_class</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span>
+        <span class="n">class_name</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">FunComponent</span><span class="p">,),</span>
+        <span class="p">{</span><span class="s2">&quot;__init__&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">FunComponent</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fun</span><span class="p">)},</span>
+    <span class="p">)</span>
+    <span class="c1"># register the component</span>
+    <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">component_class</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">component_class</span><span class="p">()</span></div>
+
+
+
+<span class="c1"># TODO: not used yet, will further investigate dict mode</span>
+<span class="c1"># class ComponentDict(Component):</span>
+<span class="c1">#     r&quot;&quot;&quot;</span>
+<span class="c1">#     We directly used the code in PyTorch&#39;s ModuleDict.</span>
+<span class="c1">#     See its design here: /torch/nn/modules/container.py</span>
+
+<span class="c1">#     Holds submodules in a dictionary.</span>
+
+<span class="c1">#     :class:`~torch.nn.ModuleDict` can be indexed like a regular Python dictionary,</span>
+<span class="c1">#     but modules it contains are properly registered, and will be visible by all</span>
+<span class="c1">#     :class:`~torch.nn.Module` methods.</span>
+
+<span class="c1">#     :class:`~torch.nn.ModuleDict` is an **ordered** dictionary that respects</span>
+
+<span class="c1">#     * the order of insertion, and</span>
+
+<span class="c1">#     * in :meth:`~torch.nn.ModuleDict.update`, the order of the merged</span>
+<span class="c1">#       ``OrderedDict``, ``dict`` (started from Python 3.6) or another</span>
+<span class="c1">#       :class:`~torch.nn.ModuleDict` (the argument to</span>
+<span class="c1">#       :meth:`~torch.nn.ModuleDict.update`).</span>
+
+<span class="c1">#     Note that :meth:`~torch.nn.ModuleDict.update` with other unordered mapping</span>
+<span class="c1">#     types (e.g., Python&#39;s plain ``dict`` before Python version 3.6) does not</span>
+<span class="c1">#     preserve the order of the merged mapping.</span>
+
+<span class="c1">#     Args:</span>
+<span class="c1">#         modules (iterable, optional): a mapping (dictionary) of (string: module)</span>
+<span class="c1">#             or an iterable of key-value pairs of type (string, module)</span>
+
+<span class="c1">#     Example::</span>
+
+<span class="c1">#         class MyModule(nn.Module):</span>
+<span class="c1">#             def __init__(self):</span>
+<span class="c1">#                 super().__init__()</span>
+<span class="c1">#                 self.choices = nn.ModuleDict({</span>
+<span class="c1">#                         &#39;conv&#39;: nn.Conv2d(10, 10, 3),</span>
+<span class="c1">#                         &#39;pool&#39;: nn.MaxPool2d(3)</span>
+<span class="c1">#                 })</span>
+<span class="c1">#                 self.activations = nn.ModuleDict([</span>
+<span class="c1">#                         [&#39;lrelu&#39;, nn.LeakyReLU()],</span>
+<span class="c1">#                         [&#39;prelu&#39;, nn.PReLU()]</span>
+<span class="c1">#                 ])</span>
+
+<span class="c1">#             def forward(self, x, choice, act):</span>
+<span class="c1">#                 x = self.choices[choice](x)</span>
+<span class="c1">#                 x = self.activations[act](x)</span>
+<span class="c1">#                 return x</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+
+<span class="c1">#     _components: Dict[str, Component]  # type: ignore[assignment]</span>
+
+<span class="c1">#     def __init__(self, modules: Optional[Mapping[str, Component]] = None) -&gt; None:</span>
+<span class="c1">#         super().__init__()</span>
+<span class="c1">#         if modules is not None:</span>
+<span class="c1">#             self.update(modules)</span>
+
+<span class="c1">#     def __getitem__(self, key: str) -&gt; Component:</span>
+<span class="c1">#         return self._components[key]</span>
+
+<span class="c1">#     def __setitem__(self, key: str, component: Component) -&gt; None:</span>
+<span class="c1">#         self.add_component(key, component)</span>
+
+<span class="c1">#     def __delitem__(self, key: str) -&gt; None:</span>
+<span class="c1">#         del self._components[key]</span>
+
+<span class="c1">#     def __len__(self) -&gt; int:</span>
+<span class="c1">#         return len(self._components)</span>
+
+<span class="c1">#     def __iter__(self) -&gt; Iterator[str]:</span>
+<span class="c1">#         return iter(self._components)</span>
+
+<span class="c1">#     def __contains__(self, key: str) -&gt; bool:</span>
+<span class="c1">#         return key in self._components</span>
+
+<span class="c1">#     def clear(self) -&gt; None:</span>
+<span class="c1">#         &quot;&quot;&quot;Remove all items from the ModuleDict.&quot;&quot;&quot;</span>
+<span class="c1">#         self._components.clear()</span>
+
+<span class="c1">#     def pop(self, key: str) -&gt; Component:</span>
+<span class="c1">#         r&quot;&quot;&quot;Remove key from the ModuleDict and return its module.</span>
+
+<span class="c1">#         Args:</span>
+<span class="c1">#             key (str): key to pop from the ModuleDict</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         v = self[key]</span>
+<span class="c1">#         del self[key]</span>
+<span class="c1">#         return v</span>
+
+<span class="c1">#     def keys(self) -&gt; Iterable[str]:</span>
+<span class="c1">#         r&quot;&quot;&quot;Return an iterable of the ModuleDict keys.&quot;&quot;&quot;</span>
+<span class="c1">#         return self._components.keys()</span>
+
+<span class="c1">#     def items(self) -&gt; Iterable[Tuple[str, Component]]:</span>
+<span class="c1">#         r&quot;&quot;&quot;Return an iterable of the ModuleDict key/value pairs.&quot;&quot;&quot;</span>
+<span class="c1">#         return self._components.items()</span>
+
+<span class="c1">#     def values(self) -&gt; Iterable[Component]:</span>
+<span class="c1">#         r&quot;&quot;&quot;Return an iterable of the ModuleDict values.&quot;&quot;&quot;</span>
+<span class="c1">#         return self._components.values()</span>
+
+<span class="c1">#     def update(self, components: Mapping[str, Component]) -&gt; None:</span>
+<span class="c1">#         r&quot;&quot;&quot;Update the :class:`~torch.nn.ModuleDict` with key-value pairs from a mapping, overwriting existing keys.</span>
+
+<span class="c1">#         .. note::</span>
+<span class="c1">#             If :attr:`modules` is an ``OrderedDict``, a :class:`~torch.nn.ModuleDict`, or</span>
+<span class="c1">#             an iterable of key-value pairs, the order of new elements in it is preserved.</span>
+
+<span class="c1">#         Args:</span>
+<span class="c1">#             modules (iterable): a mapping (dictionary) from string to :class:`~torch.nn.Module`,</span>
+<span class="c1">#                 or an iterable of key-value pairs of type (string, :class:`~torch.nn.Module`)</span>
+<span class="c1">#         &quot;&quot;&quot;</span>
+<span class="c1">#         if not isinstance(components, container_abcs.Iterable):</span>
+<span class="c1">#             raise TypeError(</span>
+<span class="c1">#                 &quot;ModuleDict.update should be called with an &quot;</span>
+<span class="c1">#                 &quot;iterable of key/value pairs, but got &quot; + type(components).__name__</span>
+<span class="c1">#             )</span>
+
+<span class="c1">#         if isinstance(components, (OrderedDict, ComponentDict, container_abcs.Mapping)):</span>
+<span class="c1">#             for key, module in components.items():</span>
+<span class="c1">#                 self[key] = module</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             # modules here can be a list with two items</span>
+<span class="c1">#             for j, m in enumerate(components):</span>
+<span class="c1">#                 if not isinstance(m, container_abcs.Iterable):</span>
+<span class="c1">#                     raise TypeError(</span>
+<span class="c1">#                         &quot;ModuleDict update sequence element &quot;</span>
+<span class="c1">#                         &quot;#&quot; + str(j) + &quot; should be Iterable; is&quot; + type(m).__name__</span>
+<span class="c1">#                     )</span>
+<span class="c1">#                 if not len(m) == 2:</span>
+<span class="c1">#                     raise ValueError(</span>
+<span class="c1">#                         &quot;ModuleDict update sequence element &quot;</span>
+<span class="c1">#                         &quot;#&quot; + str(j) + &quot; has length &quot; + str(len(m)) + &quot;; 2 is required&quot;</span>
+<span class="c1">#                     )</span>
+<span class="c1">#                 # modules can be Mapping (what it&#39;s typed at), or a list: [(name1, module1), (name2, module2)]</span>
+<span class="c1">#                 # that&#39;s too cumbersome to type correctly with overloads, so we add an ignore here</span>
+<span class="c1">#                 self[m[0]] = m[1]  # type: ignore[assignment]</span>
+
+<span class="c1">#     # remove forward alltogether to fallback on Module&#39;s _forward_unimplemented</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

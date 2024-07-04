@@ -1,0 +1,830 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Reference &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'apis/index';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Core" href="core/index.html" />
+    <link rel="prev" title="Introduction to BaseDataClass" href="../tutorials/introduction_to_basedataclass.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="core/core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.db.html">db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.functional.html">functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.memory.html">memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core/core.parameter.html">parameter</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.agent.react.html">components.agent.react</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.model_client.utils.html">components.model_client.utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.data_process.data_components.html">components.data_process.data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/_autosummary/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_augment.html">llm_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eval/eval.retriever_relevance.html">retriever_relevance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils/utils.setup_env.html">setup_env</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">API Reference</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
+<p>Welcome to the LightRAG API reference! This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.</p>
+<section id="core">
+<h2>Core<a class="headerlink" href="#core" title="Link to this heading">#</a></h2>
+<p>The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.component.html#module-core.component" title="core.component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.component</span></code></a></p></td>
+<td><p>Component is to LLM task pipelines what nn.Module is to PyTorch models.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.base_data_class.html#module-core.base_data_class" title="core.base_data_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.base_data_class</span></code></a></p></td>
+<td><p>The role of the base data class in LightRAG for LLM applications is like <cite>Tensor</cite> for <cite>PyTorch</cite>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.default_prompt_template.html#module-core.default_prompt_template" title="core.default_prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.default_prompt_template</span></code></a></p></td>
+<td><p>This is the default system prompt template used in the LightRAG.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.model_client.html#module-core.model_client" title="core.model_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.model_client</span></code></a></p></td>
+<td><p>ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.db.html#module-core.db" title="core.db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.db</span></code></a></p></td>
+<td><p>LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.functional.html#module-core.functional" title="core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.functional</span></code></a></p></td>
+<td><p>Functional interface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.generator.html#module-core.generator" title="core.generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.generator</span></code></a></p></td>
+<td><p>Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
+<td><p>LLM applications requires lots of string processing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
+<td><p>The component that orchestrates model client (Embedding models in particular) and output processors.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.retriever.html#module-core.retriever" title="core.retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.retriever</span></code></a></p></td>
+<td><p>The base class for all retrievers who in particular retrieve documents from a given database.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.prompt_builder.html#module-core.prompt_builder" title="core.prompt_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.prompt_builder</span></code></a></p></td>
+<td><p>Class prompt builder for LightRAG system prompt.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
+<td><p>Tokenizer from tiktoken.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
+<td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
+<td><p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
+<td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.parameter.html#module-core.parameter" title="core.parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.parameter</span></code></a></p></td>
+<td><p>WIP</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="components">
+<h2>Components<a class="headerlink" href="#components" title="Link to this heading">#</a></h2>
+<p>The components section of the LightRAG API documentation outlines the detailed specifications and functionalities of various API components. Each component plays a crucial role in the LightRAG framework, providing specialized capabilities and interactions.</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation of ReAct.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
+<td><p>Anthropic ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<td><p>Cohere ModelClient integration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<td><p>Groq ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<td><p>OpenAI ModelClient integration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
+<td><p>Huggingface transformers ModelClient integration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
+<td><p>Helpers for model client for integrating models and parsing the output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
+<td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
+<td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
+<td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<td><p>BM25 retriever implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<td><p>LLM as retriever module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/_autosummary/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<td><p>Reranking model using modelclient as a retriever.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/_autosummary/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<td><p>The most commonly used output parsers for the Generator.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="evaluation">
+<h2>Evaluation<a class="headerlink" href="#evaluation" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="eval/eval.answer_match_acc.html#module-eval.answer_match_acc" title="eval.answer_match_acc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.answer_match_acc</span></code></a></p></td>
+<td><p>This is the metric for answer matching.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.retriever_recall</span></code></a></p></td>
+<td><p>This is the metric to evaluate the recall of the retriever.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.retriever_relevance</span></code></a></p></td>
+<td><p>This is the metric for evaluating the relevance of the retrieved context.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval.llm_as_judge</span></code></a></p></td>
+<td><p>This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="optimizer">
+<h2>Optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.optimizer.html#module-optim.optimizer" title="optim.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.optimizer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.sampler.html#module-optim.sampler" title="optim.sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.sampler</span></code></a></p></td>
+<td><p>The sampler here is designed to sample examples in few-shots ICL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer" title="optim.few_shot_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.few_shot_optimizer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="optim/optim.llm_augment.html#module-optim.llm_augment" title="optim.llm_augment"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.llm_augment</span></code></a></p></td>
+<td><p>Given the inputs and outputs, the llm augmenter will fill in any field that is missing in the output field.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim/optim.llm_optimizer.html#module-optim.llm_optimizer" title="optim.llm_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.llm_optimizer</span></code></a></p></td>
+<td><p>Based and optimized from ORPO llm optimizer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="tracing">
+<h2>Tracing<a class="headerlink" href="#tracing" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="tracing/tracing.decorators.html#module-tracing.decorators" title="tracing.decorators"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracing.decorators</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger" title="tracing.generator_state_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracing.generator_state_logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="tracing/tracing.generator_call_logger.html#module-tracing.generator_call_logger" title="tracing.generator_call_logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tracing.generator_call_logger</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="utils">
+<h2>Utils<a class="headerlink" href="#utils" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.logger.html#module-utils.logger" title="utils.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.logger</span></code></a></p></td>
+<td><p>LightRAG's provides default logger and colored print function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="utils/utils.serialization.html#module-utils.serialization" title="utils.serialization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.serialization</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.config.html#module-utils.config" title="utils.config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.config</span></code></a></p></td>
+<td><p>Config helper functions to manage configuration and rebuilt your task pipeline.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="utils/utils.registry.html#module-utils.registry" title="utils.registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.registry</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.setup_env.html#module-utils.setup_env" title="utils.setup_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.setup_env</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../tutorials/introduction_to_basedataclass.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to BaseDataClass</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="core/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Core</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core">Core</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components">Components</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluation">Evaluation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizer">Optimizer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing">Tracing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils">Utils</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/apis/index.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,836 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>components.data_process.text_splitter &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/components/data_process/text_splitter';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">components.d...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for components.data_process.text_splitter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</span>
+
+<span class="sd">We encourage you to process your data here and define your own embedding and retrieval methods. These methods can highly depend on the product environment and may extend beyond the scope of this library.</span>
+
+<span class="sd">However, the following approaches are commonly shared:</span>
+
+<span class="sd">* **Document Storage:** Define how to store the documents, both raw and chunked. For example, LlamaIndex uses `Document Stores &lt;https://docs.llamaindex.ai/en/stable/module_guides/storing/docstores/&gt;`_ to manage ingested document chunks.</span>
+
+<span class="sd">* **Document Chunking:** Segment documents into manageable chunks suitable for further processing.</span>
+
+<span class="sd">* **Vectorization:** Embed each chunk and store the resulting vectors in Vector Stores. For example, LLama index utilizes `Vector Stores &lt;https://docs.llamaindex.ai/en/stable/module_guides/storing/vector_stores/&gt;`_.</span>
+
+<span class="sd">* **Retrieval:** Leverage vectors for context retrieval.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="c1"># TODO:</span>
+<span class="c1"># More splitters such as PDF/JSON/HTML Splitter can be built on TextSplitter.</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">DocumentSplitterInputType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span>
+<span class="n">DocumentSplitterOutputType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Document</span><span class="p">]</span>
+
+<span class="c1"># customizable seperators map</span>
+<span class="n">SEPARATORS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;page&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\f</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;passage&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;word&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sentence&quot;</span><span class="p">:</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">DEFAULT_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">800</span>
+<span class="n">DEFAULT_CHUNK_OVERLAP</span> <span class="o">=</span> <span class="mi">200</span>
+
+<span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="TextSplitter">
+<a class="viewcode-back" href="../../../apis/components/components.data_process.html#components.data_process.text_splitter.TextSplitter">[docs]</a>
+<span class="k">class</span> <span class="nc">TextSplitter</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Text Splitter for Chunking Documents</span>
+
+<span class="sd">    ``TextSplitter`` first utilizes ``split_by`` to specify the text-splitting criterion and breaks the long text into smaller texts.</span>
+<span class="sd">    Then we create a sliding window with length= ``chunk_size``. It moves at step= ``chunk_size`` - ``chunk_overlap``.</span>
+<span class="sd">    The texts inside each window will get merged to a smaller chunk. The generated chunks from the splitted text will be returned.</span>
+
+<span class="sd">    **Splitting Types**</span>
+
+<span class="sd">    ``TextSplitter`` supports 2 types of splitting.</span>
+
+<span class="sd">    * **Type 1:** Specify the exact text splitting point such as space&lt;&quot; &quot;&gt; and periods&lt;&quot;.&quot;&gt;. It is intuitive, for example, split_by &quot;word&quot;:</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &quot;Hello, world!&quot; -&gt; [&quot;Hello, &quot; ,&quot;world!&quot;]</span>
+
+<span class="sd">    * **Type 2:** Use :class:`tokenizer &lt;lightrag.core.tokenizer.Tokenizer&gt;`. It works as:</span>
+
+<span class="sd">    ::</span>
+
+<span class="sd">        &quot;Hello, world!&quot; -&gt; [&#39;Hello&#39;, &#39;,&#39;, &#39; world&#39;, &#39;!&#39;]</span>
+
+<span class="sd">    This aligns with how models see text in the form of tokens (`Reference &lt;https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb&gt;`_),</span>
+<span class="sd">    Tokenizer reflects the real token numbers the models take in and helps the developers control budgets.</span>
+
+<span class="sd">    **Definitions**</span>
+
+<span class="sd">    * **split_by** specifies the split rule, i.e. the smallest unit during splitting. We support ``&quot;word&quot;``, ``&quot;sentence&quot;``, ``&quot;page&quot;``, ``&quot;passage&quot;``, and ``&quot;token&quot;``. The splitter utilizes the corresponding separator from the ``SEPARATORS`` dictionary.</span>
+<span class="sd">    For Type 1 splitting, we apply ``Python str.split()`` to break the text.</span>
+
+<span class="sd">    * **SEPARATORS**: Maps ``split_by`` criterions to their exact text separators, e.g., spaces &lt;&quot; &quot;&gt; for &quot;word&quot; or periods &lt;&quot;.&quot;&gt; for &quot;sentence&quot;.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        For option ``token``, its separator is &quot;&quot; because we directly split by a tokenizer, instead of text point.</span>
+
+<span class="sd">    * **chunk_size** is the the maximum number of units in each chunk.</span>
+
+<span class="sd">    * **chunk_overlap** is the number of units that each chunk should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis.</span>
+
+
+<span class="sd">    * **Splitting Details**</span>
+<span class="sd">    Type 1:</span>
+<span class="sd">    The ``TextSplitter`` utilizes Python&#39;s ``str.split(separator)`` method.</span>
+<span class="sd">    Developers can refer to</span>
+
+<span class="sd">    .. code-block:: none</span>
+
+<span class="sd">        {</span>
+<span class="sd">            &quot;page&quot;: &quot;\\f&quot;,</span>
+<span class="sd">            &quot;passage&quot;: &quot;\\n&quot;,</span>
+<span class="sd">            &quot;word&quot;: &quot; &quot;,</span>
+<span class="sd">            &quot;sentence&quot;: &quot;.&quot;</span>
+<span class="sd">        }</span>
+<span class="sd">    for exact points of text division.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Developers need to determine how to assign text to each data chunk for the embedding and retrieval tasks.</span>
+
+<span class="sd">    Type 2:</span>
+<span class="sd">    We implement a tokenizer using ``cl100k_base`` encoding that aligns with how models see text in the form of tokens.</span>
+<span class="sd">    E.g. &quot;tiktoken is great!&quot; -&gt; [&quot;t&quot;, &quot;ik&quot;, &quot;token&quot;, &quot; is&quot;, &quot; great&quot;, &quot;!&quot;] This helps developers control the token usage and budget better.</span>
+
+<span class="sd">    * **Merge Details**</span>
+<span class="sd">    Type 1/Type 2 create a list of split texts. ``TextSplitter`` then reattaches the specified separator to each piece of the split text, except for the last segment.</span>
+<span class="sd">    This approach maintains the original spacing and punctuation, which is critical in contexts like natural language processing where text formatting can impact interpretations and outcomes.</span>
+<span class="sd">    E.g. &quot;hello world!&quot; split by &quot;word&quot; will be kept as &quot;hello &quot; and &quot;world!&quot;</span>
+
+<span class="sd">    * **Customization**</span>
+<span class="sd">    You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {&quot;question&quot;: &quot;?&quot;} and setting ``split_by`` = &quot;question&quot;, the document will be split at each ``?``, ideal for processing text structured</span>
+<span class="sd">    as a series of questions. If you need to customize :class:`tokenizer &lt;lightrag.core.tokenizer.Tokenizer&gt;`, please check `Reference &lt;https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb&gt;`_.</span>
+
+<span class="sd">    * **Integration with Other Document Types**</span>
+<span class="sd">    This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.</span>
+<span class="sd">    For **PDFs**, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.</span>
+<span class="sd">    ``LightRAG``&#39;s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from lightrag.components.data_process.text_splitter import TextSplitter</span>
+<span class="sd">        from lightrag.core.types import Document</span>
+
+<span class="sd">        # Configure the splitter settings</span>
+<span class="sd">        text_splitter = TextSplitter(</span>
+<span class="sd">            split_by=&quot;word&quot;,</span>
+<span class="sd">            chunk_size=5,</span>
+<span class="sd">            chunk_overlap=1</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Example document</span>
+<span class="sd">        doc = Document(</span>
+<span class="sd">            text=&quot;Example text. More example text. Even more text to illustrate.&quot;,</span>
+<span class="sd">            id=&quot;doc1&quot;</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Execute the splitting</span>
+<span class="sd">        splitted_docs = text_splitter.call(documents=[doc])</span>
+
+<span class="sd">        for doc in splitted_docs:</span>
+<span class="sd">            print(doc)</span>
+
+<span class="sd">        # Output:</span>
+<span class="sd">        # Document(id=44a8aa37-0d16-40f0-9ca4-2e25ae5336c8, text=&#39;Example text. More example text. &#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=0, score=None)</span>
+<span class="sd">        # Document(id=ca0af45b-4f88-49b5-97db-163da9868ea4, text=&#39;text. Even more text to &#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)</span>
+<span class="sd">        # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text=&#39;to illustrate.&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">split_by</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;word&quot;</span><span class="p">,</span> <span class="s2">&quot;sentence&quot;</span><span class="p">,</span> <span class="s2">&quot;page&quot;</span><span class="p">,</span> <span class="s2">&quot;passage&quot;</span><span class="p">,</span> <span class="s2">&quot;token&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;word&quot;</span><span class="p">,</span>
+        <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CHUNK_SIZE</span><span class="p">,</span>
+        <span class="n">chunk_overlap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_CHUNK_OVERLAP</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the TextSplitter with the specified parameters for text splitting.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            split_by (str): The specific criterion to use for splitting the text.</span>
+<span class="sd">                            Valid options are &#39;word&#39; to split by &#39; &#39;, &#39;sentence&#39; to split by &#39;.&#39;,</span>
+<span class="sd">                            &#39;page&#39; to split by &#39;\\f&#39;, &#39;passage&#39; to split by &#39;\\n\\n&#39;.</span>
+<span class="sd">            chunk_size (int): The size of chunks to generate after splitting. Must be greater than 0.</span>
+<span class="sd">            chunk_overlap (int): The number of characters of overlap between chunks. Must be non-negative</span>
+<span class="sd">                                and less than chunk_size.</span>
+<span class="sd">            batch_size (int): The size of documents to process in each batch.</span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: If the provided split_by is not supported, chunk_size is not greater than 0,</span>
+<span class="sd">                        or chunk_overlap is not valid as per the given conditions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">=</span> <span class="n">split_by</span>
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">split_by</span> <span class="ow">in</span> <span class="n">SEPARATORS</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Invalid options for split_by. You must select from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">SEPARATORS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">chunk_overlap</span> <span class="o">&lt;</span> <span class="n">chunk_size</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;chunk_overlap can&#39;t be larger than or equal to chunk_size. Received chunk_size: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">chunk_size</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;chunk_size must be greater than 0. Received value: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
+
+        <span class="k">assert</span> <span class="p">(</span>
+            <span class="n">chunk_overlap</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;chunk_overlap must be non-negative. Received value: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span> <span class="o">=</span> <span class="n">chunk_overlap</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Initialized TextSplitter with split_by=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="si">}</span><span class="s2">, chunk_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">, batch_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="TextSplitter.split_text">
+<a class="viewcode-back" href="../../../apis/components/components.data_process.html#components.data_process.text_splitter.TextSplitter.split_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">split_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Splits the provided text into chunks.</span>
+
+<span class="sd">        Splits based on the specified split_by, chunk size, and chunk overlap settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text (str): The text to split.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[str]: A list of text chunks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Splitting text with split_by: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="si">}</span><span class="s2">, chunk_size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">separator</span> <span class="o">=</span> <span class="n">SEPARATORS</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="p">]</span>
+        <span class="n">splits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_split_text_into_units</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">separator</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text split into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span><span class="si">}</span><span class="s2"> parts.&quot;</span><span class="p">)</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_units_to_chunks</span><span class="p">(</span>
+            <span class="n">splits</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="p">,</span> <span class="n">separator</span>
+        <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text merged into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chunks</span></div>
+
+
+<div class="viewcode-block" id="TextSplitter.call">
+<a class="viewcode-back" href="../../../apis/components/components.data_process.html#components.data_process.text_splitter.TextSplitter.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">documents</span><span class="p">:</span> <span class="n">DocumentSplitterInputType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentSplitterOutputType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Process the splitting task on a list of documents in batch.</span>
+
+<span class="sd">        Batch processes a list of documents, splitting each document&#39;s text according to the configured</span>
+<span class="sd">        split_by, chunk size, and chunk overlap.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            documents (List[Document]): A list of Document objects to process.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Document]: A list of new Document objects, each containing a chunk of text from the original documents.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TypeError: If &#39;documents&#39; is not a list or contains non-Document objects.</span>
+<span class="sd">            ValueError: If any document&#39;s text is None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">Document</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span>
+        <span class="p">):</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Input should be a list of Documents.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Input should be a list of Documents.&quot;</span><span class="p">)</span>
+
+        <span class="n">split_docs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Using range and batch_size to create batches</span>
+        <span class="k">for</span> <span class="n">start_idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">),</span>
+            <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Splitting Documents in Batches&quot;</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">batch_docs</span> <span class="o">=</span> <span class="n">documents</span><span class="p">[</span><span class="n">start_idx</span> <span class="p">:</span> <span class="n">start_idx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">batch_docs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">Document</span><span class="p">):</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Each item in documents should be an instance of Document, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Each item in documents should be an instance of Document, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">doc</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text should not be None. Doc id: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text should not be None. Doc id: </span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="n">text_splits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_text</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="n">meta_data</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">meta_data</span><span class="p">)</span>
+
+                <span class="n">split_docs</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">Document</span><span class="p">(</span>
+                            <span class="n">text</span><span class="o">=</span><span class="n">txt</span><span class="p">,</span>
+                            <span class="n">meta_data</span><span class="o">=</span><span class="n">meta_data</span><span class="p">,</span>
+                            <span class="n">parent_doc_id</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">doc</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">order</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                            <span class="n">vector</span><span class="o">=</span><span class="p">[],</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">txt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">text_splits</span><span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span><span class="si">}</span><span class="s2"> documents into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">split_docs</span><span class="p">)</span><span class="si">}</span><span class="s2"> split documents.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">split_docs</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_split_text_into_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">separator</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Split text based on the specified separator.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">separator</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Text split by &#39;</span><span class="si">{</span><span class="n">separator</span><span class="si">}</span><span class="s2">&#39; into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span><span class="si">}</span><span class="s2"> parts.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">splits</span>
+
+    <span class="k">def</span> <span class="nf">_merge_units_to_chunks</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">splits</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">chunk_overlap</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">separator</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Merge split text chunks based on the specified chunk size and overlap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chunks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># we use a window to get the text for each trunk, the window size is chunk_size, step is chunk_size - chunk_overlap</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">chunk_size</span> <span class="o">-</span> <span class="n">chunk_overlap</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">),</span> <span class="n">step</span><span class="p">):</span>
+            <span class="c1"># 1. if the window exceeds the list of splitted string, break and process the last chunk</span>
+            <span class="c1"># 2. if the window ends exactly the same with the splits, then break and treat the splits[idx:len(splits)] as the last chunk</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">chunk_size</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="n">current_splits</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="n">idx</span> <span class="p">:</span> <span class="n">idx</span> <span class="o">+</span> <span class="n">chunk_size</span><span class="p">]</span>
+            <span class="c1"># add the separator between each unit and merge the string</span>
+            <span class="c1"># this won&#39;t be the last chunk, so we need to add the separator at the end</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">current_splits</span>  <span class="c1"># if token, then keep the original form</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chunk</span> <span class="o">=</span> <span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_splits</span><span class="p">)</span> <span class="o">+</span> <span class="n">separator</span>
+            <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
+                <span class="n">last_chunk</span> <span class="o">=</span> <span class="n">splits</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>  <span class="c1"># if token, then keep the original form</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">last_chunk</span> <span class="o">=</span> <span class="n">separator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                    <span class="n">splits</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+                <span class="p">)</span>  <span class="c1"># if not token, then join into string</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">last_chunk</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">chunks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">last_chunk</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">==</span> <span class="s2">&quot;token&quot;</span><span class="p">:</span>
+            <span class="c1"># decode each chunk here</span>
+            <span class="n">chunks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">]</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Merged into </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">chunks</span><span class="p">)</span><span class="si">}</span><span class="s2"> chunks.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">chunks</span>
+
+    <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;split_by=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="si">}</span><span class="s2">, chunk_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+
+
+<span class="c1"># test the execution llamaindex and langchain</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

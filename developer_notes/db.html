@@ -1,0 +1,1057 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data &amp; RAG &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'developer_notes/db';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Function calls" href="tool_helper.html" />
+    <link rel="prev" title="Text Splitter" href="text_splitter.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">OutputParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Datasets and Evaulation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Optimizer &amp; Trainer</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Data &amp; RAG</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="data-rag">
+<h1>Data &amp; RAG<a class="headerlink" href="#data-rag" title="Link to this heading">#</a></h1>
+<div class="highlight admonition">
+<p class="admonition-title">Author</p>
+<p><a class="reference external" href="https://github.com/liyin2015">Li Yin</a></p>
+</div>
+<p>The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
+We will conver:</p>
+<ul class="simple">
+<li><p>Data models on how to represent important data.</p></li>
+<li><p>Data pipeline to process data in LLM applications.</p></li>
+<li><p>Local database providing in-memory data management and storage.</p></li>
+<li><p>Examples on working with Cloud database using <cite>fsspec</cite> and <cite>SQLAlchemy</cite>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This note focus more on dealing with data needed to perform the LLM task.
+Datasets, including the input and ground truth output loading and dataset will be covered in the optimizing section.</p>
+</div>
+<p>So far, we have seen how our core components like <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, and <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> work without any data cache/database and enforced data format to read data from and to write data to.
+However, in real-world LLM applications, we can not avoid to deal with data storage:</p>
+<ol class="arabic simple">
+<li><p>Our documents to retrieve context from can be large and be stored in a file system or in a database in forms of tables or graphs.</p></li>
+<li><p>We often need to pre-process a large amount of data (like text splitting and embedding and idf in BM25) in a datapipline into a cloud database.</p></li>
+<li><p>We need to write records, logs to files or databases for monitoring and debugging, such as the failed llm calls.</p></li>
+<li><p>When it comes to applications where states matter, like games and chatbots, we need to store the states and conversational history.</p></li>
+</ol>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="../_images/database.png"><img alt="Data model and database" src="../_images/database.png" style="width: 620px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Data model and database</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="data-models">
+<h2>Data Models<a class="headerlink" href="#data-models" title="Link to this heading">#</a></h2>
+<p>Besides of having a unified <cite>GeneratorOutput</cite>, <cite>EmbedderOutput</cite>, and <cite>RetrieverOutput</cite> data format,
+we provide mainly <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> and <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> to help with text document and conversational histor processing and data storage.</p>
+<p>We will explain the design of Document and DialogTurn. In this note, we will continue use these simple documents we used in the previous notes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">org_documents</span> <span class="o">=</span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;The Impact of Renewable Energy on the Economy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Understanding Solar Panels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Pros and Cons of Solar Energy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span>  <span class="s2">&quot;Renewable Energy and Its Effects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="n">turns</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;What are the benefits of renewable energy?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="s2">&quot;I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:00Z&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;system_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:01Z&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;user&quot;</span><span class="p">:</span> <span class="s2">&quot;How do solar panels impact the environment?&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;system&quot;</span><span class="p">:</span> <span class="s2">&quot;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;user_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:02Z&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;system_time&quot;</span><span class="p">:</span> <span class="s2">&quot;2021-09-01T12:00:03Z&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<section id="document">
+<h3>Document<a class="headerlink" href="#document" title="Link to this heading">#</a></h3>
+<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a> is used as Document data structure and to assist text processing in LLM applications.</p>
+<ol class="arabic simple">
+<li><p>A general document/text container with fields <code class="docutils literal notranslate"><span class="pre">text</span></code>, <code class="docutils literal notranslate"><span class="pre">meta_data</span></code>, and <code class="docutils literal notranslate"><span class="pre">id</span></code>.</p></li>
+<li><p>Assist text splitting with fields <code class="docutils literal notranslate"><span class="pre">parent_doc_id</span></code> and <code class="docutils literal notranslate"><span class="pre">order</span></code>.</p></li>
+<li><p>Assist embedding with fields <code class="docutils literal notranslate"><span class="pre">vector</span></code>.</p></li>
+<li><p>Assist using it as a prompt for LLM with fields <code class="docutils literal notranslate"><span class="pre">estimated_num_tokens</span></code>.</p></li>
+</ol>
+<p>This is why data processing components like <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> and <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code>  requires <code class="docutils literal notranslate"><span class="pre">Document</span></code> as input of each data item.</p>
+<p><strong>Create a Document</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+
+<span class="n">documents</span>  <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">org_documents</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">73</span><span class="n">c12be3</span><span class="o">-</span><span class="mi">7844</span><span class="o">-</span><span class="mi">435</span><span class="n">b</span><span class="o">-</span><span class="mi">8678</span><span class="o">-</span><span class="mf">2e8</span><span class="n">e63041698</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute...&#39;</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;The Impact of Renewable Energy on the Economy&#39;</span><span class="p">},</span> <span class="n">vector</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent_doc_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">7</span><span class="n">a17ed45</span><span class="o">-</span><span class="mi">569</span><span class="n">a</span><span class="o">-</span><span class="mi">4206</span><span class="o">-</span><span class="mi">9670</span><span class="o">-</span><span class="mi">5316</span><span class="n">efd58d58</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock ele...&#39;</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Understanding Solar Panels&#39;</span><span class="p">},</span> <span class="n">vector</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent_doc_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">bcbc6ff9</span><span class="o">-</span><span class="mi">518</span><span class="n">a</span><span class="o">-</span><span class="mi">405</span><span class="n">a</span><span class="o">-</span><span class="mi">8</span><span class="n">b0d</span><span class="o">-</span><span class="mi">840021</span><span class="n">aa1953</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and...&#39;</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Pros and Cons of Solar Energy&#39;</span><span class="p">},</span> <span class="n">vector</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent_doc_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">ec910402</span><span class="o">-</span><span class="n">f98f</span><span class="o">-</span><span class="mi">4077</span><span class="o">-</span><span class="n">a958</span><span class="o">-</span><span class="mf">7335e34</span><span class="n">ee0c6</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate ...&#39;</span><span class="p">,</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;Renewable Energy and Its Effects&#39;</span><span class="p">},</span> <span class="n">vector</span><span class="o">=</span><span class="p">[],</span> <span class="n">parent_doc_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+<section id="dialogturn">
+<h3>DialogTurn<a class="headerlink" href="#dialogturn" title="Link to this heading">#</a></h3>
+<p>The <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a> is only used as a data structure to a user-assistant conversation turn in LLM applications.
+<strong>If we need to apply a text processing pipeline to a conversational history, we will use our text container``Document`` to store the text we need to use.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For both <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code>, we have an equivalent class in <span class="xref std std-doc">database.sqlalchemy.model`(:class:`database.sqlalchemy.modoel.Document</span>) to handle the persitence of data in a SQL database.</p>
+</div>
+<p>Here is how to get a list of <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> from the <code class="docutils literal notranslate"><span class="pre">turns</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">DialogTurn</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">,</span> <span class="n">AssistantResponse</span>
+
+<span class="n">dialog_turns</span> <span class="o">=</span> <span class="p">[</span>
+<span class="n">DialogTurn</span><span class="p">(</span>
+        <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]),</span>
+        <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]),</span>
+        <span class="n">user_query_timestamp</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;user_time&quot;</span><span class="p">],</span>
+        <span class="n">assistant_response_timestamp</span><span class="o">=</span><span class="n">turn</span><span class="p">[</span><span class="s2">&quot;system_time&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">turns</span>
+<span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turns</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;f2eddc77-4667-43f5-87e0-fd11f12958b3&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="s1">&#39;I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">user_query_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:00Z&#39;</span><span class="p">,</span> <span class="n">assistant_response_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:01Z&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">DialogTurn</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;b2dbdf2f-f513-493d-aaa8-c77c98ac260f&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="s1">&#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">user_query_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:02Z&#39;</span><span class="p">,</span> <span class="n">assistant_response_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:03Z&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="data-pipeline">
+<h2>Data Pipeline<a class="headerlink" href="#data-pipeline" title="Link to this heading">#</a></h2>
+<p>Let’s see how to can write a data pipeline that can process any form of text data by using intermediate data model-<code class="docutils literal notranslate"><span class="pre">Document</span></code>.
+Currently, we have two data processing components: <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> and <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code> in the <code class="docutils literal notranslate"><span class="pre">components.data_process</span></code> module.</p>
+<p>We will use <code class="docutils literal notranslate"><span class="pre">ord_documents</span></code> and a list of <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> as examples. As our data pipelines are designed to work with <code class="docutils literal notranslate"><span class="pre">Document</span></code> structure,
+we simplify just need to add a mapping function to convert the original data to <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># mapping function for org_documents</span>
+<span class="k">def</span> <span class="nf">map_to_document</span><span class="p">(</span><span class="n">doc</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]})</span>
+
+<span class="k">def</span> <span class="nf">map_dialogturn_to_document</span><span class="p">(</span><span class="n">turn</span><span class="p">:</span> <span class="n">DialogTurn</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+    <span class="c1"># it can be important to keep the original data&#39;s id</span>
+    <span class="k">return</span> <span class="n">Document</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">turn</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">turn</span><span class="o">.</span><span class="n">user_query</span><span class="o">.</span><span class="n">query_str</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">turn</span><span class="o">.</span><span class="n">assistant_response</span><span class="o">.</span><span class="n">response_str</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can refer to <a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a> for more details on how to use <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code>.
+<code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code> is an orchestrator on <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code> and it will generate embeddings for a list of <code class="docutils literal notranslate"><span class="pre">Document</span></code> and store the embeddings as <code class="docutils literal notranslate"><span class="pre">List[Float]</span></code> in the <code class="docutils literal notranslate"><span class="pre">vector</span></code> field of each <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Sequential</span></code> can be easily used to chain multiple data processing components together.
+Here is the code to form a data pipeline:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.data_process</span> <span class="kn">import</span> <span class="n">DocumentSplitter</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
+
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">splitter_config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;split_by&quot;</span><span class="p">:</span> <span class="s2">&quot;word&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;split_length&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="s2">&quot;split_overlap&quot;</span><span class="p">:</span> <span class="mi">10</span>
+<span class="p">}</span>
+
+<span class="n">splitter</span> <span class="o">=</span> <span class="n">DocumentSplitter</span><span class="p">(</span><span class="o">**</span><span class="n">splitter_config</span><span class="p">)</span>
+<span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span> <span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+<span class="n">embedder_transformer</span> <span class="o">=</span> <span class="n">ToEmbeddings</span><span class="p">(</span><span class="n">embedder</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">data_transformer</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">splitter</span><span class="p">,</span> <span class="n">embedder_transformer</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data_transformer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sequential</span><span class="p">(</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">):</span> <span class="n">DocumentSplitter</span><span class="p">(</span><span class="n">split_by</span><span class="o">=</span><span class="n">word</span><span class="p">,</span> <span class="n">split_length</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">split_overlap</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">):</span> <span class="n">ToEmbeddings</span><span class="p">(</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">(</span><span class="n">batch_embedder</span><span class="p">):</span> <span class="n">BatchEmbedder</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
+        <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, apply the data pipeline to the <code class="docutils literal notranslate"><span class="pre">dialog_turns</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dialog_turns_as_documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">map_dialogturn_to_document</span><span class="p">(</span><span class="n">turn</span><span class="p">)</span> <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">dialog_turns</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turns_as_documents</span><span class="p">)</span>
+
+<span class="c1"># apply data transformation to the documents</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">data_transformer</span><span class="p">(</span><span class="n">dialog_turns_as_documents</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>[Document(id=e3b48bcc-df68-43a4-aa81-93922b619293, text=&#39;What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...&#39;, meta_data=None, vector=[], parent_doc_id=None, order=None, score=None), Document(id=21f0385d-d19a-442f-ae99-910e984cdb65, text=&#39;How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...&#39;, meta_data=None, vector=[], parent_doc_id=None, order=None, score=None)]
+Splitting documents: 100%|██████████| 2/2 [00:00&lt;00:00, 609.37it/s]
+Batch embedding documents: 100%|██████████| 2/2 [00:00&lt;00:00,  3.79it/s]
+Adding embeddings to documents from batch: 2it [00:00, 10205.12it/s]
+[Document(id=e636facc-8bc3-483b-afbd-37e1d8ff0526, text=&#39;What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=e3b48bcc-df68-43a4-aa81-93922b619293, order=0, score=None), Document(id=06ea7cea-c4e4-4f5f-b3e9-2e6f4452827b, text=&#39;and installation sectors. The growth in renewable energy usage boosts local economies through increa...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=e3b48bcc-df68-43a4-aa81-93922b619293, order=1, score=None), Document(id=0018af12-c8fc-49ff-ab64-a2acf8ba4c27, text=&#39;How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=21f0385d-d19a-442f-ae99-910e984cdb65, order=0, score=None), Document(id=c5431397-2a78-4870-abce-353b738c1b71, text=&#39;has been found to have a significant positive effect on the environment by reducing the reliance on ...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=21f0385d-d19a-442f-ae99-910e984cdb65, order=1, score=None)]
+</pre></div>
+</div>
+</section>
+<section id="local-database">
+<h2>Local database<a class="headerlink" href="#local-database" title="Link to this heading">#</a></h2>
+<p><strong>LocalDB class</strong></p>
+<p><a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.db.LocalDB</span></code></a> is a powerful data management class:</p>
+<ol class="arabic simple">
+<li><p>It manages a sequence of data items of any data type with CRUD operations.</p></li>
+<li><p>Keep track and apply data transfomation/processing pipelines to its items.</p></li>
+<li><p>Save and load the state of the items to/from a file, including all data and data transformer records.</p></li>
+</ol>
+<p>This table lists its attributes and important methods:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Attribute/Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Attributes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>The name of the database.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">items</span></code></p></td>
+<td><p>A list of items in the database.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transformed_items</span></code></p></td>
+<td><p>A dictionary to store the transformed items.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transformer_setups</span></code></p></td>
+<td><p>A dictionary to store the transformer setups.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mapper_setups</span></code></p></td>
+<td><p>A dictionary to store the mapping functions used together with transformer.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Data CRUD Operations</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load(items:</span> <span class="pre">List[Any])</span></code></p></td>
+<td><p>Load a list of items to the database <code class="docutils literal notranslate"><span class="pre">items</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">extend(items,</span> <span class="pre">List[Any],</span> <span class="pre">apply_transformer:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True)</span></code></p></td>
+<td><p>Add items to the end of <code class="docutils literal notranslate"><span class="pre">items</span></code>. Optionally apply transformer from <code class="docutils literal notranslate"><span class="pre">transformer_setups</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">add(item:</span> <span class="pre">Any,</span> <span class="pre">index:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">apply_transformer:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True)</span></code></p></td>
+<td><p>Add a single item by index or append to the end. Optionally apply the transformer.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">delete(index:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">remove_transformed:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True)</span></code></p></td>
+<td><p>Remove items by index or pop the last item. Optionally remove the transformed data as well. Assume the transformed item has the same index as the original item. Might not always be the case.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reset()</span></code></p></td>
+<td><p>Reset all attributes to the initial state.</p></td>
+</tr>
+<tr class="row-even"><td><p>Data Processing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">register_transformer(transformer:</span> <span class="pre">Component,</span> <span class="pre">key:</span> <span class="pre">Optional[str],</span> <span class="pre">map_fn:</span> <span class="pre">Optional[Callable])</span></code></p></td>
+<td><p>Register a data transformation to the database to be used later.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transform(key:</span> <span class="pre">str)</span></code></p></td>
+<td><p>Apply a transformer by key to the data.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">transform(transformer:</span> <span class="pre">Component,</span> <span class="pre">map_fn:</span> <span class="pre">Callable,</span> <span class="pre">key:</span> <span class="pre">str)</span></code></p></td>
+<td><p>Register and apply a transformer to the data.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Data Persistence</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">save_state(filepath:</span> <span class="pre">str)</span></code></p></td>
+<td><p>Save the state of the database to a pickle file.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">load_state(filepath:</span> <span class="pre">str)</span></code></p></td>
+<td><p>A class method to load the state of the database from a pickle file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Now, finally, we have a good way to organize important data along its pipeline like <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> in a database.</p>
+<p><strong>Data Loading and CRUD Operations</strong></p>
+<p>Let’s create a <code class="docutils literal notranslate"><span class="pre">LocalDB</span></code> to manage the <code class="docutils literal notranslate"><span class="pre">dialog_turns</span></code> and its data processing pipeline:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
+
+<span class="n">dialog_turn_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">(</span><span class="s1">&#39;dialog_turns&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="p">)</span>
+
+<span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dialog_turns</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LocalDB</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dialog_turns&#39;</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="p">[],</span> <span class="n">transformed_items</span><span class="o">=</span><span class="p">{},</span> <span class="n">transformer_setups</span><span class="o">=</span><span class="p">{},</span> <span class="n">mapper_setups</span><span class="o">=</span><span class="p">{})</span>
+<span class="n">LocalDB</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;dialog_turns&#39;</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;f2eddc77-4667-43f5-87e0-fd11f12958b3&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="s1">&#39;I can see you are interested in renewable energy. Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">user_query_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:00Z&#39;</span><span class="p">,</span> <span class="n">assistant_response_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:01Z&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">DialogTurn</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;b2dbdf2f-f513-493d-aaa8-c77c98ac260f&#39;</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="s1">&#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">user_query_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:02Z&#39;</span><span class="p">,</span> <span class="n">assistant_response_timestamp</span><span class="o">=</span><span class="s1">&#39;2021-09-01T12:00:03Z&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vector</span><span class="o">=</span><span class="kc">None</span><span class="p">)],</span> <span class="n">transformed_items</span><span class="o">=</span><span class="p">{},</span> <span class="n">transformer_setups</span><span class="o">=</span><span class="p">{},</span> <span class="n">mapper_setups</span><span class="o">=</span><span class="p">{})</span>
+</pre></div>
+</div>
+<p><strong>Data Processing/Transformation Pipeline(such as TextSplitter and Embedder)</strong></p>
+<p>We register and apply the transformer from the last section to the data stored in the <code class="docutils literal notranslate"><span class="pre">dialog_turn_db</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;split_and_embed&quot;</span>
+<span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data_transformer</span><span class="p">,</span> <span class="n">map_fn</span><span class="o">=</span><span class="n">map_dialogturn_to_document</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformer_setups</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">mapper_setups</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Splitting documents: 100%|██████████| 2/2 [00:00&lt;00:00, 2167.04it/s]
+Batch embedding documents: 100%|██████████| 2/2 [00:00&lt;00:00,  5.46it/s]
+Adding embeddings to documents from batch: 2it [00:00, 63072.24it/s]
+[Document(id=64987b2b-b6c6-4eb4-9122-02448e3fd394, text=&#39;What are the benefits of renewable energy? I can see you are interested in renewable energy. Renewab...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=0, score=None), Document(id=9a424d4c-4bd0-48ce-aba9-7a4f86892556, text=&#39;and installation sectors. The growth in renewable energy usage boosts local economies through increa...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=f2eddc77-4667-43f5-87e0-fd11f12958b3, order=1, score=None), Document(id=45efa517-8e52-4780-bdbd-2329ffa8d4b6, text=&#39;How do solar panels impact the environment? Solar panels convert sunlight into electricity by allowi...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=0, score=None), Document(id=bc0ff7f6-27cc-4e24-8c3e-9435ed755e20, text=&#39;has been found to have a significant positive effect on the environment by reducing the reliance on ...&#39;, meta_data=None, vector=&#39;len: 256&#39;, parent_doc_id=b2dbdf2f-f513-493d-aaa8-c77c98ac260f, order=1, score=None)]
+Sequential(
+(0): DocumentSplitter(split_by=word, split_length=50, split_overlap=10)
+(1): ToEmbeddings(
+    batch_size=2
+    (embedder): Embedder(
+    model_kwargs={&#39;model&#39;: &#39;text-embedding-3-small&#39;, &#39;dimensions&#39;: 256, &#39;encoding_format&#39;: &#39;float&#39;},
+    (model_client): OpenAIClient()
+    )
+    (batch_embedder): BatchEmbedder(
+    (embedder): Embedder(
+        model_kwargs={&#39;model&#39;: &#39;text-embedding-3-small&#39;, &#39;dimensions&#39;: 256, &#39;encoding_format&#39;: &#39;float&#39;},
+        (model_client): OpenAIClient()
+    )
+  )
+ )
+)
+&lt;function map_dialogturn_to_document at 0x10fb26f20&gt;
+</pre></div>
+</div>
+<p><strong>Save/Reload Data</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">save_state</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;.storage/dialog_turns.pkl&#39;</span><span class="p">)</span>
+<span class="n">reloaded_dialog_turn_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="o">.</span><span class="n">load_state</span><span class="p">(</span><span class="n">filepath</span><span class="o">=</span><span class="s1">&#39;.storage/dialog_turns.pkl&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">restored_dialog_turn_db</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This will print <code class="docutils literal notranslate"><span class="pre">True</span></code> if the two databases are the same. We can use the reloaded db class to continue to work with the data.
+This data class can be really helpful for researchers and developers to run and track local experiments to optimize the data processing pipelines</p>
+<p><strong>CRUD Operations using with Generator for a conversation</strong></p>
+<p>We will have a chatbot and add new conversation turns to the database. When the conversation is too long to fit into token limit of your LLM model, you can easily
+use a retriever to control the conversation history length.</p>
+<p>First, let us prepare the generator. We will use <code class="docutils literal notranslate"><span class="pre">input_str</span></code> and <code class="docutils literal notranslate"><span class="pre">chat_history_str</span></code> from our default prompt.
+This will also leverage <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> ‘s inheritant ability from <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> to quickly form the <code class="docutils literal notranslate"><span class="pre">chat_history_str</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+
+<span class="n">llm_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span>
+<span class="p">}</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span><span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">llm_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the code to form the prompt and we will use <code class="docutils literal notranslate"><span class="pre">generator.print_prompt()</span></code> to check how the prompt will look like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="n">input_str</span> <span class="o">=</span> <span class="s2">&quot;What are the benefits of renewable energy? Did I ask this before?&quot;</span>
+
+<span class="k">def</span> <span class="nf">format_chat_history_str</span><span class="p">(</span><span class="n">turns</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DialogTurn</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">chat_history_str</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">turn</span> <span class="ow">in</span> <span class="n">turns</span><span class="p">:</span>
+        <span class="n">chat_history_str</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">turn</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span>
+                        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span>
+                            <span class="s2">&quot;id&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;user_id&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;session_id&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;user_query_timestamp&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;assistant_response_timestamp&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;order&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;vector&quot;</span><span class="p">,</span>
+                        <span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+    <span class="n">chat_history_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">_________</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chat_history_str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">chat_history_str</span>
+
+<span class="n">chat_history_str</span> <span class="o">=</span> <span class="n">format_chat_history_str</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="n">input_str</span><span class="o">=</span><span class="n">input_str</span><span class="p">,</span> <span class="n">chat_history_str</span><span class="o">=</span><span class="n">chat_history_str</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Prompt:
+
+&lt;SYS&gt;
+&lt;CHAT_HISTORY&gt;
+user_query:
+metadata: null
+query_str: What are the benefits of renewable energy?
+assistant_response:
+metadata: null
+response_str: I can see you are interested in renewable energy. Renewable energy technologies
+    not only help in reducing greenhouse gas emissions but also contribute significantly
+    to the economy by creating jobs in the manufacturing and installation sectors. The
+    growth in renewable energy usage boosts local economies through increased investment
+    in technology and infrastructure
+&lt;/CHAT_HISTORY&gt;
+&lt;/SYS&gt;
+&lt;User&gt;
+What are the benefits of renewable energy? Did I ask this before?
+&lt;/User&gt;
+You:
+</pre></div>
+</div>
+<p>Now, let us chat with the generator and add the conversation turns to the database:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">input_str</span><span class="p">,</span> <span class="s2">&quot;chat_history_str&quot;</span><span class="p">:</span> <span class="n">chat_history_str</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+<span class="c1"># add the turn and apply the transformer</span>
+<span class="n">new_turn</span> <span class="o">=</span> <span class="n">DialogTurn</span><span class="p">(</span>
+    <span class="n">user_query</span><span class="o">=</span><span class="n">UserQuery</span><span class="p">(</span><span class="n">query_str</span><span class="o">=</span><span class="n">input_str</span><span class="p">),</span>
+    <span class="n">assistant_response</span><span class="o">=</span><span class="n">AssistantResponse</span><span class="p">(</span><span class="n">response_str</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_turn</span><span class="p">,</span> <span class="n">apply_transformer</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+
+<span class="c1"># 3 6</span>
+</pre></div>
+</div>
+<p><strong>Use With Retriever</strong></p>
+<p>Assume our history is getting too long to fit into the token limit.
+We will use a semantic retriever to fetch relevant chunked documents from the database.
+Then, instead of directly using the documents, we will find its relevant dialog turns by comparing the <code class="docutils literal notranslate"><span class="pre">parent_doc_id</span></code> with the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the document.
+Here is the code to prepare the relevant dialog turns.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever.faiss_retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
+
+<span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">)</span>
+<span class="n">embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">vector</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>
+<span class="n">retriever</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">embeddings</span><span class="p">)</span>
+
+<span class="c1"># get the relevant documents</span>
+<span class="n">top_k_documents</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">input_str</span><span class="p">)</span>
+
+<span class="c1"># get the relevant dialog turns</span>
+<span class="n">parent_doc_ids</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="n">doc_index</span><span class="p">]</span><span class="o">.</span><span class="n">parent_doc_id</span>
+        <span class="k">for</span> <span class="n">doc_index</span> <span class="ow">in</span> <span class="n">top_k_documents</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">doc_indices</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">condition_fn</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">item</span><span class="p">:</span> <span class="n">item</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">parent_doc_ids</span>
+<span class="n">fetched_dialog_turns</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">condition_fn</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Now, we can use the <code class="docutils literal notranslate"><span class="pre">fetched_dialog_turns</span></code> to continue the conversation with the generator.</p>
+</section>
+<section id="cloud-database">
+<h2>Cloud database<a class="headerlink" href="#cloud-database" title="Link to this heading">#</a></h2>
+</section>
+<section id="suggestion-on-file-reading-and-writing">
+<h2>Suggestion on File reading and writing<a class="headerlink" href="#suggestion-on-file-reading-and-writing" title="Link to this heading">#</a></h2>
+<p>We dont provide integration on using <code class="docutils literal notranslate"><span class="pre">fsspec</span></code>, but here we can give you some suggestions on how to use it.</p>
+</section>
+<section id="graph-database">
+<h2>Graph database<a class="headerlink" href="#graph-database" title="Link to this heading">#</a></h2>
+<div class="highlight admonition">
+<p class="admonition-title">API References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Document</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.DialogTurn</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.db.LocalDB</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.DocumentSplitter</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.data_process.html#components.data_process.ToEmbeddings" title="components.data_process.ToEmbeddings"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.data_process.ToEmbeddings</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="text_splitter.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Text Splitter</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tool_helper.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Function calls</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-models">Data Models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#document">Document</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dialogturn">DialogTurn</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-pipeline">Data Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-database">Local database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cloud-database">Cloud database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suggestion-on-file-reading-and-writing">Suggestion on File reading and writing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#graph-database">Graph database</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/developer_notes/db.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

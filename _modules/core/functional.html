@@ -1,0 +1,1558 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>core.functional &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/core/functional';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">core.functional</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for core.functional</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Functional interface.</span>
+<span class="sd">Core functions we use to build across the components.</span>
+<span class="sd">Users can leverage these functions to customize their own components.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">get_type_hints</span><span class="p">,</span>
+    <span class="n">get_origin</span><span class="p">,</span>
+    <span class="n">get_args</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+
+<span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">signature</span><span class="p">,</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">fields</span><span class="p">,</span> <span class="n">is_dataclass</span><span class="p">,</span> <span class="n">MISSING</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">ExcludeType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span>
+
+
+<span class="c1">########################################################################################</span>
+<span class="c1"># For Dataclass base class and all schema related functions</span>
+<span class="c1">########################################################################################</span>
+
+
+<div class="viewcode-block" id="custom_asdict">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.custom_asdict">[docs]</a>
+<span class="k">def</span> <span class="nf">custom_asdict</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dict_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Equivalent to asdict() from dataclasses module but with exclude fields.</span>
+
+<span class="sd">    Return the fields of a dataclass instance as a new dictionary mapping</span>
+<span class="sd">    field names to field values, while allowing certain fields to be excluded.</span>
+
+<span class="sd">    If given, &#39;dict_factory&#39; will be used instead of built-in dict.</span>
+<span class="sd">    The function applies recursively to field values that are</span>
+<span class="sd">    dataclass instances. This will also look into built-in containers:</span>
+<span class="sd">    tuples, lists, and dicts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;custom_asdict() should be called on dataclass instances&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_asdict_inner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span> <span class="ow">or</span> <span class="p">{})</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_asdict_inner</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">exclude</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">[]):</span>
+                <span class="k">continue</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_asdict_inner</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">),</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dict_factory</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;_fields&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)(</span><span class="o">*</span><span class="p">[</span><span class="n">_asdict_inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)(</span><span class="n">_asdict_inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)(</span>
+            <span class="p">(</span>
+                <span class="n">_asdict_inner</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">),</span>
+                <span class="n">_asdict_inner</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dict_factory</span><span class="p">,</span> <span class="n">exclude</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+
+<span class="c1"># def dataclass_obj_to_dict(</span>
+<span class="c1">#     obj: Any, exclude: ExcludeType = None, parent_key: str = &quot;&quot;</span>
+<span class="c1"># ) -&gt; Dict[str, Any]:</span>
+<span class="c1">#     r&quot;&quot;&quot;Convert a dataclass object to a dictionary With exclude fields.</span>
+
+<span class="c1">#     Equivalent to asdict() from dataclasses module but with exclude fields.</span>
+
+<span class="c1">#     Supports nested dataclasses, lists, and dictionaries.</span>
+<span class="c1">#     Allow exclude keys for each dataclass object.</span>
+<span class="c1">#     Example:</span>
+
+<span class="c1">#     .. code-block:: python</span>
+
+<span class="c1">#        from dataclasses import dataclass</span>
+<span class="c1">#        from typing import List</span>
+
+<span class="c1">#        @dataclass</span>
+<span class="c1">#        class TrecData:</span>
+<span class="c1">#            question: str</span>
+<span class="c1">#            label: int</span>
+
+<span class="c1">#        @dataclass</span>
+<span class="c1">#        class TrecDataList:</span>
+
+<span class="c1">#            data: List[TrecData]</span>
+<span class="c1">#            name: str</span>
+
+<span class="c1">#        trec_data = TrecData(question=&quot;What is the capital of France?&quot;, label=0)</span>
+<span class="c1">#        trec_data_list = TrecDataList(data=[trec_data], name=&quot;trec_data_list&quot;)</span>
+
+<span class="c1">#        dataclass_obj_to_dict(trec_data_list, exclude={&quot;TrecData&quot;: [&quot;label&quot;], &quot;TrecDataList&quot;: [&quot;name&quot;]})</span>
+
+<span class="c1">#        # Output:</span>
+<span class="c1">#        # {&#39;data&#39;: [{&#39;question&#39;: &#39;What is the capital of France?&#39;}]}</span>
+
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     if not is_dataclass_instance(obj):</span>
+<span class="c1">#         raise ValueError(</span>
+<span class="c1">#             f&quot;dataclass_obj_to_dict() should be called with a dataclass instance.&quot;</span>
+<span class="c1">#         )</span>
+<span class="c1">#     if exclude is None:</span>
+<span class="c1">#         exclude = {}</span>
+
+<span class="c1">#     obj_class_name = obj.__class__.__name__</span>
+<span class="c1">#     current_exclude = exclude.get(obj_class_name, [])</span>
+
+<span class="c1">#     if hasattr(obj, &quot;__dataclass_fields__&quot;):</span>
+<span class="c1">#         return {</span>
+<span class="c1">#             key: dataclass_obj_to_dict(value, exclude, parent_key=key)</span>
+<span class="c1">#             for key, value in obj.__dict__.items()</span>
+<span class="c1">#             if key not in current_exclude</span>
+<span class="c1">#         }</span>
+<span class="c1">#     elif isinstance(obj, list):</span>
+
+
+<span class="c1">#         return [dataclass_obj_to_dict(item, exclude, parent_key) for item in obj]</span>
+<span class="c1">#     elif isinstance(obj, set):</span>
+<span class="c1">#         return {dataclass_obj_to_dict(item, exclude, parent_key) for item in obj}</span>
+<span class="c1">#     elif isinstance(obj, tuple):</span>
+<span class="c1">#         return (dataclass_obj_to_dict(item, exclude, parent_key) for item in obj)</span>
+<span class="c1">#     elif isinstance(obj, dict):</span>
+<span class="c1">#         return {</span>
+<span class="c1">#             key: dataclass_obj_to_dict(value, exclude, parent_key)</span>
+<span class="c1">#             for key, value in obj.items()</span>
+<span class="c1">#         }</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         return deepcopy(obj)</span>
+<div class="viewcode-block" id="validate_data">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.validate_data">[docs]</a>
+<span class="k">def</span> <span class="nf">validate_data</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">fieldtypes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">name</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">fieldtypes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">_is_required_field</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">required_fields</span> <span class="o">&lt;=</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="is_potential_dataclass">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_potential_dataclass">[docs]</a>
+<span class="k">def</span> <span class="nf">is_potential_dataclass</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.&quot;&quot;&quot;</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">Union</span><span class="p">:</span>
+        <span class="c1"># This checks if any of the arguments in a Union (which is what Optional is) is a dataclass</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">is_dataclass</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">get_args</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_dataclass_type">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_dataclass_type">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_dataclass_type</span><span class="p">(</span><span class="n">type_hint</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract the actual dataclass type from a type hint that could be Optional or other generic.&quot;&quot;&quot;</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">):</span>
+        <span class="c1"># Unpack Optional[SomeClass] or Union[SomeClass, None]</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">arg</span>
+    <span class="k">return</span> <span class="n">type_hint</span> <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">type_hint</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="dataclass_obj_from_dict">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.dataclass_obj_from_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="nb">object</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a dataclass object.</span>
+
+<span class="sd">    Supports nested dataclasses, lists, and dictionaries.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        If any required field is missing, it will raise an error.</span>
+<span class="sd">        Do not use the dict that has excluded required fields.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">       from dataclasses import dataclass</span>
+<span class="sd">       from typing import List</span>
+
+<span class="sd">       @dataclass</span>
+<span class="sd">       class TrecData:</span>
+<span class="sd">           question: str</span>
+<span class="sd">           label: int</span>
+
+<span class="sd">       @dataclass</span>
+<span class="sd">       class TrecDataList:</span>
+
+<span class="sd">           data: List[TrecData]</span>
+<span class="sd">           name: str</span>
+
+<span class="sd">       trec_data_dict = {&quot;data&quot;: [{&quot;question&quot;: &quot;What is the capital of France?&quot;, &quot;label&quot;: 0}], &quot;name&quot;: &quot;trec_data_list&quot;}</span>
+
+<span class="sd">       dataclass_obj_from_dict(TrecDataList, trec_data_dict)</span>
+
+<span class="sd">       # Output:</span>
+<span class="sd">       # TrecDataList(data=[TrecData(question=&#39;What is the capital of France?&#39;, label=0)], name=&#39;trec_data_list&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_potential_dataclass</span><span class="p">(</span>
+        <span class="bp">cls</span>
+    <span class="p">):</span>  <span class="c1"># Optional[Address] will be false, and true for each check</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">is_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">is_potential_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">cls_type</span> <span class="o">=</span> <span class="n">extract_dataclass_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+        <span class="n">fieldtypes</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="n">f</span><span class="o">.</span><span class="n">type</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">cls_type</span><span class="o">.</span><span class="n">__dataclass_fields__</span><span class="o">.</span><span class="n">values</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">cls_type</span><span class="p">(</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="n">key</span><span class="p">:</span> <span class="n">dataclass_obj_from_dict</span><span class="p">(</span><span class="n">fieldtypes</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+        <span class="n">restored_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">):</span>
+                <span class="c1"># restore the value to its dataclass type</span>
+                <span class="n">restored_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Use the original data [Any]</span>
+                <span class="n">restored_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">restored_data</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">set</span><span class="p">):</span>
+        <span class="n">restored_data</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">):</span>
+                <span class="c1"># restore the value to its dataclass type</span>
+                <span class="n">restored_data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">item</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Use the original data [Any]</span>
+                <span class="n">restored_data</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">restored_data</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__args__&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+                <span class="ow">and</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="c1"># restore the value to its dataclass type</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataclass_obj_from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__args__</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Use the original data [Any]</span>
+                <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Not datclass, or list, or dict: </span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2">, use the original data.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+
+<span class="c1"># Custom representer for OrderedDict</span>
+<div class="viewcode-block" id="represent_ordereddict">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.represent_ordereddict">[docs]</a>
+<span class="k">def</span> <span class="nf">represent_ordereddict</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item_key</span><span class="p">,</span> <span class="n">item_value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">node_key</span> <span class="o">=</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_data</span><span class="p">(</span><span class="n">item_key</span><span class="p">)</span>
+        <span class="n">node_value</span> <span class="o">=</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_data</span><span class="p">(</span><span class="n">item_value</span><span class="p">)</span>
+        <span class="n">value</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node_key</span><span class="p">,</span> <span class="n">node_value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">MappingNode</span><span class="p">(</span><span class="s2">&quot;tag:yaml.org,2002:map&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_dict_to_json">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_dict_to_json">[docs]</a>
+<span class="k">def</span> <span class="nf">from_dict_to_json</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a JSON string.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="n">sort_keys</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert dict to JSON: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_dict_to_yaml">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_dict_to_yaml">[docs]</a>
+<span class="k">def</span> <span class="nf">from_dict_to_yaml</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">sort_keys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a dictionary to a YAML string.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="n">sort_keys</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert dict to YAML: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_json_to_dict">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_json_to_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">from_json_to_dict</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a JSON string to a dictionary.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert JSON to dict: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_yaml_to_dict">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.from_yaml_to_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">from_yaml_to_dict</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert a YAML string to a dictionary.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to convert YAML to dict: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="is_dataclass_instance">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_dataclass_instance">[docs]</a>
+<span class="k">def</span> <span class="nf">is_dataclass_instance</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s2">&quot;__dataclass_fields__&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_type_schema">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_type_schema">[docs]</a>
+<span class="k">def</span> <span class="nf">get_type_schema</span><span class="p">(</span><span class="n">type_obj</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Retrieve the type name, handling complex and nested types.&quot;&quot;&quot;</span>
+    <span class="n">origin</span> <span class="o">=</span> <span class="n">get_origin</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">Union</span><span class="p">:</span>
+        <span class="c1"># Handle Optional[Type] and other unions</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_type_schema</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span> <span class="k">if</span> <span class="n">arg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Optional[</span><span class="si">{</span><span class="n">types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;Union[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">types</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">{</span><span class="n">List</span><span class="p">,</span> <span class="nb">list</span><span class="p">}:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="n">inner_type</span> <span class="o">=</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;List[</span><span class="si">{</span><span class="n">inner_type</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;List&quot;</span>
+
+    <span class="k">elif</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">}:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">key_type</span> <span class="o">=</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">exclude</span><span class="p">)</span>
+            <span class="n">value_type</span> <span class="o">=</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Dict[</span><span class="si">{</span><span class="n">key_type</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">value_type</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Dict&quot;</span>
+    <span class="k">elif</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Set</span><span class="p">,</span> <span class="nb">set</span><span class="p">}:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Set[</span><span class="si">{</span><span class="n">get_type_schema</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">exclude</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;Set&quot;</span>
+
+    <span class="k">elif</span> <span class="n">origin</span> <span class="ow">is</span> <span class="n">Sequence</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Sequence[</span><span class="si">{</span><span class="n">get_type_schema</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="w"> </span><span class="n">exclude</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="s2">&quot;Sequence&quot;</span>
+
+    <span class="k">elif</span> <span class="n">origin</span> <span class="ow">in</span> <span class="p">{</span><span class="n">Tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">}:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="n">get_args</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Tuple[</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">get_type_schema</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span><span class="w"> </span><span class="n">exclude</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">arg</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;Tuple&quot;</span>
+
+    <span class="k">elif</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">type_obj</span><span class="p">):</span>
+        <span class="c1"># Recursively handle nested dataclasses</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_dataclass_schema</span><span class="p">(</span><span class="n">type_obj</span><span class="p">,</span> <span class="n">exclude</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">output</span>
+    <span class="k">return</span> <span class="n">type_obj</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">type_obj</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">type_obj</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_dataclass_schema">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_dataclass_schema">[docs]</a>
+<span class="k">def</span> <span class="nf">get_dataclass_schema</span><span class="p">(</span>
+    <span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a schema dictionary for a dataclass including nested structures.</span>
+
+<span class="sd">    1. Support customized dataclass with required_field function.</span>
+<span class="sd">    2. Support nested dataclasses, even with generics like List, Dict, etc.</span>
+<span class="sd">    3. Support metadata in the dataclass fields.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Provided class is not a dataclass, please decorate your class with @dataclass&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="c1"># get the exclude list for the current class</span>
+    <span class="n">current_exclude</span> <span class="o">=</span> <span class="n">exclude</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">exclude</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">current_exclude</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># prepare field schema, it weill be done recursively for nested dataclasses</span>
+        <span class="n">field_schema</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">exclude</span><span class="p">)}</span>
+
+        <span class="c1"># check required field</span>
+        <span class="n">is_required</span> <span class="o">=</span> <span class="n">_is_required_field</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_required</span><span class="p">:</span>
+            <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># add metadata to the field schema</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+            <span class="n">field_schema</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="c1"># handle nested dataclasses and complex types</span>
+
+        <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_schema</span>
+
+    <span class="k">return</span> <span class="n">schema</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_is_required_field</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="n">Field</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Determine if the field of dataclass is required or optional.</span>
+<span class="sd">    Customized for required_field function.&quot;&quot;&quot;</span>
+    <span class="c1"># Determine if the field is required or optional</span>
+    <span class="c1"># Using __name__ to check for function identity</span>
+    <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">default</span> <span class="ow">is</span> <span class="n">MISSING</span> <span class="ow">and</span> <span class="p">(</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">default_factory</span> <span class="ow">is</span> <span class="n">MISSING</span>
+        <span class="ow">or</span> <span class="p">(</span>
+            <span class="nb">hasattr</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">default_factory</span><span class="p">,</span> <span class="s2">&quot;__name__&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">default_factory</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;required_field&quot;</span>
+        <span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="convert_schema_to_signature">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.convert_schema_to_signature">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_schema_to_signature</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the value from get_data_class_schema to a string description.&quot;&quot;&quot;</span>
+
+    <span class="n">signature</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">schema_to_use</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;properties&quot;</span><span class="p">,</span> <span class="p">{})</span>
+    <span class="n">required_fields</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;required&quot;</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">field_info</span> <span class="ow">in</span> <span class="n">schema_to_use</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">field_signature</span> <span class="o">=</span> <span class="n">field_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="c1"># add type to the signature</span>
+        <span class="k">if</span> <span class="n">field_info</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]:</span>
+            <span class="n">field_signature</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; (</span><span class="si">{</span><span class="n">field_info</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="c1"># add required/optional to the signature</span>
+        <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">required_fields</span><span class="p">:</span>
+            <span class="n">field_signature</span> <span class="o">+=</span> <span class="s2">&quot; (required)&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">field_signature</span> <span class="o">+=</span> <span class="s2">&quot; (optional)&quot;</span>
+
+        <span class="n">signature</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">field_signature</span>
+    <span class="k">return</span> <span class="n">signature</span></div>
+
+
+
+<span class="c1">########################################################################################</span>
+<span class="c1"># For FunctionTool component</span>
+<span class="c1"># It uses get_type_schema and get_dataclass_schema to generate the schema of arguments.</span>
+<span class="c1">########################################################################################</span>
+<div class="viewcode-block" id="get_fun_schema">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_fun_schema">[docs]</a>
+<span class="k">def</span> <span class="nf">get_fun_schema</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the schema of a function.</span>
+<span class="sd">    Support dataclass, Union and normal data types such as int, str, float, etc, list, dict, set.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">    def example_function(x: int, y: str = &quot;default&quot;) -&gt; int:</span>
+<span class="sd">        return x</span>
+<span class="sd">    schema = get_fun_schema(&quot;example_function&quot;, example_function)</span>
+<span class="sd">    print(json.dumps(schema, indent=4))</span>
+<span class="sd">    # Output:</span>
+<span class="sd">    {</span>
+<span class="sd">        &quot;type&quot;: &quot;object&quot;,</span>
+<span class="sd">        &quot;properties&quot;: {</span>
+<span class="sd">            &quot;x&quot;: {</span>
+<span class="sd">                &quot;type&quot;: &quot;int&quot;</span>
+<span class="sd">            },</span>
+<span class="sd">            &quot;y&quot;: {</span>
+<span class="sd">                &quot;type&quot;: &quot;str&quot;,</span>
+<span class="sd">                &quot;default&quot;: &quot;default&quot;</span>
+<span class="sd">            }</span>
+<span class="sd">        },</span>
+<span class="sd">        &quot;required&quot;: [</span>
+<span class="sd">            &quot;x&quot;</span>
+<span class="sd">        ]</span>
+<span class="sd">    }</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">signature</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span> <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">type_hints</span> <span class="o">=</span> <span class="n">get_type_hints</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">parameter</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">param_type</span> <span class="o">=</span> <span class="n">type_hints</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">param_name</span><span class="p">,</span> <span class="s2">&quot;Any&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span> <span class="o">==</span> <span class="n">Parameter</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+            <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;required&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">param_name</span><span class="p">)</span>
+            <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">param_type</span><span class="p">)}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">schema</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">get_type_schema</span><span class="p">(</span><span class="n">param_type</span><span class="p">),</span>
+                <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">parameter</span><span class="o">.</span><span class="n">default</span><span class="p">,</span>
+            <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">schema</span></div>
+
+
+
+<span class="c1"># For parse function call for FunctionTool component</span>
+<div class="viewcode-block" id="evaluate_ast_node">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.evaluate_ast_node">[docs]</a>
+<span class="k">def</span> <span class="nf">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">ast</span><span class="o">.</span><span class="n">AST</span><span class="p">,</span> <span class="n">context_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Recursively evaluates an AST node and returns the corresponding Python object.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        node (ast.AST): The AST node to evaluate. This node can represent various parts of Python expressions,</span>
+<span class="sd">                        such as literals, identifiers, lists, dictionaries, and function calls.</span>
+<span class="sd">        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.</span>
+<span class="sd">                                      This context is used to resolve names and execute functions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Any: The result of evaluating the node. The type of the returned object depends on the nature of the node:</span>
+<span class="sd">             - Constants return their literal value.</span>
+<span class="sd">             - Names are looked up in the context_map.</span>
+<span class="sd">             - Lists and tuples return their contained values as a list or tuple.</span>
+<span class="sd">             - Dictionaries return a dictionary with keys and values evaluated.</span>
+<span class="sd">             - Function calls invoke the function with evaluated arguments and return its result.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the node type is unsupported, a ValueError is raised indicating the inability to evaluate the node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Constant</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">keys</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">List</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">elts</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Tuple</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">elts</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">UnaryOp</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">USub</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">operand</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>  <span class="c1"># unary minus</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">BinOp</span>
+    <span class="p">):</span>  <span class="c1"># support &quot;multiply(2024-2017, 12)&quot;, the &quot;2024-2017&quot; is a &quot;BinOp&quot; node</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Add</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Sub</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Mult</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Div</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Mod</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span> <span class="o">%</span> <span class="n">right</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Pow</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">left</span><span class="o">**</span><span class="n">right</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported binary operator: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>  <span class="c1"># variable name</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">output_fun</span> <span class="o">=</span> <span class="n">context_map</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">output_fun</span>
+        <span class="c1"># TODO: raise the error back to the caller so that the llm can get the error message</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> does not exist in the context_map.&quot;</span>
+            <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Attribute</span><span class="p">):</span>  <span class="c1"># e.g. math.pi</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">attr</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span>
+        <span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span>
+    <span class="p">):</span>  <span class="c1"># another fun or class as argument and value, e.g. add( multiply(4,5), 3)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">args</span><span class="p">]</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">arg</span><span class="p">:</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">keywords</span>
+        <span class="p">}</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="s2">&quot;raw_output&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_output</span>
+        <span class="k">return</span> <span class="n">output</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># directly evaluate the node</span>
+        <span class="c1"># print(f&quot;Unsupported AST node type: {type(node)}&quot;)</span>
+        <span class="c1"># return eval(compile(ast.Expression(node), filename=&quot;&lt;ast&gt;&quot;, mode=&quot;eval&quot;))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported AST node type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="parse_function_call_expr">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_function_call_expr">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_function_call_expr</span><span class="p">(</span>
+    <span class="n">function_expr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        function_expr (str): The string representing the function</span>
+<span class="sd">        context_map (Dict[str, Any]): A dictionary that maps variable names to their respective values and functions.</span>
+<span class="sd">                                      This context is used to resolve names and execute functions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">function_expr</span> <span class="o">=</span> <span class="n">function_expr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># Parse the string into an AST</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">function_expr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;eval&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
+        <span class="c1"># Extract the function name</span>
+        <span class="n">func_name</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># Prepare the list of arguments and keyword arguments</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">args</span><span class="p">]</span>
+        <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">kw</span><span class="o">.</span><span class="n">arg</span><span class="p">:</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">keywords</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">keywords</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided string is not a function call.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="generate_function_call_expression_from_callable">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_function_call_expression_from_callable</span><span class="p">(</span>
+    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a function call expression string from a callable function and its arguments.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        func (Callable[..., Any]): The callable function.</span>
+<span class="sd">        *args (Any): Positional arguments to be passed to the function.</span>
+<span class="sd">        **kwargs (Any): Keyword arguments to be passed to the function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The function call expression string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">func_name</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">args_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+    <span class="n">kwargs_str</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">=</span><span class="si">{</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">args_str</span> <span class="ow">and</span> <span class="n">kwargs_str</span><span class="p">:</span>
+        <span class="n">full_args_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">args_str</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">kwargs_str</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">full_args_str</span> <span class="o">=</span> <span class="n">args_str</span> <span class="ow">or</span> <span class="n">kwargs_str</span>
+
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">func_name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">full_args_str</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<span class="c1"># Define a list of safe built-ins</span>
+<span class="n">SAFE_BUILTINS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="nb">abs</span><span class="p">,</span>
+    <span class="s2">&quot;all&quot;</span><span class="p">:</span> <span class="nb">all</span><span class="p">,</span>
+    <span class="s2">&quot;any&quot;</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span>
+    <span class="s2">&quot;bin&quot;</span><span class="p">:</span> <span class="nb">bin</span><span class="p">,</span>
+    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="s2">&quot;bytearray&quot;</span><span class="p">:</span> <span class="nb">bytearray</span><span class="p">,</span>
+    <span class="s2">&quot;bytes&quot;</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span>
+    <span class="s2">&quot;callable&quot;</span><span class="p">:</span> <span class="nb">callable</span><span class="p">,</span>
+    <span class="s2">&quot;chr&quot;</span><span class="p">:</span> <span class="nb">chr</span><span class="p">,</span>
+    <span class="s2">&quot;complex&quot;</span><span class="p">:</span> <span class="nb">complex</span><span class="p">,</span>
+    <span class="s2">&quot;dict&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+    <span class="s2">&quot;divmod&quot;</span><span class="p">:</span> <span class="nb">divmod</span><span class="p">,</span>
+    <span class="s2">&quot;enumerate&quot;</span><span class="p">:</span> <span class="nb">enumerate</span><span class="p">,</span>
+    <span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="nb">filter</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="nb">format</span><span class="p">,</span>
+    <span class="s2">&quot;frozenset&quot;</span><span class="p">:</span> <span class="nb">frozenset</span><span class="p">,</span>
+    <span class="s2">&quot;getattr&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">,</span>
+    <span class="s2">&quot;hasattr&quot;</span><span class="p">:</span> <span class="nb">hasattr</span><span class="p">,</span>
+    <span class="s2">&quot;hash&quot;</span><span class="p">:</span> <span class="nb">hash</span><span class="p">,</span>
+    <span class="s2">&quot;hex&quot;</span><span class="p">:</span> <span class="nb">hex</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s2">&quot;isinstance&quot;</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">,</span>
+    <span class="s2">&quot;issubclass&quot;</span><span class="p">:</span> <span class="nb">issubclass</span><span class="p">,</span>
+    <span class="s2">&quot;iter&quot;</span><span class="p">:</span> <span class="nb">iter</span><span class="p">,</span>
+    <span class="s2">&quot;len&quot;</span><span class="p">:</span> <span class="nb">len</span><span class="p">,</span>
+    <span class="s2">&quot;list&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+    <span class="s2">&quot;map&quot;</span><span class="p">:</span> <span class="nb">map</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">:</span> <span class="nb">max</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="nb">min</span><span class="p">,</span>
+    <span class="s2">&quot;next&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">,</span>
+    <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="s2">&quot;oct&quot;</span><span class="p">:</span> <span class="nb">oct</span><span class="p">,</span>
+    <span class="s2">&quot;ord&quot;</span><span class="p">:</span> <span class="nb">ord</span><span class="p">,</span>
+    <span class="s2">&quot;pow&quot;</span><span class="p">:</span> <span class="nb">pow</span><span class="p">,</span>
+    <span class="s2">&quot;range&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">,</span>
+    <span class="s2">&quot;repr&quot;</span><span class="p">:</span> <span class="nb">repr</span><span class="p">,</span>
+    <span class="s2">&quot;reversed&quot;</span><span class="p">:</span> <span class="nb">reversed</span><span class="p">,</span>
+    <span class="s2">&quot;round&quot;</span><span class="p">:</span> <span class="nb">round</span><span class="p">,</span>
+    <span class="s2">&quot;set&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">,</span>
+    <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="nb">slice</span><span class="p">,</span>
+    <span class="s2">&quot;sorted&quot;</span><span class="p">:</span> <span class="nb">sorted</span><span class="p">,</span>
+    <span class="s2">&quot;str&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">:</span> <span class="nb">sum</span><span class="p">,</span>
+    <span class="s2">&quot;tuple&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+    <span class="s2">&quot;zip&quot;</span><span class="p">:</span> <span class="nb">zip</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="sandbox_exec">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.sandbox_exec">[docs]</a>
+<span class="k">def</span> <span class="nf">sandbox_exec</span><span class="p">(</span>
+    <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Execute code in a sandboxed environment with a timeout.</span>
+
+<span class="sd">    1. Works similar to eval(), but with timeout and context similar to parse_function_call_expr.</span>
+<span class="sd">    2. With more flexibility as you can write additional function in the code compared with simply the function call.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        code (str): The code to execute. Has to be output=... or similar so that the result can be captured.</span>
+<span class="sd">        context (Dict[str, Any]): The context to use for the execution.</span>
+<span class="sd">        timeout (int): The execution timeout in seconds.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">context</span><span class="p">,</span> <span class="o">**</span><span class="n">SAFE_BUILTINS</span><span class="p">}</span> <span class="k">if</span> <span class="n">context</span> <span class="k">else</span> <span class="n">SAFE_BUILTINS</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">compiled_code</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="s2">&quot;&lt;string&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;exec&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Result dictionary to store execution results</span>
+
+        <span class="c1"># Define a target function for the thread</span>
+        <span class="k">def</span> <span class="nf">target</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Execute the code</span>
+                <span class="n">exec</span><span class="p">(</span><span class="n">compiled_code</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">result</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">e</span>
+
+        <span class="c1"># Create a thread to execute the code</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">)</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+
+        <span class="c1"># Check if the thread is still alive (timed out)</span>
+        <span class="k">if</span> <span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">():</span>
+            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Execution timed out&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Execution timed out&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Errpr at sandbox_exec: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="c1">########################################################################################</span>
+<span class="c1"># For ** component</span>
+<span class="c1">########################################################################################</span>
+<div class="viewcode-block" id="compose_model_kwargs">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.compose_model_kwargs">[docs]</a>
+<span class="k">def</span> <span class="nf">compose_model_kwargs</span><span class="p">(</span><span class="n">default_model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The model configuration exclude the input itself.</span>
+<span class="sd">    Combine the default model, model_kwargs with the passed model_kwargs.</span>
+<span class="sd">    Example:</span>
+<span class="sd">    model_kwargs = {&quot;temperature&quot;: 0.5, &quot;model&quot;: &quot;gpt-3.5-turbo&quot;}</span>
+<span class="sd">    self.model_kwargs = {&quot;model&quot;: &quot;gpt-3.5&quot;}</span>
+<span class="sd">    combine_kwargs(model_kwargs) =&gt; {&quot;temperature&quot;: 0.5, &quot;model&quot;: &quot;gpt-3.5-turbo&quot;}</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pass_model_kwargs</span> <span class="o">=</span> <span class="n">default_model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">model_kwargs</span><span class="p">:</span>
+        <span class="n">pass_model_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">model_kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pass_model_kwargs</span></div>
+
+
+
+<span class="c1">########################################################################################</span>
+<span class="c1"># For Tokenizer component</span>
+<span class="c1">########################################################################################</span>
+<span class="n">VECTOR_TYPE</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="is_normalized">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.is_normalized">[docs]</a>
+<span class="k">def</span> <span class="nf">is_normalized</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Check if the norm is approximately 1</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">norm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+
+<div class="viewcode-block" id="normalize_np_array">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.normalize_np_array">[docs]</a>
+<span class="k">def</span> <span class="nf">normalize_np_array</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Normalize the vector</span>
+    <span class="n">normalized_v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">norm</span>
+    <span class="c1"># Return the normalized vector</span>
+    <span class="k">return</span> <span class="n">normalized_v</span></div>
+
+
+
+<div class="viewcode-block" id="normalize_vector">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.normalize_vector">[docs]</a>
+<span class="k">def</span> <span class="nf">normalize_vector</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">VECTOR_TYPE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Compute the norm of the vector (assuming v is 1D)</span>
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># Normalize the vector</span>
+    <span class="n">normalized_v</span> <span class="o">=</span> <span class="n">v</span> <span class="o">/</span> <span class="n">norm</span>
+    <span class="c1"># Return the normalized vector as a list</span>
+    <span class="k">return</span> <span class="n">normalized_v</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="get_top_k_indices_scores">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.get_top_k_indices_scores">[docs]</a>
+<span class="k">def</span> <span class="nf">get_top_k_indices_scores</span><span class="p">(</span>
+    <span class="n">scores</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">scores</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">scores_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">scores</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">scores_np</span> <span class="o">=</span> <span class="n">scores</span>
+    <span class="n">top_k_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">scores_np</span><span class="p">)[</span><span class="o">-</span><span class="n">top_k</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">top_k_scores</span> <span class="o">=</span> <span class="n">scores_np</span><span class="p">[</span><span class="n">top_k_indices</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">top_k_indices</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">top_k_scores</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="generate_readable_key_for_function">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.generate_readable_key_for_function">[docs]</a>
+<span class="k">def</span> <span class="nf">generate_readable_key_for_function</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+    <span class="n">module_name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__module__</span>
+    <span class="n">function_name</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">module_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">function_name</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="extract_json_str">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_json_str">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_json_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_brace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract JSON string from text.</span>
+<span class="sd">    NOTE: Only handles the first JSON object or array found in the text. And it expects at least one JSON object in the text.</span>
+<span class="sd">    If right brace is not found, we add one to the end of the string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># NOTE: this regex parsing is taken from langchain.output_parsers.pydantic</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">start_obj</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">)</span>
+    <span class="n">start_arr</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">start_obj</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">start_arr</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No JSON object or array found in the text: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">start</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+        <span class="n">start_obj</span> <span class="k">if</span> <span class="n">start_obj</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
+        <span class="n">start_arr</span> <span class="k">if</span> <span class="n">start_arr</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;inf&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">open_brace</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span><span class="p">]</span>
+    <span class="c1"># Attempt to find the matching closing brace</span>
+    <span class="n">brace_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">open_brace</span><span class="p">:</span>
+            <span class="n">brace_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="p">(</span><span class="s2">&quot;}&quot;</span> <span class="k">if</span> <span class="n">open_brace</span> <span class="o">==</span> <span class="s2">&quot;{&quot;</span> <span class="k">else</span> <span class="s2">&quot;]&quot;</span><span class="p">):</span>
+            <span class="n">brace_count</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">brace_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">add_missing_right_brace</span><span class="p">:</span>
+        <span class="c1"># If no closing brace is found, but we are allowed to add one</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Adding missing right brace to the JSON string.&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;}&quot;</span> <span class="k">if</span> <span class="n">open_brace</span> <span class="o">==</span> <span class="s2">&quot;{&quot;</span> <span class="k">else</span> <span class="s2">&quot;]&quot;</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Incomplete JSON object found and add_missing_right_brace is False.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="extract_list_str">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_list_str">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_list_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the first complete list string from the provided text. If the list string is incomplete</span>
+<span class="sd">    (missing the closing bracket), an option allows adding a closing bracket at the end.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing potential list data.</span>
+<span class="sd">        add_missing_right_bracket (bool): Whether to add a closing bracket if it is missing.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The extracted list string.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no list is found or if the list extraction is incomplete</span>
+<span class="sd">                    without the option to add a missing bracket.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;[&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No list found in the text.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Attempt to find the matching closing bracket</span>
+    <span class="n">bracket_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;[&quot;</span><span class="p">:</span>
+            <span class="n">bracket_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;]&quot;</span><span class="p">:</span>
+            <span class="n">bracket_count</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">bracket_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">add_missing_right_bracket</span><span class="p">:</span>
+        <span class="c1"># If no closing bracket is found, but we are allowed to add one</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;]&quot;</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Incomplete list found and add_missing_right_bracket is False.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">start</span> <span class="p">:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="extract_yaml_str">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_yaml_str">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_yaml_str</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Extract YAML string from text.</span>
+
+<span class="sd">    In default, we use regex pattern to match yaml code blocks within triple backticks with optional yaml or yml prefix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">yaml_re_pattern</span><span class="p">:</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+            <span class="sa">r</span><span class="s2">&quot;^```(?:ya?ml)?(?P&lt;yaml&gt;[^`]*)&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span>
+        <span class="p">)</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">yaml_re_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+        <span class="n">yaml_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s2">&quot;yaml&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">yaml_str</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to extract YAML from text: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fix_json_missing_commas">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.fix_json_missing_commas">[docs]</a>
+<span class="k">def</span> <span class="nf">fix_json_missing_commas</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># Example: adding missing commas, only after double quotes</span>
+    <span class="c1"># Regular expression to find missing commas</span>
+    <span class="n">regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;(?&lt;=[}\]&quot;</span><span class="se">\&#39;</span><span class="s1">\d])(\s+)(?=[\{&quot;\[])&#39;</span>
+
+    <span class="c1"># Add commas where missing</span>
+    <span class="n">fixed_json_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;,\1&quot;</span><span class="p">,</span> <span class="n">json_str</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fixed_json_str</span></div>
+
+
+
+<div class="viewcode-block" id="fix_json_escaped_single_quotes">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.fix_json_escaped_single_quotes">[docs]</a>
+<span class="k">def</span> <span class="nf">fix_json_escaped_single_quotes</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># First, replace improperly escaped single quotes inside strings</span>
+    <span class="c1"># json_str = re.sub(r&quot;(?&lt;!\\)\&#39;&quot;, &#39;&quot;&#39;, json_str)</span>
+    <span class="c1"># Fix escaped single quotes</span>
+    <span class="n">json_str</span> <span class="o">=</span> <span class="n">json_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">json_str</span></div>
+
+
+
+<div class="viewcode-block" id="parse_yaml_str_to_obj">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_yaml_str_to_obj</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a YAML string to a Python object.</span>
+<span class="sd">    yaml_str: has to be a valid YAML string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">yaml</span>
+
+        <span class="n">yaml_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">yaml_obj</span>
+    <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Got invalid YAML object. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got YAML string: </span><span class="si">{</span><span class="n">yaml_str</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please pip install PyYAML.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+
+
+
+<div class="viewcode-block" id="parse_json_str_to_obj">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.parse_json_str_to_obj">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a JSON string to a Python object.</span>
+<span class="sd">    json_str: has to be a valid JSON string. Either {} or [].</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">json_str</span> <span class="o">=</span> <span class="n">json_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json_obj</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="c1"># 2nd attemp after fixing the json string</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trying to fix potential missing commas...&quot;</span><span class="p">)</span>
+            <span class="n">json_str</span> <span class="o">=</span> <span class="n">fix_json_missing_commas</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Trying to fix scaped single quotes...&quot;</span><span class="p">)</span>
+            <span class="n">json_str</span> <span class="o">=</span> <span class="n">fix_json_escaped_single_quotes</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fixed JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">json_obj</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json_obj</span>
+        <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+            <span class="c1"># 3rd attemp using yaml</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">import</span> <span class="nn">yaml</span>
+
+                <span class="c1"># NOTE: parsing again with pyyaml</span>
+                <span class="c1">#       pyyaml is less strict, and allows for trailing commas</span>
+                <span class="c1">#       right now we rely on this since guidance program generates</span>
+                <span class="c1">#       trailing commas</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Parsing JSON string with PyYAML...&quot;</span><span class="p">)</span>
+                <span class="n">json_obj</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">json_obj</span>
+            <span class="k">except</span> <span class="n">yaml</span><span class="o">.</span><span class="n">YAMLError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Got invalid JSON object. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">. Got JSON string: </span><span class="si">{</span><span class="n">json_str</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">NameError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please pip install PyYAML.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

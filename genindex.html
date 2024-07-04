@@ -1,0 +1,2334 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/rtd_search_config.js"></script>
+    <script src="_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <link rel="icon" href="_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="developer_notes/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="apis/index.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/hmZWFEUd" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#Y"><strong>Y</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall">acall() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.acall">(CohereAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.component.html#core.component.Component.acall">(Component method)</a>
+</li>
+        <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.acall">(Embedder method)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.acall">(FunctionTool method)</a>
+</li>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.acall">(Generator method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.acall">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.acall">(Retriever method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionExpression.action">action (FunctionExpression attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.StepOutput.action">(StepOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.add">add() (LocalDB method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.component.html#core.component.Component.add_component">add_component() (Component method)</a>
+</li>
+      <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc">AnswerMatchAcc (class in eval.answer_match_acc)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.ANTHROPIC">ANTHROPIC (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.ANTHROPIC">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">AnthropicAPIClient (class in components.model_client.anthropic_client)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Sequential.append">append() (Sequential method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.append_dialog_turn">append_dialog_turn() (Conversation method)</a>
+</li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.append_to_jsonl">append_to_jsonl() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Function.args">args (Function attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.assistant_response">assistant_response (DialogTurn attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.assistant_response_timestamp">assistant_response_timestamp (DialogTurn attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.AssistantResponse">AssistantResponse (class in core.types)</a>
+</li>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.augment_samples">augment_samples() (BootstrapFewShot method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool">average_pool() (in module components.model_client.transformers_client)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder">BatchEmbedder (class in core.embedder)</a>
+</li>
+      <li><a href="apis/components/components.retriever.html#components.retriever.BM25Retriever">BM25Retriever (class in components.retriever)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever">(class in components.retriever.bm25_retriever)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser">BooleanOutputParser (class in components.output_parsers.outputs)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot">BootstrapFewShot (class in optim.few_shot_optimizer)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">build_index_from_documents() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.build_index_from_documents">[1]</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.build_index_from_documents">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.build_index_from_documents">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.build_index_from_documents">[1]</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.build_index_from_documents">(Retriever method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">call() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">(BatchEmbedder method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call">(BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.call">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.call">(BooleanOutputParser method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.call">(ClassSampler method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.call">(CohereAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.component.html#core.component.Component.call">(Component method)</a>
+</li>
+        <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge.call">(DefaultLLMJudge method)</a>
+</li>
+        <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.call">(Embedder method)</a>
+</li>
+        <li><a href="apis/core/core.component.html#core.component.FunComponent.call">(FunComponent method)</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.call">(FunctionTool method)</a>
+</li>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.call">(Generator method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.call">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.call">(JsonOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser.call">[1]</a>
+</li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.JsonParser.call">(JsonParser method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser.call">(ListOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser.call">[1]</a>
+</li>
+        <li><a href="apis/optim/optim.llm_augment.html#optim.llm_augment.LLMAugmenter.call">(LLMAugmenter method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.call">[1]</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.call">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">(OutputParser method)</a>
+</li>
+        <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">(Prompt method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.call">(RandomSampler method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.agent.react.html#components.agent.react.ReActAgent.call">(ReActAgent method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.call">[1]</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.call">(Retriever method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.call">(Sampler method)</a>
+</li>
+        <li><a href="apis/core/core.component.html#core.component.Sequential.call">(Sequential method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.call">(TextSplitter method)</a>, <a href="apis/components/components.data_process.html#components.data_process.TextSplitter.call">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call">(TransformerLLM method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call">(TransformersClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.call">(YamlOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser.call">[1]</a>
+</li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.YamlParser.call">(YamlParser method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.check_object">check_object() (in module utils.serialization)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.children">children() (Component method)</a>
+</li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.CLASS">CLASS (ObjectTypes attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler">ClassSampler (class in optim.sampler)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.COHERE">COHERE (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.COHERE">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient">CohereAPIClient (class in components.model_client.cohere_client)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component">Component (class in core.component)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.components">components() (Component method)</a>
+</li>
+      <li>
+    components.agent.react
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.agent.react.html#module-components.agent.react">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.data_process
+
+      <ul>
+        <li><a href="apis/components/components.data_process.html#module-components.data_process">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.data_process.data_components
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.data_process.data_components.html#module-components.data_process.data_components">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.data_process.text_splitter
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.data_process.text_splitter.html#module-components.data_process.text_splitter">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.memory
+
+      <ul>
+        <li><a href="apis/components/components.memory.html#module-components.memory">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.memory.memory
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.memory.memory.html#module-components.memory.memory">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client
+
+      <ul>
+        <li><a href="apis/components/components.model_client.html#module-components.model_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.anthropic_client
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.cohere_client
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#module-components.model_client.cohere_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.groq_client
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#module-components.model_client.groq_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.openai_client
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#module-components.model_client.openai_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.transformers_client
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#module-components.model_client.transformers_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.utils
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.utils.html#module-components.model_client.utils">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    components.output_parsers
+
+      <ul>
+        <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.output_parsers.outputs
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#module-components.output_parsers.outputs">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.reasoning
+
+      <ul>
+        <li><a href="apis/components/components.reasoning.html#module-components.reasoning">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.reasoning.chain_of_thought
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.retriever
+
+      <ul>
+        <li><a href="apis/components/components.retriever.html#module-components.retriever">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.retriever.bm25_retriever
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.retriever.llm_retriever
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.retriever.reranker_retriever
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.functional.html#core.functional.compose_model_kwargs">compose_model_kwargs() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.compose_prompt_kwargs">compose_prompt_kwargs() (Prompt method)</a>
+</li>
+      <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc.compute">compute() (AnswerMatchAcc method)</a>
+
+      <ul>
+        <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge.compute">(LLMasJudge method)</a>
+</li>
+        <li><a href="apis/eval/eval.retriever_recall.html#eval.retriever_recall.RetrieverRecall.compute">(RetrieverRecall method)</a>
+</li>
+        <li><a href="apis/eval/eval.retriever_relevance.html#eval.retriever_relevance.RetrieverRelevance.compute">(RetrieverRelevance method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation">Conversation (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.conversation_id">conversation_id (DialogTurn attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">convert_inputs_to_api_kwargs() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs">(CohereAPIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.convert_inputs_to_api_kwargs">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.convert_inputs_to_api_kwargs">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">(TransformersClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.functional.html#core.functional.convert_schema_to_signature">convert_schema_to_signature() (in module core.functional)</a>
+</li>
+      <li>
+    core.base_data_class
+
+      <ul>
+        <li><a href="apis/core/core.base_data_class.html#module-core.base_data_class">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.component
+
+      <ul>
+        <li><a href="apis/core/core.component.html#module-core.component">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.db
+
+      <ul>
+        <li><a href="apis/core/core.db.html#module-core.db">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.default_prompt_template
+
+      <ul>
+        <li><a href="apis/core/core.default_prompt_template.html#module-core.default_prompt_template">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.embedder
+
+      <ul>
+        <li><a href="apis/core/core.embedder.html#module-core.embedder">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.func_tool
+
+      <ul>
+        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.functional
+
+      <ul>
+        <li><a href="apis/core/core.functional.html#module-core.functional">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.generator
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#module-core.generator">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.model_client
+
+      <ul>
+        <li><a href="apis/core/core.model_client.html#module-core.model_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.parameter
+
+      <ul>
+        <li><a href="apis/core/core.parameter.html#module-core.parameter">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.prompt_builder
+
+      <ul>
+        <li><a href="apis/core/core.prompt_builder.html#module-core.prompt_builder">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.retriever
+
+      <ul>
+        <li><a href="apis/core/core.retriever.html#module-core.retriever">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.string_parser
+
+      <ul>
+        <li><a href="apis/core/core.string_parser.html#module-core.string_parser">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.tokenizer
+
+      <ul>
+        <li><a href="apis/core/core.tokenizer.html#module-core.tokenizer">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.tool_manager
+
+      <ul>
+        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.types
+
+      <ul>
+        <li><a href="apis/core/core.types.html#module-core.types">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.count_tokens">count_tokens() (Tokenizer method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.create_from_dict">create_from_dict() (DynamicDataClassFactory static method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.created_at">created_at (Conversation attribute)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.custom_asdict">custom_asdict() (in module core.functional)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.data">data (EmbedderOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.data">(GeneratorOutput attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample.data">(Sample attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass">DataClass (class in core.base_data_class)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.dataclass_obj_from_dict">dataclass_obj_from_dict() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType">DataClassFormatType (class in core.base_data_class)</a>
+</li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.dataset">dataset (RandomSampler attribute)</a>
+</li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.decode">decode() (Tokenizer method)</a>
+</li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
+</li>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
+</li>
+      <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.delete">delete() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.delete_dialog_turn">delete_dialog_turn() (Conversation method)</a>
+</li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.deserialize">deserialize() (in module utils.serialization)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.dialog_turns">dialog_turns (Conversation attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.dialog_turns_input">dialog_turns_input (Conversation attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn">DialogTurn (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.doc_indices">doc_indices (RetrieverOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.doc_scores">doc_scores (RetrieverOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Document">Document (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.documents">documents (RetrieverOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory">DynamicDataClassFactory (class in core.base_data_class)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder">Embedder (class in core.embedder)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelType.EMBEDDER">EMBEDDER (ModelType attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput">EmbedderOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutputType">EmbedderOutputType (in module core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Embedding">Embedding (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Embedding.embedding">embedding (Embedding attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.embedding_dim">embedding_dim (EmbedderOutput property)</a>
+</li>
+      <li><a href="apis/utils/utils.logger.html#utils.logger.enable_library_logging">enable_library_logging() (in module utils.logger)</a>
+</li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.encode">encode() (Tokenizer method)</a>
+</li>
+      <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping">EntityMapping (class in utils.registry)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.error">error (EmbedderOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.FunctionOutput.error">(FunctionOutput attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.error">(GeneratorOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.Document.estimated_num_tokens">estimated_num_tokens (Document attribute)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.eval">eval() (Component method)</a>
+</li>
+      <li>
+    eval.answer_match_acc
+
+      <ul>
+        <li><a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc">module</a>
+</li>
+      </ul></li>
+      <li>
+    eval.llm_as_judge
+
+      <ul>
+        <li><a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    eval.retriever_recall
+
+      <ul>
+        <li><a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall">module</a>
+</li>
+      </ul></li>
+      <li>
+    eval.retriever_relevance
+
+      <ul>
+        <li><a href="apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.functional.html#core.functional.evaluate_ast_node">evaluate_ast_node() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_JSON">EXAMPLE_JSON (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_YAML">EXAMPLE_YAML (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.execute">execute() (FunctionTool method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">execute_func() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr">execute_func_expr() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_eval">execute_func_expr_via_eval() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">execute_func_expr_via_sandbox() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.extend">extend() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.extract_dataclass_type">extract_dataclass_type() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.extract_json_str">extract_json_str() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.extract_list_str">extract_list_str() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.extract_yaml_str">extract_yaml_str() (in module core.functional)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.FAISS">FAISS (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.fetch_items">fetch_items() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.fetch_transformed_items">fetch_transformed_items() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.fix_json_escaped_single_quotes">fix_json_escaped_single_quotes() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.fix_json_missing_commas">fix_json_missing_commas() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.fn_schema_str">fn_schema_str() (FunctionDefinition method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_class_str">format_class_str() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_example_str">format_example_str() (DataClass method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.format_instructions">format_instructions() (BooleanOutputParser method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.format_instructions">(JsonOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser.format_instructions">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser.format_instructions">(ListOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser.format_instructions">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.format_instructions">(OutputParser method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.format_instructions">(YamlOutputParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser.format_instructions">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.from_config">from_config() (Component class method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.from_config">(Embedder class method)</a>
+</li>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.from_config">(Generator class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.from_dict">from_dict() (Component class method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_dict">(DataClass class method)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.Document.from_dict">(Document class method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">(OpenAIClient class method)</a>
+</li>
+        <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.from_dict">(Prompt class method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.from_dict_to_json">from_dict_to_json() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.from_dict_to_yaml">from_dict_to_yaml() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionExpression.from_function">from_function() (FunctionExpression class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_json">from_json() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.from_json_to_dict">from_json_to_dict() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_yaml">from_yaml() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.from_yaml_to_dict">from_yaml_to_dict() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput.fun_args">fun_args (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput.fun_kwargs">fun_kwargs (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput.fun_name">fun_name (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.fun_to_component">fun_to_component() (in module core.component)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.func_desc">func_desc (FunctionDefinition attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.func_name">func_name (FunctionDefinition attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionDefinition.func_parameters">func_parameters (FunctionDefinition attribute)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.FunComponent">FunComponent (class in core.component)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Function">Function (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.function_definitions">function_definitions (ToolManager property)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionDefinition">FunctionDefinition (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionExpression">FunctionExpression (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionOutput">FunctionOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool">FunctionTool (class in core.func_tool)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable">generate_function_call_expression_from_callable() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.generate_readable_key_for_function">generate_readable_key_for_function() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator">Generator (class in core.generator)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.generator_names">generator_names (GeneratorStateLogger property)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.generator_names_to_files">generator_names_to_files (GeneratorCallLogger property)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger">GeneratorCallLogger (class in tracing.generator_call_logger)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord">GeneratorCallRecord (class in tracing.generator_call_logger)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.GeneratorOutput">GeneratorOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger">GeneratorStateLogger (class in tracing.generator_state_logger)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord">GeneratorStatesRecord (class in tracing.generator_state_logger)</a>
+</li>
+      <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get">get() (EntityMapping class method)</a>
+</li>
+      <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get_all">get_all() (EntityMapping class method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">get_all_messages_content() (in module components.model_client.openai_client)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_calls">get_calls() (GeneratorCallLogger method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.get_chat_history_str">get_chat_history_str() (Conversation method)</a>
+</li>
+      <li><a href="apis/utils/utils.logger.html#utils.logger.get_current_script_and_line">get_current_script_and_line() (in module utils.logger)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.get_dataclass_schema">get_dataclass_schema() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.get_dialog_turns">get_dialog_turns() (Conversation method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">get_first_message_content() (in module components.model_client.openai_client)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">get_jinja2_environment() (in module core.prompt_builder)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">get_log_location() (GeneratorCallLogger method)</a>
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.get_log_location">(GeneratorStateLogger method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/utils/utils.logger.html#utils.logger.get_logger">get_logger() (in module utils.logger)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.get_model_args">get_model_args() (in module core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.get_next_order">get_next_order() (Conversation method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">get_probabilities() (in module components.model_client.openai_client)</a>
+</li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.get_prompt_variables">get_prompt_variables() (Prompt method)</a>
+</li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.get_string_tokens">get_string_tokens() (Tokenizer method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.get_subcomponent">get_subcomponent() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.get_top_k_indices_scores">get_top_k_indices_scores() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.get_transformed_data">get_transformed_data() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.get_transformer_keys">get_transformer_keys() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.get_type_schema">get_type_schema() (in module core.functional)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GOOGLE_GENERATIVEAI">GOOGLE_GENERATIVEAI (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.GROQ">GROQ (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GROQ">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient">GroqAPIClient (class in components.model_client.groq_client)</a>
+</li>
+      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.gts">gts (Instruction attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.id">id (Conversation attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.DialogTurn.id">(DialogTurn attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.Document.id">(Document attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.Embedding.index">index (Embedding attribute)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample.index">(Sample attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.index_keys">index_keys (Retriever attribute)</a>
+</li>
+      <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.indexed">indexed (Retriever attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.infer_bge_reranker_base">infer_bge_reranker_base() (TransformerReranker method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding">infer_gte_base_embedding() (TransformerEmbedder method)</a>
+</li>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.init">init() (BootstrapFewShot method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">init_async_client() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_async_client">(CohereAPIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_async_client">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_async_client">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">init_llm_client() (TransformersClient method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.init_model">init_model() (TransformerEmbedder method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.init_model">(TransformerLLM method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.init_model">(TransformerReranker method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client">init_reranker_client() (TransformersClient method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">init_sync_client() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client">(CohereAPIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_sync_client">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_sync_client">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">(TransformersClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.input">input (EmbedderOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.FunctionOutput.input">(FunctionOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.INSTANCE">INSTANCE (ObjectTypes attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction">Instruction (class in optim.llm_optimizer)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.is_dataclass_instance">is_dataclass_instance() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.is_key_in_template">is_key_in_template() (Prompt method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.is_normalized">is_normalized (EmbedderOutput property)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.is_normalized">is_normalized() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.is_picklable">is_picklable() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.is_potential_dataclass">is_potential_dataclass() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.is_running_in_event_loop">is_running_in_event_loop() (in module core.func_tool)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.items">items (LocalDB attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.json_definitions">json_definitions (ToolManager property)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser">JsonOutputParser (class in components.output_parsers)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser">(class in components.output_parsers.outputs)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.string_parser.html#core.string_parser.JsonParser">JsonParser (class in core.string_parser)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.Function.kwargs">kwargs (Function attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport">LazyImport (class in utils.lazy_import)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.length">length (EmbedderOutput property)</a>
+
+      <ul>
+        <li><a href="apis/core/core.db.html#core.db.LocalDB.length">(LocalDB property)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser">ListOutputParser (class in components.output_parsers)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser">(class in components.output_parsers.outputs)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.string_parser.html#core.string_parser.ListParser">ListParser (class in core.string_parser)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelType.LLM">LLM (ModelType attribute)</a>
+</li>
+      <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge">LLMasJudge (class in eval.llm_as_judge)</a>
+</li>
+      <li><a href="apis/optim/optim.llm_augment.html#optim.llm_augment.LLMAugmenter">LLMAugmenter (class in optim.llm_augment)</a>
+</li>
+      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer">LLMOptimizer (class in optim.llm_optimizer)</a>
+</li>
+      <li><a href="apis/components/components.retriever.html#components.retriever.LLMRetriever">LLMRetriever (class in components.retriever)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever">(class in components.retriever.llm_retriever)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load">load() (GeneratorCallLogger method)</a>
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.load">(GeneratorStateLogger method)</a>
+</li>
+        <li><a href="apis/utils/utils.file_io.html#utils.file_io.load">(in module utils.file_io)</a>
+</li>
+        <li><a href="apis/core/core.db.html#core.db.LocalDB.load">(LocalDB method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">load_from_file() (BM25Retriever class method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.load_from_file">[1]</a>
+
+      <ul>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.load_from_file">(Retriever class method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.load_from_pickle">load_from_pickle() (Component class method)</a>
+</li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.load_json">load_json() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.load_jsonl">load_jsonl() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load_meta_data">load_meta_data() (GeneratorCallLogger method)</a>
+</li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.load_pickle">load_pickle() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.load_state">load_state() (LocalDB class method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.load_state_dict">load_state_dict() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.load_state_pickle">load_state_pickle() (Component class method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB">LocalDB (class in core.db)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.log_call">log_call() (GeneratorCallLogger method)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.log_prompt">log_prompt() (GeneratorStateLogger method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.TokenLogProb.logprob">logprob (TokenLogProb attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.mapper_setups">mapper_setups (LocalDB attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.memory.memory.html#components.memory.memory.Memory">Memory (class in components.memory.memory)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Document.meta_data">meta_data (Document attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.AssistantResponse.metadata">metadata (AssistantResponse attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.Conversation.metadata">(Conversation attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.DialogTurn.metadata">(DialogTurn attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.metadata">(GeneratorOutput attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.UserQuery.metadata">(UserQuery attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.model">model (EmbedderOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.model_client">model_client (Embedder attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.model_client">(Generator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.model_kwargs">model_kwargs (GeneratorCallRecord attribute)</a>
+</li>
+      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.model_type">model_type (Embedder attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.model_type">(Generator attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient">ModelClient (class in core.model_client)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType">ModelClientType (class in core.types)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.models">models (TransformerEmbedder attribute)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.models">(TransformerLLM attribute)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.models">(TransformerReranker attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.ModelType">ModelType (class in core.types)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.agent.react.html#module-components.agent.react">components.agent.react</a>
+</li>
+        <li><a href="apis/components/components.data_process.html#module-components.data_process">components.data_process</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.data_process.data_components.html#module-components.data_process.data_components">components.data_process.data_components</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.data_process.text_splitter.html#module-components.data_process.text_splitter">components.data_process.text_splitter</a>
+</li>
+        <li><a href="apis/components/components.memory.html#module-components.memory">components.memory</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.memory.memory.html#module-components.memory.memory">components.memory.memory</a>
+</li>
+        <li><a href="apis/components/components.model_client.html#module-components.model_client">components.model_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client">components.model_client.anthropic_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.cohere_client.html#module-components.model_client.cohere_client">components.model_client.cohere_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#module-components.model_client.groq_client">components.model_client.groq_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#module-components.model_client.openai_client">components.model_client.openai_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#module-components.model_client.transformers_client">components.model_client.transformers_client</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.utils.html#module-components.model_client.utils">components.model_client.utils</a>
+</li>
+        <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">components.output_parsers</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#module-components.output_parsers.outputs">components.output_parsers.outputs</a>
+</li>
+        <li><a href="apis/components/components.reasoning.html#module-components.reasoning">components.reasoning</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought">components.reasoning.chain_of_thought</a>
+</li>
+        <li><a href="apis/components/components.retriever.html#module-components.retriever">components.retriever</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever">components.retriever.bm25_retriever</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever">components.retriever.llm_retriever</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever">components.retriever.reranker_retriever</a>
+</li>
+        <li><a href="apis/core/core.base_data_class.html#module-core.base_data_class">core.base_data_class</a>
+</li>
+        <li><a href="apis/core/core.component.html#module-core.component">core.component</a>
+</li>
+        <li><a href="apis/core/core.db.html#module-core.db">core.db</a>
+</li>
+        <li><a href="apis/core/core.default_prompt_template.html#module-core.default_prompt_template">core.default_prompt_template</a>
+</li>
+        <li><a href="apis/core/core.embedder.html#module-core.embedder">core.embedder</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">core.func_tool</a>
+</li>
+        <li><a href="apis/core/core.functional.html#module-core.functional">core.functional</a>
+</li>
+        <li><a href="apis/core/core.generator.html#module-core.generator">core.generator</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#module-core.model_client">core.model_client</a>
+</li>
+        <li><a href="apis/core/core.parameter.html#module-core.parameter">core.parameter</a>
+</li>
+        <li><a href="apis/core/core.prompt_builder.html#module-core.prompt_builder">core.prompt_builder</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#module-core.retriever">core.retriever</a>
+</li>
+        <li><a href="apis/core/core.string_parser.html#module-core.string_parser">core.string_parser</a>
+</li>
+        <li><a href="apis/core/core.tokenizer.html#module-core.tokenizer">core.tokenizer</a>
+</li>
+        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">core.tool_manager</a>
+</li>
+        <li><a href="apis/core/core.types.html#module-core.types">core.types</a>
+</li>
+        <li><a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc">eval.answer_match_acc</a>
+</li>
+        <li><a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge">eval.llm_as_judge</a>
+</li>
+        <li><a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall">eval.retriever_recall</a>
+</li>
+        <li><a href="apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance">eval.retriever_relevance</a>
+</li>
+        <li><a href="apis/optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer">optim.few_shot_optimizer</a>
+</li>
+        <li><a href="apis/optim/optim.llm_augment.html#module-optim.llm_augment">optim.llm_augment</a>
+</li>
+        <li><a href="apis/optim/optim.llm_optimizer.html#module-optim.llm_optimizer">optim.llm_optimizer</a>
+</li>
+        <li><a href="apis/optim/optim.optimizer.html#module-optim.optimizer">optim.optimizer</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#module-optim.sampler">optim.sampler</a>
+</li>
+        <li><a href="apis/tracing/tracing.decorators.html#module-tracing.decorators">tracing.decorators</a>
+</li>
+        <li><a href="apis/tracing/tracing.generator_call_logger.html#module-tracing.generator_call_logger">tracing.generator_call_logger</a>
+</li>
+        <li><a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger">tracing.generator_state_logger</a>
+</li>
+        <li><a href="apis/utils/utils.config.html#module-utils.config">utils.config</a>
+</li>
+        <li><a href="apis/utils/utils.file_io.html#module-utils.file_io">utils.file_io</a>
+</li>
+        <li><a href="apis/utils/utils.lazy_import.html#module-utils.lazy_import">utils.lazy_import</a>
+</li>
+        <li><a href="apis/utils/utils.logger.html#module-utils.logger">utils.logger</a>
+</li>
+        <li><a href="apis/utils/utils.registry.html#module-utils.registry">utils.registry</a>
+</li>
+        <li><a href="apis/utils/utils.serialization.html#module-utils.serialization">utils.serialization</a>
+</li>
+        <li><a href="apis/utils/utils.setup_env.html#module-utils.setup_env">utils.setup_env</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.name">name (Conversation attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.Function.name">(Function attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.FunctionOutput.name">(FunctionOutput attribute)</a>
+</li>
+        <li><a href="apis/core/core.db.html#core.db.LocalDB.name">(LocalDB attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.named_children">named_children() (Component method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.component.html#core.component.Component.named_components">named_components() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.named_parameters">named_parameters() (Component method)</a>
+</li>
+      <li><a href="apis/utils/utils.config.html#utils.config.new_component">new_component() (in module utils.config)</a>
+</li>
+      <li><a href="apis/utils/utils.config.html#utils.config.new_components_from_config">new_components_from_config() (in module utils.config)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.normalize_np_array">normalize_np_array() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.normalize_vector">normalize_vector() (in module core.functional)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes">ObjectTypes (class in utils.serialization)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput.observation">observation (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.OPENAI">OPENAI (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OPENAI">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient">OpenAIClient (class in components.model_client.openai_client)</a>
+</li>
+      <li>
+    optim.few_shot_optimizer
+
+      <ul>
+        <li><a href="apis/optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.llm_augment
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_augment.html#module-optim.llm_augment">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.llm_optimizer
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#module-optim.llm_optimizer">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    optim.optimizer
+
+      <ul>
+        <li><a href="apis/optim/optim.optimizer.html#module-optim.optimizer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.sampler
+
+      <ul>
+        <li><a href="apis/optim/optim.sampler.html#module-optim.sampler">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer">Optimizer (class in optim.optimizer)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages">OptionalPackages (class in utils.lazy_import)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.order">order (DialogTurn attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.Document.order">(Document attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionOutput.output">output (FunctionOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.output">(GeneratorCallRecord attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.output_processors">output_processors (Embedder attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser">OutputParser (class in components.output_parsers.outputs)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.parameter.html#core.parameter.Parameter">Parameter (class in core.parameter)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.parameters">parameters() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Document.parent_doc_id">parent_doc_id (Document attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">parse_chat_completion() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.parse_chat_completion">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_chat_completion">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">(TransformerLLM method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">parse_embedding_response() (in module components.model_client.utils)</a>
+
+      <ul>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response">(TransformersClient method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr">parse_func_expr() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.parse_function_call_expr">parse_function_call_expr() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.pickle_to_file">pickle_to_file() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.preprocess">preprocess() (Tokenizer method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.print_prompt">print_prompt() (Generator method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.print_prompt">(Prompt method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.print_prompt_template">print_prompt_template() (Prompt method)</a>
+</li>
+      <li><a href="apis/utils/utils.logger.html#utils.logger.printc">printc() (in module utils.logger)</a>
+</li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt">Prompt (class in core.prompt_builder)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.prompt_kwargs">prompt_kwargs (GeneratorCallRecord attribute)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord.prompt_states">prompt_states (GeneratorStatesRecord attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Usage.prompt_tokens">prompt_tokens (Usage attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.propose">propose() (BootstrapFewShot method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.propose">(LLMOptimizer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.query">query (RetrieverOutput attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.UserQuery.query_str">query_str (UserQuery attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.random_replace">random_replace() (BootstrapFewShot method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_replace">(ClassSampler method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_replace">(RandomSampler method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.random_replace">(Sampler method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_sample">random_sample() (ClassSampler method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_sample">(RandomSampler method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler">RandomSampler (class in optim.sampler)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.raw_response">raw_response (EmbedderOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.raw_response">(GeneratorOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.agent.react.html#components.agent.react.ReActAgent">ReActAgent (class in components.agent.react)</a>
+</li>
+      <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.register_component">register_component() (Component method)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.register_generator">register_generator() (GeneratorCallLogger method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.register_parameter">register_parameter() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.register_transformer">register_transformer() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.represent_ordereddict">represent_ordereddict() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.required_field">required_field() (in module core.base_data_class)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelType.RERANKER">RERANKER (ModelType attribute)</a>
+</li>
+      <li><a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever">RerankerRetriever (class in components.retriever)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever">(class in components.retriever.reranker_retriever)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset">reset() (BootstrapFewShot method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset">(LLMOptimizer method)</a>
+</li>
+        <li><a href="apis/core/core.db.html#core.db.LocalDB.reset">(LocalDB method)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.agent.react.html#components.agent.react.ReActAgent.reset">(ReActAgent method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">reset_index() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.reset_index">[1]</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.reset_index">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.reset_index">[1]</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.reset_index">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.reset_index">[1]</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.reset_index">(Retriever method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset_parameter">reset_parameter() (BootstrapFewShot method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset_parameter">(LLMOptimizer method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.AssistantResponse.response_str">response_str (AssistantResponse attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.responses">responses (Instruction attribute)</a>
+</li>
+      <li><a href="apis/core/core.retriever.html#core.retriever.Retriever">Retriever (class in core.retriever)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.data_process.data_components.html#components.data_process.data_components.retriever_output_to_context_str">retriever_output_to_context_str() (in module components.data_process.data_components)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.RetrieverOutput">RetrieverOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/components/components.data_process.html#components.data_process.RetrieverOutputToContextStr">RetrieverOutputToContextStr (class in components.data_process)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.data_process.data_components.html#components.data_process.data_components.RetrieverOutputToContextStr">(class in components.data_process.data_components)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/eval/eval.retriever_recall.html#eval.retriever_recall.RetrieverRecall">RetrieverRecall (class in eval.retriever_recall)</a>
+</li>
+      <li><a href="apis/eval/eval.retriever_relevance.html#eval.retriever_relevance.RetrieverRelevance">RetrieverRelevance (class in eval.retriever_relevance)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.safe_import">safe_import() (in module utils.lazy_import)</a>
+</li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample">Sample (class in optim.sampler)</a>
+</li>
+      <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sampler">Sampler (class in optim.sampler)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.sandbox_exec">sandbox_exec() (in module core.functional)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.save">save() (GeneratorStateLogger method)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.file_io.html#utils.file_io.save">(in module utils.file_io)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_json">save_json() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data">save_meta_data() (GeneratorCallLogger method)</a>
+</li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_pickle">save_pickle() (in module utils.file_io)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.save_state">save_state() (LocalDB method)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.save_to_file">save_to_file() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.save_to_file">[1]</a>
+
+      <ul>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.save_to_file">(Retriever method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SCHEMA">SCHEMA (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Document.score">score (Document attribute)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.score">(Instruction attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Sequential">Sequential (class in core.component)</a>
+</li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.serialize">serialize() (in module utils.serialization)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.set_assistant_response">set_assistant_response() (DialogTurn method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.set_user_query">set_user_query() (DialogTurn method)</a>
+</li>
+      <li><a href="apis/utils/utils.setup_env.html#utils.setup_env.setup_env">setup_env() (in module utils.setup_env)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_JSON">SIGNATURE_JSON (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.split_text">split_text() (TextSplitter method)</a>, <a href="apis/components/components.data_process.html#components.data_process.TextSplitter.split_text">[1]</a>
+</li>
+      <li><a href="apis/components/components.retriever.html#components.retriever.split_text_by_word_fn">split_text_by_word_fn() (in module components.retriever)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn">(in module components.retriever.bm25_retriever)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/components.retriever.html#components.retriever.split_text_by_word_fn_then_lower_tokenized">split_text_by_word_fn_then_lower_tokenized() (in module components.retriever)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn_then_lower_tokenized">(in module components.retriever.bm25_retriever)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_tokenized">split_text_tokenized() (in module components.retriever.bm25_retriever)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.SQLALCHEMY">SQLALCHEMY (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.state_dict">state_dict() (Component method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.state_dict">(Optimizer method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput.step">step (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.step">step() (Optimizer method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.StepOutput">StepOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.support_models">support_models (TransformersClient attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.Document.text">text (Document attribute)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.text">(Instruction attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter">TextSplitter (class in components.data_process)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter">(class in components.data_process.text_splitter)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.Function.thought">thought (Function attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.FunctionExpression.thought">(FunctionExpression attribute)</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.StepOutput.thought">(StepOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.time_stamp">time_stamp (GeneratorCallRecord attribute)</a>
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord.time_stamp">(GeneratorStatesRecord attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.to_dict">to_dict() (Component method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">(DataClass method)</a>
+</li>
+        <li><a href="apis/utils/utils.serialization.html#utils.serialization.to_dict">(in module utils.serialization)</a>
+</li>
+        <li><a href="apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/core/core.parameter.html#core.parameter.Parameter.to_dict">(Parameter method)</a>
+</li>
+        <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.to_dict">(Prompt method)</a>
+</li>
+        <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample.to_dict">(Sample method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict_class">to_dict_class() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json">to_json() (DataClass method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_obj">to_json_obj() (DataClass method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_signature">to_json_signature() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema">to_schema() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema_str">to_schema_str() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">to_yaml() (DataClass method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">to_yaml_obj() (DataClass method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">to_yaml_signature() (DataClass class method)</a>
+</li>
+      <li><a href="apis/components/components.data_process.html#components.data_process.ToEmbeddings">ToEmbeddings (class in components.data_process)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.data_process.data_components.html#components.data_process.data_components.ToEmbeddings">(class in components.data_process.data_components)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.TokenLogProb.token">token (TokenLogProb attribute)</a>
+</li>
+      <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer">Tokenizer (class in core.tokenizer)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.TokenLogProb">TokenLogProb (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager">ToolManager (class in core.tool_manager)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TORCH">TORCH (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Usage.total_tokens">total_tokens (Usage attribute)</a>
+</li>
+      <li><a href="apis/tracing/tracing.decorators.html#tracing.decorators.trace_generator_call">trace_generator_call() (in module tracing.decorators)</a>
+</li>
+      <li><a href="apis/tracing/tracing.decorators.html#tracing.decorators.trace_generator_states">trace_generator_states() (in module tracing.decorators)</a>
+</li>
+      <li>
+    tracing.decorators
+
+      <ul>
+        <li><a href="apis/tracing/tracing.decorators.html#module-tracing.decorators">module</a>
+</li>
+      </ul></li>
+      <li>
+    tracing.generator_call_logger
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_call_logger.html#module-tracing.generator_call_logger">module</a>
+</li>
+      </ul></li>
+      <li>
+    tracing.generator_state_logger
+
+      <ul>
+        <li><a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.train">train() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.training">training (Component attribute)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.transform">transform() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.transformed_items">transformed_items (LocalDB attribute)</a>
+</li>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.transformer_setups">transformer_setups (LocalDB attribute)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder">TransformerEmbedder (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM">TransformerLLM (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker">TransformerReranker (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.TRANSFORMERS">TRANSFORMERS (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TRANSFORMERS">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">TransformersClient (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.TYPE">TYPE (ObjectTypes attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.ModelType.UNDEFINED">UNDEFINED (ModelType attribute)</a>
+</li>
+      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.update_default_model_kwargs">update_default_model_kwargs() (Embedder method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.update_dialog_turn">update_dialog_turn() (Conversation method)</a>
+</li>
+      <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.update_parameter">update_parameter() (BootstrapFewShot method)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.update_parameter">(LLMOptimizer method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.update_prompt_kwargs">update_prompt_kwargs() (Prompt method)</a>
+</li>
+      <li><a href="apis/core/core.parameter.html#core.parameter.Parameter.update_value">update_value() (Parameter method)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.Usage">Usage (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.usage">usage (EmbedderOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.usage">(GeneratorOutput attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.Conversation.user_id">user_id (Conversation attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_id">(DialogTurn attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query">user_query (DialogTurn attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query_timestamp">user_query_timestamp (DialogTurn attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.UserQuery">UserQuery (class in core.types)</a>
+</li>
+      <li>
+    utils.config
+
+      <ul>
+        <li><a href="apis/utils/utils.config.html#module-utils.config">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.file_io
+
+      <ul>
+        <li><a href="apis/utils/utils.file_io.html#module-utils.file_io">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.lazy_import
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#module-utils.lazy_import">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.logger
+
+      <ul>
+        <li><a href="apis/utils/utils.logger.html#module-utils.logger">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.registry
+
+      <ul>
+        <li><a href="apis/utils/utils.registry.html#module-utils.registry">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.serialization
+
+      <ul>
+        <li><a href="apis/utils/utils.serialization.html#module-utils.serialization">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.setup_env
+
+      <ul>
+        <li><a href="apis/utils/utils.setup_env.html#module-utils.setup_env">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.validate_data">validate_data() (in module core.functional)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.vector">vector (DialogTurn attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.Document.vector">(Document attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.write_list_to_jsonl">write_list_to_jsonl() (in module utils.file_io)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Y">Y</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.yaml_definitions">yaml_definitions (ToolManager property)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser">YamlOutputParser (class in components.output_parsers)</a>
+
+      <ul>
+        <li><a href="apis/components/_autosummary/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser">(class in components.output_parsers.outputs)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.string_parser.html#core.string_parser.YamlParser">YamlParser (class in core.string_parser)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
