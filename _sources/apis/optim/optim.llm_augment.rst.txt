@@ -1,6 +1,6 @@
 .. _optim-llm_augment:
 
-llm\_augment
+llm_augment
 =========================
 
 .. automodule:: optim.llm_augment

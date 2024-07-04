@@ -1,6 +1,6 @@
 .. _optim-llm_optimizer:
 
-llm\_optimizer
+llm_optimizer
 ===========================
 
 .. automodule:: optim.llm_optimizer

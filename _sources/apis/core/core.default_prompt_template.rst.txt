@@ -1,6 +1,6 @@
 .. _core-default_prompt_template:
 
-default\_prompt\_template
+default_prompt_template
 =====================================
 
 .. automodule:: core.default_prompt_template

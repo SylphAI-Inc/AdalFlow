@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=292bc364" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -438,7 +438,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RerankerRetriever">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.html#components.retriever.reranker_retriever.RerankerRetriever">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever">[docs]</a>
 <span class="k">class</span> <span class="nc">RerankerRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RetrieverStrQueriesType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    A retriever that uses a reranker model to rank the documents and retrieve the top-k documents.</span>
@@ -476,7 +476,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RerankerRetriever.reset_index">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.html#components.retriever.reranker_retriever.RerankerRetriever.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.reset_index">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">documents</span> <span class="o">=</span> <span class="p">[]</span>
@@ -484,7 +484,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RerankerRetriever.build_index_from_documents">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.html#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents">[docs]</a>
     <span class="k">def</span> <span class="nf">build_index_from_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="n">RetrieverDocumentsType</span><span class="p">,</span>
@@ -502,7 +502,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RerankerRetriever.call">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrieverOutputType</span><span class="p">:</span>

@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=292bc364" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
@@ -446,7 +446,7 @@ Then it takes actions to utilize external resources(action). For more details, p
 <code class="docutils literal notranslate"><span class="pre">tools</span></code>, few shot <code class="docutils literal notranslate"><span class="pre">examples</span></code>, <code class="docutils literal notranslate"><span class="pre">history</span></code>, and <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">query</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">history</span></code> will be automatically managed by the agent. <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">query</span></code> will be handled in each single turn.
 Hence when initializing an agent, we only need to set up the <code class="docutils literal notranslate"><span class="pre">tools</span></code> and the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the <code class="docutils literal notranslate"><span class="pre">preset_prompt_kwargs</span></code> for the system prompt and
-use <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">query</span></code> in each agent call. <a class="reference internal" href="../apis/components/agent_prompt.html#default-react-agent-system-prompt"><span class="std std-ref">Prompt</span></a>.</p>
+use <code class="docutils literal notranslate"><span class="pre">user</span> <span class="pre">query</span></code> in each agent call. <span class="xref std std-ref">Prompt</span>.</p>
 <p>2. <strong>Tools:</strong> ReAct Agent needs to plan the tool to use, which means it needs to access the tools’ descriptions.
 <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> provides dynamic tool handling, using <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> to encapsulate tool functionalities. The metadata(function name, description, and parameters) will be extracted and passed to the prompt automatically. This process not only makes tool integration more seamless but also enhances developer efficiency by allowing straightforward definition and management of tools.</p>
 <p>Here is the example to illustrate the usage of <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code>. It’s easy to set up using <code class="docutils literal notranslate"><span class="pre">from_defaults</span></code>.</p>
@@ -653,15 +653,6 @@ Note: the paper defines Thought(or reasoning trace) as a <em>language level acti
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#react-agent-deep-dive">ReAct Agent Deep Dive</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../_sources/developer_notes/react_agent_xy.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
 
 </div></div>
               

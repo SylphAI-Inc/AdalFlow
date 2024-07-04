@@ -1,6 +1,6 @@
 .. _utils-file_io:
 
-file\_io
+file_io
 =====================
 
 .. automodule:: utils.file_io

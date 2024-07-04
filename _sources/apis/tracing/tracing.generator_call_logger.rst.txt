@@ -1,6 +1,6 @@
 .. _tracing-generator_call_logger:
 
-generator\_call\_logger
+generator_call_logger
 ======================================
 
 .. automodule:: tracing.generator_call_logger

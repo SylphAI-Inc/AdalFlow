@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=292bc364" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -52,8 +52,8 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="components.agent.react" href="_autosummary/components.agent.react.html" />
-    <link rel="prev" title="components.output_parsers.outputs" href="_autosummary/components.output_parsers.outputs.html" />
+    <link rel="next" title="react" href="_autosummary/components.agent.react.html" />
+    <link rel="prev" title="outputs" href="_autosummary/components.output_parsers.outputs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -376,72 +376,61 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.model_client.html">model_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.default_prompt_template.html">default_prompt_template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.prompt_builder.html">prompt_builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.embedder.html">embedder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.generator.html">generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.memory.html">memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.parameter.html">parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
 </ul>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Components</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.agent.react.html">components.agent.react</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.data_process.data_components.html">components.data_process.data_components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.memory.memory.html">components.memory.memory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="None/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.utils.html">components.model_client.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.model_client.utils.html">utils</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">agent</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.agent.react.html">components.agent.react</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.agent.react.html">react</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.data_components.html">components.data_process.data_components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.data_process.text_splitter.html">text_splitter</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.memory.memory.html">components.memory.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/components.memory.memory.html">memory</a></li>
 </ul>
 </details></li>
 </ul>
@@ -478,7 +467,10 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 </ul>
 </details></li>
 </ul>
@@ -543,8 +535,8 @@ document.write(`
                   
   <section id="agent">
 <span id="components-agent"></span><h1>agent<a class="headerlink" href="#agent" title="Link to this heading">#</a></h1>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="_autosummary/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
@@ -553,41 +545,15 @@ document.write(`
 </tbody>
 </table>
 </div>
-<div class="toctree-wrapper compound">
-</div>
 <hr class="docutils" />
-<dl class="py class" id="module-components.agent">
-<dt class="sig sig-object py" id="components.agent.ReActAgent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReActAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">FunctionTool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_llm_as_fallback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<p>ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</p>
-<p>Users need to set up:
-- tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
-- max_steps: the maximum number of steps the agent can take to complete the task.
-- use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
-- model_client: the model client to use to generate the response.
-- model_kwargs: the model kwargs to use to generate the response.</p>
-<p>For the generator, the default arguments are:
-(1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
-(2) default output_processors: JsonParser</p>
-<p>There are <cite>examples</cite> which is optional, a list of string examples in the prompt.</p>
-<p>Example:</p>
-<p>Reference:
-[1] <a class="reference external" href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a>, published in Mar, 2023.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.agent.ReActAgent.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent.reset" title="Link to this definition">#</a></dt>
-<dd><p>Reset the agent to start a new query.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.agent.ReActAgent.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent.call" title="Link to this definition">#</a></dt>
-<dd><p>prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.</p>
-</dd></dl>
-
-</dd></dl>
-
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 </section>
 
@@ -607,7 +573,7 @@ document.write(`
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">components.output_parsers.outputs</p>
+        <p class="prev-next-title">outputs</p>
       </div>
     </a>
     <a class="right-next"
@@ -615,7 +581,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">components.agent.react</p>
+        <p class="prev-next-title">react</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -637,25 +603,9 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent"><code class="docutils literal notranslate"><span class="pre">ReActAgent</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent.reset"><code class="docutils literal notranslate"><span class="pre">ReActAgent.reset()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent.call"><code class="docutils literal notranslate"><span class="pre">ReActAgent.call()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../../_sources/apis/components/components.agent.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
 
 </div></div>
               
