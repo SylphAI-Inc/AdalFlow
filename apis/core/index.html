@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=acde6056" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=292bc364" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -52,7 +52,7 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="model_client" href="core.model_client.html" />
+    <link rel="next" title="base_data_class" href="core.base_data_class.html" />
     <link rel="prev" title="API Reference" href="../index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -376,72 +376,61 @@ document.write(`
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Core</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="core.model_client.html">model_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.component.html">component</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.string_parser.html">string_parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.func_tool.html">func_tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.tool_manager.html">tool_manager</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.default_prompt_template.html">default_prompt_template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.prompt_builder.html">prompt_builder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.embedder.html">embedder</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.retriever.html">retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.generator.html">generator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.memory.html">memory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
 </ul>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.agent.react.html">components.agent.react</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.data_process.data_components.html">components.data_process.data_components</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.memory.memory.html">components.memory.memory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../components/None/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.anthropic_client.html">components.model_client.anthropic_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.cohere_client.html">components.model_client.cohere_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.groq_client.html">components.model_client.groq_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.openai_client.html">components.model_client.openai_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.transformers_client.html">components.model_client.transformers_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.utils.html">components.model_client.utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.utils.html">utils</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.bm25_retriever.html">components.retriever.bm25_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.reranker_retriever.html">components.retriever.reranker_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.output_parsers.outputs.html">components.output_parsers.outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.agent.react.html">components.agent.react</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.agent.react.html">react</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.data_components.html">components.data_process.data_components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.text_splitter.html">components.data_process.text_splitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.text_splitter.html">text_splitter</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.reasoning.chain_of_thought.html">components.reasoning.chain_of_thought</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.memory.memory.html">components.memory.memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.memory.memory.html">memory</a></li>
 </ul>
 </details></li>
 </ul>
@@ -478,7 +467,10 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 </ul>
 </details></li>
 </ul>
@@ -540,7 +532,7 @@ document.write(`
                   
   <section id="core">
 <span id="apis-core"></span><h1>Core<a class="headerlink" href="#core" title="Link to this heading">#</a></h1>
-<p>The core section of the LightRAG API documentation provides detailed information about the foundational components of the LightRAG system. These components are essential for the basic operations and serve as the building blocks for higher-level functionalities.</p>
+<p>Core building blocks for RAG and more advanced functionalities, such as agents.</p>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
@@ -551,17 +543,11 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="core.component.html#module-core.component" title="core.component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.component</span></code></a></p></td>
 <td><p>Component is to LLM task pipelines what nn.Module is to PyTorch models.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core.db.html#module-core.db" title="core.db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.db</span></code></a></p></td>
-<td><p>LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core.default_prompt_template.html#module-core.default_prompt_template" title="core.default_prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.default_prompt_template</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core.default_prompt_template.html#module-core.default_prompt_template" title="core.default_prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.default_prompt_template</span></code></a></p></td>
 <td><p>This is the default system prompt template used in the LightRAG.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
 <td><p>The component that orchestrates model client (Embedding models in particular) and output processors.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core.functional.html#module-core.functional" title="core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.functional</span></code></a></p></td>
-<td><p>Functional interface.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="core.generator.html#module-core.generator" title="core.generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.generator</span></code></a></p></td>
 <td><p>Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</p></td>
@@ -569,20 +555,14 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="core.model_client.html#module-core.model_client" title="core.model_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.model_client</span></code></a></p></td>
 <td><p>ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core.parameter.html#module-core.parameter" title="core.parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.parameter</span></code></a></p></td>
-<td><p>WIP</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core.prompt_builder.html#module-core.prompt_builder" title="core.prompt_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.prompt_builder</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core.prompt_builder.html#module-core.prompt_builder" title="core.prompt_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.prompt_builder</span></code></a></p></td>
 <td><p>Class prompt builder for LightRAG system prompt.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core.retriever.html#module-core.retriever" title="core.retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core.retriever.html#module-core.retriever" title="core.retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.retriever</span></code></a></p></td>
 <td><p>The base class for all retrievers who in particular retrieve documents from a given database.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
 <td><p>Extract and convert common string to Python objects.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
-<td><p>Tokenizer from tiktoken.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
 <td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
@@ -593,75 +573,22 @@ document.write(`
 <tr class="row-even"><td><p><a class="reference internal" href="core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
 <td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core.db.html#module-core.db" title="core.db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.db</span></code></a></p></td>
+<td><p>LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core.functional.html#module-core.functional" title="core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.functional</span></code></a></p></td>
+<td><p>Functional interface.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core.parameter.html#module-core.parameter" title="core.parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.parameter</span></code></a></p></td>
+<td><p>WIP</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
+<td><p>Tokenizer from tiktoken.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-</section>
-<section id="model-client">
-<h2>Model Client<a class="headerlink" href="#model-client" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.model_client.html">model_client</a></li>
-</ul>
-</div>
-</section>
-<section id="component">
-<h2>Component<a class="headerlink" href="#component" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.component.html">component</a></li>
-</ul>
-</div>
-</section>
-<section id="data-handling">
-<h2>Data Handling<a class="headerlink" href="#data-handling" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.base_data_class.html">base_data_class</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.types.html">types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.db.html">db</a></li>
-</ul>
-</div>
-</section>
-<section id="prompts-and-templates">
-<h2>Prompts and Templates<a class="headerlink" href="#prompts-and-templates" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.default_prompt_template.html">default_prompt_template</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.prompt_builder.html">prompt_builder</a></li>
-</ul>
-</div>
-</section>
-<section id="embedding-and-retrieval">
-<h2>Embedding and Retrieval<a class="headerlink" href="#embedding-and-retrieval" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.embedder.html">embedder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.retriever.html">retriever</a></li>
-</ul>
-</div>
-</section>
-<section id="generation-and-utilities">
-<h2>Generation and Utilities<a class="headerlink" href="#generation-and-utilities" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.generator.html">generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l1"><a class="reference internal" href="core.memory.html">memory</a></li>
-</ul>
-</div>
-<blockquote>
-<div><p>core.string_parser
-core.tokenizer
-core.func_tool</p>
-</div></blockquote>
-</section>
-<section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="core.parameter.html">parameter</a></li>
-</ul>
 </div>
 </section>
 </section>
@@ -686,11 +613,11 @@ core.func_tool</p>
       </div>
     </a>
     <a class="right-next"
-       href="core.model_client.html"
+       href="core.base_data_class.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">model_client</p>
+        <p class="prev-next-title">base_data_class</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -713,24 +640,8 @@ core.func_tool</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-client">Model Client</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component">Component</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-handling">Data Handling</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prompts-and-templates">Prompts and Templates</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#embedding-and-retrieval">Embedding and Retrieval</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generation-and-utilities">Generation and Utilities</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 </ul>
   </nav></div>
-
-  <div class="sidebar-secondary-item">
-
-  <div class="tocsection sourcelink">
-    <a href="../../_sources/apis/core/index.rst.txt">
-      <i class="fa-solid fa-file-lines"></i> Show Source
-    </a>
-  </div>
-</div>
 
 </div></div>
               

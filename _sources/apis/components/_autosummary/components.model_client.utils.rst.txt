@@ -1,29 +1,18 @@
-﻿components.model\_client.utils
+.. _components-model_client-utils:
+
+utils
 ==============================
 
 .. automodule:: components.model_client.utils
 
-   
-   
-   
 
-   
-   
+
+
+
+
+
    .. rubric:: Functions
 
    .. autosummary::
-   
+
       parse_embedding_response
-   
-   
-
-   
-   
-   
-
-   
-   
-   
-
-
-

@@ -11,17 +11,11 @@ Overview
    tracing.generator_state_logger
    tracing.generator_call_logger
 
-Decorators
---------------
+
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    tracing.decorators
-
-Loggers
---------------
-.. toctree::
-   :maxdepth: 1
-
    tracing.generator_state_logger
    tracing.generator_call_logger

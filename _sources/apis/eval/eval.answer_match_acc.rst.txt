@@ -1,6 +1,6 @@
 .. _eval-answer_match_acc:
 
-answer\_match\_acc
+answer_match_acc
 ==============================
 
 .. automodule:: eval.answer_match_acc

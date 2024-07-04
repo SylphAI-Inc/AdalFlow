@@ -12,24 +12,15 @@ Overview
    utils.config
    utils.registry
    utils.setup_env
+   utils.lazy_import
 
-Logger
---------
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    utils.logger
-
-Serialization
-----------------
-.. toctree::
-   :maxdepth: 1
-
    utils.serialization
-
-Setup_env
---------------
-.. toctree::
-   :maxdepth: 1
-
+   utils.config
+   utils.registry
    utils.setup_env
+   utils.lazy_import

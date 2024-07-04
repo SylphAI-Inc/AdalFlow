@@ -1,6 +1,6 @@
 .. _core-func_tool:
 
-func\_tool
+func_tool
 ======================
 
 .. automodule:: core.func_tool
