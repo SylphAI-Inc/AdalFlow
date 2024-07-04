@@ -1,6 +1,6 @@
 .. _utils-setup_env:
 
-setup\_env
+setup_env
 =======================
 
 .. automodule:: utils.setup_env

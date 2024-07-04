@@ -7,13 +7,13 @@ Use the default prompt without any example.
 """
 
 import dotenv
-from components.api_client.openai_client import OpenAIClient
-from components.agent.react_agent import ReActAgent
-from core.func_tool import FunctionTool
-from components.api_client import GroqAPIClient
+from lightrag.components.model_client.openai_client import OpenAIClient
+from lightrag.components.agent.react import ReActAgent
+from lightrag.core.func_tool import FunctionTool
+from lightrag.components.model_client import GroqAPIClient
 import time
 from benchmarks.ReAct_agent.utils.tools import search, lookup, normalize_answer
-from eval.evaluators import AnswerMacthEvaluator
+from lightrag.eval.answer_match_acc import AnswerMatchAcc
 import logging
 import json
 from typing import List, Optional, Any, Dict
@@ -229,8 +229,8 @@ def experiment(
 
 
 # setup evaluators
-EM_evaluator = AnswerMacthEvaluator(type="exact_match")
-FM_evaluator = AnswerMacthEvaluator(type="fuzzy_match")
+EM_evaluator = AnswerMatchAcc(type="exact_match")
+FM_evaluator = AnswerMatchAcc(type="fuzzy_match")
 
 # load test data
 file = open("./tests/benchmark/ReAct_agent/paper_data/paper_dev_10.json")

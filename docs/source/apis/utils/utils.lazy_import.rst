@@ -1,6 +1,6 @@
 .. _utils-lazy_import:
 
-lazy\_import
+lazy_import
 =========================
 
 .. automodule:: utils.lazy_import

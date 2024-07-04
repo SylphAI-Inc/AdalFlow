@@ -1,4 +1,6 @@
-﻿components.retriever.faiss\_retriever
+.. _components-retriever-faiss_retriever:
+
+faiss_retriever
 =====================================
 
 .. automodule:: components.retriever.faiss_retriever

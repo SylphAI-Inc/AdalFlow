@@ -1,6 +1,6 @@
 .. _optim-few_shot_optimizer:
 
-few\_shot\_optimizer
+few_shot_optimizer
 =================================
 
 .. automodule:: optim.few_shot_optimizer

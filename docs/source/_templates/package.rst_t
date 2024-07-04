@@ -23,10 +23,6 @@
 .. py:module:: {{ pkgname }}
 {% endif %}
 
-{%- if modulefirst and not is_namespace %}
-{{ automodule(pkgname, automodule_options) }}
-{% endif %}
-
 {%- if subpackages %}
 Subpackages
 -----------
@@ -37,28 +33,21 @@ Subpackages
 {%- if submodules %}
 Submodules
 ----------
+
 .. autosummary::
    :toctree: _autosummary
 
 {% for submodule in submodules %}
    {{ submodule }}
 {% endfor %}
-
-{% if separatemodules %}
-{{ toctree(submodules) }}
-{% else %}
-{%- for submodule in submodules %}
-{% if show_headings %}
-{{- [submodule, "module"] | join(" ") | e | heading(2) }}
-{% endif %}
-{{ automodule(submodule, automodule_options) }}
-{% endfor %}
-{%- endif %}
 {%- endif %}
 
-{%- if not modulefirst and not is_namespace %}
+{%- if not is_namespace %}
 Module contents
 ---------------
 
-{{ automodule(pkgname, automodule_options) }}
+.. autosummary::
+   :toctree: _autosummary
+
+   {{ pkgname }}
 {% endif %}

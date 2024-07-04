@@ -1,12 +1,10 @@
 # Minimal makefile for Sphinx documentation
-#
-
 
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = LightRAG
-SOURCEDIR     = source# the source of output and conf.py
+SOURCEDIR     = source
 BUILDDIR      = build
 APIDOCOUTDIR  = $(SOURCEDIR)/apis
 
@@ -28,6 +26,12 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../lightrag/lightrag/optim --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/lightrag/tracing --separate --force
+
+generate_autosummary:
+	@echo "Generating autosummary files"
+	@sphinx-autogen $(SOURCEDIR)/**/*.rst
+
+update_files:
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
@@ -36,9 +40,6 @@ apidoc:
 	@python $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
 	@python $(SOURCEDIR)/change_api_file_name.py
-	# @echo "Renaming and updating file"
-	# @python $(SOURCEDIR)/change_api_file_name_autosummary.py
-	
 
-html: apidoc
+html: apidoc generate_autosummary update_files
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

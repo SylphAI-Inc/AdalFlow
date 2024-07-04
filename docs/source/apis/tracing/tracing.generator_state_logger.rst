@@ -1,6 +1,6 @@
 .. _tracing-generator_state_logger:
 
-generator\_state\_logger
+generator_state_logger
 =======================================
 
 .. automodule:: tracing.generator_state_logger

@@ -1,6 +1,6 @@
 .. _core-tool_manager:
 
-tool\_manager
+tool_manager
 =========================
 
 .. automodule:: core.tool_manager

@@ -1,4 +1,6 @@
-﻿components.retriever.bm25\_retriever
+.. _components-retriever-bm25_retriever:
+
+bm25_retriever
 ====================================
 
 .. automodule:: components.retriever.bm25_retriever

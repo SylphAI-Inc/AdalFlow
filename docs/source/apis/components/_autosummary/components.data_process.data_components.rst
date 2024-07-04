@@ -1,4 +1,6 @@
-﻿components.data\_process.data\_components
+.. _components-data_process-data_components:
+
+data_components
 =========================================
 
 .. automodule:: components.data_process.data_components
