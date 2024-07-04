@@ -1,0 +1,1021 @@
+Generating autosummary files
+[autosummary] generating autosummary for: source/apis/index.rst, source/contributor/contribute_to_document.rst, source/contributor/contribution_guide.rst, source/contributor/index.rst, source/developer_notes/agent.rst, source/developer_notes/base_data_class.rst, source/developer_notes/class_hierarchy.rst, source/developer_notes/component.rst, source/developer_notes/data_pipeline.rst, source/developer_notes/datasets.rst, ..., source/get_started/index.rst, source/get_started/installation.rst, source/get_started/introduction.rst, source/get_started/lightrag_in_10_mins.rst, source/resources/index.rst, source/resources/resources.rst, source/tutorials/eval_a_rag.rst, source/tutorials/index.rst, source/tutorials/introduction_to_basedataclass.rst, source/tutorials/logging.rst
+Inserting reference labels into RST files.
+Removing unnecessary strings for better formatting
+Removing duplicated files
+No modules.rst to remove in ./source/apis/components
+No components.rst to remove in ./source/apis/components
+./source/apis/components/components.model_client.google_client.rst is removed
+./source/apis/components/components.memory.memory.rst is removed
+./source/apis/components/components.retriever.faiss_retriever.rst is removed
+./source/apis/components/components.reasoning.chain_of_thought.rst is removed
+./source/apis/components/components.output_parsers.outputs.rst is removed
+./source/apis/components/components.agent.react.rst is removed
+./source/apis/components/components.model_client.transformers_client.rst is removed
+./source/apis/components/components.retriever.bm25_retriever.rst is removed
+./source/apis/components/components.data_process.data_components.rst is removed
+./source/apis/components/components.model_client.openai_client.rst is removed
+./source/apis/components/components.model_client.groq_client.rst is removed
+./source/apis/components/components.model_client.anthropic_client.rst is removed
+./source/apis/components/components.retriever.llm_retriever.rst is removed
+./source/apis/components/components.model_client.utils.rst is removed
+./source/apis/components/components.retriever.reranker_retriever.rst is removed
+./source/apis/components/components.data_process.text_splitter.rst is removed
+./source/apis/components/components.model_client.cohere_client.rst is removed
+No modules.rst to remove in ./source/apis/core
+No core.rst to remove in ./source/apis/core
+No modules.rst to remove in ./source/apis/eval
+No eval.rst to remove in ./source/apis/eval
+No modules.rst to remove in ./source/apis/utils
+No utils.rst to remove in ./source/apis/utils
+No modules.rst to remove in ./source/apis/tracing
+No tracing.rst to remove in ./source/apis/tracing
+No modules.rst to remove in ./source/apis/optim
+No optim.rst to remove in ./source/apis/optim
+Renaming and updating file
+./source/apis/core/core.retriever.rst core
+filepath: ./source/apis/core/core.retriever.rst
+line: '.. _core-retriever:', module_name: 'core', False
+filepath: ./source/apis/core/core.retriever.rst
+line: 'core.retriever', module_name: 'core', True
+here: core.retriever,
+Updated title in ./source/apis/core/core.retriever.rst, lnew_title: retriever
+Updated ./source/apis/core/core.retriever.rst
+./source/apis/core/core.types.rst core
+filepath: ./source/apis/core/core.types.rst
+line: '.. _core-types:', module_name: 'core', False
+filepath: ./source/apis/core/core.types.rst
+line: 'core.types', module_name: 'core', True
+here: core.types,
+Updated title in ./source/apis/core/core.types.rst, lnew_title: types
+Updated ./source/apis/core/core.types.rst
+./source/apis/core/core.base_data_class.rst core
+filepath: ./source/apis/core/core.base_data_class.rst
+line: '.. _core-base_data_class:', module_name: 'core', False
+filepath: ./source/apis/core/core.base_data_class.rst
+line: 'core.base_data_class', module_name: 'core', True
+here: core.base_data_class,
+Updated title in ./source/apis/core/core.base_data_class.rst, lnew_title: base_data_class
+Updated ./source/apis/core/core.base_data_class.rst
+./source/apis/core/core.default_prompt_template.rst core
+filepath: ./source/apis/core/core.default_prompt_template.rst
+line: '.. _core-default_prompt_template:', module_name: 'core', False
+filepath: ./source/apis/core/core.default_prompt_template.rst
+line: 'core.default_prompt_template', module_name: 'core', True
+here: core.default_prompt_template,
+Updated title in ./source/apis/core/core.default_prompt_template.rst, lnew_title: default_prompt_template
+Updated ./source/apis/core/core.default_prompt_template.rst
+./source/apis/core/core.db.rst core
+filepath: ./source/apis/core/core.db.rst
+line: '.. _core-db:', module_name: 'core', False
+filepath: ./source/apis/core/core.db.rst
+line: 'core.db', module_name: 'core', True
+here: core.db,
+Updated title in ./source/apis/core/core.db.rst, lnew_title: db
+Updated ./source/apis/core/core.db.rst
+./source/apis/core/core.model_client.rst core
+filepath: ./source/apis/core/core.model_client.rst
+line: '.. _core-model_client:', module_name: 'core', False
+filepath: ./source/apis/core/core.model_client.rst
+line: 'core.model_client', module_name: 'core', True
+here: core.model_client,
+Updated title in ./source/apis/core/core.model_client.rst, lnew_title: model_client
+Updated ./source/apis/core/core.model_client.rst
+./source/apis/core/core.component.rst core
+filepath: ./source/apis/core/core.component.rst
+line: '.. _core-component:', module_name: 'core', False
+filepath: ./source/apis/core/core.component.rst
+line: 'core.component', module_name: 'core', True
+here: core.component,
+Updated title in ./source/apis/core/core.component.rst, lnew_title: component
+Updated ./source/apis/core/core.component.rst
+./source/apis/core/core.prompt_builder.rst core
+filepath: ./source/apis/core/core.prompt_builder.rst
+line: '.. _core-prompt_builder:', module_name: 'core', False
+filepath: ./source/apis/core/core.prompt_builder.rst
+line: 'core.prompt_builder', module_name: 'core', True
+here: core.prompt_builder,
+Updated title in ./source/apis/core/core.prompt_builder.rst, lnew_title: prompt_builder
+Updated ./source/apis/core/core.prompt_builder.rst
+./source/apis/core/core.func_tool.rst core
+filepath: ./source/apis/core/core.func_tool.rst
+line: '.. _core-func_tool:', module_name: 'core', False
+filepath: ./source/apis/core/core.func_tool.rst
+line: 'core.func_tool', module_name: 'core', True
+here: core.func_tool,
+Updated title in ./source/apis/core/core.func_tool.rst, lnew_title: func_tool
+Updated ./source/apis/core/core.func_tool.rst
+./source/apis/core/core.tool_manager.rst core
+filepath: ./source/apis/core/core.tool_manager.rst
+line: '.. _core-tool_manager:', module_name: 'core', False
+filepath: ./source/apis/core/core.tool_manager.rst
+line: 'core.tool_manager', module_name: 'core', True
+here: core.tool_manager,
+Updated title in ./source/apis/core/core.tool_manager.rst, lnew_title: tool_manager
+Updated ./source/apis/core/core.tool_manager.rst
+./source/apis/core/core.tokenizer.rst core
+filepath: ./source/apis/core/core.tokenizer.rst
+line: '.. _core-tokenizer:', module_name: 'core', False
+filepath: ./source/apis/core/core.tokenizer.rst
+line: 'core.tokenizer', module_name: 'core', True
+here: core.tokenizer,
+Updated title in ./source/apis/core/core.tokenizer.rst, lnew_title: tokenizer
+Updated ./source/apis/core/core.tokenizer.rst
+./source/apis/core/core.generator.rst core
+filepath: ./source/apis/core/core.generator.rst
+line: '.. _core-generator:', module_name: 'core', False
+filepath: ./source/apis/core/core.generator.rst
+line: 'core.generator', module_name: 'core', True
+here: core.generator,
+Updated title in ./source/apis/core/core.generator.rst, lnew_title: generator
+Updated ./source/apis/core/core.generator.rst
+./source/apis/core/core.parameter.rst core
+filepath: ./source/apis/core/core.parameter.rst
+line: '.. _core-parameter:', module_name: 'core', False
+filepath: ./source/apis/core/core.parameter.rst
+line: 'core.parameter', module_name: 'core', True
+here: core.parameter,
+Updated title in ./source/apis/core/core.parameter.rst, lnew_title: parameter
+Updated ./source/apis/core/core.parameter.rst
+./source/apis/core/core.string_parser.rst core
+filepath: ./source/apis/core/core.string_parser.rst
+line: '.. _core-string_parser:', module_name: 'core', False
+filepath: ./source/apis/core/core.string_parser.rst
+line: 'core.string_parser', module_name: 'core', True
+here: core.string_parser,
+Updated title in ./source/apis/core/core.string_parser.rst, lnew_title: string_parser
+Updated ./source/apis/core/core.string_parser.rst
+./source/apis/core/core.functional.rst core
+filepath: ./source/apis/core/core.functional.rst
+line: '.. _core-functional:', module_name: 'core', False
+filepath: ./source/apis/core/core.functional.rst
+line: 'core.functional', module_name: 'core', True
+here: core.functional,
+Updated title in ./source/apis/core/core.functional.rst, lnew_title: functional
+Updated ./source/apis/core/core.functional.rst
+./source/apis/core/core.embedder.rst core
+filepath: ./source/apis/core/core.embedder.rst
+line: '.. _core-embedder:', module_name: 'core', False
+filepath: ./source/apis/core/core.embedder.rst
+line: 'core.embedder', module_name: 'core', True
+here: core.embedder,
+Updated title in ./source/apis/core/core.embedder.rst, lnew_title: embedder
+Updated ./source/apis/core/core.embedder.rst
+./source/apis/components/components.output_parsers.rst components
+filepath: ./source/apis/components/components.output_parsers.rst
+line: '.. _components-output_parsers:', module_name: 'components', False
+filepath: ./source/apis/components/components.output_parsers.rst
+line: 'components.output_parsers', module_name: 'components', True
+here: components.output_parsers,
+Updated title in ./source/apis/components/components.output_parsers.rst, lnew_title: output_parsers
+Updated ./source/apis/components/components.output_parsers.rst
+./source/apis/components/components.memory.rst components
+filepath: ./source/apis/components/components.memory.rst
+line: '.. _components-memory:', module_name: 'components', False
+filepath: ./source/apis/components/components.memory.rst
+line: 'components.memory', module_name: 'components', True
+here: components.memory,
+Updated title in ./source/apis/components/components.memory.rst, lnew_title: memory
+Updated ./source/apis/components/components.memory.rst
+./source/apis/components/components.retriever.postgres_retriever.rst components
+filepath: ./source/apis/components/components.retriever.postgres_retriever.rst
+line: '.. _components-retriever-postgres_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/components.retriever.postgres_retriever.rst
+line: 'components.retriever.postgres_retriever', module_name: 'components', True
+here: components.retriever.postgres_retriever,
+Updated title in ./source/apis/components/components.retriever.postgres_retriever.rst, lnew_title: postgres_retriever
+Updated ./source/apis/components/components.retriever.postgres_retriever.rst
+./source/apis/components/components.retriever.rst components
+filepath: ./source/apis/components/components.retriever.rst
+line: '.. _components-retriever:', module_name: 'components', False
+filepath: ./source/apis/components/components.retriever.rst
+line: 'components.retriever', module_name: 'components', True
+here: components.retriever,
+Updated title in ./source/apis/components/components.retriever.rst, lnew_title: retriever
+Updated ./source/apis/components/components.retriever.rst
+./source/apis/components/components.model_client.rst components
+filepath: ./source/apis/components/components.model_client.rst
+line: '.. _components-model_client:', module_name: 'components', False
+filepath: ./source/apis/components/components.model_client.rst
+line: 'components.model_client', module_name: 'components', True
+here: components.model_client,
+Updated title in ./source/apis/components/components.model_client.rst, lnew_title: model_client
+Updated ./source/apis/components/components.model_client.rst
+./source/apis/components/components.data_process.rst components
+filepath: ./source/apis/components/components.data_process.rst
+line: '.. _components-data_process:', module_name: 'components', False
+filepath: ./source/apis/components/components.data_process.rst
+line: 'components.data_process', module_name: 'components', True
+here: components.data_process,
+Updated title in ./source/apis/components/components.data_process.rst, lnew_title: data_process
+Updated ./source/apis/components/components.data_process.rst
+./source/apis/components/components.reasoning.rst components
+filepath: ./source/apis/components/components.reasoning.rst
+line: '.. _components-reasoning:', module_name: 'components', False
+filepath: ./source/apis/components/components.reasoning.rst
+line: 'components.reasoning', module_name: 'components', True
+here: components.reasoning,
+Updated title in ./source/apis/components/components.reasoning.rst, lnew_title: reasoning
+Updated ./source/apis/components/components.reasoning.rst
+./source/apis/components/components.agent.rst components
+filepath: ./source/apis/components/components.agent.rst
+line: '.. _components-agent:', module_name: 'components', False
+filepath: ./source/apis/components/components.agent.rst
+line: 'components.agent', module_name: 'components', True
+here: components.agent,
+Updated title in ./source/apis/components/components.agent.rst, lnew_title: agent
+Updated ./source/apis/components/components.agent.rst
+./source/apis/components/_autosummary/components.memory.memory.rst components
+filepath: ./source/apis/components/_autosummary/components.memory.memory.rst
+line: '.. _components-memory-memory:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.memory.rst
+line: 'components.memory.memory', module_name: 'components', True
+here: components.memory.memory,
+Updated title in ./source/apis/components/_autosummary/components.memory.memory.rst, lnew_title: memory
+Updated ./source/apis/components/_autosummary/components.memory.memory.rst
+./source/apis/components/_autosummary/components.retriever.faiss_retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.faiss_retriever.rst
+line: '.. _components-retriever-faiss_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.faiss_retriever.rst
+line: 'components.retriever.faiss_retriever', module_name: 'components', True
+here: components.retriever.faiss_retriever,
+Updated title in ./source/apis/components/_autosummary/components.retriever.faiss_retriever.rst, lnew_title: faiss_retriever
+Updated ./source/apis/components/_autosummary/components.retriever.faiss_retriever.rst
+./source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst components
+filepath: ./source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst
+line: '.. _components-reasoning-chain_of_thought:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst
+line: 'components.reasoning.chain_of_thought', module_name: 'components', True
+here: components.reasoning.chain_of_thought,
+Updated title in ./source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst, lnew_title: chain_of_thought
+Updated ./source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst
+./source/apis/components/_autosummary/components.output_parsers.outputs.rst components
+filepath: ./source/apis/components/_autosummary/components.output_parsers.outputs.rst
+line: '.. _components-output_parsers-outputs:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.outputs.rst
+line: 'components.output_parsers.outputs', module_name: 'components', True
+here: components.output_parsers.outputs,
+Updated title in ./source/apis/components/_autosummary/components.output_parsers.outputs.rst, lnew_title: outputs
+Updated ./source/apis/components/_autosummary/components.output_parsers.outputs.rst
+./source/apis/components/_autosummary/components.agent.react.rst components
+filepath: ./source/apis/components/_autosummary/components.agent.react.rst
+line: '.. _components-agent-react:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.react.rst
+line: 'components.agent.react', module_name: 'components', True
+here: components.agent.react,
+Updated title in ./source/apis/components/_autosummary/components.agent.react.rst, lnew_title: react
+Updated ./source/apis/components/_autosummary/components.agent.react.rst
+./source/apis/components/_autosummary/components.model_client.transformers_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.transformers_client.rst
+line: '.. _components-model_client-transformers_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.transformers_client.rst
+line: 'components.model_client.transformers_client', module_name: 'components', True
+here: components.model_client.transformers_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.transformers_client.rst, lnew_title: transformers_client
+Updated ./source/apis/components/_autosummary/components.model_client.transformers_client.rst
+./source/apis/components/_autosummary/components.output_parsers.rst components
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '.. _components-output_parsers:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: 'output_parsers', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '==========================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '.. automodule:: components.output_parsers', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.output_parsers.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.retriever.bm25_retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.bm25_retriever.rst
+line: '.. _components-retriever-bm25_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.bm25_retriever.rst
+line: 'components.retriever.bm25_retriever', module_name: 'components', True
+here: components.retriever.bm25_retriever,
+Updated title in ./source/apis/components/_autosummary/components.retriever.bm25_retriever.rst, lnew_title: bm25_retriever
+Updated ./source/apis/components/_autosummary/components.retriever.bm25_retriever.rst
+./source/apis/components/_autosummary/components.data_process.data_components.rst components
+filepath: ./source/apis/components/_autosummary/components.data_process.data_components.rst
+line: '.. _components-data_process-data_components:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.data_components.rst
+line: 'components.data_process.data_components', module_name: 'components', True
+here: components.data_process.data_components,
+Updated title in ./source/apis/components/_autosummary/components.data_process.data_components.rst, lnew_title: data_components
+Updated ./source/apis/components/_autosummary/components.data_process.data_components.rst
+./source/apis/components/_autosummary/components.model_client.openai_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.openai_client.rst
+line: '.. _components-model_client-openai_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.openai_client.rst
+line: 'components.model_client.openai_client', module_name: 'components', True
+here: components.model_client.openai_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.openai_client.rst, lnew_title: openai_client
+Updated ./source/apis/components/_autosummary/components.model_client.openai_client.rst
+./source/apis/components/_autosummary/components.model_client.groq_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.groq_client.rst
+line: '.. _components-model_client-groq_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.groq_client.rst
+line: 'components.model_client.groq_client', module_name: 'components', True
+here: components.model_client.groq_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.groq_client.rst, lnew_title: groq_client
+Updated ./source/apis/components/_autosummary/components.model_client.groq_client.rst
+./source/apis/components/_autosummary/components.model_client.anthropic_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.anthropic_client.rst
+line: '.. _components-model_client-anthropic_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.anthropic_client.rst
+line: 'components.model_client.anthropic_client', module_name: 'components', True
+here: components.model_client.anthropic_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.anthropic_client.rst, lnew_title: anthropic_client
+Updated ./source/apis/components/_autosummary/components.model_client.anthropic_client.rst
+./source/apis/components/_autosummary/components.retriever.llm_retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.llm_retriever.rst
+line: '.. _components-retriever-llm_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.llm_retriever.rst
+line: 'components.retriever.llm_retriever', module_name: 'components', True
+here: components.retriever.llm_retriever,
+Updated title in ./source/apis/components/_autosummary/components.retriever.llm_retriever.rst, lnew_title: llm_retriever
+Updated ./source/apis/components/_autosummary/components.retriever.llm_retriever.rst
+./source/apis/components/_autosummary/components.model_client.utils.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.utils.rst
+line: '.. _components-model_client-utils:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.utils.rst
+line: 'components.model_client.utils', module_name: 'components', True
+here: components.model_client.utils,
+Updated title in ./source/apis/components/_autosummary/components.model_client.utils.rst, lnew_title: utils
+Updated ./source/apis/components/_autosummary/components.model_client.utils.rst
+./source/apis/components/_autosummary/components.memory.rst components
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '.. _components-memory:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: 'memory', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '=================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '.. automodule:: components.memory', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.memory.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.retriever.postgres_retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.postgres_retriever.rst
+line: '.. _components-retriever-postgres_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.postgres_retriever.rst
+line: 'components.retriever.postgres_retriever', module_name: 'components', True
+here: components.retriever.postgres_retriever,
+Updated title in ./source/apis/components/_autosummary/components.retriever.postgres_retriever.rst, lnew_title: postgres_retriever
+Updated ./source/apis/components/_autosummary/components.retriever.postgres_retriever.rst
+./source/apis/components/_autosummary/components.retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '.. _components-retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: 'retriever', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '====================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '.. automodule:: components.retriever', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.retriever.reranker_retriever.rst components
+filepath: ./source/apis/components/_autosummary/components.retriever.reranker_retriever.rst
+line: '.. _components-retriever-reranker_retriever:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.retriever.reranker_retriever.rst
+line: 'components.retriever.reranker_retriever', module_name: 'components', True
+here: components.retriever.reranker_retriever,
+Updated title in ./source/apis/components/_autosummary/components.retriever.reranker_retriever.rst, lnew_title: reranker_retriever
+Updated ./source/apis/components/_autosummary/components.retriever.reranker_retriever.rst
+./source/apis/components/_autosummary/components.model_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.rst
+line: '.. _components-model_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.rst
+line: 'components.model_client', module_name: 'components', True
+here: components.model_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.rst, lnew_title: model_client
+Updated ./source/apis/components/_autosummary/components.model_client.rst
+./source/apis/components/_autosummary/components.data_process.rst components
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '.. _components-data_process:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: 'data_process', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '========================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '.. automodule:: components.data_process', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.reasoning.rst components
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '.. _components-reasoning:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: 'reasoning', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '====================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '.. automodule:: components.reasoning', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.reasoning.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.data_process.text_splitter.rst components
+filepath: ./source/apis/components/_autosummary/components.data_process.text_splitter.rst
+line: '.. _components-data_process-text_splitter:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.data_process.text_splitter.rst
+line: 'components.data_process.text_splitter', module_name: 'components', True
+here: components.data_process.text_splitter,
+Updated title in ./source/apis/components/_autosummary/components.data_process.text_splitter.rst, lnew_title: text_splitter
+Updated ./source/apis/components/_autosummary/components.data_process.text_splitter.rst
+./source/apis/components/_autosummary/components.agent.rst components
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '.. _components-agent:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: 'agent', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '================', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '.. automodule:: components.agent', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.agent.rst
+line: '', module_name: 'components', False
+./source/apis/components/_autosummary/components.model_client.cohere_client.rst components
+filepath: ./source/apis/components/_autosummary/components.model_client.cohere_client.rst
+line: '.. _components-model_client-cohere_client:', module_name: 'components', False
+filepath: ./source/apis/components/_autosummary/components.model_client.cohere_client.rst
+line: 'components.model_client.cohere_client', module_name: 'components', True
+here: components.model_client.cohere_client,
+Updated title in ./source/apis/components/_autosummary/components.model_client.cohere_client.rst, lnew_title: cohere_client
+Updated ./source/apis/components/_autosummary/components.model_client.cohere_client.rst
+./source/apis/utils/utils.config.rst utils
+filepath: ./source/apis/utils/utils.config.rst
+line: '.. _utils-config:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.config.rst
+line: 'utils.config', module_name: 'utils', True
+here: utils.config,
+Updated title in ./source/apis/utils/utils.config.rst, lnew_title: config
+Updated ./source/apis/utils/utils.config.rst
+./source/apis/utils/utils.logger.rst utils
+filepath: ./source/apis/utils/utils.logger.rst
+line: '.. _utils-logger:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.logger.rst
+line: 'utils.logger', module_name: 'utils', True
+here: utils.logger,
+Updated title in ./source/apis/utils/utils.logger.rst, lnew_title: logger
+Updated ./source/apis/utils/utils.logger.rst
+./source/apis/utils/utils.setup_env.rst utils
+filepath: ./source/apis/utils/utils.setup_env.rst
+line: '.. _utils-setup_env:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.setup_env.rst
+line: 'utils.setup_env', module_name: 'utils', True
+here: utils.setup_env,
+Updated title in ./source/apis/utils/utils.setup_env.rst, lnew_title: setup_env
+Updated ./source/apis/utils/utils.setup_env.rst
+./source/apis/utils/utils.lazy_import.rst utils
+filepath: ./source/apis/utils/utils.lazy_import.rst
+line: '.. _utils-lazy_import:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.lazy_import.rst
+line: 'utils.lazy_import', module_name: 'utils', True
+here: utils.lazy_import,
+Updated title in ./source/apis/utils/utils.lazy_import.rst, lnew_title: lazy_import
+Updated ./source/apis/utils/utils.lazy_import.rst
+./source/apis/utils/utils.file_io.rst utils
+filepath: ./source/apis/utils/utils.file_io.rst
+line: '.. _utils-file_io:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.file_io.rst
+line: 'utils.file_io', module_name: 'utils', True
+here: utils.file_io,
+Updated title in ./source/apis/utils/utils.file_io.rst, lnew_title: file_io
+Updated ./source/apis/utils/utils.file_io.rst
+./source/apis/utils/utils.registry.rst utils
+filepath: ./source/apis/utils/utils.registry.rst
+line: '.. _utils-registry:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.registry.rst
+line: 'utils.registry', module_name: 'utils', True
+here: utils.registry,
+Updated title in ./source/apis/utils/utils.registry.rst, lnew_title: registry
+Updated ./source/apis/utils/utils.registry.rst
+./source/apis/utils/utils.serialization.rst utils
+filepath: ./source/apis/utils/utils.serialization.rst
+line: '.. _utils-serialization:', module_name: 'utils', False
+filepath: ./source/apis/utils/utils.serialization.rst
+line: 'utils.serialization', module_name: 'utils', True
+here: utils.serialization,
+Updated title in ./source/apis/utils/utils.serialization.rst, lnew_title: serialization
+Updated ./source/apis/utils/utils.serialization.rst
+./source/apis/eval/eval.retriever_recall.rst eval
+filepath: ./source/apis/eval/eval.retriever_recall.rst
+line: '.. _eval-retriever_recall:', module_name: 'eval', False
+filepath: ./source/apis/eval/eval.retriever_recall.rst
+line: 'eval.retriever_recall', module_name: 'eval', True
+here: eval.retriever_recall,
+Updated title in ./source/apis/eval/eval.retriever_recall.rst, lnew_title: retriever_recall
+Updated ./source/apis/eval/eval.retriever_recall.rst
+./source/apis/eval/eval.llm_as_judge.rst eval
+filepath: ./source/apis/eval/eval.llm_as_judge.rst
+line: '.. _eval-llm_as_judge:', module_name: 'eval', False
+filepath: ./source/apis/eval/eval.llm_as_judge.rst
+line: 'eval.llm_as_judge', module_name: 'eval', True
+here: eval.llm_as_judge,
+Updated title in ./source/apis/eval/eval.llm_as_judge.rst, lnew_title: llm_as_judge
+Updated ./source/apis/eval/eval.llm_as_judge.rst
+./source/apis/eval/eval.retriever_relevance.rst eval
+filepath: ./source/apis/eval/eval.retriever_relevance.rst
+line: '.. _eval-retriever_relevance:', module_name: 'eval', False
+filepath: ./source/apis/eval/eval.retriever_relevance.rst
+line: 'eval.retriever_relevance', module_name: 'eval', True
+here: eval.retriever_relevance,
+Updated title in ./source/apis/eval/eval.retriever_relevance.rst, lnew_title: retriever_relevance
+Updated ./source/apis/eval/eval.retriever_relevance.rst
+./source/apis/eval/eval.evaluators.rst eval
+filepath: ./source/apis/eval/eval.evaluators.rst
+line: '_eval-evaluators:', module_name: 'eval', False
+filepath: ./source/apis/eval/eval.evaluators.rst
+line: 'evaluators', module_name: 'eval', True
+here: evaluators,
+Updated title in ./source/apis/eval/eval.evaluators.rst, lnew_title: evaluators
+Updated ./source/apis/eval/eval.evaluators.rst
+./source/apis/eval/eval.answer_match_acc.rst eval
+filepath: ./source/apis/eval/eval.answer_match_acc.rst
+line: '.. _eval-answer_match_acc:', module_name: 'eval', False
+filepath: ./source/apis/eval/eval.answer_match_acc.rst
+line: 'eval.answer_match_acc', module_name: 'eval', True
+here: eval.answer_match_acc,
+Updated title in ./source/apis/eval/eval.answer_match_acc.rst, lnew_title: answer_match_acc
+Updated ./source/apis/eval/eval.answer_match_acc.rst
+./source/apis/tracing/tracing.generator_state_logger.rst tracing
+filepath: ./source/apis/tracing/tracing.generator_state_logger.rst
+line: '.. _tracing-generator_state_logger:', module_name: 'tracing', False
+filepath: ./source/apis/tracing/tracing.generator_state_logger.rst
+line: 'tracing.generator_state_logger', module_name: 'tracing', True
+here: tracing.generator_state_logger,
+Updated title in ./source/apis/tracing/tracing.generator_state_logger.rst, lnew_title: generator_state_logger
+Updated ./source/apis/tracing/tracing.generator_state_logger.rst
+./source/apis/tracing/tracing.generator_call_logger.rst tracing
+filepath: ./source/apis/tracing/tracing.generator_call_logger.rst
+line: '.. _tracing-generator_call_logger:', module_name: 'tracing', False
+filepath: ./source/apis/tracing/tracing.generator_call_logger.rst
+line: 'tracing.generator_call_logger', module_name: 'tracing', True
+here: tracing.generator_call_logger,
+Updated title in ./source/apis/tracing/tracing.generator_call_logger.rst, lnew_title: generator_call_logger
+Updated ./source/apis/tracing/tracing.generator_call_logger.rst
+./source/apis/tracing/tracing.decorators.rst tracing
+filepath: ./source/apis/tracing/tracing.decorators.rst
+line: '.. _tracing-decorators:', module_name: 'tracing', False
+filepath: ./source/apis/tracing/tracing.decorators.rst
+line: 'tracing.decorators', module_name: 'tracing', True
+here: tracing.decorators,
+Updated title in ./source/apis/tracing/tracing.decorators.rst, lnew_title: decorators
+Updated ./source/apis/tracing/tracing.decorators.rst
+./source/apis/optim/optim.llm_augment.rst optim
+filepath: ./source/apis/optim/optim.llm_augment.rst
+line: '.. _optim-llm_augment:', module_name: 'optim', False
+filepath: ./source/apis/optim/optim.llm_augment.rst
+line: 'optim.llm_augment', module_name: 'optim', True
+here: optim.llm_augment,
+Updated title in ./source/apis/optim/optim.llm_augment.rst, lnew_title: llm_augment
+Updated ./source/apis/optim/optim.llm_augment.rst
+./source/apis/optim/optim.few_shot_optimizer.rst optim
+filepath: ./source/apis/optim/optim.few_shot_optimizer.rst
+line: '.. _optim-few_shot_optimizer:', module_name: 'optim', False
+filepath: ./source/apis/optim/optim.few_shot_optimizer.rst
+line: 'optim.few_shot_optimizer', module_name: 'optim', True
+here: optim.few_shot_optimizer,
+Updated title in ./source/apis/optim/optim.few_shot_optimizer.rst, lnew_title: few_shot_optimizer
+Updated ./source/apis/optim/optim.few_shot_optimizer.rst
+./source/apis/optim/optim.optimizer.rst optim
+filepath: ./source/apis/optim/optim.optimizer.rst
+line: '.. _optim-optimizer:', module_name: 'optim', False
+filepath: ./source/apis/optim/optim.optimizer.rst
+line: 'optim.optimizer', module_name: 'optim', True
+here: optim.optimizer,
+Updated title in ./source/apis/optim/optim.optimizer.rst, lnew_title: optimizer
+Updated ./source/apis/optim/optim.optimizer.rst
+./source/apis/optim/optim.sampler.rst optim
+filepath: ./source/apis/optim/optim.sampler.rst
+line: '.. _optim-sampler:', module_name: 'optim', False
+filepath: ./source/apis/optim/optim.sampler.rst
+line: 'optim.sampler', module_name: 'optim', True
+here: optim.sampler,
+Updated title in ./source/apis/optim/optim.sampler.rst, lnew_title: sampler
+Updated ./source/apis/optim/optim.sampler.rst
+./source/apis/optim/optim.llm_optimizer.rst optim
+filepath: ./source/apis/optim/optim.llm_optimizer.rst
+line: '.. _optim-llm_optimizer:', module_name: 'optim', False
+filepath: ./source/apis/optim/optim.llm_optimizer.rst
+line: 'optim.llm_optimizer', module_name: 'optim', True
+here: optim.llm_optimizer,
+Updated title in ./source/apis/optim/optim.llm_optimizer.rst, lnew_title: llm_optimizer
+Updated ./source/apis/optim/optim.llm_optimizer.rst
+Running Sphinx v7.3.7
+loading pickled environment... done
+[autosummary] generating autosummary for: apis/components/_autosummary/components.agent.react.rst, apis/components/_autosummary/components.agent.rst, apis/components/_autosummary/components.data_process.data_components.rst, apis/components/_autosummary/components.data_process.rst, apis/components/_autosummary/components.data_process.text_splitter.rst, apis/components/_autosummary/components.memory.memory.rst, apis/components/_autosummary/components.memory.rst, apis/components/_autosummary/components.model_client.anthropic_client.rst, apis/components/_autosummary/components.model_client.cohere_client.rst, apis/components/_autosummary/components.model_client.groq_client.rst, ..., get_started/installation.rst, get_started/introduction.rst, get_started/lightrag_in_10_mins.rst, index.rst, resources/index.rst, resources/resources.rst, tutorials/eval_a_rag.rst, tutorials/index.rst, tutorials/introduction_to_basedataclass.rst, tutorials/logging.rst
+[autosummary] generating autosummary for: /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.agent.react.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.data_process.data_components.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.data_process.text_splitter.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.memory.memory.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.anthropic_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.cohere_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.groq_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.openai_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.transformers_client.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.model_client.utils.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.output_parsers.outputs.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.reasoning.chain_of_thought.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.retriever.bm25_retriever.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.retriever.faiss_retriever.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.retriever.llm_retriever.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.retriever.postgres_retriever.rst, /Users/liyin/Documents/test/LightRAG/docs/source/apis/components/_autosummary/components.retriever.reranker_retriever.rst
+building [mo]: targets for 0 po files that are out of date
+writing output...
+building [html]: targets for 68 source files that are out of date
+updating environment: 0 added, 70 changed, 0 removed
+reading sources... [  1%] apis/components/_autosummary/components.agent.react
+reading sources... [  3%] apis/components/_autosummary/components.data_process.data_components
+reading sources... [  4%] apis/components/_autosummary/components.data_process.text_splitter
+reading sources... [  6%] apis/components/_autosummary/components.memory.memory
+reading sources... [  7%] apis/components/_autosummary/components.model_client
+reading sources... [  9%] apis/components/_autosummary/components.model_client.anthropic_client
+reading sources... [ 10%] apis/components/_autosummary/components.model_client.cohere_client
+reading sources... [ 11%] apis/components/_autosummary/components.model_client.groq_client
+reading sources... [ 13%] apis/components/_autosummary/components.model_client.openai_client
+reading sources... [ 14%] apis/components/_autosummary/components.model_client.transformers_client
+reading sources... [ 16%] apis/components/_autosummary/components.model_client.utils
+reading sources... [ 17%] apis/components/_autosummary/components.output_parsers.outputs
+reading sources... [ 19%] apis/components/_autosummary/components.reasoning.chain_of_thought
+reading sources... [ 20%] apis/components/_autosummary/components.retriever.bm25_retriever
+reading sources... [ 21%] apis/components/_autosummary/components.retriever.faiss_retriever
+reading sources... [ 23%] apis/components/_autosummary/components.retriever.llm_retriever
+reading sources... [ 24%] apis/components/_autosummary/components.retriever.postgres_retriever
+reading sources... [ 26%] apis/components/_autosummary/components.retriever.reranker_retriever
+reading sources... [ 27%] apis/components/components.agent
+reading sources... [ 29%] apis/components/components.data_process
+reading sources... [ 30%] apis/components/components.memory
+reading sources... [ 31%] apis/components/components.model_client
+reading sources... [ 33%] apis/components/components.output_parsers
+reading sources... [ 34%] apis/components/components.reasoning
+reading sources... [ 36%] apis/components/components.retriever
+reading sources... [ 37%] apis/components/components.retriever.postgres_retriever
+reading sources... [ 39%] apis/components/index
+reading sources... [ 40%] apis/core/core.base_data_class
+reading sources... [ 41%] apis/core/core.component
+reading sources... [ 43%] apis/core/core.db
+reading sources... [ 44%] apis/core/core.default_prompt_template
+reading sources... [ 46%] apis/core/core.embedder
+reading sources... [ 47%] apis/core/core.func_tool
+reading sources... [ 49%] apis/core/core.functional
+reading sources... [ 50%] apis/core/core.generator
+reading sources... [ 51%] apis/core/core.model_client
+reading sources... [ 53%] apis/core/core.parameter
+reading sources... [ 54%] apis/core/core.prompt_builder
+reading sources... [ 56%] apis/core/core.retriever
+reading sources... [ 57%] apis/core/core.string_parser
+reading sources... [ 59%] apis/core/core.tokenizer
+reading sources... [ 60%] apis/core/core.tool_manager
+reading sources... [ 61%] apis/core/core.types
+reading sources... [ 63%] apis/core/index
+reading sources... [ 64%] apis/eval/eval.answer_match_acc
+reading sources... [ 66%] apis/eval/eval.evaluators
+reading sources... [ 67%] apis/eval/eval.llm_as_judge
+reading sources... [ 69%] apis/eval/eval.retriever_recall
+reading sources... [ 70%] apis/eval/eval.retriever_relevance
+reading sources... [ 71%] apis/eval/index
+reading sources... [ 73%] apis/optim/index
+reading sources... [ 74%] apis/optim/optim.few_shot_optimizer
+reading sources... [ 76%] apis/optim/optim.llm_augment
+reading sources... [ 77%] apis/optim/optim.llm_optimizer
+reading sources... [ 79%] apis/optim/optim.optimizer
+reading sources... [ 80%] apis/optim/optim.sampler
+reading sources... [ 81%] apis/tracing/index
+reading sources... [ 83%] apis/tracing/tracing.decorators
+reading sources... [ 84%] apis/tracing/tracing.generator_call_logger
+reading sources... [ 86%] apis/tracing/tracing.generator_state_logger
+reading sources... [ 87%] apis/utils/index
+reading sources... [ 89%] apis/utils/utils.config
+reading sources... [ 90%] apis/utils/utils.file_io
+reading sources... [ 91%] apis/utils/utils.lazy_import
+reading sources... [ 93%] apis/utils/utils.logger
+reading sources... [ 94%] apis/utils/utils.registry
+reading sources... [ 96%] apis/utils/utils.serialization
+reading sources... [ 97%] apis/utils/utils.setup_env
+reading sources... [ 99%] developer_notes/index
+reading sources... [100%] index
+
+looking for now-outdated files... none found
+pickling environment... done
+checking consistency... done
+preparing documents... done
+copying assets... copying static files... done
+copying extra files... done
+done
+writing output... [  1%] apis/components/_autosummary/components.agent.react
+writing output... [  3%] apis/components/_autosummary/components.data_process.data_components
+writing output... [  4%] apis/components/_autosummary/components.data_process.text_splitter
+writing output... [  6%] apis/components/_autosummary/components.memory.memory
+writing output... [  7%] apis/components/_autosummary/components.model_client
+writing output... [  8%] apis/components/_autosummary/components.model_client.anthropic_client
+writing output... [ 10%] apis/components/_autosummary/components.model_client.cohere_client
+writing output... [ 11%] apis/components/_autosummary/components.model_client.groq_client
+writing output... [ 13%] apis/components/_autosummary/components.model_client.openai_client
+writing output... [ 14%] apis/components/_autosummary/components.model_client.transformers_client
+writing output... [ 15%] apis/components/_autosummary/components.model_client.utils
+writing output... [ 17%] apis/components/_autosummary/components.output_parsers.outputs
+writing output... [ 18%] apis/components/_autosummary/components.reasoning.chain_of_thought
+writing output... [ 20%] apis/components/_autosummary/components.retriever.bm25_retriever
+writing output... [ 21%] apis/components/_autosummary/components.retriever.faiss_retriever
+writing output... [ 23%] apis/components/_autosummary/components.retriever.llm_retriever
+writing output... [ 24%] apis/components/_autosummary/components.retriever.postgres_retriever
+writing output... [ 25%] apis/components/_autosummary/components.retriever.reranker_retriever
+writing output... [ 27%] apis/components/components.agent
+writing output... [ 28%] apis/components/components.data_process
+writing output... [ 30%] apis/components/components.memory
+writing output... [ 31%] apis/components/components.model_client
+writing output... [ 32%] apis/components/components.output_parsers
+writing output... [ 34%] apis/components/components.reasoning
+writing output... [ 35%] apis/components/components.retriever
+writing output... [ 37%] apis/components/components.retriever.postgres_retriever
+writing output... [ 38%] apis/components/index
+writing output... [ 39%] apis/core/core.base_data_class
+writing output... [ 41%] apis/core/core.component
+writing output... [ 42%] apis/core/core.db
+writing output... [ 44%] apis/core/core.default_prompt_template
+writing output... [ 45%] apis/core/core.embedder
+writing output... [ 46%] apis/core/core.func_tool
+writing output... [ 48%] apis/core/core.functional
+writing output... [ 49%] apis/core/core.generator
+writing output... [ 51%] apis/core/core.model_client
+writing output... [ 52%] apis/core/core.parameter
+writing output... [ 54%] apis/core/core.prompt_builder
+writing output... [ 55%] apis/core/core.retriever
+writing output... [ 56%] apis/core/core.string_parser
+writing output... [ 58%] apis/core/core.tokenizer
+writing output... [ 59%] apis/core/core.tool_manager
+writing output... [ 61%] apis/core/core.types
+writing output... [ 62%] apis/core/index
+writing output... [ 63%] apis/eval/eval.answer_match_acc
+writing output... [ 65%] apis/eval/eval.evaluators
+writing output... [ 66%] apis/eval/eval.llm_as_judge
+writing output... [ 68%] apis/eval/eval.retriever_recall
+writing output... [ 69%] apis/eval/eval.retriever_relevance
+writing output... [ 70%] apis/eval/index
+writing output... [ 72%] apis/index
+writing output... [ 73%] apis/optim/index
+writing output... [ 75%] apis/optim/optim.few_shot_optimizer
+writing output... [ 76%] apis/optim/optim.llm_augment
+writing output... [ 77%] apis/optim/optim.llm_optimizer
+writing output... [ 79%] apis/optim/optim.optimizer
+writing output... [ 80%] apis/optim/optim.sampler
+writing output... [ 82%] apis/tracing/index
+writing output... [ 83%] apis/tracing/tracing.decorators
+writing output... [ 85%] apis/tracing/tracing.generator_call_logger
+writing output... [ 86%] apis/tracing/tracing.generator_state_logger
+writing output... [ 87%] apis/utils/index
+writing output... [ 89%] apis/utils/utils.config
+writing output... [ 90%] apis/utils/utils.file_io
+writing output... [ 92%] apis/utils/utils.lazy_import
+writing output... [ 93%] apis/utils/utils.logger
+writing output... [ 94%] apis/utils/utils.registry
+writing output... [ 96%] apis/utils/utils.serialization
+writing output... [ 97%] apis/utils/utils.setup_env
+writing output... [ 99%] developer_notes/index
+writing output... [100%] index
+
+generating indices... genindex py-modindex done
+copying linked files...
+copying notebooks ...
+highlighting module code... [  2%] components.agent.react
+highlighting module code... [  4%] components.data_process.data_components
+highlighting module code... [  6%] components.data_process.text_splitter
+highlighting module code... [  8%] components.memory.memory
+highlighting module code... [ 10%] components.model_client.anthropic_client
+highlighting module code... [ 12%] components.model_client.cohere_client
+highlighting module code... [ 14%] components.model_client.groq_client
+highlighting module code... [ 16%] components.model_client.openai_client
+highlighting module code... [ 18%] components.model_client.transformers_client
+highlighting module code... [ 20%] components.model_client.utils
+highlighting module code... [ 22%] components.output_parsers.outputs
+highlighting module code... [ 24%] components.retriever.bm25_retriever
+highlighting module code... [ 26%] components.retriever.faiss_retriever
+highlighting module code... [ 28%] components.retriever.llm_retriever
+highlighting module code... [ 30%] components.retriever.postgres_retriever
+highlighting module code... [ 32%] components.retriever.reranker_retriever
+highlighting module code... [ 34%] core.base_data_class
+highlighting module code... [ 36%] core.component
+highlighting module code... [ 38%] core.db
+highlighting module code... [ 40%] core.embedder
+highlighting module code... [ 42%] core.func_tool
+highlighting module code... [ 44%] core.functional
+highlighting module code... [ 46%] core.generator
+highlighting module code... [ 48%] core.model_client
+highlighting module code... [ 50%] core.parameter
+highlighting module code... [ 52%] core.prompt_builder
+highlighting module code... [ 54%] core.retriever
+highlighting module code... [ 56%] core.string_parser
+highlighting module code... [ 58%] core.tokenizer
+highlighting module code... [ 60%] core.tool_manager
+highlighting module code... [ 62%] core.types
+highlighting module code... [ 64%] eval.answer_match_acc
+highlighting module code... [ 66%] eval.llm_as_judge
+highlighting module code... [ 68%] eval.retriever_recall
+highlighting module code... [ 70%] eval.retriever_relevance
+highlighting module code... [ 72%] optim.few_shot_optimizer
+highlighting module code... [ 74%] optim.llm_augment
+highlighting module code... [ 76%] optim.llm_optimizer
+highlighting module code... [ 78%] optim.optimizer
+highlighting module code... [ 80%] optim.sampler
+highlighting module code... [ 82%] tracing.decorators
+highlighting module code... [ 84%] tracing.generator_call_logger
+highlighting module code... [ 86%] tracing.generator_state_logger
+highlighting module code... [ 88%] utils.config
+highlighting module code... [ 90%] utils.file_io
+highlighting module code... [ 92%] utils.lazy_import
+highlighting module code... [ 94%] utils.logger
+highlighting module code... [ 96%] utils.registry
+highlighting module code... [ 98%] utils.serialization
+highlighting module code... [100%] utils.setup_env
+
+writing additional pages... search done
+copying images... [100%] _static/images/LLM_arch.png
+
+dumping search index in English (code: en)... done
+dumping object inventory... done
+build succeeded, 119 warnings.
+
+The HTML pages are in build.

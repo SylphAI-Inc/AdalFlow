@@ -13,9 +13,9 @@ Overview
    components.agent.react
 
 
----------------
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. autosummary::
-   :toctree: _autosummary
 
-   components.agent
+   components.agent.react

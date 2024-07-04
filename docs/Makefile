@@ -29,7 +29,11 @@ apidoc:
 
 generate_autosummary:
 	@echo "Generating autosummary files"
-	@sphinx-autogen $(SOURCEDIR)/**/*.rst
+	@python $(SOURCEDIR)/generate_autosummary.py
+
+
+
+
 
 update_files:
 	@echo "Inserting reference labels into RST files."
@@ -37,7 +41,7 @@ update_files:
 	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
 	@echo "Removing duplicated files"
-	@python $(SOURCEDIR)/remove_files.py
+#@python $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
 	@python $(SOURCEDIR)/change_api_file_name.py
 

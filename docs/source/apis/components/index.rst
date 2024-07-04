@@ -10,21 +10,30 @@ ModelClient
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
 
+   components.model_client.anthropic_client
+
+   components.model_client.cohere_client
+
+   components.model_client.google_client
 
    components.model_client.groq_client
-   components.model_client.anthropic_client
+
    components.model_client.openai_client
-   components.model_client.cohere_client
-   components.model_client.google_client
+
    components.model_client.transformers_client
+
+   components.model_client.utils
+
+
 
 Retriever
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
    components.retriever.bm25_retriever
    components.retriever.faiss_retriever
@@ -39,7 +48,8 @@ Output Parsers
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
    components.output_parsers.outputs
 
@@ -47,7 +57,8 @@ Agent
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
    components.agent.react
 
@@ -55,7 +66,8 @@ Data Process
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
 
    components.data_process.text_splitter
@@ -66,14 +78,17 @@ Memory
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
    components.memory.memory
 
 Reasoning
+~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: None
+   :toctree: _autosummary
+   :nosignatures:
 
    components.reasoning.chain_of_thought
 
