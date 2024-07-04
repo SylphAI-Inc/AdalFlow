@@ -1,4 +1,6 @@
-﻿components.model\_client.openai\_client
+.. _components-model_client-openai_client:
+
+openai_client
 =======================================
 
 .. automodule:: components.model_client.openai_client

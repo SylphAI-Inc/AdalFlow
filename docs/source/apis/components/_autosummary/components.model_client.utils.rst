@@ -1,4 +1,6 @@
-﻿components.model\_client.utils
+.. _components-model_client-utils:
+
+utils
 ==============================
 
 .. automodule:: components.model_client.utils

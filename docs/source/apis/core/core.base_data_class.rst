@@ -1,6 +1,6 @@
 .. _core-base_data_class:
 
-base\_data\_class
+base_data_class
 =============================
 
 .. automodule:: core.base_data_class

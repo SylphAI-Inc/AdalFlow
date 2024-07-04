@@ -171,17 +171,19 @@ class YamlOutputParser(OutputParser):
         # convert example to string, convert data class to yaml string
         example_str = ""
         try:
-            for example in self.examples:
-                per_example_str = example.format_example_str(
-                    format_type=DataClassFormatType.EXAMPLE_YAML,
-                    exclude=self._exclude_fields,
-                )
-                example_str += f"{per_example_str}\n________\n"
-            # remove the last new line
-            example_str = example_str[:-1]
-            log.debug(f"{__class__.__name__} example_str: {example_str}")
+            if self.examples and len(self.examples) > 0:
+                for example in self.examples:
+                    per_example_str = example.format_example_str(
+                        format_type=DataClassFormatType.EXAMPLE_YAML,
+                        exclude=self._exclude_fields,
+                    )
+                    example_str += f"{per_example_str}\n________\n"
+                # remove the last new line
+                example_str = example_str[:-1]
+                log.debug(f"{__class__.__name__} example_str: {example_str}")
 
-        except Exception:
+        except Exception as e:
+            log.error(f"Error in formatting example for {__class__.__name__}, {e}")
             example_str = None
 
         return self.yaml_output_format_prompt(schema=schema, example=example_str)
@@ -240,18 +242,19 @@ class JsonOutputParser(OutputParser):
         )
         example_str = ""
         try:
-            for example in self.examples:
-                per_example_str = example.format_example_str(
-                    format_type=DataClassFormatType.EXAMPLE_JSON,
-                    exclude=self._exclude_fields,
-                )
-                example_str += f"{per_example_str}\n________\n"
-            # remove the last new line
-            example_str = example_str[:-1]
-            log.debug(f"{__class__.__name__} example_str: {example_str}")
+            if self.examples and len(self.examples) > 0:
+                for example in self.examples:
+                    per_example_str = example.format_example_str(
+                        format_type=DataClassFormatType.EXAMPLE_JSON,
+                        exclude=self._exclude_fields,
+                    )
+                    example_str += f"{per_example_str}\n________\n"
+                # remove the last new line
+                example_str = example_str[:-1]
+                log.debug(f"{__class__.__name__} example_str: {example_str}")
 
-        except Exception:
-            log.error(f"Error in formatting example for {__class__.__name__}")
+        except Exception as e:
+            log.error(f"Error in formatting example for {__class__.__name__}, {e}")
             example_str = None
         return self.json_output_format_prompt(schema=schema, example=example_str)
 

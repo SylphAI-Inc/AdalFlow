@@ -1,4 +1,6 @@
-﻿components.output\_parsers.outputs
+.. _components-output_parsers-outputs:
+
+outputs
 ==================================
 
 .. automodule:: components.output_parsers.outputs

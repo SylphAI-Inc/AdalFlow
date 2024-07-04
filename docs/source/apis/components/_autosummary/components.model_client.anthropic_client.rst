@@ -1,4 +1,6 @@
-﻿components.model\_client.anthropic\_client
+.. _components-model_client-anthropic_client:
+
+anthropic_client
 ==========================================
 
 .. automodule:: components.model_client.anthropic_client

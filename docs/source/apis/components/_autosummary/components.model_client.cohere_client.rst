@@ -1,4 +1,6 @@
-﻿components.model\_client.cohere\_client
+.. _components-model_client-cohere_client:
+
+cohere_client
 =======================================
 
 .. automodule:: components.model_client.cohere_client

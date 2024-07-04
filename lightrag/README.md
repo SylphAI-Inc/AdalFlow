@@ -1,7 +1,7 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 
-## ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
+### ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
@@ -82,7 +82,7 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
 - [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html): Design based on three principles: Simplicity over complexity, Quality over quantity, and Optimizing over building.
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction will developers with maximum customizability and simplicity.
+- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction provides developers with maximum customizability and simplicity.
 - [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html): Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
@@ -95,11 +95,12 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 # Citation
 
 ```bibtex
-@software{Yin-LightRAG-2024,
-  author = {Yin, Li},
-  title = {{LightRAG: The PyTorch Library for Large language Model (LLM) Applications}},
+@software{Yin2024LightRAG,
+  author = {Li Yin},
+  title = {{LightRAG: The PyTorch Library for Large Language Model (LLM) Applications}},
   month = {7},
   year = {2024},
+  doi = {10.5281/zenodo.12639531},
   url = {https://github.com/SylphAI-Inc/LightRAG}
 }
 ```

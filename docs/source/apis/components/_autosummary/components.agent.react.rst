@@ -1,4 +1,6 @@
-﻿components.agent.react
+.. _components-agent-react:
+
+react
 ======================
 
 .. automodule:: components.agent.react

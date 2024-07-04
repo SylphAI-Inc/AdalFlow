@@ -1,4 +1,6 @@
-﻿components.model\_client.groq\_client
+.. _components-model_client-groq_client:
+
+groq_client
 =====================================
 
 .. automodule:: components.model_client.groq_client

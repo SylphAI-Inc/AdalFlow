@@ -1,4 +1,6 @@
-﻿components.retriever.llm\_retriever
+.. _components-retriever-llm_retriever:
+
+llm_retriever
 ===================================
 
 .. automodule:: components.retriever.llm_retriever
