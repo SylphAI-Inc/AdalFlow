@@ -6,7 +6,6 @@
 Optimizer
 ----------
 .. autosummary::
-    :maxdepth: 2
 
    optim.optimizer
    optim.sampler

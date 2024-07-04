@@ -10,7 +10,6 @@ ModelClient
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
 
    components.model_client.anthropic_client
 
@@ -32,7 +31,6 @@ Retriever
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
    components.retriever.bm25_retriever
@@ -48,7 +46,6 @@ Output Parsers
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
    components.output_parsers.outputs
@@ -57,7 +54,6 @@ Agent
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
    components.agent.react
@@ -66,7 +62,6 @@ Data Process
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
 
@@ -78,7 +73,6 @@ Memory
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
    components.memory.memory
@@ -87,15 +81,13 @@ Reasoning
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :toctree: _autosummary
    :nosignatures:
 
    components.reasoning.chain_of_thought
 
 
 .. toctree::
-   :maxdepth: 2
-   :hidden:
+   :maxdepth: 1
 
    components.model_client
    components.retriever

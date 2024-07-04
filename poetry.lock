@@ -2717,27 +2717,26 @@ typing = ["mypy (>=1.0.0)", "types-setuptools"]
 
 [[package]]
 name = "lightrag"
-version = "0.0.0a11"
+version = "0.0.0-alpha.12"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
 optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "lightrag-0.0.0a11-py3-none-any.whl", hash = "sha256:d4d72894124856593f69d797ceb3e9ed5437ee99a45c1819bef675c11ba15b11"},
-]
+python-versions = ">=3.10, <4.0"
+files = []
+develop = true
 
 [package.dependencies]
-backoff = ">=2.2.1,<3.0.0"
-jinja2 = ">=3.1.3,<4.0.0"
-jsonlines = ">=4.0.0,<5.0.0"
-numpy = ">=1.26.4,<2.0.0"
-python-dotenv = ">=1.0.1,<2.0.0"
-pyyaml = ">=6.0.1,<7.0.0"
-tiktoken = ">=0.7.0,<0.8.0"
-tqdm = ">=4.66.4,<5.0.0"
+backoff = "^2.2.1"
+jinja2 = "^3.1.3"
+jsonlines = "^4.0.0"
+numpy = "^1.26.4"
+python-dotenv = "^1.0.1"
+pyyaml = "^6.0.1"
+tiktoken = "^0.7.0"
+tqdm = "^4.66.4"
 
 [package.source]
-type = "file"
-url = "lightrag/dist/lightrag-0.0.0a11-py3-none-any.whl"
+type = "directory"
+url = "lightrag"
 
 [[package]]
 name = "llama-cloud"
@@ -2931,13 +2930,12 @@ llama-index-core = ">=0.10.24,<0.11.0"
 
 [[package]]
 name = "llama-index-multi-modal-llms-openai"
-version = "0.1.6"
+version = "0.1.7"
 description = "llama-index multi-modal-llms openai integration"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "llama_index_multi_modal_llms_openai-0.1.6-py3-none-any.whl", hash = "sha256:0b6950a6cf98d16ade7d3b9dd0821ecfe457ca103819ae6c3e66cfc9634ca646"},
-    {file = "llama_index_multi_modal_llms_openai-0.1.6.tar.gz", hash = "sha256:10de75a877a444af35306385faad9b9f0624391e55309970564114a080a0578c"},
+    {file = "llama_index_multi_modal_llms_openai-0.1.7-py3-none-any.whl", hash = "sha256:a86fa4a8f8372da31b978cc28d14da75ce6a39f42b1eea90cd3ac93017644766"},
 ]
 
 [package.dependencies]
@@ -6896,4 +6894,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "3bbec9ec886638e712981051f9e1a655deda9ead4330b63eb9f81d7aed80ad6f"
+content-hash = "b26198523504ef4ec2cec12a9b060c6d9eff8c66232f9c81ac2b4abd8164616d"
