@@ -3,9 +3,8 @@
 agent
 ========================
 
-Overview
+Submodules
 ----------
-
 .. autosummary::
    :toctree: _autosummary
 
@@ -13,9 +12,16 @@ Overview
    components.agent.react
 
 
+
+.. toctree::
+   :maxdepth: 4
+
+   components.agent.react
+
+
 ---------------
 
-.. autosummary::
-   :toctree: _autosummary
-
-   components.agent
+.. automodule:: components.agent
+   :members:
+   :undoc-members:
+   :show-inheritance:

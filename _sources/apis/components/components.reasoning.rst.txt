@@ -3,9 +3,8 @@
 reasoning
 ============================
 
-Overview
+Submodules
 ----------
-
 .. autosummary::
    :toctree: _autosummary
 
@@ -13,9 +12,16 @@ Overview
    components.reasoning.chain_of_thought
 
 
+
+.. toctree::
+   :maxdepth: 4
+
+   components.reasoning.chain_of_thought
+
+
 ---------------
 
-.. autosummary::
-   :toctree: _autosummary
-
-   components.reasoning
+.. automodule:: components.reasoning
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,11 +1,10 @@
 .. _components-data_process:
 
-data_process
+data\_process
 ================================
 
-Overview
+Submodules
 ----------
-
 .. autosummary::
    :toctree: _autosummary
 
@@ -15,9 +14,17 @@ Overview
    components.data_process.text_splitter
 
 
+
+.. toctree::
+   :maxdepth: 4
+
+   components.data_process.data_components
+   components.data_process.text_splitter
+
+
 ---------------
 
-.. autosummary::
-   :toctree: _autosummary
-
-   components.data_process
+.. automodule:: components.data_process
+   :members:
+   :undoc-members:
+   :show-inheritance:
