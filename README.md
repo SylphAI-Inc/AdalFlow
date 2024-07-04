@@ -1,6 +1,6 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
-### ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
+### ⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
@@ -34,15 +34,14 @@ class Net(nn.Module):
 ## LightRAG Task Pipeline
 
 
-We will ask the model to response with ``explaination`` and ``example`` of a concept. And we built the pipeline to get the structured output as ``QAOutput``.
+We will ask the model to respond with ``explaination`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
 
 ```python
 
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator, fun_to_component
+from lightrag.core import Component, Generator, DataClass, fun_to_component, Sequential
 from lightrag.components.model_client import GroqAPIClient
-from lightrag.core import DataClass, fun_to_component, Sequential
 from lightrag.components.output_parsers import JsonOutputParser
 
 @dataclass
@@ -62,13 +61,13 @@ class QA(Component):
     def __init__(self):
         super().__init__()
         template = r"""<SYS>
-        You are a helpful assistant.
-        <OUTPUT_FORMAT>
-        {{output_format_str}}
-        </OUTPUT_FORMAT>
-        </SYS>
-        User: {{input_str}}
-        You:
+You are a helpful assistant.
+<OUTPUT_FORMAT>
+{{output_format_str}}
+</OUTPUT_FORMAT>
+</SYS>
+User: {{input_str}}
+You:
         """
         parser = JsonOutputParser(data_class=QAOutput)
         self.generator = Generator(
@@ -151,6 +150,39 @@ Here is what we get from ``print(output)``:
 
 ```
 GeneratorOutput(data=QAOutput(explaination='LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.', example='For example, a LLM can be trained to generate news articles, conversations, or even entire books, and can be used for a variety of applications such as language translation, text summarization, and chatbots.'), error=None, usage=None, raw_response='```\n{\n  "explaination": "LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.",\n  "example": "For example, a LLM can be trained to generate news articles, conversations, or even entire books, and can be used for a variety of applications such as language translation, text summarization, and chatbots."\n}', metadata=None)
+```
+**See the prompt**
+
+Use the following code:
+
+```python
+
+qa2.generator.print_prompt(
+        output_format_str=qa2.generator.output_processors[0].format_instructions(),
+        input_str="What is LLM?",
+)
+```
+
+
+The output will be:
+
+```
+You are a helpful assistant.
+<OUTPUT_FORMAT>
+Your output should be formatted as a standard JSON instance with the following schema:
+```
+{
+    "explaination": "A brief explaination of the concept in one sentence. (str) (required)",
+    "example": "An example of the concept in a sentence. (str) (required)"
+}
+```
+-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+-Use double quotes for the keys and string values.
+-Follow the JSON formatting conventions.
+</OUTPUT_FORMAT>
+</SYS>
+User: What is LLM?
+You:
 ```
 
 
