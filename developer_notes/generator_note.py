@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator
+from lightrag.core import Component, Generator, DataClass, fun_to_component, Sequential
 from lightrag.components.model_client import GroqAPIClient
-from lightrag.core import DataClass, fun_to_component, Sequential
 from lightrag.components.output_parsers import JsonOutputParser
 from lightrag.utils import setup_env
 
@@ -48,13 +47,13 @@ class QA(Component):
     def __init__(self):
         super().__init__()
         template = r"""<SYS>
-        You are a helpful assistant.
-        <OUTPUT_FORMAT>
-        {{output_format_str}}
-        </OUTPUT_FORMAT>
-        </SYS>
-        User: {{input_str}}
-        You:
+You are a helpful assistant.
+<OUTPUT_FORMAT>
+{{output_format_str}}
+</OUTPUT_FORMAT>
+</SYS>
+User: {{input_str}}
+You:
         """
         parser = JsonOutputParser(data_class=QAOutput)
         self.generator = Generator(
@@ -123,8 +122,8 @@ def use_its_own_template():
     from lightrag.components.model_client import GroqAPIClient
 
     template = r"""<SYS>{{task_desc_str}}</SYS>
-    User: {{input_str}}
-    You:"""
+User: {{input_str}}
+You:"""
     generator = Generator(
         model_client=GroqAPIClient(),
         model_kwargs={"model": "llama3-8b-8192"},
@@ -225,6 +224,10 @@ if __name__ == "__main__":
     answer = qa2("What is LLM?")
     print(qa2)
     print(answer)
+    qa2.generator.print_prompt(
+        output_format_str=qa2.generator.output_processors[0].format_instructions(),
+        input_str="What is LLM?",
+    )
 
     # minimum_generator()
     # use_a_json_parser()
