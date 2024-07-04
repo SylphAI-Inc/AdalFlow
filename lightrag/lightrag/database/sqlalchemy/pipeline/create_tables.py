@@ -1,6 +1,6 @@
 from lightrag.database.sqlalchemy.sqlachemy_manager import DatabaseManager
 
-# we need to import the DocumentModel class to create the tables
+#  we need to import the DocumentModel class to create the tables
 from lightrag.database.sqlalchemy.model import DocumentModel  # noqa
 
 

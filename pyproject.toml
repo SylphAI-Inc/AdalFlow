@@ -23,7 +23,7 @@ pyvis = "^0.3.2"
 pre-commit = "^3.7.0"
 
 anthropic = "^0.26.0"
-google-generativeai = "^0.5.4"
+# google-generativeai = "^0.5.4"
 torchmetrics = "^1.4.0.post0"
 # dspy-ai = "^2.4.9"
 jupyter = "^1.0.0"
@@ -54,6 +54,7 @@ nbconvert = "^7.16.4"
 pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
 sqlalchemy = "^2.0.31"
+google-generativeai = "^0.7.1"
 
 
 [build-system]

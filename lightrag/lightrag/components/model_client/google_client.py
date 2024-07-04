@@ -20,8 +20,8 @@ from lightrag.core.types import ModelType
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 safe_import(
-    OptionalPackages.GOOGLE_GENERATIVEAI.name,
-    OptionalPackages.GOOGLE_GENERATIVEAI.value,
+    OptionalPackages.GOOGLE_GENERATIVEAI.value[0],
+    OptionalPackages.GOOGLE_GENERATIVEAI.value[1],
 )
 
 

@@ -1,26 +1,38 @@
 .. _apis-optim:
 
-.. Optimizer
-.. ==============
-
 Optimizer
+==============
+
+
+
+Overview
 ----------
 .. autosummary::
 
-   optim.optimizer
-   optim.sampler
    optim.few_shot_optimizer
    optim.llm_augment
    optim.llm_optimizer
+   optim.optimizer
+   optim.sampler
 
-.. Optimizer
-.. ----------
+
 .. toctree::
    :maxdepth: 1
    :hidden:
 
-   optim.optimizer
-   optim.sampler
    optim.few_shot_optimizer
    optim.llm_augment
    optim.llm_optimizer
+   optim.optimizer
+   optim.sampler
+
+
+
+---------------
+
+.. automodule:: optim
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. make sure it follows the same order as optim.rst
