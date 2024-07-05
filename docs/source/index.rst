@@ -1,10 +1,37 @@
-=======================
-Introduction
-=======================
+.. =======================
+.. Introduction
+.. =======================
 
-LightRAG is the `PyTorch` library for building large language model (LLM) applications. We help developers with both building and optimizing `Retriever`-`Agent`-`Generator` (RAG) pipelines.
-It is light, modular, and robust.
+.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg
+   :width: 100%
+   :alt: LightRAG Logo
 
+.. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
+   :target: https://opensource.org/license/MIT
+
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/lightRAG?style=flat-square
+   :target: https://pypi.org/project/lightRAG/
+
+.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/lightRAG?style=flat-square
+   :target: https://pypistats.org/packages/lightRAG
+
+.. |GitHub Stars| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
+   :target: https://star-history.com/#SylphAI-Inc/LightRAG
+
+.. |Open Issues| image:: https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square
+   :target: https://github.com/SylphAI-Inc/LightRAG/issues
+
+.. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
+   :target: https://discord.gg/zt2mTPcu
+
+|License| |PyPI Version| |PyPI Downloads| |GitHub Stars| |Open Issues| |Discord|
+
+===============================================================
+⚡ The PyTorch Library for Large Language Model Applications ⚡
+===============================================================
+
+*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
+It is *light*, *modular*, and *robust*.
 
 
 .. grid:: 1
@@ -71,15 +98,15 @@ It is light, modular, and robust.
 .. and Customizability
 
 
-Simplicity
+Maxium Customizability & Composability
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
 As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
 
 - Two fundamental and powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
-- We end up with less than two levels of subclasses. :doc:`developer_notes/class_hierarchy`.
-- The result is a library with bare minimum abstraction, providing developers with maximum customizability.
+- We end up with less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
+- The result is a library with bare minimum abstraction, providing developers with *maximum customizability and composability*.
 
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
@@ -109,10 +136,11 @@ Similar to the `PyTorch` module, our ``Component`` provides excellent visualizat
 
 .. and Robustness
 
-Controllability
+
+Maximum Control and Robustness
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Our simplicity did not come from doing 'less'.
-On the contrary, we have to do 'more' and go 'deeper' and 'wider' on any topic to offer developers maximum control and robustness.
+Our simplicity did not come from doing less.
+On the contrary, we have to do more and go deeper and wider on any topic to offer developers *maximum control and robustness*.
 
 - LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on API features such as tools and JSON format with components like ``Prompt``, ``OutputParser``, ``FunctionTool``, and ``ToolManager``.
 - Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in ``ModelClient`` and ``Retriever``.

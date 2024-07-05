@@ -15,6 +15,11 @@
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
 
+
+
+
+# Design Philosophy
+
 LightRAG follows three fundamental principles from day one: simplicity over complexity, quality over quantity, and optimizing over building.
 This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability. View Class hierarchy [here](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
 
