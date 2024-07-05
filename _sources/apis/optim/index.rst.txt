@@ -3,8 +3,6 @@
 Optimizer
 ==============
 
-
-
 Overview
 ----------
 .. autosummary::
