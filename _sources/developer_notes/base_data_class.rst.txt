@@ -10,14 +10,14 @@ DataClass
 In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
 Tensor wraps a multi-dimensional matrix to better support its operations and computations.
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
-:class:`DataClass<core.base_data_class.DataClass>` is designed to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+:class:`DataClass<core.base_data_class.DataClass>` is designed to ease this data interaction with LLMs via prompt(input) and to parse the text prediction(output).
 
 .. figure:: /_static/images/dataclass.png
     :align: center
     :alt: DataClass
     :width: 680px
 
-    DataClass is to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+    DataClass is to ease the data interaction with LLMs.
 
 
 Design
