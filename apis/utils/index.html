@@ -52,8 +52,8 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="config" href="utils.config.html" />
-    <link rel="prev" title="generator_call_logger" href="../tracing/tracing.generator_call_logger.html" />
+    <link rel="next" title="logger" href="utils.logger.html" />
+    <link rel="prev" title="llm_as_judge" href="../eval/eval.llm_as_judge.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -159,6 +159,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -295,6 +302,13 @@ document.write(`
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -360,7 +374,7 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -380,48 +394,67 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.openai_client.html">openai_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.transformers_client.html">transformers_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.utils.html">utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.utils.html">utils</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.agent.react.html">react</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.text_splitter.html">text_splitter</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.memory.memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.memory.memory.html">memory</a></li>
 </ul>
 </details></li>
 </ul>
 </details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
@@ -429,28 +462,15 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
 </ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
-</ul>
-</details></li>
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Utils</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.logger.html">logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.lazy_import.html">lazy_import</a></li>
 </ul>
 </details></li>
 </ul>
@@ -516,26 +536,23 @@ document.write(`
 <h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="utils.config.html#module-utils.config" title="utils.config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.config</span></code></a></p></td>
-<td><p>Config helper functions to manage configuration and rebuilt your task pipeline.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="utils.file_io.html#module-utils.file_io" title="utils.file_io"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.file_io</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="utils.lazy_import.html#module-utils.lazy_import" title="utils.lazy_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.lazy_import</span></code></a></p></td>
-<td><p>Lazy import a module and class.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="utils.logger.html#module-utils.logger" title="utils.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.logger</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils.logger.html#module-utils.logger" title="utils.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.logger</span></code></a></p></td>
 <td><p>LightRAG's provides default logger and colored print function.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="utils.registry.html#module-utils.registry" title="utils.registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.registry</span></code></a></p></td>
-<td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="utils.serialization.html#module-utils.serialization" title="utils.serialization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.serialization</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils.config.html#module-utils.config" title="utils.config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.config</span></code></a></p></td>
+<td><p>Config helper functions to manage configuration and rebuilt your task pipeline.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="utils.registry.html#module-utils.registry" title="utils.registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.registry</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="utils.setup_env.html#module-utils.setup_env" title="utils.setup_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.setup_env</span></code></a>()</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="utils.lazy_import.html#module-utils.lazy_import" title="utils.lazy_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.lazy_import</span></code></a></p></td>
+<td><p>Lazy import a module and class.</p></td>
 </tr>
 </tbody>
 </table>
@@ -556,20 +573,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../tracing/tracing.generator_call_logger.html"
+       href="../eval/eval.llm_as_judge.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">generator_call_logger</p>
+        <p class="prev-next-title">llm_as_judge</p>
       </div>
     </a>
     <a class="right-next"
-       href="utils.config.html"
+       href="utils.logger.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">config</p>
+        <p class="prev-next-title">logger</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

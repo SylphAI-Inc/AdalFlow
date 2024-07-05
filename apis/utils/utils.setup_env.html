@@ -52,7 +52,8 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="prev" title="serialization" href="utils.serialization.html" />
+    <link rel="next" title="lazy_import" href="utils.lazy_import.html" />
+    <link rel="prev" title="registry" href="utils.registry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,6 +164,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
   </a>
@@ -295,6 +303,13 @@ document.write(`
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
   </a>
@@ -359,14 +374,105 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="utils.config.html">config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.file_io.html">file_io</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.lazy_import.html">lazy_import</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.logger.html">logger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.registry.html">registry</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.serialization.html">serialization</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">setup_env</a></li>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tool_manager.html">tool_manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.parameter.html">parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.utils.html">utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.output_parsers.outputs.html">outputs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.agent.react.html">react</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.text_splitter.html">text_splitter</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.memory.memory.html">memory</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Utils</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.registry.html">registry</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.lazy_import.html">lazy_import</a></li>
+</ul>
+</details></li>
 </ul>
 </div>
 </nav></div>
@@ -447,13 +553,22 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="utils.serialization.html"
+       href="utils.registry.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">serialization</p>
+        <p class="prev-next-title">registry</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="utils.lazy_import.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">lazy_import</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -426,7 +440,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Generator">
-<a class="viewcode-back" href="../../apis/core/core.generator.html#core.Generator">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator">[docs]</a>
 <span class="k">class</span> <span class="nc">Generator</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An user-facing orchestration component for LLM prediction.</span>
@@ -525,7 +539,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Generator.from_config">
-<a class="viewcode-back" href="../../apis/core/core.generator.html#core.Generator.from_config">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Generator&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create a Generator instance from the config dictionary.</span>
@@ -575,7 +589,7 @@ document.write(`
         <span class="k">return</span> <span class="n">combined_model_kwargs</span>
 
 <div class="viewcode-block" id="Generator.print_prompt">
-<a class="viewcode-back" href="../../apis/core/core.generator.html#core.Generator.print_prompt">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.print_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
@@ -627,7 +641,7 @@ document.write(`
         <span class="k">return</span> <span class="n">api_kwargs</span>
 
 <div class="viewcode-block" id="Generator.call">
-<a class="viewcode-back" href="../../apis/core/core.generator.html#core.Generator.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>  <span class="c1"># the input need to be passed to the prompt</span>
@@ -667,7 +681,7 @@ document.write(`
 
     <span class="c1"># TODO: training is not supported in async call yet</span>
 <div class="viewcode-block" id="Generator.acall">
-<a class="viewcode-back" href="../../apis/core/core.generator.html#core.Generator.acall">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.acall">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>

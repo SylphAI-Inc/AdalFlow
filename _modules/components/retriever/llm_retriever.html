@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -442,7 +456,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LLMRetriever">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever">[docs]</a>
 <span class="k">class</span> <span class="nc">LLMRetriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Use LLM to access the query and the documents to retrieve the top k relevant indices of the documents.</span>
 
@@ -484,14 +498,14 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LLMRetriever.reset_index">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.reset_index">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">total_documents</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 
 <div class="viewcode-block" id="LLMRetriever.build_index_from_documents">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.build_index_from_documents">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.build_index_from_documents">[docs]</a>
     <span class="k">def</span> <span class="nf">build_index_from_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="n">RetrieverDocumentsType</span><span class="p">,</span>
@@ -508,7 +522,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LLMRetriever.call">
-<a class="viewcode-back" href="../../../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span>

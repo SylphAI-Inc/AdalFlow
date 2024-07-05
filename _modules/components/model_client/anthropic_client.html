@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -432,7 +446,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="AnthropicAPIClient">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">[docs]</a>
 <span class="k">class</span> <span class="nc">AnthropicAPIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the Anthropic API client.</span>
 
@@ -448,7 +462,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">tested_llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_sync_client">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ANTHROPIC_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -457,7 +471,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_async_client">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ANTHROPIC_API_KEY&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
@@ -466,14 +480,14 @@ document.write(`
 
 
 <div class="viewcode-block" id="AnthropicAPIClient.parse_chat_completion">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span></div>
 
 
 <div class="viewcode-block" id="AnthropicAPIClient.convert_inputs_to_api_kwargs">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -493,7 +507,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="AnthropicAPIClient.call">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">[docs]</a>
     <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
         <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
         <span class="p">(</span>
@@ -518,7 +532,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="AnthropicAPIClient.acall">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall">[docs]</a>
     <span class="nd">@backoff</span><span class="o">.</span><span class="n">on_exception</span><span class="p">(</span>
         <span class="n">backoff</span><span class="o">.</span><span class="n">expo</span><span class="p">,</span>
         <span class="p">(</span>

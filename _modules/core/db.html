@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -424,7 +438,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">LocalDB</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</span>
@@ -522,13 +536,13 @@ document.write(`
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
 
 <div class="viewcode-block" id="LocalDB.get_transformer_keys">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.get_transformer_keys">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.get_transformer_keys">[docs]</a>
     <span class="k">def</span> <span class="nf">get_transformer_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transformed_items</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="LocalDB.get_transformed_data">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.get_transformed_data">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.get_transformed_data">[docs]</a>
     <span class="k">def</span> <span class="nf">get_transformed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">U</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the transformed items by key.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
@@ -541,7 +555,7 @@ document.write(`
         <span class="k">return</span> <span class="n">name</span>
 
 <div class="viewcode-block" id="LocalDB.register_transformer">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.register_transformer">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.register_transformer">[docs]</a>
     <span class="k">def</span> <span class="nf">register_transformer</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">transformer</span><span class="p">:</span> <span class="n">Component</span><span class="p">,</span>
@@ -574,7 +588,7 @@ document.write(`
         <span class="o">...</span>
 
 <div class="viewcode-block" id="LocalDB.transform">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.transform">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.transform">[docs]</a>
     <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">transformer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Component</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -611,7 +625,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.load">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.load">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.load">[docs]</a>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the db with new items.</span>
 
@@ -629,7 +643,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.extend">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.extend">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.extend">[docs]</a>
     <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="n">apply_transformer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extend the db with new items.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
@@ -648,7 +662,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.delete">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.delete">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.delete">[docs]</a>
     <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remove_transformed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove items by index or pop the last item. Optionally remove the transformed data as well.</span>
 
@@ -665,7 +679,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.add">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.add">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.add">[docs]</a>
     <span class="k">def</span> <span class="nf">add</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">apply_transformer</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">):</span>
@@ -704,14 +718,14 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.fetch_items">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.fetch_items">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.fetch_items">[docs]</a>
     <span class="k">def</span> <span class="nf">fetch_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch items with a condition.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">condition</span><span class="p">(</span><span class="n">item</span><span class="p">)]</span></div>
 
 
 <div class="viewcode-block" id="LocalDB.fetch_transformed_items">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.fetch_transformed_items">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.fetch_transformed_items">[docs]</a>
     <span class="k">def</span> <span class="nf">fetch_transformed_items</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">U</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">U</span><span class="p">]:</span>
@@ -720,7 +734,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.reset">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.reset">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.reset">[docs]</a>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Reset all attributes to empty.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mapped_items</span> <span class="o">=</span> <span class="p">{}</span>
@@ -730,7 +744,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.save_state">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.save_state">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.save_state">[docs]</a>
     <span class="k">def</span> <span class="nf">save_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the current state (attributes) of the DB using pickle.</span>
 
@@ -747,7 +761,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LocalDB.load_state">
-<a class="viewcode-back" href="../../apis/core/core.db.html#core.LocalDB.load_state">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.load_state">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_state</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;LocalDB&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the state of the DB from a pickle file.&quot;&quot;&quot;</span>

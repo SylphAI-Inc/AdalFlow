@@ -164,6 +164,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -291,6 +298,13 @@ document.write(`
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -497,7 +511,7 @@ For example:</p>
 </pre></div>
 </div>
 <p>For local models, such as using <cite>huggingface transformers</cite>, you need to create this model inference SDKs yourself.
-How you do this is highly flexible. Here is an example to use local embedding model (e.g. <code class="docutils literal notranslate"><span class="pre">thenlper/gte-base</span></code>) as a model (Refer <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder" title="components.model_client.transformers_client.TransformerEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformerEmbedder</span></code></a> for details).
+How you do this is highly flexible. Here is an example to use local embedding model (e.g. <code class="docutils literal notranslate"><span class="pre">thenlper/gte-base</span></code>) as a model (Refer <a class="reference internal" href="../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder" title="components.model_client.transformers_client.TransformerEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformerEmbedder</span></code></a> for details).
 It really is just normal model inference code.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModel</span>
 
@@ -692,7 +706,7 @@ Typically an LLM needs to use <cite>parse_chat_completion</cite> to parse the co
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>You can refer to <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a> for API embedding model integration and <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a> for local embedding model integration.</p>
+<p>You can refer to <a class="reference internal" href="../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a> for API embedding model integration and <a class="reference internal" href="../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a> for local embedding model integration.</p>
 <p>Then <cite>call</cite> and <cite>acall</cite> methods to call Model inference via their own arguments.
 We encourage the subclass provides error handling and retry mechanism in these methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
@@ -779,11 +793,11 @@ Here is an example to use <code class="docutils literal notranslate"><span class
 <p class="admonition-title">API reference</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.model_client.ModelClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient" title="components.model_client.google_client.GoogleGenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.google_client.GoogleGenAIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/_autosummary/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/_autosummary/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/_autosummary/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.google_client.GoogleGenAIClient</span></code></p></li>
 </ul>
 </div>
 </section>

@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -502,7 +516,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="enable_library_logging">
-<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.enable_library_logging">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.enable_library_logging">[docs]</a>
 <span class="k">def</span> <span class="nf">enable_library_logging</span><span class="p">(</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
     <span class="n">enable_console</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -575,7 +589,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="get_logger">
-<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.get_logger">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.get_logger">[docs]</a>
 <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
@@ -635,7 +649,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="get_current_script_and_line">
-<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.get_current_script_and_line">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.get_current_script_and_line">[docs]</a>
 <span class="k">def</span> <span class="nf">get_current_script_and_line</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the function name, script name, and line of where the print is called.</span>
 
@@ -657,7 +671,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="printc">
-<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.printc">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.printc">[docs]</a>
 <span class="k">def</span> <span class="nf">printc</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cyan&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Color enhanced print function along with logger-like format.</span>
 

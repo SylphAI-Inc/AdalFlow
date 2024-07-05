@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -291,6 +298,13 @@ document.write(`
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -409,7 +423,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RetrieverRecall">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.RetrieverRecall">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.retriever_recall.html#eval.retriever_recall.RetrieverRecall">[docs]</a>
 <span class="k">class</span> <span class="nc">RetrieverRecall</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metric to evaluate the recall of the retriever. The recall is the ratio of the number of relevant context strings in the retrieved context to the total number of ground truth relevant context strings.</span>
@@ -460,7 +474,7 @@ document.write(`
         <span class="k">return</span> <span class="n">recalled</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">gt_context</span><span class="p">)</span>
 
 <div class="viewcode-block" id="RetrieverRecall.compute">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.RetrieverRecall.compute">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.retriever_recall.html#eval.retriever_recall.RetrieverRecall.compute">[docs]</a>
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">retrieved_contexts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>

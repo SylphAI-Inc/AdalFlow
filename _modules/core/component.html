@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -468,7 +482,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component">[docs]</a>
 <span class="k">class</span> <span class="nc">Component</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for all LLM task pipeline components.</span>
@@ -549,7 +563,7 @@ document.write(`
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="s2">&quot;_init_args&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_init_args</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
 
 <div class="viewcode-block" id="Component.train">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.train">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.train">[docs]</a>
     <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sets the component in training mode.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
@@ -561,7 +575,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.eval">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.eval">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.eval">[docs]</a>
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sets the component in evaluation mode.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
@@ -583,7 +597,7 @@ document.write(`
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Component.is_picklable">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.is_picklable">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.is_picklable">[docs]</a>
     <span class="k">def</span> <span class="nf">is_picklable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test if the given object is picklable.</span>
@@ -613,7 +627,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.pickle_to_file">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.pickle_to_file">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.pickle_to_file">[docs]</a>
     <span class="k">def</span> <span class="nf">pickle_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Pickle the component to a file.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
@@ -621,7 +635,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.load_from_pickle">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.load_from_pickle">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_from_pickle">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_from_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the component from a file.&quot;&quot;&quot;</span>
@@ -630,7 +644,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.to_dict">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts the component to a dictionary object for serialization, including more states of the component than state_dict.</span>
 
@@ -696,7 +710,7 @@ document.write(`
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">)}</span>
 
 <div class="viewcode-block" id="Component.from_dict">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance from previously serialized data</span>
@@ -713,7 +727,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.from_config">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.from_config">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.from_config">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_config</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create an instance of the component from a configuration dictionary.&quot;&quot;&quot;</span>
@@ -762,7 +776,7 @@ document.write(`
         <span class="k">return</span> <span class="n">value</span>
 
 <div class="viewcode-block" id="Component.load_state_pickle">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.load_state_pickle">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_state_pickle">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_state_pickle</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Component&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the state of the component from a file using pickle.&quot;&quot;&quot;</span>
@@ -771,7 +785,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.register_parameter">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.register_parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.register_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">register_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add a parameter to the component.</span>
 
@@ -804,7 +818,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.parameters">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.parameters">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.parameters">[docs]</a>
     <span class="k">def</span> <span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Returns an iterator over module parameters.</span>
 
@@ -862,7 +876,7 @@ document.write(`
                 <span class="k">yield</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span>
 
 <div class="viewcode-block" id="Component.named_parameters">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.named_parameters">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_parameters">[docs]</a>
     <span class="k">def</span> <span class="nf">named_parameters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">remove_duplicate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]:</span>
@@ -945,7 +959,7 @@ document.write(`
         <span class="k">return</span> <span class="n">output</span>
 
 <div class="viewcode-block" id="Component.call">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Component </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> is missing the required &#39;call&#39; method.&quot;</span>
@@ -953,14 +967,14 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.acall">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.acall">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.acall">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;API call, file io.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Component.add_component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.add_component">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.add_component">[docs]</a>
     <span class="k">def</span> <span class="nf">add_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sa">r</span><span class="s2">&quot;Add a child component to the current component.&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">component</span><span class="p">,</span> <span class="n">Component</span><span class="p">)</span> <span class="ow">and</span> <span class="n">component</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -979,7 +993,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.register_component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.register_component">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.register_component">[docs]</a>
     <span class="k">def</span> <span class="nf">register_component</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alias for add_component</span>
@@ -988,13 +1002,13 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.get_subcomponent">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.get_subcomponent">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.get_subcomponent">[docs]</a>
     <span class="k">def</span> <span class="nf">get_subcomponent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Component.named_children">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.named_children">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_children">[docs]</a>
     <span class="k">def</span> <span class="nf">named_children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;Component&quot;</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an iterator over immediate children components.</span>
@@ -1007,7 +1021,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.children">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.children">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.children">[docs]</a>
     <span class="k">def</span> <span class="nf">children</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an iterator over immediate children components.</span>
@@ -1017,7 +1031,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.components">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.components">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.components">[docs]</a>
     <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns an iterator over all components in the Module.</span>
@@ -1027,7 +1041,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Component.named_components">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.named_components">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.named_components">[docs]</a>
     <span class="k">def</span> <span class="nf">named_components</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Component&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1086,7 +1100,7 @@ document.write(`
 
     <span class="c1"># TODO: test it + add example</span>
 <div class="viewcode-block" id="Component.state_dict">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.state_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.state_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
@@ -1162,7 +1176,7 @@ document.write(`
                         <span class="n">unexpected_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Component.load_state_dict">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Component.load_state_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Component.load_state_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Copy parameters from :attr:`state_dict` into this component and its descendants.</span>
 
@@ -1360,7 +1374,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Sequential">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Sequential">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential">[docs]</a>
 <span class="k">class</span> <span class="nc">Sequential</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A sequential container.</span>
 
@@ -1441,7 +1455,7 @@ document.write(`
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Sequential.append">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Sequential.append">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential.append">[docs]</a>
     <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">:</span> <span class="n">Component</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Sequential&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Appends a component to the end of the Sequential.&quot;&quot;&quot;</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="p">)</span>
@@ -1464,7 +1478,7 @@ document.write(`
     <span class="c1">#         )</span>
 
 <div class="viewcode-block" id="Sequential.call">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.Sequential.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.Sequential.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_components</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="nb">input</span> <span class="o">=</span> <span class="n">component</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -1475,7 +1489,7 @@ document.write(`
 
 <span class="c1"># TODO: support async call</span>
 <div class="viewcode-block" id="FunComponent">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.FunComponent">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent">[docs]</a>
 <span class="k">class</span> <span class="nc">FunComponent</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Component that wraps a function.</span>
 
@@ -1495,7 +1509,7 @@ document.write(`
         <span class="n">EntityMapping</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">,</span> <span class="n">fun</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FunComponent.call">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.FunComponent.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.FunComponent.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">fun</span> <span class="o">=</span> <span class="n">EntityMapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fun_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fun</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
@@ -1507,7 +1521,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="fun_to_component">
-<a class="viewcode-back" href="../../apis/core/core.component.html#core.fun_to_component">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.component.html#core.component.fun_to_component">[docs]</a>
 <span class="k">def</span> <span class="nf">fun_to_component</span><span class="p">(</span><span class="n">fun</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FunComponent</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function to convert a function into a Component with</span>
 <span class="sd">    its own class name.</span>

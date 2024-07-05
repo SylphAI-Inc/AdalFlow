@@ -52,8 +52,8 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="few_shot_optimizer" href="optim.few_shot_optimizer.html" />
-    <link rel="prev" title="llm_as_judge" href="../eval/eval.llm_as_judge.html" />
+    <link rel="next" title="optimizer" href="optim.optimizer.html" />
+    <link rel="prev" title="memory" href="../components/_autosummary/components.memory.memory.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,6 +163,13 @@
 </li>
 
 
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -252,10 +259,6 @@ document.write(`
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -291,6 +294,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -360,7 +370,7 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
@@ -380,48 +390,67 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.openai_client.html">openai_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.transformers_client.html">transformers_client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.utils.html">utils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.model_client.utils.html">utils</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.agent.react.html">react</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.data_process.text_splitter.html">text_splitter</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="../components/components.memory.memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/_autosummary/components.memory.memory.html">memory</a></li>
 </ul>
 </details></li>
 </ul>
 </details></li>
+</ul>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Optimizer</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.llm_augment.html">llm_augment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.llm_optimizer.html">llm_optimizer</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
@@ -429,28 +458,15 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Optimizer</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim.llm_optimizer.html">llm_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="optim.sampler.html">sampler</a></li>
 </ul>
-</details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
-</ul>
-</details></li>
+<ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 </ul>
 </details></li>
 </ul>
@@ -510,12 +526,16 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="optimizer">
-<span id="apis-optim"></span><h1>Optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+  <span class="target" id="apis-optim"></span><section id="optimizer">
+<h1>Optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h1>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="optim.optimizer.html#module-optim.optimizer" title="optim.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.optimizer</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="optim.sampler.html#module-optim.sampler" title="optim.sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.sampler</span></code></a></p></td>
+<td><p>The sampler here is designed to sample examples in few-shots ICL.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="optim.few_shot_optimizer.html#module-optim.few_shot_optimizer" title="optim.few_shot_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.few_shot_optimizer</span></code></a></p></td>
 <td><p></p></td>
 </tr>
@@ -525,197 +545,11 @@ document.write(`
 <tr class="row-odd"><td><p><a class="reference internal" href="optim.llm_optimizer.html#module-optim.llm_optimizer" title="optim.llm_optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.llm_optimizer</span></code></a></p></td>
 <td><p>Based and optimized from ORPO llm optimizer.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="optim.optimizer.html#module-optim.optimizer" title="optim.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.optimizer</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="optim.sampler.html#module-optim.sampler" title="optim.sampler"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optim.sampler</span></code></a></p></td>
-<td><p>The sampler here is designed to sample examples in few-shots ICL.</p></td>
-</tr>
 </tbody>
 </table>
 </div>
 <div class="toctree-wrapper compound">
 </div>
-<hr class="docutils" />
-<dl class="py class" id="module-optim">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BootstrapFewShot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sampler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">llm_augmenter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_input_dataclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_processors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">task_output_dataclass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
-<p>BootstrapFewShot performs few-shot sampling used in few-shot ICL.</p>
-<p>It simply orchestrates a sampler and an output processor to generate examples.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.augment_samples">
-<span class="sig-name descname"><span class="pre">augment_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Sample</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Sample</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.augment_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.augment_samples" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.reset" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.init" title="Link to this definition">#</a></dt>
-<dd><p>Initialize the parameters with the initial examples.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.random_replace">
-<span class="sig-name descname"><span class="pre">random_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.random_replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.random_replace" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.propose">
-<span class="sig-name descname"><span class="pre">propose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.propose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.propose" title="Link to this definition">#</a></dt>
-<dd><p>Update parameter with the proposed examples.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.update_parameter">
-<span class="sig-name descname"><span class="pre">update_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.update_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.update_parameter" title="Link to this definition">#</a></dt>
-<dd><p>Load the proposed into the current.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.BootstrapFewShot.reset_parameter">
-<span class="sig-name descname"><span class="pre">reset_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/few_shot_optimizer.html#BootstrapFewShot.reset_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.BootstrapFewShot.reset_parameter" title="Link to this definition">#</a></dt>
-<dd><p>When performance did not improve, reset the parameter to the current examples.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.LLMOptimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LLMOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/llm_optimizer.html#LLMOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.LLMOptimizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Optimizer</span></code></p>
-<p>Default LLM optimizer for task instruction.</p>
-<p>User should always provide a starter instruction which provides the source of truth for the task.
-The optimizer will generate new instructions that can score higher than all previous instructions.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.LLMOptimizer.reset">
-<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/llm_optimizer.html#LLMOptimizer.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.LLMOptimizer.reset" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.LLMOptimizer.propose">
-<span class="sig-name descname"><span class="pre">propose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/llm_optimizer.html#LLMOptimizer.propose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.LLMOptimizer.propose" title="Link to this definition">#</a></dt>
-<dd><p>Propose a new instruction using the generator.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.LLMOptimizer.update_parameter">
-<span class="sig-name descname"><span class="pre">update_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/llm_optimizer.html#LLMOptimizer.update_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.LLMOptimizer.update_parameter" title="Link to this definition">#</a></dt>
-<dd><p>Load the proposed instruction to the current instruction to complete the optimization step.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.LLMOptimizer.reset_parameter">
-<span class="sig-name descname"><span class="pre">reset_parameter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/llm_optimizer.html#LLMOptimizer.reset_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.LLMOptimizer.reset_parameter" title="Link to this definition">#</a></dt>
-<dd><p>The proposed is not leading to a better instruction, reset the parameter.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.Optimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Optimizer</span></span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Optimizer" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.Optimizer.state_dict">
-<span class="sig-name descname"><span class="pre">state_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.state_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Optimizer.state_dict" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.Optimizer.step">
-<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/optimizer.html#Optimizer.step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Optimizer.step" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.RandomSampler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RandomSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/sampler.html#RandomSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.RandomSampler" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="optim.sampler.html#optim.sampler.Sampler" title="optim.sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
-<p>Simple random sampler to sample from the dataset.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="optim.RandomSampler.dataset">
-<span class="sig-name descname"><span class="pre">dataset</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></em><a class="headerlink" href="#optim.RandomSampler.dataset" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.RandomSampler.random_replace">
-<span class="sig-name descname"><span class="pre">random_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#RandomSampler.random_replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.RandomSampler.random_replace" title="Link to this definition">#</a></dt>
-<dd><p>Randomly replace num of shots in the samples.</p>
-<p>If replace is True, it will skip duplicate checks</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.RandomSampler.random_sample">
-<span class="sig-name descname"><span class="pre">random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#RandomSampler.random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.RandomSampler.random_sample" title="Link to this definition">#</a></dt>
-<dd><p>Randomly sample num of shots from the dataset. If replace is True, sample with replacement,
-meaning the same sample can be sampled multiple times.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.RandomSampler.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#RandomSampler.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.RandomSampler.call" title="Link to this definition">#</a></dt>
-<dd><p>Abstract method to do the main sampling</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.ClassSampler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ClassSampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_data_key_fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/sampler.html#ClassSampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.ClassSampler" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="optim.sampler.html#optim.sampler.Sampler" title="optim.sampler.Sampler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sampler</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
-<p>Sample from the dataset based on the class labels.</p>
-<p>T_co can be any type of data, e.g., dict, list, etc. with get_data_key_fun to extract the class label.</p>
-<p>Example:
-Initialize
-<code class="docutils literal notranslate"><span class="pre">`</span>
-<span class="pre">dataset</span> <span class="pre">=</span> <span class="pre">[{&quot;coarse_label&quot;:</span> <span class="pre">i}</span> <span class="pre">for</span> <span class="pre">i</span> <span class="pre">in</span> <span class="pre">range(10)]</span>
-<span class="pre">sampler</span> <span class="pre">=</span> <span class="pre">ClassSampler[Dict](dataset,</span> <span class="pre">num_classes=6,</span> <span class="pre">get_data_key_fun=lambda</span> <span class="pre">x:</span> <span class="pre">x[&quot;coarse_label&quot;])</span>
-<span class="pre">`</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.ClassSampler.random_replace">
-<span class="sig-name descname"><span class="pre">random_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights_per_class</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#ClassSampler.random_replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.ClassSampler.random_replace" title="Link to this definition">#</a></dt>
-<dd><p>Randomly select num shots from the samples and replace it with another sample has the same class index</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.ClassSampler.random_sample">
-<span class="sig-name descname"><span class="pre">random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#ClassSampler.random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.ClassSampler.random_sample" title="Link to this definition">#</a></dt>
-<dd><p>Randomly sample num_shots from the dataset. If replace is True, sample with replacement.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.ClassSampler.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#ClassSampler.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.ClassSampler.call" title="Link to this definition">#</a></dt>
-<dd><p>Sample num_shots from the dataset. If replace is True, sample with replacement.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="optim.Sampler">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sampler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/sampler.html#Sampler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Sampler" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.Sampler.random_replace">
-<span class="sig-name descname"><span class="pre">random_replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/sampler.html#Sampler.random_replace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Sampler.random_replace" title="Link to this definition">#</a></dt>
-<dd><p>Randomly replace some samples</p>
-<p>Recomnend to have two arguments: shots and samples</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="optim.Sampler.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="optim.sampler.html#optim.sampler.Sample" title="optim.sampler.Sample"><span class="pre">Sample</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/sampler.html#Sampler.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.Sampler.call" title="Link to this definition">#</a></dt>
-<dd><p>Abstract method to do the main sampling</p>
-</dd></dl>
-
-</dd></dl>
-
-</section>
 </section>
 
 
@@ -729,20 +563,20 @@ Initialize
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../eval/eval.llm_as_judge.html"
+       href="../components/_autosummary/components.memory.memory.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">llm_as_judge</p>
+        <p class="prev-next-title">memory</p>
       </div>
     </a>
     <a class="right-next"
-       href="optim.few_shot_optimizer.html"
+       href="optim.optimizer.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">few_shot_optimizer</p>
+        <p class="prev-next-title">optimizer</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -752,65 +586,6 @@ Initialize
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.augment_samples"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.augment_samples()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.reset"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.reset()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.init"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.init()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.random_replace"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.random_replace()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.propose"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.propose()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.update_parameter"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.update_parameter()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.BootstrapFewShot.reset_parameter"><code class="docutils literal notranslate"><span class="pre">BootstrapFewShot.reset_parameter()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.LLMOptimizer"><code class="docutils literal notranslate"><span class="pre">LLMOptimizer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.LLMOptimizer.reset"><code class="docutils literal notranslate"><span class="pre">LLMOptimizer.reset()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.LLMOptimizer.propose"><code class="docutils literal notranslate"><span class="pre">LLMOptimizer.propose()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.LLMOptimizer.update_parameter"><code class="docutils literal notranslate"><span class="pre">LLMOptimizer.update_parameter()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.LLMOptimizer.reset_parameter"><code class="docutils literal notranslate"><span class="pre">LLMOptimizer.reset_parameter()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Optimizer"><code class="docutils literal notranslate"><span class="pre">Optimizer</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Optimizer.state_dict"><code class="docutils literal notranslate"><span class="pre">Optimizer.state_dict()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Optimizer.step"><code class="docutils literal notranslate"><span class="pre">Optimizer.step()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.RandomSampler"><code class="docutils literal notranslate"><span class="pre">RandomSampler</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.RandomSampler.dataset"><code class="docutils literal notranslate"><span class="pre">RandomSampler.dataset</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.RandomSampler.random_replace"><code class="docutils literal notranslate"><span class="pre">RandomSampler.random_replace()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.RandomSampler.random_sample"><code class="docutils literal notranslate"><span class="pre">RandomSampler.random_sample()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.RandomSampler.call"><code class="docutils literal notranslate"><span class="pre">RandomSampler.call()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.ClassSampler"><code class="docutils literal notranslate"><span class="pre">ClassSampler</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.ClassSampler.random_replace"><code class="docutils literal notranslate"><span class="pre">ClassSampler.random_replace()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.ClassSampler.random_sample"><code class="docutils literal notranslate"><span class="pre">ClassSampler.random_sample()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.ClassSampler.call"><code class="docutils literal notranslate"><span class="pre">ClassSampler.call()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Sampler"><code class="docutils literal notranslate"><span class="pre">Sampler</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Sampler.random_replace"><code class="docutils literal notranslate"><span class="pre">Sampler.random_replace()</span></code></a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.Sampler.call"><code class="docutils literal notranslate"><span class="pre">Sampler.call()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

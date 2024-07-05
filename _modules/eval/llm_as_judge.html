@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -445,7 +459,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="DefaultLLMJudge">
-<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.DefaultLLMJudge">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">[docs]</a>
 <span class="k">class</span> <span class="nc">DefaultLLMJudge</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</span>
 
@@ -482,7 +496,7 @@ document.write(`
         <span class="p">)</span>
 
 <div class="viewcode-block" id="DefaultLLMJudge.call">
-<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.DefaultLLMJudge.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">judgement_query</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -520,7 +534,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="LLMasJudge">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.LLMasJudge">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge">[docs]</a>
 <span class="k">class</span> <span class="nc">LLMasJudge</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    LLM as judge for evaluating the performance of a LLM.</span>
@@ -554,7 +568,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">llm_evaluator</span> <span class="o">=</span> <span class="n">llm_evaluator</span> <span class="ow">or</span> <span class="n">DefaultLLMJudge</span><span class="p">()</span>
 
 <div class="viewcode-block" id="LLMasJudge.compute">
-<a class="viewcode-back" href="../../apis/eval/index.html#eval.LLMasJudge.compute">[docs]</a>
+<a class="viewcode-back" href="../../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge.compute">[docs]</a>
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">questions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>

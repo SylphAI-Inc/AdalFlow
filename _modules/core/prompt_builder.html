@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -422,7 +436,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="get_jinja2_environment">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.get_jinja2_environment">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">[docs]</a>
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_jinja2_environment</span><span class="p">():</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function for Prompt component to get the Jinja2 environment with the default settings.&quot;&quot;&quot;</span>
@@ -441,7 +455,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Prompt">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt">[docs]</a>
 <span class="k">class</span> <span class="nc">Prompt</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Renders a text string(prompt) from a Jinja2 template string.</span>
 
@@ -501,21 +515,21 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Jinja2 template: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Prompt.update_prompt_kwargs">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.update_prompt_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.update_prompt_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">update_prompt_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Update the initial prompt kwargs after Prompt is initialized.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Prompt.get_prompt_variables">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.get_prompt_variables">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.get_prompt_variables">[docs]</a>
     <span class="k">def</span> <span class="nf">get_prompt_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the prompt kwargs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span></div>
 
 
 <div class="viewcode-block" id="Prompt.is_key_in_template">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.is_key_in_template">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.is_key_in_template">[docs]</a>
     <span class="k">def</span> <span class="nf">is_key_in_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Check if the key exists in the template.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span></div>
@@ -527,7 +541,7 @@ document.write(`
         <span class="k">return</span> <span class="n">meta</span><span class="o">.</span><span class="n">find_undeclared_variables</span><span class="p">(</span><span class="n">parsed_content</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Prompt.compose_prompt_kwargs">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.compose_prompt_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.compose_prompt_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">compose_prompt_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Compose the final prompt kwargs by combining the initial and the provided kwargs at runtime.&quot;&quot;&quot;</span>
         <span class="n">composed_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span><span class="p">}</span>
@@ -542,7 +556,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Prompt.print_prompt_template">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.print_prompt_template">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.print_prompt_template">[docs]</a>
     <span class="k">def</span> <span class="nf">print_prompt_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Print the template string.&quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Template:&quot;</span><span class="p">)</span>
@@ -552,7 +566,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Prompt.print_prompt">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.print_prompt">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.print_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -567,7 +581,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Prompt.call">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Renders the prompt template with keyword arguments.</span>
@@ -591,7 +605,7 @@ document.write(`
         <span class="k">return</span> <span class="n">s</span>
 
 <div class="viewcode-block" id="Prompt.from_dict">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.from_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.from_dict">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
         <span class="n">obj</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -601,7 +615,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Prompt.to_dict">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.Prompt.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the dictionary representation of all the Prompt object&#39;s attributes, with sorting applied to</span>

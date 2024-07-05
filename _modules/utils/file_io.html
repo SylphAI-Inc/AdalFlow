@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -419,7 +433,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="save_json">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.save_json">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.save_json">[docs]</a>
 <span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the object to a json file.</span>
 
@@ -438,7 +452,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="save_pickle">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.save_pickle">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.save_pickle">[docs]</a>
 <span class="k">def</span> <span class="nf">save_pickle</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.pickle&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Save the object to a pickle file.</span>
 
@@ -456,7 +470,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="save">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.save">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.save">[docs]</a>
 <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Save the object to both a json and a pickle file.</span>
 
@@ -474,7 +488,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_json">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.load_json">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load_json">[docs]</a>
 <span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.json&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the object from a json file.</span>
 
@@ -493,7 +507,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_pickle">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.load_pickle">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load_pickle">[docs]</a>
 <span class="k">def</span> <span class="nf">load_pickle</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task.pickle&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load the object from a pickle file.</span>
 
@@ -512,7 +526,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="load">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.load">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load">[docs]</a>
 <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;task&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load both the json and pickle files and return the object from the json file</span>
 
@@ -529,7 +543,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="load_jsonl">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.load_jsonl">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.load_jsonl">[docs]</a>
 <span class="k">def</span> <span class="nf">load_jsonl</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load a jsonl file and return a list of dictionaries.</span>
 
@@ -554,7 +568,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="append_to_jsonl">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.append_to_jsonl">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.append_to_jsonl">[docs]</a>
 <span class="k">def</span> <span class="nf">append_to_jsonl</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Append data to a jsonl file.</span>
 
@@ -581,7 +595,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="write_list_to_jsonl">
-<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.write_list_to_jsonl">[docs]</a>
+<a class="viewcode-back" href="../../apis/utils/utils.file_io.html#utils.file_io.write_list_to_jsonl">[docs]</a>
 <span class="k">def</span> <span class="nf">write_list_to_jsonl</span><span class="p">(</span><span class="n">f</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Write a list of dictionaries to a jsonl file.</span>
 

@@ -13,9 +13,9 @@ Overview
    components.reasoning.chain_of_thought
 
 
-.. toctree::
-   :maxdepth: 1
-   :hidden:
+---------------
 
+.. autosummary::
+   :toctree: _autosummary
 
-   components.reasoning.chain_of_thought
+   components.reasoning

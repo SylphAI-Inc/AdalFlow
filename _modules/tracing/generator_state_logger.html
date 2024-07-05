@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -421,7 +435,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorStatesRecord">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStatesRecord">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">GeneratorStatesRecord</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">prompt_states</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
@@ -435,7 +449,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorStateLogger">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStateLogger">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger">[docs]</a>
 <span class="k">class</span> <span class="nc">GeneratorStateLogger</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Log the generator states especially the prompt states update history to a file.</span>
 
@@ -476,7 +490,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">)</span>
 
 <div class="viewcode-block" id="GeneratorStateLogger.get_log_location">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStateLogger.get_log_location">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.get_log_location">[docs]</a>
     <span class="k">def</span> <span class="nf">get_log_location</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span></div>
 
@@ -486,7 +500,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names</span>
 
 <div class="viewcode-block" id="GeneratorStateLogger.log_prompt">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStateLogger.log_prompt">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.log_prompt">[docs]</a>
     <span class="k">def</span> <span class="nf">log_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generator</span><span class="p">:</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Log the prompt states of the generator with the given name.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -520,7 +534,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorStateLogger.save">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStateLogger.save">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.save">[docs]</a>
     <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">serialized_obj</span> <span class="o">=</span> <span class="n">serialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_trace_map</span><span class="p">)</span>
@@ -528,7 +542,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="GeneratorStateLogger.load">
-<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.GeneratorStateLogger.load">[docs]</a>
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.load">[docs]</a>
     <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>

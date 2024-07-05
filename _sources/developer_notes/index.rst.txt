@@ -7,7 +7,7 @@ Tutorials
 .. *Why and How Each Part works*
 
 Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
-These are our most important tutorials before you move ahead to build your use cases end to end.
+These are our most important tutorials before you move ahead to build use cases  (LLM applications) end to end.
 
 
 .. raw::

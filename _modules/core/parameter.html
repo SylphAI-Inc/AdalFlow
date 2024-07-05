@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -291,6 +298,13 @@ document.write(`
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -411,7 +425,7 @@ document.write(`
 
 <span class="c1"># Future direction: potentially subclass DataClass, especially when parameter becomes more complex</span>
 <div class="viewcode-block" id="Parameter">
-<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.Parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.parameter.Parameter">[docs]</a>
 <span class="k">class</span> <span class="nc">Parameter</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A data container to represent a component parameter.</span>
 
@@ -463,7 +477,7 @@ document.write(`
             <span class="p">)</span>
 
 <div class="viewcode-block" id="Parameter.update_value">
-<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.Parameter.update_value">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.parameter.Parameter.update_value">[docs]</a>
     <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the parameter&#39;s value in-place, checking for type correctness.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -473,7 +487,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Parameter.to_dict">
-<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.Parameter.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/core/core.parameter.html#core.parameter.Parameter.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="s2">&quot;requires_opt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">}</span></div>
 

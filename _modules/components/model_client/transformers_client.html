@@ -161,6 +161,13 @@
 
 
 <li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -286,6 +293,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
     Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -436,7 +450,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="average_pool">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool">[docs]</a>
 <span class="k">def</span> <span class="nf">average_pool</span><span class="p">(</span><span class="n">last_hidden_states</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">attention_mask</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
     <span class="n">last_hidden</span> <span class="o">=</span> <span class="n">last_hidden_states</span><span class="o">.</span><span class="n">masked_fill</span><span class="p">(</span><span class="o">~</span><span class="n">attention_mask</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">.</span><span class="n">bool</span><span class="p">(),</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">last_hidden</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">attention_mask</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="o">...</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span></div>
@@ -445,7 +459,7 @@ document.write(`
 
 <span class="c1"># TODO: provide a standard api for embedding and chat models used in local model SDKs</span>
 <div class="viewcode-block" id="TransformerEmbedder">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder">[docs]</a>
 <span class="k">class</span> <span class="nc">TransformerEmbedder</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Local model SDK for transformers.</span>
 
@@ -475,7 +489,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TransformerEmbedder.init_model">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.init_model">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.init_model">[docs]</a>
     <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -491,7 +505,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerEmbedder.infer_gte_base_embedding">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding">[docs]</a>
     <span class="k">def</span> <span class="nf">infer_gte_base_embedding</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
@@ -539,7 +553,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerReranker">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker">[docs]</a>
 <span class="k">class</span> <span class="nc">TransformerReranker</span><span class="p">:</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Local model SDK for a reranker model using transformers.</span>
 
@@ -558,7 +572,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TransformerReranker.init_model">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.init_model">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.init_model">[docs]</a>
     <span class="k">def</span> <span class="nf">init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
@@ -588,7 +602,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerReranker.infer_bge_reranker_base">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.infer_bge_reranker_base">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.infer_bge_reranker_base">[docs]</a>
     <span class="k">def</span> <span class="nf">infer_bge_reranker_base</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="c1"># input=List[Tuple[str, str]],  # list of pairs of the query and the candidate</span>
@@ -651,7 +665,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerLLM">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM">[docs]</a>
 <span class="k">class</span> <span class="nc">TransformerLLM</span><span class="p">:</span>
     <span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
@@ -662,7 +676,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TransformerLLM.init_model">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.init_model">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.init_model">[docs]</a>
     <span class="k">def</span> <span class="nf">init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
@@ -683,7 +697,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerLLM.parse_chat_completion">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">parsed_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
             <span class="n">input_text</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
@@ -693,7 +707,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformerLLM.call">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -763,7 +777,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformersClient">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">[docs]</a>
 <span class="k">class</span> <span class="nc">TransformersClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;LightRAG API client for transformers.</span>
 
@@ -796,25 +810,25 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="TransformersClient.init_sync_client">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TransformerEmbedder</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TransformersClient.init_reranker_client">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_reranker_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TransformerReranker</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TransformersClient.init_llm_client">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">[docs]</a>
     <span class="k">def</span> <span class="nf">init_llm_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">TransformerLLM</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TransformersClient.parse_embedding_response">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
         <span class="n">embeddings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Embedding</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">emb</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
@@ -824,7 +838,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformersClient.call">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
         <span class="k">assert</span> <span class="s2">&quot;model&quot;</span> <span class="ow">in</span> <span class="n">api_kwargs</span><span class="p">,</span> <span class="s2">&quot;model is required&quot;</span>
         <span class="k">assert</span> <span class="p">(</span>
@@ -862,7 +876,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="TransformersClient.convert_inputs_to_api_kwargs">
-<a class="viewcode-back" href="../../../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/_autosummary/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">[docs]</a>
     <span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="nb">input</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># for retriever, it is a single query,</span>
