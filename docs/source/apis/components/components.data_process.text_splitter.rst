@@ -7,3 +7,10 @@ text_splitter
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      TextSplitter

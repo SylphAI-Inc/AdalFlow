@@ -7,3 +7,10 @@ llm_augment
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      LLMAugmenter

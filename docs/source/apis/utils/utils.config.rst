@@ -7,3 +7,11 @@ config
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      new_component
+      new_components_from_config

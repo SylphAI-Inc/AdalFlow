@@ -7,3 +7,10 @@ memory
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Memory

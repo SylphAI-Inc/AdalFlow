@@ -7,3 +7,17 @@ lazy_import
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      safe_import
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      LazyImport
+      OptionalPackages

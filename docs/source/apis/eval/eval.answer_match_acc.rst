@@ -7,3 +7,10 @@ answer_match_acc
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      AnswerMatchAcc

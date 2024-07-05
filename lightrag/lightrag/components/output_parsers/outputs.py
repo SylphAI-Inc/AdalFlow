@@ -150,7 +150,7 @@ class YamlOutputParser(OutputParser):
         self._return_data_class = return_data_class
         self._exclude_fields = exclude_fields
         self.data_class: DataClass = data_class
-        self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
+        self.output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
         self.output_processors = YamlParser()
         self.examples = examples
 
@@ -188,7 +188,7 @@ class YamlOutputParser(OutputParser):
             log.error(f"Error in formatting example for {__class__.__name__}, {e}")
             example_str = None
 
-        return self.yaml_output_format_prompt(schema=schema, example=example_str)
+        return self.output_format_prompt(schema=schema, example=example_str)
 
     def call(self, input: str) -> YAML_OUTPUT_PARSER_OUTPUT_TYPE:
         r"""Parse the YAML string to JSON object and return the JSON object."""
@@ -230,7 +230,7 @@ class JsonOutputParser(OutputParser):
         self._exclude_fields = exclude_fields
         template = JSON_OUTPUT_FORMAT
         self.data_class: DataClass = data_class
-        self.json_output_format_prompt = Prompt(template=template)
+        self.output_format_prompt = Prompt(template=template)
         self.output_processors = JsonParser()
         self.examples = examples
 
@@ -266,7 +266,7 @@ class JsonOutputParser(OutputParser):
         except Exception as e:
             log.error(f"Error in formatting example for {__class__.__name__}, {e}")
             example_str = None
-        return self.json_output_format_prompt(schema=schema, example=example_str)
+        return self.output_format_prompt(schema=schema, example=example_str)
 
     def call(self, input: str) -> Any:
         try:

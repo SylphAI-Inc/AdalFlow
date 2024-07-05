@@ -7,3 +7,10 @@ retriever_relevance
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      RetrieverRelevance

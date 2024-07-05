@@ -7,3 +7,10 @@ registry
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      EntityMapping

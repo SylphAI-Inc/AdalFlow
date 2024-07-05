@@ -7,3 +7,10 @@ utils
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      parse_embedding_response

@@ -103,11 +103,21 @@ def enable_library_logging(
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
 ) -> logging.Logger:
-    r"""Enable the library logging which is the root logger.
+    r"""Enable the library logging and return the root logger.
 
     Root logger has no name or '' as the name. It is the ancestor of all loggers.
+    The default config follows :func:`_get_log_config` function.
 
-    The default config follows :func:`get_default_log_config`.
+    Args:
+        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
+        enable_console (bool): Control the console output. Defaults to True.
+        enable_file (bool): Control the file output. Defaults to False.
+        save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
+        filename (Optional[str]): Name of the output log file. Defaults to "lib.log".
+
+    Returns:
+        logging.Logger: The root logger with the specified configuration.
+
 
     Example:
 
@@ -117,33 +127,13 @@ def enable_library_logging(
 
         from lightrag.utils.logger import enable_library_logging
 
-        enable_library_logging(level="DEBUG", enable_console=True, enable_file=False)
+        root_logger = enable_library_logging(level="DEBUG")
 
-    2. Enable the library logging with default settings which outputs library logs to file:
-
-    .. code-block:: python
-
-        from lightrag.utils.logger import enable_library_logging
-
-        enable_library_logging(level="DEBUG", enable_console=False, enable_file=True, filename="library.log")
-
-    3. Enable the library logging along with getting a logger of the same configuration:
+    2. To save the library logs to a file:
 
     .. code-block:: python
 
-        from lightrag.utils.logger import enable_library_logging
-
-        logger = enable_library_logging(level="DEBUG", enable_console=True, enable_file=False, return_logger=True)
-
-
-
-    Args:
-        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
-        enable_console (bool): Control the console output. Defaults to True.
-        enable_file (bool): Control the file output. Defaults to False.
-        save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
-        filename (Optional[str]): Name of the output log file. Defaults to "lib.log".
-        return_logger (bool): Return the logger with the same configuration. Defaults to False.
+        root_logger = enable_library_logging(level="DEBUG", enable_file=True)
     """
     # reset the past logging configuration
     save_dir = save_dir or "./logs"
@@ -169,13 +159,14 @@ def enable_library_logging(
 def get_logger(
     name: str,
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
-    # filename: str = "./logs/app.log",
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
     enable_console: bool = True,
-    enable_file: bool = True,
+    enable_file: bool = False,
 ) -> logging.Logger:
-    r"""Get a named logger without changing or writing to the root logger.
+    r"""Get a named logger independent of the root logger.
+
+    This is especially useful when you want to separate your application logs from the library logs.
 
     Args:
         name (str): Name of the logger.
@@ -183,7 +174,10 @@ def get_logger(
         save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
         filename (Optional[str]): Name of the output log file. Defaults to "app.log".
         enable_console (bool): Control the console output. Defaults to True.
-        enable_file (bool): Control the file output. Defaults to True.
+        enable_file (bool): Control the file output. Defaults to False.
+
+    Returns:
+        logging.Logger: The named logger with the specified configuration.
 
     Example:
 

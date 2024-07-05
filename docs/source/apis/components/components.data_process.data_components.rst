@@ -7,3 +7,17 @@ data_components
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      retriever_output_to_context_str
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      RetrieverOutputToContextStr
+      ToEmbeddings

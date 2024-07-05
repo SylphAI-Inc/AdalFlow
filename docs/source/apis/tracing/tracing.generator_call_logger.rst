@@ -7,3 +7,11 @@ generator_call_logger
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      GeneratorCallLogger
+      GeneratorCallRecord

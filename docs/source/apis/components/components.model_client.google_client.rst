@@ -7,3 +7,10 @@ google_client
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      GoogleGenAIClient

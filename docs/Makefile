@@ -40,6 +40,8 @@ update_files:
 # @python $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
 	@python $(SOURCEDIR)/change_api_file_name.py
+	@echo "Add autosummary of functions and classes"
+	@python $(SOURCEDIR)/insert_autosummary.py
 
 
 html: apidoc  update_files

@@ -443,6 +443,17 @@ files = [
 dev = ["freezegun (>=1.0,<2.0)", "pytest (>=6.0)", "pytest-cov"]
 
 [[package]]
+name = "backoff"
+version = "2.2.1"
+description = "Function decoration for backoff and retry"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "backoff-2.2.1-py3-none-any.whl", hash = "sha256:63579f9a0628e06278f7e47b7d7d5b6ce20dc65c5e96a6f3ca99a6adca0396e8"},
+    {file = "backoff-2.2.1.tar.gz", hash = "sha256:03f829f5bb1923180821643f8753b0502c3b682293992485b0eef2807afa5cba"},
+]
+
+[[package]]
 name = "beautifulsoup4"
 version = "4.12.3"
 description = "Screen-scraping library"
@@ -2090,6 +2101,20 @@ files = [
 ]
 
 [[package]]
+name = "jsonlines"
+version = "4.0.0"
+description = "Library with helpers for the jsonlines file format"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "jsonlines-4.0.0-py3-none-any.whl", hash = "sha256:185b334ff2ca5a91362993f42e83588a360cf95ce4b71a73548502bda52a7c55"},
+    {file = "jsonlines-4.0.0.tar.gz", hash = "sha256:0c6d2c09117550c089995247f605ae4cf77dd1533041d366351f6f298822ea74"},
+]
+
+[package.dependencies]
+attrs = ">=19.2.0"
+
+[[package]]
 name = "jsonpatch"
 version = "1.33"
 description = "Apply JSON-Patches (RFC 6902)"
@@ -2689,6 +2714,27 @@ typing-extensions = "*"
 cli = ["fire"]
 docs = ["requests (>=2.0.0)"]
 typing = ["mypy (>=1.0.0)", "types-setuptools"]
+
+[[package]]
+name = "lightrag"
+version = "0.0.0a13"
+description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
+optional = false
+python-versions = "<4.0,>=3.10"
+files = [
+    {file = "lightrag-0.0.0a13-py3-none-any.whl", hash = "sha256:84f3b05b413d4b6b14ee190e65570b0415917a183239c6476f32966982e6efd7"},
+    {file = "lightrag-0.0.0a13.tar.gz", hash = "sha256:00ce405ba5a830b39f5275d2fd971e99c0c909a31dbb3d512140ff929f24f510"},
+]
+
+[package.dependencies]
+backoff = ">=2.2.1,<3.0.0"
+jinja2 = ">=3.1.3,<4.0.0"
+jsonlines = ">=4.0.0,<5.0.0"
+numpy = ">=1.26.4,<2.0.0"
+python-dotenv = ">=1.0.1,<2.0.0"
+pyyaml = ">=6.0.1,<7.0.0"
+tiktoken = ">=0.7.0,<0.8.0"
+tqdm = ">=4.66.4,<5.0.0"
 
 [[package]]
 name = "llama-cloud"
@@ -4661,6 +4707,20 @@ files = [
 
 [package.dependencies]
 six = ">=1.5"
+
+[[package]]
+name = "python-dotenv"
+version = "1.0.1"
+description = "Read key-value pairs from a .env file and set them as environment variables"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "python-dotenv-1.0.1.tar.gz", hash = "sha256:e324ee90a023d808f1959c46bcbc04446a10ced277783dc6ee09987c37ec10ca"},
+    {file = "python_dotenv-1.0.1-py3-none-any.whl", hash = "sha256:f7b63ef50f1b690dddf550d03497b66d609393b40b564ed0d674909a68ebf16a"},
+]
+
+[package.extras]
+cli = ["click (>=5.0)"]
 
 [[package]]
 name = "python-json-logger"
@@ -6832,4 +6892,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "eb54c240c5173f3abe7cd15711303c6b0186a0fa875b46a05339eed665828d6e"
+content-hash = "e44ba0667fbad8e15454b41c3413da9859bab4aa83c37b66dac5c9080a370d77"

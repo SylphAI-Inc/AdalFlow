@@ -7,3 +7,18 @@ bm25_retriever
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      split_text_by_word_fn
+      split_text_by_word_fn_then_lower_tokenized
+      split_text_tokenized
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      BM25Retriever

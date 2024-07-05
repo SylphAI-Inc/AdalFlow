@@ -7,3 +7,10 @@ prompt_builder
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Prompt

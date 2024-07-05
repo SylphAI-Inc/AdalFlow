@@ -7,3 +7,15 @@ string_parser
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      BooleanParser
+      FloatParser
+      IntParser
+      JsonParser
+      ListParser
+      YamlParser

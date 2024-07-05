@@ -7,3 +7,10 @@ reranker_retriever
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      RerankerRetriever

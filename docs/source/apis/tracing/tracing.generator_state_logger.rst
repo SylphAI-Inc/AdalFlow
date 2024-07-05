@@ -7,3 +7,11 @@ generator_state_logger
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      GeneratorStateLogger
+      GeneratorStatesRecord

@@ -7,3 +7,13 @@ sampler
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      ClassSampler
+      RandomSampler
+      Sample
+      Sampler

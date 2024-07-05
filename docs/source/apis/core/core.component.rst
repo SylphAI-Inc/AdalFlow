@@ -7,3 +7,18 @@ component
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      fun_to_component
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Component
+      FunComponent
+      Sequential

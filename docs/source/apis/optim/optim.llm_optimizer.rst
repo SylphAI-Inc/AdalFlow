@@ -7,3 +7,11 @@ llm_optimizer
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Instruction
+      LLMOptimizer

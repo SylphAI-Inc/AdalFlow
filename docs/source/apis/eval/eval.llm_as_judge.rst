@@ -7,3 +7,11 @@ llm_as_judge
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      DefaultLLMJudge
+      LLMasJudge
