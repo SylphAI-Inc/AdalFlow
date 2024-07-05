@@ -158,12 +158,12 @@ Researchers will want their code to be adapted into more products too.
 
 
 .. Hide the use cases for now
-.. toctree::
-   :maxdepth: 1
-   :caption: Use Cases - How different parts are used to build various LLM applications
-   :hidden:
+   toctree::
+   .. :maxdepth: 1
+   .. :caption: Use Cases - How different parts are used to build various LLM applications
+   .. :hidden:
 
-   tutorials/index
+   .. tutorials/index
 
 
 .. toctree::

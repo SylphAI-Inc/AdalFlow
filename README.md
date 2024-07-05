@@ -44,7 +44,7 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-## LightRAG Task Pipeline
+# LightRAG Task Pipeline
 
 
 We will ask the model to respond with ``explaination`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
@@ -193,7 +193,7 @@ You:
 ````
 
 
-## Quick Install
+# Quick Install
 
 Install LightRAG with pip:
 
@@ -220,7 +220,7 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 
 
-## Contributors
+# Contributors
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
 
