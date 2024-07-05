@@ -13,9 +13,9 @@ Overview
    components.memory.memory
 
 
----------------
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. autosummary::
-   :toctree: _autosummary
 
-   components.memory
+   components.memory.memory

@@ -21,3 +21,12 @@ Overview
    eval.retriever_recall
    eval.retriever_relevance
    eval.llm_as_judge
+
+
+
+---------------
+
+.. automodule:: eval
+   :members:
+   :undoc-members:
+   :show-inheritance:

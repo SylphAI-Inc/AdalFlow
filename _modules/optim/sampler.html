@@ -445,7 +445,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="Sample">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.Sample">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.Sample">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Sample</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Output data structure for each sampled data in the sequence.&quot;&quot;&quot;</span>
@@ -454,7 +454,7 @@ document.write(`
     <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span>  <span class="c1"># the data of the sample</span>
 
 <div class="viewcode-block" id="Sample.to_dict">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.Sample.to_dict">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.Sample.to_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">}</span></div>
 </div>
@@ -462,13 +462,13 @@ document.write(`
 
 
 <div class="viewcode-block" id="Sampler">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.Sampler">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.Sampler">[docs]</a>
 <span class="k">class</span> <span class="nc">Sampler</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="Sampler.random_replace">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.Sampler.random_replace">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.Sampler.random_replace">[docs]</a>
     <span class="k">def</span> <span class="nf">random_replace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Randomly replace some samples</span>
 
@@ -481,7 +481,7 @@ document.write(`
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Sampler.call">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.Sampler.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.Sampler.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">[</span><span class="n">T_co</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Abstract method to do the main sampling&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -492,7 +492,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RandomSampler">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.RandomSampler">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.RandomSampler">[docs]</a>
 <span class="k">class</span> <span class="nc">RandomSampler</span><span class="p">(</span><span class="n">Sampler</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Simple random sampler to sample from the dataset.</span>
@@ -511,7 +511,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">default_num_shots</span> <span class="o">=</span> <span class="n">default_num_shots</span>
 
 <div class="viewcode-block" id="RandomSampler.random_replace">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_replace">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.RandomSampler.random_replace">[docs]</a>
     <span class="k">def</span> <span class="nf">random_replace</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -547,7 +547,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RandomSampler.random_sample">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_sample">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.RandomSampler.random_sample">[docs]</a>
     <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">]:</span>
@@ -561,7 +561,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RandomSampler.call">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.RandomSampler.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.RandomSampler.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">num_shots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">replace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">]:</span>
@@ -575,7 +575,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ClassSampler">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.ClassSampler">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.ClassSampler">[docs]</a>
 <span class="k">class</span> <span class="nc">ClassSampler</span><span class="p">(</span><span class="n">Sampler</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T_co</span><span class="p">]):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sample from the dataset based on the class labels.</span>
 
@@ -628,7 +628,7 @@ document.write(`
         <span class="k">return</span> <span class="n">samples</span>
 
 <div class="viewcode-block" id="ClassSampler.random_replace">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_replace">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.ClassSampler.random_replace">[docs]</a>
     <span class="k">def</span> <span class="nf">random_replace</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -690,7 +690,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ClassSampler.random_sample">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_sample">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.ClassSampler.random_sample">[docs]</a>
     <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">num_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -712,7 +712,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ClassSampler.call">
-<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.sampler.ClassSampler.call">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.sampler.html#optim.ClassSampler.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">num_shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>

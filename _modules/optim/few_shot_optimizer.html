@@ -428,7 +428,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot">[docs]</a>
 <span class="k">class</span> <span class="nc">BootstrapFewShot</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;BootstrapFewShot performs few-shot sampling used in few-shot ICL.</span>
 
@@ -462,7 +462,7 @@ document.write(`
         <span class="c1"># self.proposing = False</span>
 
 <div class="viewcode-block" id="BootstrapFewShot.augment_samples">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.augment_samples">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.augment_samples">[docs]</a>
     <span class="k">def</span> <span class="nf">augment_samples</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_augmenter</span><span class="p">:</span>  <span class="c1"># TODO: better represent sample</span>
             <span class="n">augmented_samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Sample</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -487,14 +487,14 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot.reset">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.reset">[docs]</a>
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">proposed</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="BootstrapFewShot.init">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.init">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.init">[docs]</a>
     <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weights</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the parameters with the initial examples.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">shots</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -510,7 +510,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot.random_replace">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.random_replace">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.random_replace">[docs]</a>
     <span class="k">def</span> <span class="nf">random_replace</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">weights_per_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
@@ -523,7 +523,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot.propose">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.propose">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.propose">[docs]</a>
     <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">weights_per_class</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Update parameter with the proposed examples.</span>
@@ -540,7 +540,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot.update_parameter">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.update_parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.update_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">update_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load the proposed into the current.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proposed</span><span class="p">)</span>
@@ -553,7 +553,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BootstrapFewShot.reset_parameter">
-<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset_parameter">[docs]</a>
+<a class="viewcode-back" href="../../apis/optim/optim.few_shot_optimizer.html#optim.BootstrapFewShot.reset_parameter">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_parameter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When performance did not improve, reset the parameter to the current examples.&quot;&quot;&quot;</span>
         <span class="n">examples</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="p">)</span>

@@ -447,7 +447,7 @@ document.write(`
 
 <span class="c1"># TODO: move the functions in core.functional</span>
 <div class="viewcode-block" id="split_text_by_word_fn">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn">[docs]</a>
 <span class="k">def</span> <span class="nf">split_text_by_word_fn</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span></div>
@@ -455,7 +455,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="split_text_by_word_fn_then_lower_tokenized">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn_then_lower_tokenized">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_by_word_fn_then_lower_tokenized">[docs]</a>
 <span class="k">def</span> <span class="nf">split_text_by_word_fn_then_lower_tokenized</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
     <span class="n">words</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
@@ -469,7 +469,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="split_text_tokenized">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_tokenized">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.split_text_tokenized">[docs]</a>
 <span class="k">def</span> <span class="nf">split_text_tokenized</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">()</span>
     <span class="c1"># words = x.lower().split(&quot; &quot;)</span>
@@ -484,7 +484,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BM25Retriever">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever">[docs]</a>
 <span class="k">class</span> <span class="nc">BM25Retriever</span><span class="p">(</span><span class="n">Retriever</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">RetrieverStrQueryType</span><span class="p">]):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Fast Implementation of Best Matching 25 ranking function.</span>
 
@@ -616,7 +616,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BM25Retriever.reset_index">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">[docs]</a>
     <span class="k">def</span> <span class="nf">reset_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Used for both initializing and resetting the index.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t2d</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># term freuqency in each document</span>
@@ -720,7 +720,7 @@ document.write(`
         <span class="k">return</span> <span class="n">score</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
 <div class="viewcode-block" id="BM25Retriever.build_index_from_documents">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">[docs]</a>
     <span class="k">def</span> <span class="nf">build_index_from_documents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">documents</span><span class="p">:</span> <span class="n">RetrieverDocumentsType</span><span class="p">,</span>
@@ -748,7 +748,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BM25Retriever.call">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverStrQueriesType</span><span class="p">,</span> <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrieverOutputType</span><span class="p">:</span>
@@ -785,7 +785,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BM25Retriever.save_to_file">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.save_to_file">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.save_to_file">[docs]</a>
     <span class="k">def</span> <span class="nf">save_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">index_dict</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
         <span class="c1"># filter out index_dict[data] that is not in self.index_keys</span>
@@ -800,7 +800,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BM25Retriever.load_from_file">
-<a class="viewcode-back" href="../../../apis/components/_autosummary/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">load_from_file</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="c1"># create an instance of the class</span>
