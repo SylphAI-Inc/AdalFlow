@@ -15,9 +15,11 @@ Overview
    components.data_process.text_splitter
 
 
----------------
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. autosummary::
-   :toctree: _autosummary
 
-   components.data_process
+   components.data_process.data_components
+
+   components.data_process.text_splitter

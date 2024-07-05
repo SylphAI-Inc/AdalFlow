@@ -20,9 +20,6 @@ All base/abstract classes, core components like generator, embedder, and basic f
    core.base_data_class
    core.default_prompt_template
    core.model_client
-
-   .. core.data_components
-
    core.db
    core.functional
 
@@ -30,7 +27,6 @@ All base/abstract classes, core components like generator, embedder, and basic f
    core.string_parser
    core.embedder
    core.retriever
-   .. core.memory
 
    core.prompt_builder
    core.tokenizer
@@ -85,13 +81,12 @@ Evaluation
 Optimizer
 ----------
 .. autosummary::
-    :maxdepth: 2
 
-   optim.optimizer
-   optim.sampler
    optim.few_shot_optimizer
    optim.llm_augment
    optim.llm_optimizer
+   optim.optimizer
+   optim.sampler
 
 
 Tracing
@@ -119,35 +114,8 @@ Utils
    :hidden:
 
    core/index
-
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
    components/index
-
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
-   optim/index
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
-   tracing/index
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
    eval/index
-
-.. toctree::
-   :maxdepth: 2
-   :hidden:
-
+   optim/index
+   tracing/index
    utils/index

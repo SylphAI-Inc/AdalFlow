@@ -37,17 +37,15 @@ Overview
 .. autosummary::
    :toctree: _autosummary
 
-{% for submodule in submodules %}
+{% for submodule in submodules if not submodule.startswith('source/apis/components/_autosummary') %}
    {{ submodule }}
 {% endfor %}
 {%- endif %}
 
-{%- if not is_namespace %}
-Module contents
----------------
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. autosummary::
-   :toctree: _autosummary
-
-   {{ pkgname }}
-{% endif %}
+{% for submodule in submodules if not submodule.startswith('source/apis/components/_autosummary') %}
+   {{ submodule }}
+{% endfor %}

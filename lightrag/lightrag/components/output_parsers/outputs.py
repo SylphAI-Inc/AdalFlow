@@ -130,6 +130,7 @@ class YamlOutputParser(OutputParser):
         data_class: DataClass,
         examples: List[DataClass] = None,
         exclude_fields: ExcludeType = None,
+        return_data_class: bool = False,
     ):
 
         super().__init__()
@@ -146,6 +147,7 @@ class YamlOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
+        self._return_data_class = return_data_class
         self._exclude_fields = exclude_fields
         self.data_class: DataClass = data_class
         self.yaml_output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
@@ -190,10 +192,16 @@ class YamlOutputParser(OutputParser):
 
     def call(self, input: str) -> YAML_OUTPUT_PARSER_OUTPUT_TYPE:
         r"""Parse the YAML string to JSON object and return the JSON object."""
-        return self.output_processors(input)
+        try:
+            output_dict = self.output_processors(input)
+            if self._return_data_class:
+                return self.data_class.from_dict(output_dict)
+        except Exception as e:
+            log.error(f"Error in parsing YAML to JSON: {e}")
+            return None
 
     def _extra_repr(self) -> str:
-        s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}"
+        s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"
         return s
 
 
@@ -203,6 +211,7 @@ class JsonOutputParser(OutputParser):
         data_class: DataClass,
         examples: List[DataClass] = None,
         exclude_fields: ExcludeType = None,
+        return_data_class: bool = False,
     ):
         super().__init__()
         if not is_dataclass(data_class):
@@ -217,6 +226,7 @@ class JsonOutputParser(OutputParser):
             raise ValueError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
+        self._return_data_class = return_data_class
         self._exclude_fields = exclude_fields
         template = JSON_OUTPUT_FORMAT
         self.data_class: DataClass = data_class
@@ -259,10 +269,16 @@ class JsonOutputParser(OutputParser):
         return self.json_output_format_prompt(schema=schema, example=example_str)
 
     def call(self, input: str) -> Any:
-        return self.output_processors(input)
+        try:
+            output_dict = self.output_processors(input)
+            if self._return_data_class:
+                return self.data_class.from_dict(output_dict)
+        except Exception as e:
+            log.error(f"Error in parsing JSON to JSON: {e}")
+            return None
 
     def _extra_repr(self) -> str:
-        s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}"""
+        s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"""
         return s
 
 

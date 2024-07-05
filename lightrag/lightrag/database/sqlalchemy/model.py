@@ -201,15 +201,15 @@ class DialogueTurnModel(Base):
     __bind_key__ = "dialogue_db"
 
     id = Column(
-        uuid.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+        String, primary_key=True, default=lambda: str(uuid.uuid4())
     )  # Assuming SERIAL is auto-incrementing integer
     turn_index = Column(Integer)
     user_id = Column(
-        uuid.UUID(as_uuid=True),
+        String,
         nullable=False,
     )
     session_id = Column(
-        uuid.UUID(as_uuid=True),
+        String,
         # ForeignKey("dialogue_session.id", ondelete="CASCADE"),
         nullable=False,
     )
@@ -217,11 +217,9 @@ class DialogueTurnModel(Base):
     converse_agent_response = Column(JSONB)
     search_agent_response = Column(JSONB)
     user_feedback = Column(JSONB)
-    turn_start_time = Column(DateTime, default=datetime.datetime.now())
-    converse_agent_response_time = Column(DateTime, default=datetime.datetime.now())
-    search_agent_response_time = Column(
-        DateTime, default=datetime.datetime.now()
-    )  # matches
+    turn_start_time = Column(DateTime, default=datetime.now())
+    converse_agent_response_time = Column(DateTime, default=datetime.now())
+    search_agent_response_time = Column(DateTime, default=datetime.now())  # matches
     # matches should be a list of dictionaries
     created_at = Column(TIMESTAMP, default=func.now())
     updated_at = Column(TIMESTAMP, default=func.now(), onupdate=func.now())
