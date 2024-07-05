@@ -1,11 +1,11 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 <!-- [![release](https://img.shields.io/github/v/release/SylphAI-Inc/LightRAG?sort=semver)](https://github.com/SylphAI-Inc/LightRAG/releases) -->
+<!-- [![Dependency Status](https://img.shields.io/librariesio/github/SylphAI-Inc/LightRAG?style=flat-square)](https://libraries.io/github/SylphAI-Inc/LightRAG) -->
 [![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![PyPI](https://img.shields.io/pypi/v/lightRAG?style=flat-square)](https://pypi.org/project/lightRAG/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG)
 [![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG)
-<!-- [![Dependency Status](https://img.shields.io/librariesio/github/SylphAI-Inc/LightRAG?style=flat-square)](https://libraries.io/github/SylphAI-Inc/LightRAG) -->
 [![Open Issues](https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square)](https://github.com/SylphAI-Inc/LightRAG/issues)
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
@@ -82,7 +82,7 @@ class QA(Component):
             model_kwargs={"model": "llama3-8b-8192"},
             template=qa_template,
             prompt_kwargs={"output_format_str": parser.format_instructions()},
-            output_processors=Sequential(parser, to_qa_output),
+            output_processors=parser,
         )
 
     def call(self, query: str):
