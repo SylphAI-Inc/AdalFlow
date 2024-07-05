@@ -34,7 +34,8 @@ update_files:
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
-
+	@echo "Removing duplicated files"
+	@python $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
 	@python $(SOURCEDIR)/change_api_file_name.py
 	@echo "Add autosummary of functions and classes"
