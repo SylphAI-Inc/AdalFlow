@@ -1,7 +1,7 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 
-### ⚡⚡⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡⚡⚡
+### ⚡ The PyTorch Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.

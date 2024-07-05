@@ -10,10 +10,13 @@
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
 
-### ⚡ The PyTorch Library for Large language Model (LLM) Applications ⚡
+### ⚡ The PyTorch Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
+
+LightRAG follows three fundamental principles from day one: simplicity over complexity, quality over quantity, and optimizing over building.
+This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability. View Class hierarchy [here](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
 
 <!--
 
@@ -209,9 +212,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html): Design based on three principles: Simplicity over complexity, Quality over quantity, and Optimizing over building.
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction provides developers with maximum customizability and simplicity.
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html): Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
+- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
+- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
+- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 
