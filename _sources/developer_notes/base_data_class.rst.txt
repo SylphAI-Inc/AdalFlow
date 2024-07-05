@@ -10,7 +10,7 @@ DataClass
 In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
 Tensor wraps a multi-dimensional matrix to better support its operations and computations.
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs' text prediction.
-:class:`core.base_data_class.DataClass` is designed to ease the data interaction with LLMs via prompt(input) and text prediction(output).
+:class:`DataClass<core.base_data_class.DataClass>` is designed to ease the data interaction with LLMs via prompt(input) and text prediction(output).
 
 .. figure:: /_static/images/dataclass.png
     :align: center
@@ -28,7 +28,7 @@ This overlaps with the serialization and deserialization of the data in the conv
 Packages like ``Pydantic`` or ``Marshmallow`` can covers the seralization and deserialization, but it will end up with more complexity and less transparency to users.
 LLM prompts are known to be sensitive, the details, controllability, and transparency of the data format are crucial here.
 
-We eventually created a base class :class:`core.base_data_class.DataClass` to handle data that will interact with LLMs, which builds on top of Python's native ``dataclasses`` module.
+We eventually created a base class :class:`DataClass<core.base_data_class.DataClass>`  to handle data that will interact with LLMs, which builds on top of Python's native ``dataclasses`` module.
 Here are our reasoning:
 
 1. ``dataclasses`` module is lightweight, flexible, and is already widely used in Python for data classes.
@@ -60,7 +60,7 @@ Here is how users typically use the ``dataclasses`` module:
 
 We also made the effort to provide more control:
 
-1. **Keep the ordering of your data fields.** We provided :func:`core.base_data_class.required_field` with ``default_factory`` to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.
+1. **Keep the ordering of your data fields.** We provided :func:`required_field<core.base_data_class.required_field>` with ``default_factory`` to mark the field as required even if it is after optional fields. We also has to do customization to preserve their ordering while being converted to dictionary, json and yaml string.
 2. **Exclude some fields from the output.**  All serialization methods support `exclude` parameter to exclude some fields even for nested dataclasses.
 3. **Allow nested dataclasses, lists, and dictionaries.** All methods support nested dataclasses, lists, and dictionaries.
 
@@ -113,7 +113,7 @@ Work with Data Instance
    * - ``format_example_str(self, format_type, exclude) -> str``
      - Generate data examples string, covers ``to_json`` and ``to_yaml``.
 
-We have :class:`core.base_data_class.DataClassFormatType` to specify the format type for the data format methods.
+We have :class:`DataclassFormatType<core.base_data_class.DataClassFormatType>` to specify the format type for the data format methods.
 
 .. note::
 
@@ -173,7 +173,7 @@ Describe the data format to LLMs
 We will create ``TrecData2`` class that subclasses from `DataClass`.
 You decide to add a field ``metadata`` to the ``TrecData`` class to store the metadata of the question.
 For your own reason, you want ``metadata`` to be a required field and you want to keep the ordering of your fields while being converted to strings.
-``DataClass`` will help you achieve this using :func:`core.base_data_class.required_field` on the `default_factory` of the field.
+``DataClass`` will help you achieve this using :func:`required_field<core.base_data_class.required_field>` on the `default_factory` of the field.
 Normally, this is not possible with the native `dataclasses` module as it will raise an error if you put a required field after an optional field.
 
 .. note::
