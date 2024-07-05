@@ -14,6 +14,7 @@ from lightrag.core.types import (
     RetrieverOutput,
     RetrieverStrQueryType,
     RetrieverStrQueriesType,
+    Document,
 )
 from lightrag.database.sqlalchemy.sqlachemy_manager import DatabaseManager
 
@@ -204,39 +205,39 @@ class PostgresRetriever(Retriever[Any, RetrieverStrQueryType]):
         return retrieved_outputs
 
 
-if __name__ == "__main__":
-    from lightrag.core.embedder import Embedder
-    from lightrag.core.types import Document
-    from lightrag.database.sqlalchemy.pipeline.default_config import default_config
-    from lightrag.utils import setup_env  # noqa
+# if __name__ == "__main__":
+#     from lightrag.core.embedder import Embedder
+#     from lightrag.core.types import Document
+#     from lightrag.database.sqlalchemy.pipeline.default_config import default_config
+#     from lightrag.utils import setup_env  # noqa
 
-    documents = [
-        {
-            "meta_data": {"title": "Li Yin's profile"},
-            "text": "My name is Li Yin, I love rock climbing"
-            + "lots of nonsense text" * 500,
-            "id": "doc1",
-        },
-        {
-            "meta_data": {"title": "Interviewing Li Yin"},
-            "text": "lots of more nonsense text" * 250
-            + "Li Yin is a software developer and AI researcher"
-            + "lots of more nonsense text" * 250,
-            "id": "doc2",
-        },
-    ]
-    db_name = "vector_db"
-    postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
+#     documents = [
+#         {
+#             "meta_data": {"title": "Li Yin's profile"},
+#             "text": "My name is Li Yin, I love rock climbing"
+#             + "lots of nonsense text" * 500,
+#             "id": "doc1",
+#         },
+#         {
+#             "meta_data": {"title": "Interviewing Li Yin"},
+#             "text": "lots of more nonsense text" * 250
+#             + "Li Yin is a software developer and AI researcher"
+#             + "lots of more nonsense text" * 250,
+#             "id": "doc2",
+#         },
+#     ]
+#     db_name = "vector_db"
+#     postgres_url = f"postgresql://postgres:password@localhost:5432/{db_name}"
 
-    vector_config = default_config["to_embeddings"]["component_config"]["embedder"][
-        "component_config"
-    ]
-    eb = Embedder.from_config(vector_config)
-    pr = PostgresRetriever(
-        embedder=eb,
-        database_url=postgres_url,
-        top_k=2,
-        distance_operator=DistanceToOperator.INNER_PRODUCT,
-    )
-    output = pr("What did the author do?")
-    print(output)
+#     vector_config = default_config["to_embeddings"]["component_config"]["embedder"][
+#         "component_config"
+#     ]
+#     eb = Embedder.from_config(vector_config)
+#     pr = PostgresRetriever(
+#         embedder=eb,
+#         database_url=postgres_url,
+#         top_k=2,
+#         distance_operator=DistanceToOperator.INNER_PRODUCT,
+#     )
+#     output = pr("What did the author do?")
+#     print(output)

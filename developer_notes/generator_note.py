@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator, DataClass, fun_to_component, Sequential
+from lightrag.core import Component, Generator, DataClass
+
+# fun_to_component, Sequential
 from lightrag.components.model_client import GroqAPIClient
 from lightrag.components.output_parsers import JsonOutputParser
 from lightrag.utils import setup_env
@@ -38,30 +40,32 @@ class QAOutput(DataClass):
     example: str = field(metadata={"desc": "An example of the concept in a sentence."})
 
 
-@fun_to_component
-def to_qa_output(data: dict) -> QAOutput:
-    return QAOutput.from_dict(data)
+# @fun_to_component
+# def to_qa_output(data: dict) -> QAOutput:
+#     return QAOutput.from_dict(data)
 
 
-class QA(Component):
-    def __init__(self):
-        super().__init__()
-        template = r"""<SYS>
+qa_template = r"""<SYS>
 You are a helpful assistant.
 <OUTPUT_FORMAT>
 {{output_format_str}}
 </OUTPUT_FORMAT>
 </SYS>
 User: {{input_str}}
-You:
-        """
-        parser = JsonOutputParser(data_class=QAOutput)
+You:"""
+
+
+class QA(Component):
+    def __init__(self):
+        super().__init__()
+
+        parser = JsonOutputParser(data_class=QAOutput, return_data_class=True)
         self.generator = Generator(
             model_client=GroqAPIClient(),
             model_kwargs={"model": "llama3-8b-8192"},
-            template=template,
+            template=qa_template,
             prompt_kwargs={"output_format_str": parser.format_instructions()},
-            output_processors=Sequential(parser, to_qa_output),
+            output_processors=parser,
         )
 
     def call(self, query: str):
@@ -225,7 +229,7 @@ if __name__ == "__main__":
     print(qa2)
     print(answer)
     qa2.generator.print_prompt(
-        output_format_str=qa2.generator.output_processors[0].format_instructions(),
+        output_format_str=qa2.generator.output_processors.format_instructions(),
         input_str="What is LLM?",
     )
 

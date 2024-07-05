@@ -3,7 +3,7 @@ default_config = {
         "component_name": "DocumentSplitter",
         "component_config": {
             "split_by": "word",
-            "split_length": 400,
+            "split_length": 500,
             "split_overlap": 200,
         },
     },

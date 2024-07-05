@@ -60,7 +60,7 @@ if __name__ == "__main__":
     directories = [
         "./source/apis/core",
         "./source/apis/components",
-        "./source/apis/components/_autosummary",
+        # "./source/apis/components/_autosummary",
         "./source/apis/utils",
         "./source/apis/eval",
         "./source/apis/tracing",

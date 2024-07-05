@@ -35,6 +35,10 @@ OpenAIClient = LazyImport(
     "lightrag.components.model_client.openai_client.OpenAIClient",
     OptionalPackages.OPENAI,
 )
+GoogleGenAIClient = LazyImport(
+    "lightrag.components.model_client.google_client.GoogleGenAIClient",
+    OptionalPackages.GOOGLE_GENERATIVEAI,
+)
 get_first_message_content = LazyImport(
     "lightrag.components.model_client.openai_client.get_first_message_content",
     OptionalPackages.OPENAI,
@@ -58,6 +62,7 @@ __all__ = [
     "AnthropicAPIClient",
     "GroqAPIClient",
     "OpenAIClient",
+    "GoogleGenAIClient",
 ]
 
 for name in __all__:

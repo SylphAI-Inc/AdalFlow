@@ -27,19 +27,27 @@ apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/lightrag/tracing --separate --force
 
-generate_autosummary:
-	@echo "Generating autosummary files"
-	@sphinx-autogen $(SOURCEDIR)/**/*.rst
+# generate_autosummary:
+# 	@echo "Generating autosummary files"
+# 	@python $(SOURCEDIR)/generate_autosummary.py
 
 update_files:
 	@echo "Inserting reference labels into RST files."
 	@python $(SOURCEDIR)/insert_labels.py
 	@echo "Removing unnecessary strings for better formatting"
 	@python $(SOURCEDIR)/remove_string.py
-	@echo "Removing duplicated files"
-	@python $(SOURCEDIR)/remove_files.py
+#@echo "Removing duplicated files"
+# @python $(SOURCEDIR)/remove_files.py
 	@echo "Renaming and updating file"
 	@python $(SOURCEDIR)/change_api_file_name.py
 
-html: apidoc generate_autosummary update_files
+
+html: apidoc  update_files
 	@$(SPHINXBUILD) -b html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+
+
+# STEPS to make the components work
+# 1. create autosummary but the update files would not work as it is run first and then the autosummary
+# 2. distable the autosummary in conf.py
+# 3. make file again to update the files

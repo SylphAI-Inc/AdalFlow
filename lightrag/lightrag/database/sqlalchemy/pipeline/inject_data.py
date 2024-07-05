@@ -9,7 +9,7 @@ from lightrag.database.sqlalchemy.model import DocumentModel
 from lightrag.database.sqlalchemy.pipeline import default_config
 
 
-# TODO: async call
+# TODO:  async call
 class EmbeddingPipeline:
     __doc__ = r"""Pipeline to process documents and store them in the database
 

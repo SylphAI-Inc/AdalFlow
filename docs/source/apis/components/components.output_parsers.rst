@@ -13,9 +13,9 @@ Overview
    components.output_parsers.outputs
 
 
----------------
+.. toctree::
+   :maxdepth: 1
+   :hidden:
 
-.. autosummary::
-   :toctree: _autosummary
 
-   components.output_parsers
+   components.output_parsers.outputs
