@@ -47,7 +47,7 @@ class Net(nn.Module):
 ## LightRAG Task Pipeline
 
 
-We will ask the model to respond with ``explaination`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
+We will ask the model to respond with ``explanation`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
 
 ```python
 
