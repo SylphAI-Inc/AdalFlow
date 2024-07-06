@@ -252,10 +252,6 @@ document.write(`
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -518,74 +514,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-components.model_client.cohere_client">
-<span id="cohere-client"></span><span id="components-model-client-cohere-client"></span><h1>cohere_client<a class="headerlink" href="#module-components.model_client.cohere_client" title="Link to this heading">#</a></h1>
-<p>Cohere ModelClient integration.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a>([api_key])</p></td>
-<td><p>A component wrapper for the Cohere API.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CohereAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
-<p>A component wrapper for the Cohere API.</p>
-<p>Visit <a class="reference external" href="https://docs.cohere.com/">https://docs.cohere.com/</a> for more api details.</p>
-<p>References:
-- Cohere reranker: <a class="reference external" href="https://docs.cohere.com/reference/rerank">https://docs.cohere.com/reference/rerank</a></p>
-<p>Tested Cohere models: 6/16/2024
--  rerank-english-v3.0, rerank-multilingual-v3.0, rerank-english-v2.0, rerank-multilingual-v2.0</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For all ModelClient integration, such as CohereAPIClient, if you want to subclass CohereAPIClient, you need to import it from the module directly.</p>
-<p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">lightrag.components.model_client.cohere_client</span> <span class="pre">import</span> <span class="pre">CohereAPIClient</span></code></p>
-<p>instead of using the lazy import with:</p>
-<p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">lightrag.components.model_client</span> <span class="pre">import</span> <span class="pre">CohereAPIClient</span></code></p>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.init_sync_client" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.init_async_client" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>For rerank model, expect model_kwargs to have the following keys:</dt><dd><p>model: str,
-query: str,
-documents: List[str],
-top_n: int,</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.call" title="Link to this definition">#</a></dt>
-<dd><p>Subclass use this to call the API with the sync client.
-model_type: this decides which API, such as chat.completions or embeddings for OpenAI.
-api_kwargs: all the arguments that the API call needs, subclass should implement this method.</p>
-<p>Additionally in subclass you can implement the error handling and retry logic here. See OpenAIClient for example.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.acall" title="Link to this definition">#</a></dt>
-<dd><p>Subclass use this to call the API with the async client.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="cohere-client">
+<span id="components-model-client-cohere-client"></span><h1>cohere_client<a class="headerlink" href="#cohere-client" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -622,30 +552,6 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_sync_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_async_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient.call"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.call()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.cohere_client.CohereAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.acall()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

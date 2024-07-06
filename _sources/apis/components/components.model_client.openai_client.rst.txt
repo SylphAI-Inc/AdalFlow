@@ -7,19 +7,3 @@ openai_client
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      get_all_messages_content
-      get_first_message_content
-      get_probabilities
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      OpenAIClient
-
