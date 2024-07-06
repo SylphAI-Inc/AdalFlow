@@ -1,5 +1,3 @@
-import pytest
-
 import logging
 from unittest.mock import MagicMock
 
@@ -44,7 +42,11 @@ class TestGetDefaultLogger:
             "logging.FileHandler", return_value=MagicMock(spec=logging.FileHandler)
         )
 
-        logger = get_logger(name="test_both_console_and_file_logging")
+        logger = get_logger(
+            name="test_both_console_and_file_logging",
+            enable_console=True,
+            enable_file=True,
+        )
 
         assert logger.hasHandlers()
         assert len(logger.handlers) == 2  # Both handlers should be added

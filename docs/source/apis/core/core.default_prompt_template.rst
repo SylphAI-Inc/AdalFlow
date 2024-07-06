@@ -1,9 +1,0 @@
-.. _core-default_prompt_template:
-
-default_prompt_template
-=====================================
-
-.. automodule:: core.default_prompt_template
-   :members:
-   :undoc-members:
-   :show-inheritance:

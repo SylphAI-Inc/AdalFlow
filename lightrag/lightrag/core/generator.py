@@ -1,6 +1,7 @@
-"""Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction. 
+"""Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.
 
 It is a pipeline that consists of three subcomponents."""
+
 from typing import Any, Dict, List, Optional, Union
 from copy import deepcopy
 import logging
@@ -71,7 +72,7 @@ class Generator(Component):
         """
 
         if not isinstance(model_client, ModelClient):
-            raise ValueError(
+            raise TypeError(
                 f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
             )
 

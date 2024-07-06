@@ -1,8 +1,9 @@
 """Anthropic ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any
-
+from typing import Dict, Optional, Any, Callable
+import backoff
+import logging
 
 import anthropic
 from anthropic import (
@@ -15,30 +16,42 @@ from anthropic import (
 from anthropic.types import Message
 
 
-import backoff
-
-
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
-
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+log = logging.getLogger(__name__)
 
 safe_import(OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1])
 
 
+def get_first_message_content(completion: Message) -> str:
+    r"""When we only need the content of the first message.
+    It is the default parser for chat completion."""
+    return completion.content[0].text
+
+
+# NOTE: using customize parser might make the new_component more complex when we have to handle a callable
 class AnthropicAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Anthropic API client.
 
     Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        chat_completion_parser: Callable[[Message], Any] = None,
+    ):
         r"""It is recommended to set the ANTHROPIC_API_KEY environment variable instead of passing it as an argument."""
         super().__init__()
         self._api_key = api_key
         self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
         self.tested_llm_models = ["claude-3-opus-20240229"]
+        self.chat_completion_parser = (
+            chat_completion_parser or get_first_message_content
+        )
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("ANTHROPIC_API_KEY")
@@ -53,7 +66,7 @@ class AnthropicAPIClient(ModelClient):
         return anthropic.AsyncAnthropic(api_key=api_key)
 
     def parse_chat_completion(self, completion: Message) -> str:
-        print(f"completion: {completion}")
+        log.debug(f"completion: {completion}")
         return completion.content[0].text
 
     def convert_inputs_to_api_kwargs(
@@ -64,9 +77,9 @@ class AnthropicAPIClient(ModelClient):
     ) -> dict:
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
-            api_kwargs["messages"] = [
-                {"role": "user", "content": input},
-            ]
+            # api_kwargs["messages"] = [
+            #     {"role": "user", "content": input},
+            # ]
             if input and input != "":
                 api_kwargs["system"] = input
         else:

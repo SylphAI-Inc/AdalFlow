@@ -1,10 +1,10 @@
 Data & RAG
 ====================
 
-.. admonition:: Author
-   :class: highlight
+.. .. admonition:: Author
+..    :class: highlight
 
-   `Li Yin <https://github.com/liyin2015>`_
+..    `Li Yin <https://github.com/liyin2015>`_
 
 
 The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.

@@ -1,5 +1,6 @@
 from .base_data_class import DataClass, required_field, DataClassFormatType
-from .component import Component, Sequential, FunComponent, fun_to_component
+from .component import Component, FunComponent, fun_to_component
+from .container import Sequential
 from .db import LocalDB
 from .default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from .embedder import Embedder, BatchEmbedder

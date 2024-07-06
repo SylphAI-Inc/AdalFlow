@@ -52,6 +52,12 @@ class OptionalPackages(Enum):
 class LazyImport:
     __doc__ = r"""Lazy import a module and class.
 
+    It is a proxy. The class/func will be created only when the class is instantiated or called.
+
+    .. note::
+
+       Do not subclass a lazy imported class.
+
     Mainly internal library use to import optional packages only when needed.
 
     Args:
@@ -65,24 +71,32 @@ class LazyImport:
         self.module = None
         self.class_ = None
 
-    def _load(self):
+    def load_class(self):
+        log.debug(f"Loading class: {self.import_path}")
         if self.module is None:
             try:
                 components = self.import_path.split(".")
                 module_path = ".".join(components[:-1])
                 class_name = components[-1]
+            except Exception as e:
+                log.error(f"Error parsing import path: {e}")
+            try:
                 self.module = importlib.import_module(module_path)
                 self.class_ = getattr(self.module, class_name)
+                return self.class_
             except ImportError:
                 log.info(f"Optional module not installed: {self.import_path}")
                 raise ImportError(f"{self.optional_package.error_message}")
 
     def __getattr__(self, name):
-        self._load()
+        self.load_class()
         return getattr(self.class_, name)
 
     def __call__(self, *args, **kwargs):
-        self._load()
+        """Create the class instance."""
+        self.load_class()
+        log.debug(f"Creating class instance: {self.class_}")
+        # normal class initialization
         return self.class_(*args, **kwargs)
 
 
