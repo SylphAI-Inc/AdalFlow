@@ -1,9 +1,0 @@
-.. _components-agent-react:
-
-react
-=============================
-
-.. automodule:: components.agent.react
-   :members:
-   :undoc-members:
-   :show-inheritance:

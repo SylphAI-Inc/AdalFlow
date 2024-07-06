@@ -15,10 +15,10 @@ In class `TrecClassifier`'s `call` method. Beside of the standard output process
 ###  Debugging
 
 1. save the structure of the model (`print(task)`)
-2. turn on the library logging 
+2. turn on the library logging
 
 ```python
-from utils import enable_library_logging, get_logger
+from utils import get_logger
 
 
 ### Prompt Template
@@ -90,7 +90,7 @@ Before we optimize our task pipeline, we will do two evaluations:
 Now, lets do this on model `gemma-7b-it`, along with model kwargs as:
 ```python
  groq_model_kwargs = {
-            "model": "gemma-7b-it",  
+            "model": "gemma-7b-it",
             "temperature": 0.0,
             "top_p": 1,
             "frequency_penalty": 0,
@@ -109,7 +109,7 @@ Here is what we message we sent to the model:
 
 ### Optimizing
 
-Our goals are to improve the performance of 
+Our goals are to improve the performance of
 1. `task_desc_str` via the `LLMOptimizer` with our manual `task_desc_str` as the initial prompt.
 2. `few-shot` optimizer should perform better even than the random optimizer.
 

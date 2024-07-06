@@ -47,7 +47,14 @@ class RerankerRetriever(Retriever[str, RetrieverStrQueriesType]):
         self.top_k = top_k
         self._model_kwargs = model_kwargs or {}
         assert "model" in self._model_kwargs, "model must be specified in model_kwargs"
-
+        if not isinstance(self._model_kwargs, Dict):
+            raise TypeError(
+                f"{type(self).__name__} requires a dictionary for model_kwargs, not a string"
+            )
+        if not isinstance(model_client, ModelClient):
+            raise TypeError(
+                f"{type(self).__name__} requires a ModelClient instance for model_client"
+            )
         self.model_client = model_client
 
         self.reset_index()

@@ -14,9 +14,9 @@ from lightrag.core.functional import (
     fix_json_escaped_single_quotes,
     extract_yaml_str,
 )
-from lightrag.utils.logger import enable_library_logging
+from lightrag.utils.logger import get_logger
 
-enable_library_logging()
+get_logger()
 
 
 ##################################################
