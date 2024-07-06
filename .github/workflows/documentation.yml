@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies using Poetry
         run: |
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install  # Install dependencies as specified in pyproject.toml
+          poetry install --only doc  # Install only the doc dependencies as specified in pyproject.toml
 
       - name: Build documentation using Makefile
         run: |
