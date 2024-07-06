@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,78 @@ document.write(`
   <section id="module-core.types">
 <span id="types"></span><span id="core-types"></span><h1>types<a class="headerlink" href="#module-core.types" title="Link to this heading">#</a></h1>
 <p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.get_model_args" title="core.types.get_model_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_args</span></code></a>(model_type)</p></td>
+<td><p>Get the required keys in model_kwargs for a specific model type.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.AssistantResponse" title="core.types.AssistantResponse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssistantResponse</span></code></a>(response_str[, metadata])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Conversation" title="core.types.Conversation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Conversation</span></code></a>(id, name, user_id, ...)</p></td>
+<td><p>A conversation manages the dialog turns in a whole conversation as a session.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DialogTurn</span></code></a>(id, user_id, conversation_id, ...)</p></td>
+<td><p>A turn consists of a user query and the assistant response.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Document" title="core.types.Document"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Document</span></code></a>(text, meta_data, ...)</p></td>
+<td><p>A text container with optional metadata and vector representation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmbedderOutput</span></code></a>(data, model, usage, error, ...)</p></td>
+<td><p>Container to hold the response from an Embedder model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.EmbedderOutputType" title="core.types.EmbedderOutputType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmbedderOutputType</span></code></a></p></td>
+<td><p>alias of <a class="reference internal" href="#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmbedderOutput</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Embedding</span></code></a>(embedding, index)</p></td>
+<td><p>Container for a single embedding.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Function" title="core.types.Function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Function</span></code></a>(thought, name, args, kwargs, ...)</p></td>
+<td><p>The data modeling of a function call, including the name and keyword arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a>(func_name, func_desc, ...)</p></td>
+<td><p>The data modeling of a function definition, including the name, description, and parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a>(thought, action)</p></td>
+<td><p>The data modeling of a function expression for a call, including the name and arguments.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a>([name, input, parsed_input, ...])</p></td>
+<td><p>The output of a tool, which could be a function, a class, or a module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a>([data, error, usage, ...])</p></td>
+<td><p>The output data class for the Generator component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClientType</span></code></a>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelType</span></code></a>(value[, names, module, qualname, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a>(doc_indices[, doc_scores, ...])</p></td>
+<td><p>Save the output of a single query in retrievers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, thought, action, ...])</p></td>
+<td><p>The output of a single step in the agent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.TokenLogProb" title="core.types.TokenLogProb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TokenLogProb</span></code></a>(token, logprob)</p></td>
+<td><p>similar to openai.ChatCompletionTokenLogprob</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Usage</span></code></a>(prompt_tokens, total_tokens)</p></td>
+<td><p>In sync with api spec, same as openai/types/create_embedding_response.py</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.UserQuery" title="core.types.UserQuery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserQuery</span></code></a>(query_str[, metadata])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.ModelType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#ModelType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.ModelType" title="Link to this definition">#</a></dt>

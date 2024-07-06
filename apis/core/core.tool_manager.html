@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,15 @@ document.write(`
   <section id="module-core.tool_manager">
 <span id="tool-manager"></span><span id="core-tool-manager"></span><h1>tool_manager<a class="headerlink" href="#module-core.tool_manager" title="Link to this heading">#</a></h1>
 <p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToolManager</span></code></a>([tools, additional_context])</p></td>
+<td><p>&quot;Manage a list of tools, context, and all ways to execute functions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.tool_manager.ToolManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ToolManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">FunctionTool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager" title="Link to this definition">#</a></dt>

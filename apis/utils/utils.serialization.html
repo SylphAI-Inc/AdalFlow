@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -529,6 +515,36 @@ document.write(`
                   
   <section id="module-utils.serialization">
 <span id="serialization"></span><span id="utils-serialization"></span><h1>serialization<a class="headerlink" href="#module-utils.serialization" title="Link to this heading">#</a></h1>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.serialization.check_object" title="utils.serialization.check_object"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_object</span></code></a>(obj)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.serialization.default" title="utils.serialization.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>(o)</p></td>
+<td><p>Customized JSON serializer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.serialization.deserialize" title="utils.serialization.deserialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deserialize</span></code></a>(data)</p></td>
+<td><p>Deserialize the JSON string back to an object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.serialization.serialize" title="utils.serialization.serialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">serialize</span></code></a>(obj)</p></td>
+<td><p>Serialize the object to a json string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.serialization.to_dict" title="utils.serialization.to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_dict</span></code></a>(obj)</p></td>
+<td><p>Convert the object to a dictionary.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.serialization.ObjectTypes" title="utils.serialization.ObjectTypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ObjectTypes</span></code></a>(value[, names, module, ...])</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.serialization.ObjectTypes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ObjectTypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/serialization.html#ObjectTypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.serialization.ObjectTypes" title="Link to this definition">#</a></dt>

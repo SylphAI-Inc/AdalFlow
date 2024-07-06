@@ -7,7 +7,7 @@ Tutorials
 .. *Why and How Each Part works*
 
 Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
-These are our most important tutorials before you move ahead to build use cases  (LLM applications) end to end.
+These are our most important tutorials before you move ahead to build your use cases end to end.
 
 
 .. raw::
@@ -250,7 +250,7 @@ Training
    trainer
 
 
-Logging & Tracing & Configurations
+Logging & Tracing
 ------------------------------------
 Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-tracing>`.
 
@@ -261,14 +261,42 @@ Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-
    * - Part
      - Description
    * - :doc:`logging`
-     - LightRAG uses ``logging`` module as the first defense line to help users debug the code. We made the effort to help you set it up easily.
+     - LightRAG uses native ``logging`` module as the first line of debugging tooling. We made the effort to help you set it up easily.
+   * - :doc:`logging_tracing`
+     - We provide two tracing methods to help you develop and improve the Generator:
+       1. Trace the history change(states) on prompt during your development process.
+       2. Trace all failed LLM predictions in a unified file for further improvement.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Logging & Tracing & Configurations
+   :caption: Logging & Tracing
    :hidden:
 
 
    logging
    logging_tracing
+
+
+
+Configurations
+-------------------
+Code path:  :ref:`lightrag.utils <apis-utils>`.
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`configs`
+     - The configurations for the components.
+
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Configurations
+   :hidden:
+
+
    configs

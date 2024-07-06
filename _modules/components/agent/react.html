@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -293,13 +286,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -750,11 +736,9 @@ document.write(`
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
     <span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
-    <span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>  <span class="c1"># noqa</span>
+    <span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
 
-    <span class="c1"># from lightrag.utils import enable_library_logging</span>
-
-    <span class="c1"># enable_library_logging(level=&quot;DEBUG&quot;)</span>
+    <span class="n">setup_env</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>

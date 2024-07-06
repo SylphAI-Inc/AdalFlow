@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,18 @@ document.write(`
   <section id="module-eval.llm_as_judge">
 <span id="llm-as-judge"></span><span id="eval-llm-as-judge"></span><h1>llm_as_judge<a class="headerlink" href="#module-eval.llm_as_judge" title="Link to this heading">#</a></h1>
 <p>This is the metric to use an LLM as a judge for evaluating the performance of predicted answers.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a>([model_client, model_kwargs])</p></td>
+<td><p>Demonstrate how to use an LLM/Generator to output True or False for a judgement query.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#eval.llm_as_judge.LLMasJudge" title="eval.llm_as_judge.LLMasJudge"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a>([llm_evaluator])</p></td>
+<td><p>LLM as judge for evaluating the performance of a LLM.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="eval.llm_as_judge.DefaultLLMJudge">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DefaultLLMJudge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/eval/llm_as_judge.html#DefaultLLMJudge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#eval.llm_as_judge.DefaultLLMJudge" title="Link to this definition">#</a></dt>

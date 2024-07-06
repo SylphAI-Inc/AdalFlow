@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,27 @@ document.write(`
   <section id="module-utils.lazy_import">
 <span id="lazy-import"></span><span id="utils-lazy-import"></span><h1>lazy_import<a class="headerlink" href="#module-utils.lazy_import" title="Link to this heading">#</a></h1>
 <p>Lazy import a module and class.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.safe_import" title="utils.lazy_import.safe_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_import</span></code></a>(module_name, install_message)</p></td>
+<td><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.LazyImport" title="utils.lazy_import.LazyImport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyImport</span></code></a>(import_path, optional_package)</p></td>
+<td><p>Lazy import a module and class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionalPackages</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>Enum for optional packages that can be used in the library.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptionalPackages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#OptionalPackages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.OptionalPackages" title="Link to this definition">#</a></dt>
@@ -593,6 +600,11 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LazyImport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">import_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><span class="pre">OptionalPackages</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#LazyImport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.LazyImport" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Lazy import a module and class.</p>
+<p>It is a proxy. The class/func will be created only when the class is instantiated or called.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not subclass a lazy imported class.</p>
+</div>
 <p>Mainly internal library use to import optional packages only when needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -602,6 +614,11 @@ document.write(`
 </ul>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.lazy_import.LazyImport.load_class">
+<span class="sig-name descname"><span class="pre">load_class</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#LazyImport.load_class"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.LazyImport.load_class" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -672,7 +689,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.PGVECTOR"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.PGVECTOR</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.LazyImport"><code class="docutils literal notranslate"><span class="pre">LazyImport</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.LazyImport"><code class="docutils literal notranslate"><span class="pre">LazyImport</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.LazyImport.load_class"><code class="docutils literal notranslate"><span class="pre">LazyImport.load_class()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.safe_import"><code class="docutils literal notranslate"><span class="pre">safe_import()</span></code></a></li>
 </ul>
   </nav></div>

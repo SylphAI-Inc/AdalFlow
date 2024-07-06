@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -293,13 +286,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -565,22 +551,22 @@ document.write(`
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided class is not a subclass of DataClass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># ensure example is instance of data class and initiated</span>
         <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data_class</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided example is not an instance of the data class: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span> <span class="o">=</span> <span class="n">return_data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">yaml_output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
 
@@ -620,7 +606,7 @@ document.write(`
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in formatting example for </span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">example_str</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaml_output_format_prompt</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="n">example_str</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="n">example_str</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="YamlOutputParser.call">
@@ -654,22 +640,22 @@ document.write(`
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided class is not a subclass of DataClass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">examples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">examples</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data_class</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Provided example is not an instance of the data class: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span> <span class="o">=</span> <span class="n">return_data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">JSON_OUTPUT_FORMAT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">json_output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">JsonParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
 
@@ -707,7 +693,7 @@ document.write(`
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error in formatting example for </span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">example_str</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">json_output_format_prompt</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="n">example_str</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">example</span><span class="o">=</span><span class="n">example_str</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="JsonOutputParser.call">

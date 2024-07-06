@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -299,13 +292,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -407,10 +393,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -471,7 +461,7 @@ document.write(`
   <section id="class-hierarchy">
 <h1>Class Hierarchy<a class="headerlink" href="#class-hierarchy" title="Link to this heading">#</a></h1>
 <p>From the plot of the <cite>LightRAG</cite> library’s class hierarchy, we can see the library is well-centered around two powerful base classes: <cite>Component</cite> and <cite>DataClass</cite>,  and it maintains no more than two levels of class hierarchy.
-This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability.</p>
+This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability and composability.</p>
 <style>
 .iframe-container {
     width: 100%;

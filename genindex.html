@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="apis/index.html">
     API Reference
   </a>
@@ -293,13 +286,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -467,7 +453,7 @@ document.write(`
       </ul></li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">AnthropicAPIClient (class in components.model_client.anthropic_client)</a>
 </li>
-      <li><a href="apis/core/core.component.html#core.component.Sequential.append">append() (Sequential method)</a>
+      <li><a href="apis/core/core.container.html#core.container.Sequential.append">append() (Sequential method)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.append_dialog_turn">append_dialog_turn() (Conversation method)</a>
 </li>
@@ -510,6 +496,8 @@ document.write(`
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">build_index_from_documents() (BM25Retriever method)</a>
 
       <ul>
+        <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents">(FAISSRetriever method)</a>
+</li>
         <li><a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.build_index_from_documents">(LLMRetriever method)</a>
 </li>
         <li><a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.build_index_from_documents">(RerankerRetriever method)</a>
@@ -541,6 +529,8 @@ document.write(`
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge.call">(DefaultLLMJudge method)</a>
 </li>
         <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.call">(Embedder method)</a>
+</li>
+        <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.call">(FAISSRetriever method)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.FunComponent.call">(FunComponent method)</a>
 </li>
@@ -582,7 +572,7 @@ document.write(`
 </li>
         <li><a href="apis/optim/index.html#optim.Sampler.call">(Sampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.call">[1]</a>
 </li>
-        <li><a href="apis/core/core.component.html#core.component.Sequential.call">(Sequential method)</a>
+        <li><a href="apis/core/core.container.html#core.container.Sequential.call">(Sequential method)</a>
 </li>
         <li><a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.call">(TextSplitter method)</a>
 </li>
@@ -720,6 +710,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    components.retriever.faiss_retriever
+
+      <ul>
+        <li><a href="apis/components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever">module</a>
+</li>
+      </ul></li>
+      <li>
     components.retriever.llm_retriever
 
       <ul>
@@ -788,6 +785,13 @@ document.write(`
 
       <ul>
         <li><a href="apis/core/core.component.html#module-core.component">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.container
+
+      <ul>
+        <li><a href="apis/core/core.container.html#module-core.container">module</a>
 </li>
       </ul></li>
       <li>
@@ -974,8 +978,6 @@ document.write(`
 </li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.embedding_dim">embedding_dim (EmbedderOutput property)</a>
 </li>
-      <li><a href="apis/utils/utils.logger.html#utils.logger.enable_library_logging">enable_library_logging() (in module utils.logger)</a>
-</li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.encode">encode() (Tokenizer method)</a>
 </li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping">EntityMapping (class in utils.registry)</a>
@@ -1046,7 +1048,11 @@ document.write(`
       <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">execute_func_expr_via_sandbox() (ToolManager method)</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.extend">extend() (LocalDB method)</a>
+
+      <ul>
+        <li><a href="apis/core/core.container.html#core.container.Sequential.extend">(Sequential method)</a>
 </li>
+      </ul></li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_dataclass_type">extract_dataclass_type() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_first_boolean">extract_first_boolean() (in module core.functional)</a>
@@ -1068,6 +1074,8 @@ document.write(`
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.FAISS">FAISS (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever">FAISSRetriever (class in components.retriever.faiss_retriever)</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.fetch_items">fetch_items() (LocalDB method)</a>
 </li>
@@ -1205,12 +1213,16 @@ document.write(`
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.get_dialog_turns">get_dialog_turns() (Conversation method)</a>
 </li>
-      <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">get_first_message_content() (in module components.model_client.openai_client)</a>
+      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">get_first_message_content() (in module components.model_client.anthropic_client)</a>
+
+      <ul>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">(in module components.model_client.openai_client)</a>
 </li>
-      <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
-</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
+</li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">get_jinja2_environment() (in module core.prompt_builder)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">get_log_location() (GeneratorCallLogger method)</a>
@@ -1309,8 +1321,6 @@ document.write(`
       </ul></li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client">init_reranker_client() (TransformersClient method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">init_sync_client() (AnthropicAPIClient method)</a>
 
       <ul>
@@ -1327,6 +1337,8 @@ document.write(`
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">(TransformersClient method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT">INNER_PRODUCT (DistanceToOperator attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.input">input (EmbedderOutput attribute)</a>
@@ -1335,6 +1347,8 @@ document.write(`
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput.input">(FunctionOutput attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apis/core/core.container.html#core.container.Sequential.insert">insert() (Sequential method)</a>
+</li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.INSTANCE">INSTANCE (ObjectTypes attribute)</a>
 </li>
       <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction">Instruction (class in optim.llm_optimizer)</a>
@@ -1431,6 +1445,8 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport.load_class">load_class() (LazyImport method)</a>
+</li>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">load_from_file() (BM25Retriever class method)</a>
 
       <ul>
@@ -1547,6 +1563,8 @@ document.write(`
 </li>
         <li><a href="apis/components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever">components.retriever.bm25_retriever</a>
 </li>
+        <li><a href="apis/components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever">components.retriever.faiss_retriever</a>
+</li>
         <li><a href="apis/components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever">components.retriever.llm_retriever</a>
 </li>
         <li><a href="apis/components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever">components.retriever.postgres_retriever</a>
@@ -1556,6 +1574,8 @@ document.write(`
         <li><a href="apis/core/core.base_data_class.html#module-core.base_data_class">core.base_data_class</a>
 </li>
         <li><a href="apis/core/core.component.html#module-core.component">core.component</a>
+</li>
+        <li><a href="apis/core/core.container.html#module-core.container">core.container</a>
 </li>
         <li><a href="apis/core/core.db.html#module-core.db">core.db</a>
 </li>
@@ -1892,8 +1912,6 @@ document.write(`
 </li>
       <li><a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever">RerankerRetriever (class in components.retriever.reranker_retriever)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot.reset">reset() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset">[1]</a>
 
       <ul>
@@ -1904,9 +1922,13 @@ document.write(`
         <li><a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.reset">(ReActAgent method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">reset_index() (BM25Retriever method)</a>
 
       <ul>
+        <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.reset_index">(FAISSRetriever method)</a>
+</li>
         <li><a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.reset_index">(LLMRetriever method)</a>
 </li>
         <li><a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.reset_index">(RerankerRetriever method)</a>
@@ -1925,6 +1947,10 @@ document.write(`
       <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.responses">responses (Instruction attribute)</a>
 </li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">retrieve_by_sql() (PostgresRetriever method)</a>
+</li>
+      <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries">retrieve_embedding_queries() (FAISSRetriever method)</a>
+</li>
+      <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries">retrieve_string_queries() (FAISSRetriever method)</a>
 </li>
       <li><a href="apis/core/core.retriever.html#core.retriever.Retriever">Retriever (class in core.retriever)</a>
 </li>
@@ -1992,7 +2018,7 @@ document.write(`
         <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.score">(Instruction attribute)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.component.html#core.component.Sequential">Sequential (class in core.component)</a>
+      <li><a href="apis/core/core.container.html#core.container.Sequential">Sequential (class in core.container)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

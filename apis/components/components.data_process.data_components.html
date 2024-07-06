@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -535,6 +521,27 @@ document.write(`
   <section id="module-components.data_process.data_components">
 <span id="data-components"></span><span id="components-data-process-data-components"></span><h1>data_components<a class="headerlink" href="#module-components.data_process.data_components" title="Link to this heading">#</a></h1>
 <p>Helper components for data transformation such as embeddings and document splitting.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.data_process.data_components.retriever_output_to_context_str" title="components.data_process.data_components.retriever_output_to_context_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retriever_output_to_context_str</span></code></a>(retriever_output)</p></td>
+<td><p>The retrieved documents from one or mulitple queries.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.data_process.data_components.RetrieverOutputToContextStr" title="components.data_process.data_components.RetrieverOutputToContextStr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutputToContextStr</span></code></a>([deduplicate])</p></td>
+<td><p>Wrap on functional F.retriever_output_to_context_str</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.data_process.data_components.ToEmbeddings" title="components.data_process.data_components.ToEmbeddings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToEmbeddings</span></code></a>(embedder[, batch_size])</p></td>
+<td><p>It transforms a Sequence of Chunks or Documents to a List of Embeddings.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.data_process.data_components.ToEmbeddings">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ToEmbeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embedder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Embedder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/data_process/data_components.html#ToEmbeddings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.data_process.data_components.ToEmbeddings" title="Link to this definition">#</a></dt>

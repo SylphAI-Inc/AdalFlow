@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,27 @@ document.write(`
   <section id="module-core.component">
 <span id="component"></span><span id="core-component"></span><h1>component<a class="headerlink" href="#module-core.component" title="Link to this heading">#</a></h1>
 <p>Component is to LLM task pipelines what nn.Module is to PyTorch models.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fun_to_component</span></code></a>(fun)</p></td>
+<td><p>Helper function to convert a function into a Component with its own class name.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Component</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Base class for all LLM task pipeline components.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunComponent</span></code></a>([fun, afun])</p></td>
+<td><p>Component that wraps a function.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.component.Component">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component" title="Link to this definition">#</a></dt>
@@ -830,78 +837,6 @@ returned by this component’s <a class="reference internal" href="#core.compone
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="core.component.Sequential">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sequential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Sequential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Sequential" title="Link to this definition">#</a></dt>
-<dt class="sig sig-object py">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sequential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
-<dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
-<p>A sequential container.</p>
-<p>Components will be added to it in the order they are passed to the constructor.
-Output of the previous component is input to the next component as positional argument.</p>
-<p>Examples:
-1. Use list as input:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">([</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">])</span>
-</pre></div>
-</div>
-<ol class="arabic" start="2">
-<li><dl>
-<dt>Use positional arguments:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">component1</span><span class="p">,</span> <span class="n">component2</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Use both:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">component1</span><span class="p">,</span> <span class="p">[</span><span class="n">component2</span><span class="p">,</span> <span class="n">component3</span><span class="p">])</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Add components:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">component4</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Get a component:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Delete a component:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">seq</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Iterate over components:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">:</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="nb">print</span><span class="p">(</span><span class="n">component</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-</ol>
-<dl class="py method">
-<dt class="sig sig-object py" id="core.component.Sequential.append">
-<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.component.Sequential" title="core.component.Sequential"><span class="pre">Sequential</span></a></span></span><a class="reference internal" href="../../_modules/core/component.html#Sequential.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Sequential.append" title="Link to this definition">#</a></dt>
-<dd><p>Appends a component to the end of the Sequential.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.component.Sequential.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/core/component.html#Sequential.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Sequential.call" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="core.component.FunComponent">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FunComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">afun</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#FunComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.FunComponent" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></p>
@@ -1034,11 +969,6 @@ its own class name.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.named_components"><code class="docutils literal notranslate"><span class="pre">Component.named_components()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.state_dict"><code class="docutils literal notranslate"><span class="pre">Component.state_dict()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.load_state_dict"><code class="docutils literal notranslate"><span class="pre">Component.load_state_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Sequential"><code class="docutils literal notranslate"><span class="pre">Sequential</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Sequential.append"><code class="docutils literal notranslate"><span class="pre">Sequential.append()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Sequential.call"><code class="docutils literal notranslate"><span class="pre">Sequential.call()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.FunComponent"><code class="docutils literal notranslate"><span class="pre">FunComponent</span></code></a><ul class="nav section-nav flex-column">

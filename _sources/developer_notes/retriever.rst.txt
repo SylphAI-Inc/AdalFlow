@@ -1,10 +1,10 @@
 Retriever
 ============
 
-.. admonition:: Author
-   :class: highlight
+.. .. admonition:: Author
+..    :class: highlight
 
-   `Li Yin <https://github.com/liyin2015>`_
+..    `Li Yin <https://github.com/liyin2015>`_
 
 Context
 ------------------

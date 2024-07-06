@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -303,13 +296,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -411,10 +397,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -472,7 +462,7 @@ document.write(`
   <section id="tutorials">
 <span id="developer-notes"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
 <p>Learn the <cite>why</cite> and <cite>how-to</cite> (customize and integrate) behind each core part within the <cite>LightRAG</cite> library.
-These are our most important tutorials before you move ahead to build use cases  (LLM applications) end to end.</p>
+These are our most important tutorials before you move ahead to build your use cases end to end.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/LLM_arch.png"><img alt="LLM application is no different from a mode training/eval workflow" src="../_images/LLM_arch.png" style="width: 600px;" />
 </a>
@@ -668,8 +658,8 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </div>
 </section>
 </section>
-<section id="logging-tracing-configurations">
-<h2>Logging &amp; Tracing &amp; Configurations<a class="headerlink" href="#logging-tracing-configurations" title="Link to this heading">#</a></h2>
+<section id="logging-tracing">
+<h2>Logging &amp; Tracing<a class="headerlink" href="#logging-tracing" title="Link to this heading">#</a></h2>
 <p>Code path:  <a class="reference internal" href="../apis/utils/index.html#apis-utils"><span class="std std-ref">lightrag.utils</span></a> and <a class="reference internal" href="../apis/tracing/index.html#apis-tracing"><span class="std std-ref">lightrag.tracing</span></a>.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -683,7 +673,35 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="logging.html"><span class="doc">Logging</span></a></p></td>
-<td><p>LightRAG uses <code class="docutils literal notranslate"><span class="pre">logging</span></code> module as the first defense line to help users debug the code. We made the effort to help you set it up easily.</p></td>
+<td><p>LightRAG uses native <code class="docutils literal notranslate"><span class="pre">logging</span></code> module as the first line of debugging tooling. We made the effort to help you set it up easily.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="logging_tracing.html"><span class="doc">Tracing</span></a></p></td>
+<td><p>We provide two tracing methods to help you develop and improve the Generator:
+1. Trace the history change(states) on prompt during your development process.
+2. Trace all failed LLM predictions in a unified file for further improvement.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="configurations">
+<h2>Configurations<a class="headerlink" href="#configurations" title="Link to this heading">#</a></h2>
+<p>Code path:  <a class="reference internal" href="../apis/utils/index.html#apis-utils"><span class="std std-ref">lightrag.utils</span></a>.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Part</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="configs.html"><span class="doc">Configurations</span></a></p></td>
+<td><p>The configurations for the components.</p></td>
 </tr>
 </tbody>
 </table>
@@ -754,7 +772,8 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-tracing-configurations">Logging &amp; Tracing &amp; Configurations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-tracing">Logging &amp; Tracing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurations">Configurations</a></li>
 </ul>
   </nav></div>
 

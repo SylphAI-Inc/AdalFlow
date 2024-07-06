@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -535,6 +521,15 @@ document.write(`
   <section id="module-components.model_client.cohere_client">
 <span id="cohere-client"></span><span id="components-model-client-cohere-client"></span><h1>cohere_client<a class="headerlink" href="#module-components.model_client.cohere_client" title="Link to this heading">#</a></h1>
 <p>Cohere ModelClient integration.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a>([api_key])</p></td>
+<td><p>A component wrapper for the Cohere API.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CohereAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient" title="Link to this definition">#</a></dt>
@@ -545,6 +540,13 @@ document.write(`
 - Cohere reranker: <a class="reference external" href="https://docs.cohere.com/reference/rerank">https://docs.cohere.com/reference/rerank</a></p>
 <p>Tested Cohere models: 6/16/2024
 -  rerank-english-v3.0, rerank-multilingual-v3.0, rerank-english-v2.0, rerank-multilingual-v2.0</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For all ModelClient integration, such as CohereAPIClient, if you want to subclass CohereAPIClient, you need to import it from the module directly.</p>
+<p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">lightrag.components.model_client.cohere_client</span> <span class="pre">import</span> <span class="pre">CohereAPIClient</span></code></p>
+<p>instead of using the lazy import with:</p>
+<p><code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">lightrag.components.model_client</span> <span class="pre">import</span> <span class="pre">CohereAPIClient</span></code></p>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.cohere_client.CohereAPIClient.init_sync_client">
 <span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/cohere_client.html#CohereAPIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.cohere_client.CohereAPIClient.init_sync_client" title="Link to this definition">#</a></dt>

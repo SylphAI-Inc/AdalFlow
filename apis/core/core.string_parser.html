@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -531,6 +517,30 @@ document.write(`
 <span id="string-parser"></span><span id="core-string-parser"></span><h1>string_parser<a class="headerlink" href="#module-core.string_parser" title="Link to this heading">#</a></h1>
 <p>Extract and convert common string to Python objects.</p>
 <p>From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BooleanParser</span></code></a>()</p></td>
+<td><p>Extracts boolean values from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FloatParser</span></code></a>()</p></td>
+<td><p>Extracts float values from text.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IntParser</span></code></a>()</p></td>
+<td><p>Extracts integer values from text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JsonParser</span></code></a>([add_missing_right_brace])</p></td>
+<td><p>Extracts JSON strings <cite>{...}</cite> or <cite>[...]</cite> from text and parses them into a JSON object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListParser</span></code></a>([add_missing_right_bracket])</p></td>
+<td><p>Extracts list <cite>[...]</cite> strings from text and parses them into a list object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YamlParser</span></code></a>()</p></td>
+<td><p>To extract YAML strings from text and parse them into a YAML object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.BooleanParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BooleanParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser" title="Link to this definition">#</a></dt>

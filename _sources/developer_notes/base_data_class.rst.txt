@@ -2,10 +2,10 @@
 DataClass
 ============
 
-.. admonition:: Author
-   :class: highlight
+.. .. admonition:: Author
+..    :class: highlight
 
-   `Li Yin <https://github.com/liyin2015>`_
+..    `Li Yin <https://github.com/liyin2015>`_
 
 In `PyTorch`, ``Tensor`` is the data type used in ``Module`` and ``Optimizer`` across the library.
 Tensor wraps a multi-dimensional matrix to better support its operations and computations.

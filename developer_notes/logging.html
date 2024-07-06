@@ -52,7 +52,7 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Logging &amp; Tracing" href="logging_tracing.html" />
+    <link rel="next" title="Tracing" href="logging_tracing.html" />
     <link rel="prev" title="Trainer" href="trainer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -259,6 +252,10 @@ document.write(`
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -294,13 +291,6 @@ document.write(`
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -407,10 +397,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -470,6 +464,117 @@ document.write(`
                   
   <section id="logging">
 <h1>Logging<a class="headerlink" href="#logging" title="Link to this heading">#</a></h1>
+<p>Python logging module <a class="footnote-reference brackets" href="#id8" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> is a powerful and flexible tool for debugging and tracing.
+LightRAG uses the native <code class="docutils literal notranslate"><span class="pre">logging</span></code> module as the <em>first line of defense</em>.</p>
+<section id="design">
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<p>Some libraries may use <code class="docutils literal notranslate"><span class="pre">hooks</span></code> <a class="footnote-reference brackets" href="#id9" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and <code class="docutils literal notranslate"><span class="pre">Callbacks</span></code> <a class="footnote-reference brackets" href="#id10" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id11" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, or advanced web-based debugging tools <a class="footnote-reference brackets" href="#id12" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id13" id="id6" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> <a class="footnote-reference brackets" href="#id14" id="id7" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a>.
+<code class="docutils literal notranslate"><span class="pre">hooks</span></code> and <code class="docutils literal notranslate"><span class="pre">callbacks</span></code> are conceptually similar in that they both allow users to execute custom code at specific points during the execution of a program.
+Both provide mechanisms to inject additional behavior in response to certain events or conditions, without modifying its core logic.
+PyTorch defines, registers, and executes hooks mainly in its base classes like <cite>nn.Module</cite> and <cite>Tensor</cite>, without polluting the functional and user-facing APIs.</p>
+<p>At this point, our objectives are:</p>
+<ol class="arabic simple">
+<li><p>Maximize the debugging capabilities via the simple logging module to keep the source code clean.</p></li>
+<li><p>Additionally, as we can’t always control the outputs of generators, we will provide customized logger and tracers(drop-in decorators) for them, for which we will explain in <a class="reference internal" href="logging_tracing.html"><span class="doc">Tracing</span></a>. This will not break the first objective.</p></li>
+</ol>
+<p>In the future, when we have more complex requirements from users, we will consider adding hooks/callbacks but doing it in a way to keep the functional and user-facing APIs clean.</p>
+<section id="how-the-library-logs">
+<h3>How the library logs<a class="headerlink" href="#how-the-library-logs" title="Link to this heading">#</a></h3>
+<p>In each file, we simply set the logger with the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And we will use <cite>log</cite> and decide what level of logging we want to use in each function.
+Here is how <span class="xref std std-ref">Generator logs</span>.</p>
+</section>
+<section id="how-users-set-up-the-logger">
+<h3>How users set up the logger<a class="headerlink" href="#how-users-set-up-the-logger" title="Link to this heading">#</a></h3>
+<p>We provide a simple function <a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.get_logger" title="utils.logger.get_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_logger</span></code></a> to help users set up loggers with great default formatting and handlers.
+The simplest way to get up a logger and see the library logs is to call this function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<span class="n">root_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Here is an example of the printed log message if users run the generator after setting up the logger:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">2024</span><span class="o">-</span><span class="mi">07</span><span class="o">-</span><span class="mi">05</span> <span class="mi">18</span><span class="p">:</span><span class="mi">49</span><span class="p">:</span><span class="mi">39</span> <span class="o">-</span> <span class="n">generator</span> <span class="o">-</span> <span class="n">INFO</span> <span class="o">-</span> <span class="p">[</span><span class="n">generator</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">249</span><span class="p">:</span><span class="n">call</span><span class="p">]</span> <span class="o">-</span> <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello! I&#39;m just a computer program, so I don&#39;t have feelings, but I&#39;m here and ready to help you. How can I assist you today?&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="s2">&quot;Hello! I&#39;m just a computer program, so I don&#39;t have feelings, but I&#39;m here and ready to help you. How can I assist you today?&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="printc-function">
+<h3>printc function<a class="headerlink" href="#printc-function" title="Link to this heading">#</a></h3>
+<p>A neat tiny function <a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.printc" title="utils.logger.printc"><code class="xref py py-func docutils literal notranslate"><span class="pre">printc</span></code></a> is provided to print colored text to the console.
+It has similar formatting to the logger.
+Here is an example of how to use it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.logger</span> <span class="kn">import</span> <span class="n">printc</span>
+
+<span class="n">printc</span><span class="p">(</span><span class="s2">&quot;All logging examples are done. Feeling green!&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;green&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<pre style="color: green; background-color: black;">
+2024-07-05 22:25:43 - [logging_config.py:98:&lt;module&gt;] - All logging examples are done. Feeling green!
+</pre></section>
+</section>
+<section id="use-logger-in-projects">
+<h2>Use Logger in Projects<a class="headerlink" href="#use-logger-in-projects" title="Link to this heading">#</a></h2>
+<p>There are three distinct ways to set up the logging in your project:</p>
+<ol class="arabic simple">
+<li><p>Use root logger only and have all the library and your application logging in one file. This is the simplest setup.</p></li>
+<li><p>Use only named logger to log your application logs in a file.</p></li>
+<li><p>Use both root and named logger to log library and application logs separately.</p></li>
+</ol>
+<p>It works similarly if it is to be logged to console.
+Config 3 can be quite neat:</p>
+<ul class="simple">
+<li><p>You can enable different levels of logging for the library and your application.</p></li>
+<li><p>You can easily focus on debugging your own code without being distracted by the library logs and still have the option to see the library logs if needed.</p></li>
+</ul>
+<div class="highlight admonition">
+<p class="admonition-title">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id8" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Python logging module: <a class="reference external" href="https://docs.python.org/3/library/logging.html">https://docs.python.org/3/library/logging.html</a></p>
+</aside>
+<aside class="footnote brackets" id="id9" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Hooks in PyTorch: <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.modules.module.register_module_forward_hook.html">https://pytorch.org/docs/stable/generated/torch.nn.modules.module.register_module_forward_hook.html</a></p>
+</aside>
+<aside class="footnote brackets" id="id10" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Callbacks in Transformers: <a class="reference external" href="https://huggingface.co/docs/transformers/main/en/main_classes/callback">https://huggingface.co/docs/transformers/main/en/main_classes/callback</a></p>
+</aside>
+<aside class="footnote brackets" id="id11" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Callbacks in PyTorch Lightning: <a class="reference external" href="https://pytorch-lightning.readthedocs.io/en/1.5.10/extensions/callbacks.html">https://pytorch-lightning.readthedocs.io/en/1.5.10/extensions/callbacks.html</a></p>
+</aside>
+<aside class="footnote brackets" id="id12" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">5</a><span class="fn-bracket">]</span></span>
+<p>Weights &amp; Biases: <a class="reference external" href="https://wandb.ai/site">https://wandb.ai/site</a></p>
+</aside>
+<aside class="footnote brackets" id="id13" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">6</a><span class="fn-bracket">]</span></span>
+<p>TensorBoard: <a class="reference external" href="https://www.tensorflow.org/tensorboard">https://www.tensorflow.org/tensorboard</a></p>
+</aside>
+<aside class="footnote brackets" id="id14" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">7</a><span class="fn-bracket">]</span></span>
+<p>Arize Phoenix: <a class="reference external" href="https://docs.arize.com/phoenix">https://docs.arize.com/phoenix</a></p>
+</aside>
+</aside>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.get_logger" title="utils.logger.get_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.logger.get_logger()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/utils/utils.logger.html#utils.logger.printc" title="utils.logger.printc"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.logger.printc()</span></code></a></p></li>
+<li><p><span class="xref std std-ref">Generator</span></p></li>
+</ul>
+</div>
+</section>
 </section>
 
 
@@ -496,7 +601,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Logging &amp; Tracing</p>
+        <p class="prev-next-title">Tracing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -506,6 +611,29 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-library-logs">How the library logs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-users-set-up-the-logger">How users set up the logger</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#printc-function">printc function</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-logger-in-projects">Use Logger in Projects</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

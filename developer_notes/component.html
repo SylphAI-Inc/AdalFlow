@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -303,13 +296,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -411,10 +397,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -602,7 +592,7 @@ We can also use methods to add more subcomponnents or parameters.</p>
 <span class="n">save_json</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">&quot;doc.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To adds even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a> and <a class="reference internal" href="../apis/core/core.component.html#core.component.Sequential" title="core.component.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></a> for more advanced use cases.</p>
+<p>To adds even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code> for more advanced use cases.</p>
 </section>
 <section id="searalization-and-deserialization">
 <h3>Searalization and deserialization<a class="headerlink" href="#searalization-and-deserialization" title="Link to this heading">#</a></h3>
@@ -661,7 +651,7 @@ This approach gives you a unique component converted from the function name.</p>
 </section>
 <section id="sequential">
 <h2>Sequential<a class="headerlink" href="#sequential" title="Link to this heading">#</a></h2>
-<p>We have <a class="reference internal" href="../apis/core/core.component.html#core.component.Sequential" title="core.component.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></a> class to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class. This is especially useful to chain together components in a sequence.  Much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
+<p>We have <code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code> class to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class. This is especially useful to chain together components in a sequence.  Much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
 Let’s put the FunComponent and DocQA together in a sequence:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
@@ -700,7 +690,7 @@ The output is:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Component</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.Sequential" title="core.component.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a></p></li>
 </ul>
 </div>

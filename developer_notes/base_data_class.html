@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -303,13 +296,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -411,10 +397,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -474,10 +464,6 @@ document.write(`
                   
   <section id="dataclass">
 <span id="core-base-data-class-note"></span><h1>DataClass<a class="headerlink" href="#dataclass" title="Link to this heading">#</a></h1>
-<div class="highlight admonition">
-<p class="admonition-title">Author</p>
-<p><a class="reference external" href="https://github.com/liyin2015">Li Yin</a></p>
-</div>
 <p>In <cite>PyTorch</cite>, <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> is the data type used in <code class="docutils literal notranslate"><span class="pre">Module</span></code> and <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> across the library.
 Tensor wraps a multi-dimensional matrix to better support its operations and computations.
 In LLM applications, data constantly needs to interact with LLMs in the form of strings via prompt and be parsed back to structured data from LLMs’ text prediction.

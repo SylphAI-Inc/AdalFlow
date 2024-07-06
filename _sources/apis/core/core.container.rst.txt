@@ -1,0 +1,17 @@
+.. _core-container:
+
+container
+=====================
+
+.. automodule:: core.container
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+   .. rubric:: Classes
+
+   .. autosummary::
+
+      Sequential
+

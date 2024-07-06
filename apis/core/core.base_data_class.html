@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,30 @@ document.write(`
   <section id="module-core.base_data_class">
 <span id="base-data-class"></span><span id="core-base-data-class"></span><h1>base_data_class<a class="headerlink" href="#module-core.base_data_class" title="Link to this heading">#</a></h1>
 <p>The role of the base data class in LightRAG for LLM applications is like <cite>Tensor</cite> for <cite>PyTorch</cite>.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.required_field" title="core.base_data_class.required_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">required_field</span></code></a>()</p></td>
+<td><p>A factory function to create a required field in a dataclass.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.DataClass" title="core.base_data_class.DataClass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataClass</span></code></a>()</p></td>
+<td><p>The base data class for all data types that interact with LLMs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a>(value[, names, module, ...])</p></td>
+<td><p>The format type for the DataClass schema.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.base_data_class.DynamicDataClassFactory" title="core.base_data_class.DynamicDataClassFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DynamicDataClassFactory</span></code></a>()</p></td>
+<td><p>This class is used to create a dynamic dataclass called <cite>DynamicOutputs</cite> from a dictionary. The dictionary should have the following structure: {     &quot;field_name&quot;: {         &quot;value&quot;: field_value,         &quot;desc&quot;: &quot;Field description&quot;,     },.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.base_data_class.DataClassFormatType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">DataClassFormatType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/base_data_class.html#DataClassFormatType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.base_data_class.DataClassFormatType" title="Link to this definition">#</a></dt>

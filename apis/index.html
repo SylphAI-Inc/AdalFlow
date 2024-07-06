@@ -55,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Core" href="core/index.html" />
-    <link rel="prev" title="Use Cases" href="../tutorials/index.html" />
+    <link rel="prev" title="Configurations" href="../developer_notes/configs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -161,13 +161,6 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -300,13 +293,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -535,49 +521,52 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.component.html#module-core.component" title="core.component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.component</span></code></a></p></td>
 <td><p>Component is to LLM task pipelines what nn.Module is to PyTorch models.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.base_data_class.html#module-core.base_data_class" title="core.base_data_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.base_data_class</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.container.html#module-core.container" title="core.container"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.container</span></code></a></p></td>
+<td><p>Container component for composing multiple components, such as Sequential.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.base_data_class.html#module-core.base_data_class" title="core.base_data_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.base_data_class</span></code></a></p></td>
 <td><p>The role of the base data class in LightRAG for LLM applications is like <cite>Tensor</cite> for <cite>PyTorch</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.default_prompt_template.html#module-core.default_prompt_template" title="core.default_prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.default_prompt_template</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.default_prompt_template.html#module-core.default_prompt_template" title="core.default_prompt_template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.default_prompt_template</span></code></a></p></td>
 <td><p>This is the default system prompt template used in the LightRAG.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.model_client.html#module-core.model_client" title="core.model_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.model_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.model_client.html#module-core.model_client" title="core.model_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.model_client</span></code></a></p></td>
 <td><p>ModelClient is the protocol and base class for all models(either via APIs or local models) to communicate with components.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.db.html#module-core.db" title="core.db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.db</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.db.html#module-core.db" title="core.db"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.db</span></code></a></p></td>
 <td><p>LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.functional.html#module-core.functional" title="core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.functional</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.functional.html#module-core.functional" title="core.functional"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.functional</span></code></a></p></td>
 <td><p>Functional interface.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.generator.html#module-core.generator" title="core.generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.generator</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.generator.html#module-core.generator" title="core.generator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.generator</span></code></a></p></td>
 <td><p>Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.string_parser.html#module-core.string_parser" title="core.string_parser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.string_parser</span></code></a></p></td>
 <td><p>Extract and convert common string to Python objects.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.embedder.html#module-core.embedder" title="core.embedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.embedder</span></code></a></p></td>
 <td><p>The component that orchestrates model client (Embedding models in particular) and output processors.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.retriever.html#module-core.retriever" title="core.retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.retriever.html#module-core.retriever" title="core.retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.retriever</span></code></a></p></td>
 <td><p>The base class for all retrievers who in particular retrieve documents from a given database.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.prompt_builder.html#module-core.prompt_builder" title="core.prompt_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.prompt_builder</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.prompt_builder.html#module-core.prompt_builder" title="core.prompt_builder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.prompt_builder</span></code></a></p></td>
 <td><p>Class prompt builder for LightRAG system prompt.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
 <td><p>Tokenizer from tiktoken.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
 <td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
 <td><p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
 <td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.parameter.html#module-core.parameter" title="core.parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.parameter</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.parameter.html#module-core.parameter" title="core.parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.parameter</span></code></a></p></td>
 <td><p>WIP</p></td>
 </tr>
 </tbody>
@@ -625,16 +614,19 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
 <td><p>Leverage a postgres database to store and retrieve documents.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
 <td><p>The most commonly used output parsers for the Generator.</p></td>
 </tr>
 </tbody>
@@ -706,7 +698,7 @@ The API reference is organized by subdirectories.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.logger.html#module-utils.logger" title="utils.logger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.logger</span></code></a></p></td>
-<td><p>LightRAG's provides default logger and colored print function.</p></td>
+<td><p>This logger file provides easy configurability of the root and named loggers, along with a color print function for console output.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="utils/utils.serialization.html#module-utils.serialization" title="utils.serialization"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.serialization</span></code></a></p></td>
 <td><p></p></td>
@@ -717,8 +709,8 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="utils/utils.registry.html#module-utils.registry" title="utils.registry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.registry</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.setup_env.html#module-utils.setup_env" title="utils.setup_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.setup_env</span></code></a>()</p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="utils/utils.setup_env.html#module-utils.setup_env" title="utils.setup_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">utils.setup_env</span></code></a>([dotenv_path])</p></td>
+<td><p>Load environment variables from .env file.</p></td>
 </tr>
 </tbody>
 </table>
@@ -739,12 +731,12 @@ The API reference is organized by subdirectories.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../tutorials/index.html"
+       href="../developer_notes/configs.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Use Cases</p>
+        <p class="prev-next-title">Configurations</p>
       </div>
     </a>
     <a class="right-next"

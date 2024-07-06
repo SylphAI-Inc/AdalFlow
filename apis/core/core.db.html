@@ -163,13 +163,6 @@
 </li>
 
 
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="../index.html">
     API Reference
@@ -298,13 +291,6 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../developer_notes/index.html">
     Tutorials
-  </a>
-</li>
-
-
-<li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
   </a>
 </li>
 
@@ -530,6 +516,15 @@ document.write(`
   <section id="module-core.db">
 <span id="db"></span><span id="core-db"></span><h1>db<a class="headerlink" href="#module-core.db" title="Link to this heading">#</a></h1>
 <p>LocalDB to perform in-memory storage and data persistence(pickle or any filesystem) for data models like documents and dialogturn.</p>
+<p class="rubric">Classes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LocalDB</span></code></a>(name, items, transformed_items, ...)</p></td>
+<td><p>LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.db.LocalDB">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LocalDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">items:</span> <span class="pre">~typing.List[~core.db.T]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformed_items:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.List[~core.db.U]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">transformer_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~lightrag.core.component.Component]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">mapper_setups:</span> <span class="pre">~typing.Dict[str,</span> <span class="pre">~typing.Callable[[~core.db.T],</span> <span class="pre">~typing.Any]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/db.html#LocalDB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.db.LocalDB" title="Link to this definition">#</a></dt>

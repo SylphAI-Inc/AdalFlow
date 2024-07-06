@@ -164,13 +164,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -303,13 +296,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
   </a>
@@ -411,10 +397,14 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
 <li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing &amp; Configurations</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Logging &amp; Tracing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -474,10 +464,6 @@ document.write(`
                   
   <section id="retriever">
 <h1>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h1>
-<div class="highlight admonition">
-<p class="admonition-title">Author</p>
-<p><a class="reference external" href="https://github.com/liyin2015">Li Yin</a></p>
-</div>
 <section id="context">
 <h2>Context<a class="headerlink" href="#context" title="Link to this heading">#</a></h2>
 <p><strong>Why Retriever for LLM?</strong></p>
@@ -952,7 +938,7 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.retriever.Retriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core-types"><span class="std std-ref">core.types</span></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever.FAISSRetriever</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever.FAISSRetriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever.BM25Retriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever.RerankerRetriever</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>

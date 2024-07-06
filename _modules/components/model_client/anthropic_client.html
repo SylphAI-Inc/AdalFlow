@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -298,13 +291,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../apis/index.html">
     API Reference
   </a>
@@ -420,8 +406,9 @@ document.write(`
 <span></span><span class="sd">&quot;&quot;&quot;Anthropic ModelClient integration.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
-
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span> <span class="nn">backoff</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">import</span> <span class="nn">anthropic</span>
 <span class="kn">from</span> <span class="nn">anthropic</span> <span class="kn">import</span> <span class="p">(</span>
@@ -434,17 +421,25 @@ document.write(`
 <span class="kn">from</span> <span class="nn">anthropic.types</span> <span class="kn">import</span> <span class="n">Message</span>
 
 
-<span class="kn">import</span> <span class="nn">backoff</span>
-
-
 <span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
 <span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-
 <span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">ANTHROPIC</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">ANTHROPIC</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
 
+<div class="viewcode-block" id="get_first_message_content">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">[docs]</a>
+<span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When we only need the content of the first message.</span>
+<span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span></div>
+
+
+
+<span class="c1"># NOTE: using customize parser might make the new_component more complex when we have to handle a callable</span>
 <div class="viewcode-block" id="AnthropicAPIClient">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">[docs]</a>
 <span class="k">class</span> <span class="nc">AnthropicAPIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
@@ -453,13 +448,20 @@ document.write(`
 <span class="s2">    Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Message</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It is recommended to set the ANTHROPIC_API_KEY environment variable instead of passing it as an argument.&quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only initialize if the async call is called</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tested_llm_models</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;claude-3-opus-20240229&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="AnthropicAPIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">[docs]</a>
@@ -482,7 +484,7 @@ document.write(`
 <div class="viewcode-block" id="AnthropicAPIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Message</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">content</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span></div>
 
 
@@ -496,9 +498,9 @@ document.write(`
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="n">api_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
-            <span class="n">api_kwargs</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">},</span>
-            <span class="p">]</span>
+            <span class="c1"># api_kwargs[&quot;messages&quot;] = [</span>
+            <span class="c1">#     {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: input},</span>
+            <span class="c1"># ]</span>
             <span class="k">if</span> <span class="nb">input</span> <span class="ow">and</span> <span class="nb">input</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
                 <span class="n">api_kwargs</span><span class="p">[</span><span class="s2">&quot;system&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">input</span>
         <span class="k">else</span><span class="p">:</span>

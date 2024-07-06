@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -298,13 +291,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -418,7 +404,7 @@ document.write(`
                   
   <h1>Source code for utils.logger</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">LightRAG&#39;s provides default logger and colored print function.</span>
+<span class="sd">This logger file provides easy configurability of the root and named loggers, along with a color print function for console output.</span>
 
 <span class="sd">NOTE: If you are on Windows versions prior to Windows 10, the Command Prompt and PowerShell do not support ANSI color codes. You would need to use third-party libraries like colorama to enable ANSI color support.</span>
 <span class="sd">Please add the following colorama setting at the beginning of your code:</span>
@@ -515,121 +501,59 @@ document.write(`
     <span class="k">return</span> <span class="n">get_level</span><span class="p">(</span><span class="n">level</span><span class="p">),</span> <span class="n">handlers</span>
 
 
-<div class="viewcode-block" id="enable_library_logging">
-<a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.enable_library_logging">[docs]</a>
-<span class="k">def</span> <span class="nf">enable_library_logging</span><span class="p">(</span>
-    <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-    <span class="n">enable_console</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">enable_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Enable the library logging which is the root logger.</span>
-
-<span class="sd">    Root logger has no name or &#39;&#39; as the name. It is the ancestor of all loggers.</span>
-
-<span class="sd">    The default config follows :func:`get_default_log_config`.</span>
-
-<span class="sd">    Example:</span>
-
-<span class="sd">    1. Enable the library logging with default settings which outputs library logs to console:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from lightrag.utils.logger import enable_library_logging</span>
-
-<span class="sd">        enable_library_logging(level=&quot;DEBUG&quot;, enable_console=True, enable_file=False)</span>
-
-<span class="sd">    2. Enable the library logging with default settings which outputs library logs to file:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from lightrag.utils.logger import enable_library_logging</span>
-
-<span class="sd">        enable_library_logging(level=&quot;DEBUG&quot;, enable_console=False, enable_file=True, filename=&quot;library.log&quot;)</span>
-
-<span class="sd">    3. Enable the library logging along with getting a logger of the same configuration:</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from lightrag.utils.logger import enable_library_logging</span>
-
-<span class="sd">        logger = enable_library_logging(level=&quot;DEBUG&quot;, enable_console=True, enable_file=False, return_logger=True)</span>
-
-
-
-<span class="sd">    Args:</span>
-<span class="sd">        level (str): Log level. Defaults to &quot;INFO&quot;. Options: &quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;, &quot;CRITICAL&quot;.</span>
-<span class="sd">        enable_console (bool): Control the console output. Defaults to True.</span>
-<span class="sd">        enable_file (bool): Control the file output. Defaults to False.</span>
-<span class="sd">        save_dir (Optional[str]): Directory to save log files. Defaults to &quot;./logs&quot;.</span>
-<span class="sd">        filename (Optional[str]): Name of the output log file. Defaults to &quot;lib.log&quot;.</span>
-<span class="sd">        return_logger (bool): Return the logger with the same configuration. Defaults to False.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># reset the past logging configuration</span>
-    <span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span> <span class="ow">or</span> <span class="s2">&quot;./logs&quot;</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;lib.log&quot;</span>
-    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
-    <span class="n">default_config</span> <span class="o">=</span> <span class="n">_get_log_config</span><span class="p">(</span>
-        <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span>
-        <span class="n">enable_console</span><span class="o">=</span><span class="n">enable_console</span><span class="p">,</span>
-        <span class="n">enable_file</span><span class="o">=</span><span class="n">enable_file</span><span class="p">,</span>
-        <span class="n">filepath</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">root_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
-    <span class="n">root_logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">default_config</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">root_logger</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Clear existing handlers</span>
-    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">default_config</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">root_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">root_logger</span></div>
-
-
-
 <div class="viewcode-block" id="get_logger">
 <a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.get_logger">[docs]</a>
 <span class="k">def</span> <span class="nf">get_logger</span><span class="p">(</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">level</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;WARNING&quot;</span><span class="p">,</span> <span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;CRITICAL&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-    <span class="c1"># filename: str = &quot;./logs/app.log&quot;,</span>
     <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">enable_console</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">enable_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">enable_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get a named logger without changing or writing to the root logger.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get or configure a logger, including both the root logger and named logger.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        name (str): Name of the logger.</span>
+<span class="sd">        name (Optional[str]): Name of the logger. Defaults to None which means root logger.</span>
 <span class="sd">        level (str): Log level. Defaults to &quot;INFO&quot;. Options: &quot;DEBUG&quot;, &quot;INFO&quot;, &quot;WARNING&quot;, &quot;ERROR&quot;, &quot;CRITICAL&quot;.</span>
 <span class="sd">        save_dir (Optional[str]): Directory to save log files. Defaults to &quot;./logs&quot;.</span>
-<span class="sd">        filename (Optional[str]): Name of the output log file. Defaults to &quot;app.log&quot;.</span>
+<span class="sd">        filename (Optional[str]): Name of the output log file. Defaults to &quot;lib.log&quot; for root logger and &quot;{name}.log&quot; for named logger.</span>
 <span class="sd">        enable_console (bool): Control the console output. Defaults to True.</span>
-<span class="sd">        enable_file (bool): Control the file output. Defaults to True.</span>
+<span class="sd">        enable_file (bool): Control the file output. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        logging.Logger: The logger with the specified configuration.</span>
 
 <span class="sd">    Example:</span>
 
+<span class="sd">    1. Get the root logger and have it log to both console and file (./logs/lib.log):</span>
+
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        from lightrag.utils.logger import get_logger, enable_library_logging</span>
+<span class="sd">        from lightrag.utils.logger import get_logger</span>
 
-<span class="sd">        filename = &quot;lib.log&quot;</span>
+<span class="sd">        root_logger = get_logger(enable_console=True, enable_file=True)</span>
 
-<span class="sd">        enable_library_logging(level=&quot;DEBUG&quot;, enable_console=True, enable_file=True, filename=filename)</span>
+<span class="sd">    2. Get a named logger and have it log to both console and file (./logs/app.log):</span>
 
-<span class="sd">        app_log_filename = &quot;app.log&quot;</span>
+<span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        logger = get_logger(name=&quot;app&quot;, level=&quot;DEBUG&quot;, enable_console=True, enable_file=True, filename=app_log_filename)</span>
+<span class="sd">        logger = get_logger(name=&quot;app&quot;, enable_console=True, enable_file=True)</span>
 
-<span class="sd">        # This will result two log files, one for library and one for app</span>
+<span class="sd">    3. Use two loggers, one for the library and one for the application:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        root_logger = enable_library_logging(level=&quot;DEBUG&quot;, enable_console=True, enable_file=True)</span>
+<span class="sd">        logger = get_logger(name=&quot;app&quot;, level=&quot;DEBUG&quot;, enable_console=True, enable_file=True)</span>
+<span class="sd">        logger.info(&quot;This is an application log, and it will be saved in app.log separately from the library log at lib.log.&quot;)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;Name of the logger cannot be None or empty&quot;</span>
-
     <span class="n">save_dir</span> <span class="o">=</span> <span class="n">save_dir</span> <span class="ow">or</span> <span class="s2">&quot;./logs&quot;</span>
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;app.log&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="s2">&quot;lib.log&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">.log&quot;</span>
     <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
 
     <span class="n">config</span> <span class="o">=</span> <span class="n">_get_log_config</span><span class="p">(</span>
@@ -643,7 +567,8 @@ document.write(`
     <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Clear existing handlers</span>
     <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Do not propagate to the root logger</span>
+    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Do not propagate to the root logger</span>
     <span class="k">return</span> <span class="n">logger</span></div>
 
 
@@ -672,8 +597,13 @@ document.write(`
 
 <div class="viewcode-block" id="printc">
 <a class="viewcode-back" href="../../apis/utils/utils.logger.html#utils.logger.printc">[docs]</a>
-<span class="k">def</span> <span class="nf">printc</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;cyan&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Color enhanced print function along with logger-like format.</span>
+<span class="k">def</span> <span class="nf">printc</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">color</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span>
+        <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;magenta&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Color enhanced print function with logger-like format.</span>
 
 <span class="sd">    LightRAG&#39;s customized print with colored text, position of code block the print is set, and current timestamp.</span>
 

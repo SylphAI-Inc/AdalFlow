@@ -1,9 +1,9 @@
 Text Splitter
 -----------------
-.. admonition:: Author
-   :class: highlight
+.. .. admonition:: Author
+..    :class: highlight
 
-   `Xiaoyi Gu <https://github.com/Alleria1809>`_
+..    `Xiaoyi Gu <https://github.com/Alleria1809>`_
 
 In this tutorial, we will learn:
 
@@ -19,7 +19,7 @@ LLMs’s context window is limited and the performance often drops with very lon
 Shorter content is more manageable and fits memory constraint.
 The goal of the text splitter is to chunk large data into smaller ones, potentially improving embedding and retrieving.
 
-The ``TextSplitter`` is designed to efficiently process and chunk **plain text**. 
+The ``TextSplitter`` is designed to efficiently process and chunk **plain text**.
 It leverages configurable separators to facilitate the splitting of :obj:`document object <core.types.Document>` into smaller manageable document chunks.
 
 How does it work
@@ -30,11 +30,11 @@ The texts inside each window will get merged to a smaller chunk. The generated c
 
 **Splitting Types**
 
-``TextSplitter`` supports 2 types of splitting. 
-    
+``TextSplitter`` supports 2 types of splitting.
+
 * **Type 1:** Specify the exact text splitting point such as space<" "> and periods<".">. It is intuitive, for example, split_by "word":
 
-:: 
+::
 
     "Hello, world!" -> ["Hello, " ,"world!"]
 
@@ -48,7 +48,7 @@ This aligns with how models see text in the form of tokens (`Reference <https://
 Tokenizer reflects the real token numbers the models take in and helps the developers control budgets.
 
 **Definitions**
-    
+
 * **split_by** specifies the split rule, i.e. the smallest unit during splitting. We support ``"word"``, ``"sentence"``, ``"page"``, ``"passage"``, and ``"token"``. The splitter utilizes the corresponding separator from the ``SEPARATORS`` dictionary.
 For Type 1 splitting, we apply ``Python str.split()`` to break the text.
 
@@ -57,15 +57,15 @@ For Type 1 splitting, we apply ``Python str.split()`` to break the text.
 .. note::
     For option ``token``, its separator is "" because we directly split by a tokenizer, instead of text point.
 
-* **chunk_size** is the the maximum number of units in each chunk. 
+* **chunk_size** is the the maximum number of units in each chunk.
 
 * **chunk_overlap** is the number of units that each chunk should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis.
 
 Here are examples of how ``split_by``, ``chunk_size`` works with ``chunk_overlap``.
-Document Text: 
+Document Text:
 
 ::
-    
+
     Hello, this is lightrag. Please implement your splitter here.
 
 
@@ -94,12 +94,12 @@ When splitting by ``word`` with ``chunk_size`` = 5 and ``chunk_overlap`` = 2,
 each chunk will repeat 2 words from the previous chunk. These 2 words are set by ``chunk_overlap``.
 This means each chunk has ``5-2=3`` word(split unit) difference compared with its previous.
 
-When splitting using tokenizer, each chunk still keeps 5 tokens. 
+When splitting using tokenizer, each chunk still keeps 5 tokens.
 For example, the tokenizer transforms ``lightrag`` to ['l', 'igh', 'trag']. So the second chunk is actually ``is`` + ``l`` + ``igh`` + ``trag`` + ``.``.
 
 .. note::
     ``chunk_overlap`` should always be smaller than ``chunk_size``, otherwise the window won't move and the splitting stucks.
-    When ``split_by`` = ``token``, the punctuation is considered as a token.    
+    When ``split_by`` = ``token``, the punctuation is considered as a token.
 
 How to use it
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -142,6 +142,5 @@ For **PDFs**, developers will need to extract the text before using the splitter
 
 Customization Tips
 ~~~~~~~~~~~~~~~~~~~~~
-You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured 
+You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {"question": "?"} and setting ``split_by`` = "question", the document will be split at each ``?``, ideal for processing text structured
 as a series of questions. If you need to customize :class:`tokenizer <lightrag.core.tokenizer.Tokenizer>`, please check `Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_.
-    

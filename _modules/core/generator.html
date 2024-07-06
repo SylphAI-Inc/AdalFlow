@@ -161,13 +161,6 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -298,13 +291,6 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Use Cases
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="../../apis/index.html">
     API Reference
   </a>
@@ -417,9 +403,10 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for core.generator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction. </span>
+<span></span><span class="sd">&quot;&quot;&quot;Generator is a user-facing orchestration component with a simple and unified interface for LLM prediction.</span>
 
 <span class="sd">It is a pipeline that consists of three subcomponents.&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -492,7 +479,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">ModelClient</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example.&quot;</span>
             <span class="p">)</span>
 

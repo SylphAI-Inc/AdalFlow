@@ -17,6 +17,7 @@ All base/abstract classes, core components like generator, embedder, and basic f
 
 .. autosummary::
    core.component
+   core.container
    core.base_data_class
    core.default_prompt_template
    core.model_client
