@@ -5,7 +5,17 @@ from typing import Dict, Optional, Any, Callable
 import backoff
 import logging
 
-import anthropic
+
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType
+
+# optional import
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+anthropic = safe_import(
+    OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1]
+)
+
 from anthropic import (
     RateLimitError,
     APITimeoutError,
@@ -15,14 +25,7 @@ from anthropic import (
 )
 from anthropic.types import Message
 
-
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
 log = logging.getLogger(__name__)
-
-safe_import(OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1])
 
 
 def get_first_message_content(completion: Message) -> str:

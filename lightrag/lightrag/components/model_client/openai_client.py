@@ -4,6 +4,18 @@ import os
 from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
 
 import logging
+import backoff
+
+
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType, EmbedderOutput, TokenLogProb
+from lightrag.components.model_client.utils import parse_embedding_response
+
+# optional import
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+
+openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
 from openai import OpenAI, AsyncOpenAI
 from openai import (
@@ -13,22 +25,8 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
-
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType, EmbedderOutput, TokenLogProb
-from lightrag.components.model_client.utils import parse_embedding_response
-
-
-safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
-
-
 from openai.types import Completion, CreateEmbeddingResponse
 
-
-import backoff
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")

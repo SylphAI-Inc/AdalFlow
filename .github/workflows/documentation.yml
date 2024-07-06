@@ -29,22 +29,23 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
 
-      - name: Install dependencies using Poetry
+      - name: Install documentation dependencies using Poetry
         run: |
+          cd docs
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --only doc  # Install only the doc dependencies as specified in pyproject.toml
+          poetry install   # Install only the doc dependencies as specified in pyproject.toml
 
       - name: Build documentation using Makefile
         run: |
           echo "Building documentation from: $(pwd)"
           ls -l  # Debug: List current directory contents
-          poetry run make -C docs html  # Run Makefile in docs directory to build HTML docs
-        working-directory: ${{ github.workspace }}
+          poetry run make html  # Run Makefile in docs directory to build HTML docs
+        working-directory: ${{ github.workspace }}/docs
 
       - name: List built documentation
         run: |
-          find ./build/ -type f  # List all files in the build directory
-        working-directory: ${{ github.workspace }}/docs
+          find ./docs/build/ -type f  # List all files in the build directory
+        working-directory: ${{ github.workspace }}
 
       - name: Create .nojekyll file
         run: |
@@ -53,7 +54,8 @@ jobs:
 
       - name: Copy CNAME file
         run: |
-          cp ${{ github.workspace }}/CNAME ${{ github.workspace }}/docs/build/CNAME
+          cp ${{ github.workspace }}/CNAME ${{ github.workspace }}/docs/build/CNAME || true
+        working-directory: ${{ github.workspace }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

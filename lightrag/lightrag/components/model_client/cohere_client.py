@@ -5,8 +5,7 @@ from typing import Dict, Optional, Any
 import backoff
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
-safe_import(OptionalPackages.COHERE.value[0], OptionalPackages.COHERE.value[1])
-import cohere
+cohere = safe_import(OptionalPackages.COHERE.value[0], OptionalPackages.COHERE.value[1])
 from cohere import (
     BadRequestError,
     InternalServerError,
