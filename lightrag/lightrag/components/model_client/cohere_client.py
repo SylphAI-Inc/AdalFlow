@@ -27,6 +27,15 @@ class CohereAPIClient(ModelClient):
 
     Tested Cohere models: 6/16/2024
     -  rerank-english-v3.0, rerank-multilingual-v3.0, rerank-english-v2.0, rerank-multilingual-v2.0
+
+    .. note::
+        For all ModelClient integration, such as CohereAPIClient, if you want to subclass CohereAPIClient, you need to import it from the module directly.
+
+        ``from lightrag.components.model_client.cohere_client import CohereAPIClient``
+
+        instead of using the lazy import with:
+
+        ``from lightrag.components.model_client import CohereAPIClient``
     """
 
     def __init__(self, api_key: Optional[str] = None):

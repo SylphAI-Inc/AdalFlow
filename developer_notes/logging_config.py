@@ -1,5 +1,5 @@
 import os
-from lightrag.utils.logger import get_logger
+from lightrag.utils.logger import get_logger, printc
 from lightrag.utils.file_io import load_json
 from lightrag.core import Generator
 from lightrag.utils import setup_env
@@ -35,22 +35,6 @@ def check_console_logging():
     print(f"output console: {output}")
 
 
-# def check_file_logging():
-#     # enable only root logging
-#     file_name = "lib1.log"
-#     root_logger = get_logger(
-#         level="DEBUG",
-#         enable_console=False,
-#         enable_file=True,
-#         save_dir=log_dir,
-#         filename=file_name,
-#     )
-
-#     generator = Generator.from_config(generator_config)
-#     output = generator(prompt_kwargs={"input_str": "how are you?"})
-#     root_logger.info(f"logging from the root logger: {output}")
-
-
 def get_logger_and_enable_library_logging_in_same_file():
     file_name = "lib_app_mix.log"
     root_logger = get_logger(
@@ -70,7 +54,7 @@ def separate_library_logging_and_app_logging():
     lib_logfile = "lib_seperate.log"
     app_logfile = "app_seperate.log"
     get_logger(
-        level="INFO",
+        level="DEBUG",
         enable_console=False,
         enable_file=True,
         save_dir=log_dir,
@@ -106,8 +90,32 @@ def use_only_child_logger():
     child_logger.info(f"output using app logger {__name__}: {output}")
 
 
+def use_native_logging():
+
+    # use it with root logger
+    root_logger = get_logger(
+        level="INFO",
+        enable_console=True,
+        enable_file=False,
+    )
+
+    # native logging will inherit the configuration of the root logger
+    # similar to config 1 where we only use root logger
+    import logging
+
+    log = logging.getLogger(__name__)
+    log.info("test native logging")
+
+    root_logger.info("test root logger")
+    generator = Generator.from_config(generator_config)
+    output = generator(prompt_kwargs={"input_str": "how are you?"})
+    root_logger.info(f"output using root logger: {output}")
+
+
 if __name__ == "__main__":
-    check_console_logging()
-    get_logger_and_enable_library_logging_in_same_file()
+    # check_console_logging()
+    # get_logger_and_enable_library_logging_in_same_file()
     separate_library_logging_and_app_logging()
-    use_only_child_logger()
+    # use_only_child_logger()
+    use_native_logging()
+    printc("All logging examples are done. Feeling green!", color="green")

@@ -24,7 +24,19 @@
 .. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
    :target: https://discord.gg/zt2mTPcu
 
-|License| |PyPI Version| |PyPI Downloads| |GitHub Stars| |Open Issues| |Discord|
+
+
+.. raw:: html
+
+   <div style="text-align: center; margin-bottom: 20px;">
+       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
+       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+       <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
+       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+       <a href="https://github.com/SylphAI-Inc/LightRAG/issues"><img src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square" alt="Open Issues"></a>
+       <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+   </div>
+
 
 ===============================================================
 ⚡ The PyTorch Library for Large Language Model Applications ⚡

@@ -1,8 +1,13 @@
 r"""We let users install the required SDKs conditionally for our integrated model providers."""
 
 from lightrag.utils.registry import EntityMapping
-from lightrag.utils import LazyImport, OptionalPackages
+from lightrag.utils.lazy_import import (
+    LazyImport,
+    OptionalPackages,
+)
 
+# NOTE: Do not subclass lazy imported classes, it will cause issues with the lazy import mechanism.
+# Instead, directly import the class from its specif module and use it.
 CohereAPIClient = LazyImport(
     "lightrag.components.model_client.cohere_client.CohereAPIClient",
     OptionalPackages.COHERE,

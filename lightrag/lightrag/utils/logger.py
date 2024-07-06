@@ -184,8 +184,13 @@ def get_current_script_and_line() -> Tuple[str, str, int]:
     return function_name, script_name, line_number
 
 
-def printc(text: str, color: str = "cyan"):
-    """Color enhanced print function along with logger-like format.
+def printc(
+    text: str,
+    color: Literal[
+        "black", "blue", "cyan", "green", "magenta", "red", "white", "yellow"
+    ] = "cyan",
+):
+    """Color enhanced print function with logger-like format.
 
     LightRAG's customized print with colored text, position of code block the print is set, and current timestamp.
 
