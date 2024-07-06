@@ -410,6 +410,16 @@ document.write(`
 <span class="kn">import</span> <span class="nn">backoff</span>
 
 
+<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+
+<span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+<span class="c1"># optional import</span>
+<span class="n">google</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
+    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="p">)</span>
 <span class="kn">import</span> <span class="nn">google.generativeai</span> <span class="k">as</span> <span class="nn">genai</span>
 <span class="kn">from</span> <span class="nn">google.api_core.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">InternalServerError</span><span class="p">,</span>
@@ -417,17 +427,6 @@ document.write(`
     <span class="n">GoogleAPICallError</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">google.generativeai.types</span> <span class="kn">import</span> <span class="n">GenerateContentResponse</span>
-
-
-<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-
-<span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
-
-<span class="n">safe_import</span><span class="p">(</span>
-    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-    <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">GOOGLE_GENERATIVEAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-<span class="p">)</span>
 
 
 <div class="viewcode-block" id="GoogleGenAIClient">
