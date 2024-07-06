@@ -1,3 +1,5 @@
+"""Container component for composing multiple components, such as Sequential."""
+
 from collections import OrderedDict
 import operator
 from itertools import islice
@@ -18,7 +20,53 @@ class Sequential(Component):
     It "chains" outputs of the previous component to the input of the next component sequentially.
     Output of the previous component is input to the next component as positional argument.
 
+    Benefits of using Sequential:
+    1. Convenient for data pipeline that often consists of multiple components. This allow users to encapsulate the pipeline in a single component.
     Examples:
+
+    Without Sequential:
+
+    .. code-block:: python
+
+        class AddAB(Component):
+            def call(self, a: int, b: int) -> int:
+                return a + b
+
+
+        class MultiplyByTwo(Component):
+            def call(self, input: int) -> int:
+                return input * 2
+
+        class DivideByThree(Component):
+            def call(self, input: int) -> int:
+                return input / 3
+
+        # Manually chaining the components
+        add_a_b = AddAB()
+        multiply_by_two = MultiplyByTwo()
+        divide_by_three = DivideByThree()
+
+        result = divide_by_three(multiply_by_two(add_a_b(2, 3)))
+
+
+
+    With Sequential:
+
+    .. code-block:: python
+
+        seq = Sequential(AddAB(), MultiplyByTwo(), DivideByThree())
+        result = seq(2, 3)
+
+    .. note::
+        Only the first component can receive arbitrary positional and keyword arguments.
+        The rest of the components should have a single positional argument as input and have it to be exactly the same type as the output of the previous component.
+
+    2. Apply a transformation or operation (like training, evaluation, or serialization) to the Sequential object, it automatically applies that operation to each component it contains.
+    This can be useful for In-context learning training.
+
+
+    Examples:
+
     1. Use positional arguments:
         >>> seq = Sequential(component1, component2)
     2. Add components:
@@ -37,11 +85,16 @@ class Sequential(Component):
     7. Use OrderedDict:
         >>> seq = Sequential(OrderedDict({"component1": component1, "component2": component2}))
     8. Index OrderDict:
-
         >>> seq = Sequential(OrderedDict({"component1": component1, "component2": component2}))
         >>> seq["component1"]
         # or
         >>> seq[0]
+    9. Call with a single argument as input:
+        >>> seq = Sequential(component1, component2)
+        >>> result = seq.call(2)
+    10. Call with multiple arguments as input:
+        >>> seq = Sequential(component1, component2)
+        >>> result = seq.call(2, 3)
     """
 
     _components: Dict[str, Component]  # = OrderedDict()
@@ -171,10 +224,31 @@ class Sequential(Component):
             self.append(layer)
         return self
 
-    def call(self, input: Any) -> object:
-        for component in self._components.values():
-            input = component(input)
-        return input
+    @overload
+    def call(self, input: Any) -> object: ...
+
+    @overload
+    def call(self, *args: Any, **kwargs: Any) -> object: ...
+
+    def call(self, *args: Any, **kwargs: Any) -> object:
+        if len(args) == 1 and not kwargs:
+            input = args[0]
+            for component in self._components.values():
+                input = component(input)
+            return input
+        else:
+            for component in self._components.values():
+                result = component(*args, **kwargs)
+                if (
+                    isinstance(result, tuple)
+                    and len(result) == 2
+                    and isinstance(result[1], dict)
+                ):
+                    args, kwargs = result
+                else:
+                    args = (result,)
+                    kwargs = {}
+            return args[0] if len(args) == 1 else (args, kwargs)
 
     def append(self, component: Component) -> "Sequential":
         r"""Appends a component to the end of the Sequential."""

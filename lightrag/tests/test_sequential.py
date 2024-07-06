@@ -1,4 +1,5 @@
 import unittest
+import pytest
 from collections import OrderedDict
 
 from lightrag.core import Sequential, Component
@@ -77,6 +78,63 @@ class SequentialTests(unittest.TestCase):
         self.assertEqual(len(seq1), 2)
         self.assertIsInstance(seq1[0], AddOne)
         self.assertIsInstance(seq1[1], MultiplyByTwo)
+
+
+class Add(Component):
+    def call(self, x: int, y: int) -> int:
+        return x + y
+
+
+class Multiply(Component):
+    def call(self, x: int, factor: int = 1) -> int:
+        return x * factor
+
+
+class Subtract(Component):
+    def call(self, x: int, subtractor: int = 0) -> int:
+        return x - subtractor
+
+
+class TestSequential:
+
+    @pytest.fixture
+    def setup_advanced_components(self):
+        add = Add()
+        multiply = Multiply()
+        subtract = Subtract()
+        return add, multiply, subtract, Sequential(add, multiply, subtract)
+
+    def test_call_with_single_argument(self):
+        add = Add()
+        multiply = Multiply()
+        seq = Sequential(add, multiply)
+        result = seq.call(2, 3)
+        assert result == 5  # (2 + 3) * 1
+
+    def test_call_with_multiple_arguments(self, setup_advanced_components):
+        add, multiply, subtract, seq = setup_advanced_components
+        with pytest.raises(TypeError):
+            seq.call(2, 3, 4, 5)  # Too many positional arguments
+
+    def test_call_with_kwargs_only(self, setup_advanced_components):
+        add, multiply, subtract, seq = setup_advanced_components
+        result = seq.call(x=2, y=3)
+        assert result == 5
+
+    def test_call_with_mixed_args_kwargs(self, setup_advanced_components):
+        add, multiply, subtract, seq = setup_advanced_components
+        result = seq.call(2, y=3)
+        assert result == 5
+
+    def test_call_with_only_positional_args(self, setup_advanced_components):
+        add, multiply, subtract, seq = setup_advanced_components
+        with pytest.raises(TypeError):
+            seq.call(2, 3, 4)  # Too many positional arguments
+
+    def test_call_with_partial_kwargs(self, setup_advanced_components):
+        add, multiply, subtract, seq = setup_advanced_components
+        result = seq.call(2, y=3)
+        assert result == 5  # ((2 + 3) * 1) - 1
 
 
 if __name__ == "__main__":

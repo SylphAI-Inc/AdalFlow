@@ -6,6 +6,17 @@
    :width: 100%
    :alt: LightRAG Logo
 
+
+.. raw:: html
+
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
+
+*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
+It is *light*, *modular*, and *robust*.
+
+
+
+
 .. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
    :target: https://opensource.org/license/MIT
 
@@ -17,9 +28,6 @@
 
 .. |GitHub Stars| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
    :target: https://star-history.com/#SylphAI-Inc/LightRAG
-
-.. |Open Issues| image:: https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square
-   :target: https://github.com/SylphAI-Inc/LightRAG/issues
 
 .. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
    :target: https://discord.gg/zt2mTPcu
@@ -33,18 +41,8 @@
        <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
        <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
        <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-       <a href="https://github.com/SylphAI-Inc/LightRAG/issues"><img src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square" alt="Open Issues"></a>
        <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
    </div>
-
-
-===============================================================
-⚡ The PyTorch Library for Large Language Model Applications ⚡
-===============================================================
-
-*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
-It is *light*, *modular*, and *robust*.
-
 
 .. grid:: 1
    :gutter: 1

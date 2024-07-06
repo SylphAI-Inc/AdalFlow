@@ -106,22 +106,22 @@ Config 3 can be quite neat:
 - You can enable different levels of logging for the library and your application.
 - You can easily focus on debugging your own code without being distracted by the library logs and still have the option to see the library logs if needed.
 
-Create a named logger
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. Create a named logger
+.. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: python
+.. .. code-block:: python
 
-    from lightrag.utils.logger import get_logger
+..     from lightrag.utils.logger import get_logger
 
-    app_logger = get_logger(name="my_app", level="DEBUG", save_dir="./logs") # log to ./logs/my_app.log
-    # or
-    logger = get_logger(name=__name__, level="DEBUG", save_dir="./logs", filename="my_app.log")
+..     app_logger = get_logger(name="my_app", level="DEBUG", save_dir="./logs") # log to ./logs/my_app.log
+..     # or
+..     logger = get_logger(name=__name__, level="DEBUG", save_dir="./logs", filename="my_app.log")
 
-    app_logger.debug("This is a debug message")
-    app_logger.info("This is an info message")
-    app_logger.warning("This is a warning message")
-    app_logger.error("This is an error message")
-    app_logger.critical("This is a critical message")
+..     app_logger.debug("This is a debug message")
+..     app_logger.info("This is an info message")
+..     app_logger.warning("This is a warning message")
+..     app_logger.error("This is an error message")
+..     app_logger.critical("This is a critical message")
 
 
 .. admonition:: References
