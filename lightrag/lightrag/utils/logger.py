@@ -1,5 +1,5 @@
 """
-LightRAG's provides default logger and colored print function.
+This logger file provides easy configurability of the root and named loggers, along with a color print function for console output.
 
 NOTE: If you are on Windows versions prior to Windows 10, the Command Prompt and PowerShell do not support ANSI color codes. You would need to use third-party libraries like colorama to enable ANSI color support.
 Please add the following colorama setting at the beginning of your code:
@@ -96,110 +96,57 @@ def _get_log_config(
     return get_level(level), handlers
 
 
-def enable_library_logging(
-    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
-    enable_console: bool = True,
-    enable_file: bool = False,
-    save_dir: Optional[str] = None,
-    filename: Optional[str] = None,
-) -> logging.Logger:
-    r"""Enable the library logging and return the root logger.
-
-    Root logger has no name or '' as the name. It is the ancestor of all loggers.
-    The default config follows :func:`_get_log_config` function.
-
-    Args:
-        level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
-        enable_console (bool): Control the console output. Defaults to True.
-        enable_file (bool): Control the file output. Defaults to False.
-        save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
-        filename (Optional[str]): Name of the output log file. Defaults to "lib.log".
-
-    Returns:
-        logging.Logger: The root logger with the specified configuration.
-
-
-    Example:
-
-    1. Enable the library logging with default settings which outputs library logs to console:
-
-    .. code-block:: python
-
-        from lightrag.utils.logger import enable_library_logging
-
-        root_logger = enable_library_logging(level="DEBUG")
-
-    2. To save the library logs to a file:
-
-    .. code-block:: python
-
-        root_logger = enable_library_logging(level="DEBUG", enable_file=True)
-    """
-    # reset the past logging configuration
-    save_dir = save_dir or "./logs"
-    os.makedirs(save_dir, exist_ok=True)
-    filename = filename or "lib.log"
-    filepath = os.path.join(save_dir, filename)
-    default_config = _get_log_config(
-        level=level,
-        enable_console=enable_console,
-        enable_file=enable_file,
-        filepath=filepath,
-    )
-
-    root_logger = logging.getLogger()
-    root_logger.setLevel(default_config[0])
-    root_logger.handlers = []  # Clear existing handlers
-    for handler in default_config[1]:
-        root_logger.addHandler(handler)
-
-    return root_logger
-
-
 def get_logger(
-    name: str,
+    name: Optional[str] = None,
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO",
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
     enable_console: bool = True,
     enable_file: bool = False,
 ) -> logging.Logger:
-    r"""Get a named logger independent of the root logger.
-
-    This is especially useful when you want to separate your application logs from the library logs.
+    """Get or configure a logger, including both the root logger and named logger.
 
     Args:
-        name (str): Name of the logger.
+        name (Optional[str]): Name of the logger. Defaults to None which means root logger.
         level (str): Log level. Defaults to "INFO". Options: "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL".
         save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
-        filename (Optional[str]): Name of the output log file. Defaults to "app.log".
+        filename (Optional[str]): Name of the output log file. Defaults to "lib.log" for root logger and "{name}.log" for named logger.
         enable_console (bool): Control the console output. Defaults to True.
         enable_file (bool): Control the file output. Defaults to False.
 
     Returns:
-        logging.Logger: The named logger with the specified configuration.
+        logging.Logger: The logger with the specified configuration.
 
     Example:
 
+    1. Get the root logger and have it log to both console and file (./logs/lib.log):
+
     .. code-block:: python
 
-        from lightrag.utils.logger import get_logger, enable_library_logging
+        from lightrag.utils.logger import get_logger
 
-        filename = "lib.log"
+        root_logger = get_logger(enable_console=True, enable_file=True)
 
-        enable_library_logging(level="DEBUG", enable_console=True, enable_file=True, filename=filename)
+    2. Get a named logger and have it log to both console and file (./logs/app.log):
 
-        app_log_filename = "app.log"
+    .. code-block:: python
 
-        logger = get_logger(name="app", level="DEBUG", enable_console=True, enable_file=True, filename=app_log_filename)
+        logger = get_logger(name="app", enable_console=True, enable_file=True)
 
-        # This will result two log files, one for library and one for app
+    3. Use two loggers, one for the library and one for the application:
+
+    .. code-block:: python
+
+        root_logger = enable_library_logging(level="DEBUG", enable_console=True, enable_file=True)
+        logger = get_logger(name="app", level="DEBUG", enable_console=True, enable_file=True)
+        logger.info("This is an application log, and it will be saved in app.log separately from the library log at lib.log.")
     """
-    assert name, "Name of the logger cannot be None or empty"
-
     save_dir = save_dir or "./logs"
     os.makedirs(save_dir, exist_ok=True)
-    filename = filename or "app.log"
+    if name is None:
+        filename = filename or "lib.log"
+    else:
+        filename = filename or f"{name}.log"
     filepath = os.path.join(save_dir, filename)
 
     config = _get_log_config(
@@ -213,7 +160,8 @@ def get_logger(
     logger.handlers = []  # Clear existing handlers
     for handler in config[1]:
         logger.addHandler(handler)
-    logger.propagate = False  # Do not propagate to the root logger
+    if name:
+        logger.propagate = False  # Do not propagate to the root logger
     return logger
 
 

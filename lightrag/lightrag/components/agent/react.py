@@ -322,11 +322,9 @@ class ReActAgent(Component):
 if __name__ == "__main__":
     from components.model_client import GroqAPIClient
     from lightrag.core.types import ModelClientType
-    from lightrag.utils import setup_env  # noqa
+    from lightrag.utils import setup_env
 
-    # from lightrag.utils import enable_library_logging
-
-    # enable_library_logging(level="DEBUG")
+    setup_env()
 
     def multiply(a: int, b: int) -> int:
         """

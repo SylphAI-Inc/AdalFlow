@@ -135,16 +135,16 @@ class YamlOutputParser(OutputParser):
 
         super().__init__()
         if not is_dataclass(data_class):
-            raise ValueError(f"Provided class is not a dataclass: {data_class}")
+            raise TypeError(f"Provided class is not a dataclass: {data_class}")
 
         if not issubclass(data_class, DataClass):
-            raise ValueError(
+            raise TypeError(
                 f"Provided class is not a subclass of DataClass: {data_class}"
             )
 
         # ensure example is instance of data class and initiated
         if examples is not None and not isinstance(examples[0], data_class):
-            raise ValueError(
+            raise TypeError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
         self._return_data_class = return_data_class
@@ -215,15 +215,15 @@ class JsonOutputParser(OutputParser):
     ):
         super().__init__()
         if not is_dataclass(data_class):
-            raise ValueError(f"Provided class is not a dataclass: {data_class}")
+            raise TypeError(f"Provided class is not a dataclass: {data_class}")
 
         if not issubclass(data_class, DataClass):
-            raise ValueError(
+            raise TypeError(
                 f"Provided class is not a subclass of DataClass: {data_class}"
             )
 
         if examples is not None and not isinstance(examples[0], data_class):
-            raise ValueError(
+            raise TypeError(
                 f"Provided example is not an instance of the data class: {data_class}"
             )
         self._return_data_class = return_data_class
