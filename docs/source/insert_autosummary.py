@@ -80,10 +80,16 @@ def generate_autosummary_docs(src_dir, dest_dir):
             print(f"module_full_name: {module_full_name}")
             module_dir = dest_dir
             # spec and load the module
-            spec = importlib.util.spec_from_file_location(module_full_name, code_path)
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            generate_rst_for_module(module_full_name, module, module_dir)
+            try:
+                spec = importlib.util.spec_from_file_location(
+                    module_full_name, code_path
+                )
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                generate_rst_for_module(module_full_name, module, module_dir)
+            except Exception as e:
+                print(f"Error loading module {module_full_name}: {e}")
+                continue
 
 
 if __name__ == "__main__":

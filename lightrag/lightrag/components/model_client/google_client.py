@@ -5,6 +5,16 @@ from typing import Dict, Sequence, Optional, Any
 import backoff
 
 
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType
+
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+# optional import
+google = safe_import(
+    OptionalPackages.GOOGLE_GENERATIVEAI.value[0],
+    OptionalPackages.GOOGLE_GENERATIVEAI.value[1],
+)
 import google.generativeai as genai
 from google.api_core.exceptions import (
     InternalServerError,
@@ -12,17 +22,6 @@ from google.api_core.exceptions import (
     GoogleAPICallError,
 )
 from google.generativeai.types import GenerateContentResponse
-
-
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
-
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
-safe_import(
-    OptionalPackages.GOOGLE_GENERATIVEAI.value[0],
-    OptionalPackages.GOOGLE_GENERATIVEAI.value[1],
-)
 
 
 class GoogleGenAIClient(ModelClient):
