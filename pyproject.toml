@@ -56,6 +56,7 @@ pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
 sqlalchemy = "^2.0.31"
 google-generativeai = "^0.7.1"
+faiss-cpu = "^1.8.0.post1"
 
 
 [build-system]

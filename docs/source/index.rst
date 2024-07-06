@@ -7,16 +7,6 @@
    :alt: LightRAG Logo
 
 
-.. raw:: html
-
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
-
-*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
-It is *light*, *modular*, and *robust*.
-
-
-
-
 .. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
    :target: https://opensource.org/license/MIT
 
@@ -43,6 +33,25 @@ It is *light*, *modular*, and *robust*.
        <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
        <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
    </div>
+
+.. raw:: html
+
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
+
+    <div style="text-align: center;">
+        <p>
+            <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator (RAG)</em> pipelines.<br>
+            It is <em>light</em>, <em>modular</em>, and <em>robust</em>.
+        </p>
+    </div>
+
+.. *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
+.. It is *light*, *modular*, and *robust*.
+
+
+
+
+
 
 .. grid:: 1
    :gutter: 1
