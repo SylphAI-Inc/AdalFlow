@@ -1,7 +1,7 @@
 
 [tool.poetry]
 name = "lightrag-project"
-version = "0.1.0"
+version = "0.1.0-test-release"
 description = "A project to develop and test the lightrag library"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
