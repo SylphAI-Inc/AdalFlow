@@ -14,14 +14,16 @@ jobs:
       - uses: actions/checkout@v3
       - name: Validate Tag Format
         run: |
-          run: |
           TAG_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\-\.]+)?$'
+          echo "Regex to match: $TAG_REGEX"
           TAG="${GITHUB_REF/refs\/tags\//}"
+          echo "Tag extracted: $TAG"
           if [[ "$TAG" =~ $TAG_REGEX ]]; then
             echo "Tag format is valid."
           else
             echo "::error::Tag $TAG does not match the 'vMAJOR.MINOR.PATCH' or 'vMAJOR.MINOR.PATCH-pre-release' format."
             exit 1
+          fi
         shell: bash
 
   build-and-test:
