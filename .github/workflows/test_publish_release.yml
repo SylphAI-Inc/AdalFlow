@@ -64,12 +64,16 @@ jobs:
   dry-run-publish:
     needs: build-and-package
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
+
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
@@ -77,5 +81,5 @@ jobs:
       - name: Dry run publish to PyPI
         run: |
           cd lightrag
-          poetry publish --dry-run
+          poetry publish --dry-run --build
         # This step simulates the publishing process without making actual changes
