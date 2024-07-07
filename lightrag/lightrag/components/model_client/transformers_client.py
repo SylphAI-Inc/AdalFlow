@@ -4,10 +4,22 @@ from typing import Any, Dict, Union, List, Optional
 import logging
 from functools import lru_cache
 
-import torch.nn.functional as F
-import torch
-from torch import Tensor
 
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType, Embedding, EmbedderOutput
+from lightrag.core.functional import get_top_k_indices_scores
+
+# optional import
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+
+transformers = safe_import(
+    OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
+)
+torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
+
+import torch.nn.functional as F
+from torch import Tensor
 
 from transformers import (
     AutoTokenizer,
@@ -16,16 +28,6 @@ from transformers import (
     AutoModelForCausalLM,
 )
 
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType, Embedding, EmbedderOutput
-from lightrag.core.functional import get_top_k_indices_scores
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
-
-safe_import(
-    OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
-)
-safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
 
 log = logging.getLogger(__name__)
 

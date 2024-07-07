@@ -15,6 +15,11 @@
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
 It is *light*, *modular*, and *robust*.
 
+
+
+
+# Design Philosophy
+
 LightRAG follows three fundamental principles from day one: simplicity over complexity, quality over quantity, and optimizing over building.
 This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability. View Class hierarchy [here](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
 
@@ -44,7 +49,7 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-## LightRAG Task Pipeline
+# LightRAG Task Pipeline
 
 
 We will ask the model to respond with ``explanation`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
@@ -193,7 +198,7 @@ You:
 ````
 
 
-## Quick Install
+# Quick Install
 
 Install LightRAG with pip:
 
@@ -220,7 +225,7 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 
 
-## Contributors
+# Contributors
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
 

@@ -10,14 +10,11 @@ from typing import (
     Tuple,
     Iterable,
     Set,
-    Union,
-    overload,
     Mapping,
     TypeVar,
     Type,
 )
-import operator
-from itertools import islice
+
 import logging
 import pickle
 import inspect
@@ -877,114 +874,6 @@ class Component:
             else:
                 init_args[key] = kwargs.get(key, param.default)
         return init_args
-
-
-T = TypeVar("T", bound=Component)
-
-
-class Sequential(Component):
-    __doc__ = r"""A sequential container.
-
-    Components will be added to it in the order they are passed to the constructor.
-    Output of the previous component is input to the next component as positional argument.
-
-    Examples:
-    1. Use list as input:
-        >>> seq = Sequential([component1, component2])
-    2. Use positional arguments:
-        >>> seq = Sequential(component1, component2)
-    3. Use both:
-        >>> seq = Sequential(component1, [component2, component3])
-    4. Add components:
-        >>> seq.append(component4)
-    5. Get a component:
-        >>> seq[0]
-    6. Delete a component:
-        >>> del seq[0]
-    7. Iterate over components:
-        >>> for component in seq:
-        >>>     print(component)
-    """
-
-    _components: Dict[str, Component]  # type: ignore[assignment]
-
-    @overload
-    def __init__(self, *args: Component) -> None: ...
-
-    @overload
-    def __init__(self, arg: "OrderedDict[str, Component]") -> None: ...
-
-    def __init__(self, *args):
-        super().__init__()
-        if len(args) == 1 and isinstance(args[0], OrderedDict):
-            for key, module in args[0].items():
-                self.add_component(key, module)
-        else:
-            for idx, module in enumerate(args):
-                self.add_component(str(idx), module)
-
-    def _get_item_by_idx(self, iterator, idx) -> T:  # type: ignore[misc, type-var]
-        """Get the idx-th item of the iterator."""
-        size = len(self)
-        idx = operator.index(idx)
-        if not -size <= idx < size:
-            raise IndexError(f"index {idx} is out of range")
-        idx %= size
-        return next(islice(iterator, idx, None))
-
-    def __getitem__(self, idx: Union[slice, int]) -> Union["Sequential", Component]:
-        if isinstance(idx, slice):
-            return self.__class__(OrderedDict(list(self._components.items())[idx]))
-        else:
-            return self._get_item_by_idx(self._components.values(), idx)
-
-    def __setitem__(self, idx: int, component: Component) -> None:
-        key: str = self._get_item_by_idx(self._components.keys(), idx)
-        return setattr(self, key, component)
-
-    def __delitem__(self, idx: Union[slice, int]) -> None:
-        if isinstance(idx, slice):
-            for key in list(self._components.keys())[idx]:
-                delattr(self, key)
-        else:
-            key = self._get_item_by_idx(self._components.keys(), idx)
-            delattr(self, key)
-        # To preserve numbering
-        str_indices = [str(i) for i in range(len(self._components))]
-        self._components = OrderedDict(
-            list(zip(str_indices, self._components.values()))
-        )
-
-    def __iter__(self) -> Iterable[Component]:
-        return iter(self._components.values())
-
-    def __len__(self) -> int:
-        return len(self._components)
-
-    def append(self, component: Component) -> "Sequential":
-        r"""Appends a component to the end of the Sequential."""
-        idx = len(self._components)
-        self.add_component(str(idx), component)
-        return self
-
-    # def __add__(self, other) -> "Sequential":
-    #     if not isinstance(other, Sequential):
-    #         ret = Sequential()
-    #         for layer in self:
-    #             ret.append(layer)
-    #         for layer in other:
-    #             ret.append(layer)
-    #         return ret
-    #     else:
-    #         raise ValueError(
-    #             "add operator supports only objects "
-    #             f"of Sequential class, but {str(type(other))} is given."
-    #         )
-
-    def call(self, input: Any) -> Any:
-        for component in self._components.values():
-            input = component(input)
-        return input
 
 
 # TODO: support async call

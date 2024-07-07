@@ -33,9 +33,9 @@ class SimpleQA(Component):
 
 
 if __name__ == "__main__":
-    from lightrag.utils import enable_library_logging, get_logger
+    from lightrag.utils import get_logger
 
-    enable_library_logging(enable_file=False, level="DEBUG")
+    get_logger(enable_file=False, level="DEBUG")
     log = get_logger(__name__, level="INFO")
     simple_qa = SimpleQA()
     log.info(simple_qa)

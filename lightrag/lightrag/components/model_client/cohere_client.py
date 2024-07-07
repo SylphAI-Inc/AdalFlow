@@ -5,8 +5,7 @@ from typing import Dict, Optional, Any
 import backoff
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
-safe_import(OptionalPackages.COHERE.value[0], OptionalPackages.COHERE.value[1])
-import cohere
+cohere = safe_import(OptionalPackages.COHERE.value[0], OptionalPackages.COHERE.value[1])
 from cohere import (
     BadRequestError,
     InternalServerError,
@@ -27,6 +26,15 @@ class CohereAPIClient(ModelClient):
 
     Tested Cohere models: 6/16/2024
     -  rerank-english-v3.0, rerank-multilingual-v3.0, rerank-english-v2.0, rerank-multilingual-v2.0
+
+    .. note::
+        For all ModelClient integration, such as CohereAPIClient, if you want to subclass CohereAPIClient, you need to import it from the module directly.
+
+        ``from lightrag.components.model_client.cohere_client import CohereAPIClient``
+
+        instead of using the lazy import with:
+
+        ``from lightrag.components.model_client import CohereAPIClient``
     """
 
     def __init__(self, api_key: Optional[str] = None):

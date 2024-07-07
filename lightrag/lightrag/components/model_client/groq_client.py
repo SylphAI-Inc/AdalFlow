@@ -3,7 +3,14 @@
 import os
 from typing import Dict, Sequence, Optional, Any
 import backoff
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import ModelType
 
+
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+# optional import
+groq = safe_import(OptionalPackages.GROQ.value[0], OptionalPackages.GROQ.value[1])
 
 from groq import Groq, AsyncGroq
 from groq import (
@@ -12,13 +19,6 @@ from groq import (
     RateLimitError,
     UnprocessableEntityError,
 )
-
-
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
-
-safe_import(OptionalPackages.GROQ.value[0], OptionalPackages.GROQ.value[1])
 
 
 class GroqAPIClient(ModelClient):

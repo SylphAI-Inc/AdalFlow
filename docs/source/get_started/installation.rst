@@ -51,10 +51,9 @@ Or, you can load it yourself with ``python-dotenv``:
    from dotenv import load_dotenv
    load_dotenv()  # This loads the environment variables from `.env`.
 
-You can place the above code in your project's root ``__init__.py`` file.
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
-4. Install Optional Packages
+1. Install Optional Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
