@@ -58,6 +58,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
       - name: Build the distribution
         run: poetry build
       - name: Publish
@@ -65,6 +69,7 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_KEY }}
+          build: true  # Ensure the distribution is built before publishing
 
   create-github-release:
     needs: publish-to-pypi
