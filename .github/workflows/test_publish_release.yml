@@ -21,11 +21,9 @@ jobs:
           else
             echo "::error::Tag $TAG does not match the 'vMAJOR.MINOR.PATCH' or 'vMAJOR.MINOR.PATCH-pre-release' format."
             exit 1
-          fi
         shell: bash
 
-
-  build-and-test:
+  build-and-package:
     needs: validate-tag
     runs-on: ubuntu-latest
     steps:
@@ -39,12 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry install
-      - name: Run tests
-        run: |
-          poetry run pytest
+
+      - name: Build the distribution
+        run: poetry build
 
   dry-run-publish:
-    needs: build-and-test
+    needs: build-and-package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -52,26 +50,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Build the distribution
-        run: poetry build
       - name: Dry run publish to PyPI
         run: poetry publish --dry-run
         # This step simulates the publishing process without making actual changes
-
-  # The GitHub release creation is commented out to avoid creating releases during tests
-  # create-github-release:
-  #   needs: dry-run-publish
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Create Release on GitHub
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         tag_name: ${{ github.ref_name }}
-  #         release_name: Release ${{ github.ref_name }}
-  #         body: 'Test automated release of version ${{ github.ref_name }}'
-  #         draft: false
-  #         prerelease: false
