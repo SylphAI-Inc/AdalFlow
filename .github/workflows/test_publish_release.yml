@@ -21,6 +21,7 @@ jobs:
           else
             echo "::error::Tag $TAG does not match the 'vMAJOR.MINOR.PATCH' or 'vMAJOR.MINOR.PATCH-pre-release' format."
             exit 1
+          fi
         shell: bash
 
 
