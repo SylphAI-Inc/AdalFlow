@@ -49,7 +49,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install Poetry
+      - name: Install Poetry and Update Path
         run: |
           python -m pip install --upgrade pip
           pip install poetry
@@ -71,14 +71,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Set up Python and Ensure Poetry is Available
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install Poetry
+      - name: Configure Poetry Path
         run: |
-          python -m pip install --upgrade pip
-          pip install poetry
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Download distribution
         uses: actions/download-artifact@v2
@@ -87,7 +85,10 @@ jobs:
           path: dist
       - name: Dry run publish to PyPI
         run: |
-          poetry publish --dry-run --build
+          poetry publish --dry-run --build -v
+
+# Add more jobs here for handling workflow_dispatch inputs like version override and rollback.
+
 
   # Uncomment the following lines to enable TestPyPI publishing
   # test-publish-to-testpypi:
