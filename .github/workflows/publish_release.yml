@@ -69,22 +69,23 @@ jobs:
   dry-run-publish:
     needs: build-and-package
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
+
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python and Ensure Poetry is Available
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-      - name: Configure Poetry Path
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
         run: |
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-      - name: Download distribution
-        uses: actions/download-artifact@v2
-        with:
-          name: dist
-          path: dist
+          python -m pip install --upgrade pip
+          pip install poetry
       - name: Dry run publish to PyPI
         run: |
+          cd lightrag
           poetry publish --dry-run --build -v
 
 # Add more jobs here for handling workflow_dispatch inputs like version override and rollback.
