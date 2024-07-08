@@ -7,32 +7,54 @@
    :alt: LightRAG Logo
 
 
-.. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
-   :target: https://opensource.org/license/MIT
-
-.. |PyPI Version| image:: https://img.shields.io/pypi/v/lightRAG?style=flat-square
-   :target: https://pypi.org/project/lightRAG/
-
-.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/lightRAG?style=flat-square
-   :target: https://pypistats.org/packages/lightRAG
-
-.. |GitHub Stars| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
-   :target: https://star-history.com/#SylphAI-Inc/LightRAG
-
-.. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
-   :target: https://discord.gg/zt2mTPcu
+.. .. |GitHub| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
+..    :target: https://github.com/SylphAI-Inc/LightRAG
 
 
+.. .. |PyPI Version| image:: https://img.shields.io/pypi/v/lightRAG?style=flat-square
+..    :target: https://pypi.org/project/lightRAG/
+
+
+.. .. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
+..    :target: https://discord.gg/zt2mTPcu
+
+.. .. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
+..    :target: https://opensource.org/license/MIT
+
+
+.. .. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/lightRAG?style=flat-square
+..    :target: https://pypistats.org/packages/lightRAG
+
+.. .. |GitHub Stars| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
+..    :target: https://star-history.com/#SylphAI-Inc/LightRAG
+
+
+
+
+.. .. raw:: html
+
+..    <div style="text-align: center; margin-bottom: 20px;">
+..        <a href="https://github.com/SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/repo-size/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Repo"></a>
+..        <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+..        <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+..        <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+..        <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
+
+..    </div>
 
 .. raw:: html
 
    <div style="text-align: center; margin-bottom: 20px;">
-       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-       <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
-       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-       <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+
+      <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+      <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+      <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
    </div>
+
+
+..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
+
 
 .. raw:: html
 

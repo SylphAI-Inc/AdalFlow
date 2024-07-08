@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "lightrag"
 
-version = "0.0.0-alpha.13"
+version = "0.0.0-alpha.15"
 description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"

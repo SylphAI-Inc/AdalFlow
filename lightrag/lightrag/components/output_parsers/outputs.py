@@ -33,6 +33,7 @@ Examples:
 {% endif %}
 -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
 -Use double quotes for the keys and string values.
+-DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
 -Follow the JSON formatting conventions."""
 
 YAML_OUTPUT_FORMAT = r"""Your output should be formatted as a standard YAML instance with the following schema:
@@ -48,10 +49,13 @@ Examples:
 
 -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
 -Follow the YAML formatting conventions with an indent of 2 spaces.
+-DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the YAML output.
 -Quote the string values properly."""
 
 LIST_OUTPUT_FORMAT = r"""Your output should be formatted as a standard Python list.
-- Start the list with '[' and end with ']'"""
+- Start the list with '[' and end with ']'
+- DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the list output.
+"""
 
 
 YAML_OUTPUT_PARSER_OUTPUT_TYPE = Dict[str, Any]
@@ -196,9 +200,10 @@ class YamlOutputParser(OutputParser):
             output_dict = self.output_processors(input)
             if self._return_data_class:
                 return self.data_class.from_dict(output_dict)
+            return output_dict
         except Exception as e:
             log.error(f"Error in parsing YAML to JSON: {e}")
-            return None
+            raise e
 
     def _extra_repr(self) -> str:
         s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"
@@ -273,9 +278,10 @@ class JsonOutputParser(OutputParser):
             output_dict = self.output_processors(input)
             if self._return_data_class:
                 return self.data_class.from_dict(output_dict)
+            return output_dict
         except Exception as e:
             log.error(f"Error in parsing JSON to JSON: {e}")
-            return None
+            raise e
 
     def _extra_repr(self) -> str:
         s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"""
@@ -328,13 +334,9 @@ class BooleanOutputParser(OutputParser):
                 return output
             # go to string parsing
             output = _parse_boolean_from_str(input)
-            if output is not None:
-                return output
+            return output
         except Exception as e:
             # try to do regex matching for boolean values
             log.info(f"Error: {e}")
             output = _parse_boolean_from_str(input)
-            if output is not None:
-                return output
-        # when parsing is failed
-        return None
+            return output

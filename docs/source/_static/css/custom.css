@@ -7,6 +7,9 @@
 
 
 }
+.theme-switch-button {
+  display: none;
+}
 .theme-version {
   display: none;
 }
