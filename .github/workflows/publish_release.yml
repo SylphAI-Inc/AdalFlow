@@ -140,17 +140,17 @@ jobs:
   #         draft: false
   #         prerelease: false
 
-  rollback:
-    needs: publish-to-pypi
-    if: ${{ github.event.inputs.rollback == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - name: Rollback to previous stable version
-        run: |
-          echo "Rolling back to previous stable version..."
-          # Add rollback logic here
+  # rollback:
+  #   needs: publish-to-pypi
+  #   if: ${{ github.event.inputs.rollback == 'true' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v4
+  #       with:
+  #         python-version: '3.11'
+  #     - name: Rollback to previous stable version
+  #       run: |
+  #         echo "Rolling back to previous stable version..."
+  #         # Add rollback logic here
