@@ -64,8 +64,8 @@ from lightrag.components.output_parsers import JsonOutputParser
 
 @dataclass
 class QAOutput(DataClass):
-    explaination: str = field(
-        metadata={"desc": "A brief explaination of the concept in one sentence."}
+    explanation: str = field(
+        metadata={"desc": "A brief explanation of the concept in one sentence."}
     )
     example: str = field(metadata={"desc": "An example of the concept in a sentence."})
 
@@ -129,7 +129,7 @@ QA(
       </OUTPUT_FORMAT>
       </SYS>
       User: {{input_str}}
-      You:, prompt_kwargs: {'output_format_str': 'Your output should be formatted as a standard JSON instance with the following schema:\n```\n{\n    "explaination": "A brief explaination of the concept in one sentence. (str) (required)",\n    "example": "An example of the concept in a sentence. (str) (required)"\n}\n```\n-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!\n-Use double quotes for the keys and string values.\n-Follow the JSON formatting conventions.'}, prompt_variables: ['output_format_str', 'input_str']
+      You:, prompt_kwargs: {'output_format_str': 'Your output should be formatted as a standard JSON instance with the following schema:\n```\n{\n    "explanation": "A brief explanation of the concept in one sentence. (str) (required)",\n    "example": "An example of the concept in a sentence. (str) (required)"\n}\n```\n-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!\n-Use double quotes for the keys and string values.\n-Follow the JSON formatting conventions.'}, prompt_variables: ['output_format_str', 'input_str']
     )
     (model_client): GroqAPIClient()
     (output_processors): JsonOutputParser(
@@ -160,7 +160,7 @@ QA(
 Here is what we get from ``print(output)``:
 
 ```
-GeneratorOutput(data=QAOutput(explaination='LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.', example='For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input.'), error=None, usage=None, raw_response='```\n{\n  "explaination": "LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.",\n  "example": "For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input."\n}', metadata=None)
+GeneratorOutput(data=QAOutput(explanation='LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.', example='For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input.'), error=None, usage=None, raw_response='```\n{\n  "explanation": "LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.",\n  "example": "For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input."\n}', metadata=None)
 ```
 **See the prompt**
 
@@ -184,7 +184,7 @@ You are a helpful assistant.
 Your output should be formatted as a standard JSON instance with the following schema:
 ```
 {
-    "explaination": "A brief explaination of the concept in one sentence. (str) (required)",
+    "explanation": "A brief explanation of the concept in one sentence. (str) (required)",
     "example": "An example of the concept in a sentence. (str) (required)"
 }
 ```
