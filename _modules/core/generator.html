@@ -647,10 +647,11 @@ document.write(`
             <span class="p">}</span>
             <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">trained_prompt_kwargs</span><span class="p">)</span>
 
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prompt_kwargs: </span><span class="si">{</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;prompt_kwargs: </span><span class="si">{</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_kwargs: </span><span class="si">{</span><span class="n">model_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_call</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># call the model client</span>
         <span class="k">try</span><span class="p">:</span>
