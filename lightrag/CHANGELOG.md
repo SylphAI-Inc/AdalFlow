@@ -1,3 +1,9 @@
+## [0.0.0-alpha.15] - 2024-07-07
+
+### Fixed
+- `JsonOutputParser` and `YamlOutputParser` (1) forget to return the `output_dict` in the call. (2) Improve the output format str to ask it not to mistaken the "properties" and "type" as keys in the json/yaml output.
+- Add test cases for the above fixes.
+
 ## [0.0.0-alpha.14] - 2024-07-06
 
 ### Modified
