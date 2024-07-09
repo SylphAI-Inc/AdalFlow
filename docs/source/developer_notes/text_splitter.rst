@@ -144,6 +144,34 @@ What you need is to specify the arguments and input your documents this way:
     # Document(id=ca0af45b-4f88-49b5-97db-163da9868ea4, text='text. Even more text to ', meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)
     # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text='to illustrate.', meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)
 
+.. code-block:: python
+
+    from lightrag.components.data_process.text_splitter import TextSplitter
+    from lightrag.core.types import Document
+    import tiktoken
+
+    # Configure the splitter settings
+    text_splitter = TextSplitter(
+        split_by="token",
+        chunk_size=5,
+        chunk_overlap=0
+    )
+
+    doc = Document(
+            text="Example text. More example text. Even more text to illustrate.",
+            id = "doc1"
+        )
+
+    splitted_docs = (text_splitter.call(documents=[doc]))
+
+    for doc in splitted_docs:
+        print(doc)
+
+    # Output:
+    # Document(id=27cec433-b400-4f11-8871-e386e774d150, text='Example text. More example', meta_data=None, vector=[], parent_doc_id=doc1, order=0, score=None)
+    # Document(id=8905dc5f-8be5-4ca4-88b1-2ae492258b53, text=' text. Even more text', meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)
+    # Document(id=ba8e1e23-82fb-4aa8-bfc5-e22084984bb9, text=' to illustrate.', meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)
+
 Chunking Tips
 -----------------------------
 Choosing the proper chunking strategy involves considering several key factors:
