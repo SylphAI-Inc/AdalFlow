@@ -115,6 +115,9 @@ How to use it
 -----------------------------
 What you need is to specify the arguments and input your documents this way:
 
+Split by word
+^^^^^^^^^^^^^^^^^^
+
 .. code-block:: python
 
     from lightrag.components.data_process.text_splitter import TextSplitter
@@ -144,6 +147,8 @@ What you need is to specify the arguments and input your documents this way:
     # Document(id=ca0af45b-4f88-49b5-97db-163da9868ea4, text='text. Even more text to ', meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)
     # Document(id=e7b617b2-3927-4248-afce-ec0fc247ac8b, text='to illustrate.', meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)
 
+Split by token
+^^^^^^^^^^^^^^^^^^
 .. code-block:: python
 
     from lightrag.components.data_process.text_splitter import TextSplitter
@@ -158,8 +163,8 @@ What you need is to specify the arguments and input your documents this way:
     )
 
     doc = Document(
-            text="Example text. More example text. Even more text to illustrate.",
-            id = "doc1"
+        text="Example text. More example text. Even more text to illustrate.",
+        id = "doc1"
         )
 
     splitted_docs = (text_splitter.call(documents=[doc]))
@@ -211,7 +216,7 @@ Upcoming Splitting Features
 Integration with Other Document Types
 ----------------------------------------------------------
 This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
-For **PDFs**, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.
+For `PDFs`, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.
 ``LightRAG``'s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
 
 Customization Tips
