@@ -509,7 +509,7 @@ document.write(`
     <span class="n">save_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">enable_console</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">enable_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">enable_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get or configure a logger, including both the root logger and named logger.</span>
 
@@ -519,7 +519,7 @@ document.write(`
 <span class="sd">        save_dir (Optional[str]): Directory to save log files. Defaults to &quot;./logs&quot;.</span>
 <span class="sd">        filename (Optional[str]): Name of the output log file. Defaults to &quot;lib.log&quot; for root logger and &quot;{name}.log&quot; for named logger.</span>
 <span class="sd">        enable_console (bool): Control the console output. Defaults to True.</span>
-<span class="sd">        enable_file (bool): Control the file output. Defaults to False.</span>
+<span class="sd">        enable_file (bool): Control the file output. Defaults to True.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        logging.Logger: The logger with the specified configuration.</span>
