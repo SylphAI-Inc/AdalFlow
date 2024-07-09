@@ -77,9 +77,12 @@ class CohereAPIClient(ModelClient):
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.RERANKER:
             final_model_kwargs["query"] = input
-            assert "model" in final_model_kwargs, "model must be specified"
-            assert "documents" in final_model_kwargs, "documents must be specified"
-            assert "top_k" in final_model_kwargs, "top_k must be specified"
+            if "model" not in final_model_kwargs:
+                raise ValueError("model must be specified")
+            if "documents" not in final_model_kwargs:
+                raise ValueError("documents must be specified")
+            if "top_k" not in final_model_kwargs:
+                raise ValueError("top_k must be specified")
 
             # convert top_k to the api specific, which is top_n
             final_model_kwargs["top_n"] = final_model_kwargs.pop("top_k")

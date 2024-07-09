@@ -10,7 +10,7 @@ We put these three hard rules while designing LightRAG:
 
 - Every layer of abstraction needs to be adjusted and overall we do not allow more than 3 layers of abstraction.
 - We minimize the lines of code instead of maximizing the lines of code.
-- Go *deep* and *wide* in order to *simplify*.  The clarity we achieve is not the result of being easy, but the result of being deep.
+- Go *deep* and *wide* in order to *simplify*.  The clarity we achieve is not the result of being easy.
 
 
 

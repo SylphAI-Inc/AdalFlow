@@ -8,8 +8,7 @@ packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
 
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
-lightrag = "^0.0.0a13"  # Assuming this is the main library you are developing
-
+lightrag = { path = "lightrag", develop = true } # document always follow the latest version of the library
 
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "^0.15.3"
