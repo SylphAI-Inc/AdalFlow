@@ -126,7 +126,8 @@ class CohereAPIClient(ModelClient):
     ):
         if self.async_client is None:
             self.init_async_client()
-        assert "model" in api_kwargs, "model must be specified"
+        if "model" not in api_kwargs:
+            raise ValueError("model must be specified")
         if model_type == ModelType.RERANKER:
             response = await self.async_client.rerank(**api_kwargs)
             top_k_scores = [result.relevance_score for result in response.results]

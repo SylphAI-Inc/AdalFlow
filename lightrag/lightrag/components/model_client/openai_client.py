@@ -118,7 +118,6 @@ class OpenAIClient(ModelClient):
         """Parse the completion to a str."""
         log.debug(f"completion: {completion}")
         return self.chat_completion_parser(completion)
-        # return completion.choices[0].message.content
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse

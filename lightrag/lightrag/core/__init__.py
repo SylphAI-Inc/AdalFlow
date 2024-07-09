@@ -15,7 +15,7 @@ from .tokenizer import Tokenizer
 
 from .types import (
     ModelType,
-    ModelClientType,
+    # ModelClientType,
     get_model_args,
     Embedding,
     Usage,
@@ -65,7 +65,7 @@ __all__ = [
     "GeneratorOutput",
     "GeneratorOutputType",
     "ModelType",
-    "ModelClientType",
+    # "ModelClientType",
     "get_model_args",
     "Embedding",
     "Usage",

@@ -34,6 +34,9 @@ def get_first_message_content(completion: Message) -> str:
     return completion.content[0].text
 
 
+__all__ = ["AnthropicAPIClient", "get_first_message_content"]
+
+
 # NOTE: using customize parser might make the new_component more complex when we have to handle a callable
 class AnthropicAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Anthropic API client.

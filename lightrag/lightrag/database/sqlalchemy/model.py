@@ -30,7 +30,14 @@ References:
 from typing import Optional, Dict, List
 from datetime import datetime
 import logging
+from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
+sqlalchemy = safe_import(
+    OptionalPackages.SQLALCHEMY.value[0], OptionalPackages.SQLALCHEMY.value[1]
+)
+pgvector = safe_import(
+    OptionalPackages.PGVECTOR.value[0], OptionalPackages.PGVECTOR.value[1]
+)
 from sqlalchemy import (
     Column,
     Integer,
@@ -48,11 +55,8 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 from pgvector.sqlalchemy import Vector
 
-from lightrag.utils.lazy_import import safe_import, OptionalPackages
 from lightrag.database.sqlalchemy.base import Base
 
-safe_import(OptionalPackages.SQLALCHEMY.value[0], OptionalPackages.SQLALCHEMY.value[1])
-safe_import(OptionalPackages.PGVECTOR.value[0], OptionalPackages.PGVECTOR.value[1])
 
 log = logging.getLogger(__name__)
 

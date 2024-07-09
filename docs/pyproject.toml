@@ -8,7 +8,7 @@ packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
 
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
-lightrag = { path = "lightrag", develop = true } # document always follow the latest version of the library
+lightrag = { path = "../lightrag", develop = true } # document always follow the latest version of the library
 
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "^0.15.3"
@@ -19,8 +19,16 @@ nbsphinx = "^0.9.4"
 nbconvert = "^7.16.4"
 pandoc = "^2.3"
 readthedocs-sphinx-search = "^0.3.2"
+# add optional packages to compile the documents correctly
 sqlalchemy = "^2.0.31"
 google-generativeai = "^0.7.1"
+anthropic = "^0.30.1"
+cohere = "^5.5.8"
+transformers = "^4.42.3"
+openai = "^1.35.12"
+groq = "^0.9.0"
+pgvector = "^0.3.0"
+faiss-cpu = "^1.8.0.post1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
