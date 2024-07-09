@@ -118,7 +118,7 @@
 
 
 Maxium Customizability & Composability
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
 As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
