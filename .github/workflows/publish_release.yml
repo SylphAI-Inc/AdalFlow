@@ -6,7 +6,7 @@ on:
       - 'v*'
     branches:
       - release  # Restricts the workflow to only run on tags pushed to the release branch
-  workflow_dispatch:
+  workflow_dispatch:  # allows manual control
     inputs:
       version:
         description: 'Override the version number'
@@ -19,41 +19,40 @@ on:
 jobs:
   validate-tag:
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - uses: actions/checkout@v3
       - name: Validate Tag Format
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            TAG_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\-\.]+)?$'
-            echo "Regex to match: $TAG_REGEX"
-            TAG="${GITHUB_REF/refs\/tags\//}"
-            echo "Tag extracted: $TAG"
-            if [[ "$TAG" =~ $TAG_REGEX ]]; then
-              echo "Tag format is valid."
-            else
-              echo "::error::Tag $TAG does not match the 'vMAJOR.MINOR.PATCH' or 'vMAJOR.MINOR.PATCH-pre-release' format."
-              exit 1
-            fi
+          TAG_REGEX='^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9\-\.]+)?$'
+          echo "Regex to match: $TAG_REGEX"
+          TAG="${GITHUB_REF/refs\/tags\//}"
+          echo "Tag extracted: $TAG"
+          if [[ "$TAG" =~ $TAG_REGEX ]]; then
+            echo "Tag format is valid."
           else
-            echo "No tag associated with push, skipping tag validation."
-            exit 78  # Exiting with neutral status
+            echo "::error::Tag $TAG does not match the 'vMAJOR.MINOR.PATCH' or 'vMAJOR.MINOR.PATCH-pre-release' format."
+            exit 1
           fi
         shell: bash
+
 
   build-and-package:
     needs: validate-tag
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
-      - name: Install Poetry and Update Path
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: Install dependencies
         run: |
           poetry install --no-dev
@@ -88,9 +87,6 @@ jobs:
           cd lightrag
           poetry publish --dry-run --build -v
 
-# Add more jobs here for handling workflow_dispatch inputs like version override and rollback.
-
-
   # Uncomment the following lines to enable TestPyPI publishing
   # test-publish-to-testpypi:
   #   needs: build-and-package
@@ -111,57 +107,63 @@ jobs:
   #         poetry config repositories.testpypi https://test.pypi.org/legacy/
   #         poetry publish --repository testpypi --username __token__ --password ${{ secrets.TEST_PYPI_API_TOKEN }}
 
-  # publish-to-pypi:
-  #   needs: 
-  #     - validate-tag
-  #     - build-and-package
-  #     - dry-run-publish
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Download distribution
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: dist
-  #         path: dist
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.11'
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@v1.5.0
-  #       with:
-  #         user: __token__
-  #         password: ${{ secrets.PYPI_KEY }}
+  publish-to-pypi:
+    needs: 
+      - validate-tag
+      - build-and-package
+      - dry-run-publish
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
 
-  # create-github-release:
-  #   needs: publish-to-pypi
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Create Release on GitHub
-  #       id: create_release
-  #       uses: actions/create-release@v1
-  #       env:
-  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       with:
-  #         tag_name: ${{ github.ref_name }}
-  #         release_name: Release ${{ github.ref_name }}
-  #         body: 'Automated release of version ${{ github.ref_name }}'
-  #         draft: false
-  #         prerelease: false
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_KEY }}
 
-  # rollback:
-  #   needs: publish-to-pypi
-  #   if: ${{ github.event.inputs.rollback == 'true' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.11'
-  #     - name: Rollback to previous stable version
-  #       run: |
-  #         echo "Rolling back to previous stable version..."
-  #         # Add rollback logic here
+  create-github-release:
+    needs: publish-to-pypi
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create Release on GitHub
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: 'Automated release of version ${{ github.ref_name }}'
+          draft: false
+          prerelease: false
+
+  rollback:
+    needs: publish-to-pypi
+    if: ${{ github.event.inputs.rollback == 'true' }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Rollback to previous stable version
+        run: |
+          echo "Rolling back to previous stable version..."
+          # Add rollback logic here
