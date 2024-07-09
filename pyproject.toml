@@ -11,10 +11,7 @@ packages = [{ from = "_lightrag", include = "lightrag" }]          # empty packa
 python = ">=3.11, <4.0"
 # lightrag = { path = "lightrag", develop = true }
 torch = "^2.3.1"
-# flagembedding = "^1.2.10"
 openai = "^1.34.0"
-networkx = "^3.3"
-pyvis = "^0.3.2"
 # lightrag = {path = "lightrag/dist/lightrag-0.0.0a11-py3-none-any.whl"}
 lightrag = "^0.0.0a13"
 
@@ -22,7 +19,6 @@ lightrag = "^0.0.0a13"
 [tool.poetry.group.dev.dependencies]
 
 pre-commit = "^3.7.0"
-
 anthropic = "^0.26.0"
 torchmetrics = "^1.4.0.post0"
 jupyter = "^1.0.0"
