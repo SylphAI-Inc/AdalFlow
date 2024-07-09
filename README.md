@@ -26,7 +26,7 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 
 LightRAG is born to be light, modular, and robust, with a 100% readable codebase.
 
-Further reading: [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
 
 
 <!--
