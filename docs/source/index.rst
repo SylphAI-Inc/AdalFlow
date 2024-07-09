@@ -1,38 +1,24 @@
-.. =======================
-.. Introduction
-.. =======================
 
 .. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg
    :width: 100%
    :alt: LightRAG Logo
 
 
-.. |License| image:: https://img.shields.io/github/license/SylphAI-Inc/LightRAG
-   :target: https://opensource.org/license/MIT
-
-.. |PyPI Version| image:: https://img.shields.io/pypi/v/lightRAG?style=flat-square
-   :target: https://pypi.org/project/lightRAG/
-
-.. |PyPI Downloads| image:: https://img.shields.io/pypi/dm/lightRAG?style=flat-square
-   :target: https://pypistats.org/packages/lightRAG
-
-.. |GitHub Stars| image:: https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square
-   :target: https://star-history.com/#SylphAI-Inc/LightRAG
-
-.. |Discord| image:: https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat
-   :target: https://discord.gg/zt2mTPcu
-
 
 
 .. raw:: html
 
    <div style="text-align: center; margin-bottom: 20px;">
-       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-       <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
-       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-       <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+
+      <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
+      <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+      <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
    </div>
+
+
+..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
+
 
 .. raw:: html
 
@@ -41,12 +27,10 @@
     <div style="text-align: center;">
         <p>
             <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator (RAG)</em> pipelines.<br>
-            It is <em>light</em>, <em>modular</em>, and <em>robust</em>.
+            It is <em>light</em>, <em>modular</em>, and <em>robust</em>,  with a 100% readable codebase.
         </p>
     </div>
 
-.. *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
-.. It is *light*, *modular*, and *robust*.
 
 
 
@@ -123,9 +107,11 @@ Maxium Customizability & Composability
 Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
 As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
 
-- Two fundamental and powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
-- We end up with less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
-- The result is a library with bare minimum abstraction, providing developers with *maximum customizability and composability*.
+- Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
+- A highly readable codebase and less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
+- We maximize the library's tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.
+- The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
+
 
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
@@ -134,7 +120,19 @@ As a library, we provide them with the fundamental building blocks with 100% cla
 
 .. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
 
-Similar to the `PyTorch` module, our ``Component`` provides excellent visualization of the pipeline structure.
+
+
+Modular
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LightRAG resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.
+
+- `Component` and `DataClass` are to LightRAG for LLM Applications what  `module` and `Tensor` are to PyTorch for deep learning modeling.
+- `ModelClient` to bridge the gap between the LLM API and the LightRAG pipeline.
+- `Orchestrator` components like `Retriever`, `Embedder`, `Generator`, and `Agent` are all model-agnostic (you can use the component on different models from different providers).
+
+
+Similar to the PyTorch `module`, our `Component` provides excellent visualization of the pipeline structure.
 
 .. code-block::
 
@@ -156,12 +154,12 @@ Similar to the `PyTorch` module, our ``Component`` provides excellent visualizat
 .. and Robustness
 
 
-Maximum Control and Robustness
+Robust
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Our simplicity did not come from doing less.
 On the contrary, we have to do more and go deeper and wider on any topic to offer developers *maximum control and robustness*.
 
-- LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on API features such as tools and JSON format with components like ``Prompt``, ``OutputParser``, ``FunctionTool``, and ``ToolManager``.
+- LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on LLM API features such as tools and JSON format with components like ``Prompt``, ``OutputParser``, ``FunctionTool``, and ``ToolManager``.
 - Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in ``ModelClient`` and ``Retriever``.
 - All integrations, such as different API SDKs, are formed as optional packages but all within the same library. You can easily switch to any models from different providers that we officially support.
 
@@ -175,13 +173,14 @@ On the contrary, we have to do more and go deeper and wider on any topic to offe
 
 .. It is the future of LLM applications
 
-Unites both Research and Production
+Unites Research and Production
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Our team has experience in both AI research and production.
+We are building a library that unites the two worlds, forming a healthy LLM application ecosystem.
 
-On top of the easiness to use, we in particular optimize the configurability of components for researchers to build their solutions and to benchmark existing solutions.
-Like how PyTorch has united both researchers and production teams, it enables smooth transition from research to production.
-With researchers building on LightRAG, production engineers can easily take over the method and test and iterate on their production data.
-Researchers will want their code to be adapted into more products too.
+- To resemble the PyTorch library makes it easier for LLM researchers to use the library.
+- Researchers building on LightRAG enable production engineers to easily adopt, test, and iterate on their production data.
+- Our 100% control and clarity of the source code further make it easy for product teams to build on and for researchers to extend their new methods.
 
 
 .. toctree::

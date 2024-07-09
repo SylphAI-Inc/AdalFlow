@@ -1,7 +1,7 @@
 API Reference
 =============
 
-Welcome to the `LightRAG`.
+Welcome to `LightRAG`.
 The API reference is organized by subdirectories.
 
 ..  This section provides detailed documentation of the internal APIs that make up the LightRAG framework. Explore the APIs to understand how to effectively utilize and integrate LightRAG components into your projects.
