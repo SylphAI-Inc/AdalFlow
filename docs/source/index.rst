@@ -101,11 +101,9 @@
 .. and Customizability
 
 
-Maxium Customizability & Composability
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Developers who are building real-world Large Language Model (LLM) applications are the real heroes.
-As a library, we provide them with the fundamental building blocks with 100% clarity and simplicity.
+Light
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+We provide developers with fundamental building blocks of *100% clarity and simplicity*.
 
 - Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
 - A highly readable codebase and less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
