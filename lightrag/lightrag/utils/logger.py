@@ -102,7 +102,7 @@ def get_logger(
     save_dir: Optional[str] = None,
     filename: Optional[str] = None,
     enable_console: bool = True,
-    enable_file: bool = False,
+    enable_file: bool = True,
 ) -> logging.Logger:
     """Get or configure a logger, including both the root logger and named logger.
 
@@ -112,7 +112,7 @@ def get_logger(
         save_dir (Optional[str]): Directory to save log files. Defaults to "./logs".
         filename (Optional[str]): Name of the output log file. Defaults to "lib.log" for root logger and "{name}.log" for named logger.
         enable_console (bool): Control the console output. Defaults to True.
-        enable_file (bool): Control the file output. Defaults to False.
+        enable_file (bool): Control the file output. Defaults to True.
 
     Returns:
         logging.Logger: The logger with the specified configuration.

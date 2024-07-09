@@ -3,7 +3,7 @@ name: Documentation
 on:
   push:
     branches:
-      - li # Trigger the workflow when changes are pushed to the release branch
+      - release # Trigger the workflow when changes are pushed to the release branch
 
 permissions:
   contents: write

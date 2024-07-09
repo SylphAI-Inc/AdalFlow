@@ -27,7 +27,7 @@
     <div style="text-align: center;">
         <p>
             <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator (RAG)</em> pipelines.<br>
-            It is <em>light</em>, <em>modular</em>, and <em>robust</em>.
+            It is <em>light</em>, <em>modular</em>, and <em>robust</em>,  with a 100% readable codebase.
         </p>
     </div>
 
