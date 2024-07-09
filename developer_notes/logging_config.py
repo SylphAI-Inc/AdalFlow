@@ -90,21 +90,38 @@ def use_only_child_logger():
     child_logger.info(f"output using app logger {__name__}: {output}")
 
 
-def use_native_logging():
+def user_program_lightrag_config():
+    from lightrag.utils.logger import get_logger
+
+    log = get_logger(
+        name=__name__,
+        level="INFO",
+        enable_console=True,
+        enable_file=True,
+        filename="app.log",
+    )
+    log.info("This is a user program child logger in app.log")
+
+
+def user_program():
+    import logging
+
+    log = logging.getLogger(__name__)
+    log.info("This is a user program child logger")
+
+
+def use_native_root_logging():
+    # usually the main program will use the root logger to gather all logs
 
     # use it with root logger
     root_logger = get_logger(
         level="INFO",
         enable_console=True,
-        enable_file=False,
+        enable_file=True,
     )
 
-    # native logging will inherit the configuration of the root logger
-    # similar to config 1 where we only use root logger
-    import logging
-
-    log = logging.getLogger(__name__)
-    log.info("test native logging")
+    # call user program
+    user_program()
 
     root_logger.info("test root logger")
     generator = Generator.from_config(generator_config)
@@ -112,10 +129,43 @@ def use_native_logging():
     root_logger.info(f"output using root logger: {output}")
 
 
+def use_named_logger():
+    # use it with named logger
+    named_logger = get_logger(
+        name="app1",
+        level="INFO",
+        enable_console=True,
+        enable_file=True,
+    )
+
+    user_program()
+    # will only include logs here
+    named_logger.info("test named logger")
+    generator = Generator.from_config(generator_config)
+    output = generator(prompt_kwargs={"input_str": "how are you?"})
+    named_logger.info(f"output using named logger {__name__}: {output}")
+
+
+def use_lightrag_logger():
+    # set up root logger for the library
+    # get_logger(
+    #     level="INFO",
+    #     enable_file=True,
+    #     filename="app.log",
+    # )
+    # # use the library
+    # generator = Generator.from_config(generator_config)
+    # output = generator(prompt_kwargs={"input_str": "how are you?"})
+    # use a logger for the user program
+    user_program_lightrag_config()
+
+
 if __name__ == "__main__":
     # check_console_logging()
     # get_logger_and_enable_library_logging_in_same_file()
-    separate_library_logging_and_app_logging()
+    # separate_library_logging_and_app_logging()
     # use_only_child_logger()
-    use_native_logging()
+    # use_native_root_logging()
+    # use_named_logger()
+    use_lightrag_logger()
     printc("All logging examples are done. Feeling green!", color="green")

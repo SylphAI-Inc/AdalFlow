@@ -1,3 +1,9 @@
+## [0.0.0-alpha.16] - 2024-07-08
+
+### Fixed
+- Anthropic client message does not use system role. For now, we put the whole prompt as the first user message.
+- Update the `DEDEFAULT_LIGHTRAG_SYSTEM_PROMPT` to include 'You are a helpful assistant' as default <SYS> prompt.
+
 ## [0.0.0-alpha.15] - 2024-07-07
 
 ### Fixed

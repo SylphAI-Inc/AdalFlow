@@ -72,19 +72,26 @@ class AnthropicAPIClient(ModelClient):
         log.debug(f"completion: {completion}")
         return completion.content[0].text
 
+    # TODO: potentially use <SYS></SYS> to separate the system and user messages. This requires user to follow it. If it is not found, then we will only use user message.
     def convert_inputs_to_api_kwargs(
         self,
         input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> dict:
+        r"""Anthropic API messages separates the system and the user messages.
+
+        As we focus on one prompt, we have to use the user message as the input.
+
+        api: https://docs.anthropic.com/en/api/messages
+        """
         api_kwargs = model_kwargs.copy()
         if model_type == ModelType.LLM:
-            # api_kwargs["messages"] = [
-            #     {"role": "user", "content": input},
-            # ]
-            if input and input != "":
-                api_kwargs["system"] = input
+            api_kwargs["messages"] = [
+                {"role": "user", "content": input},
+            ]
+            # if input and input != "":
+            #     api_kwargs["system"] = input
         else:
             raise ValueError(f"Model type {model_type} not supported")
         return api_kwargs

@@ -13,15 +13,21 @@
 ### ⚡ The PyTorch Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator (RAG)* pipelines.
-It is *light*, *modular*, and *robust*.
+It is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
 
 
-# Design Philosophy
+# Why LightRAG?
 
-LightRAG follows three fundamental principles from day one: simplicity over complexity, quality over quantity, and optimizing over building.
-This design philosophy results in a library with bare minimum abstraction, providing developers with maximum customizability. View Class hierarchy [here](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+LLMs are like water; they can almost do anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
+
+Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case, which requires the library to be modular, robust, and have a clean and readable codebase. The only code you should put into production is code you either trust 100% or are 100% clear about how to customize and iterate.
+
+LightRAG is born to be light, modular, and robust, with a 100% readable codebase.
+
+Further reading: [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+
 
 <!--
 

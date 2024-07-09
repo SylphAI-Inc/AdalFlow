@@ -25,12 +25,12 @@ SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<SYS>{{task_desc_str}}</SYS>
 User: {{input_str}}
 You:"""
 
-DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
-<SYS>
-{% endif %}
+DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<SYS>
 {# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}
+{% else %}
+You are a helpful assistant.
 {% endif %}
 {# output format #}
 {% if output_format_str %}
@@ -68,9 +68,7 @@ DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""{% if task_desc_str or output_format_str or
 {{steps_str}}
 </STEPS>
 {% endif %}
-{% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
 </SYS>
-{% endif %}
 {% if input_str %}
 <User>
 {{input_str}}

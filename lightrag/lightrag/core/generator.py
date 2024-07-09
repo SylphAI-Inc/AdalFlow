@@ -232,10 +232,11 @@ class Generator(Component):
             }
             prompt_kwargs.update(trained_prompt_kwargs)
 
-        log.info(f"prompt_kwargs: {prompt_kwargs}")
-        log.info(f"model_kwargs: {model_kwargs}")
+        log.debug(f"prompt_kwargs: {prompt_kwargs}")
+        log.debug(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
+        log.debug(f"api_kwargs: {api_kwargs}")
         output: GeneratorOutputType = None
         # call the model client
         try:
