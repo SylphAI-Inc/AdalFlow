@@ -49,7 +49,8 @@ Here are sample examples and you will see the real output of ``TextSplitter`` in
 
     "Hello, world!" -> ["Hello", ",", " world", "!"]
 
-Tokenization aligns with how models see text in the form of tokens (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_),
+Tokenization aligns with how models see text in the form of tokens (`Reference <https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb>`_).
+Consider using tokenization when your embedding model works better for tokens or you will input the data chunks to LLM models that are sensitive to token limit.
 
 .. note::
 
