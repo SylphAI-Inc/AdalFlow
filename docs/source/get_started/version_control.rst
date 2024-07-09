@@ -46,7 +46,12 @@ Steps to Release a New Version
       git add lightrag/pyproject.toml
       git commit -m "new version release"
       git push origin release
+   
+   Since the workflow only processes **`tags`**, your file submission will not go through the version release workflow.
 
+   Only the tags you pushed will get checked.
+
+To push the new version tag, please run:
    To push the new version tag:
 
    .. code-block:: python
