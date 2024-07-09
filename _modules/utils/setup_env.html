@@ -404,6 +404,10 @@ document.write(`
                   
   <h1>Source code for utils.setup_env</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">dotenv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="setup_env">
@@ -411,7 +415,14 @@ document.write(`
 <span class="k">def</span> <span class="nf">setup_env</span><span class="p">(</span><span class="n">dotenv_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.env&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load environment variables from .env file.&quot;&quot;&quot;</span>
 
-    <span class="n">dotenv</span><span class="o">.</span><span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="n">dotenv_path</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dotenv_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;File not found: </span><span class="si">{</span><span class="n">dotenv_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">dotenv</span><span class="o">.</span><span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="n">dotenv_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading .env file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span></div>
 
 </pre></div>
 

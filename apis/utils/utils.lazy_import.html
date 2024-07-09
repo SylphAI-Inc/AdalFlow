@@ -528,7 +528,7 @@ document.write(`
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.LazyImport" title="utils.lazy_import.LazyImport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyImport</span></code></a>(import_path, optional_package)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.LazyImport" title="utils.lazy_import.LazyImport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyImport</span></code></a>(import_path, optional_package, ...)</p></td>
 <td><p>Lazy import a module and class.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionalPackages</span></code></a>(value[, names, module, ...])</p></td>
@@ -597,7 +597,7 @@ document.write(`
 
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.lazy_import.LazyImport">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LazyImport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">import_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><span class="pre">OptionalPackages</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#LazyImport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.LazyImport" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">LazyImport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">import_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional_package</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><span class="pre">OptionalPackages</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#LazyImport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.LazyImport" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Lazy import a module and class.</p>
 <p>It is a proxy. The class/func will be created only when the class is instantiated or called.</p>
@@ -623,9 +623,30 @@ document.write(`
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.lazy_import.safe_import">
-<span class="sig-name descname"><span class="pre">safe_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_message</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#safe_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.safe_import" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">safe_import</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">install_message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ModuleType</span></span></span><a class="reference internal" href="../../_modules/utils/lazy_import.html#safe_import"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.safe_import" title="Link to this definition">#</a></dt>
 <dd><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p>
 <p>Mainly used internally to import optional packages only when needed.</p>
+<p>Example:</p>
+<ol class="arabic simple">
+<li><p>Tests</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">numpy</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="s2">&quot;numpy&quot;</span><span class="p">,</span> <span class="s2">&quot;Please install numpy with: pip install numpy&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When numpy is not installed, it will raise an ImportError with the install message.
+When numpy is installed, it will print the numpy version.</p>
+<ol class="arabic simple" start="2">
+<li><p>Use it to delay the import of optional packages in the library.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+
+<span class="n">numpy</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">NUMPY</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">NUMPY</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
