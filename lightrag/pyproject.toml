@@ -2,7 +2,7 @@
 name = "lightrag"
 
 version = "0.0.0-alpha.16"
-description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
+description = "The 'PyTorch' library for LLM applications."
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
 repository = "https://github.com/SylphAI-Inc/LightRAG"

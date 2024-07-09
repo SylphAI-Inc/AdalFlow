@@ -66,7 +66,8 @@ class GoogleGenAIClient(ModelClient):
             if isinstance(input, str):
                 input = [input]
             # convert input to input
-            assert isinstance(input, Sequence), "input must be a sequence of text"
+            if not isinstance(input, Sequence):
+                raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
 
