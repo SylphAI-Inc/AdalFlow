@@ -106,8 +106,7 @@ To manually run these tests, run:
 
 Documentation Dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-If your documentation requires any new dependencies, please include it in the ``pyproject.toml`` under the root directory.
-Add your new dependencies in the ``[tool.poetry.group.doc.dependencies]`` section as other developers will run ``poetry install`` for the documentation dependencies. 
+If your documentation requires any new dependencies, please include it in the ``pyproject.toml`` under the root directory, include it in your PR description and let us know.
 
 Commit Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
