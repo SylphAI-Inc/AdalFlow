@@ -61,7 +61,7 @@ Code Tips
 
 Dependencies
 ^^^^^^^^^^^^^^^^^^^
-If you are adding any new dependencies to the package, please make sure you have include them in your documentation to inform us.
+If you are adding any new dependencies to the package, please make sure you have include them in your PR description to inform us.
 
 Testing
 ^^^^^^^^^^^^^^^^^^^
