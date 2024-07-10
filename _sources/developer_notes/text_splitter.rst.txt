@@ -214,6 +214,8 @@ Upcoming Splitting Features
 
 - **Semantic Splitting**: Focuses on grouping texts by meaning rather than structure, enhancing the relevance for thematic searches or advanced contextual retrieval tasks.
 
+If you are using strategies not based on tokenizer, please be careful of your token length when you input the chunks to your model.
+
 Integration with Other Document Types
 ----------------------------------------------------------
 This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.

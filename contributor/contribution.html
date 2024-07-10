@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Release Version Control Guide &#8212; LightRAG  documentation</title>
+    <title>LightRAG Contribution Guide &#8212; LightRAG  documentation</title>
   
   
   
@@ -48,10 +48,12 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'get_started/version_control';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributor/contribution';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contribute to Code" href="contribute_to_code.html" />
+    <link rel="prev" title="For Contributors" href="index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -148,7 +150,7 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="index.html">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
     Get Started
   </a>
 </li>
@@ -164,6 +166,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    For Contributors
   </a>
 </li>
 
@@ -264,9 +273,7 @@ document.write(`
       
       
       
-        
-      
-      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -282,7 +289,7 @@ document.write(`
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="index.html">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
     Get Started
   </a>
 </li>
@@ -298,6 +305,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    For Contributors
   </a>
 </li>
 
@@ -355,6 +369,21 @@ document.write(`
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">LightRAG Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Contribute to Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_document.html">Contribute to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_control.html">Release Version Control Guide</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -387,7 +416,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Release...</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">For Contributors</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">LightRAG...</li>
   </ul>
 </nav>
 </div>
@@ -404,83 +436,48 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="release-version-control-guide">
-<span id="release-guide"></span><h1>Release Version Control Guide<a class="headerlink" href="#release-version-control-guide" title="Link to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<p>This guide outlines the process for releasing a new version of LightRAG. The workflow pipeline validates the version tag, builds the package, runs tests, publishes to PyPI, and creates a release on GitHub. The workflow is triggered by tags pushed to the <strong>Release</strong> branch. See <a class="reference external" href="https://docs.github.com/en/desktop/managing-commits/managing-tags-in-github-desktop">GitHub tags</a> for more details on version release tagging.</p>
-</section>
-<section id="steps-to-release-a-new-version">
-<h2>Steps to Release a New Version<a class="headerlink" href="#steps-to-release-a-new-version" title="Link to this heading">#</a></h2>
-<ol class="arabic">
-<li><p>Update the <strong>./lightrag/pyproject.toml</strong> version number and the latest dependencies before pushing a new release. Make sure to follow the <a class="reference external" href="https://peps.python.org/pep-0440/">PEP 440 rules</a> to define the version, otherwise, the workflow will fail. For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">tool</span><span class="o">.</span><span class="n">poetry</span><span class="p">]</span>
-<span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;lightrag&quot;</span>
-
-<span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;0.0.0-rc.1&quot;</span>
-<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;The &#39;PyTorch&#39; library for LLM applications. RAG=Retriever-Agent-Generator.&quot;</span>
-</pre></div>
-</div>
-</li>
-<li><p>Ensure your updates are the latest and correct. Update the version number following <cite>Semantic Versioning &lt;https://semver.org/&gt;</cite>. Here is a list of sample tags:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Stable Release Tags:
-v1.0.0
-v1.2.3
-Pre-release Tags:
-v1.0.0-alpha.1
-v1.0.0-beta.1
-v1.0.0-rc.1
-Custom Pre-release Tags:
-v1.0.0-test.1
-v1.1.0-dev.2
-v1.2.3-pre.3
-v2.0.0-exp.4
-v2.1.0-nightly.5
-</pre></div>
-</div>
-</li>
-<li><p>The workflow will be triggered when new releases are pushed to the <strong>release</strong> branch. Push the <strong>./lightrag/pyproject.toml</strong> to the release branch:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">add</span> <span class="n">lightrag</span><span class="o">/</span><span class="n">pyproject</span><span class="o">.</span><span class="n">toml</span>
-<span class="n">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;new version release&quot;</span>
-<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">release</span>
-</pre></div>
-</div>
-<p>Since the workflow only processes <strong>`tags`</strong>, your file submission will not go through the version release workflow.</p>
-<p>Only the tags you pushed will get checked.</p>
-</li>
-</ol>
-<dl>
-<dt>To push the new version tag, please run:</dt><dd><p>To push the new version tag:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tag</span> <span class="o">-</span><span class="n">a</span> <span class="n">vx</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">z</span> <span class="o">-</span><span class="n">m</span> <span class="s2">&quot;Release version x.y.z&quot;</span>
-<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">release</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-<ol class="arabic" start="4">
-<li><p>To delete redundant local tags:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">tags</span> <span class="c1"># list the existing tags</span>
-
-<span class="n">git</span> <span class="n">tag</span> <span class="o">-</span><span class="n">d</span> <span class="o">&lt;</span><span class="n">tag</span><span class="o">&gt;</span>
-<span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="o">--</span><span class="n">delete</span> <span class="o">&lt;</span><span class="n">tag</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-</li>
-</ol>
-</section>
-<section id="important-notes">
-<h2>Important Notes<a class="headerlink" href="#important-notes" title="Link to this heading">#</a></h2>
+  <section id="lightrag-contribution-guide">
+<h1>LightRAG Contribution Guide<a class="headerlink" href="#lightrag-contribution-guide" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>’s contribution process is similar to most open source projects on GitHub. We encourage new project ideas and the communication between <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> team, developers and the broader community.
+Please don’t forget to join us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>.</p>
+<section id="contribution-process">
+<h2>Contribution Process<a class="headerlink" href="#contribution-process" title="Link to this heading">#</a></h2>
+<p>You are always welcomed to contribute even if you’ve never participated in open source project before.
+Here is the basic contribution process:</p>
+<section id="find-a-direction-to-work-on">
+<h3>Find a direction to work on<a class="headerlink" href="#find-a-direction-to-work-on" title="Link to this heading">#</a></h3>
+<p>The team builds <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> based on latest researches and product cases. But you might have your own task to apply <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>.
+Therefore, you can extend <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> and add any new features you believe will solve yours or others’ problems.
+If you don’t have any idea yet, you can:</p>
 <ul class="simple">
-<li><p><strong>Do Not Reuse Tags:</strong> If you need to fix a problem after a tag is pushed but before a release is made, you must create a new version number. Never reuse version numbers as this can lead to confusion and potential deployment issues.</p></li>
-<li><p><strong>Monitor the Workflow:</strong> After pushing the tag, monitor the GitHub Actions workflow to ensure that it completes successfully. Check the “Actions” tab in the GitHub repository to see the progress and logs.</p></li>
+<li><p>Check the <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/issues">existing issues</a> and see if there is anyone you know how to fix or you’d love to fix.</p></li>
+<li><p>Join us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>. We are glad to discuss with you and know what you are interested in here.</p></li>
 </ul>
 </section>
-<section id="troubleshooting">
-<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading">#</a></h2>
-<ul class="simple">
-<li><p>If the workflow fails, review the logs for errors. Common issues might include failing tests or configuration errors in the workflow.</p></li>
-<li><p>If you encounter errors related to tagging (e.g., “tag already exists”), check that you’re incrementing the version numbers correctly.</p></li>
-</ul>
+<section id="figure-out-the-scope-of-your-change">
+<h3>Figure out the scope of your change<a class="headerlink" href="#figure-out-the-scope-of-your-change" title="Link to this heading">#</a></h3>
+<p><strong>Small:</strong> Most of the pull requests are small. If your change is small, such as fixing a line of bug, please go ahead to push it.</p>
+<p><strong>Big:</strong> But if you are making a new feature, or planning to push a large change, it is recommended to contact us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a> first.</p>
+<p><strong>Unknown:</strong> If you have no idea how big it will be, we are here to help you. Please post your idea on <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/issues">issues</a>. We will read it carefully and get back to you.</p>
+</section>
+<section id="add-your-code">
+<h3>Add your code<a class="headerlink" href="#add-your-code" title="Link to this heading">#</a></h3>
+<p>Please check our <a class="reference external" href="./contribute_to_code.html">code contribution guidelines</a> to work with code.</p>
+</section>
+<section id="pull-requests">
+<h3>Pull requests<a class="headerlink" href="#pull-requests" title="Link to this heading">#</a></h3>
+<p><strong>WIP PR:</strong> If you are working on an in pull request that is not ready for review, you can create a PR with <strong>“[WIP]”</strong> to inform us that this PR is a draft <strong>“work in progress”</strong>.</p>
+<p><strong>Finished PR:</strong> You can name your finished PR as <strong>“[New Retriever Integration]”</strong> for example.
+We will carry out code review regularly and provide feedbacks as soon as possible.
+Please iterate your PR with the feedbacks. We will try our best to reduce the revision workload on your side.
+Once your PR is approved, we will merge the PR for you.
+If you have any concerns about our feedbacks, please feel free to contact us on <a class="reference external" href="https://discord.com/invite/ezzszrRZvT">Discord</a>.</p>
+</section>
+</section>
+<section id="writing-documentation">
+<h2>Writing Documentation<a class="headerlink" href="#writing-documentation" title="Link to this heading">#</a></h2>
+<p>It is a good practice to submit your code with documentations to help the <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> team and other developers better understand your updates.
+Please see our <a class="reference external" href="./contribute_to_document.html">documentation contribution guidelines</a> for more details on <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> documentation standard.</p>
 </section>
 </section>
 
@@ -494,6 +491,24 @@ v2.1.0-nightly.5
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">For Contributors</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contribute_to_code.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contribute to Code</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -512,10 +527,14 @@ v2.1.0-nightly.5
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps-to-release-a-new-version">Steps to Release a New Version</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#important-notes">Important Notes</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#troubleshooting">Troubleshooting</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contribution-process">Contribution Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-a-direction-to-work-on">Find a direction to work on</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#figure-out-the-scope-of-your-change">Figure out the scope of your change</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-your-code">Add your code</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pull-requests">Pull requests</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-documentation">Writing Documentation</a></li>
 </ul>
   </nav></div>
 

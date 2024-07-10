@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>LightRAG Contribution Guide &#8212; LightRAG  documentation</title>
+    <title>Contribute to Code &#8212; LightRAG  documentation</title>
   
   
   
@@ -48,10 +48,12 @@
     <script src="../_static/js/rtd_search_config.js"></script>
     <script src="../_static/js/rtd_sphinx_search.min.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'contributor/contribution_guide';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'contributor/contribute_to_code';</script>
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contribute to Documentation" href="contribute_to_document.html" />
+    <link rel="prev" title="LightRAG Contribution Guide" href="contribution.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -167,6 +169,13 @@
   </a>
 </li>
 
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    For Contributors
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -250,6 +259,10 @@ document.write(`
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -292,6 +305,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    For Contributors
   </a>
 </li>
 
@@ -354,7 +374,13 @@ document.write(`
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"></div>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contribution.html">LightRAG Contribution Guide</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Contribute to Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contribute_to_document.html">Contribute to Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="version_control.html">Release Version Control Guide</a></li>
+</ul>
+</div>
 </nav></div>
     </div>
   
@@ -390,7 +416,10 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">LightRAG...</li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">For Contributors</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Contribute to Code</li>
   </ul>
 </nav>
 </div>
@@ -407,12 +436,84 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="lightrag-contribution-guide">
-<h1>LightRAG Contribution Guide<a class="headerlink" href="#lightrag-contribution-guide" title="Link to this heading">#</a></h1>
-<ol class="arabic simple">
-<li><p>Writing Documentation</p></li>
+  <section id="contribute-to-code">
+<h1>Contribute to Code<a class="headerlink" href="#contribute-to-code" title="Link to this heading">#</a></h1>
+<p>This document will cover how you can contribute to lightRAG codebase.</p>
+<section id="set-up">
+<h2>Set Up<a class="headerlink" href="#set-up" title="Link to this heading">#</a></h2>
+<p>The current <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> code contribution supports <a class="reference external" href="https://python-poetry.org/">poetry</a> setup only. The team is working on optimizing the library and will get back to support more environment soon.
+If you are only interested in using <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> as a package, please check our <a class="reference external" href="https://lightrag.sylph.ai/get_started/installation.html#install-lightrag">installation guide</a>.</p>
+<p>To set up <code class="docutils literal notranslate"><span class="pre">poetry</span></code> and contribute, please check the following steps:</p>
+<ol class="arabic">
+<li><p><strong>Clone the Repository:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/SylphAI-Inc/LightRAG
+<span class="nb">cd</span><span class="w"> </span>LightRAG
+</pre></div>
+</div>
+</li>
+<li><p><strong>Configure API Keys:</strong></p>
+<p>Copy the example environment file and add your API keys:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cp<span class="w"> </span>.env.example<span class="w"> </span>.env
+<span class="c1"># example API keys:</span>
+<span class="c1"># OPENAI_API_KEY=YOUR_API_KEY_IF_YOU_USE_OPENAI</span>
+<span class="c1"># GROQ_API_KEY=YOUR_API_KEY_IF_YOU_USE_GROQ</span>
+<span class="c1"># ANTHROPIC_API_KEY=YOUR_API_KEY_IF_YOU_USE_ANTHROPIC</span>
+<span class="c1"># GOOGLE_API_KEY=YOUR_API_KEY_IF_YOU_USE_GOOGLE</span>
+<span class="c1"># COHERE_API_KEY=YOUR_API_KEY_IF_YOU_USE_COHERE</span>
+<span class="c1"># HF_TOKEN=YOUR_API_KEY_IF_YOU_USE_HF</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Install Dependencies:</strong></p>
+<p>Use Poetry to install the dependencies and set up the virtual environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
+poetry<span class="w"> </span>shell
+</pre></div>
+</div>
+</li>
 </ol>
-<p>Please see our <a class="reference external" href="./contribute_to_document.html">documentation contribution guidelines</a> for more details.</p>
+</section>
+<section id="codebase-structure">
+<h2>Codebase Structure<a class="headerlink" href="#codebase-structure" title="Link to this heading">#</a></h2>
+<p>It is recommended to check our <a class="reference external" href="https://lightrag.sylph.ai/developer_notes/index.html">LightRAG codebase structure</a> and current <a class="reference external" href="https://lightrag.sylph.ai/apis/index.html">API references</a> to familiarize yourself with the directories and paths before contributing.</p>
+</section>
+<section id="code-examples">
+<h2>Code Examples<a class="headerlink" href="#code-examples" title="Link to this heading">#</a></h2>
+<p>We want to support you with our best. We have included code samples in the <a class="reference external" href="https://lightrag.sylph.ai/developer_notes/index.html">tutorial</a> for you to refer to.</p>
+<p>We inlcude a list of potential samples(<cite>We are working in progress to add more</cite>):</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://lightrag.sylph.ai/developer_notes/model_client.html#model-inference-sdks">ModelClient integration</a>. This document will help if you want to add new models not included in our codebase.</p></li>
+<li><p><a class="reference external" href="https://lightrag.sylph.ai/developer_notes/retriever.html#retriever-in-action">Retriever Integration</a>. We provide different retrivers but you can create more.</p></li>
+</ul>
+</section>
+<section id="code-tips">
+<h2>Code Tips<a class="headerlink" href="#code-tips" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>When writing code, it is appreciated to include any important docstrings and comments. Please refer to <a class="reference external" href="./contribute_to_document.html">documentation contribution guidelines</a> for standard docstrings.</p></li>
+<li><p>LightRAG is a Python library and if you could follow the <a class="reference external" href="https://google.github.io/styleguide/pyguide.html">Google Python Style Guide</a>, the codebase will be more consistent.</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
+<p>If you are adding any new dependencies to the package, please make sure you have include them in your documentation to inform the other users to install themselves.
+Or if your package is light, you can update in <code class="docutils literal notranslate"><span class="pre">./lightrag/pyproject.toml</span></code> and remember to update the <code class="docutils literal notranslate"><span class="pre">./lightrag/poetry.lock</span></code> accordingly.</p>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
+<p>Please make sure your code is well-tested before making a pull request.
+There is a <code class="docutils literal notranslate"><span class="pre">./lightrag/tests</span></code> folder in the project directory to host your unit testing cases.</p>
+<p>You might need to install the testing packages using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>:</p>
+<p>Example packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unittest</span>
+<span class="n">pytest</span>
+<span class="n">mypy</span> <span class="o">-</span> <span class="nb">type</span> <span class="n">check</span>
+</pre></div>
+</div>
+<p>All the test scripts should start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>. For example, run the individual test for <code class="docutils literal notranslate"><span class="pre">components</span></code> with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>lightrag/tests/test_components.py
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -425,12 +526,52 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="contribution.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">LightRAG Contribution Guide</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contribute_to_document.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contribute to Documentation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up">Set Up</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#codebase-structure">Codebase Structure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-examples">Code Examples</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-tips">Code Tips</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#testing">Testing</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
