@@ -5,12 +5,13 @@ Release Version Control Guide
 
 Overview
 --------
+**The version will mainly be managed by the LightRAG team. But we are glad to share how we will release the latest version here.**
 
-This guide outlines the process for releasing a new version of LightRAG. The workflow pipeline validates the version tag, builds the package, runs tests, publishes to PyPI, and creates a release on GitHub. The workflow is triggered by tags pushed to the **Release** branch. See `GitHub tags <https://docs.github.com/en/desktop/managing-commits/managing-tags-in-github-desktop>`_ for more details on version release tagging.
+This guide outlines the process for releasing a new version of ``LightRAG``. 
+The workflow pipeline validates the version tag, builds the package, runs tests, publishes to PyPI, and creates a release on GitHub. The workflow is triggered by tags pushed to the **Release** branch. See `GitHub tags <https://docs.github.com/en/desktop/managing-commits/managing-tags-in-github-desktop>`_ for more details on version release tagging.
 
 Steps to Release a New Version
 ------------------------------
-
 1. Update the **./lightrag/pyproject.toml** version number and the latest dependencies before pushing a new release. Make sure to follow the `PEP 440 rules <https://peps.python.org/pep-0440/>`_ to define the version, otherwise, the workflow will fail. For example:
 
    .. code-block:: python
@@ -21,17 +22,19 @@ Steps to Release a New Version
       version = "0.0.0-rc.1"
       description = "The 'PyTorch' library for LLM applications. RAG=Retriever-Agent-Generator."
 
-2. Ensure your updates are the latest and correct. Update the version number following `Semantic Versioning <https://semver.org/>`. Here is a list of sample tags:
+2. Ensure your updates are the latest and correct. Update the version number following `Semantic Versioning <https://semver.org/>`_. Here is a list of sample tags:
 
    .. code-block:: none
 
       Stable Release Tags:
       v1.0.0
       v1.2.3
+
       Pre-release Tags:
       v1.0.0-alpha.1
       v1.0.0-beta.1
       v1.0.0-rc.1
+
       Custom Pre-release Tags:
       v1.0.0-test.1
       v1.1.0-dev.2
@@ -47,12 +50,11 @@ Steps to Release a New Version
       git commit -m "new version release"
       git push origin release
    
-   Since the workflow only processes **`tags`**, your file submission will not go through the version release workflow.
+   Since the workflow only processes **tags**, your file submission will not go through the version release workflow.
 
    Only the tags you pushed will get checked.
 
-To push the new version tag, please run:
-   To push the new version tag:
+   To push the new version tag, please run:
 
    .. code-block:: python
 
@@ -70,12 +72,15 @@ To push the new version tag, please run:
 
 Important Notes
 ---------------
+- **Do Not Reuse Tags:** If you need to fix a problem and update the package, you must create a new version number. Duplicated tag number or version number won't work. Never reuse version numbers as this can lead to confusion and potential deployment issues.
+- **Monitor the Workflow:** After pushing the tag, monitor the GitHub Actions workflow to ensure that it completes successfully. Check the ``"Actions"`` tab in the GitHub repository to see the progress and logs.
 
-- **Do Not Reuse Tags:** If you need to fix a problem after a tag is pushed but before a release is made, you must create a new version number. Never reuse version numbers as this can lead to confusion and potential deployment issues.
-- **Monitor the Workflow:** After pushing the tag, monitor the GitHub Actions workflow to ensure that it completes successfully. Check the "Actions" tab in the GitHub repository to see the progress and logs.
+Common Problems
+-----------------
+- If the workflow fails, review the logs for errors. Common issues might include:
 
-Troubleshooting
----------------
+      **Tag Validation:** If your tag validation failed, you should check if your pushed tag meets the standard.
 
-- If the workflow fails, review the logs for errors. Common issues might include failing tests or configuration errors in the workflow.
+      **Package Build:** Pay attention to the error during the package building and see if there is any bug.
+
 - If you encounter errors related to tagging (e.g., "tag already exists"), check that you're incrementing the version numbers correctly.
