@@ -118,7 +118,6 @@ class OpenAIClient(ModelClient):
         """Parse the completion to a str."""
         log.debug(f"completion: {completion}")
         return self.chat_completion_parser(completion)
-        # return completion.choices[0].message.content
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse
@@ -148,16 +147,14 @@ class OpenAIClient(ModelClient):
             if isinstance(input, str):
                 input = [input]
             # convert input to input
-            assert isinstance(input, Sequence), "input must be a sequence of text"
+            if not isinstance(input, Sequence):
+                raise TypeError("input must be a sequence of text")
             final_model_kwargs["input"] = input
         elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
             if input is not None and input != "":
                 messages.append({"role": "system", "content": input})
-            assert isinstance(
-                messages, Sequence
-            ), "input must be a sequence of messages"
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")

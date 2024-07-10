@@ -374,10 +374,11 @@ class TransformersClient(ModelClient):
         return response
 
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        assert "model" in api_kwargs, "model is required"
-        assert (
-            api_kwargs["model"] in self.support_models
-        ), f"model {api_kwargs['model']} is not supported"
+        if "model" not in api_kwargs:
+            raise ValueError("model must be specified in api_kwargs")
+        if api_kwargs["model"] not in self.support_models:
+            raise ValueError(f"model {api_kwargs['model']} is not supported")
+
         if (
             model_type == ModelType.EMBEDDER
             and "model" in api_kwargs

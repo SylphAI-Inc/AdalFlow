@@ -2,6 +2,7 @@
 
 import importlib
 import logging
+from types import ModuleType
 
 
 from enum import Enum
@@ -65,7 +66,16 @@ class LazyImport:
         optional_package (OptionalPackages): The optional package to import, it helps define the package name and error message.
     """
 
-    def __init__(self, import_path: str, optional_package: OptionalPackages):
+    def __init__(
+        self, import_path: str, optional_package: OptionalPackages, *args, **kwargs
+    ):
+        if args or kwargs:
+            raise TypeError(
+                "LazyImport does not support subclassing or additional arguments. "
+                "Import the class directly from its specific module instead. For example, "
+                "from lightrag.components.model_client.cohere_client import CohereAPIClient"
+                "instead of using the lazy import with: from lightrag.components.model_client import CohereAPIClient"
+            )
         self.import_path = import_path
         self.optional_package = optional_package
         self.module = None
@@ -100,10 +110,34 @@ class LazyImport:
         return self.class_(*args, **kwargs)
 
 
-def safe_import(module_name, install_message):
+def safe_import(module_name: str, install_message: str) -> ModuleType:
     """Safely import a module and raise an ImportError with the install message if the module is not found.
 
     Mainly used internally to import optional packages only when needed.
+
+    Example:
+
+    1. Tests
+
+    .. code-block:: python
+
+        try:
+            numpy = safe_import("numpy", "Please install numpy with: pip install numpy")
+            print(numpy.__version__)
+        except ImportError as e:
+            print(e)
+
+    When numpy is not installed, it will raise an ImportError with the install message.
+    When numpy is installed, it will print the numpy version.
+
+    2. Use it to delay the import of optional packages in the library.
+
+    .. code-block:: python
+
+        from lightrag.utils.lazy_import import safe_import, OptionalPackages
+
+        numpy = safe_import(OptionalPackages.NUMPY.value[0], OptionalPackages.NUMPY.value[1])
+
     """
     try:
         return importlib.import_module(module_name)
