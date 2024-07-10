@@ -8,9 +8,7 @@ import logging
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
-from ollama import (
-    RequestError, ChatResponse
-)
+from ollama import RequestError, ChatResponse
 
 
 from lightrag.core.model_client import ModelClient
@@ -19,6 +17,7 @@ import ollama
 
 
 log = logging.getLogger(__name__)
+
 
 class OllamaClient(ModelClient):
     __doc__ = r"""A component wrapper for the Ollama SDK client.
@@ -62,16 +61,14 @@ class OllamaClient(ModelClient):
     def parse_chat_completion(self, completion: ChatResponse) -> Any:
         """Parse the completion to a str."""
         log.debug(f"completion: {completion}")
-        return completion['message']['content']
+        return completion["message"]["content"]
 
-    def parse_embedding_response(
-        self, response: Dict[str, float]
-    ) -> EmbedderOutput:
+    def parse_embedding_response(self, response: Dict[str, float]) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand.
         Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:
-            embeddings = Embedding(embedding=response['embedding'])
+            embeddings = Embedding(embedding=response["embedding"])
             return EmbedderOutput(data=[embeddings])
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")
@@ -79,7 +76,7 @@ class OllamaClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: Optional[Any] = None, 
+        input: Optional[Any] = None,
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -101,15 +98,13 @@ class OllamaClient(ModelClient):
             else:
                 raise ValueError("input must be text")
         if model_type == ModelType.LLM:
-            messages: List[Dict[str, str]] = []
             if input is not None and input != "":
-                messages.append({"role": "user", "content": input})
+                final_model_kwargs["prompt"] = input
+                return final_model_kwargs
             else:
                 raise ValueError("Input must be text")
-            final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
-        return final_model_kwargs
 
     @backoff.on_exception(
         backoff.expo,
@@ -120,13 +115,13 @@ class OllamaClient(ModelClient):
         """
         kwargs is the combined input and model_kwargs
         """
-        if "model" not in api_kwargs: 
+        if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings(**api_kwargs)
         if model_type == ModelType.LLM:
-            return self.sync_client.chat(**api_kwargs)
+            return self.sync_client.generate(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
@@ -143,7 +138,7 @@ class OllamaClient(ModelClient):
         """
         if self.async_client is None:
             self.init_async_client()
-        if "model" not in api_kwargs: 
+        if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings(**api_kwargs)

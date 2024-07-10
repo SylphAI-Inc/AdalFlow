@@ -49,6 +49,7 @@ pytest = "^8.1.1"
 pytest-mock = "^3.14.0"
 transformers = "^4.41.2"
 torch = "^2.3.1"
+ollama = "^0.2.1"
 
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
