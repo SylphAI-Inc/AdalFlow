@@ -181,22 +181,18 @@ class TextSplitter(Component):
         super().__init__()
 
         self.split_by = split_by
-        assert (
-            split_by in SEPARATORS
-        ), f"Invalid options for split_by. You must select from {list(SEPARATORS.keys())}."
+        if split_by not in SEPARATORS:
+            raise ValueError(f"Invalid options for split_by. You must select from {list(SEPARATORS.keys())}.")
 
-        assert (
-            chunk_overlap < chunk_size
-        ), f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}"
+        if chunk_overlap >= chunk_size:
+            raise ValueError(f"chunk_overlap can't be larger than or equal to chunk_size. Received chunk_size: {chunk_size}, chunk_overlap: {chunk_overlap}")
 
-        assert (
-            chunk_size > 0
-        ), f"chunk_size must be greater than 0. Received value: {chunk_size}"
+        if chunk_size <= 0:
+            raise ValueError(f"chunk_size must be greater than 0. Received value: {chunk_size}")
         self.chunk_size = chunk_size
 
-        assert (
-            chunk_overlap >= 0
-        ), f"chunk_overlap must be non-negative. Received value: {chunk_overlap}"
+        if chunk_overlap < 0:
+            raise ValueError(f"chunk_overlap must be non-negative. Received value: {chunk_overlap}")
         self.chunk_overlap = chunk_overlap
 
         self.batch_size = batch_size
