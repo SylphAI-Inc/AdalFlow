@@ -7,7 +7,7 @@ import logging
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
-cohere = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
+ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
 from ollama import (
     RequestError, ChatResponse
 )
@@ -29,7 +29,8 @@ class OllamaClient(ModelClient):
     - 
     
     Tested Ollama models: 7/9/24
-    -  
+    -  internlm2:latest
+    -  jina/jina-embeddings-v2-base-en:latest
 
     .. note::
     """
@@ -67,8 +68,7 @@ class OllamaClient(ModelClient):
         self, response: Dict[str, float]
     ) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand.
-
-        Should be called in ``Embedder``.
+        Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:
             embeddings = Embedding(embedding=response['embedding'])
@@ -79,7 +79,7 @@ class OllamaClient(ModelClient):
 
     def convert_inputs_to_api_kwargs(
         self,
-        input: Optional[Any] = None,  # for retriever, it is a list of string.
+        input: Optional[Any] = None, 
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
@@ -87,19 +87,25 @@ class OllamaClient(ModelClient):
         For LLM, expect model_kwargs to have the following keys:
          model: str,
          messages: str,
+
+        For EMBEDDER, expect model_kwargs to have the following keys:
+         model: str,
+         prompt: str,
         """
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             # make sure input is a string
-            assert isinstance(input, str), "input must be a sequence of text"
-            final_model_kwargs["prompt"] = input
+            if input is not None and input != "":
+                final_model_kwargs["prompt"] = input
+                return final_model_kwargs
+            else:
+                raise ValueError("input must be text")
         if model_type == ModelType.LLM:
             messages: List[Dict[str, str]] = []
             if input is not None and input != "":
                 messages.append({"role": "user", "content": input})
-            assert isinstance(
-                messages, Sequence
-            ), "input must be a sequence of messages"
+            else:
+                raise ValueError("Input must be text")
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
@@ -111,9 +117,11 @@ class OllamaClient(ModelClient):
         max_time=5,
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        assert (
-            "model" in api_kwargs
-        ), f"model must be specified in api_kwargs: {api_kwargs}"
+        """
+        kwargs is the combined input and model_kwargs
+        """
+        if "model" not in api_kwargs: 
+            raise ValueError("model must be specified")
         log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings(**api_kwargs)
@@ -130,9 +138,13 @@ class OllamaClient(ModelClient):
     async def acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
+        """
+        kwargs is the combined input and model_kwargs
+        """
         if self.async_client is None:
             self.init_async_client()
-        assert "model" in api_kwargs, "model must be specified"
+        if "model" not in api_kwargs: 
+            raise ValueError("model must be specified")
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings(**api_kwargs)
         if model_type == ModelType.LLM:
