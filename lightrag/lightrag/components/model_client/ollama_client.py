@@ -143,6 +143,6 @@ class OllamaClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings(**api_kwargs)
         if model_type == ModelType.LLM:
-            return await self.async_client.chat(**api_kwargs)
+            return await self.async_client.generate(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
