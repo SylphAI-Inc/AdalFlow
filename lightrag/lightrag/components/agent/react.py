@@ -23,6 +23,7 @@ from lightrag.utils.logger import printc
 
 log = logging.getLogger(__name__)
 
+
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
 {# role/task description #}
 You are a helpful assistant.
@@ -78,7 +79,7 @@ User query:
 {% for history in step_history %}
 Step {{ loop.index }}.
 {
- "thought": "{{history.thought}}",
+ "thought": "{{history.action.thought}}",
  "action": "{{history.action.action}}",
 }
 "Observation": "{{history.observation}}"
@@ -164,7 +165,9 @@ class ReActAgent(Component):
             func=self._finish,
             answer="final answer: 'answer'",
         )
-        output_parser = JsonOutputParser(data_class=ouput_data_class, example=example)
+        output_parser = JsonOutputParser(
+            data_class=ouput_data_class, examples=[example], return_data_class=True
+        )
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
             "output_format_str": output_parser.format_instructions(),
@@ -217,7 +220,7 @@ class ReActAgent(Component):
         if self.add_llm_as_fallback:
             tools.append(llm_tool)
         tools.append(finish)
-        self.tool_manager = ToolManager(tools=tools)
+        self.tool_manager: ToolManager = ToolManager(tools=tools)
 
     def reset(self):
         r"""Reset the agent to start a new query."""
@@ -230,12 +233,10 @@ class ReActAgent(Component):
         action = action_step.action
         try:
 
-            fun: Function = self.tool_manager.parse_function_call_expr(action)
-            result: FunctionOutput = self.tool_manager.execute_function(fun)
+            fun: Function = self.tool_manager.parse_func_expr(action)
+            result: FunctionOutput = self.tool_manager.execute_func(fun)
             # TODO: optimize the action_step
-            action_step.fun_name = fun.name
-            action_step.fun_args = fun.args
-            action_step.fun_kwargs = fun.kwargs
+            action_step.function = fun
             action_step.observation = result.output
             return action_step
         except Exception as e:
@@ -246,10 +247,9 @@ class ReActAgent(Component):
 
     def _run_one_step(self, step: int, prompt_kwargs: Dict, model_kwargs: Dict) -> str:
         """
-        Run one step of the agent.
+        Run one step of the agent. Plan and execute the action for the step.
         """
-        # step_history is the only per-query variable, and should not be controlled by the user
-        # add the step_history to the prompt_kwargs
+        step_output: StepOutput = StepOutput(step=step)
         prompt_kwargs["step_history"] = self.step_history
 
         log.debug(
@@ -260,27 +260,28 @@ class ReActAgent(Component):
         response: GeneratorOutput = self.planner(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
-        step_output: StepOutput = None
-        try:
-            fun_expr: FunctionExpression = FunctionExpression.from_dict(response.data)
-            step_output = StepOutput(
-                step=step, thought=fun_expr.thought, action=fun_expr
-            )
-            # print the func expr
-            log.debug(f"Step {step}: {fun_expr}")
+        if response.error:
+            error_msg = f"Error planning step {step}: {response.error}"
+            step_output.observation = error_msg
+            log.error(error_msg)
+        else:
+            try:
+                fun_expr: FunctionExpression = response.data
+                step_output.action = fun_expr
+                # print the func expr
+                log.debug(f"Step {step}: {fun_expr}")
 
-            # execute the action
-            if step_output and step_output.action:
-                step_output = self._execute_action(step_output)
-                printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
-            else:
-                log.error(f"Failed to parse response for step {step}")
-        except Exception as e:
-            log.error(f"Error running step {step}: {e}")
-            if step_output is None:
-                step_output = StepOutput(step=step, thought="", action="")
-            else:
-                step_output.observation = f"Error running step {step}: {e}"
+                # execute the action
+                if step_output and step_output.action:
+                    step_output = self._execute_action(step_output)
+                    printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")
+                else:
+                    log.error(f"Failed to parse response for step {step}")
+            except Exception as e:
+                error_msg = f"Error parsing response for step {step}: {e}"
+                step_output.observation = error_msg
+                log.error(error_msg)
+
         self.step_history.append(step_output)
 
         return response
@@ -300,8 +301,8 @@ class ReActAgent(Component):
             try:
                 self._run_one_step(step, prompt_kwargs, model_kwargs)
                 if (
-                    self.step_history[-1].fun_name
-                    and self.step_history[-1].fun_name == "finish"
+                    self.step_history[-1].function
+                    and self.step_history[-1].function.name == "finish"
                 ):
                     break
             except Exception as e:
@@ -315,14 +316,15 @@ class ReActAgent(Component):
 
     def _extra_repr(self) -> str:
         s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}"
-        s += super()._extra_repr()
         return s
 
 
 if __name__ == "__main__":
-    from components.model_client import GroqAPIClient
+    from lightrag.components.model_client import GroqAPIClient
     from lightrag.core.types import ModelClientType
     from lightrag.utils import setup_env
+
+    # get_logger()
 
     setup_env()
 

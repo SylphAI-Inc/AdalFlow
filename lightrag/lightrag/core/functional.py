@@ -318,20 +318,36 @@ def is_dataclass_instance(obj):
     return hasattr(obj, "__dataclass_fields__")
 
 
-def get_type_schema(type_obj, exclude: ExcludeType = None) -> str:
+def get_type_schema(
+    type_obj,
+    exclude: ExcludeType = None,
+    type_var_map: Optional[Dict] = None,
+) -> str:
     """Retrieve the type name, handling complex and nested types."""
     origin = get_origin(type_obj)
+    type_var_map = type_var_map or {}
+
+    # Replace type variables with their actual types to support Generic[T/To]
+    if hasattr(type_obj, "__origin__") and type_obj.__origin__ is not None:
+        type_obj = type_var_map.get(type_obj.__origin__, type_obj)
+    else:
+        type_obj = type_var_map.get(type_obj, type_obj)
+
     if origin is Union:
         # Handle Optional[Type] and other unions
         args = get_args(type_obj)
-        types = [get_type_schema(arg, exclude) for arg in args if arg is not type(None)]
+        types = [
+            get_type_schema(arg, exclude, type_var_map)
+            for arg in args
+            if arg is not type(None)
+        ]
         return (
             f"Optional[{types[0]}]" if len(types) == 1 else f"Union[{', '.join(types)}]"
         )
     elif origin in {List, list}:
         args = get_args(type_obj)
         if args:
-            inner_type = get_type_schema(args[0], exclude)
+            inner_type = get_type_schema(args[0], exclude, type_var_map)
             return f"List[{inner_type}]"
         else:
             return "List"
@@ -339,34 +355,42 @@ def get_type_schema(type_obj, exclude: ExcludeType = None) -> str:
     elif origin in {Dict, dict}:
         args = get_args(type_obj)
         if args and len(args) >= 2:
-            key_type = get_type_schema(args[0], exclude)
-            value_type = get_type_schema(args[1], exclude)
+            key_type = get_type_schema(args[0], exclude, type_var_map)
+            value_type = get_type_schema(args[1], exclude, type_var_map)
             return f"Dict[{key_type}, {value_type}]"
         else:
             return "Dict"
     elif origin in {Set, set}:
         args = get_args(type_obj)
-        return f"Set[{get_type_schema(args[0], exclude)}]" if args else "Set"
+        return (
+            f"Set[{get_type_schema(args[0],exclude, type_var_map)}]" if args else "Set"
+        )
 
     elif origin is Sequence:
         args = get_args(type_obj)
-        return f"Sequence[{get_type_schema(args[0], exclude)}]" if args else "Sequence"
+        return (
+            f"Sequence[{get_type_schema(args[0], exclude,type_var_map)}]"
+            if args
+            else "Sequence"
+        )
 
     elif origin in {Tuple, tuple}:
         args = get_args(type_obj)
         if args:
-            return f"Tuple[{', '.join(get_type_schema(arg, exclude) for arg in args)}]"
+            return f"Tuple[{', '.join(get_type_schema(arg,exclude,type_var_map) for arg in args)}]"
         return "Tuple"
 
     elif is_dataclass(type_obj):
         # Recursively handle nested dataclasses
-        output = str(get_dataclass_schema(type_obj, exclude))
+        output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
         return output
     return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
 
 
 def get_dataclass_schema(
-    cls, exclude: ExcludeType = None
+    cls,
+    exclude: ExcludeType = None,
+    type_var_map: Optional[Dict] = None,
 ) -> Dict[str, Dict[str, object]]:
     """Generate a schema dictionary for a dataclass including nested structures.
 
@@ -374,10 +398,13 @@ def get_dataclass_schema(
     2. Support nested dataclasses, even with generics like List, Dict, etc.
     3. Support metadata in the dataclass fields.
     """
+
     if not is_dataclass(cls):
         raise ValueError(
             "Provided class is not a dataclass, please decorate your class with @dataclass"
         )
+
+    type_var_map = type_var_map or {}
 
     schema = {"type": cls.__name__, "properties": {}, "required": []}
     # get the exclude list for the current class
@@ -386,7 +413,9 @@ def get_dataclass_schema(
         if f.name in current_exclude:
             continue
         # prepare field schema, it weill be done recursively for nested dataclasses
-        field_schema = {"type": get_type_schema(f.type, exclude)}
+
+        field_type = type_var_map.get(f.type, f.type)
+        field_schema = {"type": get_type_schema(field_type, exclude, type_var_map)}
 
         # check required field
         is_required = _is_required_field(f)

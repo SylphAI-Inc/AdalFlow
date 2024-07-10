@@ -10,7 +10,7 @@
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
 
-### ⚡ The PyTorch Library for Large Language Model Applications ⚡
+### ⚡ The PyTorch-like Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator* pipelines.
 It is *light*, *modular*, and *robust*, with a 100% readable codebase.
@@ -20,7 +20,7 @@ It is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 # Why LightRAG?
 
-LLMs are like water; they can almost do anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
+LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
 Because of this, no library can provide out-of-the-box solutions. Users must build toward their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
