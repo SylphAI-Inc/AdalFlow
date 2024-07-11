@@ -378,7 +378,6 @@ document.write(`
 <li class="toctree-l1"><a class="reference internal" href="contribution.html">LightRAG Contribution Guide</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Contribute to Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute_to_document.html">Contribute to Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="version_control.html">Release Version Control Guide</a></li>
 </ul>
 </div>
 </nav></div>
@@ -465,11 +464,10 @@ If you are only interested in using <code class="docutils literal notranslate"><
 </div>
 </li>
 <li><p><strong>Install Dependencies:</strong></p>
-<p>Use Poetry to install the dependencies and set up the virtual environment:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>install
-poetry<span class="w"> </span>shell
-</pre></div>
-</div>
+<blockquote>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">./lightrag/pyproject.toml</span></code> controls the dependencies for the <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> package.
+Use Poetry to install the dependencies and set up the virtual environment:</p>
+</div></blockquote>
 </li>
 </ol>
 </section>
@@ -495,17 +493,23 @@ poetry<span class="w"> </span>shell
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
-<p>If you are adding any new dependencies to the package, please make sure you have include them in your PR description to inform us.</p>
+<p>If you want to add any new dependencies to the package, please include them in your PR description to inform us.
+Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in
+<code class="docutils literal notranslate"><span class="pre">./lightrag/pyproject.toml</span></code> file <code class="docutils literal notranslate"><span class="pre">[tool.poetry.group.test.dependencies]</span></code> section to avoid dependency errors in our CI/CD workflow.</p>
+<p>In order to correctly add the dependency using <code class="docutils literal notranslate"><span class="pre">poetry</span></code>, please run</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w"> </span>&lt;package-name&gt;
+</pre></div>
+</div>
 </section>
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
-<p>Please make sure your code is well-tested before making a pull request.
+<p>After you update the code, please make sure your code is well tested before making a pull request.
 There is a <code class="docutils literal notranslate"><span class="pre">./lightrag/tests</span></code> folder in the project directory to host your unit testing cases.</p>
-<p>You might need to install the testing packages using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>:</p>
-<p>Example packages:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">unittest</span>
-<span class="n">pytest</span>
-<span class="n">mypy</span> <span class="o">-</span> <span class="nb">type</span> <span class="n">check</span>
+<p>You might need to install the testing packages using <code class="docutils literal notranslate"><span class="pre">poetry</span></code>:</p>
+<p>For example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>poetry<span class="w"> </span>add<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w"> </span>unittest
+poetry<span class="w"> </span>add<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w"> </span>pytest
+poetry<span class="w"> </span>add<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w"> </span>mypy
 </pre></div>
 </div>
 <p>All the test scripts should start with <code class="docutils literal notranslate"><span class="pre">test_</span></code>. For example, run the individual test for <code class="docutils literal notranslate"><span class="pre">components</span></code> with:</p>

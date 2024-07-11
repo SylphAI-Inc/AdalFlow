@@ -378,7 +378,6 @@ document.write(`
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">LightRAG Contribution Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute_to_code.html">Contribute to Code</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contribute_to_document.html">Contribute to Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="version_control.html">Release Version Control Guide</a></li>
 </ul>
 </div>
 </nav></div>
@@ -444,6 +443,15 @@ Please don’t forget to join us on <a class="reference external" href="https://
 <h2>Contribution Process<a class="headerlink" href="#contribution-process" title="Link to this heading">#</a></h2>
 <p>You are always welcomed to contribute even if you’ve never participated in open source project before.
 Here is the basic contribution process:</p>
+<section id="environment">
+<h3>Environment<a class="headerlink" href="#environment" title="Link to this heading">#</a></h3>
+<p>When contributing, please note:
+LightRAG separates the source code environment and documentation environment.</p>
+<ul class="simple">
+<li><p>To activate the code environment, you should run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> and <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> under <code class="docutils literal notranslate"><span class="pre">./lightrag</span></code>. The <code class="docutils literal notranslate"><span class="pre">./lightrag/pyproject.toml</span></code> contains the dependencies for the <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> package.</p></li>
+<li><p>To activate the documentation environment, you can run <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">install</span></code> and <code class="docutils literal notranslate"><span class="pre">poetry</span> <span class="pre">shell</span></code> under <code class="docutils literal notranslate"><span class="pre">.</span></code>. The <code class="docutils literal notranslate"><span class="pre">./pyproject.toml</span></code> controls documentation dependencies.</p></li>
+</ul>
+</section>
 <section id="find-a-direction-to-work-on">
 <h3>Find a direction to work on<a class="headerlink" href="#find-a-direction-to-work-on" title="Link to this heading">#</a></h3>
 <p>The team builds <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> based on latest researches and product cases. But you might have your own task to apply <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>.
@@ -528,6 +536,7 @@ Please see our <a class="reference external" href="./contribute_to_document.html
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#contribution-process">Contribution Process</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#environment">Environment</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#find-a-direction-to-work-on">Find a direction to work on</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#figure-out-the-scope-of-your-change">Figure out the scope of your change</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-your-code">Add your code</a></li>

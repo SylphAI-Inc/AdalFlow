@@ -8,6 +8,15 @@ Contribution Process
 You are always welcomed to contribute even if you've never participated in open source project before. 
 Here is the basic contribution process:
 
+Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+When contributing, please note:
+LightRAG separates the source code environment and documentation environment. 
+
+* To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
+
+* To activate the documentation environment, you can run ``poetry install`` and ``poetry shell`` under ``.``. The ``./pyproject.toml`` controls documentation dependencies.
+
 Find a direction to work on
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 The team builds ``LightRAG`` based on latest researches and product cases. But you might have your own task to apply ``LightRAG``.
