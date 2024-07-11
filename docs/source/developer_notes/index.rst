@@ -52,6 +52,11 @@ A `Prompt` will work with `DataClass` to ease data interaction with the LLM mode
 A `Retriever` will work with databases to retrieve context and overcome the hallucination and knowledge limitations of LLM, following the paradigm of Retrieval-Augmented Generation (RAG).
 An `Agent` will work with tools and an LLM planner for enhanced ability to reason, plan, and act on real-world tasks.
 
+
+Additionally, what shines in LightRAG is that all orchestrator components, like `Retriever`, `Embedder`, `Generator`, and `Agent`, are model-agnostic.
+You can easily make each component work with different models from different providers by switching out the `ModelClient` and its `model_kwargs`.
+
+
 We will introduce the libraries starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
 With these building blocks, we will further introduce optimizing, where the optimizer uses building blocks such as Generator for auto-prompting and retriever for dynamic few-shot in-context learning (ICL).
 
