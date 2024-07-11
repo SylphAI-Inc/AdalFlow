@@ -1,7 +1,9 @@
 Parser
 =============
 
-In this note, we will explain LightRAG parser and output parsers.
+Parser is the `interpreter` of the LLM output.
+
+
 
 Context
 ----------------
@@ -21,7 +23,6 @@ It is an important step for the LLM applications to interact with the external w
 - to list to support multiple choice selection.
 - to json/yaml  which will be extracted to dict, and optional further to data class instance to support support cases like function calls.
 
-Parsing is the `interpreter` of the LLM output.
 
 Scope and Design
 ------------------
