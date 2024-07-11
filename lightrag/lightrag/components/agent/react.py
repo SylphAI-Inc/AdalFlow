@@ -1,4 +1,4 @@
-"""Implementation of ReAct."""
+"""Implementation of ReAct Agent."""
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from copy import deepcopy
@@ -23,8 +23,12 @@ from lightrag.utils.logger import printc
 
 log = logging.getLogger(__name__)
 
+d = r"""You are a helpful assistant.
+Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
 
-DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<<SYS>>
+Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action."""
+
+DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<SYS>
 {# role/task description #}
 You are a helpful assistant.
 Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
@@ -42,10 +46,8 @@ You available tools are:
 {% endfor %}
 </TOOLS>
 {% endif %}
-{# output is always more robust to use json than string #}
-<OUTPUT_FORMAT>
+{# output format and examples #}
 {{output_format_str}}
-</OUTPUT_FORMAT>
 <TASK_SPEC>
 {# Specifications TODO: preference between the usage of llm tool vs the other tool #}
 - For simple queries: Directly call the ``finish`` action and provide the answer.
@@ -57,37 +59,23 @@ Remember:
 - Action must call one of the above tools with name. It can not be empty.
 - You will always end with 'finish' action to finish the task. The answer can be the final answer or failure message.
 </TASK_SPEC>
-{#Examples can be here#}
-{# Check if there are any examples #}
-{% if examples %}
-<EXAMPLES>
-{% for example in examples %}
-{{ example }}
-{% endfor %}
-</EXAMPLES>
-{% endif %}
-
-<</SYS>>
+</SYS>
 -----------------
-{% if input_str %}
 User query:
 {{ input_str }}
-{% endif %}
 {# Step History #}
 {% if step_history %}
 <STEPS>
 {% for history in step_history %}
 Step {{ loop.index }}.
-{
- "thought": "{{history.action.thought}}",
- "action": "{{history.action.action}}",
-}
+"Thought": "{{history.action.thought}}",
+"Action": "{{history.action.action}}",
 "Observation": "{{history.observation}}"
 ------------------------
 {% endfor %}
 </STEPS>
 {% endif %}
-"""
+You:"""
 
 
 class ReActAgent(Component):
@@ -139,12 +127,14 @@ class ReActAgent(Component):
     [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.
     """
 
+    # TODO: allow users to pass in a few examples. Need to be a list of FunctionExpression instances.
     def __init__(
         self,
         # added arguments specifc to React
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
+        examples: List[FunctionExpression] = [],
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
@@ -165,8 +155,10 @@ class ReActAgent(Component):
             func=self._finish,
             answer="final answer: 'answer'",
         )
+        self._examples = examples + [example]
+
         output_parser = JsonOutputParser(
-            data_class=ouput_data_class, examples=[example], return_data_class=True
+            data_class=ouput_data_class, examples=self._examples, return_data_class=True
         )
         prompt_kwargs = {
             "tools": self.tool_manager.yaml_definitions,
@@ -315,7 +307,7 @@ class ReActAgent(Component):
         return answer
 
     def _extra_repr(self) -> str:
-        s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}"
+        s = f"max_steps={self.max_steps}, add_llm_as_fallback={self.add_llm_as_fallback}, "
         return s
 
 
