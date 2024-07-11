@@ -50,7 +50,7 @@ The above principles are distilled from our experiences and continuous learning 
 
 **Developers are the ultimate heroes**
 
-LLMs are like `water`, they can almost do anything, from GenAI applications such as `chatbot`, `translation`, `summarization`, `code generation`, `autonomous agent` to classical NLP tasks like `text classification`, and `named entity recognition`.
+LLMs are like `water`, they can be shaped into anything, from GenAI applications such as `chatbot`, `translation`, `summarization`, `code generation`, `autonomous agent` to classical NLP tasks like `text classification`, and `named entity recognition`.
 They interact with the world beyond the model's internal knowledge via `retriever`, `memory`, and `tools` (`function calls`).
 Each use case is unique in its data, its business logic, and its unique user experience.
 

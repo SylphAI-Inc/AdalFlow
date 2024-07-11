@@ -104,10 +104,11 @@ Utils
 .. autosummary::
 
    utils.logger
+   utils.setup_env
+   utils.lazy_import
    utils.serialization
    utils.config
    utils.registry
-   utils.setup_env
 
 
 .. toctree::

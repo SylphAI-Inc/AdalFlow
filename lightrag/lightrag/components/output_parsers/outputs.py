@@ -239,7 +239,6 @@ class JsonOutputParser(OutputParser):
         self.output_processors = JsonParser()
         self.examples = examples
 
-    # TODO: make exclude works with both
     def format_instructions(
         self,
         format_type: Optional[DataClassFormatType] = None,

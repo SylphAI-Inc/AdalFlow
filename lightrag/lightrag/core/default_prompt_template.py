@@ -3,6 +3,12 @@
 Use :ref:`Prompt <core-prompt_builder>` class  to manage it.
 """
 
+__all__ = [
+    "LIGHTRAG_DEFAULT_PROMPT_ARGS",
+    "LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS",
+    "SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT",
+    "DEFAULT_LIGHTRAG_SYSTEM_PROMPT",
+]
 # TODO: potentially make a data class for this
 LIGHTRAG_DEFAULT_PROMPT_ARGS = [
     "task_desc_str",  # task description
