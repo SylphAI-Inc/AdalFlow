@@ -8,4 +8,4 @@ For Contributors
    contribution
    contribute_to_code
    contribute_to_document
-   version_control
+   .. version_control
