@@ -418,6 +418,7 @@ document.write(`
     <span class="n">Literal</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Awaitable</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
@@ -448,6 +449,7 @@ document.write(`
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">T_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T_co&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># invariant type</span>
 
 
 <span class="c1">#######################################################################################</span>
@@ -759,6 +761,13 @@ document.write(`
 
 
 
+<span class="n">_action_desc</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;FuncName(&lt;kwargs&gt;) </span><span class="se">\</span>
+<span class="s2">Valid function call expression. </span><span class="se">\</span>
+<span class="s2">Example: &quot;FuncName(a=1, b=2)&quot; </span><span class="se">\</span>
+<span class="s2">Follow the data type specified in the function parameters.</span><span class="se">\</span>
+<span class="s2">e.g. for Type object with x,y properties, use &quot;ObjectType(x=1, y=2)&quot;&quot;&quot;</span>
+
+
 <div class="viewcode-block" id="FunctionExpression">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.FunctionExpression">[docs]</a>
 <span class="nd">@dataclass</span>
@@ -800,13 +809,7 @@ document.write(`
     <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">required_field</span><span class="p">,</span>
         <span class="c1"># metadata={&quot;desc&quot;: &quot;FuncName(&lt;args&gt;, &lt;kwargs&gt;)&quot;},</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;&quot;FuncName(&lt;kwargs&gt;) </span><span class="se">\</span>
-<span class="s2">                Valid function call expression. </span><span class="se">\</span>
-<span class="s2">                Example: &quot;FuncName(a=1, b=2)&quot; </span><span class="se">\</span>
-<span class="s2">                Follow the data type specified in the function parameters.</span><span class="se">\</span>
-<span class="s2">                e.g. for Type object with x,y properties, use &quot;ObjectType(x=1, y=2)&quot;&quot;&quot;</span>
-        <span class="p">},</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">_action_desc</span><span class="p">},</span>
     <span class="p">)</span>
 
 <div class="viewcode-block" id="FunctionExpression.from_function">
@@ -881,34 +884,60 @@ document.write(`
 <div class="viewcode-block" id="StepOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">StepOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The output of a single step in the agent.&quot;&quot;&quot;</span>
+<span class="k">class</span> <span class="nc">StepOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The output of a single step in the agent. Suits for serial planning agent such as React&quot;&quot;&quot;</span>
     <span class="n">step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The order of the step in the agent&quot;</span><span class="p">}</span>
     <span class="p">)</span>
-    <span class="n">thought</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The thought of the agent in the step&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The action of the agent in the step&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">fun_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The function named parsed from action&quot;</span><span class="p">}</span>
-    <span class="p">)</span>
-    <span class="n">fun_args</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The function positional arguments parsed from action&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">fun_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The function keyword arguments parsed from action&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
-    <span class="n">observation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The result of the action&quot;</span><span class="p">}</span>
+
+    <span class="c1"># This action can be in Function, or Function Exptression, or just str</span>
+    <span class="c1"># it includes the thought and action already</span>
+    <span class="c1"># directly the output from planner LLMs</span>
+    <span class="n">action</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The action the agent takes at this step&quot;</span><span class="p">}</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Thought </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">thought</span><span class="si">}</span><span class="se">\n</span><span class="s2">Action </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="si">}</span><span class="se">\n</span><span class="s2">Observation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">observation</span><span class="si">}</span><span class="s2">&quot;</span></div>
+    <span class="n">function</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Function</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The parsed function from the action&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">observation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The execution result shown for this action&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="StepOutput.with_action_type">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.StepOutput.with_action_type">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">with_action_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">action_type</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Type</span><span class="p">[</span><span class="s2">&quot;StepOutput[T]&quot;</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new StepOutput class with the specified action type.</span>
+
+<span class="sd">        Use this if you want to create schema for StepOutput with a specific action type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            action_type (Type[T]): The type to set for the action attribute.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Type[StepOutput[T]]: A new subclass of StepOutput with the specified action type.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from lightrag.core.types import StepOutput, FunctionExpression</span>
+
+<span class="sd">            StepOutputWithFunctionExpression = StepOutput.with_action_type(FunctionExpression)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a new type variable map</span>
+        <span class="n">type_var_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">T</span><span class="p">:</span> <span class="n">action_type</span><span class="p">}</span>
+
+        <span class="c1"># Create a new subclass with the updated type</span>
+        <span class="n">new_cls</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="p">(</span><span class="bp">cls</span><span class="p">,),</span> <span class="p">{</span><span class="s2">&quot;__type_var_map__&quot;</span><span class="p">:</span> <span class="n">type_var_map</span><span class="p">})</span>
+
+        <span class="c1"># Update the __annotations__ to reflect the new type of action</span>
+        <span class="n">new_cls</span><span class="o">.</span><span class="vm">__annotations__</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">action_type</span>
+        <span class="k">return</span> <span class="n">new_cls</span></div>
+</div>
 
 
 

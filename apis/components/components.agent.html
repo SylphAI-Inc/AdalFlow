@@ -515,18 +515,54 @@ document.write(`
                   
   <section id="agent">
 <span id="components-agent"></span><h1>agent<a class="headerlink" href="#agent" title="Link to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
-<td><p>Implementation of ReAct.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="components.agent.react.html">react</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.agent.react.html#components.agent.react.ReActAgent"><code class="docutils literal notranslate"><span class="pre">ReActAgent</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.react.html#components.agent.react.ReActAgent.reset"><code class="docutils literal notranslate"><span class="pre">ReActAgent.reset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.agent.react.html#components.agent.react.ReActAgent.call"><code class="docutils literal notranslate"><span class="pre">ReActAgent.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
 </div>
+<hr class="docutils" />
+<dl class="py class" id="module-components.agent">
+<dt class="sig sig-object py" id="components.agent.ReActAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ReActAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">FunctionTool</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_llm_as_fallback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">examples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">FunctionExpression</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelClient</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>ReActAgent uses generator as a planner that runs multiple and sequential functional call steps to generate the final response.</p>
+<p>Users need to set up:
+- tools: a list of tools to use to complete the task. Each tool is a function or a function tool.
+- max_steps: the maximum number of steps the agent can take to complete the task.
+- use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
+- model_client: the model client to use to generate the response.
+- model_kwargs: the model kwargs to use to generate the response.</p>
+<p>For the generator, the default arguments are:
+(1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+(2) default output_processors: JsonParser</p>
+<p>There are <cite>examples</cite> which is optional, a list of string examples in the prompt.</p>
+<p>Example:</p>
+<p>Reference:
+[1] <a class="reference external" href="https://arxiv.org/abs/2210.03629">https://arxiv.org/abs/2210.03629</a>, published in Mar, 2023.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.ReActAgent.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.reset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent.reset" title="Link to this definition">#</a></dt>
+<dd><p>Reset the agent to start a new query.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.agent.ReActAgent.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">promt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/agent/react.html#ReActAgent.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.agent.ReActAgent.call" title="Link to this definition">#</a></dt>
+<dd><p>prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -576,7 +612,14 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent"><code class="docutils literal notranslate"><span class="pre">ReActAgent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent.reset"><code class="docutils literal notranslate"><span class="pre">ReActAgent.reset()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#components.agent.ReActAgent.call"><code class="docutils literal notranslate"><span class="pre">ReActAgent.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

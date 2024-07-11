@@ -435,12 +435,12 @@ document.write(`
 
 
 <div class="viewcode-block" id="retriever_output_to_context_str">
-<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.data_components.retriever_output_to_context_str">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.retriever_output_to_context_str">[docs]</a>
 <span class="k">def</span> <span class="nf">retriever_output_to_context_str</span><span class="p">(</span>
     <span class="n">retriever_output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]],</span>
     <span class="n">deduplicate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The retrieved documents from one or mulitple queries.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;The retrieved documents from one or multiple queries.</span>
 <span class="sd">    Deduplicate is especially helpful when you used query expansion.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -480,7 +480,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ToEmbeddings">
-<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.data_components.ToEmbeddings">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.ToEmbeddings">[docs]</a>
 <span class="k">class</span> <span class="nc">ToEmbeddings</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It transforms a Sequence of Chunks or Documents to a List of Embeddings.</span>
 
@@ -513,7 +513,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="RetrieverOutputToContextStr">
-<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.data_components.RetrieverOutputToContextStr">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.data_process.data_components.html#components.data_process.RetrieverOutputToContextStr">[docs]</a>
 <span class="k">class</span> <span class="nc">RetrieverOutputToContextStr</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Wrap on functional F.retriever_output_to_context_str</span>

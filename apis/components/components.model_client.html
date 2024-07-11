@@ -515,33 +515,83 @@ document.write(`
                   
   <section id="model-client">
 <span id="components-model-client"></span><h1>model_client<a class="headerlink" href="#model-client" title="Link to this heading">#</a></h1>
-<section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
-<td><p>Anthropic ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
-<td><p>Cohere ModelClient integration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
-<td><p>Google GenAI ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
-<td><p>Groq ModelClient integration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
-<td><p>OpenAI ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
-<td><p>Helpers for model client for integrating models and parsing the output.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading">#</a></h2>
 <div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.anthropic_client.html">anthropic_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.acall()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.cohere_client.html">cohere_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.call"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">CohereAPIClient.acall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.google_client.html">google_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.call"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.call()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.groq_client.html">groq_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.call"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.acall()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.openai_client.html">openai_client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content"><code class="docutils literal notranslate"><span class="pre">get_all_messages_content()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities"><code class="docutils literal notranslate"><span class="pre">get_probabilities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient"><code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_sync_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_async_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_embedding_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.to_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="components.model_client.utils.html">utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.utils.html#components.model_client.utils.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">parse_embedding_response()</span></code></a></li>
+</ul>
+</li>
+</ul>
 </div>
+<hr class="docutils" />
+<p id="module-components.model_client">We let users install the required SDKs conditionally for our integrated model providers.</p>
 </section>
 </section>
 
@@ -591,7 +641,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#submodules">Submodules</a></li>
 </ul>
   </nav></div>
 

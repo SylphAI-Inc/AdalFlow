@@ -467,7 +467,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="OutputParser">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser">[docs]</a>
 <span class="k">class</span> <span class="nc">OutputParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The abstract class for all output parsers.</span>
 
@@ -484,14 +484,14 @@ document.write(`
         <span class="k">pass</span>
 
 <div class="viewcode-block" id="OutputParser.format_instructions">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.format_instructions">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser.format_instructions">[docs]</a>
     <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the formatted instructions to use in prompt for the output format.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This is an abstract method.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OutputParser.call">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.OutputParser.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the output string to the desired format and return the parsed output.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This is an abstract method.&quot;</span><span class="p">)</span></div>
@@ -500,7 +500,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="YamlOutputParser">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser">[docs]</a>
 <span class="k">class</span> <span class="nc">YamlOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;YAML output parser using dataclass for schema extraction.</span>
 
@@ -575,7 +575,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
 
 <div class="viewcode-block" id="YamlOutputParser.format_instructions">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.format_instructions">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser.format_instructions">[docs]</a>
     <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataClassFormatType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -614,7 +614,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="YamlOutputParser.call">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.YamlOutputParser.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">YAML_OUTPUT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the YAML string to JSON object and return the JSON object.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -634,7 +634,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="JsonOutputParser">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser">[docs]</a>
 <span class="k">class</span> <span class="nc">JsonOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -664,9 +664,8 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">JsonParser</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">examples</span> <span class="o">=</span> <span class="n">examples</span>
 
-    <span class="c1"># TODO: make exclude works with both</span>
 <div class="viewcode-block" id="JsonOutputParser.format_instructions">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.format_instructions">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser.format_instructions">[docs]</a>
     <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DataClassFormatType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -702,7 +701,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="JsonOutputParser.call">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.JsonOutputParser.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">output_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
@@ -721,7 +720,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="ListOutputParser">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser">[docs]</a>
 <span class="k">class</span> <span class="nc">ListOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;List output parser to parse list of objects from the string.&quot;&quot;&quot;</span>
 
@@ -731,13 +730,13 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">ListParser</span><span class="p">()</span>
 
 <div class="viewcode-block" id="ListOutputParser.format_instructions">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser.format_instructions">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser.format_instructions">[docs]</a>
     <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">list_output_format_prompt</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="ListOutputParser.call">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.ListOutputParser.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span></div>
 </div>
@@ -755,7 +754,7 @@ document.write(`
 
 
 <div class="viewcode-block" id="BooleanOutputParser">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser">[docs]</a>
 <span class="k">class</span> <span class="nc">BooleanOutputParser</span><span class="p">(</span><span class="n">OutputParser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Boolean output parser to parse boolean values from the string.&quot;&quot;&quot;</span>
 
@@ -764,13 +763,13 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="BooleanOutputParser.format_instructions">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.format_instructions">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser.format_instructions">[docs]</a>
     <span class="k">def</span> <span class="nf">format_instructions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;The output should be a boolean value. True or False.&quot;</span></div>
 
 
 <div class="viewcode-block" id="BooleanOutputParser.call">
-<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.call">[docs]</a>
+<a class="viewcode-back" href="../../../apis/components/components.output_parsers.outputs.html#components.output_parsers.BooleanOutputParser.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>

@@ -464,22 +464,15 @@ document.write(`
                   
   <section id="component">
 <h1>Component<a class="headerlink" href="#component" title="Link to this heading">#</a></h1>
-<p>What you will learn?</p>
-<ol class="arabic simple">
-<li><p>What is <code class="docutils literal notranslate"><span class="pre">Component</span></code> and why is it designed this way?</p></li>
-<li><p>How to use <code class="docutils literal notranslate"><span class="pre">Component</span></code> along with helper classes like <code class="docutils literal notranslate"><span class="pre">FunComponent</span></code> and <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>?</p></li>
-</ol>
+<p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
+It is the base class for components such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in LightRAG.
+Your task pipeline should also subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code>.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
-<blockquote>
-<div><p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> is to PyTorch models.</p>
-</div></blockquote>
-<p>It is the base class for components, such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in LightRAG.
-Your task pipeline should subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code> too. Instead of working with <code class="docutils literal notranslate"><span class="pre">Tensor</span></code> and <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> to train models with weights and biases, our component works with any data, <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
-We name it differently to avoid confusion and also for better compatibility with <cite>PyTorch</cite>.</p>
-<p>Here is the comparison of writing a PyTorch model and a LightRAG task component.</p>
+<p>Different from PyTorch’s nn.Module, which works exclusively with Tensor and Parameter to train models with weights and biases, our component can work with different types of data, from a string or a list of strings to a list of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.</p>
+<p>Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.</p>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
@@ -531,15 +524,20 @@ LightRAG</div>
 </div>
 </div>
 </div>
-<p>As the foundamental building block in LLM task pipeline, the component is designed to serve five main purposes:</p>
+<p>As the fundamental building block in LLM task pipelines, the component is designed to serve five main purposes:</p>
 <ol class="arabic simple">
-<li><p><strong>Standarize the interface for all components.</strong> This includes the <cite>__init__</cite> method, the <cite>call</cite> method for synchronous call, the <cite>acall</cite> method for asynchronous call, and the <cite>__call__</cite> which in default calls the <cite>call</cite> method.</p></li>
-<li><p><strong>Provide a unified way to visualize the structure of the task pipeline</strong> via <cite>__repr__</cite> method. And subclass can additional add <cite>_extra_repr</cite> method to add more information than the default <cite>__repr__</cite> method.</p></li>
-<li><p><strong>Tracks, adds all subcomponents and parameters automatically and recursively</strong> to assistant the building and optimizing process of the task pipeline.</p></li>
-<li><p><strong>Manages the states and serialization</strong>, with <cite>state_dict</cite> and <cite>load_state_dict</cite> methods in particular for parameters and <cite>to_dict</cite> method for serialization of all the states fall into the component’s attributes, from subcomponents to parameters, to any other attributes of various data type.</p></li>
-<li><p><strong>Make all components configurable from using `json` or `yaml` files</strong>. This is especially useful for experimenting or building data processing pipelines.</p></li>
+<li><p><strong>Standardize the interface for all components.</strong>
+This includes the <cite>__init__</cite> method, the <cite>call</cite> method for synchronous calls, the <cite>acall</cite> method for asynchronous calls, and the <cite>__call__</cite> method, which by default calls the <cite>call</cite> method.</p></li>
+<li><p><strong>Provide a unified way to visualize the structure of the task pipeline</strong>
+via the <cite>__repr__</cite> method. Subclasses can additionally add the <cite>_extra_repr</cite> method to include more information than the default <cite>__repr__</cite> method.</p></li>
+<li><p><strong>Track and add all subcomponents and parameters automatically and recursively</strong>
+to assist in the building and optimizing process of the task pipeline.</p></li>
+<li><p><strong>Manage the states and serialization</strong>,
+with <cite>state_dict</cite> and <cite>load_state_dict</cite> methods specifically for parameters, and the <cite>to_dict</cite> method for serialization of all states within the component’s attributes, from subcomponents to parameters, to any other attributes of various data types.</p></li>
+<li><p><strong>Make all components configurable using `json` or `yaml` files</strong>.
+This is especially useful for experimenting or building data processing pipelines.</p></li>
 </ol>
-<p>These features are key to keep LightRAG pipeline transparent, flexible, and easy to use.
+<p>These features are key to keeping the LightRAG pipeline transparent, flexible, and easy to use.
 By subclassing from the <cite>Component</cite> class, you will get most of these features out of the box.</p>
 </section>
 <section id="component-in-action">
@@ -582,8 +580,10 @@ We can also use methods to add more subcomponnents or parameters.</p>
 <span class="c1"># list all parameters</span>
 <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
-<span class="c1"># output</span>
-<span class="c1"># (&#39;demo&#39;, Parameter: demo)</span>
+</pre></div>
+</div>
+<p>The output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;demo&#39;</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">:</span> <span class="n">demo</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>You can easily save the detailed states:</p>
@@ -592,20 +592,20 @@ We can also use methods to add more subcomponnents or parameters.</p>
 <span class="n">save_json</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">&quot;doc.json&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>To adds even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a> and <code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code> for more advanced use cases.</p>
+<p>To add even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> and <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> for more advanced use cases.</p>
 </section>
 <section id="searalization-and-deserialization">
 <h3>Searalization and deserialization<a class="headerlink" href="#searalization-and-deserialization" title="Link to this heading">#</a></h3>
-<p>We provide <code class="docutils literal notranslate"><span class="pre">is_pickable</span></code> method to check if the component is pickable.
-And any of your component, it is a good practise to ensure it is pickable.</p>
+<p>We provide the <code class="docutils literal notranslate"><span class="pre">is_pickable</span></code> method to check if the component is pickable.
+It is good practice to ensure that any of your components are pickable.</p>
 </section>
 </section>
 <section id="funcomponent">
 <h2>FunComponent<a class="headerlink" href="#funcomponent" title="Link to this heading">#</a></h2>
 <blockquote>
-<div><p>Use <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a> as a decorator to convert any function to a Component with its unique class name.</p>
+<div><p>Use <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> as a decorator to convert any function to a Component with its unique class name.</p>
 </div></blockquote>
-<p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Component</span></code></a> that allows you to define a component with a function.
+<p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> that allows you to define a component with a function.
 You can directly use this class as:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">FunComponent</span>
 
@@ -615,13 +615,14 @@ You can directly use this class as:</p>
 <span class="n">fun_component</span> <span class="o">=</span> <span class="n">FunComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
-
-<span class="c1"># output:</span>
-<span class="c1"># 2</span>
-<span class="c1"># &lt;class &#39;core.component.FunComponent&#39;&gt;</span>
 </pre></div>
 </div>
-<p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a> to convert a function to a FunComponent via decorator or directly call the function.
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
+&lt;class &#39;core.component.FunComponent&#39;&gt;
+</pre></div>
+</div>
+<p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> to convert a function to a <cite>FunComponent</cite> via a decorator or by directly calling the function.
 This approach gives you a unique component converted from the function name.</p>
 <p>Via direct call:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">fun_to_component</span>
@@ -629,13 +630,14 @@ This approach gives you a unique component converted from the function name.</p>
 <span class="n">fun_component</span> <span class="o">=</span> <span class="n">fun_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
-
-<span class="c1"># output:</span>
-<span class="c1"># 2</span>
-<span class="c1"># &lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;</span>
 </pre></div>
 </div>
-<p>Via decorator will be even more convenient to have a component from a function:</p>
+<p>The output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
+&lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;
+</pre></div>
+</div>
+<p>Using a decorator is an even more convenient way to create a component from a function:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="nd">@fun_to_component</span>
 <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
@@ -651,8 +653,9 @@ This approach gives you a unique component converted from the function name.</p>
 </section>
 <section id="sequential">
 <h2>Sequential<a class="headerlink" href="#sequential" title="Link to this heading">#</a></h2>
-<p>We have <code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code> class to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class. This is especially useful to chain together components in a sequence.  Much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
-Let’s put the FunComponent and DocQA together in a sequence:</p>
+<p>We have the <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> class, which is similar to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class.
+This is especially useful for chaining together components in a sequence, much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
+Let’s put the <cite>FunComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
 <span class="nd">@fun_to_component</span>
@@ -665,7 +668,7 @@ Let’s put the FunComponent and DocQA together in a sequence:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>We automatically enhance users’ queries before passing them to the DocQA component.
+<p>We automatically enhance users’ queries before passing them to the <cite>DocQA</cite> component.
 The output is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Over</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">counter</span> <span class="n">pain</span> <span class="n">relievers</span> <span class="n">like</span> <span class="n">acetaminophen</span><span class="p">,</span> <span class="n">ibuprofen</span><span class="p">,</span> <span class="ow">or</span> <span class="n">aspirin</span>
 <span class="mf">2.</span> <span class="n">Rest</span> <span class="ow">and</span> <span class="n">relaxation</span>
@@ -694,7 +697,7 @@ The output is:</p>
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a></p></li>
 </ul>
 </div>
-<p>We will have more advanced use cases in the upcoming tutorials.</p>
+<p>We will cover more advanced use cases in the upcoming tutorials.</p>
 </section>
 </section>
 

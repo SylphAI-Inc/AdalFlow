@@ -464,28 +464,22 @@ document.write(`
                   
   <section id="modelclient">
 <h1>ModelClient<a class="headerlink" href="#modelclient" title="Link to this heading">#</a></h1>
-<p>What you will learn?</p>
-<ol class="arabic simple">
-<li><p>What is <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> and why is it designed this way?</p></li>
-<li><p>How to intergrate your own <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>?</p></li>
-<li><p>How to use <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> directly?</p></li>
-</ol>
-<p><a class="reference internal" href="../apis/core/core.model_client.html#core-model-client"><span class="std std-ref">ModelClient</span></a> is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components/classes.
-Because so, by switching off <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>  in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> or <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> component, you can make your prompt or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> model-agnostic.</p>
+<p><a class="reference internal" href="../apis/core/core.model_client.html#core-model-client"><span class="std std-ref">ModelClient</span></a> is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components.
+Therefore, by switching out the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> (those components that take models), you can make these functional components model-agnostic.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/model_client.png"><img alt="ModelClient" src="../_images/model_client.png" style="width: 400px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The interface to internal components in LightRAG</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">The bridge between all model inference SDKs and internal components in LightRAG</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>All users are encouraged to customize your own <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> whenever you need to do so. You can refer our code in <code class="docutils literal notranslate"><span class="pre">components.model_client</span></code> dir.</p>
+<p>All users are encouraged to customize their own <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> whenever needed. You can refer to our code in <code class="docutils literal notranslate"><span class="pre">components.model_client</span></code> directory.</p>
 </div>
 <section id="model-inference-sdks">
 <h2>Model Inference SDKs<a class="headerlink" href="#model-inference-sdks" title="Link to this heading">#</a></h2>
-<p>With cloud API providers like OpenAI, Groq, Anthropic, it often comes with a <cite>sync</cite> and an <cite>async</cite> client via their SDKs.
+<p>With cloud API providers like OpenAI, Groq, and Anthropic, it often comes with a <cite>sync</cite> and an <cite>async</cite> client via their SDKs.
 For example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
 
@@ -496,117 +490,25 @@ For example:</p>
 <span class="n">response</span> <span class="o">=</span> <span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>For local models, such as using <cite>huggingface transformers</cite>, you need to create this model inference SDKs yourself.
-How you do this is highly flexible. Here is an example to use local embedding model (e.g. <code class="docutils literal notranslate"><span class="pre">thenlper/gte-base</span></code>) as a model (Refer <code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformerEmbedder</span></code> for details).
+<p>For local models, such as using <cite>huggingface transformers</cite>, you need to create these model inference SDKs yourself.
+How you do this is highly flexible.
+Here is an example of using a local embedding model (e.g., <code class="docutils literal notranslate"><span class="pre">thenlper/gte-base</span></code>) as a model (Refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code> for details).
 It really is just normal model inference code.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModel</span>
-
-<span class="k">class</span> <span class="nc">TransformerEmbedder</span><span class="p">:</span>
-    <span class="n">models</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
-
-    <span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">init_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">AutoModel</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-            <span class="c1"># register the model</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
-
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading model </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">e</span>
-
-    <span class="k">def</span> <span class="nf">infer_gte_base_embedding</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="nb">input</span><span class="o">=</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-        <span class="n">tolist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># initialize the model</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">init_model</span><span class="p">(</span><span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span>
-        <span class="c1"># Tokenize the input texts</span>
-        <span class="n">batch_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokenizer</span><span class="p">(</span>
-            <span class="nb">input</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">truncation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
-        <span class="p">)</span>
-        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="o">**</span><span class="n">batch_dict</span><span class="p">)</span>
-        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">average_pool</span><span class="p">(</span>
-            <span class="n">outputs</span><span class="o">.</span><span class="n">last_hidden_state</span><span class="p">,</span> <span class="n">batch_dict</span><span class="p">[</span><span class="s2">&quot;attention_mask&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="c1"># (Optionally) normalize embeddings</span>
-        <span class="n">embeddings</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tolist</span><span class="p">:</span>
-            <span class="n">embeddings</span> <span class="o">=</span> <span class="n">embeddings</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">embeddings</span>
-
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">if</span> <span class="s2">&quot;model&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;model is required&quot;</span><span class="p">)</span>
-        <span class="c1"># load files and models, cache it for the next inference</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]</span>
-        <span class="c1"># inference the model</span>
-        <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">infer_gte_base_embedding</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;input&quot;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 <section id="modelclient-protocol">
 <h2>ModelClient Protocol<a class="headerlink" href="#modelclient-protocol" title="Link to this heading">#</a></h2>
-<p>A model client can be used to manage different types of models, we defined a <code class="docutils literal notranslate"><span class="pre">ModelType</span></code> to categorize the model type.</p>
+<p>A model client can be used to manage different types of models, we defined a <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelType</span></code></a> to categorize the model type.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
+    <span class="n">RERANKER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">UNDEFINED</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>We designed 6 abstract methods in the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> class to be implemented by the subclass model type.
-We will use <code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.OpenAIClient</span></code> along with the above <code class="docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code> as examples.</p>
-<p>First, we offer two methods to initialize the model SDKs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _init_sync_client method&quot;</span>
-    <span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _init_async_client method&quot;</span>
-    <span class="p">)</span>
-</pre></div>
-</div>
-<p>This is how <cite>OpenAIClient</cite> implements these methods along with <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">OpenAIClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="o">=</span> <span class="n">api_key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_sync_client</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only initialize if the async call is called</span>
-
-    <span class="k">def</span> <span class="nf">init_sync_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">OpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">init_async_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_api_key</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">api_key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Environment variable OPENAI_API_KEY must be set&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span>
-</pre></div>
-</div>
+<p>We designed 6 abstract methods in the <cite>ModelClient</cite> class that can be implemented by subclasses to integrate with different model inference SDKs.
+We will use <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code> as the cloud API example and <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code> along with the local inference code <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code> as an example for local model clients.</p>
+<p>First, we offer two methods, <cite>init_async_client</cite> and <cite>init_sync_client</cite>, for subclasses to initialize the SDK client.
+You can refer to <code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code> to see how these methods, along with the <cite>__init__</cite> method, are implemented:</p>
 <p>This is how <code class="docutils literal notranslate"><span class="pre">TransformerClient</span></code> does the same thing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TransformersClient</span><span class="p">(</span><span class="n">ModelClient</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -623,7 +525,7 @@ We will use <code class="xref py py-class docutils literal notranslate"><span cl
         <span class="k">return</span> <span class="n">TransformerEmbedder</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Second. we use <cite>convert_inputs_to_api_kwargs</cite> for subclass to convert LightRAG inputs into the <cite>api_kwargs</cite> (SDKs arguments).</p>
+<p>Second, we use <cite>convert_inputs_to_api_kwargs</cite> for subclasses to convert LightRAG inputs into the <cite>api_kwargs</cite> (SDK arguments).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -663,6 +565,9 @@ We will use <code class="xref py py-class docutils literal notranslate"><span cl
     <span class="k">return</span> <span class="n">final_model_kwargs</span>
 </pre></div>
 </div>
+<p>For embedding, as <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> takes both <cite>str</cite> and <cite>List[str]</cite> as input, we need to convert the input to a list of strings that is acceptable by the SDK.
+For LLM, as <code class="docutils literal notranslate"><span class="pre">Generator</span></code> will takes a <cite>prompt_kwargs`(dict) and convert it into a single string, thus we need to convert the input to a list of messages.
+For Rerankers, you can refer to :class:`CohereAPIClient&lt;components.model_client.cohere_client.CohereAPIClient&gt;</cite> for an example.</p>
 <p>This is how <code class="docutils literal notranslate"><span class="pre">TransformerClient</span></code> does the same thing:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -678,32 +583,11 @@ We will use <code class="xref py py-class docutils literal notranslate"><span cl
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In addition, you can add any method that parse the SDK specific output to a format compatible with LightRAG components.
-Typically an LLM needs to use <cite>parse_chat_completion</cite> to parse the completion to texts and <cite>parse_embedding_response</cite> to parse the embedding response to a structure LightRAG components can understand.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement parse_chat_completion method&quot;</span>
-    <span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
-<span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the embedding response to a structure LightRAG components can understand.&quot;&quot;&quot;</span>
-<span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement parse_embedding_response method&quot;</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>You can refer to <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.openai_client.OpenAIClient</span></code></a> for API embedding model integration and <code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.transformers_client.TransformersClient</span></code> for local embedding model integration.</p>
-<p>Then <cite>call</cite> and <cite>acall</cite> methods to call Model inference via their own arguments.
-We encourage the subclass provides error handling and retry mechanism in these methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement _call method&quot;</span><span class="p">)</span>
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
-    <span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span>
-<span class="p">):</span>
-    <span class="k">pass</span>
-</pre></div>
-</div>
+<p>In addition, you can add any method that parses the SDK-specific output to a format compatible with LightRAG components.
+Typically, an LLM needs to use <cite>parse_chat_completion</cite> to parse the completion to text and <cite>parse_embedding_response</cite> to parse the embedding response to a structure that LightRAG components can understand.
+You can refer to <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a> for API embedding model integration and <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code> for local embedding model integration.</p>
+<p>Lastly, the <cite>call</cite> and <cite>acall</cite> methods are used to call model inference via their own arguments.
+We encourage subclasses to provide error handling and retry mechanisms in these methods.</p>
 <p>The <cite>OpenAIClient</cite> example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
@@ -719,16 +603,19 @@ We encourage the subclass provides error handling and retry mechanism in these m
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Our library currently integrated with 5 providers: OpenAI, Groq, Anthropic, Huggingface, and Google.
+<p>O
+ur library currently integrates with six providers: OpenAI, Groq, Anthropic, Huggingface, Google, and Cohere.
 Please check out <a class="reference internal" href="../apis/components/components.model_client.html#components-model-client"><span class="std std-ref">ModelClient Integration</span></a>.</p>
 </section>
 <section id="use-modelclient-directly">
 <h2>Use ModelClient directly<a class="headerlink" href="#use-modelclient-directly" title="Link to this heading">#</a></h2>
-<p>Though <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> is often managed in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code> or <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> component, you can use it directly if you ever plan to write your own component.
-Here is an example to use <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code> directly, first on LLM model:</p>
+<p>Though <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> is often managed in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> component, you can use it directly if you plan to write your own component.
+Here is an example of using <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code> directly, first on an LLM model:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
 <span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
 <span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+
+<span class="n">setup_env</span><span class="p">()</span>
 
 <span class="n">openai_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
 
@@ -784,6 +671,7 @@ Here is an example to use <code class="docutils literal notranslate"><span class
 <li><p><a class="reference internal" href="../apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient" title="components.model_client.groq_client.GroqAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.groq_client.GroqAPIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.anthropic_client.AnthropicAPIClient</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient" title="components.model_client.google_client.GoogleGenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.google_client.GoogleGenAIClient</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.model_client.cohere_client.CohereAPIClient</span></code></a></p></li>
 </ul>
 </div>
 </section>

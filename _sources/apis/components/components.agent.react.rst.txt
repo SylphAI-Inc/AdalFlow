@@ -15,3 +15,7 @@ react
 
       ReActAgent
 
+   .. rubric:: Constants
+
+   .. autodata:: components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+

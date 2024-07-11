@@ -517,9 +517,47 @@ document.write(`
 <span id="default-prompt-template"></span><span id="core-default-prompt-template"></span><h1>default_prompt_template<a class="headerlink" href="#module-core.default_prompt_template" title="Link to this heading">#</a></h1>
 <p>This is the default system prompt template used in the LightRAG.</p>
 <p>Use <a class="reference internal" href="core.prompt_builder.html#core-prompt-builder"><span class="std std-ref">Prompt</span></a> class  to manage it.</p>
+<p class="rubric">Constants</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS">
+<span class="sig-name descname"><span class="pre">LIGHTRAG_DEFAULT_PROMPT_ARGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['task_desc_str',</span> <span class="pre">'output_format_str',</span> <span class="pre">'tools_str',</span> <span class="pre">'examples_str',</span> <span class="pre">'chat_history_str',</span> <span class="pre">'context_str',</span> <span class="pre">'steps_str',</span> <span class="pre">'input_str']</span></em><a class="headerlink" href="#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS" title="Link to this definition">#</a></dt>
+<dd><p>Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list.
+The argument must be an iterable if specified.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS">
+<span class="sig-name descname"><span class="pre">LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['task_desc_str',</span> <span class="pre">'examples_str']</span></em><a class="headerlink" href="#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS" title="Link to this definition">#</a></dt>
+<dd><p>Built-in mutable sequence.</p>
+<p>If no argument is given, the constructor creates a new empty list.
+The argument must be an iterable if specified.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT">
+<span class="sig-name descname"><span class="pre">SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;SYS&gt;{{task_desc_str}}&lt;/SYS&gt;\nUser:</span> <span class="pre">{{input_str}}\nYou:'</span></em><a class="headerlink" href="#core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT" title="Link to this definition">#</a></dt>
+<dd><p>str(object=’’) -&gt; str
+str(bytes_or_buffer[, encoding[, errors]]) -&gt; str</p>
+<p>Create a new string object from the given object. If encoding or
+errors is specified, then the object must expose a data buffer
+that will be decoded using the given encoding and error handler.
+Otherwise, returns the result of object.__str__() (if defined)
+or repr(object).
+encoding defaults to sys.getdefaultencoding().
+errors defaults to ‘strict’.</p>
+</dd></dl>
+
 <dl class="py data">
 <dt class="sig sig-object py" id="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">
 <span class="sig-name descname"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;SYS&gt;\n{#</span> <span class="pre">task</span> <span class="pre">desc</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">task_desc_str</span> <span class="pre">%}\n{{task_desc_str}}\n{%</span> <span class="pre">else</span> <span class="pre">%}\nYou</span> <span class="pre">are</span> <span class="pre">a</span> <span class="pre">helpful</span> <span class="pre">assistant.\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">output</span> <span class="pre">format</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">output_format_str</span> <span class="pre">%}\n&lt;OUTPUT_FORMAT&gt;\n{{output_format_str}}\n&lt;/OUTPUT_FORMAT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">tools</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">tools_str</span> <span class="pre">%}\n&lt;TOOLS&gt;\n{{tools_str}}\n&lt;/TOOLS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">example</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">examples_str</span> <span class="pre">%}\n&lt;EXAMPLES&gt;\n{{examples_str}}\n&lt;/EXAMPLES&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">chat</span> <span class="pre">history</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">chat_history_str</span> <span class="pre">%}\n&lt;CHAT_HISTORY&gt;\n{{chat_history_str}}\n&lt;/CHAT_HISTORY&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#contex#}\n{%</span> <span class="pre">if</span> <span class="pre">context_str</span> <span class="pre">%}\n&lt;CONTEXT&gt;\n{{context_str}}\n&lt;/CONTEXT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">steps</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">steps_str</span> <span class="pre">%}\n&lt;STEPS&gt;\n{{steps_str}}\n&lt;/STEPS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&lt;/SYS&gt;\n{%</span> <span class="pre">if</span> <span class="pre">input_str</span> <span class="pre">%}\n&lt;User&gt;\n{{input_str}}\n&lt;/User&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\nYou:\n'</span></em><a class="headerlink" href="#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT" title="Link to this definition">#</a></dt>
+<dd><p>This is the default system prompt template used in the LightRAG.</p>
+<p>Use <a class="reference internal" href="core.prompt_builder.html#core-prompt-builder"><span class="std std-ref">Prompt</span></a> class  to manage it.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'&lt;SYS&gt;\n{#</span> <span class="pre">task</span> <span class="pre">desc</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">task_desc_str</span> <span class="pre">%}\n{{task_desc_str}}\n{%</span> <span class="pre">else</span> <span class="pre">%}\nYou</span> <span class="pre">are</span> <span class="pre">a</span> <span class="pre">helpful</span> <span class="pre">assistant.\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">output</span> <span class="pre">format</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">output_format_str</span> <span class="pre">%}\n&lt;OUTPUT_FORMAT&gt;\n{{output_format_str}}\n&lt;/OUTPUT_FORMAT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">tools</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">tools_str</span> <span class="pre">%}\n&lt;TOOLS&gt;\n{{tools_str}}\n&lt;/TOOLS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">example</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">examples_str</span> <span class="pre">%}\n&lt;EXAMPLES&gt;\n{{examples_str}}\n&lt;/EXAMPLES&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">chat</span> <span class="pre">history</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">chat_history_str</span> <span class="pre">%}\n&lt;CHAT_HISTORY&gt;\n{{chat_history_str}}\n&lt;/CHAT_HISTORY&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#contex#}\n{%</span> <span class="pre">if</span> <span class="pre">context_str</span> <span class="pre">%}\n&lt;CONTEXT&gt;\n{{context_str}}\n&lt;/CONTEXT&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n{#</span> <span class="pre">steps</span> <span class="pre">#}\n{%</span> <span class="pre">if</span> <span class="pre">steps_str</span> <span class="pre">%}\n&lt;STEPS&gt;\n{{steps_str}}\n&lt;/STEPS&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\n&lt;/SYS&gt;\n{%</span> <span class="pre">if</span> <span class="pre">input_str</span> <span class="pre">%}\n&lt;User&gt;\n{{input_str}}\n&lt;/User&gt;\n{%</span> <span class="pre">endif</span> <span class="pre">%}\nYou:\n'</span></em><a class="headerlink" href="#id0" title="Link to this definition">#</a></dt>
 <dd><p>This is the default system prompt template used in the LightRAG.</p>
 <p>Use <a class="reference internal" href="core.prompt_builder.html#core-prompt-builder"><span class="std std-ref">Prompt</span></a> class  to manage it.</p>
 </dd></dl>
@@ -572,7 +610,11 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS"><code class="docutils literal notranslate"><span class="pre">LIGHTRAG_DEFAULT_PROMPT_ARGS</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS"><code class="docutils literal notranslate"><span class="pre">LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="docutils literal notranslate"><span class="pre">SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id0"><code class="docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -3,19 +3,18 @@
 memory
 =========================
 
-Overview
+Submodules
 ----------
 
-.. autosummary::
-   :toctree: _autosummary
-
-
-   components.memory.memory
-
-
 .. toctree::
-   :maxdepth: 1
-   :hidden:
-
+   :maxdepth: 4
 
    components.memory.memory
+
+
+---------------
+
+.. automodule:: components.memory
+   :members:
+   :undoc-members:
+   :show-inheritance:

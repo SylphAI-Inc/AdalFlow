@@ -802,7 +802,9 @@ document.write(`
             <span class="n">excluded</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">excluded</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">get_dataclass_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">excluded</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">get_dataclass_schema</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="n">excluded</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__type_var_map__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_schema_str">
@@ -934,6 +936,9 @@ document.write(`
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported format type: </span><span class="si">{</span><span class="n">format_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
 
+
+    <span class="c1"># TODO:support Generic[Type[T]] for the type of fields</span>
+    <span class="c1"># it will automatically use __type_var_map__ attribute</span>
 
 
 <span class="sd">&quot;&quot;&quot;Reserved for Agent to automatically create a dataclass and to manipulate the code&quot;&quot;&quot;</span>

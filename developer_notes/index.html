@@ -476,6 +476,19 @@ These are our most important tutorials before you move ahead to build your use c
 We have a clear <a class="reference internal" href="lightrag_design_philosophy.html"><span class="doc">Design Philosophy</span></a>, which results in this <a class="reference internal" href="class_hierarchy.html"><span class="doc">Class Hierarchy</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
+<p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
+An LLM task pipeline in LightRAG mainly consists of components, such as a <cite>Prompt</cite>, <cite>ModelClient</cite>, <cite>Generator</cite>, <cite>Retriever</cite>, <cite>Agent</cite>, or any other custom components.
+This pipeline can be <cite>Sequential</cite> or a Directed Acyclic Graph (DAG) of components.
+A <cite>Prompt</cite> will work with <cite>DataClass</cite> to ease data interaction with the LLM model.
+A <cite>Retriever</cite> will work with databases to retrieve context and overcome the hallucination and knowledge limitations of LLM, following the paradigm of Retrieval-Augmented Generation (RAG).
+An <cite>Agent</cite> will work with tools and an LLM planner for enhanced ability to reason, plan, and act on real-world tasks.</p>
+<p>Additionally, what shines in LightRAG is that all orchestrator components, like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite>, are model-agnostic.
+You can easily make each component work with different models from different providers by switching out the <cite>ModelClient</cite> and its <cite>model_kwargs</cite>.</p>
+<p>We will introduce the libraries starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
+With these building blocks, we will further introduce optimizing, where the optimizer uses building blocks such as Generator for auto-prompting and retriever for dynamic few-shot in-context learning (ICL).</p>
+</section>
 <section id="building">
 <h2>Building<a class="headerlink" href="#building" title="Link to this heading">#</a></h2>
 <section id="base-classes">
@@ -757,6 +770,7 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#introduction">Introduction</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building">Building</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#base-classes">Base classes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#rag-essentials">RAG Essentials</a><ul class="nav section-nav flex-column">

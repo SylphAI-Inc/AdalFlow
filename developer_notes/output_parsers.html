@@ -464,7 +464,7 @@ document.write(`
                   
   <section id="parser">
 <h1>Parser<a class="headerlink" href="#parser" title="Link to this heading">#</a></h1>
-<p>In this note, we will explain LightRAG parser and output parsers.</p>
+<p>Parser is the <cite>interpreter</cite> of the LLM output.</p>
 <section id="context">
 <h2>Context<a class="headerlink" href="#context" title="Link to this heading">#</a></h2>
 <p>LLMs output text in string format.
@@ -482,7 +482,6 @@ It is an important step for the LLM applications to interact with the external w
 <li><p>to list to support multiple choice selection.</p></li>
 <li><p>to json/yaml  which will be extracted to dict, and optional further to data class instance to support support cases like function calls.</p></li>
 </ul>
-<p>Parsing is the <cite>interpreter</cite> of the LLM output.</p>
 </section>
 <section id="scope-and-design">
 <h2>Scope and Design<a class="headerlink" href="#scope-and-design" title="Link to this heading">#</a></h2>
