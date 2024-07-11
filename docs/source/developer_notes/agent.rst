@@ -7,20 +7,21 @@ Agent
 
     -- Franklin and Graesser (1997)
 
-Agents are LLM-based and themselves belong to another popular family of LLM applications besides of the well-known RAGs.
+Agents [1]_ are LLM-based and themselves belong to another popular family of LLM applications besides of the well-known RAGs.
 The key on Agents are their ability to reasoning, plannning, and acting via accessible tools.
 In LightRAG, agents are simply a generator which can use tools, take multiple steps(sequential or parallel ) to complete a user query.
 
 Design
 ----------------
-We will first introduce ``ReAct``[2]_, a general paradigm for building agents with sequential of interleaving thought, action, and observation steps.
+We will first introduce ReAct [2]_, a general paradigm for building agents with sequential of interleaving thought, action, and observation steps.
+
 - **Thought**: The reasoning to take an action.
 - **Action**: The action to take from a predefined set of actions. In particular, it is tools/functional tools we have introduced in :doc:`tools<tool_helper>`.
 - **Observation**: The simplest senario is the execution result of the action in string format. To be more robust, this can be anyway you define to pass the right amount of execution information LLM to plan the next step.
 
 Prompt and Data Models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-:const:`components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT` is the default prompt for React agent's LLM planner.
+:const:`DEFAULT_REACT_AGENT_SYSTEM_PROMPT<components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT>` is the default prompt for React agent's LLM planner.
 Let's go through this template to see how the planner works.
 
 1. Task description
@@ -334,7 +335,7 @@ Now, let's run the test function to see the agent in action.
 
 
 The internal terminal printout of the agent on the first query will show the input_query, steps, and the final answer in different colors.
-The printout of the first query is shown below(without the color here):
+The printout of the first query with llama3 is shown below(without the color here):
 
 .. code-block:: console
 
@@ -361,6 +362,43 @@ The printout of the first query is shown below(without the color here):
    _______
    2024-07-10 16:48:50 - [react.py:301:call] - answer:
    The capital of France is Paris! and the result of the mathematical operation is 18527.424242424244.
+
+For the second query, the printout:
+
+.. code-block:: python
+
+   2024-07-10 16:48:51 - [react.py:287:call] - input_query: Give me 5 words rhyming with cool, and make a 4-sentence poem using them
+   2024-07-10 16:48:52 - [react.py:266:_run_one_step] - Step 1:
+   StepOutput(step=1, action=FunctionExpression(thought="I need to find 5 words that rhyme with 'cool'.", action='llm_tool(input="What are 5 words that rhyme with \'cool\'?")'), function=Function(thought=None, name='llm_tool', args=[], kwargs={'input': "What are 5 words that rhyme with 'cool'?"}), observation='Here are 5 words that rhyme with "cool":\n\n1. Rule\n2. Tool\n3. Fool\n4. Pool\n5. School')
+   _______
+
+   2024-07-10 16:49:00 - [react.py:266:_run_one_step] - Step 2:
+   StepOutput(step=2, action=FunctionExpression(thought='Now that I have the rhyming words, I need to create a 4-sentence poem using them.', action='llm_tool(input="Create a 4-sentence poem using the words \'rule\', \'tool\', \'fool\', \'pool\', and \'school\'.")'), function=Function(thought=None, name='llm_tool', args=[], kwargs={'input': "Create a 4-sentence poem using the words 'rule', 'tool', 'fool', 'pool', and 'school'."}), observation="Here is a 4-sentence poem using the words 'rule', 'tool', 'fool', 'pool', and 'school':\n\nIn the classroom, we learn to rule,\nWith a pencil as our trusty tool.\nBut if we're not careful, we can be a fool,\nAnd end up swimming in the school pool.")
+   _______
+
+   2024-07-10 16:49:12 - [react.py:266:_run_one_step] - Step 3:
+   StepOutput(step=3, action=FunctionExpression(thought='I have the poem, now I need to finish the task.', action='finish(answer="Here are 5 words that rhyme with \'cool\': rule, tool, fool, pool, school. Here is a 4-sentence poem using the words: In the classroom, we learn to rule, With a pencil as our trusty tool. But if we\'re not careful, we can be a fool, And end up swimming in the school pool.")'), function=Function(thought=None, name='finish', args=[], kwargs={'answer': "Here are 5 words that rhyme with 'cool': rule, tool, fool, pool, school. Here is a 4-sentence poem using the words: In the classroom, we learn to rule, With a pencil as our trusty tool. But if we're not careful, we can be a fool, And end up swimming in the school pool."}), observation="Here are 5 words that rhyme with 'cool': rule, tool, fool, pool, school. Here is a 4-sentence poem using the words: In the classroom, we learn to rule, With a pencil as our trusty tool. But if we're not careful, we can be a fool, And end up swimming in the school pool.")
+   _______
+
+   2024-07-10 16:49:12 - [react.py:301:call] - answer:
+   Here are 5 words that rhyme with 'cool': rule, tool, fool, pool, school. Here is a 4-sentence poem using the words: In the classroom, we learn to rule, With a pencil as our trusty tool. But if we're not careful, we can be a fool, And end up swimming in the school pool.
+
+The comparison between the agent and the vanilla LLM response is shown below:
+
+.. code-block::
+
+   Answer with agent: The capital of France is Paris! and the result of the mathematical operation is 18527.424242424244.
+   Answer without agent: GeneratorOutput(data="I'd be happy to help you with that!\n\nThe capital of France is Paris.\n\nNow, let's tackle the math problem:\n\n1. 465 × 321 = 149,485\n2. Add 95,297 to that result: 149,485 + 95,297 = 244,782\n3. Divide the result by 13.2: 244,782 ÷ 13.2 = 18,544.09\n\nSo, the answer is 18,544.09!", error=None, usage=None, raw_response="I'd be happy to help you with that!\n\nThe capital of France is Paris.\n\nNow, let's tackle the math problem:\n\n1. 465 × 321 = 149,485\n2. Add 95,297 to that result: 149,485 + 95,297 = 244,782\n3. Divide the result by 13.2: 244,782 ÷ 13.2 = 18,544.09\n\nSo, the answer is 18,544.09!", metadata=None)
+
+
+For the second query, the comparison is shown below:
+
+.. code-block::
+
+   Answer with agent: Here are 5 words that rhyme with 'cool': rule, tool, fool, pool, school. Here is a 4-sentence poem using the words: In the classroom, we learn to rule, With a pencil as our trusty tool. But if we're not careful, we can be a fool, And end up swimming in the school pool.
+   Answer without agent: GeneratorOutput(data='Here are 5 words that rhyme with "cool":\n\n1. rule\n2. tool\n3. fool\n4. pool\n5. school\n\nAnd here\'s a 4-sentence poem using these words:\n\nIn the summer heat, I like to be cool,\nFollowing the rule, I take a dip in the pool.\nI\'m not a fool, I know just what to do,\nI grab my tool and head back to school.', error=None, usage=None, raw_response='Here are 5 words that rhyme with "cool":\n\n1. rule\n2. tool\n3. fool\n4. pool\n5. school\n\nAnd here\'s a 4-sentence poem using these words:\n\nIn the summer heat, I like to be cool,\nFollowing the rule, I take a dip in the pool.\nI\'m not a fool, I know just what to do,\nI grab my tool and head back to school.', metadata=None)
+
+React agent will be helpful to answer queries that require capabilities like computation or more complicated reasoning and planning, using it on general queries might not be the best choice.
 
 
 .. .. figure:: /_static/images/query_1.png
