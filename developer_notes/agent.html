@@ -784,8 +784,8 @@ ReActAgent(
          </code>
      </pre>
  </div><p>Now, let’s run the test function to see the agent in action.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test_react_agent</span><span class="p">(</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">GROQ</span><span class="p">,</span> <span class="n">llama3_model_kwargs</span><span class="p">)</span>
-<span class="n">test_react_agent</span><span class="p">(</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">,</span> <span class="n">gpt_model_kwargs</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test_react_agent</span><span class="p">(</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">GROQ</span><span class="p">(),</span> <span class="n">llama3_model_kwargs</span><span class="p">)</span>
+<span class="n">test_react_agent</span><span class="p">(</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">gpt_model_kwargs</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Our agent will show the core steps for developers via colored printout, including input_query, steps, and the final answer.
