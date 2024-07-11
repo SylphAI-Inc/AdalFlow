@@ -22,12 +22,12 @@
 
 .. raw:: html
 
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The Lightning Library for Large Language Model Applications ⚡</h1>
 
     <div style="text-align: center;">
         <p>
             <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator</em> pipelines.<br>
-            It is <em>light</em>, <em>modular</em>, and <em>robust</em>,  with a 100% readable codebase.
+            It is light, modular, and robust,  with a 100% readable codebase.
         </p>
     </div>
 
@@ -35,6 +35,26 @@
 
 
 
+
+
+
+
+
+
+
+
+.. and Customizability
+
+
+Light
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LightRAG shares similar design pattern as `PyTorch` for deep learning modeling.
+We provide developers with fundamental building blocks of *100% clarity and simplicity*.
+
+- Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
+- A highly readable codebase and less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
+- We maximize the library's tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.
+- The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
 
 
 .. grid:: 1
@@ -93,23 +113,6 @@
 
             async def acall(self, query):
                return await self.generator.acall({"input_str": query})
-
-
-
-
-
-.. and Customizability
-
-
-Light
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We provide developers with fundamental building blocks of *100% clarity and simplicity*.
-
-- Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
-- A highly readable codebase and less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
-- We maximize the library's tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.
-- The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
-
 
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
