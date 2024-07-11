@@ -33,7 +33,7 @@ def retriever_output_to_context_str(
     retriever_output: Union[RetrieverOutput, List[RetrieverOutput]],
     deduplicate: bool = False,
 ) -> str:
-    r"""The retrieved documents from one or mulitple queries.
+    r"""The retrieved documents from one or multiple queries.
     Deduplicate is especially helpful when you used query expansion.
     """
     """
