@@ -1,3 +1,15 @@
+## [0.0.0-beta.1] - 2024-07-10
+
+### Added
+- `DataClass`: add `__type_var_map__` in `data class schema` as the necessary step to support `Generic` in data class.
+- Support Python `3.9`.
+
+### Fixed
+- `ReAct` agent is fixed to be working with updates on the json output parser.
+- `Add` error handling for using Lazy Import classes the wrong way, such as subclass.
+
+
+
 ## [0.0.0-alpha.16] - 2024-07-08
 
 ### Fixed
