@@ -31,7 +31,6 @@ Retriever
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
    components.retriever.bm25_retriever
    components.retriever.faiss_retriever
@@ -46,7 +45,6 @@ Output Parsers
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
    components.output_parsers.outputs
 
@@ -54,7 +52,6 @@ Agent
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
    components.agent.react
 
@@ -62,7 +59,6 @@ Data Process
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
 
    components.data_process.text_splitter
@@ -73,7 +69,6 @@ Memory
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
    components.memory.memory
 
@@ -81,7 +76,6 @@ Reasoning
 ~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
-   :nosignatures:
 
    components.reasoning.chain_of_thought
 

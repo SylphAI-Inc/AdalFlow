@@ -363,7 +363,9 @@ class DataClass:
             excluded = deepcopy(exclude)
         else:
             excluded = None
-        return get_dataclass_schema(cls, excluded)
+        return get_dataclass_schema(
+            cls, excluded, getattr(cls, "__type_var_map__", None)
+        )
 
     @classmethod
     def to_schema_str(cls, exclude: ExcludeType = None) -> str:
@@ -475,6 +477,9 @@ class DataClass:
             return self.to_yaml(exclude)
         else:
             raise ValueError(f"Unsupported format type: {format_type}")
+
+    # TODO:support Generic[Type[T]] for the type of fields
+    # it will automatically use __type_var_map__ attribute
 
 
 """Reserved for Agent to automatically create a dataclass and to manipulate the code"""
