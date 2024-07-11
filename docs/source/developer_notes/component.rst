@@ -6,14 +6,24 @@ Component
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
-What you will learn?
+.. What you will learn?
 
-1. What is ``Component`` and why is it designed this way?
-2. How to use ``Component`` along with helper classes like ``FunComponent`` and ``Sequential``?
+.. 1. What is ``Component`` and why is it designed this way?
+.. 2. How to use ``Component`` along with helper classes like ``FunComponent`` and ``Sequential``?
+
+
+:ref:`Component<core-component>` is to LLM task pipelines what `nn.Module` is to PyTorch models.
+An LLM task pipeline in LightRAG consists of components, be it a `Prompt`, `ModelClient`, `Generator`, `Retriever`, `Agent`, or any other custom components.
+This pipeline can be ``Sequential`` or a Directed Acyclic Graph (DAG) of components.
+`Prompt` will work with ``DataClass`` to ease the data interaction with the LLM model.
+`Retriever` will work with database to retrieve context to overcome the halluciation and knowledge limitation of LLM, the paradigm of Retrieval-Augmented Generation (RAG).
+`Agent` will work with tools and LLM planner for enhanced ability to reason, plan, and to act real-world tasks.
+
+
+
 
 Design
 ---------------------------------------
- :ref:`Component<core-component>` is to LLM task pipelines what ``nn.Module`` is to PyTorch models.
 
 It is the base class for components, such as ``Prompt``, ``ModelClient``, ``Generator``, ``Retriever`` in LightRAG.
 Your task pipeline should subclass from ``Component`` too. Instead of working with ``Tensor`` and ``Parameter`` to train models with weights and biases, our component works with any data, ``Parameter`` that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
