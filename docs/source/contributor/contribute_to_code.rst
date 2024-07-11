@@ -33,17 +33,17 @@ To set up ``poetry`` and contribute, please check the following steps:
 
 3. **Install Dependencies:**
 
-   Use Poetry to install the dependencies and set up the virtual environment:
+    The ``./lightrag/pyproject.toml`` controls the dependencies for the ``LightRAG`` package.
+    Use Poetry to install the dependencies and set up the virtual environment:
 
    .. code-block:: bash
-
+        cd lightrag
         poetry install
         poetry shell
 
 Codebase Structure
 ^^^^^^^^^^^^^^^^^^^
 It is recommended to check our `LightRAG codebase structure <https://lightrag.sylph.ai/developer_notes/index.html>`_ and current `API references <https://lightrag.sylph.ai/apis/index.html>`_ to familiarize yourself with the directories and paths before contributing.
-
 
 Code Examples
 ^^^^^^^^^^^^^^^^^^^
@@ -61,22 +61,31 @@ Code Tips
 
 Dependencies
 ^^^^^^^^^^^^^^^^^^^
-If you are adding any new dependencies to the package, please make sure you have include them in your PR description to inform us.
+If you want to add any new dependencies to the package, please include them in your PR description to inform us.
+Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in 
+``./lightrag/pyproject.toml`` file ``[tool.poetry.group.test.dependencies]`` section to avoid dependency errors in our CI/CD workflow.
+
+In order to correctly add the dependency using ``poetry``, please run 
+
+.. code-block:: bash
+
+        poetry add --group test <package-name>
 
 Testing
 ^^^^^^^^^^^^^^^^^^^
-Please make sure your code is well-tested before making a pull request. 
+After you update the code, please make sure your code is well tested before making a pull request. 
 There is a ``./lightrag/tests`` folder in the project directory to host your unit testing cases.
 
-You might need to install the testing packages using ``pip install``:
+You might need to install the testing packages using ``poetry``:
 
-Example packages:
+For example:
 
-::
+.. code-block:: bash
 
-        unittest
-        pytest
-        mypy - type check
+        poetry add --group test unittest
+        poetry add --group test pytest
+        poetry add --group test mypy
+
 
 All the test scripts should start with ``test_``. For example, run the individual test for ``components`` with:
 
