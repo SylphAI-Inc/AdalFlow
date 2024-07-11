@@ -23,10 +23,7 @@ from lightrag.utils.logger import printc
 
 log = logging.getLogger(__name__)
 
-d = r"""You are a helpful assistant.
-Answer the user's query using the tools provided below with minimal steps and maximum accuracy.
-
-Each step you will read the previous Thought, Action, and Observation(execution result of the action) and then provide the next Thought and Action."""
+__all__ = ["DEFAULT_REACT_AGENT_SYSTEM_PROMPT", "ReActAgent"]
 
 DEFAULT_REACT_AGENT_SYSTEM_PROMPT = r"""<SYS>
 {# role/task description #}
