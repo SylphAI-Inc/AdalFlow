@@ -1,3 +1,5 @@
+.. _lightrag_design_philosophy:
+
 Design Philosophy
 ====================================
 

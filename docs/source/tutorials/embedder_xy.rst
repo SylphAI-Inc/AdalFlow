@@ -1,3 +1,5 @@
+.. _embedder_xy:
+
 Embedder
 ============
 

@@ -81,9 +81,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html): Design based on three principles: Simplicity over complexity, Quality over quantity, and Optimizing over building.
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction provides developers with maximum customizability and simplicity.
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html): Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
+- [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html): Design based on three principles: Simplicity over complexity, Quality over quantity, and Optimizing over building.
+- [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html): We have no more than two levels of subclasses. The bare minimum abstraction provides developers with maximum customizability and simplicity.
+- [Tutorials](https://lightrag.sylph.ai/tutorials/index.html): Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 

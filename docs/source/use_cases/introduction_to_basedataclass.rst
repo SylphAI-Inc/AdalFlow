@@ -3,20 +3,20 @@ Introduction to BaseDataClass
 
 In this tutorial, we will discuss how to use ``BaseDataClass`` to streamline the data handling, serialization and description in LightRAG.
 
-`OpenAI's cookbook <https://cookbook.openai.com/articles/techniques_to_improve_reliability>`_ emphasizes that LLM works better when operating **structured** and **consistent** data. 
+`OpenAI's cookbook <https://cookbook.openai.com/articles/techniques_to_improve_reliability>`_ emphasizes that LLM works better when operating **structured** and **consistent** data.
 To solve this, ``LightRAG`` provides ``BaseDataClass`` for developers to manage data with control and flexibility, including:
 
 * getting structured dataclass/instance metadata(`signature` or `schema`)
 * formatting class instance to ``yaml``, ``dict`` or ``json``
 * loading data from dictionary
 
-Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``LightRAG`` is the base class across all **dataclasses**. 
+Like the role of ``Tensor`` in ``PyTorch``, ``BaseDataClass`` in ``LightRAG`` is the base class across all **dataclasses**.
 ``BaseDataClass`` offers to create `signature` or `schema` from both classeses and instances. It will also generate structured instances data. Developers can use ``BaseDataClass`` to easily define and describe dataclasses that handle the data input or output in LLM applications, keeping data consistent and structured.
 In the following tutorial, we will investigate the functionality of ``BaseDataClass`` with examples.
 
 **1. Create Signature and Schema**
 
-* **Signature:** Signature has simpler content and structure and hence more token efficient than schema. ``LightRAG`` supports ``json`` and ``yaml`` formating. 
+* **Signature:** Signature has simpler content and structure and hence more token efficient than schema. ``LightRAG`` supports ``json`` and ``yaml`` formating.
 
 * **Schema:** Schema is enssentially a dictionary containing more keys to show detailed information. Because of the detailed content, schema can mislead the model if not used properly.
 
@@ -55,14 +55,14 @@ Example to get signature and schema from a dataclass:
             # yaml signature:
             age: The age of the person (int) (required)
             name: The name of the person (str) (required)
-            
+
 
     .. grid-item-card::  Schema Output
 
         .. code-block:: python
-            
+
             {
-                'age': {'type': 'int', 'description': '', 'required': True}, 
+                'age': {'type': 'int', 'description': '', 'required': True},
                 'name': {'type': 'str', 'description': '', 'required': True}
             }
 
@@ -80,7 +80,7 @@ Example to get signiture and schema from an instance:
     class MyOutputs(BaseDataClass):
         age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
         name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-            
+
     my_instance = MyOutputs(age=25, name="John Doe")
     # my_instance json signiture
     print(my_instance.to_json_signature())
@@ -108,9 +108,9 @@ Example to get signiture and schema from an instance:
     .. grid-item-card::  Schema Output
 
         .. code-block:: python
-            
+
             {
-                'age': {'type': 'int', 'description': '', 'required': True}, 
+                'age': {'type': 'int', 'description': '', 'required': True},
                 'name': {'type': 'str', 'description': '', 'required': True}
             }
 
@@ -128,7 +128,7 @@ Example to get structured instance examples(``yaml`` or ``json``):
     class MyOutputs(BaseDataClass):
         age: int = field(metadata={"desc": "The age of the person", "prefix": "Age:"})
         name: str = field(metadata={"desc": "The name of the person", "prefix": "Name:"})
-        
+
     my_instance = MyOutputs(age=25, name="John Doe")
     # my_instance json signiture
     print(my_instance.to_json())
@@ -146,16 +146,16 @@ Example to get structured instance examples(``yaml`` or ``json``):
                 "age": 25,
                 "name": "John Doe"
             }
-            
+
 
     .. grid-item-card::  yaml Output
 
         .. code-block:: python
-            
+
             age: 25
             name: John Doe
 
-The examples demonstrate how ``BaseDataClass`` works for describing dataclasses and formatting instance to ``yaml`` and ``json``. 
+The examples demonstrate how ``BaseDataClass`` works for describing dataclasses and formatting instance to ``yaml`` and ``json``.
 Developers should select schema or signature depends on the use case.
 
 **3. Load Data from Dictionary**

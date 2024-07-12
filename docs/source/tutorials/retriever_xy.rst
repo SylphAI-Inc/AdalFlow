@@ -1,3 +1,5 @@
+.. _retriever_xy:
+
 Retriever
 ===================
 

@@ -1,3 +1,5 @@
-Datasets
+.. _trainer:
+
+Trainer
 ================
 Coming soon!

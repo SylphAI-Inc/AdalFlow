@@ -1,3 +1,5 @@
+.. _tutorials-embedder:
+
 Embedder
 ============
 .. .. admonition:: Author

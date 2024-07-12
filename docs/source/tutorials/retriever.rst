@@ -1,3 +1,6 @@
+.. _tutorials-retriever:
+
+
 Retriever
 ============
 

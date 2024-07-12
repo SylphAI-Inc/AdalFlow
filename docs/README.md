@@ -1,4 +1,4 @@
-# LightRAG Documentation Contribution Instruction
+# LightRAG Documentation Guide
 
 ## Content Overview
 
@@ -9,7 +9,7 @@
 
 ## How the Documentation Works
 
-We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) as the language. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files.
+We use [Sphinx](https://www.sphinx-doc.org/en/master/) and [reStructuredText](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html) for our documentation. Sphinx primarily reads configurations from a Python script (`conf.py`), pulls documentation from comments in the code (via the `autodoc` extension), and organizes content through its table of contents hierarchy defined in `.rst` files.
 
 ## Setup
 
@@ -19,11 +19,15 @@ We use [Sphinx](https://www.sphinx-doc.org/en/master/) as the documentation tool
 
 ### **2. Install Necessary Packages**
 
-You can use either `poetry` or `pip` to install the necessary packages.
+We use `poetry` and `pyproject.toml` to manage the dependencies. You can install all the necessary packages by running:
 
-**Use `poetry`:**
+```
 
+poetry lock
+poetry install
+```
 
+<!--
 All the packages are manged in the project's ``pyproject.toml`` file in the doc dependencies section. You can install all the necessary packages by running:
 
 ```
@@ -36,16 +40,17 @@ Or you can use `pip` to install the necessary packages listed in ``requirements.
 
 ```
 pip install -r requirements.txt
-```
+``` -->
 
 ### **3. Build the Documentation**
+Go to the `docs` directory and run the following command to build the documentation:
 
 ```python
 cd docs
 make html
 ```
 
-Build with more options:
+Build with more verbose output:
 
 ```
 sphinx-build -b html source build -v
@@ -77,10 +82,6 @@ The `docs/source/index.rst` is the root document for Sphinx-generated documentat
 For example, in the `index.rst`, the `:caption: Get Started` corresponds to the section name of the documentation site. `installation` and `introduction` are the detailed pages.
 
 ```python
-What is LightRAG?
-=================
-LightRAG comes from the best of the AI research and engineering. Fundamentally, we ask ourselves: what kind of system that combines the best of research(such as LLM), engineering (such as 'jinja') to build the best applications? We are not a framework. We do not want you to directly install the package. We want you to carefully decide to take modules and structures from here to build your own library and applications. This is a cookbook organized uniquely for easy understanding: you can read the 1000 lines of code to see a typical RAG end-to-end without jumping between files and going through multi-level class inheritance. If we build our system expanding from light_rag.py, we as a community will share the same RAG languages, and share other building blocks and use cases easily without depending on a complex framework.
-
 .. toctree::
    :glob:
    :maxdepth: 1
@@ -90,19 +91,20 @@ LightRAG comes from the best of the AI research and engineering. Fundamentally, 
    get_started/introduction
 ```
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/bf4570a3-1b74-45d8-8b3b-10221ec99a40/edd3bba3-265a-44cc-94d5-5ab222f9cb71/Untitled.png)
+<!-- ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/bf4570a3-1b74-45d8-8b3b-10221ec99a40/edd3bba3-265a-44cc-94d5-5ab222f9cb71/Untitled.png) -->
 
 ### **Existing Sections**
 
 Existing sections include:
 
-`get_started/`: Includes installation and LightRAG introduction
+`get_started/`: Includes installation and LightRAG in 10 minutes
 
-`tutorials/`: Includes sample code and instructions
+`tutorials/`: Includes our main tutorials
+`use_cases/`: Includes the use cases of LightRAG that will be added in the future and which accepts community contributions
 
 `apis/`: All the source-code-related documents will be included in this directory
 
-`resources/`: Include all the LightRAG-relevant resources.
+<!-- `resources/`: Include all the LightRAG-relevant resources. -->
 
 ## How to Edit the Documentation
 

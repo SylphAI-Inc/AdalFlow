@@ -10,8 +10,9 @@ Generator
 
 .. *The Center of it All*
 
+
 `Generator` is a user-facing orchestration component with a simple and unified interface for LLM prediction.
-It is a pipeline that consists of three subcomponents.
+It is a pipeline consisting of three subcomponents.
 
 Design
 ---------------------------------------
@@ -21,69 +22,83 @@ Design
     :alt: LightRAG generator design
     :width: 700px
 
-    Generator-The orchestrator for LLM prediction
+    Generator - The Orchestrator for LLM Prediction
 
-:class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
 
-- Model Agnostic: The Generator should be able to call any LLM model with the same prompt.
-- Unified Interface: It should manage the pipeline of prompt(input)->model call -> output parsing.
-- Unified Output: This will make it easy to log and save records of all LLM predictions.
-- Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.
 
-An orchestrator
+
+The :class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
+
+1. Model Agnostic: The Generator should be able to call any LLM model with the same prompt.
+2. Unified Interface: It should manage the pipeline from prompt(input)->model call -> output parsing.
+3. Unified Output: This will make it easy to log and save records of all LLM predictions.
+4. Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.
+
+The first three goals apply to other orchestrator components like :ref:`Retriever<tutorials-retriever>`, :ref:`Embedder<tutorials-embedder>`, and :ref:`Agent<tutorials-agent>` (mostly) as well.
+
+
+An Orchestrator
 ^^^^^^^^^^^^^^^^^
 
 It orchestrates three components:
 
-- ``Prompt``: by taking in ``template`` (string) and ``prompt_kwargs`` (dict) to format the prompt at initialization. When the ``template`` is not given, it defaults to :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>`.
+- `Prompt`: by taking in ``template`` (string) and ``prompt_kwargs`` (dict) to format the prompt at initialization.
+  When the ``template`` is not provided, it defaults to :const:`DEFAULT_LIGHTRAG_SYSTEM_PROMPT<core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT>`.
 
-- ``ModelClient``: by taking in already instantiated ``model_client`` and ``model_kwargs`` to call the model. Switching out the model client will allow you to call any LLM model on the same prompt and output parsing.
+- `ModelClient`: by taking in an already instantiated ``model_client`` and ``model_kwargs`` to call the model.
+  Switching out the model client allows you to call any LLM model using the same prompt and output parsing.
 
-- ``output_processors``: component or chained components via ``Sequential`` to process the raw response to desired format. If no output processor provided, it is decided by Model client, often return raw string response (from the first response message).
+- `output_processors`: A single component or chained components via :class:`Sequential<core.container.Sequential>` to process the raw response to desired format.
+  If no output processor provided, it is decided by the model client and often returns raw string response (from the first response message).
 
 **Call and arguments**
 
-Generator supports both ``call`` (``__call__``) and ``acall`` method.
+The `Generator` supports both the ``call`` (``__call__``) and ``acall`` methods.
 They take two optional arguments:
 
-- ``prompt_kwargs`` (dict): to be passed to its ``Prompt`` component.
-- ``model_kwargs`` (dict): will be combined with the ``model_kwargs`` from the initial model client.
+- ``prompt_kwargs`` (dict): This is combined with the ``prompt_kwargs`` from the initial ``Prompt`` component and used to format the prompt.
+- ``model_kwargs`` (dict): This is  combined with the ``model_kwargs`` from the initial model client, and along with :const:`ModelType.LLM<core.types.ModelType.LLM>`, it is passed to the ``ModelClient``.
+  The ModelClient will interpret all the inputs as ``api_kwargs`` specific to each model API provider.
 
-The generator will call ``Prompt`` to format the final prompt and adapt the inputs to ones workable with ``ModelClient``.
-In particular, it passes:
 
-- Formatted prompt after calling ``Prompt``.
-- All combined ``model_kwargs`` and :const:`ModelType.LLM<core.types.ModelType.LLM>` to the ``ModelClient``.
 
 .. note ::
 
-    This also means any ``ModelClient`` who wants to be compatible with `Generator` should take in ``model_kwargs`` and ``model_type`` as arguments.
+    This also means any ``ModelClient`` that wants to be compatible with `Generator` should take accept ``model_kwargs`` and ``model_type`` as arguments.
+
+
+
 
 
 
 GeneratorOutput
 ^^^^^^^^^^^^^^^^^
-Different from all other components, we can not alway enforce LLM to output the right format.
-Some part of the `Generator` pipeline can fail.
+Unlike other components, we cannot always enforce the LLM to follow the output format. The `ModelClient` and the `output_processors` may fail.
+
 
 .. note::
-    Whenever there is an error happens, we do not raise the error and stop this pipeline.
+    Whenever an error occurs, we do not raise the error and force the program to stop.
     Instead, `Generator` will always return an output record.
-    We made this design choice as it can be really helpful to log various failed cases on your test examples without stopping the pipeline for further investigation and improvement.
+    We made this design choice because it can be really helpful to log various failed cases in your train/eval sets all together for further investigation and improvement.
 
-In particular, we created :class:`GeneratorOutput<core.types.GeneratorOutput>` (subclass of ``DataClass``) to capture important information.
 
-- `data` (object) : to store the final processed response after all three components in the pipeline. This means `success`.
-- `error` (str): error message if any of the three components in the pipeline fail. When this is not `None`, it means `failure`.
-- `raw_response` (str): raw string response for reference for any LLM predictions. For now it is a string, which comes from the first response message. [This might change and be different in the future]
-- `metadata` (dict): to store any additional information and `usage` reserved to track the usage of the LLM prediction.
 
-Whether to do further processing or terminate the pipeline whenever an error happens is up to the user from here on.
+In particular, we created :class:`GeneratorOutput<core.types.GeneratorOutput>` to capture important information.
+
+- `data` (object) : Stores the final processed response after all three components in the pipeline, indicating `success`.
+- `error` (str): Contains the error message if any of the three components in the pipeline fail. When this is not `None`, it indicates `failure`.
+- `raw_response` (str): Raw string response for reference of any LLM predictions. Currently, it is a string that comes from the first response message. [This might change and be different in the future]
+- `metadata` (dict): Stores any additional information
+- `usage`:  Reserved for tracking the usage of the LLM prediction.
+
+Whether to do further processing or terminate the pipeline whenever an error occurs is up to the user from here on.
+
+
 
 Generator In Action
 ---------------------------------------
 
-We will create a simple one-turn chatbot to demonstrate how to use the Generator in action.
+We will create a simple one-turn chatbot to demonstrate how to use the Generator.
 
 Minimum Example
 ^^^^^^^^^^^^^^^^^
@@ -111,12 +126,12 @@ The structure of generator using ``print``:
         Generator(
         model_kwargs={'model': 'llama3-8b-8192'},
         (prompt): Prompt(
-            template: {% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
-            <SYS>
-            {% endif %}
+            template: <SYS>
             {# task desc #}
             {% if task_desc_str %}
             {{task_desc_str}}
+            {% else %}
+            You are a helpful assistant.
             {% endif %}
             {# output format #}
             {% if output_format_str %}
@@ -154,19 +169,17 @@ The structure of generator using ``print``:
             {{steps_str}}
             </STEPS>
             {% endif %}
-            {% if task_desc_str or output_format_str or tools_str or examples_str or chat_history_str or context_str or steps_str %}
             </SYS>
-            {% endif %}
             {% if input_str %}
             <User>
             {{input_str}}
             </User>
             {% endif %}
             You:
-            , prompt_variables: ['output_format_str', 'chat_history_str', 'task_desc_str', 'context_str', 'steps_str', 'input_str', 'tools_str', 'examples_str']
+            , prompt_variables: ['input_str', 'tools_str', 'context_str', 'steps_str', 'task_desc_str', 'chat_history_str', 'output_format_str', 'examples_str']
         )
         (model_client): GroqAPIClient()
-    )
+        )
             </code>
         </pre>
     </div>

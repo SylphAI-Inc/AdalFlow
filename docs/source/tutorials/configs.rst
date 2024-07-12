@@ -1,2 +1,4 @@
+.. _configs:
+
 Configurations
 ===================
