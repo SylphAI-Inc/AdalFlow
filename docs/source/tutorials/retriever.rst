@@ -9,14 +9,14 @@ Retriever
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
-Context
-------------------
+.. Context
+.. ------------------
 
-**Why Retriever for LLM?**
+.. **Why Retriever for LLM?**
 
 LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factuality, relevancy, and freshness on the LLM answers.
-Due to LLM's context window limit(can only take so much tokens each time), the ``lost-in-the-middle`` problem[6], and the high cost on speed and resources using large context,
-it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs.
+Due to LLM's context window limit(can only take so much tokens each time), the ``lost-in-the-middle`` problem [6]_, and the high cost on speed and resources using large context,
+it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG) [7]_ applications become one of main applications in LLMs.
 
 .. It is easy to build a demo, but hard to excel due to the many different parts in the pipeline that made it difficult to evaluate and to optimize.
 
@@ -580,7 +580,7 @@ The response is:
 
 PostgresRetriever
 ^^^^^^^^^^^^^^^^^^^^^^^^
-
+Coming soon.
 
 Use Score Threshold instead of top_k
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -602,17 +602,17 @@ Additionally, ``LocalDB`` help us keep track of our initial documents and its tr
 .. admonition:: References
    :class: highlight
 
-   1. Full-text search on PostgreSQL: https://www.postgresql.org/docs/current/textsearch.html
-   2. BM25: https://en.wikipedia.org/wiki/Okapi_BM25
-   3. Representative learning models: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   4. Reranking models: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   5. FAISS: https://github.com/facebookresearch/faiss
-   6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
-   8. Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
-   9. Rank_bm25: https://github.com/dorianbrown/rank_bm25
-   10. https://huggingface.co/BAAI/bge-reranker-base
-   11. Cohere reranker: https://docs.cohere.com/reference/rerank
+   .. [1] Full-text search on PostgreSQL: https://www.postgresql.org/docs/current/textsearch.html
+   .. [2] BM25: https://en.wikipedia.org/wiki/Okapi_BM25
+   .. [3] Representative learning models: https://arxiv.org/abs/2310.07554
+   .. [4] Reranking models: https://github.com/FlagOpen/FlagEmbedding/tree/master/FlagEmbedding/llm_reranker
+   .. [5] FAISS: https://github.com/facebookresearch/faiss
+   .. [6] Lost-in-the-middle: https://arxiv.org/abs/2307.03172
+   .. [7] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks(RAG): https://arxiv.org/abs/2005.11401
+   .. [8] Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
+   .. [9] Rank_bm25: https://github.com/dorianbrown/rank_bm25
+   .. [10] https://huggingface.co/BAAI/bge-reranker-base
+   .. [11] Cohere reranker: https://docs.cohere.com/reference/rerank
 
 
 .. admonition:: API References

@@ -21,7 +21,7 @@ Principle 2: Quality over Quantity
 
  The Quality of core building blocks over the Quantity of integrations.
 
-We aim to provide developers with well-designed core building blocks that are  **easy** to understand, **transparent** to debug, and **flexible** enough to customize.
+We aim to provide developers with well-designed core building blocks that are  *easy* to understand, *transparent* to debug, and *flexible* enough to customize.
 This goes for the prompt, the model client, the retriever, the optimizer, and the trainer.
 
 
@@ -32,15 +32,8 @@ Principle 3: Optimizing over Building
  We help users build the task pipeline, but we want to help with optimizing even more so.
 
 
-
-We will design our building blocks with `optimization` in mind.
-This means beyond giving developers transparency and control, providing them with great `logging`, `observability`, `configurability`, `optimizers`,  and `trainers`
-to ease the existing frustrations of optimizing the task pipeline.
-
-
-
-
-
+We design our building blocks with `optimization` in mind.
+This means we go beyond just providing developers with transparency and control; we also offer excellent `logging`, `observability`, `configurability`, `optimizers`, and `trainers` to ease the existing frustrations of optimizing the task pipeline.
 
 
 Our understanding of LLM workflow
