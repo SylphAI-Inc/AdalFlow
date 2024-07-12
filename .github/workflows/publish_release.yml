@@ -36,25 +36,23 @@ jobs:
           fi
         shell: bash
 
-
   build-and-package:
     needs: validate-tag
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
+      - name: Install Poetry and dependencies
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-      - name: Install dependencies
-        run: |
+          poetry env use python${{ matrix.python-version }}
           poetry install --no-dev
       - name: Build the distribution
         run: |
@@ -70,20 +68,18 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
-
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
+      - name: Install Poetry and perform dry run publish
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-      - name: Dry run publish to PyPI
-        run: |
+          poetry env use python${{ matrix.python-version }}
           cd lightrag
           poetry publish --dry-run --build -v
 
@@ -115,23 +111,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
-
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
+      - name: Install Poetry and publish to PyPI
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@v1.5.0
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_KEY }}
+          poetry env use python${{ matrix.python-version }}
+          poetry publish -u __token__ -p ${{ secrets.PYPI_KEY }}
 
   create-github-release:
     needs: publish-to-pypi
@@ -156,7 +148,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']  # Ensure consistency with build-and-package job
+        python-version: ['3.10', '3.11', '3.12']
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python ${{ matrix.python-version }}
