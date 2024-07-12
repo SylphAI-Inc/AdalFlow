@@ -191,7 +191,7 @@ Choosing the proper chunking strategy involves considering several key factors:
 - **Application of Results**: The application, whether it be semantic search, question answering, or summarization, dictates the appropriate chunking method, especially considering the limitations of content windows in large language models (LLMs).
 - **System Integration**: Efficient chunking aligns with system capabilities. For example, `Full-Text Search:` Use larger chunks to allow algorithms to explore broader contexts effectively. For example, search books based on extensive excerpts or chapters. `Granular Search Systems:` Employ smaller chunks to precisely retrieve information relevant to user queries, such as retrieving specific instructions directly in response to a user’s question. For example, if a user asks, "How do I reset my password?". The system can retrieve a specific sentence or paragraph addressing that action directly.
 
-   
+
 Chunking Strategies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
