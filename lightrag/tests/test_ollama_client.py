@@ -37,6 +37,7 @@ class TestOllamaModelClient(unittest.TestCase):
     def test_ollama_embedding_client(self):
         ollama_client = Mock(spec=OllamaClient())
         print("Testing ollama embedding client")
+        
         # run the model
         kwargs = {
             "model": "jina/jina-embeddings-v2-base-en:latest",
