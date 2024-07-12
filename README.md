@@ -26,7 +26,7 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 
 LightRAG is born to be light, modular, and robust, with a 100% readable codebase.
 
-Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -223,9 +223,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
+- [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
+- [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
+- [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 

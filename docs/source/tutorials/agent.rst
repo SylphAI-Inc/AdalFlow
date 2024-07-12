@@ -1,3 +1,6 @@
+.. _tutorials-agent:
+
+
 Agent
 ====================
 
@@ -178,8 +181,8 @@ Additionally, it manages `step_history` as a list of ``StepOutput`` instances fo
 
    * - **Name**
      - **Description**
-   * - ``__init__(self, tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [], max_steps: int = 10, add_llm_as_fallback: bool = True, examples: List[FunctionExpression] = [], *, model_client: ModelClient, model_kwargs: Dict = {})``
-     - Initialize the `ReActAgent` with the specified tools, maximum steps, fallback option, examples, model client, and model arguments.
+   * - ``__init__(self, tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [], max_steps: int = 10, add_llm_as_fallback: bool = True, examples: List[FunctionExpression] = [], *, model_client: ModelClient, model_kwargs: Dict = {}, template: Optional[str] = None)``
+     - Initialize the `ReActAgent` with the specified tools, maximum steps, fallback option, examples, model client, model arguments, and template if you want to customize the prompt.
    * - ``call(self, input: str, prompt_kwargs: Optional[Dict] = {}, model_kwargs: Optional[Dict] = {}) -> Any``
      - Prompt the agent with an input query and process the steps to generate a response.
 
@@ -292,9 +295,11 @@ The structure of React, including the initialization arguments and two major com
             </TOOLS>
             {% endif %}
             {# output format and examples #}
+            <OUTPUT_FORMAT>
             {{output_format_str}}
+            </OUTPUT_FORMAT>
             <TASK_SPEC>
-            {# Specifications TODO: preference between the usage of llm tool vs the other tool #}
+            {# Task specification to teach the agent how to think using 'divide and conquer' strategy #}
             - For simple queries: Directly call the ``finish`` action and provide the answer.
             - For complex queries:
                - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
@@ -353,8 +358,8 @@ Now, let's run the test function to see the agent in action.
 
 .. code-block:: python
 
-   test_react_agent(ModelClientType.GROQ, llama3_model_kwargs)
-   test_react_agent(ModelClientType.OPENAI, gpt_model_kwargs)
+   test_react_agent(ModelClientType.GROQ(), llama3_model_kwargs)
+   test_react_agent(ModelClientType.OPENAI(), gpt_model_kwargs)
 
 Our agent will show the core steps for developers via colored printout, including input_query, steps, and the final answer.
 The printout of the first query with llama3 is shown below (without the color here):
@@ -423,8 +428,82 @@ For the second query, the comparison is shown below:
    Answer without agent: GeneratorOutput(data='Here are 5 words that rhyme with "cool":\n\n1. rule\n2. tool\n3. fool\n4. pool\n5. school\n\nAnd here\'s a 4-sentence poem using these words:\n\nIn the summer heat, I like to be cool,\nFollowing the rule, I take a dip in the pool.\nI\'m not a fool, I know just what to do,\nI grab my tool and head back to school.', error=None, usage=None, raw_response='Here are 5 words that rhyme with "cool":\n\n1. rule\n2. tool\n3. fool\n4. pool\n5. school\n\nAnd here\'s a 4-sentence poem using these words:\n\nIn the summer heat, I like to be cool,\nFollowing the rule, I take a dip in the pool.\nI\'m not a fool, I know just what to do,\nI grab my tool and head back to school.', metadata=None)
 
 The ReAct agent is particularly helpful for answering queries that require capabilities like computation or more complicated reasoning and planning.
-However, using it on general queries might not be an overkill, as it might take more steps than necessary to answer the query.
+However, using it on general queries might be an overkill, as it might take more steps than necessary to answer the query.
 
+Customization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Template**
+
+
+The first thing you want to customize is the template itself.
+You can do this by passing your own template to the agent's constructor.
+We suggest you to modify our default template: :const:`DEFAULT_REACT_AGENT_SYSTEM_PROMPT<components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT>`.
+
+
+
+**Examples for Better Output Format**
+
+
+Secondly, the ``examples`` in the constructor allow you to provide more examples to enforce the correct output format.
+For instance, if we want it to learn how to correctly call `multiply`, we can pass in a list of ``FunctionExpression`` instances with the correct format.
+Classmethod ``from_function`` can be used to create a ``FunctionExpression`` instance from a function and its arguments.
+
+.. code-block:: python
+
+   from lightrag.core.types import FunctionExpression
+
+   # generate an example of calling multiply with key-word arguments
+   example_using_multiply = FunctionExpression.from_function(
+        func=multiply,
+        thought="Now, let's multiply two numbers.",
+        a=3,
+        b=4,
+    )
+   examples = [example_using_multiply]
+
+   # pass it to the agent
+
+We can visualize how this is passed to the planner prompt via:
+
+.. code-block:: python
+
+   react.planner.print_prompt()
+
+
+The above example will be formated as:
+
+.. code-block::
+
+   <OUTPUT_FORMAT>
+   Your output should be formatted as a standard JSON instance with the following schema:
+   ```
+   {
+      "thought": "Why the function is called (Optional[str]) (optional)",
+      "action": "FuncName(<kwargs>) Valid function call expression. Example: \"FuncName(a=1, b=2)\" Follow the data type specified in the function parameters.e.g. for Type object with x,y properties, use \"ObjectType(x=1, y=2) (str) (required)"
+   }
+   ```
+   Examples:
+   ```
+   {
+      "thought": "Now, let's multiply two numbers.",
+      "action": "multiply(a=3, b=4)"
+   }
+   ________
+   {
+      "thought": "I have finished the task.",
+      "action": "finish(answer=\"final answer: 'answer'\")"
+   }
+   ________
+   ```
+   -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+   -Use double quotes for the keys and string values.
+   -DO NOT mistaken the "properties" and "type" in the schema as the actual fields in the JSON output.
+   -Follow the JSON formatting conventions.
+   </OUTPUT_FORMAT>
+
+**Subclass ReActAgent**
+
+If you want to customize the agent further, you can subclass the :class:`ReActAgent<components.agent.react.ReActAgent>` and override the methods you want to change.
 .. .. figure:: /_static/images/query_1.png
 ..    :align: center
 ..    :alt: DataClass

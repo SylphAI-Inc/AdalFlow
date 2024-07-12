@@ -1,3 +1,6 @@
+.. _tutorials-text_splitter:
+
+
 Text Splitter
 -----------------
 .. .. admonition:: Author

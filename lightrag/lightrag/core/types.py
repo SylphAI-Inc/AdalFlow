@@ -38,6 +38,7 @@ from lightrag.components.model_client import (
     AnthropicAPIClient,
     GroqAPIClient,
     OpenAIClient,
+    GoogleGenAIClient,
 )
 
 
@@ -51,6 +52,8 @@ T = TypeVar("T")  # invariant type
 # Data modeling for ModelClient
 ######################################################################################
 class ModelType(Enum):
+    __doc__ = r"""The type of the model, including Embedder, LLM, Reranker.
+     It helps ModelClient identify the model type required to correctly call the model."""
     EMBEDDER = auto()
     LLM = auto()
     RERANKER = auto()  # ranking model
@@ -59,11 +62,30 @@ class ModelType(Enum):
 
 @dataclass
 class ModelClientType:
+    __doc__ = r"""A quick way to access all model clients in the ModelClient module.
+
+    From this:
+
+    .. code-block:: python
+
+    from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient
+
+    model_client = OpenAIClient()
+
+    To this:
+
+    .. code-block:: python
+
+    from lightrag.core.types import ModelClientType
+
+    model_client = ModelClientType.OPENAI()
+    """
     COHERE = CohereAPIClient
     TRANSFORMERS = TransformersClient
     ANTHROPIC = AnthropicAPIClient
     GROQ = GroqAPIClient
     OPENAI = OpenAIClient
+    GOOGLE_GENAI = GoogleGenAIClient
 
 
 # TODO: define standard required outputs
@@ -365,7 +387,6 @@ class FunctionExpression(DataClass):
     )
     action: str = field(
         default_factory=required_field,
-        # metadata={"desc": "FuncName(<args>, <kwargs>)"},
         metadata={"desc": _action_desc},
     )
 
@@ -389,6 +410,24 @@ class FunctionExpression(DataClass):
         1. Create a FunctionExpression object from a function call:
         2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.
         3. This will be used as an example in prompt showing LLM how to call the function.
+
+        Example:
+
+        .. code-block:: python
+
+            from lightrag.core.types import FunctionExpression
+
+            def add(a, b):
+                return a + b
+
+            # create an expression for the function call and using keyword arguments
+            fun_expr = FunctionExpression.from_function(
+                add, thought="Add two numbers", a=1, b=2
+            )
+            print(fun_expr)
+
+            # output
+            # FunctionExpression(thought='Add two numbers', action='add(a=1, b=2)')
         """
         try:
             action = generate_function_call_expression_from_callable(
@@ -398,9 +437,6 @@ class FunctionExpression(DataClass):
             logger.error(f"Error generating function expression: {e}")
             raise ValueError(f"Error generating function expression: {e}")
         return cls(action=action, thought=thought)
-
-
-# saves the output of a function tool.
 
 
 @dataclass

@@ -1,3 +1,5 @@
+.. _tool_helper:
+
 Function calls
 ===========================
 .. .. admonition:: Author
