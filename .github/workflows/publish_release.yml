@@ -83,26 +83,6 @@ jobs:
           cd lightrag
           poetry publish --dry-run --build -v
 
-  # Uncomment the following lines to enable TestPyPI publishing
-  # test-publish-to-testpypi:
-  #   needs: build-and-package
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v4
-  #       with:
-  #         python-version: '3.11'
-  #     - name: Download distribution
-  #       uses: actions/download-artifact@v2
-  #       with:
-  #         name: dist
-  #         path: dist
-  #     - name: Publish to TestPyPI
-  #       run: |
-  #         poetry config repositories.testpypi https://test.pypi.org/legacy/
-  #         poetry publish --repository testpypi --username __token__ --password ${{ secrets.TEST_PYPI_API_TOKEN }}
-
   publish-to-pypi:
     needs: 
       - validate-tag
