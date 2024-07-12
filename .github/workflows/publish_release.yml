@@ -48,12 +48,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
+      - name: Install Poetry and dependencies
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-      - name: Change to the lightrag directory and install dependencies
-        run: |
+          poetry env use python${{ matrix.python-version }}
           cd lightrag
           poetry install --no-dev
       - name: Build the distribution
@@ -64,7 +63,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: lightrag/dist/
+          path: lightrag/dist/**
 
 
   dry-run-publish:
@@ -89,7 +88,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           cd dist
-          poetry publish --dry-run --build -v
+          poetry publish --dry-run -v
 
   publish-to-pypi:
     needs: 
