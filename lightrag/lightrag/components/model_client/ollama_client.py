@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
+from typing import Dict, Optional, Any
 import backoff
 import logging
 
@@ -11,6 +11,7 @@ from ollama import RequestError, ChatResponse
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput, Embedding
+
 log = logging.getLogger(__name__)
 
 
@@ -109,7 +110,7 @@ class OllamaClient(ModelClient):
         max_time=5,
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        """
+        r"""
         kwargs is the combined input and model_kwargs
         """
         if "model" not in api_kwargs:
