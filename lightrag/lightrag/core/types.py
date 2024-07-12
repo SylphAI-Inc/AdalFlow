@@ -13,6 +13,7 @@ from typing import (
     Literal,
     Callable,
     Awaitable,
+    Type,
 )
 from collections import OrderedDict
 from dataclasses import (
@@ -43,6 +44,7 @@ from lightrag.components.model_client import (
 logger = logging.getLogger(__name__)
 
 T_co = TypeVar("T_co", covariant=True)
+T = TypeVar("T")  # invariant type
 
 
 #######################################################################################
@@ -318,6 +320,13 @@ class Function(DataClass):
     )
 
 
+_action_desc = """FuncName(<kwargs>) \
+Valid function call expression. \
+Example: "FuncName(a=1, b=2)" \
+Follow the data type specified in the function parameters.\
+e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
+
+
 @dataclass
 class FunctionExpression(DataClass):
     __doc__ = r"""The data modeling of a function expression for a call, including the name and arguments.
@@ -357,13 +366,7 @@ class FunctionExpression(DataClass):
     action: str = field(
         default_factory=required_field,
         # metadata={"desc": "FuncName(<args>, <kwargs>)"},
-        metadata={
-            "desc": """FuncName(<kwargs>) \
-                Valid function call expression. \
-                Example: "FuncName(a=1, b=2)" \
-                Follow the data type specified in the function parameters.\
-                e.g. for Type object with x,y properties, use "ObjectType(x=1, y=2)"""
-        },
+        metadata={"desc": _action_desc},
     )
 
     @classmethod
@@ -429,34 +432,57 @@ class FunctionOutput(DataClass):
 # Data modeling for agent component
 ######################################################################################
 @dataclass
-class StepOutput(DataClass):
-    __doc__ = r"""The output of a single step in the agent."""
+class StepOutput(DataClass, Generic[T]):
+    __doc__ = r"""The output of a single step in the agent. Suits for serial planning agent such as React"""
     step: int = field(
         default=0, metadata={"desc": "The order of the step in the agent"}
     )
-    thought: Optional[str] = field(
-        default="", metadata={"desc": "The thought of the agent in the step"}
-    )
-    action: str = field(
-        default="", metadata={"desc": "The action of the agent in the step"}
-    )
-    fun_name: Optional[str] = field(
-        default=None, metadata={"desc": "The function named parsed from action"}
-    )
-    fun_args: Optional[List[Any]] = field(
-        default=None,
-        metadata={"desc": "The function positional arguments parsed from action"},
-    )
-    fun_kwargs: Optional[Dict[str, Any]] = field(
-        default=None,
-        metadata={"desc": "The function keyword arguments parsed from action"},
-    )
-    observation: Optional[str] = field(
-        default=None, metadata={"desc": "The result of the action"}
+
+    # This action can be in Function, or Function Exptression, or just str
+    # it includes the thought and action already
+    # directly the output from planner LLMs
+    action: T = field(
+        default=None, metadata={"desc": "The action the agent takes at this step"}
     )
 
-    def __str__(self):
-        return f"Thought {self.step}: {self.thought}\nAction {self.step}: {self.action}\nObservation {self.step}: {self.observation}"
+    function: Optional[Function] = field(
+        default=None, metadata={"desc": "The parsed function from the action"}
+    )
+
+    observation: Optional[str] = field(
+        default=None, metadata={"desc": "The execution result shown for this action"}
+    )
+
+    @classmethod
+    def with_action_type(cls, action_type: Type[T]) -> Type["StepOutput[T]"]:
+        """
+        Create a new StepOutput class with the specified action type.
+
+        Use this if you want to create schema for StepOutput with a specific action type.
+
+        Args:
+            action_type (Type[T]): The type to set for the action attribute.
+
+        Returns:
+            Type[StepOutput[T]]: A new subclass of StepOutput with the specified action type.
+
+        Example:
+
+        .. code-block:: python
+
+            from lightrag.core.types import StepOutput, FunctionExpression
+
+            StepOutputWithFunctionExpression = StepOutput.with_action_type(FunctionExpression)
+        """
+        # Create a new type variable map
+        type_var_map = {T: action_type}
+
+        # Create a new subclass with the updated type
+        new_cls = type(cls.__name__, (cls,), {"__type_var_map__": type_var_map})
+
+        # Update the __annotations__ to reflect the new type of action
+        new_cls.__annotations__["action"] = action_type
+        return new_cls
 
 
 #######################################################################################

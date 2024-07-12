@@ -300,7 +300,7 @@ The ``exclude`` parameter works the same across all methods.
 
 **DataClassFormatType**
 
-For data class format, we have :class:``core.base_data_class.DataClassFormatType`` along with ``format_class_str`` method to specify the format type for the data format methods.
+For data class format, we have :class:`DataClassFormatType<core.base_data_class.DataClassFormatType>` along with ``format_class_str`` method to specify the format type for the data format methods.
 
 .. code-block:: python
 

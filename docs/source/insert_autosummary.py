@@ -54,6 +54,25 @@ def generate_rst_for_module(module_full_name, module, output_dir):
             content += f"      {class_name}\n"
         content += "\n"
 
+    # Collect constants from __all__
+    constants = []
+    if hasattr(module, "__all__"):
+        all_members = getattr(module, "__all__")
+        for const_name in all_members:
+            const_value = getattr(module, const_name, None)
+            if (
+                const_value is not None
+                and not inspect.isfunction(const_value)
+                and not inspect.isclass(const_value)
+            ):
+                constants.append((const_name, const_value))
+
+    if constants:
+        content += "   .. rubric:: Constants\n\n"
+        for const_name, const_value in constants:
+            content += f"   .. autodata:: {module_full_name}.{const_name}\n"
+        content += "\n"
+
     with open(rst_filepath, "a") as rst_file:
         rst_file.write(content)
 

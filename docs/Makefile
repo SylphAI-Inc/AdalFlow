@@ -21,7 +21,8 @@ help:
 
 apidoc:
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/lightrag/core --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/lightrag/components --separate --force --templatedir=$(SOURCEDIR)/_templates
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/lightrag/components --separate --force
+#--templatedir=$(SOURCEDIR)/_templates
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/lightrag/eval --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../lightrag/lightrag/optim --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
