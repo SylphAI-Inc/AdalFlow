@@ -47,12 +47,14 @@ class OllamaClient(ModelClient):
         self.async_client = None  # only initialize if the async call is called
 
     def init_sync_client(self):
+        """Create the synchronous client"""
         host = self._host or os.getenv("OLLAMA_HOST")
         if not host:
             raise ValueError("Must provide host or set OLLAMA_HOST env variable")
         self.sync_client = ollama.Client(host=host)
 
     def init_async_client(self):
+        """Create the asynchronous client"""
         host = self._host or os.getenv("OLLAMA_HOST")
         if not host:
             raise ValueError("Must provide host or set OLLAMA_HOST env variable")
