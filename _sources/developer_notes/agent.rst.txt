@@ -353,8 +353,8 @@ Now, let's run the test function to see the agent in action.
 
 .. code-block:: python
 
-   test_react_agent(ModelClientType.GROQ(), llama3_model_kwargs)
-   test_react_agent(ModelClientType.OPENAI(), gpt_model_kwargs)
+   test_react_agent(ModelClientType.GROQ, llama3_model_kwargs)
+   test_react_agent(ModelClientType.OPENAI, gpt_model_kwargs)
 
 Our agent will show the core steps for developers via colored printout, including input_query, steps, and the final answer.
 The printout of the first query with llama3 is shown below (without the color here):

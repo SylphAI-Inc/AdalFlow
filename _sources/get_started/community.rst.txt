@@ -5,7 +5,7 @@ Community
 
 You can join our community on various platforms:
 
-* `Discord <https://discord.com>`_
+* `Discord <https://discord.com/invite/ezzszrRZvT>`_
 * `GitHub Discussion <https://github.com>`_
 
 .. _discord-link:
