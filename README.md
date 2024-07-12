@@ -10,7 +10,7 @@
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
 
-### ⚡ The PyTorch Library for Large Language Model Applications ⚡
+### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator* pipelines.
 It is *light*, *modular*, and *robust*, with a 100% readable codebase.
@@ -20,13 +20,13 @@ It is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 # Why LightRAG?
 
-LLMs are like water; they can almost do anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
+LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
 Because of this, no library can provide out-of-the-box solutions. Users must build toward their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
 LightRAG is born to be light, modular, and robust, with a 100% readable codebase.
 
-Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -223,9 +223,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
+- [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
+- [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
+- [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 
@@ -240,7 +240,7 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 ```bibtex
 @software{Yin2024LightRAG,
   author = {Li Yin},
-  title = {{LightRAG: The PyTorch Library for Large Language Model (LLM) Applications}},
+  title = {{LightRAG: The Lightning Library for Large Language Model (LLM) Applications}},
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},

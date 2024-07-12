@@ -22,12 +22,12 @@
 
 .. raw:: html
 
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The Lightning Library for Large Language Model Applications ⚡</h1>
 
     <div style="text-align: center;">
         <p>
             <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator</em> pipelines.<br>
-            It is <em>light</em>, <em>modular</em>, and <em>robust</em>,  with a 100% readable codebase.
+            It is light, modular, and robust,  with a 100% readable codebase.
         </p>
     </div>
 
@@ -35,6 +35,26 @@
 
 
 
+
+
+
+
+
+
+
+
+.. and Customizability
+
+
+Light
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+LightRAG shares similar design pattern as `PyTorch` for deep learning modeling.
+We provide developers with fundamental building blocks of *100% clarity and simplicity*.
+
+- Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
+- A highly readable codebase and less than two levels of class inheritance. :doc:`tutorials/class_hierarchy`.
+- We maximize the library's tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.
+- The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
 
 
 .. grid:: 1
@@ -94,27 +114,8 @@
             async def acall(self, query):
                return await self.generator.acall({"input_str": query})
 
-
-
-
-
-.. and Customizability
-
-
-Light
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We provide developers with fundamental building blocks of *100% clarity and simplicity*.
-
-- Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
-- A highly readable codebase and less than two levels of class inheritance. :doc:`developer_notes/class_hierarchy`.
-- We maximize the library's tooling and prompting capabilities to minimize the reliance on LLM API features such as tools and JSON format.
-- The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
-
-
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
-.. - `Class Hierarchy Visualization <developer_notes/class_hierarchy.html>`_
-.. We support them with require **Maximum Flexibility and Customizability**:
 
 .. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
 
@@ -149,6 +150,19 @@ Similar to the PyTorch `module`, our `Component` provides excellent visualizatio
       )
    )
 
+To switch to `gpt-3.5-turbo` by OpenAI, simply update the `model_client`` and `model_kwargs` in the Generator component.
+
+.. code-block:: python
+
+   from lightrag.components.model_client import OpenAIClient
+
+   self.generator = Generator(
+        model_client=OpenAIClient(),
+        model_kwargs={"model": "gpt-3.5-turbo"},
+        template=template,
+    )
+
+
 .. and Robustness
 
 
@@ -157,8 +171,8 @@ Robust
 Our simplicity did not come from doing less.
 On the contrary, we have to do more and go deeper and wider on any topic to offer developers *maximum control and robustness*.
 
-- LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on LLM API features such as tools and JSON format with components like ``Prompt``, ``OutputParser``, ``FunctionTool``, and ``ToolManager``.
-- Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in ``ModelClient`` and ``Retriever``.
+- LLMs are sensitive to the prompt. We allow developers full control over their prompts without relying on LLM API features such as tools and JSON format with components like `Prompt`, `OutputParser`, `FunctionTool`, and `ToolManager`.
+- Our goal is not to optimize for integration, but to provide a robust abstraction with representative examples. See this in :ref:`ModelClient<tutorials-model_client>` and :ref:`Retriever<tutorials-retriever>` components.
 - All integrations, such as different API SDKs, are formed as optional packages but all within the same library. You can easily switch to any models from different providers that we officially support.
 
 
@@ -196,7 +210,7 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    :maxdepth: 1
    :hidden:
 
-   developer_notes/index
+   tutorials/index
    .. :caption: Tutorials - How each part works
    .. :hidden:
 

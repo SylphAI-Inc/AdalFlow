@@ -40,7 +40,7 @@ You can use the following import:
 
 .. code-block:: python
 
-   from lightrag.utils import setup_env()
+   from lightrag.utils import setup_env
 
    setup_env()
 
@@ -53,7 +53,7 @@ Or, you can load it yourself with ``python-dotenv``:
 
 This setup ensures that LightRAG can access all necessary configurations during runtime.
 
-1. Install Optional Packages
+4. Install Optional Packages
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
