@@ -184,9 +184,10 @@ The structure of generator using ``print``:
         </pre>
     </div>
 
-**Show the final prompt**
+**Show the Final Prompt**
 
-`Generator` 's ``print_prompt`` method will simply relay the method from the `Prompt` component:
+
+The `Generator` 's ``print_prompt`` method will simply relay the method from the `Prompt` component:
 
 .. code-block:: python
 
@@ -204,7 +205,7 @@ The output will be the formatted prompt:
 
 
 
-**Call the generator**
+**Call the Generator**
 
 .. code-block:: python
 
@@ -219,11 +220,11 @@ The output will be the `GeneratorOutput` object:
 
     GeneratorOutput(data='LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.', error=None, usage=None, raw_response='LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.', metadata=None)
 
-Use template
+Use Template
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In this example, we will use a customized template to format the prompt.
-We intialized the prompt with one variable `task_desc_str` and it is further combined with the `input_str` in the prompt.
+We intialized the prompt with one variable `task_desc_str`, which is further combined with the `input_str` in the prompt.
 
 .. code-block:: python
 
@@ -263,8 +264,9 @@ The final prompt is:
 Use output_processors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In this example, we will instruct LLM to output a JSON object to respond.
+In this example, we will instruct the LLM to output a JSON object in response.
 We will use the `JsonParser` to parse the output back to a `dict` object.
+
 
 .. code-block:: python
 
@@ -314,18 +316,20 @@ The final prompt is:
     </User>
     You:
 
-The output of the call is:
+The above printout is:
 
 .. code-block::
 
     <class 'dict'>
     {'explaination': 'LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.', 'example': 'An example of a LLM is GPT-3, which can generate human-like text based on the input provided.'}
 
-Switch model client
+Please refer to :doc:`output_parsers` for a more comprehensive guide on the `Parser` components.
+
+Switch the model_client
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Also, did you notice that we have already switched to use models from `OpenAI` in the above example?
-This is how easy to switch the model client in the Generator, making it a truly model-agnostic component.
+Also, did you notice that we have already switched to using models from `OpenAI` in the above example?
+This demonstrates how easy it is to switch the `model_client` in the Generator, making it a truly model-agnostic component.
 We can even use :class:`ModelClientType<core.types.ModelClientType>` to switch the model client without handling multiple imports.
 
 .. code-block:: python
@@ -337,22 +341,24 @@ We can even use :class:`ModelClientType<core.types.ModelClientType>` to switch t
         model_kwargs={"model": "gpt-3.5-turbo"},
     )
 
-Get errors in the output
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Get Errors in GeneratorOutput
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We will use a wrong API key to delibrately create an error.
-We will still get a response, but only with empty ``data`` and an error message.
-Here is the api key error with OpenAI:
+We will use an incorrect API key to delibrately create an error.
+We will still get a response, but it will only contain empty ``data`` and an error message.
+Here is an example of an API key error with OpenAI:
+
 
 .. code-block:: python
 
     GeneratorOutput(data=None, error="Error code: 401 - {'error': {'message': 'Incorrect API key provided: ab. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}", usage=None, raw_response=None, metadata=None)
 
 
-Create from configs
+Create from Configs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Same as all components, we can create the generator purely from configs.
+As with all components, we can create the generator purely from configs.
+
 
 **Know it is a Generator**
 
@@ -383,11 +389,13 @@ In this case, we know we are creating a generator, we will use ``from_config`` m
     print(output)
 
 
-**Purely from the configs**
+**Purely from the Configs**
 
 This is even more general.
-This method fits to create any component from configs.
+This method can be used to create any component from configs.
 We just need to follow the config structure: ``component_name`` and ``component_config`` for all arguments.
+
+
 
 .. code-block:: python
 
@@ -424,13 +432,13 @@ We imported ``Generator`` in this case to only show the type hinting.
 
 .. note::
 
-    Please refer the :doc:`configurations<configs>` for more details on how to create components from configs.
+    Please refer to the :doc:`configurations<configs>` for more details on how to create components from configs.
 
 
-Examples across the library
+Examples Across the Library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Beside of these examples, LLM is like water, even in our library, we have components that have adpated Generator to other various functionalities.
+Besides these examples, LLM is like water, even in our library, we have components that have adpated Generator to various other functionalities.
 
 - :class:`LLMRetriever<components.retriever.llm_retriever.LLMRetriever>` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.
 - :class:`DefaultLLMJudge<eval.llm_as_judge.DefaultLLMJudge>` is a judge that uses Generator to call LLM to evaluate the quality of the response.
@@ -438,22 +446,15 @@ Beside of these examples, LLM is like water, even in our library, we have compon
 
 Tracing
 ---------------------------------------
+
+
+
 In particular, we provide two tracing methods to help you develop and improve the ``Generator``:
 
 1. Trace the history change (states) on prompt during your development process.
-
-Developers typically go through a long process of prompt optimization, and it is frustrating to lose track of the prompt changes when your current change actually makes the performance much worse.
-We created a :class:`GeneratorStateLogger<tracing.generator_state_logger.GeneratorStateLogger>` to handle the logging and saving into JSON files. To further simplify the developer's process, we provide a class decorator `trace_generator_states` where a single line of code can be added to any of your task components. It will automatically track any attributes of type `Generator`.
-
 2. Trace all failed LLM predictions for further improvement.
 
-Similarly, :class:`GeneratorCallLogger<tracing.generator_call_logger.GeneratorCallLogger>` is created to log generator call input arguments and output results.
-The `trace_generator_call` decorator is provided to offer a one-line setup to trace calls, which by default will log only failed predictions.
-
-.. note::
-
-    This note is getting rather long. Please go to the :doc:`tracing<logging_tracing>` for more details on how to use these tracing methods.
-
+As this note is getting rather long. Please refer to the :doc:`tracing<logging_tracing>` to learn about these two tracing methods.
 
 
 Training [Experimental]
