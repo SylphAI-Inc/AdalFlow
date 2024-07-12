@@ -102,8 +102,16 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          poetry env use python${{ matrix.python-version }}
-          poetry publish -u __token__ -p ${{ secrets.PYPI_KEY }}
+      - name: Download distribution
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+      - name: Publish to PyPI
+        run: |
+          cd dist
+          poetry publish --username __token__ --password ${{ secrets.PYPI_KEY }}
+
 
   create-github-release:
     needs: publish-to-pypi
