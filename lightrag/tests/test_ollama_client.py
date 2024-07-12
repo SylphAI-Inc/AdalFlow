@@ -17,7 +17,6 @@ class TestOllamaModelClient(unittest.TestCase):
     
     def test_ollama_llm_client(self):
         ollama_client = Mock(spec=OllamaClient())
-        #mocker.patch('OllamaClient', return_value=ollama_client)
         print("Testing ollama LLM client")
         # run the model
         kwargs = {
@@ -36,7 +35,6 @@ class TestOllamaModelClient(unittest.TestCase):
 
 
     def test_ollama_embedding_client(self):
-        # jina/jina-embeddings-v2-base-en:latest
         ollama_client = Mock(spec=OllamaClient())
         print("Testing ollama embedding client")
         # run the model
