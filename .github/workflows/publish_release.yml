@@ -5,8 +5,8 @@ on:
     tags:
       - 'v*'
     branches:
-      - release  # Restricts the workflow to only run on tags pushed to the release branch
-  workflow_dispatch:  # allows manual control
+      - release
+  workflow_dispatch:
     inputs:
       version:
         description: 'Override the version number'
