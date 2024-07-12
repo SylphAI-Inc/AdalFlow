@@ -1,9 +1,6 @@
 Installation
 ============
 
-
-.. _Installation:
-
 LightRAG is available in Python.
 
 1. Install LightRAG

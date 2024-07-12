@@ -499,7 +499,7 @@ If we want it to be even more accurate, we can move up to more expensive and acc
 </ol>
 <p>Instead, our design goals are:</p>
 <ol class="arabic simple">
-<li><p>Representative and valable coverage:</p>
+<li><p>Cover representative and valuable retriever methods:</p>
 <ol class="loweralpha simple">
 <li><p>High-precision retrieval methods and enabling them to work locally and in-memory so that researchers and developers can build and test more efficiently.</p></li>
 <li><p>Showcase how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.</p></li>
@@ -641,6 +641,8 @@ The <code class="docutils literal notranslate"><span class="pre">FAISSRetriever<
 </pre></div>
 </div>
 <p>The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.</p>
+<section id="faissretriever">
+<h3>FAISSRetriever<a class="headerlink" href="#faissretriever" title="Link to this heading">#</a></h3>
 <p>First, let’s do semantic search, here we will use in-memory <a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a>.
 FAISS retriever takes embeddings which can be <code class="docutils literal notranslate"><span class="pre">List[float]</span></code> or <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> and build an index using FAISS library.
 The query can take both embeddings and str formats.</p>
@@ -705,6 +707,9 @@ This is helpful when your retriever would need to work with different pool of do
 </div>
 <p>In default, the score is a simulated probabity in range <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> using consine similarity. The higher the score, the more relevant the document is to the query.
 You can check the retriever for more type of scores.</p>
+</section>
+<section id="bm25retriever">
+<h3>BM25Retriever<a class="headerlink" href="#bm25retriever" title="Link to this heading">#</a></h3>
 <p>So the semantic search works pretty well. We will see how <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> works in comparison.
 We reimplemented the code in <a class="footnote-reference brackets" href="#id17" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> with one improvement: instead of using <code class="docutils literal notranslate"><span class="pre">text.split(&quot;</span> <span class="pre">&quot;)</span></code>, we use tokenizer to split the text. Here is a comparison of how they different:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
@@ -761,6 +766,9 @@ We tested on the shorter and almost key-word like version of our queries and use
 <span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5343238380789569</span><span class="p">,</span> <span class="mf">0.4568096570283078</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;solar panels?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
 </pre></div>
 </div>
+</section>
+<section id="reranker-as-retriever">
+<h3>Reranker as Retriever<a class="headerlink" href="#reranker-as-retriever" title="Link to this heading">#</a></h3>
 <p>Semantic search works well, and reranker basd on mostly <cite>cross-encoder</cite> model is supposed to work even better.
 We have integrated two rerankers: <code class="docutils literal notranslate"><span class="pre">BAAI/bge-reranker-base</span></code> <a class="footnote-reference brackets" href="#id18" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> hosted on <code class="docutils literal notranslate"><span class="pre">transformers</span></code> and rerankers provided by <code class="docutils literal notranslate"><span class="pre">Cohere</span></code> <a class="footnote-reference brackets" href="#id19" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a>.
 These models follow the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> protocol and are directly accessible as retriever from <a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a>.</p>
@@ -842,6 +850,9 @@ require conversion in the <code class="docutils literal notranslate"><span class
 Semantically,  these documents might be close.
 If we use top_k = 3, the genearator might be able to filter out the irrelevant one and eventually give out the right final response.
 Also, if we use both the <cite>title</cite> and <cite>content</cite>, it will also got the right response.</p>
+</section>
+<section id="llm-as-retriever">
+<h3>LLM as Retriever<a class="headerlink" href="#llm-as-retriever" title="Link to this heading">#</a></h3>
 <p>There are differen ways to use LLM as a retriever:</p>
 <ol class="arabic simple">
 <li><p>Directly show it of all documents and query and ask it to return the indices of the top_k as a list.</p></li>
@@ -909,13 +920,22 @@ Here is our code:</p>
 <span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
 </pre></div>
 </div>
+</section>
+<section id="postgresretriever">
+<h3>PostgresRetriever<a class="headerlink" href="#postgresretriever" title="Link to this heading">#</a></h3>
 <p>Coming soon.</p>
+</section>
+<section id="use-score-threshold-instead-of-top-k">
+<h3>Use Score Threshold instead of top_k<a class="headerlink" href="#use-score-threshold-instead-of-top-k" title="Link to this heading">#</a></h3>
 <p>In some cases, when the retriever has a computed score and you might prefer to use the score instead of <code class="docutils literal notranslate"><span class="pre">top_k</span></code> to filter out the relevant documents.
 To do so, you can simplify set the <code class="docutils literal notranslate"><span class="pre">top_k</span></code> to the full size of the documents and use a post-processing step or a component(to chain with the retriever) to filter out the documents with the score below the threshold.</p>
+</section>
 </section>
 <section id="use-together-with-database">
 <h2>Use together with Database<a class="headerlink" href="#use-together-with-database" title="Link to this heading">#</a></h2>
 <p>When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.</p>
+<section id="with-localdb">
+<h3>With LocalDB<a class="headerlink" href="#with-localdb" title="Link to this heading">#</a></h3>
 <p>We have previously computed embeddings, now let us <a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalDB</span></code></a> to help with the persistence.
 (Although you can totally persist them yourself such as using pickle).
 Additionally, <code class="docutils literal notranslate"><span class="pre">LocalDB</span></code> help us keep track of our initial documents and its transformed documents.</p>
@@ -981,6 +1001,7 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 </div>
 </section>
 </section>
+</section>
 
 
                 </article>
@@ -1037,8 +1058,19 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-together-with-database">Use together with Database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#faissretriever">FAISSRetriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bm25retriever">BM25Retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reranker-as-retriever">Reranker as Retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-as-retriever">LLM as Retriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#postgresretriever">PostgresRetriever</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-score-threshold-instead-of-top-k">Use Score Threshold instead of top_k</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-together-with-database">Use together with Database</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-localdb">With LocalDB</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
