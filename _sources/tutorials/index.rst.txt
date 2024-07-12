@@ -59,7 +59,7 @@ Additionally, what shines in LightRAG is that all orchestrator components, like 
 You can easily make each component work with different models from different providers by switching out the `ModelClient` and its `model_kwargs`.
 
 
-We will introduce the library starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
+We will introduce the libraries starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
 With these building blocks, we will further introduce optimizing, where the optimizer uses building blocks such as Generator for auto-prompting and retriever for dynamic few-shot in-context learning (ICL).
 
 Building
@@ -126,7 +126,8 @@ Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
    * - :doc:`embedder`
      - The component that orchestrates model client (Embedding models in particular) and output processors.
    * - :doc:`retriever`
-     - The base class for all retrievers, which in particular retrieve relevant documents from a given database to add *context* to the generator.
+     - The base class for all retrievers who in particular retrieve relevant documents from a given database to add **context** to the generator.
+
 
 Data Pipeline and Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

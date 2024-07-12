@@ -253,7 +253,7 @@ Using a decorator is an even more convenient way to create a component from a fu
 
 .. code-block:: python
 
-    @fun_to_component
+    .. @fun_to_component
     def add_one(x):
         return x + 1
 
@@ -275,7 +275,7 @@ Let's put the `FunComponent`` and `DocQA`` together in a sequence:
 
 .. code-block:: python
 
-    from lightrag.core.container import Sequential
+    from lightrag.core.component import Sequential
 
     @fun_to_component
     def enhance_query(query:str) -> str:
@@ -318,7 +318,7 @@ The structure of the sequence using ``print(seq)``:
 
    - :class:`core.component.Component`
    - :class:`core.component.FunComponent`
-   - :class:`core.container.Sequential`
+   - :class:`core.component.Sequential`
    - :func:`core.component.fun_to_component`
 
 

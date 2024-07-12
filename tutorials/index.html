@@ -486,7 +486,7 @@ A <cite>Retriever</cite> will work with databases to retrieve context and overco
 An <cite>Agent</cite> will work with tools and an LLM planner for enhanced ability to reason, plan, and act on real-world tasks.</p>
 <p>Additionally, what shines in LightRAG is that all orchestrator components, like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite>, are model-agnostic.
 You can easily make each component work with different models from different providers by switching out the <cite>ModelClient</cite> and its <cite>model_kwargs</cite>.</p>
-<p>We will introduce the library starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
+<p>We will introduce the libraries starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
 With these building blocks, we will further introduce optimizing, where the optimizer uses building blocks such as Generator for auto-prompting and retriever for dynamic few-shot in-context learning (ICL).</p>
 </section>
 <section id="building">
@@ -553,7 +553,7 @@ With these building blocks, we will further introduce optimizing, where the opti
 <td><p>The component that orchestrates model client (Embedding models in particular) and output processors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="retriever.html"><span class="doc">Retriever</span></a></p></td>
-<td><p>The base class for all retrievers, which in particular retrieve relevant documents from a given database to add <em>context</em> to the generator.</p></td>
+<td><p>The base class for all retrievers who in particular retrieve relevant documents from a given database to add <strong>context</strong> to the generator.</p></td>
 </tr>
 </tbody>
 </table>

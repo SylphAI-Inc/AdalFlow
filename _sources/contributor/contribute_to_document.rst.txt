@@ -1,14 +1,11 @@
-Contribute to Document
+Contribute to Documentation
 ===============================================
 
 .. contents::
    :local:
    :depth: 2
 
-.. _Writing documentation:
-
-Writing Documentation
----------------------------
+.. _Documentation Contribution:
 
 - **User-Facing Documentation**: Found on the main docs site. These include tutorials, guides, and usage documentation meant for end users.
 - **Developer Documentation**: Located within the repository's READMEs and the ``docs/`` directory. These documents are more technical and intended for contributors and maintainers.
@@ -35,14 +32,14 @@ Setup & Build Documentation
 
 **2. Install Necessary Packages**
 
-LightRAG's documentation style is `pydata_sphinx_theme <https://pydata-sphinx-theme.readthedocs.io/en/stable/>`_ (version: 0.15.3).
+LightRAG's documentation style is `pydata_sphinx_theme <https://pydata-sphinx-theme.readthedocs.io/en/stable/>`_.
 
-Install by ``pip``:
+.. Install by ``pip``:
 
-.. code-block:: bash
+.. .. code-block:: bash
 
-    cd docs
-    pip install -r requirements.txt 
+..     cd docs
+..     pip install -r requirements.txt 
 
 Install by ``poetry`` along with all other dependencies for LightRAG:
 
@@ -107,6 +104,9 @@ To manually run these tests, run:
     make doctest
 
 
+Documentation Dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If your documentation requires any new dependencies, please include it in the ``pyproject.toml`` under the root directory, include it in your PR description and let us know.
 
 Commit Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~

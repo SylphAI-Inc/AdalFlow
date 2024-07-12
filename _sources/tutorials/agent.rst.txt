@@ -504,8 +504,6 @@ The above example will be formated as:
 **Subclass ReActAgent**
 
 If you want to customize the agent further, you can subclass the :class:`ReActAgent<components.agent.react.ReActAgent>` and override the methods you want to change.
-
-
 .. .. figure:: /_static/images/query_1.png
 ..    :align: center
 ..    :alt: DataClass

@@ -638,7 +638,7 @@ This approach gives you a unique component converted from the function name.</p>
 </pre></div>
 </div>
 <p>Using a decorator is an even more convenient way to create a component from a function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@fun_to_component</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="nd">@fun_to_component</span>
 <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
 
@@ -656,7 +656,7 @@ This approach gives you a unique component converted from the function name.</p>
 <p>We have the <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> class, which is similar to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class.
 This is especially useful for chaining together components in a sequence, much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
 Let’s put the <cite>FunComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.container</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
 <span class="nd">@fun_to_component</span>
 <span class="k">def</span> <span class="nf">enhance_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -693,7 +693,7 @@ The output is:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Component</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.container.Sequential</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a></p></li>
 </ul>
 </div>
