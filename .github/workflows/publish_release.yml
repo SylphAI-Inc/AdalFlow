@@ -83,12 +83,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
-          path: dist
+          path: lightrag/dist/
       - name: Install Poetry and perform dry run publish
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          cd dist
+          cd lightrag
           poetry publish --dry-run -v
 
   publish-to-pypi:
@@ -110,12 +110,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
-          path: dist
+          path: lightrag/dist/
       - name: Install Poetry and publish to PyPI
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          cd dist
+          cd lightrag
           poetry publish --username __token__ --password ${{ secrets.PYPI_KEY }} --verbose
 
   create-github-release:
