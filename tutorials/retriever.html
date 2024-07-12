@@ -1,0 +1,1093 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Retriever &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/retriever';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Text Splitter" href="text_splitter.html" />
+    <link rel="prev" title="Embedder" href="embedder.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Retriever</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="retriever">
+<span id="tutorials-retriever"></span><h1>Retriever<a class="headerlink" href="#retriever" title="Link to this heading">#</a></h1>
+<p>LLMs halluciate and also have a knowledge cut-off.
+External and relevant context is needed to increase the factuality, relevancy, and freshness of the LLM answers.
+Due to the LLM’s context window limit (it can only take so many tokens at a time), the <code class="docutils literal notranslate"><span class="pre">lost-in-the-middle</span></code> problem <a class="footnote-reference brackets" href="#id14" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a>, and the high cost in speed and resources using large context,
+it is practical to use a retriever to retrieve the most relevant information for the best performance. Retrieval Augemented Generation (RAG) <a class="footnote-reference brackets" href="#id15" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> applications have become one of main applications in LLMs.</p>
+<p><strong>What is a retriever?</strong></p>
+<p>Though the definition is simple-“Retrieve relevant information for a given query from a given database”-the scope of a retriever can extend as wide as the entire search and information retrieval field.
+Numerous search techniques existed long before vector/semantic search and reranking models, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search.
+These techniques can be applied to various data types, including text, time-sensitive data, locations, sensor data, images, videos, and audio.
+Additionally, they can be stored in various types of databases, such as relational databases, NoSQL databases, vector databases, and graph databases.</p>
+<p><strong>Retrieval in Production</strong></p>
+<p>In real production, retrieval is often a multiple-stage process, progressing from the cheapest to the most expensive and accurate methods, narrowing down from millions of candidates to a few hundred or even less.
+For example, when you want to search for candidates from a pool of profiles stored in a realtional database like Postgres, you can start with a simple keyword search or check if the  name equals the query.
+You may also want to search by profession, which has already been categorized either by a model or human labeling, making it a filter search.
+If the search query requires more semantic understanding, we will leverage semantic search using embedding models.
+If we want it to be even more accurate, we can move up to more expensive and accurate methods such as reranking models and LLM-based retrieval methods.</p>
+<section id="design">
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id20">
+<a class="reference internal image-reference" href="../_images/retriever.png"><img alt="Retriever design" src="../_images/retriever.png" style="width: 620px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">LightRAG retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<div class="legend">
+</div>
+</figcaption>
+</figure>
+<section id="scope-and-design-goals">
+<h3>Scope and Design Goals<a class="headerlink" href="#scope-and-design-goals" title="Link to this heading">#</a></h3>
+<p>LightRAG library does not prioritize the coverage of integration for the following reasons:</p>
+<ol class="arabic simple">
+<li><p>It is literally too-wide to cover them all.</p></li>
+<li><p>The challenges with RAG application lies more in evaluation and optimization due to many different moving parts and many hyperparmeters, and less in implementing or integrating a 3rd party retriever.</p></li>
+</ol>
+<p>Instead, our design goals are:</p>
+<ol class="arabic simple">
+<li><p>Representative and valable coverage:</p>
+<ol class="loweralpha simple">
+<li><p>High-precision retrieval methods and enabling them to work locally and in-memory so that researchers and developers can build and test more efficiently.</p></li>
+<li><p>Showcase how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.</p></li>
+</ol>
+</li>
+<li><p>Provide a clear design pattern so that users can:</p>
+<ol class="loweralpha simple">
+<li><p>Easily integrate their own retriever and make it work seamlessly with the remaining part of the LLM task pipeline.</p></li>
+<li><p>Easily combine different retriever methods to form a multiple-stage retrieval pipeline.</p></li>
+</ol>
+</li>
+</ol>
+<p>Here are current coverage on retriever methods:</p>
+<ol class="arabic simple">
+<li><p>LLMAsRetriever</p></li>
+<li><p>Reranker (Cross-encoder)</p></li>
+<li><p>Semantic Search (Bi-encoder)</p></li>
+<li><p>BM25</p></li>
+<li><p>Database’s built-in search such as full-text search/SQL-based search using Postgres and semantic search using <code class="docutils literal notranslate"><span class="pre">PgVector</span></code>.</p></li>
+</ol>
+</section>
+<section id="with-database">
+<h3>With Database<a class="headerlink" href="#with-database" title="Link to this heading">#</a></h3>
+<p>A retriever will work hand in hand with <code class="docutils literal notranslate"><span class="pre">database</span></code>.
+We will provide a <a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalDB</span></code></a> and a cloud SQL-based database (using <code class="docutils literal notranslate"><span class="pre">SQLAlchemy</span></code>) that can work with any data class/model, espeically with the <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> for data processing and <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">DialogTurn</span></code></a> for conversational data.
+<code class="docutils literal notranslate"><span class="pre">Document</span></code> combined with text splitter and embedding models will provide the <code class="docutils literal notranslate"><span class="pre">context</span></code> in RAG.
+Working with <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> can help manage <code class="docutils literal notranslate"><span class="pre">conversation_history</span></code>, especiall for the lifelong memeory of a chatbot.</p>
+<section id="retriever-data-types">
+<h4>Retriever Data Types<a class="headerlink" href="#retriever-data-types" title="Link to this heading">#</a></h4>
+<p>In most cases, the query is string. But there are cases we might need both text and images as a query, such as “find me a cloth that looks like this”.
+We defined the query type as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RetrieverQueryType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverQueryType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">RetrieverStrQueryType</span> <span class="o">=</span> <span class="nb">str</span>
+<span class="n">RetrieverQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">]]</span>
+<span class="n">RetrieverStrQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverStrQueryType</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>As we see, our retriever should be able to handle both single query and multiple queries at once.</p>
+<p>The documents are a sequence of document of any type that will be later specified by the subclass:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RetrieverDocumentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverDocumentType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># a single document</span>
+<span class="n">RetrieverDocumentsType</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">]</span> <span class="c1"># The final documents types retriever can use</span>
+</pre></div>
+</div>
+<p>We further define  the same output format so that we can easily switch between different retrievers in our task pipeline.
+Here is our output format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Save the output of a single query in retrievers.</span>
+
+<span class="s2">    It is up to the subclass of Retriever to specify the type of query and document.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">doc_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document indices&quot;</span><span class="p">})</span>
+    <span class="n">doc_scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document scores&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The query used to retrieve the documents&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">documents</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of retrieved documents&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+
+
+<span class="n">RetrieverOutputType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]</span>  <span class="c1"># so to support multiple queries at once</span>
+</pre></div>
+</div>
+<p>You can find the types in <a class="reference internal" href="../apis/core/core.types.html#core-types"><span class="std std-ref">types</span></a>. The list of queries and <cite>RetrieverOutput</cite> can be helpful for:</p>
+<ol class="arabic simple">
+<li><p>Batch-processing: especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.</p></li>
+<li><p>For <cite>query expansion</cite> where to increase the recall, users often generate multiple queries from the original query.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
+
+    <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrieverOutputType</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;retrieve is not implemented&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">acall</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="nb">input</span><span class="p">:</span> <span class="n">RetrieverQueriesType</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RetrieverOutputType</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Async retrieve is not implemented&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Document and TextSplitter</strong></p>
+<p>If your documents(text format) are too large and it is a common practise to first use <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> to split them into smaller chunks.
+Please refer to <a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a> and our provided notebook on how to use it.</p>
+</section>
+<section id="retriever-base-class">
+<h4>Retriever Base Class<a class="headerlink" href="#retriever-base-class" title="Link to this heading">#</a></h4>
+<p>Functionally, the base retriever <a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code></a> defines another required method <code class="docutils literal notranslate"><span class="pre">build_index_from_documents</span></code> where the subclass will prepare the retriever for the actual retrieval calls.
+Optionally, the subclass can implement <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to save and load the retriever to/from disk.
+As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_config</span></code> to help
+with the saving and loading process. As for helper attributes, we have <code class="docutils literal notranslate"><span class="pre">indexed</span></code> and <code class="docutils literal notranslate"><span class="pre">index_keys</span></code> to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
+As an example, <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> has the following key attributes to index.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">index_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nd&quot;</span><span class="p">,</span> <span class="s2">&quot;t2d&quot;</span><span class="p">,</span> <span class="s2">&quot;idf&quot;</span><span class="p">,</span><span class="s2">&quot;doc_len&quot;</span><span class="p">,</span><span class="s2">&quot;avgdl&quot;</span><span class="p">,</span><span class="s2">&quot;total_documents&quot;</span><span class="p">,</span><span class="s2">&quot;top_k&quot;</span><span class="p">,</span><span class="s2">&quot;k1&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;epsilon&quot;</span><span class="p">,</span><span class="s2">&quot;indexed&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="retriever-in-action">
+<h2>Retriever in Action<a class="headerlink" href="#retriever-in-action" title="Link to this heading">#</a></h2>
+<p>All of our retrievers are  subclassed from the base retriever, and they are located in the <code class="docutils literal notranslate"><span class="pre">components.retriever</span></code> module.
+You can skim through their implementations here: <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">retriever</span></a>.
+Currently only <code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code> needs to have its own <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to avoid recomputation again.
+The <code class="docutils literal notranslate"><span class="pre">FAISSRetriever</span></code> will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.</p>
+<p>In this note, we will use the following documents and queries for demonstration:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query_1</span> <span class="o">=</span> <span class="s2">&quot;What are the benefits of renewable energy?&quot;</span> <span class="c1"># gt is [0, 3]</span>
+<span class="n">query_2</span> <span class="o">=</span> <span class="s2">&quot;How do solar panels impact the environment?&quot;</span> <span class="c1"># gt is [1, 2]</span>
+
+<span class="n">documents</span> <span class="o">=</span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;The Impact of Renewable Energy on the Economy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Understanding Solar Panels&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Pros and Cons of Solar Energy&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.&quot;</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span>  <span class="s2">&quot;Renewable Energy and Its Effects&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.&quot;</span>
+    <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.</p>
+<p>First, let’s do semantic search, here we will use in-memory <a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">FAISSRetriever</span></code></a>.
+FAISS retriever takes embeddings which can be <code class="docutils literal notranslate"><span class="pre">List[float]</span></code> or <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> and build an index using FAISS library.
+The query can take both embeddings and str formats.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">faiss</span></code> package is optional in our library. When you want to use it, ensure you have it installed in your env.</p>
+</div>
+<p>We will quickly prepare the embeddings of the above documents using <cite>content</cite> field.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+    <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span> <span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">embedder</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="p">[</span><span class="n">doc</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">documents</span><span class="p">])</span>
+<span class="n">documents_embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">embedding</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For the initialization, a retriever can take both its required documents along with hyperparmeters including <code class="docutils literal notranslate"><span class="pre">top_k</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">documents</span></code> field is optional. Let’s pass it all from <code class="docutils literal notranslate"><span class="pre">__init__</span></code> first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
+<span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">documents_embeddings</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FAISSRetriever</span><span class="p">(</span>
+ <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">metric</span><span class="o">=</span><span class="n">prob</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">4</span>
+ <span class="p">(</span><span class="n">embedder</span><span class="p">):</span> <span class="n">Embedder</span><span class="p">(</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;text-embedding-3-small&#39;</span><span class="p">,</span> <span class="s1">&#39;dimensions&#39;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">&#39;encoding_format&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+ <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>We can also pass the documents using <a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents" title="components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_index_from_documents</span></code></a> method after the initialization.
+This is helpful when your retriever would need to work with different pool of documents each time.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">retriever_1</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">)</span>
+<span class="n">retriever_1</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">documents_embeddings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we will do the retriever, the input can either be a single query or a list of queries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output_1</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_2</span><span class="p">)</span>
+<span class="n">output_3</span> <span class="o">=</span> <span class="n">retriever</span><span class="p">(</span><span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="n">query_1</span><span class="p">,</span> <span class="n">query_2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8119999766349792</span><span class="p">,</span> <span class="mf">0.7749999761581421</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8169999718666077</span><span class="p">,</span> <span class="mf">0.8109999895095825</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8119999766349792</span><span class="p">,</span> <span class="mf">0.7749999761581421</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.8169999718666077</span><span class="p">,</span> <span class="mf">0.8109999895095825</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>In default, the score is a simulated probabity in range <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">1]</span></code> using consine similarity. The higher the score, the more relevant the document is to the query.
+You can check the retriever for more type of scores.</p>
+<p>So the semantic search works pretty well. We will see how <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> works in comparison.
+We reimplemented the code in <a class="footnote-reference brackets" href="#id17" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> with one improvement: instead of using <code class="docutils literal notranslate"><span class="pre">text.split(&quot;</span> <span class="pre">&quot;)</span></code>, we use tokenizer to split the text. Here is a comparison of how they different:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
+
+<span class="n">query_1_words</span> <span class="o">=</span> <span class="n">split_text_by_word_fn</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">query_1_tokens</span> <span class="o">=</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;what&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;benefits&#39;</span><span class="p">,</span> <span class="s1">&#39;of&#39;</span><span class="p">,</span> <span class="s1">&#39;renewable&#39;</span><span class="p">,</span> <span class="s1">&#39;energy?&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;what&#39;</span><span class="p">,</span> <span class="s1">&#39;are&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;benef&#39;</span><span class="p">,</span> <span class="s1">&#39;its&#39;</span><span class="p">,</span> <span class="s1">&#39;of&#39;</span><span class="p">,</span> <span class="s1">&#39;re&#39;</span><span class="p">,</span> <span class="s1">&#39;new&#39;</span><span class="p">,</span> <span class="s1">&#39;able&#39;</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">,</span> <span class="s1">&#39;?&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We prepare the retriever:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">BM25Retriever</span>
+
+<span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+
+<span class="n">bm25_retriever</span> <span class="o">=</span> <span class="n">BM25Retriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="o">=</span><span class="n">document_map_func</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bm25_retriever</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It takes <code class="docutils literal notranslate"><span class="pre">document_map_func</span></code> to map the documents to the text format the retriever can work with.
+The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">BM25Retriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">k1</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mf">0.75</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">use_tokenizer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we call the retriever exactly the same way as we did with the FAISS retriever:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output_1</span> <span class="o">=</span> <span class="n">bm25_retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">bm25_retriever</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_2</span><span class="p">)</span>
+<span class="n">output_3</span> <span class="o">=</span> <span class="n">bm25_retriever</span><span class="p">(</span><span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="n">query_1</span><span class="p">,</span> <span class="n">query_2</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output_3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">2.151683837681807</span><span class="p">,</span> <span class="mf">1.6294762236217233</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">1.5166601493236314</span><span class="p">,</span> <span class="mf">0.7790170272403408</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">2.151683837681807</span><span class="p">,</span> <span class="mf">1.6294762236217233</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">1.5166601493236314</span><span class="p">,</span> <span class="mf">0.7790170272403408</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Here we see the first query returns <code class="docutils literal notranslate"><span class="pre">[2,</span> <span class="pre">1]</span></code> while the ground truth is <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">3]</span></code>. The second query returns <code class="docutils literal notranslate"><span class="pre">[3,</span> <span class="pre">2]</span></code> while the ground truth is <code class="docutils literal notranslate"><span class="pre">[1,</span> <span class="pre">2]</span></code>.
+The performance is quite disappointing. BM25 is known for lack of semantic understanding and does not consider context.
+We tested on the shorter and almost key-word like version of our queries and use both the <cite>title</cite> and <cite>content</cite>, and it gives the right response using the tokenized split.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">query_1_short</span> <span class="o">=</span> <span class="s2">&quot;renewable energy?&quot;</span>  <span class="c1"># gt is [0, 3]</span>
+<span class="n">query_2_short</span> <span class="o">=</span> <span class="s2">&quot;solar panels?&quot;</span>  <span class="c1"># gt is [1, 2]</span>
+<span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="n">bm25_retriever</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="o">=</span><span class="n">document_map_func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This time the retrieval gives us the right answer.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9498793313012154</span><span class="p">,</span> <span class="mf">0.8031794089550072</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.5343238380789569</span><span class="p">,</span> <span class="mf">0.4568096570283078</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;solar panels?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Semantic search works well, and reranker basd on mostly <cite>cross-encoder</cite> model is supposed to work even better.
+We have integrated two rerankers: <code class="docutils literal notranslate"><span class="pre">BAAI/bge-reranker-base</span></code> <a class="footnote-reference brackets" href="#id18" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> hosted on <code class="docutils literal notranslate"><span class="pre">transformers</span></code> and rerankers provided by <code class="docutils literal notranslate"><span class="pre">Cohere</span></code> <a class="footnote-reference brackets" href="#id19" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a>.
+These models follow the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> protocol and are directly accessible as retriever from <a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a>.</p>
+<p><strong>Reranker ModelClient Integration</strong></p>
+<p>A reranker will take <code class="docutils literal notranslate"><span class="pre">ModelType.RERANKER</span></code> and the standard LightRAG library requires it to have four arguments in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>:
+<code class="docutils literal notranslate"><span class="pre">['model',</span> <span class="pre">'top_k',</span> <span class="pre">'documents',</span> <span class="pre">'query']</span></code>. It is in the ModelClient which converts LightRAG’s standard arguments to the model’s specific arguments.
+If you want to intergrate your reranker, either locally or using APIs, check out <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code> and
+<a class="reference internal" href="../apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a> for how to do it.</p>
+<p>To use it from the <code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code>, we only need to pass the <code class="docutils literal notranslate"><span class="pre">model</span></code> along with other arguments who does not
+require conversion in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>. Here is how we use model  <cite>rerank-english-v3.0</cite> from Cohere(Make sure you have the cohere sdk installed and prepared your api key):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">RerankerRetriever</span>
+
+<span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">COHERE</span><span class="p">()</span>
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;rerank-english-v3.0&quot;</span><span class="p">}</span>
+
+
+<span class="n">reranker</span> <span class="o">=</span> <span class="n">RerankerRetriever</span><span class="p">(</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">reranker</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RerankerRetriever</span><span class="p">(</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;rerank-english-v3.0&#39;</span><span class="p">},</span> <span class="n">model_client</span><span class="o">=</span><span class="n">CohereAPIClient</span><span class="p">(),</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">CohereAPIClient</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we build the index and do the retrieval:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="n">reranker</span><span class="o">.</span><span class="n">build_index_from_documents</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span> <span class="n">document_map_func</span><span class="o">=</span><span class="n">document_map_func</span><span class="p">)</span>
+
+<span class="n">output_1</span> <span class="o">=</span> <span class="n">reranker</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">reranker</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">query_2</span><span class="p">)</span>
+<span class="n">output_3</span> <span class="o">=</span> <span class="n">reranker</span><span class="p">(</span><span class="nb">input</span> <span class="o">=</span> <span class="p">[</span><span class="n">query_1</span><span class="p">,</span> <span class="n">query_2</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>From the structure after adding documents we see the reranker has passed the documents to the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> so that it can send it all to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RerankerRetriever</span><span class="p">(</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;rerank-english-v3.0&#39;</span><span class="p">,</span> <span class="s1">&#39;documents&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&#39;</span><span class="p">,</span> <span class="s1">&#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&#39;</span><span class="p">,</span> <span class="s1">&#39;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.&#39;</span><span class="p">,</span> <span class="s1">&#39;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.&#39;</span><span class="p">]},</span> <span class="n">model_client</span><span class="o">=</span><span class="n">CohereAPIClient</span><span class="p">(),</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">4</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">CohereAPIClient</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>From the results we see it gets the right answer and has a close to 1 score.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.99520767</span><span class="p">,</span> <span class="mf">0.9696708</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.98742366</span><span class="p">,</span> <span class="mf">0.9701269</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.99520767</span><span class="p">,</span> <span class="mf">0.9696708</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.98742366</span><span class="p">,</span> <span class="mf">0.9701269</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Now let us see how the <a href="#id6"><span class="problematic" id="id7">``</span></a>BAAI/bge-reranker-base` from local transformers model works:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">TRANSFORMERS</span><span class="p">()</span>
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;BAAI/bge-reranker-base&quot;</span><span class="p">}</span>
+
+<span class="n">reranker</span> <span class="o">=</span> <span class="n">RerankerRetriever</span><span class="p">(</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+    <span class="n">document_map_func</span><span class="o">=</span><span class="n">document_map_func</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">reranker</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RerankerRetriever</span><span class="p">(</span>
+    <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;BAAI/bge-reranker-base&#39;</span><span class="p">,</span> <span class="s1">&#39;documents&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&#39;</span><span class="p">,</span> <span class="s1">&#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&#39;</span><span class="p">,</span> <span class="s1">&#39;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.&#39;</span><span class="p">,</span> <span class="s1">&#39;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.&#39;</span><span class="p">]},</span> <span class="n">model_client</span><span class="o">=</span><span class="n">TransformersClient</span><span class="p">(),</span> <span class="n">total_documents</span><span class="o">=</span><span class="mi">4</span>
+    <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">TransformersClient</span><span class="p">()</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the retrieval result:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9996004700660706</span><span class="p">,</span> <span class="mf">0.9950029253959656</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="p">[</span><span class="mf">0.9994490742683411</span><span class="p">,</span> <span class="mf">0.9994476437568665</span><span class="p">],</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>It missed one at the second query, but it is at the top 3.
+Semantically,  these documents might be close.
+If we use top_k = 3, the genearator might be able to filter out the irrelevant one and eventually give out the right final response.
+Also, if we use both the <cite>title</cite> and <cite>content</cite>, it will also got the right response.</p>
+<p>There are differen ways to use LLM as a retriever:</p>
+<ol class="arabic simple">
+<li><p>Directly show it of all documents and query and ask it to return the indices of the top_k as a list.</p></li>
+<li><p>Put the query and document a pair and ask it to do a <cite>yes</cite> and <cite>no</cite>. Additionally, we can use its <cite>logprobs</cite> of the <cite>yes</cite> token to get a probability-like score. We will implement this in the near future, for now, you can refer <a class="footnote-reference brackets" href="#id16" id="id8" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a> to implement it yourself.</p></li>
+</ol>
+<p>For the first case, with out prompt and zero-shot, <cite>gpt-3.5-turbo</cite> is not working as well as <cite>gpt-4o</cite> which got both answers right.
+Here is our code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">LLMRetriever</span>
+
+<span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-4o&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
+<span class="n">llm_retriever</span> <span class="o">=</span> <span class="n">LLMRetriever</span><span class="p">(</span>
+        <span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">,</span>
+        <span class="n">document_map_func</span><span class="o">=</span><span class="n">document_map_func</span>
+    <span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">llm_retriever</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>LLMRetriever(
+    top_k=2, total_documents=4,
+    (generator): Generator(
+        model_kwargs={&#39;model&#39;: &#39;gpt-4o&#39;},
+        (prompt): Prompt(
+        template: &lt;SYS&gt;
+        You are a retriever. Given a list of documents, you will retrieve the top_k {{top_k}} most relevant documents and output the indices (int) as a list:
+        [&lt;index of the most relevant with top_k options&gt;]
+        &lt;Documents&gt;
+        {% for doc in documents %}
+        ```Index {{ loop.index - 1 }}. {{ doc }}```
+        {% endfor %}
+        &lt;/Documents&gt;
+        &lt;/SYS&gt;
+        Query: {{ input_str }}
+        You:
+        , preset_prompt_kwargs: {&#39;top_k&#39;: 2, &#39;documents&#39;: [&#39;Renewable energy technologies not only help in reducing greenhouse gas emissions but also contribute significantly to the economy by creating jobs in the manufacturing and installation sectors. The growth in renewable energy usage boosts local economies through increased investment in technology and infrastructure.&#39;, &#39;Solar panels convert sunlight into electricity by allowing photons, or light particles, to knock electrons free from atoms, generating a flow of electricity. Solar panels are a type of renewable energy technology that has been found to have a significant positive effect on the environment by reducing the reliance on fossil fuels.&#39;, &#39;While solar energy offers substantial environmental benefits, such as reducing carbon footprints and pollution, it also has downsides. The production of solar panels can lead to hazardous waste, and large solar farms require significant land, which can disrupt local ecosystems.&#39;, &#39;Renewable energy sources like wind, solar, and hydro power play a crucial role in combating climate change. They do not produce greenhouse gases during operation, making them essential for sustainable development. However, the initial setup and material sourcing for these technologies can still have environmental impacts.&#39;]}, prompt_variables: [&#39;documents&#39;, &#39;top_k&#39;, &#39;input_str&#39;]
+        )
+        (model_client): OpenAIClient()
+        (output_processors): ListParser()
+    )
+)
+</pre></div>
+</div>
+<p>Here is the response:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>We can call the retriever with different model without reinitializing the retriever. Here is how we do it with <cite>gpt-3.5-turbo</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">output_1</span> <span class="o">=</span> <span class="n">llm_retriever</span><span class="p">(</span><span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">query_1</span><span class="p">)</span>
+<span class="n">output_2</span> <span class="o">=</span> <span class="n">llm_retriever</span><span class="p">(</span><span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">query_2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The response is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;What are the benefits of renewable energy?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+<span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">(</span><span class="n">doc_indices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">doc_scores</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;How do solar panels impact the environment?&#39;</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="kc">None</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Coming soon.</p>
+<p>In some cases, when the retriever has a computed score and you might prefer to use the score instead of <code class="docutils literal notranslate"><span class="pre">top_k</span></code> to filter out the relevant documents.
+To do so, you can simplify set the <code class="docutils literal notranslate"><span class="pre">top_k</span></code> to the full size of the documents and use a post-processing step or a component(to chain with the retriever) to filter out the documents with the score below the threshold.</p>
+</section>
+<section id="use-together-with-database">
+<h2>Use together with Database<a class="headerlink" href="#use-together-with-database" title="Link to this heading">#</a></h2>
+<p>When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.</p>
+<p>We have previously computed embeddings, now let us <a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalDB</span></code></a> to help with the persistence.
+(Although you can totally persist them yourself such as using pickle).
+Additionally, <code class="docutils literal notranslate"><span class="pre">LocalDB</span></code> help us keep track of our initial documents and its transformed documents.</p>
+<div class="highlight admonition">
+<p class="admonition-title">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id9" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Full-text search on PostgreSQL: <a class="reference external" href="https://www.postgresql.org/docs/current/textsearch.html">https://www.postgresql.org/docs/current/textsearch.html</a></p>
+</aside>
+<aside class="footnote brackets" id="id10" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<p>BM25: <a class="reference external" href="https://en.wikipedia.org/wiki/Okapi_BM25">https://en.wikipedia.org/wiki/Okapi_BM25</a></p>
+</aside>
+<aside class="footnote brackets" id="id11" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<p>Representative learning models: <a class="reference external" href="https://arxiv.org/abs/2310.07554">https://arxiv.org/abs/2310.07554</a></p>
+</aside>
+<aside class="footnote brackets" id="id12" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
+<p>Reranking models: <a class="github reference external" href="https://github.com/FlagOpen/FlagEmbedding/tree/master/FlagEmbedding/llm_reranker">FlagOpen/FlagEmbedding</a></p>
+</aside>
+<aside class="footnote brackets" id="id13" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<p>FAISS: <a class="github reference external" href="https://github.com/facebookresearch/faiss">facebookresearch/faiss</a></p>
+</aside>
+<aside class="footnote brackets" id="id14" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">6</a><span class="fn-bracket">]</span></span>
+<p>Lost-in-the-middle: <a class="reference external" href="https://arxiv.org/abs/2307.03172">https://arxiv.org/abs/2307.03172</a></p>
+</aside>
+<aside class="footnote brackets" id="id15" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">7</a><span class="fn-bracket">]</span></span>
+<p>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks(RAG): <a class="reference external" href="https://arxiv.org/abs/2005.11401">https://arxiv.org/abs/2005.11401</a></p>
+</aside>
+<aside class="footnote brackets" id="id16" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">8</a><span class="fn-bracket">]</span></span>
+<p>Use LLM as Reranker along with logprobs: <a class="reference external" href="https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/">https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/</a></p>
+</aside>
+<aside class="footnote brackets" id="id17" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">9</a><span class="fn-bracket">]</span></span>
+<p>Rank_bm25: <a class="github reference external" href="https://github.com/dorianbrown/rank_bm25">dorianbrown/rank_bm25</a></p>
+</aside>
+<aside class="footnote brackets" id="id18" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">10</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://huggingface.co/BAAI/bge-reranker-base">https://huggingface.co/BAAI/bge-reranker-base</a></p>
+</aside>
+<aside class="footnote brackets" id="id19" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">11</a><span class="fn-bracket">]</span></span>
+<p>Cohere reranker: <a class="reference external" href="https://docs.cohere.com/reference/rerank">https://docs.cohere.com/reference/rerank</a></p>
+</aside>
+</aside>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.retriever.Retriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core-types"><span class="std std-ref">core.types</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever" title="components.retriever.faiss_retriever.FAISSRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever.FAISSRetriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever.BM25Retriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever.RerankerRetriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="embedder.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Embedder</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="text_splitter.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Text Splitter</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-and-design-goals">Scope and Design Goals</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-database">With Database</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-data-types">Retriever Data Types</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-base-class">Retriever Base Class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-together-with-database">Use together with Database</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

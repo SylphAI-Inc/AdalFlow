@@ -154,7 +154,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -284,7 +284,7 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -443,6 +443,7 @@ document.write(`
     <span class="n">AnthropicAPIClient</span><span class="p">,</span>
     <span class="n">GroqAPIClient</span><span class="p">,</span>
     <span class="n">OpenAIClient</span><span class="p">,</span>
+    <span class="n">GoogleGenAIClient</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -458,6 +459,8 @@ document.write(`
 <div class="viewcode-block" id="ModelType">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelType">[docs]</a>
 <span class="k">class</span> <span class="nc">ModelType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The type of the model, including Embedder, LLM, Reranker.</span>
+<span class="s2">     It helps ModelClient identify the model type required to correctly call the model.&quot;&quot;&quot;</span>
     <span class="n">EMBEDDER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">LLM</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>
     <span class="n">RERANKER</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># ranking model</span>
@@ -469,11 +472,30 @@ document.write(`
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.ModelClientType">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">ModelClientType</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A quick way to access all model clients in the ModelClient module.</span>
+
+<span class="s2">    From this:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">    from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
+
+<span class="s2">    model_client = OpenAIClient()</span>
+
+<span class="s2">    To this:</span>
+
+<span class="s2">    .. code-block:: python</span>
+
+<span class="s2">    from lightrag.core.types import ModelClientType</span>
+
+<span class="s2">    model_client = ModelClientType.OPENAI()</span>
+<span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">COHERE</span> <span class="o">=</span> <span class="n">CohereAPIClient</span>
     <span class="n">TRANSFORMERS</span> <span class="o">=</span> <span class="n">TransformersClient</span>
     <span class="n">ANTHROPIC</span> <span class="o">=</span> <span class="n">AnthropicAPIClient</span>
     <span class="n">GROQ</span> <span class="o">=</span> <span class="n">GroqAPIClient</span>
-    <span class="n">OPENAI</span> <span class="o">=</span> <span class="n">OpenAIClient</span></div>
+    <span class="n">OPENAI</span> <span class="o">=</span> <span class="n">OpenAIClient</span>
+    <span class="n">GOOGLE_GENAI</span> <span class="o">=</span> <span class="n">GoogleGenAIClient</span></div>
 
 
 
@@ -808,7 +830,6 @@ document.write(`
     <span class="p">)</span>
     <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="n">required_field</span><span class="p">,</span>
-        <span class="c1"># metadata={&quot;desc&quot;: &quot;FuncName(&lt;args&gt;, &lt;kwargs&gt;)&quot;},</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">_action_desc</span><span class="p">},</span>
     <span class="p">)</span>
 
@@ -834,6 +855,24 @@ document.write(`
 <span class="sd">        1. Create a FunctionExpression object from a function call:</span>
 <span class="sd">        2. use :meth:`to_json` and :meth:`to_yaml` to get the schema in JSON or YAML format.</span>
 <span class="sd">        3. This will be used as an example in prompt showing LLM how to call the function.</span>
+
+<span class="sd">        Example:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from lightrag.core.types import FunctionExpression</span>
+
+<span class="sd">            def add(a, b):</span>
+<span class="sd">                return a + b</span>
+
+<span class="sd">            # create an expression for the function call and using keyword arguments</span>
+<span class="sd">            fun_expr = FunctionExpression.from_function(</span>
+<span class="sd">                add, thought=&quot;Add two numbers&quot;, a=1, b=2</span>
+<span class="sd">            )</span>
+<span class="sd">            print(fun_expr)</span>
+
+<span class="sd">            # output</span>
+<span class="sd">            # FunctionExpression(thought=&#39;Add two numbers&#39;, action=&#39;add(a=1, b=2)&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">action</span> <span class="o">=</span> <span class="n">generate_function_call_expression_from_callable</span><span class="p">(</span>
@@ -845,9 +884,6 @@ document.write(`
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">action</span><span class="o">=</span><span class="n">action</span><span class="p">,</span> <span class="n">thought</span><span class="o">=</span><span class="n">thought</span><span class="p">)</span></div>
 </div>
 
-
-
-<span class="c1"># saves the output of a function tool.</span>
 
 
 <div class="viewcode-block" id="FunctionOutput">

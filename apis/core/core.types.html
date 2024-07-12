@@ -157,7 +157,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -289,7 +289,7 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -364,6 +364,7 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Core</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="core.base_data_class.html">base_data_class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.container.html">container</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.default_prompt_template.html">default_prompt_template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.embedder.html">embedder</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.generator.html">generator</a></li>
@@ -565,10 +566,10 @@ document.write(`
 <td><p>The output data class for the Generator component.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClientType</span></code></a>()</p></td>
-<td><p></p></td>
+<td><p>A quick way to access all model clients in the ModelClient module.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelType</span></code></a>(value[, names, module, qualname, ...])</p></td>
-<td><p></p></td>
+<td><p>The type of the model, including Embedder, LLM, Reranker.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a>(doc_indices[, doc_scores, ...])</p></td>
 <td><p>Save the output of a single query in retrievers.</p></td>
@@ -592,6 +593,8 @@ document.write(`
 <dt class="sig sig-object py" id="core.types.ModelType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#ModelType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.ModelType" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>The type of the model, including Embedder, LLM, Reranker.
+It helps ModelClient identify the model type required to correctly call the model.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelType.EMBEDDER">
 <span class="sig-name descname"><span class="pre">EMBEDDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#core.types.ModelType.EMBEDDER" title="Link to this definition">#</a></dt>
@@ -618,6 +621,19 @@ document.write(`
 <dt class="sig sig-object py" id="core.types.ModelClientType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelClientType</span></span><a class="reference internal" href="../../_modules/core/types.html#ModelClientType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.ModelClientType" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A quick way to access all model clients in the ModelClient module.</p>
+<p>From this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</p>
+<p>model_client = OpenAIClient()</p>
+<p>To this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>from lightrag.core.types import ModelClientType</p>
+<p>model_client = ModelClientType.OPENAI()</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.COHERE">
 <span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">#</a></dt>
@@ -636,6 +652,11 @@ document.write(`
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.OPENAI">
 <span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.ModelClientType.GOOGLE_GENAI">
+<span class="sig-name descname"><span class="pre">GOOGLE_GENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GOOGLE_GENAI" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -995,6 +1016,22 @@ we have data as None, error as the error message.</p>
 1. Create a FunctionExpression object from a function call:
 2. use <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml()</span></code> to get the schema in JSON or YAML format.
 3. This will be used as an example in prompt showing LLM how to call the function.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+<span class="c1"># create an expression for the function call and using keyword arguments</span>
+<span class="n">fun_expr</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>
+    <span class="n">add</span><span class="p">,</span> <span class="n">thought</span><span class="o">=</span><span class="s2">&quot;Add two numbers&quot;</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fun_expr</span><span class="p">)</span>
+
+<span class="c1"># output</span>
+<span class="c1"># FunctionExpression(thought=&#39;Add two numbers&#39;, action=&#39;add(a=1, b=2)&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -1402,6 +1439,7 @@ record or history.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">ModelClientType.ANTHROPIC</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.GROQ"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GROQ</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.OPENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OPENAI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.GOOGLE_GENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GOOGLE_GENAI</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.get_model_args"><code class="docutils literal notranslate"><span class="pre">get_model_args()</span></code></a></li>

@@ -1,0 +1,994 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Parser &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/output_parsers';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Embedder" href="embedder.html" />
+    <link rel="prev" title="Generator" href="generator.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Parser</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="parser">
+<h1>Parser<a class="headerlink" href="#parser" title="Link to this heading">#</a></h1>
+<p>Parser is the <cite>interpreter</cite> of the LLM output.</p>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading">#</a></h2>
+<p>LLMs output text in string format.
+Parsing is the process of <cite>extracting</cite> and <cite>converting</cite> the string to desired data structure per the use case.
+This desired data structure can be:</p>
+<ul class="simple">
+<li><p>simple data types like string, int, float, boolean, etc.</p></li>
+<li><p>complex data types like list, dict, or data class instance.</p></li>
+<li><p>Code like Python, SQL, html, etc.</p></li>
+</ul>
+<p>It honestly can be converted to any kind of formats that are required by the use case.
+It is an important step for the LLM applications to interact with the external world, such as:</p>
+<ul class="simple">
+<li><p>to int to support classification and float to support regression.</p></li>
+<li><p>to list to support multiple choice selection.</p></li>
+<li><p>to json/yaml  which will be extracted to dict, and optional further to data class instance to support support cases like function calls.</p></li>
+</ul>
+</section>
+<section id="scope-and-design">
+<h2>Scope and Design<a class="headerlink" href="#scope-and-design" title="Link to this heading">#</a></h2>
+<p><em>Right now, we aim to cover the simple and complext data types but the code.</em></p>
+<p><strong>Parse</strong></p>
+<p>The following list the scope of our current support of parsing:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">int_str</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
+<span class="n">float_str</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
+<span class="n">boolean_str</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>  <span class="c1"># json works with true/false, yaml works for both True/False and true/false</span>
+<span class="n">None_str</span> <span class="o">=</span> <span class="s2">&quot;None&quot;</span>
+<span class="n">Null_str</span> <span class="o">=</span> <span class="s2">&quot;null&quot;</span>  <span class="c1"># json works with null, yaml works with both null and None</span>
+<span class="n">dict_str</span> <span class="o">=</span> <span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span>
+<span class="n">list_str</span> <span class="o">=</span> <span class="s1">&#39;[&quot;key&quot;, &quot;value&quot;]&#39;</span>
+<span class="n">nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;{&quot;name&quot;: &quot;John&quot;, &quot;age&quot;: 30, &quot;attributes&quot;: {&quot;height&quot;: 180, &quot;weight&quot;: 70}}&#39;</span>
+<span class="p">)</span>
+<span class="n">yaml_dict_str</span> <span class="o">=</span> <span class="s2">&quot;key: value&quot;</span>
+<span class="n">yaml_nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;name: John</span><span class="se">\n</span><span class="s2">age: 30</span><span class="se">\n</span><span class="s2">attributes:</span><span class="se">\n</span><span class="s2">  height: 180</span><span class="se">\n</span><span class="s2">  weight: 70&quot;</span>
+<span class="p">)</span>
+<span class="n">yaml_list_str</span> <span class="o">=</span> <span class="s2">&quot;- key</span><span class="se">\n</span><span class="s2">- value&quot;</span>
+</pre></div>
+</div>
+<p>In Python, there are various ways to parse the string:
+Use built-in functions like <code class="docutils literal notranslate"><span class="pre">int</span></code>, <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">bool</span></code> can handle the simple types.
+We can use <code class="docutils literal notranslate"><span class="pre">ast.literal_eval</span></code> and <code class="docutils literal notranslate"><span class="pre">json.loads()</span></code> to handle the complex types like dict, list, and nested dict.
+However, none of them is as robust as <code class="docutils literal notranslate"><span class="pre">yaml.safe_load</span></code>. Yaml can:</p>
+<ul class="simple">
+<li><p>Parse <cite>True/False</cite> and ‘true/false’ to boolean.</p></li>
+<li><p>Parse <cite>None</cite> and ‘null’ to None.</p></li>
+<li><p>Handle nested dict and list in both yaml and json format.</p></li>
+</ul>
+<p>Thus, we will use <code class="docutils literal notranslate"><span class="pre">yaml.safe_load</span></code> as the last resort for robust parsing to handle complex data types to get <cite>List</cite> and <cite>Dict</cite> data types.
+We will use <cite>int</cite>, <cite>float</cite>, <cite>bool</cite> for simple data types.</p>
+<section id="id1">
+<h3>Parser<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>Our parser is located at <span class="xref std std-doc">core.string_parser</span>.
+It handles both <cite>extracting</cite> and <cite>parsing</cite> to python object types.
+And it is designed to be robust.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parser Class</p></th>
+<th class="head"><p>Target Python Object</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">BooleanParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p></td>
+<td><p>Extracts the first boolean value from the text with <code class="docutils literal notranslate"><span class="pre">bool</span></code>. Supports both ‘True/False’ and ‘true/false’.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">int</span></code></p></td>
+<td><p>Extracts the first integer value from the text with <code class="docutils literal notranslate"><span class="pre">int</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">FloatParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">float</span></code></p></td>
+<td><p>Extracts the first float value from the text with <code class="docutils literal notranslate"><span class="pre">float</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">ListParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">list</span></code></p></td>
+<td><p>Extracts ‘[]’ and parses the first list string from the text. Uses both <cite>json.loads</cite> and <cite>yaml.safe_load</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">JsonParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Extracts ‘[]’ and ‘{}’ and parses JSON strings from the text. It resorts to <cite>yaml.safe_load</cite> for robust parsing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">YamlParser</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p></td>
+<td><p>Extracts ‘<code class="docutils literal notranslate"><span class="pre">`yaml`</span></code>’, ‘<code class="docutils literal notranslate"><span class="pre">`yml`</span></code>’ or the whole string and parses YAML strings from the text.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Data Class Instance</strong></p>
+<p>If your parsed object is dictionary, you can define and use <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> instance.
+With <code class="docutils literal notranslate"><span class="pre">from_dict</span></code> method, you can easily convert the dictionary to data class instance.</p>
+</section>
+<section id="output-parsers">
+<h3>Output Parsers<a class="headerlink" href="#output-parsers" title="Link to this heading">#</a></h3>
+<p>The above parsers do not come with output format instructions.
+Thus, we created <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">OutputParser</span></code></a> to orchestrate both the formatting and parsing process.
+It is an abstract component with two main methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">format_instructions</span></code>: to generate the output format instructions for the prompt.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call</span></code>: to parse the output string to the desired python object.</p></li>
+</ul>
+<p>If you are targetting at <code class="docutils literal notranslate"><span class="pre">dict</span></code> object, we already have <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> to help us describe any data class type and instance that can be easily used to interact with LLMs.
+Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> and <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code> both takes the following arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data_class</span></code>: the <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">examples</span></code>: the examples of the data class instance if you want to show the examples in the prompt.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude</span></code>: the fields to exclude from both the data format and the examples.</p></li>
+</ul>
+</section>
+</section>
+<section id="parser-in-action">
+<h2>Parser in Action<a class="headerlink" href="#parser-in-action" title="Link to this heading">#</a></h2>
+<p>All of the parsers are quite straightforward to use.</p>
+<p><strong>BooleanParser</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">BooleanParser</span>
+
+<span class="n">bool_str</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
+<span class="n">bool_str_2</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
+<span class="n">bool_str_3</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+<span class="n">bool_str_4</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+<span class="n">bool_str_5</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>  <span class="c1"># will fail</span>
+<span class="n">bool_str_6</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>  <span class="c1"># will fail</span>
+<span class="n">bool_str_7</span> <span class="o">=</span> <span class="s2">&quot;yes&quot;</span>  <span class="c1"># will fail</span>
+<span class="n">bool_str_8</span> <span class="o">=</span> <span class="s2">&quot;no&quot;</span>  <span class="c1"># will fail</span>
+
+<span class="c1"># it will all return True/False</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">BooleanParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">bool_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">bool_str_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">bool_str_3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">bool_str_4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kc">True</span>
+<span class="kc">False</span>
+<span class="kc">True</span>
+<span class="kc">False</span>
+</pre></div>
+</div>
+<p>Boolean parsers will not work for ‘1’, ‘0’, ‘yes’, ‘no’ as they are not the standard boolean values.</p>
+<p><strong>IntParser</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rom</span> <span class="n">lightrag</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">string_parser</span> <span class="kn">import</span> <span class="nn">IntParser</span>
+
+<span class="n">int_str</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
+<span class="n">int_str_2</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
+<span class="n">int_str_3</span> <span class="o">=</span> <span class="s2">&quot;42.7&quot;</span>
+<span class="n">int_str_4</span> <span class="o">=</span> <span class="s2">&quot;the answer is 42.75&quot;</span>
+
+<span class="c1"># it will all return 42</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">IntParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">int_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">int_str_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">int_str_3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">int_str_4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">42</span>
+<span class="mi">42</span>
+<span class="mi">42</span>
+<span class="mi">42</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">IntParser</span></code> will return the integer value of the first number in the string, even if it is a float.</p>
+<p><strong>FloatParser</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">FloatParser</span>
+
+<span class="n">float_str</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
+<span class="n">float_str_2</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
+<span class="n">float_str_3</span> <span class="o">=</span> <span class="s2">&quot;42.7&quot;</span>
+<span class="n">float_str_4</span> <span class="o">=</span> <span class="s2">&quot;the answer is 42.75&quot;</span>
+
+<span class="c1"># it will all return 42.0</span>
+<span class="n">parser</span> <span class="o">=</span> <span class="n">FloatParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">float_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">float_str_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">float_str_3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">float_str_4</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The printout will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">42.0</span>
+<span class="mf">42.0</span>
+<span class="mf">42.7</span>
+<span class="mf">42.75</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">FloatParser</span></code> will return the float value of the first number in the string, even if it is an integer.</p>
+<p><strong>ListParser</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
+
+<span class="n">list_str</span> <span class="o">=</span> <span class="s1">&#39;[&quot;key&quot;, &quot;value&quot;]&#39;</span>
+<span class="n">list_str_2</span> <span class="o">=</span> <span class="s1">&#39;prefix[&quot;key&quot;, 2]...&#39;</span>
+<span class="n">list_str_3</span> <span class="o">=</span> <span class="s1">&#39;[{&quot;key&quot;: &quot;value&quot;}, {&quot;key&quot;: &quot;value&quot;}]&#39;</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">ListParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">list_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">list_str_2</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">list_str_3</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
+<span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p><strong>JsonParser</strong></p>
+<p>Even though it can work on lists, it is better to only use it for dictionaries.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+
+<span class="n">dict_str</span> <span class="o">=</span> <span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span>
+<span class="n">nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;{&quot;name&quot;: &quot;John&quot;, &quot;age&quot;: 30, &quot;attributes&quot;: {&quot;height&quot;: 180, &quot;weight&quot;: 70}}&#39;</span>
+<span class="p">)</span>
+<span class="n">list_str</span> <span class="o">=</span> <span class="s1">&#39;[&quot;key&quot;, 2]&#39;</span>
+<span class="n">list_dict_str</span> <span class="o">=</span> <span class="s1">&#39;[{&quot;key&quot;: &quot;value&quot;}, {&quot;key&quot;: &quot;value&quot;}]&#39;</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">JsonParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">dict_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">nested_dict_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">list_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">list_dict_str</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">}}</span>
+<span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="p">[{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">},</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}]</span>
+</pre></div>
+</div>
+<p><strong>YamlParser</strong></p>
+<p>Though it works almost on all of the previous examples, it is better to use it for yaml formatted dictionaries.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span>
+
+<span class="n">yaml_dict_str</span> <span class="o">=</span> <span class="s2">&quot;key: value&quot;</span>
+<span class="n">yaml_nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;name: John</span><span class="se">\n</span><span class="s2">age: 30</span><span class="se">\n</span><span class="s2">attributes:</span><span class="se">\n</span><span class="s2">  height: 180</span><span class="se">\n</span><span class="s2">  weight: 70&quot;</span>
+<span class="p">)</span>
+<span class="n">yaml_list_str</span> <span class="o">=</span> <span class="s2">&quot;- key</span><span class="se">\n</span><span class="s2">- value&quot;</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">yaml_dict_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">yaml_nested_dict_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">(</span><span class="n">yaml_list_str</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="s1">&#39;value&#39;</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;John&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;attributes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">180</span><span class="p">,</span> <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mi">70</span><span class="p">}}</span>
+<span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All parsers will raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if it fails at any step. Developers should process it accordingly.</p>
+</div>
+</section>
+<section id="output-parsers-in-action">
+<h2>Output Parsers in Action<a class="headerlink" href="#output-parsers-in-action" title="Link to this heading">#</a></h2>
+<p>We will create the following simple <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> with one example.
+And we will demonstrate how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> and <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code> to parse another example to dict object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">DataClass</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;User ID&quot;</span><span class="p">})</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;User name&quot;</span><span class="p">})</span>
+
+<span class="n">user_example</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>JsonOutputParser</strong></p>
+<p>Here is how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The structure of it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>JsonOutputParser(
+    data_class=User, examples=[json_output_parser.&lt;locals&gt;.User(id=1, name=&#39;John&#39;)], exclude_fields=None
+    (json_output_format_prompt): Prompt(
+        template: Your output should be formatted as a standard JSON instance with the following schema:
+        ```
+        {{schema}}
+        ```
+        {% if example %}
+        Examples:
+        ```
+        {{example}}
+        ```
+        {% endif %}
+        -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+        -Use double quotes for the keys and string values.
+        -Follow the JSON formatting conventions., prompt_variables: [&#39;example&#39;, &#39;schema&#39;]
+    )
+    (output_processors): JsonParser()
+)
+</pre></div>
+</div>
+<p>The output format string will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Your output should be formatted as a standard JSON instance with the following schema:
+```
+{
+    &quot;id&quot;: &quot; (int) (optional)&quot;,
+    &quot;name&quot;: &quot; (str) (optional)&quot;
+}
+```
+Examples:
+```
+{
+    &quot;id&quot;: 1,
+    &quot;name&quot;: &quot;John&quot;
+}
+________
+```
+-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+-Use double quotes for the keys and string values.
+-Follow the JSON formatting conventions.
+</pre></div>
+</div>
+<p>Call the parser with the following string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_to_parse</span> <span class="o">=</span> <span class="s1">&#39;{&quot;id&quot;: 2, &quot;name&quot;: &quot;Jane&quot;}&#39;</span>
+<span class="n">parsed_user</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">user_to_parse</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parsed_user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Jane&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>YamlOutputParser</strong></p>
+<p>The steps are totally the same as the <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">YamlOutputParser</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">YamlOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The structure of it:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>YamlOutputParser(
+data_class=&lt;class &#39;__main__.yaml_output_parser.&lt;locals&gt;.User&#39;&gt;, examples=[yaml_output_parser.&lt;locals&gt;.User(id=1, name=&#39;John&#39;)]
+(yaml_output_format_prompt): Prompt(
+    template: Your output should be formatted as a standard YAML instance with the following schema:
+    ```
+    {{schema}}
+    ```
+    {% if example %}
+    Examples:
+    ```
+    {{example}}
+    ```
+    {% endif %}
+
+    -Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+    -Follow the YAML formatting conventions with an indent of 2 spaces.
+    -Quote the string values properly., prompt_variables: [&#39;schema&#39;, &#39;example&#39;]
+)
+(output_processors): YamlParser()
+)
+</pre></div>
+</div>
+<p>The output format string will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Your output should be formatted as a standard YAML instance with the following schema:
+```
+id:  (int) (optional)
+name:  (str) (optional)
+```
+Examples:
+```
+id: 1
+name: John
+
+________
+```
+
+-Make sure to always enclose the YAML output in triple backticks (```). Please do not add anything other than valid YAML output!
+-Follow the YAML formatting conventions with an indent of 2 spaces.
+-Quote the string values properly.
+</pre></div>
+</div>
+<p>Now, let us parse the following string:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">user_to_parse</span> <span class="o">=</span> <span class="s2">&quot;id: 2</span><span class="se">\n</span><span class="s2">name: Jane&quot;</span>
+<span class="n">parsed_user</span> <span class="o">=</span> <span class="n">parser</span><span class="p">(</span><span class="n">user_to_parse</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parsed_user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;Jane&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core-string-parser"><span class="std std-ref">string_parser</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.html#components-output-parsers"><span class="std std-ref">OutputParser</span></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser" title="components.output_parsers.outputs.YamlOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.YamlOutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser" title="components.output_parsers.outputs.OutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.OutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser" title="components.output_parsers.outputs.BooleanOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.BooleanOutputParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser" title="components.output_parsers.outputs.ListOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.ListOutputParser</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="generator.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Generator</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="embedder.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Embedder</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#context">Context</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-and-design">Scope and Design</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Parser</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#output-parsers">Output Parsers</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parser-in-action">Parser in Action</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#output-parsers-in-action">Output Parsers in Action</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

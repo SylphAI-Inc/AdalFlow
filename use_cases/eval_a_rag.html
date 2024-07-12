@@ -1,0 +1,632 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Evaluating a RAG Pipeline &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/eval_a_rag';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Evaluating...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="evaluating-a-rag-pipeline">
+<h1>Evaluating a RAG Pipeline<a class="headerlink" href="#evaluating-a-rag-pipeline" title="Link to this heading">#</a></h1>
+<p>In LightRAG, we provide a set of metrics in <span class="xref std std-ref">our evaluators</span>. In this tutorial, we will show how to use them to evaluate the performance of the retriever and generator components of a RAG pipeline</p>
+<p>The full code for this tutorial can be found in <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
+<p>RAG (Retrieval-Augmented Generation) pipelines leverage a retriever to fetch relevant context from a knowledge base (e.g., a document database) which is then fed to an LLM generator with the query to produce the answer. This allows the model to generate more contextually relevant answers.</p>
+<p>Thus, to evaluate a RAG pipeline, we can assess both the quality of the retrieved context and the quality of the final generated answer. Speciafically, in this tutorial, we will use the following evaluators and their corresponding metrics.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code>: This evaluator is used to evaluate the performance of the retriever component of the RAG pipeline. It has the following metric functions:</dt><dd><ul>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_recall</span></code>: This function computes the recall of the retriever. It is defined as the number of relevant documents retrieved by the retriever divided by the total number of relevant documents in the knowledge base.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_context_relevance</span></code>: This function computes the relevance of the retrieved context. It is defined as the ratio of the number of relevant context tokens in the retrieved context to the total number of tokens in the retrieved context.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMacthEvaluator</span></code>: This evaluator is used to evaluate the performance of the generator component of the RAG pipeline. It has the following metric functions:</dt><dd><ul>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_match_acc</span> <span class="pre">(if</span> <span class="pre">type</span> <span class="pre">is</span> <span class="pre">'exact_match')</span></code>: This function computes the exact match accuracy of the generated answer. It is defined as the number of generated answers that exactly match the ground truth answer divided by the total number of generated answers.</p></li>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_match_acc</span> <span class="pre">(if</span> <span class="pre">type</span> <span class="pre">is</span> <span class="pre">'fuzzy_match')</span></code>: This function computes the fuzzy match accuracy of the generated answer. It is defined as the number of generated answers that contain the ground truth answer divided by the total number of generated answers.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code>: This evaluator uses an LLM to get the judgement of the predicted answer for a list of questions. The task description and the judgement query of the LLM judge can be customized.</dt><dd><ul>
+<li><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute_judgement</span></code>: This function computes the judgement of the predicted answer. It is defined as the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Let’s walk through the code to evaluate a RAG pipeline step by step.</p>
+<p><strong>Step 1: import dependencies.</strong>
+We import the necessary dependencies for our evaluation script. These include modules for loading datasets, constructing a RAG pipeline, and evaluating the performance of the RAG pipeline.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">yaml</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">datasets</span> <span class="kn">import</span> <span class="n">load_dataset</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">core.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">core.base_data_class</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="linenos">10</span><span class="kn">from</span> <span class="nn">eval.evaluators</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="linenos">11</span>    <span class="n">RetrieverEvaluator</span><span class="p">,</span>
+<span class="linenos">12</span>    <span class="n">AnswerMacthEvaluator</span><span class="p">,</span>
+<span class="linenos">13</span>    <span class="n">LLMasJudge</span><span class="p">,</span>
+<span class="linenos">14</span>    <span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span><span class="p">,</span>
+<span class="linenos">15</span><span class="p">)</span>
+<span class="linenos">16</span><span class="kn">from</span> <span class="nn">core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="linenos">17</span><span class="kn">from</span> <span class="nn">use_cases.rag</span> <span class="kn">import</span> <span class="n">RAG</span>
+</pre></div>
+</div>
+<p><strong>Step 2: define the configuration.</strong>
+We load the configuration settings from <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/configs/rag_hotpotqa.yaml">a YAML file</a>. This file contains various parameters for the RAG pipeline. You can customize these settings based on your requirements.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;./configs/rag_hotpotqa.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+<span class="linenos">2</span>    <span class="n">settings</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Step 3: load the dataset.</strong>
+In this tutorial, we use the <a class="reference external" href="https://huggingface.co/datasets/hotpot_qa">HotpotQA dataset</a> as an example. Each data sample in HotpotQA has <em>question</em>, <em>answer</em>, <em>context</em> and <em>supporting_facts</em> selected from the whole context. We load the HotpotQA dataset using the <code class="xref py py-obj docutils literal notranslate"><span class="pre">load_dataset</span></code> function from the <a class="reference external" href="https://huggingface.co/docs/datasets">datasets</a> module. We select a subset of the dataset as an example for evaluation purposes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">load_dataset</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;hotpot_qa&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;fullwiki&quot;</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Step 4: build the document list for each sample in the dataset.</strong>
+For each sample in the dataset, we create a list of documents to retrieve from according to its corresponding <em>context</em> in the dataset. Each document has a title and a list of sentences. We use the <code class="xref py py-obj docutils literal notranslate"><span class="pre">Document</span></code> class from the <a class="reference internal" href="../apis/core/core.base_data_class.html#module-core.base_data_class" title="core.base_data_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.base_data_class</span></code></a> module to represent each document.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+<span class="linenos">2</span>    <span class="n">num_docs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">][</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
+<span class="linenos">3</span>    <span class="n">doc_list</span> <span class="o">=</span> <span class="p">[</span>
+<span class="linenos">4</span>        <span class="n">Document</span><span class="p">(</span>
+<span class="linenos">5</span>            <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">][</span><span class="s2">&quot;title&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]},</span>
+<span class="linenos">6</span>            <span class="n">text</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">][</span><span class="s2">&quot;sentences&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]),</span>
+<span class="linenos">7</span>        <span class="p">)</span>
+<span class="linenos">8</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_docs</span><span class="p">)</span>
+<span class="linenos">9</span>    <span class="p">]</span>
+</pre></div>
+</div>
+<p><strong>Step 5: build the RAG pipeline.</strong>
+We initialize the RAG pipeline by creating an instance of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">RAG</span></code> class with the loaded configuration settings. We then build the index using the document list created in the previous step.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+<span class="linenos">2</span>    <span class="c1"># following the previous code snippet</span>
+<span class="linenos">3</span>    <span class="n">rag</span> <span class="o">=</span> <span class="n">RAG</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+<span class="linenos">4</span>    <span class="n">rag</span><span class="o">.</span><span class="n">build_index</span><span class="p">(</span><span class="n">doc_list</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Step 6: retrieve the context and generate the answer.</strong>
+For each sample in the dataset, we retrieve the context and generate the answer using the RAG pipeline. We can print the query, response, ground truth response, context string, and ground truth context string for each sample.</p>
+<p>To get the ground truth context string from the <em>supporting_facts</em> filed in HotpotQA. We have implemented a <code class="xref py py-obj docutils literal notranslate"><span class="pre">get_supporting_sentences</span></code> function, which extract the supporting sentences from the context based on the <em>supporting_facts</em>. This function is specific to the HotpotQA dataset, which is available in <a class="reference external" href="https://github.com/SylphAI-Inc/LightRAG/blob/main/use_cases/rag_hotpotqa.py">use_cases/rag_hotpotqa.py</a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">all_questions</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 2</span><span class="n">all_retrieved_context</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 3</span><span class="n">all_gt_context</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 4</span><span class="n">all_pred_answer</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 5</span><span class="n">all_gt_answer</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="linenos"> 6</span><span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>
+<span class="linenos"> 7</span>    <span class="c1"># following the previous code snippet</span>
+<span class="linenos"> 8</span>    <span class="n">query</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;question&quot;</span><span class="p">]</span>
+<span class="linenos"> 9</span>    <span class="n">response</span><span class="p">,</span> <span class="n">context_str</span> <span class="o">=</span> <span class="n">rag</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="linenos">10</span>    <span class="n">gt_context_sentence_list</span> <span class="o">=</span> <span class="n">get_supporting_sentences</span><span class="p">(</span>
+<span class="linenos">11</span>        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;supporting_facts&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]</span>
+<span class="linenos">12</span>    <span class="p">)</span>
+<span class="linenos">13</span>    <span class="n">all_questions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+<span class="linenos">14</span>    <span class="n">all_retrieved_context</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">context_str</span><span class="p">)</span>
+<span class="linenos">15</span>    <span class="n">all_gt_context</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gt_context_sentence_list</span><span class="p">)</span>
+<span class="linenos">16</span>    <span class="n">all_pred_answer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
+<span class="linenos">17</span>    <span class="n">all_gt_answer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;answer&quot;</span><span class="p">])</span>
+<span class="linenos">18</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">19</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response: </span><span class="si">{</span><span class="n">response</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">20</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ground truth response: </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;answer&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">21</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;context_str: </span><span class="si">{</span><span class="n">context_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">22</span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ground truth context_str: </span><span class="si">{</span><span class="n">gt_context_sentence_list</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Step 7: evaluate the performance of the RAG pipeline.</strong>
+We first evaluate the performance of the retriever component of the RAG pipeline. We compute the average recall and context relevance for each query using the <code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverEvaluator</span></code> class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">retriever_evaluator</span> <span class="o">=</span> <span class="n">RetrieverEvaluator</span><span class="p">()</span>
+<span class="linenos">2</span><span class="n">avg_recall</span><span class="p">,</span> <span class="n">recall_list</span> <span class="o">=</span> <span class="n">retriever_evaluator</span><span class="o">.</span><span class="n">compute_recall</span><span class="p">(</span>
+<span class="linenos">3</span>    <span class="n">all_retrieved_context</span><span class="p">,</span> <span class="n">all_gt_context</span>
+<span class="linenos">4</span><span class="p">)</span>
+<span class="linenos">5</span><span class="n">avg_relevance</span><span class="p">,</span> <span class="n">relevance_list</span> <span class="o">=</span> <span class="n">retriever_evaluator</span><span class="o">.</span><span class="n">compute_context_relevance</span><span class="p">(</span>
+<span class="linenos">6</span>    <span class="n">all_retrieved_context</span><span class="p">,</span> <span class="n">all_gt_context</span>
+<span class="linenos">7</span><span class="p">)</span>
+<span class="linenos">8</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average recall: </span><span class="si">{</span><span class="n">avg_recall</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">9</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average relevance: </span><span class="si">{</span><span class="n">avg_relevance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Next, we evaluate the performance of the generator component of the RAG pipeline. We compute the average exact match accuracy for each query using the <code class="xref py py-class docutils literal notranslate"><span class="pre">AnswerMacthEvaluator</span></code> class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">generator_evaluator</span> <span class="o">=</span> <span class="n">AnswerMacthEvaluator</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;fuzzy_match&quot;</span><span class="p">)</span>
+<span class="linenos">2</span><span class="n">answer_match_acc</span><span class="p">,</span> <span class="n">match_acc_list</span> <span class="o">=</span> <span class="n">generator_evaluator</span><span class="o">.</span><span class="n">compute_match_acc</span><span class="p">(</span>
+<span class="linenos">3</span>    <span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span>
+<span class="linenos">4</span><span class="p">)</span>
+<span class="linenos">5</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Answer match accuracy: </span><span class="si">{</span><span class="n">answer_match_acc</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we evaluate the performance of the generator component of the RAG pipeline using an LLM judge. We compute the average judgement for each query using the <code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code> class.</p>
+<p>Note that <code class="xref py py-obj docutils literal notranslate"><span class="pre">task_desc_str</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">judgement_query</span></code> can be customized.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="n">llm_evaluator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+<span class="linenos"> 2</span>    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+<span class="linenos"> 3</span>    <span class="n">prompt</span><span class="o">=</span><span class="n">Prompt</span><span class="p">(</span><span class="n">DEFAULT_LLM_EVALUATOR_PROMPT</span><span class="p">),</span>
+<span class="linenos"> 4</span>    <span class="n">output_processors</span><span class="o">=</span><span class="n">Sequential</span><span class="p">(</span><span class="n">JsonParser</span><span class="p">()),</span>
+<span class="linenos"> 5</span>    <span class="n">preset_prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+<span class="linenos"> 6</span>        <span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="linenos"> 7</span><span class="s2">            You are a helpful assistant.</span>
+<span class="linenos"> 8</span><span class="s2">            Given the question, ground truth answer, and predicted answer, you need to answer the judgement query.</span>
+<span class="linenos"> 9</span><span class="s2">            Output True or False according to the judgement query following this JSON format:</span>
+<span class="linenos">10</span><span class="s2">            {</span>
+<span class="linenos">11</span><span class="s2">                &quot;judgement&quot;: True</span>
+<span class="linenos">12</span><span class="s2">            }</span>
+<span class="linenos">13</span><span class="s2">            &quot;&quot;&quot;</span>
+<span class="linenos">14</span>    <span class="p">},</span>
+<span class="linenos">15</span>    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">settings</span><span class="p">[</span><span class="s2">&quot;llm_evaluator&quot;</span><span class="p">],</span>
+<span class="linenos">16</span><span class="p">)</span>
+<span class="linenos">17</span><span class="n">llm_judge</span> <span class="o">=</span> <span class="n">LLMasJudge</span><span class="p">(</span><span class="n">llm_evaluator</span><span class="p">)</span>
+<span class="linenos">18</span><span class="n">judgement_query</span> <span class="o">=</span> <span class="p">(</span>
+<span class="linenos">19</span>    <span class="s2">&quot;For the question, does the predicted answer contain the ground truth answer?&quot;</span>
+<span class="linenos">20</span><span class="p">)</span>
+<span class="linenos">21</span><span class="n">avg_judgement</span><span class="p">,</span> <span class="n">judgement_list</span> <span class="o">=</span> <span class="n">llm_judge</span><span class="o">.</span><span class="n">compute_judgement</span><span class="p">(</span>
+<span class="linenos">22</span>    <span class="n">all_questions</span><span class="p">,</span> <span class="n">all_pred_answer</span><span class="p">,</span> <span class="n">all_gt_answer</span><span class="p">,</span> <span class="n">judgement_query</span>
+<span class="linenos">23</span><span class="p">)</span>
+<span class="linenos">24</span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average judgement: </span><span class="si">{</span><span class="n">avg_judgement</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Conclusion.</strong>
+In this tutorial, we learned how to evaluate a RAG pipeline using the HotpotQA dataset. We walked through the code and explained each step of the evaluation process. You can use this tutorial as a starting point to evaluate your own RAG pipelines and customize the evaluation metrics based on your requirements.</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

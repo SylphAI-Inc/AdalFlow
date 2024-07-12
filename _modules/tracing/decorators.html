@@ -154,7 +154,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -284,7 +284,7 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -434,17 +434,24 @@ document.write(`
 <span class="sd">        filename (str, Optional): The name of the trace file. If not provided, it will be &quot;{class_name}_generator_trace.json&quot;.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; @trace_generator()</span>
-<span class="sd">        &gt;&gt;&gt; class TestGenerator:</span>
-<span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
-<span class="sd">        &gt;&gt;&gt;         preset_prompt_kwargs = {&quot;input_str&quot;: &quot;world&quot;}</span>
-<span class="sd">        &gt;&gt;&gt;         self.generator = Generator(</span>
-<span class="sd">        &gt;&gt;&gt;             model_client=OpenAIClient(),</span>
-<span class="sd">        &gt;&gt;&gt;             template=template,</span>
-<span class="sd">        &gt;&gt;&gt;             preset_prompt_kwargs=preset_prompt_kwargs,</span>
-<span class="sd">        &gt;&gt;&gt;         )</span>
-<span class="sd">        &gt;&gt;&gt; # now you will see log files in the ./traces/ with a filename like TestGenerator_generator_trace.json</span>
-<span class="sd">        &gt;&gt;&gt; # If you update the template or the preset_prompt_kwargs, it will be logged in the file.</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from lightrag.tracing import trace_generator_states</span>
+
+<span class="sd">        # Define a class and apply the decorator</span>
+<span class="sd">        @trace_generator_states()</span>
+<span class="sd">        class TestGenerator:</span>
+<span class="sd">            def __init__(self):</span>
+<span class="sd">                super().__init__()</span>
+<span class="sd">                prompt_kwargs = {&quot;input_str&quot;: &quot;world&quot;}</span>
+<span class="sd">                self.generator = Generator(</span>
+<span class="sd">                    model_client=OpenAIClient(),</span>
+<span class="sd">                    prompt_kwargs=prompt_kwargs,</span>
+<span class="sd">                    model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="sd">                )</span>
+<span class="sd">        # now you will see log files in the ./traces/ with a filename like TestGenerator_generator_trace.json</span>
+<span class="sd">        # If you update the prompt templates or the prompt_kwargs, it will be logged in the file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -522,21 +529,28 @@ document.write(`
 <span class="sd">        error_only (bool): If True, only log the calls that have an error. Default is True.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; @trace_generator_call()</span>
-<span class="sd">        &gt;&gt;&gt; class TestGenerator:</span>
-<span class="sd">        &gt;&gt;&gt;     def __init__(self):</span>
-<span class="sd">        &gt;&gt;&gt;         preset_prompt_kwargs = {&quot;input_str&quot;: &quot;world&quot;}</span>
-<span class="sd">        &gt;&gt;&gt;         self.generator = Generator(</span>
-<span class="sd">        &gt;&gt;&gt;             model_client=OpenAIClient(),</span>
-<span class="sd">        &gt;&gt;&gt;             template=template,</span>
-<span class="sd">        &gt;&gt;&gt;             preset_prompt_kwargs=preset_prompt_kwargs,</span>
-<span class="sd">        &gt;&gt;&gt;         )</span>
-<span class="sd">        &gt;&gt;&gt; # now you will see ./traces/TestGenerator dir being created.</span>
-<span class="sd">        &gt;&gt;&gt; # If the generator call has an error, it will be logged in the error file generator_call.jsonl</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        from lightrag.tracing import trace_generator_call</span>
+<span class="sd">        @trace_generator_call()</span>
+<span class="sd">        class TestGenerator:</span>
+<span class="sd">            def __init__(self):</span>
+<span class="sd">                super().__init__()</span>
+<span class="sd">                prompt_kwargs = {&quot;input_str&quot;: &quot;world&quot;}</span>
+<span class="sd">                self.generator = Generator(</span>
+<span class="sd">                    model_client=OpenAIClient(),</span>
+<span class="sd">                    prompt_kwargs=prompt_kwargs,</span>
+<span class="sd">                    model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="sd">                )</span>
+<span class="sd">        # now you will see log files in the ./traces/ with a filename like TestGenerator_generator_call.jsonl</span>
+<span class="sd">        # If the generator call has an error, it will be logged in the file.</span>
+
 
 <span class="sd">    If you want to decorate a component(such as LLMRetriever) from the library where you do not have access to the source code, you can do it like this:</span>
 
 <span class="sd">    .. code-block:: python</span>
+
 <span class="sd">        from lightrag.components.retriever import LLMRetriever</span>
 
 <span class="sd">        # Define a subclass and apply the decorator</span>

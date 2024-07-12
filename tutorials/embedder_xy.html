@@ -1,0 +1,562 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Embedder &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/embedder_xy';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">Embedder</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="embedder">
+<span id="embedder-xy"></span><h1>Embedder<a class="headerlink" href="#embedder" title="Link to this heading">#</a></h1>
+<p>A commonly applied approach in the NLP field to transform texts to numeric representation is Embedding. Embedding turns the texts data to the vector space.
+This enables us to calculate numbers such as similarity score. With embedding, during retrieval, we can do semantic search to find similar documents.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>, text embedding is managed through three main components: <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, <code class="docutils literal notranslate"><span class="pre">ToEmbedderResponse</span></code>, and <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code>.
+These components work together to transform text into embeddings using external model APIs from providers like <cite>OpenAI`</cite> and <cite>Google</cite>.</p>
+<ul class="simple">
+<li><p><strong>Embedder:</strong> It acts as the interface for external embedding models. It orchestrates embedding models via <code class="docutils literal notranslate"><span class="pre">ModeClient</span></code> and <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> that can be used to process output from <code class="docutils literal notranslate"><span class="pre">ModeClient</span></code>. Ensure that your model’s API key is stored in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file. This setup prepares the Embedder to generate embeddings effectively.</p></li>
+</ul>
+<ul class="simple">
+<li><p><strong>ToEmbeddings:</strong> It takes documents from <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, processes documents in batches and uses an instance of <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> as the <code class="docutils literal notranslate"><span class="pre">vectorizer</span></code> to obtain embeddings. After receiving the embeddings, <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code> assigns them back to the respective Document objects. This component ensures that the input data is copied and the original data remains unmodified.</p></li>
+</ul>
+<p>With these components, the embeddings will be created when you run <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code>.</p>
+<p>Next, we will use an example combining the document splitter and embedder to demonstrate the embedder usage.</p>
+<p>First, import the packages and set up the environment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.data_components</span> <span class="kn">import</span> <span class="n">ToEmbedderResponse</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.data_process</span> <span class="kn">import</span> <span class="n">DocumentSplitter</span>
+
+<span class="kn">import</span> <span class="nn">dotenv</span>
+<span class="n">dotenv</span><span class="o">.</span><span class="n">load_dotenv</span><span class="p">(</span><span class="n">dotenv_path</span><span class="o">=</span><span class="s2">&quot;.env&quot;</span><span class="p">,</span> <span class="n">override</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then, set up the splitter with a simple example.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># combine splitter and embedding</span>
+<span class="c1"># configure the splitter setting</span>
+<span class="n">text_splitter_settings</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;split_by&quot;</span><span class="p">:</span> <span class="s2">&quot;word&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;split_length&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+        <span class="s2">&quot;split_overlap&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">}</span>
+
+<span class="c1"># set up the document splitter</span>
+<span class="n">text_splitter</span> <span class="o">=</span> <span class="n">DocumentSplitter</span><span class="p">(</span>
+    <span class="n">split_by</span><span class="o">=</span><span class="n">text_splitter_settings</span><span class="p">[</span><span class="s2">&quot;split_by&quot;</span><span class="p">],</span>
+    <span class="n">split_length</span><span class="o">=</span><span class="n">text_splitter_settings</span><span class="p">[</span><span class="s2">&quot;split_length&quot;</span><span class="p">],</span>
+    <span class="n">split_overlap</span><span class="o">=</span><span class="n">text_splitter_settings</span><span class="p">[</span><span class="s2">&quot;split_overlap&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+
+<span class="c1"># create examples</span>
+<span class="n">example1</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
+    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Review: What a fantastic movie! Had a great time and would watch it again! Sentiment: Positive&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">documents</span> <span class="o">=</span> <span class="p">[</span><span class="n">example1</span><span class="p">]</span>
+
+<span class="c1"># split the documents</span>
+<span class="n">splitted_docs</span> <span class="o">=</span> <span class="p">(</span><span class="n">text_splitter</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="n">documents</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">splitted_docs</span><span class="p">)</span>
+
+<span class="c1"># Document(id=78917586-c4e5-4ce3-ac78-196ec25d39c4, meta_data=None, text=Review: What a fantastic movie! Had a great time and would watch it again! Sentiment: , estimated_num_tokens=None), Document(id=fdbc447d-5ba2-4917-9c14-0d95cc65e6ef, meta_data=None, text=again! Sentiment: Positive, estimated_num_tokens=None)]</span>
+</pre></div>
+</div>
+<p>Now, create the embedder. <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code> uses <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> to configure the embedding model, process output. Developers can set up the <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> in <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># configure the vectorizer(embedding) setting</span>
+<span class="n">vectorizer_settings</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;dimensions&quot;</span><span class="p">:</span> <span class="mi">256</span><span class="p">,</span>
+        <span class="s2">&quot;encoding_format&quot;</span><span class="p">:</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">100</span>
+<span class="p">}</span>
+
+<span class="c1"># set up the embedder using openai model</span>
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span>
+        <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="n">vectorizer_settings</span><span class="p">[</span><span class="s2">&quot;model_kwargs&quot;</span><span class="p">],</span> <span class="c1"># set up model arguments</span>
+        <span class="n">output_processors</span><span class="o">=</span><span class="n">ToEmbedderResponse</span><span class="p">(),</span> <span class="c1"># convert the model output to EmbedderResponse</span>
+    <span class="p">)</span>
+
+<span class="c1"># create embedder</span>
+<span class="c1"># create embeddings</span>
+<span class="n">to_embeddings</span> <span class="o">=</span> <span class="n">ToEmbeddings</span><span class="p">(</span>
+    <span class="n">embedder</span><span class="o">=</span><span class="n">vectorizer</span><span class="p">,</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">vectorizer_settings</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">],</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, check the results.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># show the embedding for each splitted doc</span>
+<span class="n">embeddings</span> <span class="o">=</span> <span class="n">to_embeddings</span><span class="p">(</span><span class="n">splitted_docs</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">embedding</span> <span class="ow">in</span> <span class="n">embeddings</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the splitted doc: </span><span class="si">{</span><span class="n">embedding</span><span class="o">.</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;the embedding of the doc: </span><span class="si">{</span><span class="n">embedding</span><span class="o">.</span><span class="n">vector</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># the splitted doc: Review: What a fantastic movie! Had a great time and would watch it again! Sentiment:</span>
+<span class="c1"># the embedding of the doc: [-0.06596588, 0.10054244, -0.19306852, 0.045200635, -0.015742956, 0.017384859, 0.0625372, 0.13164201, 0.020113317, 0.0060756463, 0.056549083, -0.08199859, 0.0073946016, 0.0445487, 0.041820247, 0.046842538, 0.04500747, 0.015549791, 0.11802388, 0.11155285, -0.029578406, 0.08112934, -0.11686489, -0.0076722763, -0.0027390209, -0.024447458, -0.060026057, 0.03940568, 0.06881507, -0.035276778, 0.07113305, -0.022370934, 0.04363117, -0.07881136, -0.05220287, 0.025159756, -0.022491662, -0.07407882, -0.012519513, -0.0354458, 0.059977766, 0.056500793, 0.081225924, -0.006953944, -0.04090271, 0.01965455, -0.010159277, 0.02449575, -0.02094634, 0.034190223, -0.18089913, 0.08962861, -0.028274542, 0.18447268, -0.03841571, -0.030737398, -0.013799232, 0.03575969, 0.047301304, -0.122853, -0.029819863, 0.055824716, 0.055390093, 0.028250396, 0.03648406, -0.074030526, -0.049257103, -0.025304629, 0.0935402, -0.020777322, 0.04964343, 0.03438339, 0.015791247, -0.027646756, 0.06244062, -0.016853655, 0.078569904, -0.05133363, -0.017179621, -0.07456173, -0.115995646, -0.025763396, 0.00016600126, 0.0072255824, 0.039792012, -0.08397853, -0.024821715, 0.07794212, -0.09793471, 0.08277125, 0.13125569, 0.11618881, -0.028419416, -0.013642286, -0.0092658885, 0.0708433, -0.062150873, 0.085717015, 0.014752985, 0.065724425, 0.09793471, 0.0017067948, -0.0780387, -0.00018637415, 0.0841717, 0.07654167, 0.016503545, 0.049112227, 0.052106287, -0.037787925, -0.09213976, -0.020318555, -0.08658626, 0.06978089, -0.012314276, 0.028588437, 0.08494435, -0.09199488, -0.08861449, 0.06437227, 0.00093111617, -0.07185742, -0.010340369, -0.03414193, -0.041868538, -0.0442831, -0.009410762, -0.038294982, -0.015851611, -0.05331357, -0.0009763892, 0.07736263, -0.032958794, -0.033320982, -0.11396741, -0.025811687, -0.054617435, -0.044596992, 0.0003912348, 0.05408623, -0.03288636, -0.10875195, -0.05606617, -0.031992972, 0.13985154, 0.004110795, -0.052057996, 0.06842874, -0.04732545, 0.0098876385, 0.083737075, 0.037280865, -0.14545332, -0.02072903, 0.009845384, -0.046214752, -0.078763075, 0.033200253, -0.034673136, 0.04988489, -0.028709164, 0.01721584, -0.04882248, 0.0017369769, 0.029023057, 0.045755986, -0.048170548, -0.037715487, -0.007086745, -0.04882248, 0.055341803, -0.0048683644, -0.05877048, -0.050126344, 0.007424784, -0.0249183, -0.0016585035, 0.038898624, 0.055631552, 0.0035554452, -0.024773424, -0.0059066266, -0.054762308, 0.01102852, 0.040178344, -0.013376684, -0.016201723, 0.025449503, 0.042810217, 0.100156106, 0.06335816, 0.20417552, -0.016310379, -0.027719192, -0.032282718, -0.004391488, 0.062199164, 0.14796448, -0.045128196, -0.070553556, 0.08103276, 0.057031997, 0.028274542, -0.0946509, 0.03250003, -0.001274437, -0.06615905, -0.043776043, -0.0841717, -0.06799412, 0.17761531, -0.025014881, -0.029095493, -0.11164943, 0.019038836, -0.03530092, 0.017252058, 0.06205429, -0.040274926, 0.00063306844, -0.033031233, 0.010648226, 0.104888655, -0.07296812, 0.027526028, 0.08880766, 0.009380581, -0.01047317, -0.05794953, 0.08088789, -0.048242986, -0.0024688914, 0.027888212, -0.0708916, -0.026560202, -0.0055172783, 0.044017497, 0.01541699, -0.030351067, -0.077507496, 0.09614793, 0.09503723, 0.03520434, 0.017819481, -0.11174601, -0.0015121206, 0.04744618, 0.08962861, -0.014813349, 0.059543144, 0.060750425, -0.02170693, 0.0032596611, -0.09382995, 0.011336377, -0.088952534]</span>
+<span class="c1"># the splitted doc: again! Sentiment: Positive</span>
+<span class="c1"># the embedding of the doc: [0.067159414, -0.054115806, -0.057209868, 0.083539754, 0.016137673, 0.10210415, -0.035945754, 0.02686073, 0.04844335, -0.042224888, -0.011026398, -0.06033427, -0.028711103, -0.08426777, 0.13516818, 0.077776305, -0.024570517, 0.03940383, 0.002749016, 0.042285554, -0.008243256, 0.0042391727, 0.011329738, -0.029393617, -0.035399742, 0.02642089, -0.057968218, -0.028999276, 0.1156331, -0.07298353, 0.04865569, -0.09925275, 0.09172993, -0.01283127, -0.062427312, 0.10064811, -0.03773546, -0.00045548353, -0.04735133, -0.042649563, 0.025829377, -0.10046611, 0.0144541375, -0.022795979, -0.050688066, 0.046380643, -0.051385745, -0.09433865, -0.00888027, 0.062609315, -0.090455905, 0.043802254, 0.06351934, 0.17933443, -0.017199362, -0.022022463, 0.036582768, 0.025237864, -0.010723059, -0.031425994, 0.053175453, -0.11423773, 0.08256907, -0.06691674, -0.024995193, -0.0099192085, -0.083600424, 0.121821225, 0.09634069, 0.045500956, 0.02479802, -0.02781625, 0.048018675, 0.013225611, 0.06430802, 0.020702936, 0.1029535, -0.02787692, 0.028392596, -0.103074834, -0.091183916, 0.025344033, -0.001270235, -0.106168896, -0.02047543, -0.102468155, -0.034489725, 0.0025802834, -0.03148666, 0.11532976, 0.043104574, 0.091244586, -0.034338057, -0.0118985, -0.016319677, -0.048534352, -0.03567275, 0.10519821, 0.001149847, 0.08669449, 0.01600117, 0.029454285, -0.059393916, 0.09100191, 0.015500659, 0.039555497, 0.018579558, -0.039828505, -0.019186236, -0.008804435, -0.106957585, -0.0491107, -0.02959079, 0.07595626, -0.02435818, -0.030515974, -0.042922568, 0.06527871, -0.08432844, 0.0253592, -0.026527058, -0.051749755, -0.02435818, -0.031122655, -0.08275107, -0.11496575, -0.049474705, 0.035794087, -0.052417103, -0.099495426, 0.07753363, 0.012596182, 0.05202276, 0.10762493, -0.083054416, -0.035460413, -0.0013953627, -0.042952903, -0.05369113, -0.084389105, 0.09081991, -0.102407485, -0.021855626, -0.030561475, -0.00427709, 0.011663412, 0.0027831418, 0.01821555, 0.022917315, 0.09354997, -0.012414178, 0.13395482, -0.07989968, 0.015417241, 0.039919507, -0.10289283, 0.0032514224, -0.026845565, -0.04352925, 0.0065862634, -0.014256966, 0.03254835, -0.06109262, -0.045318954, 0.090455905, 0.05584484, -0.10204348, -0.10580489, -0.122670576, -0.1124177, 0.05338779, 0.020733269, -0.060758945, -0.03828147, -0.0045538875, -0.02349366, -0.063458666, -0.002240922, -0.019337907, 0.060455605, 0.018185215, 0.090455905, 0.07158817, -0.04537962, 0.03934316, -0.022083132, -0.017942544, 0.13577485, -0.00918361, 0.042497892, 0.014401053, 0.111386344, 0.12218524, 0.065521374, 0.026026547, -0.082872406, 0.08523846, 0.092639945, -0.03718945, -0.07510691, 0.02646639, 0.024691852, 0.07261953, -0.020202424, -0.043893255, -0.044408932, -0.036249094, 0.07249819, -0.08317575, 0.038463477, 0.17654371, -0.060940947, 0.07486424, -0.012740267, -0.08651248, 0.045409955, -0.057118867, 0.069404125, 0.079110995, 0.066492066, -0.024479514, 0.022583641, 0.08851453, 0.023175154, -0.024919357, 0.06424735, 0.09209394, -0.025283365, -0.0428619, -0.16574481, 0.025237864, -0.034793064, 0.076138265, -0.09148726, -0.005429781, 0.0035945757, 0.10950564, 0.0175027, -0.04537962, -0.036188427, -0.014545139, 0.085905805, 0.06358001, 0.07061748, -0.06995014, 0.017123526, 0.06782676, 0.005190901, -0.034398723, 0.05011172, 0.035096403, 0.0023736332, -0.039161157, -0.04874669, -0.012846436, -0.011178068]</span>
+</pre></div>
+</div>
+<p>As you can see in the output, each splitted doc will have a vector representation.</p>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

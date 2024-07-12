@@ -1,0 +1,810 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Component &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/component';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DataClass" href="base_data_class.html" />
+    <link rel="prev" title="Class Hierarchy" href="class_hierarchy.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Component</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="component">
+<h1>Component<a class="headerlink" href="#component" title="Link to this heading">#</a></h1>
+<p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
+It is the base class for components such as <code class="docutils literal notranslate"><span class="pre">Prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>, <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> in LightRAG.
+Your task pipeline should also subclass from <code class="docutils literal notranslate"><span class="pre">Component</span></code>.</p>
+<section id="design">
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<p>Different from PyTorch’s nn.Module, which works exclusively with Tensor and Parameter to train models with weights and biases, our component can work with different types of data, from a string or a list of strings to a list of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a>.</p>
+<p>Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.</p>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-1 sd-row-cols-md-1 sd-row-cols-lg-1 sd-g-1 sd-g-xs-1 sd-g-sm-1 sd-g-md-1 sd-g-lg-1 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+PyTorch</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">import</span> <span class="nn">torch.nn.functional</span> <span class="k">as</span> <span class="nn">F</span>
+
+<span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+LightRAG</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+
+
+<span class="n">template_doc</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt; You are a doctor &lt;/SYS&gt; User: {{input_str}}&quot;&quot;&quot;</span>
+
+<span class="k">class</span> <span class="nc">DocQA</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template_doc</span><span class="p">,</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>As the fundamental building block in LLM task pipelines, the component is designed to serve five main purposes:</p>
+<ol class="arabic simple">
+<li><p><strong>Standardize the interface for all components.</strong>
+This includes the <cite>__init__</cite> method, the <cite>call</cite> method for synchronous calls, the <cite>acall</cite> method for asynchronous calls, and the <cite>__call__</cite> method, which by default calls the <cite>call</cite> method.</p></li>
+<li><p><strong>Provide a unified way to visualize the structure of the task pipeline</strong>
+via the <cite>__repr__</cite> method. Subclasses can additionally add the <cite>_extra_repr</cite> method to include more information than the default <cite>__repr__</cite> method.</p></li>
+<li><p><strong>Track and add all subcomponents and parameters automatically and recursively</strong>
+to assist in the building and optimizing process of the task pipeline.</p></li>
+<li><p><strong>Manage the states and serialization</strong>,
+with <cite>state_dict</cite> and <cite>load_state_dict</cite> methods specifically for parameters, and the <cite>to_dict</cite> method for serialization of all states within the component’s attributes, from subcomponents to parameters, to any other attributes of various data types.</p></li>
+<li><p><strong>Make all components configurable using `json` or `yaml` files</strong>.
+This is especially useful for experimenting or building data processing pipelines.</p></li>
+</ol>
+<p>These features are key to keeping the LightRAG pipeline transparent, flexible, and easy to use.
+By subclassing from the <cite>Component</cite> class, you will get most of these features out of the box.</p>
+</section>
+<section id="component-in-action">
+<h2>Component in Action<a class="headerlink" href="#component-in-action" title="Link to this heading">#</a></h2>
+<p>In this note, we are creating an AI doctor to answer medical questions.
+Run the <code class="docutils literal notranslate"><span class="pre">DocQA</span></code> on a query:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">DocQA</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">(</span><span class="s2">&quot;What is the best treatment for headache?&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The response is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">As</span> <span class="n">a</span> <span class="n">doctor</span><span class="p">,</span> <span class="n">the</span> <span class="n">best</span> <span class="n">treatment</span> <span class="k">for</span> <span class="n">a</span> <span class="n">headache</span> <span class="n">would</span> <span class="n">depend</span> <span class="n">on</span> <span class="n">the</span> <span class="n">underlying</span> <span class="n">cause</span> <span class="n">of</span> <span class="n">the</span> <span class="n">headache</span><span class="o">.</span> <span class="n">Typically</span><span class="p">,</span> <span class="n">over</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">counter</span> <span class="n">pain</span> <span class="n">relievers</span> <span class="n">such</span> <span class="k">as</span> <span class="n">acetaminophen</span><span class="p">,</span> <span class="n">ibuprofen</span><span class="p">,</span> <span class="ow">or</span> <span class="n">aspirin</span> <span class="n">can</span> <span class="n">help</span> <span class="n">to</span> <span class="n">alleviate</span> <span class="n">the</span> <span class="n">pain</span><span class="o">.</span> <span class="n">However</span><span class="p">,</span> <span class="k">if</span> <span class="n">the</span> <span class="n">headache</span> <span class="ow">is</span> <span class="n">severe</span> <span class="ow">or</span> <span class="n">persistent</span><span class="p">,</span> <span class="n">it</span> <span class="ow">is</span> <span class="n">important</span> <span class="n">to</span> <span class="n">see</span> <span class="n">a</span> <span class="n">doctor</span> <span class="k">for</span> <span class="n">further</span> <span class="n">evaluation</span> <span class="ow">and</span> <span class="n">to</span> <span class="n">determine</span> <span class="n">the</span> <span class="n">most</span> <span class="n">appropriate</span> <span class="n">treatment</span> <span class="n">option</span><span class="o">.</span> <span class="n">Other</span> <span class="n">treatment</span> <span class="n">options</span> <span class="n">may</span> <span class="n">include</span> <span class="n">prescription</span> <span class="n">medications</span><span class="p">,</span> <span class="n">lifestyle</span> <span class="n">modifications</span><span class="p">,</span> <span class="n">stress</span> <span class="n">management</span> <span class="n">techniques</span><span class="p">,</span> <span class="ow">and</span> <span class="n">relaxation</span> <span class="n">techniques</span><span class="o">.</span>
+</pre></div>
+</div>
+<section id="print-the-structure">
+<h3>Print the structure<a class="headerlink" href="#print-the-structure" title="Link to this heading">#</a></h3>
+<p>We can easily visualize the structure via <cite>print</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">doc</span> <span class="o">=</span> <span class="n">DocQA</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DocQA</span><span class="p">(</span>
+    <span class="p">(</span><span class="n">doc</span><span class="p">):</span> <span class="n">Generator</span><span class="p">(</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;gpt-3.5-turbo&#39;</span><span class="p">},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+        <span class="p">(</span><span class="n">prompt</span><span class="p">):</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span> <span class="n">You</span> <span class="n">are</span> <span class="n">a</span> <span class="n">doctor</span> <span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="p">{{</span><span class="n">input_str</span><span class="p">}},</span> <span class="n">prompt_variables</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;input_str&#39;</span><span class="p">])</span>
+        <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configure-from-file">
+<h3>Configure from file<a class="headerlink" href="#configure-from-file" title="Link to this heading">#</a></h3>
+<p>As the above example shows, we added subcomponent via attributes.
+We can also use methods to add more subcomponnents or parameters.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
+<span class="n">doc</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">Parameter</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">))</span>
+<span class="c1"># list all parameters</span>
+<span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">doc</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="s1">&#39;demo&#39;</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">:</span> <span class="n">demo</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You can easily save the detailed states:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">utils.file_io</span> <span class="kn">import</span> <span class="n">save_json</span>
+
+<span class="n">save_json</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">&quot;doc.json&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To add even more flexibility, we provide <a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> and <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> for more advanced use cases.</p>
+</section>
+<section id="serialization-and-deserialization">
+<h3>Serialization and deserialization<a class="headerlink" href="#serialization-and-deserialization" title="Link to this heading">#</a></h3>
+<p>We provide the <code class="docutils literal notranslate"><span class="pre">is_pickable</span></code> method to check if the component is pickable.
+It is good practice to ensure that any of your components are pickable.</p>
+</section>
+</section>
+<section id="funcomponent">
+<h2>FunComponent<a class="headerlink" href="#funcomponent" title="Link to this heading">#</a></h2>
+<blockquote>
+<div><p>Use <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> as a decorator to convert any function to a Component with its unique class name.</p>
+</div></blockquote>
+<p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> that allows you to define a component with a function.
+You can directly use this class as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">FunComponent</span>
+
+<span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="n">fun_component</span> <span class="o">=</span> <span class="n">FunComponent</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
+&lt;class &#39;core.component.FunComponent&#39;&gt;
+</pre></div>
+</div>
+<p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> to convert a function to a <cite>FunComponent</cite> via a decorator or by directly calling the function.
+This approach gives you a unique component converted from the function name.</p>
+<p>Via direct call:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">fun_to_component</span>
+
+<span class="n">fun_component</span> <span class="o">=</span> <span class="n">fun_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">fun_component</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
+&lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;
+</pre></div>
+</div>
+<p>Using a decorator is an even more convenient way to create a component from a function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="nd">@fun_to_component</span>
+<span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">add_one</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">add_one</span><span class="p">))</span>
+
+<span class="c1"># output:</span>
+<span class="c1"># 2</span>
+<span class="c1"># &lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="sequential">
+<h2>Sequential<a class="headerlink" href="#sequential" title="Link to this heading">#</a></h2>
+<p>We have the <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> class, which is similar to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class.
+This is especially useful for chaining together components in a sequence, much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
+Let’s put the <cite>FunComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
+
+<span class="nd">@fun_to_component</span>
+<span class="k">def</span> <span class="nf">enhance_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">query</span> <span class="o">+</span> <span class="s2">&quot;Please be concise and only list the top treatments.&quot;</span>
+
+<span class="n">seq</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">enhance_query</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;What is the best treatment for headache?&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>We automatically enhance users’ queries before passing them to the <cite>DocQA</cite> component.
+The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Over</span><span class="o">-</span><span class="n">the</span><span class="o">-</span><span class="n">counter</span> <span class="n">pain</span> <span class="n">relievers</span> <span class="n">like</span> <span class="n">acetaminophen</span><span class="p">,</span> <span class="n">ibuprofen</span><span class="p">,</span> <span class="ow">or</span> <span class="n">aspirin</span>
+<span class="mf">2.</span> <span class="n">Rest</span> <span class="ow">and</span> <span class="n">relaxation</span>
+<span class="mf">3.</span> <span class="n">Stay</span> <span class="n">hydrated</span> <span class="ow">and</span> <span class="n">drink</span> <span class="n">plenty</span> <span class="n">of</span> <span class="n">water</span>
+</pre></div>
+</div>
+<p>The structure of the sequence using <code class="docutils literal notranslate"><span class="pre">print(seq)</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Sequential</span><span class="p">(</span>
+<span class="p">(</span><span class="mi">0</span><span class="p">):</span> <span class="n">EnhanceQueryComponent</span><span class="p">()</span>
+<span class="p">(</span><span class="mi">1</span><span class="p">):</span> <span class="n">DocQA</span><span class="p">(</span>
+        <span class="p">(</span><span class="n">doc</span><span class="p">):</span> <span class="n">Generator</span><span class="p">(</span>
+        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;gpt-3.5-turbo&#39;</span><span class="p">},</span> <span class="n">model_type</span><span class="o">=</span><span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span>
+        <span class="p">(</span><span class="n">prompt</span><span class="p">):</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span> <span class="n">You</span> <span class="n">are</span> <span class="n">a</span> <span class="n">doctor</span> <span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="p">{{</span><span class="n">input_str</span><span class="p">}},</span> <span class="n">prompt_variables</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;input_str&#39;</span><span class="p">])</span>
+        <span class="p">(</span><span class="n">model_client</span><span class="p">):</span> <span class="n">OpenAIClient</span><span class="p">()</span>
+        <span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API reference</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Component</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.FunComponent</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.component.Sequential</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.component.fun_to_component()</span></code></a></p></li>
+</ul>
+</div>
+<p>We will cover more advanced use cases in the upcoming tutorials.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="class_hierarchy.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Class Hierarchy</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="base_data_class.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">DataClass</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#component-in-action">Component in Action</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#print-the-structure">Print the structure</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configure-from-file">Configure from file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization-and-deserialization">Serialization and deserialization</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#funcomponent">FunComponent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sequential">Sequential</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

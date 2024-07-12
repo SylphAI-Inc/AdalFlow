@@ -1,0 +1,1342 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Function calls &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/tool_helper';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agent" href="agent.html" />
+    <link rel="prev" title="Data &amp; RAG" href="db.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Function calls</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="function-calls">
+<span id="tool-helper"></span><h1>Function calls<a class="headerlink" href="#function-calls" title="Link to this heading">#</a></h1>
+<p>Tools are means LLM can use to interact with the world beyond of its internal knowledge. Technically speaking, retrievers are tools to help LLM to get more relevant context, and memory is a tool for LLM to carry out a conversation.
+Deciding when, which, and how to use a tool, and even to creating a tool is an agentic behavior:
+Function calls is a process of showing LLM a list of funciton definitions and prompt it to choose one or few of them.
+Many places use tools and function calls interchangably.</p>
+<p>In this note we will covert function calls, including</p>
+<ol class="arabic simple">
+<li><p>Function call walkthrough</p></li>
+<li><p>Overall design</p></li>
+<li><p>Function call in action</p></li>
+</ol>
+<section id="quick-walkthrough">
+<h2>Quick Walkthrough<a class="headerlink" href="#quick-walkthrough" title="Link to this heading">#</a></h2>
+<p>Users might already know of OpenAI’s function call feature via its API (<a class="reference external" href="https://platform.openai.com/docs/guides/function-calling">https://platform.openai.com/docs/guides/function-calling</a>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_current_weather</span><span class="p">(</span><span class="n">location</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;fahrenheit&quot;</span><span class="p">):</span>
+<span class="w"> </span><span class="sd">&quot;&quot;&quot;Get the current weather in a given location&quot;&quot;&quot;</span>
+ <span class="kn">import</span> <span class="nn">json</span>
+
+ <span class="k">if</span> <span class="s2">&quot;tokyo&quot;</span> <span class="ow">in</span> <span class="n">location</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;Tokyo&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="s2">&quot;10&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span>
+ <span class="k">elif</span> <span class="s2">&quot;san francisco&quot;</span> <span class="ow">in</span> <span class="n">location</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+         <span class="p">{</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;San Francisco&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="s2">&quot;72&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">}</span>
+     <span class="p">)</span>
+ <span class="k">elif</span> <span class="s2">&quot;paris&quot;</span> <span class="ow">in</span> <span class="n">location</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="s2">&quot;Paris&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="s2">&quot;22&quot;</span><span class="p">,</span> <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="n">unit</span><span class="p">})</span>
+ <span class="k">else</span><span class="p">:</span>
+     <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="n">location</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="s2">&quot;unknown&quot;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>For the above function, it is shown to LLM in the following format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">function_definition</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;function&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;function&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;get_current_weather&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Get the current weather in a given location&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;The city and state, e.g. San Francisco, CA&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;string&quot;</span><span class="p">,</span> <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;celsius&quot;</span><span class="p">,</span> <span class="s2">&quot;fahrenheit&quot;</span><span class="p">]},</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">],</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Then the API will respond with a list of function names and parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Function</span><span class="p">(</span><span class="n">arguments</span><span class="o">=</span><span class="s1">&#39;{&quot;location&quot;: &quot;San Francisco, CA&quot;}&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;get_current_weather&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Then the output will need to be parsed into arguments which are then passed to the function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">function_name</span> <span class="o">=</span> <span class="n">tool_call</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">name</span>
+<span class="n">function_to_call</span> <span class="o">=</span> <span class="n">available_functions</span><span class="p">[</span><span class="n">function_name</span><span class="p">]</span>
+<span class="n">function_args</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">tool_call</span><span class="o">.</span><span class="n">function</span><span class="o">.</span><span class="n">arguments</span><span class="p">)</span>
+<span class="n">function_response</span> <span class="o">=</span> <span class="n">function_to_call</span><span class="p">(</span>
+    <span class="n">location</span><span class="o">=</span><span class="n">function_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;location&quot;</span><span class="p">),</span>
+    <span class="n">unit</span><span class="o">=</span><span class="n">function_args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;unit&quot;</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="lightrag-scope-and-design">
+<h2>LightRAG Scope and Design<a class="headerlink" href="#lightrag-scope-and-design" title="Link to this heading">#</a></h2>
+<p>Even with API, users have to (1) create the function definition, (2) Parse the response, (3) Execute the function.
+What is missing in using API is: (1) How the function definitions are shown to LLM, (2) How the output format is instructured.</p>
+<p>LightRAG will provide built-in capabilities to do function calls simplily via prompt without relying on the tools API.</p>
+<p><strong>Design Goals</strong></p>
+<p>Asking LLM to call a function with keyword arguments is the simplest way of achieving the function call.
+But it is limiting:</p>
+<ol class="arabic simple">
+<li><p>What if the argument value is a more complicated data structure?</p></li>
+<li><p>What if you want to use a variable as an argument?</p></li>
+</ol>
+<p>LightRAG will also provide <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> where calling a function is asking LLM to write the code snippet of the function call directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;get_current_weather(&quot;San Francisco, CA&quot;, unit=&quot;celsius&quot;)&#39;</span>
+</pre></div>
+</div>
+<p>This is not only more flexible, but also it is also a more efficient/compact way to call a function.</p>
+<p><strong>Data Models</strong></p>
+<p>We have four <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> models: <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionDefinition</span></code></a>, <a class="reference internal" href="../apis/core/core.types.html#core.types.Function" title="core.types.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Function</span></code></a>, <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a>, and <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a> to handle function calls.</p>
+<p>These classes not only help with data structuring but also by being a subclass of <code class="docutils literal notranslate"><span class="pre">DataClass</span></code>, it can be easily used in the prompt.
+<code class="docutils literal notranslate"><span class="pre">Function</span></code> has three important attributes: <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">args</span></code>, and <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> for the function name, positional arguments and keyword arguments.
+<code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> only has one action for the function call expression.
+Both can be used to format the output in the prompt. We will demonstrate how to use it later.</p>
+<p><strong>Components</strong></p>
+<p>We have two components: <a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a> to streamline the lifecyle of (1)
+creating the function definition (2) formatting the prompt with the definitions and output format (3) parsing the response (4) executing the function.</p>
+<p><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> is a container of a single function. It handles the function definition and executing of the function. It supports both sync and async functions.
+<code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> manages all tools. And it handles the execution and context_map that is used to parse the functions sercurely.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> is simplified way to do function calls.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"></th>
+<th class="head"><p>Attribute/Method</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Attributes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tools</span></code></p></td>
+<td><p>A list of tools managed by ToolManager. Each tool is an instance or a derivative of <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">context</span></code></p></td>
+<td><p>A dictionary combining tool definitions and additional context, used for executing function expressions.</p></td>
+</tr>
+<tr class="row-even"><td><p>Methods</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">__init__</span></code></p></td>
+<td><p>Initializes a new ToolManager instance with tools and additional context. Tool can be <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> or any function.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">yaml_definitions</span></code></p></td>
+<td><p>Returns the YAML definitions of all tools managed by ToolManager.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">json_definitions</span></code></p></td>
+<td><p>Returns the JSON definitions of all tools managed by ToolManager.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">function_definitions</span></code></p></td>
+<td><p>Returns a list of function definitions for all tools.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">parse_func_expr</span></code></p></td>
+<td><p>Parses a <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">Function</span></code> object ready for execution.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execute_func</span></code></p></td>
+<td><p>Executes a given <code class="docutils literal notranslate"><span class="pre">Function</span></code> object and returns its output wrapped in <code class="docutils literal notranslate"><span class="pre">FunctionOutput</span></code>. Support both sync and async functions.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execute_func_expr</span></code></p></td>
+<td><p>Parses and executes a <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> directly, returning the execution result as <code class="docutils literal notranslate"><span class="pre">FunctionOutput</span></code>. Support both sync and async functions.</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execute_func_expr_via_sandbox</span></code></p></td>
+<td><p>Execute the function expression via sandbox. Only support sync functions.</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">execute_func_expr_via_eval</span></code></p></td>
+<td><p>Execute the function expression via eval. Only support sync functions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="function-call-in-action">
+<h2>Function Call in Action<a class="headerlink" href="#function-call-in-action" title="Link to this heading">#</a></h2>
+<p>We will use the following functions as examples across this note:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+
+<span class="k">def</span> <span class="nf">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Multiply two numbers.&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
+
+
+<span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Add two numbers.&quot;&quot;&quot;</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">divide</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Divide two numbers.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for query and return a list of results.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;result1&quot;</span> <span class="o">+</span> <span class="n">query</span><span class="p">,</span> <span class="s2">&quot;result2&quot;</span> <span class="o">+</span> <span class="n">query</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">numpy_sum</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sum the elements of an array.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+
+<span class="n">x</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Point</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">y</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="k">def</span> <span class="nf">add_points</span><span class="p">(</span><span class="n">p1</span><span class="p">:</span> <span class="n">Point</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span> <span class="n">Point</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Point</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Point</span><span class="p">(</span><span class="n">p1</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p1</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="n">p2</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We delibrately cover both async and sync, examples of using variables and more complicated data structures as arguments.
+We will demonstrate the structure and how to use each data model and component to call the above functions in different ways.</p>
+<section id="functiontool">
+<h3>1. FunctionTool<a class="headerlink" href="#functiontool" title="Link to this heading">#</a></h3>
+<p>First, let’s see how we help describe the function to LLM.</p>
+<p>Use the above functions as examples, <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> will generate the <code class="docutils literal notranslate"><span class="pre">FunctionDefinition</span></code> for each function automatically if the user did not pass it in.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+
+<span class="n">functions</span> <span class="o">=</span><span class="p">[</span><span class="n">multiply</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">divide</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">numpy_sum</span><span class="p">,</span> <span class="n">add_points</span><span class="p">]</span>
+<span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="o">=</span><span class="n">fn</span><span class="p">)</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">functions</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tool</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The printout shows three attributes for each function: <code class="docutils literal notranslate"><span class="pre">fn</span></code>, <code class="docutils literal notranslate"><span class="pre">_is_async</span></code>, and <code class="docutils literal notranslate"><span class="pre">definition</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">multiply</span> <span class="n">at</span> <span class="mh">0x14d9d3f60</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;multiply(a: int, b: int) -&gt; int</span><span class="se">\n</span><span class="s1">Multiply two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]}))</span>
+<span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add</span> <span class="n">at</span> <span class="mh">0x14d9e4040</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;add(a: int, b: int) -&gt; int</span><span class="se">\n</span><span class="s1">Add two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]}))</span>
+<span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">divide</span> <span class="n">at</span> <span class="mh">0x14d9e40e0</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;divide(a: float, b: float) -&gt; float</span><span class="se">\n</span><span class="s1">Divide two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]}))</span>
+<span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">search</span> <span class="n">at</span> <span class="mh">0x14d9e4180</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;search(query: str) -&gt; List[str]</span><span class="se">\n</span><span class="s1">Search for query and return a list of results.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]}))</span>
+<span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">numpy_sum</span> <span class="n">at</span> <span class="mh">0x14d9e4220</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr: numpy.ndarray) -&gt; float</span><span class="se">\n</span><span class="s1">Sum the elements of an array.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ndarray&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;arr&#39;</span><span class="p">]}))</span>
+<span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add_points</span> <span class="n">at</span> <span class="mh">0x14d9e4360</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;add_points(p1: __main__.Point, p2: __main__.Point) -&gt; __main__.Point</span><span class="se">\n</span><span class="s1">None&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]},</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;p1&#39;</span><span class="p">,</span> <span class="s1">&#39;p2&#39;</span><span class="p">]}))</span>
+</pre></div>
+</div>
+<p>View the definition for <code class="docutils literal notranslate"><span class="pre">add_point</span></code> and also the <code class="docutils literal notranslate"><span class="pre">get_current_weather</span></code> function in dict format:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">tools</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">to_dict</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>The output will be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;func_name&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy_sum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;func_desc&quot;</span><span class="p">:</span> <span class="s2">&quot;numpy_sum(arr: numpy.ndarray) -&gt; float</span><span class="se">\n</span><span class="s2">Sum the elements of an array.&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;func_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;arr&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;ndarray&quot;</span><span class="p">}},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;arr&quot;</span><span class="p">],</span>
+        <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Using <code class="docutils literal notranslate"><span class="pre">to_json</span></code> and <code class="docutils literal notranslate"><span class="pre">to_yaml</span></code> will directly get us the string that can be fed into the prompt.
+And we prefer to use <code class="docutils literal notranslate"><span class="pre">yaml</span></code> format here as it is more token efficient:</p>
+<p>We choose to describe the function not only with the docstring which is <cite>Sum the elements of an array.</cite> but also with the function signature which is <cite>numpy_sum(arr: numpy.ndarray) -&gt; float</cite>.
+This will give the LLM a view of the function at the code level and it helps with the function call.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Users should better use type hints and a good docstring to help LLM understand the function better.</p>
+</div>
+<p>In comparison, here is our definition for <code class="docutils literal notranslate"><span class="pre">get_current_weather</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;func_name&quot;</span><span class="p">:</span> <span class="s2">&quot;get_current_weather&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;func_desc&quot;</span><span class="p">:</span> <span class="s2">&quot;get_current_weather(location, unit=&#39;fahrenheit&#39;)</span><span class="se">\n</span><span class="s2">Get the current weather in a given location&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;func_parameters&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;object&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;properties&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">},</span>
+            <span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Any&quot;</span><span class="p">,</span> <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="s2">&quot;fahrenheit&quot;</span><span class="p">},</span>
+        <span class="p">},</span>
+        <span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">],</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To execute function using function names requres us to manage a function map. Instead of using the raw function, we use <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> instead for this context map.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">context_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">tool</span><span class="o">.</span><span class="n">definition</span><span class="o">.</span><span class="n">func_name</span><span class="p">:</span> <span class="n">tool</span> <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>To execute a function, we can do:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">function_name</span> <span class="o">=</span> <span class="s2">&quot;add&quot;</span>
+<span class="n">function_to_call</span> <span class="o">=</span> <span class="n">context_map</span><span class="p">[</span><span class="n">function_name</span><span class="p">]</span>
+<span class="n">function_args</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;a&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="n">function_response</span> <span class="o">=</span> <span class="n">function_to_call</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="o">**</span><span class="n">function_args</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If we use async function, we can use <code class="docutils literal notranslate"><span class="pre">acall</span></code>.
+<code class="docutils literal notranslate"><span class="pre">execute</span></code> is a wrapper that you can call a function in both sync and async way regardless of the function type.
+Check out the API documentation for more details.</p>
+</section>
+<section id="toolmanager">
+<h3>2. ToolManager<a class="headerlink" href="#toolmanager" title="Link to this heading">#</a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> on all the above function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
+
+<span class="n">tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">functions</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tool_manager</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The tool manager can take both <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code>, function and async function.
+The printout:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ToolManager</span><span class="p">(</span><span class="n">Tools</span><span class="p">:</span> <span class="p">[</span><span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">multiply</span> <span class="n">at</span> <span class="mh">0x105e3b920</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;multiply(a: int, b: int) -&gt; int</span><span class="se">\n</span><span class="s1">Multiply two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]})),</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add</span> <span class="n">at</span> <span class="mh">0x105e3bc40</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;add(a: int, b: int) -&gt; int</span><span class="se">\n</span><span class="s1">Add two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]})),</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">divide</span> <span class="n">at</span> <span class="mh">0x104970220</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;divide(a: float, b: float) -&gt; float</span><span class="se">\n</span><span class="s1">Divide two numbers.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">},</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;float&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">]})),</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">search</span> <span class="n">at</span> <span class="mh">0x104970400</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;search(query: str) -&gt; List[str]</span><span class="se">\n</span><span class="s1">Search for query and return a list of results.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;str&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;query&#39;</span><span class="p">]})),</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">numpy_sum</span> <span class="n">at</span> <span class="mh">0x1062a2840</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr: numpy.ndarray) -&gt; float</span><span class="se">\n</span><span class="s1">Sum the elements of an array.&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;ndarray&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;arr&#39;</span><span class="p">]})),</span> <span class="n">FunctionTool</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add_points</span> <span class="n">at</span> <span class="mh">0x106d691c0</span><span class="o">&gt;</span><span class="p">,</span> <span class="k">async</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="n">definition</span><span class="p">:</span> <span class="n">FunctionDefinition</span><span class="p">(</span><span class="n">func_name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">func_desc</span><span class="o">=</span><span class="s1">&#39;add_points(p1: __main__.Point, p2: __main__.Point) -&gt; __main__.Point</span><span class="se">\n</span><span class="s1">None&#39;</span><span class="p">,</span> <span class="n">func_parameters</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]},</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;Point&#39;</span><span class="p">,</span> <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">},</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span><span class="p">}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]}},</span> <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;p1&#39;</span><span class="p">,</span> <span class="s1">&#39;p2&#39;</span><span class="p">]}))],</span> <span class="n">Additional</span> <span class="n">Context</span><span class="p">:</span> <span class="p">{})</span>
+</pre></div>
+</div>
+<p>We will show more how it can be used in the next section.</p>
+</section>
+<section id="function-call-end-to-end">
+<h3>3. Function Call end-to-end<a class="headerlink" href="#function-call-end-to-end" title="Link to this heading">#</a></h3>
+<p>Now, let us add prompt and start to do function calls via LLMs.
+We use the following prompt to do a single function call.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;You have these tools available:</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f tools %}</span>
+<span class="s2">&lt;TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or tool in tools %}</span>
+<span class="s2">{{ loop.index }}.</span>
+<span class="s2">{{tool}}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;OUTPUT_FORMAT&gt;</span>
+<span class="s2">{{output_format_str}}</span>
+<span class="s2">&lt;/OUTPUT_FORMAT&gt;</span>
+<span class="s2">&lt;/SYS&gt;</span>
+<span class="s2">User: {{input_str}}</span>
+<span class="s2">You:</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p><strong>Pass tools in the prompt</strong></p>
+<p>We use <cite>yaml</cite> format here and show an example with less tools.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+
+<span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+<span class="n">small_tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+
+<span class="n">renered_prompt</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">small_tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">renered_prompt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span><span class="n">You</span> <span class="n">have</span> <span class="n">these</span> <span class="n">tools</span> <span class="n">available</span><span class="p">:</span>
+<span class="o">&lt;</span><span class="n">TOOLS</span><span class="o">&gt;</span>
+<span class="mf">1.</span>
+<span class="n">func_name</span><span class="p">:</span> <span class="n">multiply</span>
+<span class="n">func_desc</span><span class="p">:</span> <span class="s1">&#39;multiply(a: int, b: int) -&gt; int</span>
+
+<span class="n">Multiply</span> <span class="n">two</span> <span class="n">numbers</span><span class="o">.</span><span class="s1">&#39;</span>
+<span class="n">func_parameters</span><span class="p">:</span>
+<span class="nb">type</span><span class="p">:</span> <span class="nb">object</span>
+<span class="n">properties</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">required</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">a</span>
+<span class="o">-</span> <span class="n">b</span>
+
+<span class="o">------------------------</span>
+<span class="mf">2.</span>
+<span class="n">func_name</span><span class="p">:</span> <span class="n">add</span>
+<span class="n">func_desc</span><span class="p">:</span> <span class="s1">&#39;add(a: int, b: int) -&gt; int</span>
+
+<span class="n">Add</span> <span class="n">two</span> <span class="n">numbers</span><span class="o">.</span><span class="s1">&#39;</span>
+<span class="n">func_parameters</span><span class="p">:</span>
+<span class="nb">type</span><span class="p">:</span> <span class="nb">object</span>
+<span class="n">properties</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span>
+<span class="n">required</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">a</span>
+<span class="o">-</span> <span class="n">b</span>
+
+<span class="o">------------------------</span>
+<span class="o">&lt;/</span><span class="n">TOOLS</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="kc">None</span>
+<span class="o">&lt;/</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span>
+<span class="n">User</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">You</span><span class="p">:</span>
+</pre></div>
+</div>
+<p><strong>Pass the output format</strong></p>
+<p>We have two ways to instruct LLM to call the function:</p>
+<ol class="arabic simple">
+<li><p>Using the function name and arguments, we will leverage <code class="docutils literal notranslate"><span class="pre">Function</span></code> as LLM’s output data type.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Function</span>
+
+<span class="n">output_data_class</span> <span class="o">=</span> <span class="n">Function</span>
+<span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
+
+<span class="n">renered_prompt</span><span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="n">output_format_str</span><span class="o">=</span><span class="n">output_format_str</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">renered_prompt</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We execluded both the <code class="docutils literal notranslate"><span class="pre">thought</span></code> and <code class="docutils literal notranslate"><span class="pre">args</span></code> as it is easier to use <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to represent the arguments.
+The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span><span class="n">You</span> <span class="n">have</span> <span class="n">these</span> <span class="n">tools</span> <span class="n">available</span><span class="p">:</span>
+<span class="o">&lt;</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;The name of the function (str) (optional)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="s2">&quot;The keyword arguments of the function (Optional) (optional)&quot;</span>
+<span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span>
+<span class="n">User</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">You</span><span class="p">:</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Using the function call expression for which we will use <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+
+<span class="n">output_data_class</span> <span class="o">=</span> <span class="n">FunctionExpression</span>
+<span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">prompt</span><span class="p">(</span><span class="n">output_format_str</span><span class="o">=</span><span class="n">output_format_str</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">SYS</span><span class="o">&gt;</span><span class="n">You</span> <span class="n">have</span> <span class="n">these</span> <span class="n">tools</span> <span class="n">available</span><span class="p">:</span>
+<span class="o">&lt;</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="p">{</span>
+    <span class="s2">&quot;action&quot;</span><span class="p">:</span> <span class="s2">&quot;FuncName(&lt;kwargs&gt;)                 Valid function call expression.                 Example: </span><span class="se">\&quot;</span><span class="s2">FuncName(a=1, b=2)</span><span class="se">\&quot;</span><span class="s2">                 Follow the data type specified in the function parameters.                e.g. for Type object with x,y properties, use </span><span class="se">\&quot;</span><span class="s2">ObjectType(x=1, y=2) (str) (required)&quot;</span>
+<span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">OUTPUT_FORMAT</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">SYS</span><span class="o">&gt;</span>
+<span class="n">User</span><span class="p">:</span> <span class="kc">None</span>
+<span class="n">You</span><span class="p">:</span>
+</pre></div>
+</div>
+<p>We will use <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a> to streamline the formatting of our output data type.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+
+<span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">Function</span><span class="p">)</span>
+<span class="n">instructions</span> <span class="o">=</span> <span class="n">func_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">instructions</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Your output should be formatted as a standard JSON instance with the following schema:
+```
+{
+    &quot;name&quot;: &quot;The name of the function (str) (optional)&quot;,
+    &quot;kwargs&quot;: &quot;The keyword arguments of the function (Optional) (optional)&quot;
+}
+```
+-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+-Use double quotes for the keys and string values.
+-Follow the JSON formatting conventions.
+</pre></div>
+</div>
+<section id="function-output-format">
+<h4>Function Output Format<a class="headerlink" href="#function-output-format" title="Link to this heading">#</a></h4>
+<p>Now, let’s prepare our generator with the above prompt, <code class="docutils literal notranslate"><span class="pre">Function</span></code> data class, and <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+
+<span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">}</span>
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;tools&quot;</span><span class="p">:</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">yaml_definitions</span><span class="p">,</span>
+    <span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">func_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(</span>
+        <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">]</span>
+    <span class="p">),</span>
+<span class="p">}</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">func_parser</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Run Queries</strong></p>
+<p>We will use <code class="docutils literal notranslate"><span class="pre">Function.from_dict</span></code> to get the final output type from the json object. Here we use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute it directly.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;add 2 and 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;search for something&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;add points (1, 2) and (3, 4)&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum numpy array with arr = np.array([[1, 2], [3, 4]])&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;multiply 2 with local variable x&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;divide 2 by 3&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Add 5 to variable y&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">queries</span><span class="p">):</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;LLM raw output: {result.raw_response}&quot;)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">Function</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function: </span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">func_output</span> <span class="o">=</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function output: </span><span class="si">{</span><span class="n">func_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to execute the function for query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">, func: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>From the output shown below, we get valide <code class="docutils literal notranslate"><span class="pre">Function</span></code> parsed as output for all queries.
+However, we see it failed three function execution:
+(1)function <cite>add_points</cite> due to its argument type is a data class, and <cite>multiply</cite> and the last <cite>add</cite> due to it is difficult to represent the local variable <cite>x</cite> and <cite>y</cite> in the function call.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">3</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">})</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">1</span> <span class="n">Query</span><span class="p">:</span> <span class="n">search</span> <span class="k">for</span> <span class="n">something</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">})</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;result1something&#39;</span><span class="p">,</span> <span class="s1">&#39;result2something&#39;</span><span class="p">],</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">2</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="n">points</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}})</span>
+<span class="n">Error</span> <span class="n">at</span> <span class="n">calling</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add_points</span> <span class="n">at</span> <span class="mh">0x117b98360</span><span class="o">&gt;</span><span class="p">:</span> <span class="s1">&#39;dict&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;x&#39;</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;&#39;dict&#39; object has no attribute &#39;x&#39;&quot;</span><span class="p">)</span>
+
+<span class="mi">3</span> <span class="n">Query</span><span class="p">:</span> <span class="nb">sum</span> <span class="n">numpy</span> <span class="n">array</span> <span class="k">with</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]})</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">4</span> <span class="n">Query</span><span class="p">:</span> <span class="n">multiply</span> <span class="mi">2</span> <span class="k">with</span> <span class="n">local</span> <span class="n">variable</span> <span class="n">x</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">})</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;x&#39;</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;xx&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">5</span> <span class="n">Query</span><span class="p">:</span> <span class="n">divide</span> <span class="mi">2</span> <span class="n">by</span> <span class="mi">3</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">})</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mf">0.6666666666666666</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">6</span> <span class="n">Query</span><span class="p">:</span> <span class="n">Add</span> <span class="mi">5</span> <span class="n">to</span> <span class="n">variable</span> <span class="n">y</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function</span><span class="p">:</span> <span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[],</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">})</span>
+<span class="n">Error</span> <span class="n">at</span> <span class="n">calling</span> <span class="o">&lt;</span><span class="n">function</span> <span class="n">add</span> <span class="n">at</span> <span class="mh">0x11742eca0</span><span class="o">&gt;</span><span class="p">:</span> <span class="n">unsupported</span> <span class="n">operand</span> <span class="nb">type</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="o">+</span><span class="p">:</span> <span class="s1">&#39;int&#39;</span> <span class="ow">and</span> <span class="s1">&#39;str&#39;</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="s1">&#39;y&#39;</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;unsupported operand type(s) for +: &#39;int&#39; and &#39;str&#39;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If users prefer to use Function, to incress the success rate, make sure your function arguments are dict based for class object. You can always convert it to a class from a dict.</p>
+</div>
+</section>
+<section id="functionexpression-output-format">
+<h4>FunctionExpression Output Format<a class="headerlink" href="#functionexpression-output-format" title="Link to this heading">#</a></h4>
+<p>We will adapt the above code easily using tool manager to use <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> as the output format.
+We will use FunctionExpression this time in the parser. And we added the necessary context to handle the local variable <cite>x</cite>, <cite>y</cite>, and <cite>np.array</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span>
+    <span class="n">tools</span><span class="o">=</span><span class="n">functions</span><span class="p">,</span>
+    <span class="n">additional_context</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;np.array&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">,</span> <span class="s2">&quot;np&quot;</span><span class="p">:</span> <span class="n">np</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally, we can also pass the <code class="docutils literal notranslate"><span class="pre">additional_context</span></code> to LLM using the follow prompt after the &lt;TOOLS&gt;</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">context</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;CONTEXT&gt;</span>
+<span class="s2">Your function expression also have access to these context:</span>
+<span class="s2">{{context_str}}</span>
+<span class="s2">&lt;/CONTEXT&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>This time, let us try to execute all function concurrently and treating them all as async functions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_async_function_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">):</span>
+    <span class="n">answers</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">queries</span><span class="p">):</span>
+        <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_query</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">))</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+    <span class="n">answers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time taken: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="w"> </span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">answers</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">process_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">generator</span><span class="p">,</span> <span class="n">tool_manager</span><span class="p">:</span> <span class="n">ToolManager</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">})</span>
+        <span class="n">func_expr</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function_expr: </span><span class="si">{</span><span class="n">func_expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">func</span> <span class="o">=</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">parse_func_expr</span><span class="p">(</span><span class="n">func_expr</span><span class="p">)</span>
+        <span class="n">func_output</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function output: </span><span class="si">{</span><span class="n">func_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func_output</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to execute the function for query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">, func: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>In this case, we used <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr" title="core.tool_manager.ToolManager.parse_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.parse_func_expr()</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute the function.
+Or we can directly use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr" title="core.tool_manager.ToolManager.execute_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func_expr()</span></code></a> to execute the function expression. Both are equivalent.</p>
+<p>From the output shown below, this time we get all function calls executed successfully.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">3</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=2, b=3)&#39;</span><span class="p">)</span>
+
+<span class="mi">1</span> <span class="n">Query</span><span class="p">:</span> <span class="n">search</span> <span class="k">for</span> <span class="n">something</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;search(query=&quot;something&quot;)&#39;</span><span class="p">)</span>
+
+<span class="mi">2</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="n">points</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))&#39;</span><span class="p">)</span>
+
+<span class="mi">3</span> <span class="n">Query</span><span class="p">:</span> <span class="nb">sum</span> <span class="n">numpy</span> <span class="n">array</span> <span class="k">with</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr=np.array([[1, 2], [3, 4]]))&#39;</span><span class="p">)</span>
+
+<span class="mi">4</span> <span class="n">Query</span><span class="p">:</span> <span class="n">multiply</span> <span class="mi">2</span> <span class="k">with</span> <span class="n">local</span> <span class="n">variable</span> <span class="n">x</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;multiply(a=2, b=2)&#39;</span><span class="p">)</span>
+
+<span class="mi">5</span> <span class="n">Query</span><span class="p">:</span> <span class="n">divide</span> <span class="mi">2</span> <span class="n">by</span> <span class="mi">3</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;divide(a=2.0, b=3.0)&#39;</span><span class="p">)</span>
+
+<span class="mi">6</span> <span class="n">Query</span><span class="p">:</span> <span class="n">Add</span> <span class="mi">5</span> <span class="n">to</span> <span class="n">variable</span> <span class="n">y</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=0, b=5)&#39;</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">4</span><span class="p">)}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;result1something&#39;</span><span class="p">,</span> <span class="s1">&#39;result2something&#39;</span><span class="p">],</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mf">0.6666666666666666</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="parallel-function-calls">
+<h2>Parallel Function Calls<a class="headerlink" href="#parallel-function-calls" title="Link to this heading">#</a></h2>
+<p>We will slightly adapt the output format instruction to get it output json array, which can still be parsed with a json parser.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">multple_function_call_template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;You have these tools available:</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f tools %}</span>
+<span class="s2">&lt;TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or tool in tools %}</span>
+<span class="s2">{{ loop.index }}.</span>
+<span class="s2">{{tool}}</span>
+<span class="s2">------------------------</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">&lt;/TOOLS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;OUTPUT_FORMAT&gt;</span>
+<span class="s2">Here is how you call one function.</span>
+<span class="s2">{{output_format_str}}</span>
+<span class="s2">-Always return a List using `[]` of the above JSON objects, even if its just one item.</span>
+<span class="s2">&lt;/OUTPUT_FORMAT&gt;</span>
+<span class="s2">&lt;SYS&gt;</span>
+<span class="s2">{{input_str}}</span>
+<span class="s2">You:</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>As LLM has problem calling <code class="docutils literal notranslate"><span class="pre">add_point</span></code>, we will add one example and we will generate it with <a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression.from_function" title="core.types.FunctionExpression.from_function"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.types.FunctionExpression.from_function()</span></code></a>.
+We will update our outputparser to use the example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">example</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>
+        <span class="n">func</span><span class="o">=</span><span class="n">add_points</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span>
+        <span class="n">data_class</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">example</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is the updated output format in the prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;OUTPUT_FORMAT&gt;
+Here is how you call one function.
+Your output should be formatted as a standard JSON instance with the following schema:
+```
+{
+    &quot;action&quot;: &quot;FuncName(&lt;kwargs&gt;)                 Valid function call expression.                 Example: \&quot;FuncName(a=1, b=2)\&quot;                 Follow the data type specified in the function parameters.                e.g. for Type object with x,y properties, use \&quot;ObjectType(x=1, y=2) (str) (required)&quot;
+}
+```
+Here is an example:
+```
+{
+    &quot;action&quot;: &quot;add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))&quot;
+}
+```
+-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
+-Use double quotes for the keys and string values.
+-Follow the JSON formatting conventions.
+Awlays return a List using `[]` of the above JSON objects. You can have length of 1 or more.
+Do not call multiple functions in one action field.
+&lt;/OUTPUT_FORMAT&gt;
+</pre></div>
+</div>
+<p>This case, we will show the response from using <cite>execute_func_expr_via_sandbox</cite> to execute the function expression.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">queries</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s2">&quot; and &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">queries</span><span class="p">[</span><span class="n">idx</span> <span class="p">:</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">}</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> Query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="mi">50</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;LLM raw output: {result.raw_response}&quot;)</span>
+        <span class="n">func_expr</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">data</span>
+        <span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function_expr: </span><span class="si">{</span><span class="n">func_expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">expr</span> <span class="ow">in</span> <span class="n">func_expr</span><span class="p">:</span>
+            <span class="n">func_output</span> <span class="o">=</span> <span class="n">tool_manager</span><span class="o">.</span><span class="n">execute_func_expr_via_sandbox</span><span class="p">(</span><span class="n">expr</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Function output: </span><span class="si">{</span><span class="n">func_output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to execute the function for query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">, func: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>By using an example to help with calling <code class="docutils literal notranslate"><span class="pre">add_point</span></code>, we can now successfully execute all function calls.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">search</span> <span class="k">for</span> <span class="n">something</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="p">[</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=2, b=3)&#39;</span><span class="p">),</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;search(query=&quot;something&quot;)&#39;</span><span class="p">)]</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add(a=2, b=3)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=2, b=3)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;search(query=&quot;something&quot;)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;search(query=&quot;something&quot;)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;search&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;query&#39;</span><span class="p">:</span> <span class="s1">&#39;something&#39;</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;result1something&#39;</span><span class="p">,</span> <span class="s1">&#39;result2something&#39;</span><span class="p">],</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">2</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="n">points</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">sum</span> <span class="n">numpy</span> <span class="n">array</span> <span class="k">with</span> <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="p">[</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))&#39;</span><span class="p">),</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr=[[1, 2], [3, 4]])&#39;</span><span class="p">)]</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add_points(p1=Point(x=1, y=2), p2=Point(x=3, y=4))&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add_points&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;p1&#39;</span><span class="p">:</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="s1">&#39;p2&#39;</span><span class="p">:</span> <span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">4</span><span class="p">)}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">Point</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">6</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr=[[1, 2], [3, 4]])&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;numpy_sum(arr=[[1, 2], [3, 4]])&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;numpy_sum&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;arr&#39;</span><span class="p">:</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]]}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">4</span> <span class="n">Query</span><span class="p">:</span> <span class="n">multiply</span> <span class="mi">2</span> <span class="k">with</span> <span class="n">local</span> <span class="n">variable</span> <span class="n">x</span> <span class="ow">and</span> <span class="n">divide</span> <span class="mi">2</span> <span class="n">by</span> <span class="mi">3</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="p">[</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;multiply(a=2, b=x)&#39;</span><span class="p">),</span> <span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;divide(a=2.0, b=3.0)&#39;</span><span class="p">)]</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply(a=2, b=x)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;multiply(a=2, b=x)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;multiply&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide(a=2.0, b=3.0)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;divide(a=2.0, b=3.0)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;divide&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mf">0.6666666666666666</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+<span class="mi">6</span> <span class="n">Query</span><span class="p">:</span> <span class="n">Add</span> <span class="mi">5</span> <span class="n">to</span> <span class="n">variable</span> <span class="n">y</span>
+<span class="o">--------------------------------------------------</span>
+<span class="n">Function_expr</span><span class="p">:</span> <span class="p">[</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=y, b=5)&#39;</span><span class="p">)]</span>
+<span class="n">Function</span> <span class="n">output</span><span class="p">:</span> <span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add(a=y, b=5)&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">FunctionExpression</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;add(a=y, b=5)&#39;</span><span class="p">),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">FunctionOutput</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">Function</span><span class="p">(</span><span class="n">thought</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(),</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}),</span> <span class="n">parsed_input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">References</p>
+<ol class="arabic simple">
+<li><p>OpenAI tools API: <a class="reference external" href="https://beta.openai.com/docs/api-reference/tools">https://beta.openai.com/docs/api-reference/tools</a></p></li>
+</ol>
+</div>
+<div class="highlight admonition">
+<p class="admonition-title">API References</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionDefinition</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Function" title="core.types.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Function</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.sandbox_execute()</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.generate_function_call_expression_from_callable()</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="db.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data &amp; RAG</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="agent.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-walkthrough">Quick Walkthrough</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lightrag-scope-and-design">LightRAG Scope and Design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#function-call-in-action">Function Call in Action</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functiontool">1. FunctionTool</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#toolmanager">2. ToolManager</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#function-call-end-to-end">3. Function Call end-to-end</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#function-output-format">Function Output Format</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#functionexpression-output-format">FunctionExpression Output Format</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallel-function-calls">Parallel Function Calls</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

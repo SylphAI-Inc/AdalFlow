@@ -154,7 +154,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -284,7 +284,7 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -549,16 +549,6 @@ document.write(`
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span></div>
 
 
-    <span class="c1"># def _compose_lm_input_non_chat(self, **kwargs: Any) -&gt; str:</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     This combines the default lm input using Prompt, and the passed input. history, steps, etc.</span>
-    <span class="c1">#     It builds the final chat input to the model.</span>
-
-    <span class="c1">#     As</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     prompt_text = self.prompt.call(**kwargs)</span>
-    <span class="c1">#     return prompt_text</span>
-
     <span class="k">def</span> <span class="nf">_compose_model_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">model_kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The model configuration exclude the input itself.</span>
@@ -597,7 +587,6 @@ document.write(`
         <span class="c1"># the output processors operate on the str, the raw_response field.</span>
         <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutputType</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
 
-        <span class="c1"># TODO: this output processing patterns need to be more clear</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>

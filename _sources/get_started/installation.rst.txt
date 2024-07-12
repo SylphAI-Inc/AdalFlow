@@ -43,7 +43,7 @@ You can use the following import:
 
 .. code-block:: python
 
-   from lightrag.utils import setup_env()
+   from lightrag.utils import setup_env
 
    setup_env()
 

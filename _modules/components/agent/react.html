@@ -154,7 +154,7 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -284,7 +284,7 @@ document.write(`
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../../developer_notes/index.html">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
     Tutorials
   </a>
 </li>
@@ -403,7 +403,7 @@ document.write(`
                 <article class="bd-article">
                   
   <h1>Source code for components.agent.react</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Implementation of ReAct Agent.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Implementation and optimization of React agent.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -440,7 +440,6 @@ document.write(`
 <span class="s2">{</span><span class="si">% i</span><span class="s2">f tools %}</span>
 <span class="s2">&lt;TOOLS&gt;</span>
 <span class="s2">You available tools are:</span>
-<span class="s2">{# tools #}</span>
 <span class="s2">{</span><span class="si">% f</span><span class="s2">or tool in tools %}</span>
 <span class="s2">{{ loop.index }}.</span>
 <span class="s2">{{tool}}</span>
@@ -448,10 +447,12 @@ document.write(`
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
 <span class="s2">&lt;/TOOLS&gt;</span>
 <span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
-<span class="s2">{# output format and examples #}</span>
+<span class="s2">{# output format and examples for output format #}</span>
+<span class="s2">&lt;OUTPUT_FORMAT&gt;</span>
 <span class="s2">{{output_format_str}}</span>
+<span class="s2">&lt;/OUTPUT_FORMAT&gt;</span>
 <span class="s2">&lt;TASK_SPEC&gt;</span>
-<span class="s2">{# Specifications TODO: preference between the usage of llm tool vs the other tool #}</span>
+<span class="s2">{# Task specification to teach the agent how to think using &#39;divide and conquer&#39; strategy #}</span>
 <span class="s2">- For simple queries: Directly call the ``finish`` action and provide the answer.</span>
 <span class="s2">- For complex queries:</span>
 <span class="s2">    - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.</span>
@@ -491,6 +492,7 @@ document.write(`
 <span class="s2">    - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.</span>
 <span class="s2">    - model_client: the model client to use to generate the response.</span>
 <span class="s2">    - model_kwargs: the model kwargs to use to generate the response.</span>
+<span class="s2">    - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.</span>
 
 <span class="s2">    For the generator, the default arguments are:</span>
 <span class="s2">    (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
@@ -501,6 +503,7 @@ document.write(`
 <span class="s2">    Example:</span>
 
 <span class="s2">    .. code-block:: python</span>
+
 <span class="s2">        from core.openai_client import OpenAIClient</span>
 <span class="s2">        from components.agent.react import ReActAgent</span>
 <span class="s2">        from core.func_tool import FunctionTool</span>
@@ -512,20 +515,17 @@ document.write(`
 <span class="s2">            &#39;&#39;&#39;Add two numbers.&#39;&#39;&#39;</span>
 <span class="s2">            return a + b</span>
 <span class="s2">        agent = ReActAgent(</span>
-<span class="s2">        tools=[multiply, add],</span>
-<span class="s2">        model_client=OpenAIClient,</span>
-<span class="s2">        model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
+<span class="s2">            tools=[multiply, add],</span>
+<span class="s2">            model_client=OpenAIClient(),</span>
+<span class="s2">            model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
 <span class="s2">        )</span>
 
-<span class="s2">        Using examples:</span>
+<span class="s2">        # Using examples:</span>
 
-<span class="s2">        preset_prompt_kwargs = {&quot;examples&quot;: examples}</span>
-<span class="s2">        agent = ReActAgent(</span>
-<span class="s2">        tools=[multiply, add],</span>
-<span class="s2">        model_client=OpenAIClient,</span>
-<span class="s2">        model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;},</span>
-<span class="s2">        preset_prompt_kwargs=preset_prompt_kwargs,</span>
-<span class="s2">        )</span>
+<span class="s2">        call_multiply = FunctionExpression.from_function(</span>
+<span class="s2">            thought=&quot;I want to multiply 3 and 4.&quot;,</span>
+
+
 
 <span class="s2">    Reference:</span>
 <span class="s2">    [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.</span>
@@ -538,14 +538,16 @@ document.write(`
         <span class="n">tools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">AsyncCallable</span><span class="p">,</span> <span class="n">FunctionTool</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
         <span class="n">add_llm_as_fallback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="c1"># TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">FunctionExpression</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span>
         <span class="o">*</span><span class="p">,</span>
         <span class="c1"># the following arguments are mainly for the planner</span>
         <span class="n">model_client</span><span class="p">:</span> <span class="n">ModelClient</span><span class="p">,</span>
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># allow users to customize the template</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="n">template</span> <span class="o">=</span> <span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="n">template</span> <span class="ow">or</span> <span class="n">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span>
 
@@ -594,7 +596,6 @@ document.write(`
 
         <span class="k">def</span> <span class="nf">llm_tool</span><span class="p">(</span><span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;I answer any input query with llm&#39;s world knowledge. Use me as a fallback tool or when the query is simple.&quot;&quot;&quot;</span>
-            <span class="c1"># use the generator to answer the query</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">_additional_llm_tool</span><span class="p">(</span>
                     <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
@@ -626,9 +627,7 @@ document.write(`
 
 
     <span class="k">def</span> <span class="nf">_execute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action_step</span><span class="p">:</span> <span class="n">StepOutput</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">StepOutput</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parse the action string to a function call and execute it. Update the action_step with the result.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the action string to a function call and execute it. Update the action_step with the result.&quot;&quot;&quot;</span>
         <span class="n">action</span> <span class="o">=</span> <span class="n">action_step</span><span class="o">.</span><span class="n">action</span>
         <span class="k">try</span><span class="p">:</span>
 
@@ -645,9 +644,7 @@ document.write(`
             <span class="k">return</span> <span class="n">action_step</span>
 
     <span class="k">def</span> <span class="nf">_run_one_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Run one step of the agent. Plan and execute the action for the step.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run one step of the agent. Plan and execute the action for the step.&quot;&quot;&quot;</span>
         <span class="n">step_output</span><span class="p">:</span> <span class="n">StepOutput</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="p">(</span><span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
         <span class="n">prompt_kwargs</span><span class="p">[</span><span class="s2">&quot;step_history&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_history</span>
 
@@ -667,7 +664,6 @@ document.write(`
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">fun_expr</span><span class="p">:</span> <span class="n">FunctionExpression</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
                 <span class="n">step_output</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">fun_expr</span>
-                <span class="c1"># print the func expr</span>
                 <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">fun_expr</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
                 <span class="c1"># execute the action</span>
@@ -695,7 +691,6 @@ document.write(`
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs.&quot;&quot;&quot;</span>
         <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">promt_kwargs</span><span class="p">,</span> <span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">}</span>
-        <span class="c1"># prompt_kwargs[&quot;input_str&quot;] = input</span>
         <span class="n">printc</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;input_query: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">):</span>
             <span class="n">step</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>

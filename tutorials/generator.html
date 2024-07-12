@@ -1,0 +1,973 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Generator &#8212; LightRAG  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/generator';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Parser" href="output_parsers.html" />
+    <link rel="prev" title="ModelClient" href="model_client.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
+<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
+<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
+<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Generator</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="generator">
+<span id="id1"></span><h1>Generator<a class="headerlink" href="#generator" title="Link to this heading">#</a></h1>
+<p><cite>Generator</cite> is a user-facing orchestration component with a simple and unified interface for LLM prediction.
+It is a pipeline consisting of three subcomponents.</p>
+<section id="design">
+<h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="../_images/generator.png"><img alt="LightRAG generator design" src="../_images/generator.png" style="width: 700px;" />
+</a>
+<figcaption>
+<p><span class="caption-text">Generator - The Orchestrator for LLM Prediction</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The <a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> is designed to achieve the following goals:</p>
+<ol class="arabic simple">
+<li><p>Model Agnostic: The Generator should be able to call any LLM model with the same prompt.</p></li>
+<li><p>Unified Interface: It should manage the pipeline from prompt(input)-&gt;model call -&gt; output parsing.</p></li>
+<li><p>Unified Output: This will make it easy to log and save records of all LLM predictions.</p></li>
+<li><p>Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.</p></li>
+</ol>
+<p>The first three goals apply to other orchestrator components like <a class="reference internal" href="retriever.html#tutorials-retriever"><span class="std std-ref">Retriever</span></a>, <a class="reference internal" href="embedder.html#tutorials-embedder"><span class="std std-ref">Embedder</span></a>, and <a class="reference internal" href="agent.html#tutorials-agent"><span class="std std-ref">Agent</span></a> (mostly) as well.</p>
+<section id="an-orchestrator">
+<h3>An Orchestrator<a class="headerlink" href="#an-orchestrator" title="Link to this heading">#</a></h3>
+<p>It orchestrates three components:</p>
+<ul class="simple">
+<li><p><cite>Prompt</cite>: by taking in <code class="docutils literal notranslate"><span class="pre">template</span></code> (string) and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> (dict) to format the prompt at initialization.
+When the <code class="docutils literal notranslate"><span class="pre">template</span></code> is not provided, it defaults to <a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a>.</p></li>
+<li><p><cite>ModelClient</cite>: by taking in an already instantiated <code class="docutils literal notranslate"><span class="pre">model_client</span></code> and <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> to call the model.
+Switching out the model client allows you to call any LLM model using the same prompt and output parsing.</p></li>
+<li><p><cite>output_processors</cite>: A single component or chained components via <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> to process the raw response to desired format.
+If no output processor provided, it is decided by the model client and often returns raw string response (from the first response message).</p></li>
+</ul>
+<p><strong>Call and arguments</strong></p>
+<p>The <cite>Generator</cite> supports both the <code class="docutils literal notranslate"><span class="pre">call</span></code> (<code class="docutils literal notranslate"><span class="pre">__call__</span></code>) and <code class="docutils literal notranslate"><span class="pre">acall</span></code> methods.
+They take two optional arguments:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> (dict): This is combined with the <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> from the initial <code class="docutils literal notranslate"><span class="pre">Prompt</span></code> component and used to format the prompt.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> (dict): This is  combined with the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> from the initial model client, and along with <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType.LLM" title="core.types.ModelType.LLM"><code class="xref py py-const docutils literal notranslate"><span class="pre">ModelType.LLM</span></code></a>, it is passed to the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>.
+The ModelClient will interpret all the inputs as <code class="docutils literal notranslate"><span class="pre">api_kwargs</span></code> specific to each model API provider.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This also means any <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> that wants to be compatible with <cite>Generator</cite> should take accept <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> and <code class="docutils literal notranslate"><span class="pre">model_type</span></code> as arguments.</p>
+</div>
+</section>
+<section id="generatoroutput">
+<h3>GeneratorOutput<a class="headerlink" href="#generatoroutput" title="Link to this heading">#</a></h3>
+<p>Unlike other components, we cannot always enforce the LLM to follow the output format. The <cite>ModelClient</cite> and the <cite>output_processors</cite> may fail.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Whenever an error occurs, we do not raise the error and force the program to stop.
+Instead, <cite>Generator</cite> will always return an output record.
+We made this design choice because it can be really helpful to log various failed cases in your train/eval sets all together for further investigation and improvement.</p>
+</div>
+<p>In particular, we created <a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a> to capture important information.</p>
+<ul class="simple">
+<li><p><cite>data</cite> (object) : Stores the final processed response after all three components in the pipeline, indicating <cite>success</cite>.</p></li>
+<li><p><cite>error</cite> (str): Contains the error message if any of the three components in the pipeline fail. When this is not <cite>None</cite>, it indicates <cite>failure</cite>.</p></li>
+<li><p><cite>raw_response</cite> (str): Raw string response for reference of any LLM predictions. Currently, it is a string that comes from the first response message. [This might change and be different in the future]</p></li>
+<li><p><cite>metadata</cite> (dict): Stores any additional information</p></li>
+<li><p><cite>usage</cite>:  Reserved for tracking the usage of the LLM prediction.</p></li>
+</ul>
+<p>Whether to do further processing or terminate the pipeline whenever an error occurs is up to the user from here on.</p>
+</section>
+</section>
+<section id="generator-in-action">
+<h2>Generator In Action<a class="headerlink" href="#generator-in-action" title="Link to this heading">#</a></h2>
+<p>We will create a simple one-turn chatbot to demonstrate how to use the Generator.</p>
+<section id="minimum-example">
+<h3>Minimum Example<a class="headerlink" href="#minimum-example" title="Link to this heading">#</a></h3>
+<p>The minimum setup to initiate a generator in the code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The structure of generator using <code class="docutils literal notranslate"><span class="pre">print</span></code>:</p>
+<div style="max-height: 300px; overflow-y: auto;">
+    <pre>
+        <code class="language-python">
+    Generator(
+    model_kwargs={'model': 'llama3-8b-8192'},
+    (prompt): Prompt(
+        template: <SYS>
+        {# task desc #}
+        {% if task_desc_str %}
+        {{task_desc_str}}
+        {% else %}
+        You are a helpful assistant.
+        {% endif %}
+        {# output format #}
+        {% if output_format_str %}
+        <OUTPUT_FORMAT>
+        {{output_format_str}}
+        </OUTPUT_FORMAT>
+        {% endif %}
+        {# tools #}
+        {% if tools_str %}
+        <TOOLS>
+        {{tools_str}}
+        </TOOLS>
+        {% endif %}
+        {# example #}
+        {% if examples_str %}
+        <EXAMPLES>
+        {{examples_str}}
+        </EXAMPLES>
+        {% endif %}
+        {# chat history #}
+        {% if chat_history_str %}
+        <CHAT_HISTORY>
+        {{chat_history_str}}
+        </CHAT_HISTORY>
+        {% endif %}
+        {#contex#}
+        {% if context_str %}
+        <CONTEXT>
+        {{context_str}}
+        </CONTEXT>
+        {% endif %}
+        {# steps #}
+        {% if steps_str %}
+        <STEPS>
+        {{steps_str}}
+        </STEPS>
+        {% endif %}
+        </SYS>
+        {% if input_str %}
+        <User>
+        {{input_str}}
+        </User>
+        {% endif %}
+        You:
+        , prompt_variables: ['input_str', 'tools_str', 'context_str', 'steps_str', 'task_desc_str', 'chat_history_str', 'output_format_str', 'examples_str']
+    )
+    (model_client): GroqAPIClient()
+    )
+        </code>
+    </pre>
+</div><p><strong>Show the Final Prompt</strong></p>
+<p>The <cite>Generator</cite> ‘s <code class="docutils literal notranslate"><span class="pre">print_prompt</span></code> method will simply relay the method from the <cite>Prompt</cite> component:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is LLM? Explain in one sentence.&quot;</span><span class="p">}</span>
+<span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be the formatted prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;User&gt;
+What is LLM? Explain in one sentence.
+&lt;/User&gt;
+You:
+</pre></div>
+</div>
+<p><strong>Call the Generator</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The output will be the <cite>GeneratorOutput</cite> object:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s1">&#39;LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.&#39;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="s1">&#39;LLM stands for Large Language Model, a type of artificial intelligence that is trained on vast amounts of text data to generate human-like language outputs, such as conversations, text, or summaries.&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="use-template">
+<h3>Use Template<a class="headerlink" href="#use-template" title="Link to this heading">#</a></h3>
+<p>In this example, we will use a customized template to format the prompt.
+We intialized the prompt with one variable <cite>task_desc_str</cite>, which is further combined with the <cite>input_str</cite> in the prompt.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;{{task_desc_str}}&lt;/SYS&gt;</span>
+<span class="s2">User: {{input_str}}</span>
+<span class="s2">You:&quot;&quot;&quot;</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">},</span>
+    <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is LLM?&quot;</span><span class="p">}</span>
+
+<span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span>
+    <span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>The final prompt is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;SYS&gt;You are a helpful assistant&lt;/SYS&gt;
+User: What is LLM?
+You:
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is quite straightforward to use any prompt.
+They only need to stick to <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> syntax.</p>
+</div>
+</section>
+<section id="use-output-processors">
+<h3>Use output_processors<a class="headerlink" href="#use-output-processors" title="Link to this heading">#</a></h3>
+<p>In this example, we will instruct the LLM to output a JSON object in response.
+We will use the <cite>JsonParser</cite> to parse the output back to a <cite>dict</cite> object.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+
+<span class="n">output_format_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard JSON object with two keys:</span>
+<span class="s2">{</span>
+<span class="s2">    &quot;explaination&quot;: &quot;A brief explaination of the concept in one sentence.&quot;,</span>
+<span class="s2">    &quot;example&quot;: &quot;An example of the concept in a sentence.&quot;</span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;output_format_str&quot;</span><span class="p">:</span> <span class="n">output_format_str</span><span class="p">},</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">JsonParser</span><span class="p">(),</span>
+<span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is LLM?&quot;</span><span class="p">}</span>
+<span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+
+<span class="n">output</span><span class="p">:</span> <span class="n">GeneratorOutput</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The final prompt is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;SYS&gt;
+&lt;OUTPUT_FORMAT&gt;
+Your output should be formatted as a standard JSON object with two keys:
+    {
+        &quot;explaination&quot;: &quot;A brief explaination of the concept in one sentence.&quot;,
+        &quot;example&quot;: &quot;An example of the concept in a sentence.&quot;
+    }
+
+&lt;/OUTPUT_FORMAT&gt;
+&lt;/SYS&gt;
+&lt;User&gt;
+What is LLM?
+&lt;/User&gt;
+You:
+</pre></div>
+</div>
+<p>The above printout is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;dict&#39;&gt;
+{&#39;explaination&#39;: &#39;LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.&#39;, &#39;example&#39;: &#39;An example of a LLM is GPT-3, which can generate human-like text based on the input provided.&#39;}
+</pre></div>
+</div>
+<p>Please refer to <a class="reference internal" href="output_parsers.html"><span class="doc">Parser</span></a> for a more comprehensive guide on the <cite>Parser</cite> components.</p>
+</section>
+<section id="switch-the-model-client">
+<h3>Switch the model_client<a class="headerlink" href="#switch-the-model-client" title="Link to this heading">#</a></h3>
+<p>Also, did you notice that we have already switched to using models from <cite>OpenAI</cite> in the above example?
+This demonstrates how easy it is to switch the <cite>model_client</cite> in the Generator, making it a truly model-agnostic component.
+We can even use <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code></a> to switch the model client without handling multiple imports.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span>  <span class="c1"># or ModelClientType.GROQ()</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="get-errors-in-generatoroutput">
+<h3>Get Errors in GeneratorOutput<a class="headerlink" href="#get-errors-in-generatoroutput" title="Link to this heading">#</a></h3>
+<p>We will use an incorrect API key to delibrately create an error.
+We will still get a response, but it will only contain empty <code class="docutils literal notranslate"><span class="pre">data</span></code> and an error message.
+Here is an example of an API key error with OpenAI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="s2">&quot;Error code: 401 - {&#39;error&#39;: {&#39;message&#39;: &#39;Incorrect API key provided: ab. You can find your API key at https://platform.openai.com/account/api-keys.&#39;, &#39;type&#39;: &#39;invalid_request_error&#39;, &#39;param&#39;: None, &#39;code&#39;: &#39;invalid_api_key&#39;}}&quot;</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="create-from-configs">
+<h3>Create from Configs<a class="headerlink" href="#create-from-configs" title="Link to this heading">#</a></h3>
+<p>As with all components, we can create the generator purely from configs.</p>
+<p><strong>Know it is a Generator</strong></p>
+<p>In this case, we know we are creating a generator, we will use <code class="docutils literal notranslate"><span class="pre">from_config</span></code> method from the <code class="docutils literal notranslate"><span class="pre">Generator</span></code> class.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;component_name&quot;</span><span class="p">:</span> <span class="s2">&quot;GroqAPIClient&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;component_config&quot;</span><span class="p">:</span> <span class="p">{},</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">generator</span><span class="p">:</span> <span class="n">Generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="o">.</span><span class="n">from_config</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is LLM? Explain in one sentence.&quot;</span><span class="p">}</span>
+<span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Purely from the Configs</strong></p>
+<p>This is even more general.
+This method can be used to create any component from configs.
+We just need to follow the config structure: <code class="docutils literal notranslate"><span class="pre">component_name</span></code> and <code class="docutils literal notranslate"><span class="pre">component_config</span></code> for all arguments.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.config</span> <span class="kn">import</span> <span class="n">new_component</span>
+<span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;component_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Generator&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;component_config&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;component_name&quot;</span><span class="p">:</span> <span class="s2">&quot;GroqAPIClient&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;component_config&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="p">},</span>
+            <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">generator</span><span class="p">:</span> <span class="n">Generator</span> <span class="o">=</span> <span class="n">new_component</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;generator&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span>
+
+<span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="s2">&quot;What is LLM? Explain in one sentence.&quot;</span><span class="p">}</span>
+<span class="n">generator</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">generator</span><span class="p">(</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>It works exactly the same as the previous example.
+We imported <code class="docutils literal notranslate"><span class="pre">Generator</span></code> in this case to only show the type hinting.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please refer to the <a class="reference internal" href="configs.html"><span class="doc">configurations</span></a> for more details on how to create components from configs.</p>
+</div>
+</section>
+<section id="examples-across-the-library">
+<h3>Examples Across the Library<a class="headerlink" href="#examples-across-the-library" title="Link to this heading">#</a></h3>
+<p>Besides these examples, LLM is like water, even in our library, we have components that have adpated Generator to various other functionalities.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMOptimizer</span></code></a> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
+</ul>
+</section>
+</section>
+<section id="tracing">
+<h2>Tracing<a class="headerlink" href="#tracing" title="Link to this heading">#</a></h2>
+<p>In particular, we provide two tracing methods to help you develop and improve the <code class="docutils literal notranslate"><span class="pre">Generator</span></code>:</p>
+<ol class="arabic simple">
+<li><p>Trace the history change (states) on prompt during your development process.</p></li>
+<li><p>Trace all failed LLM predictions for further improvement.</p></li>
+</ol>
+<p>As this note is getting rather long. Please refer to the <a class="reference internal" href="logging_tracing.html"><span class="doc">tracing</span></a> to learn about these two tracing methods.</p>
+</section>
+<section id="training-experimental">
+<h2>Training [Experimental]<a class="headerlink" href="#training-experimental" title="Link to this heading">#</a></h2>
+<p>Coming soon!</p>
+<div class="highlight admonition">
+<p class="admonition-title">API reference</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.prompt_builder.Prompt</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.llm_optimizer.LLMOptimizer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/utils/utils.config.html#utils.config.new_component" title="utils.config.new_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.config.new_component()</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="model_client.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">ModelClient</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="output_parsers.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Parser</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#an-orchestrator">An Orchestrator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#generatoroutput">GeneratorOutput</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generator-in-action">Generator In Action</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimum-example">Minimum Example</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-template">Use Template</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-output-processors">Use output_processors</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#switch-the-model-client">Switch the model_client</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-errors-in-generatoroutput">Get Errors in GeneratorOutput</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-from-configs">Create from Configs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-across-the-library">Examples Across the Library</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing">Tracing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#training-experimental">Training [Experimental]</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
