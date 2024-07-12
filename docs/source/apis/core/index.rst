@@ -39,6 +39,7 @@ Overview
 
    core.base_data_class
    core.component
+   core.container
    core.default_prompt_template
    core.embedder
    core.generator

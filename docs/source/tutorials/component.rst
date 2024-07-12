@@ -188,7 +188,7 @@ To add even more flexibility, we provide :class:`FunComponent<core.component.Fun
 
 
 
-Searalization and deserialization
+Serialization and deserialization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We provide the ``is_pickable`` method to check if the component is pickable.

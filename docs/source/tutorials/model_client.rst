@@ -1,3 +1,5 @@
+.. _tutorials-model_client:
+
 ModelClient
 ============
 

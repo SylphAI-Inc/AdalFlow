@@ -8,5 +8,3 @@ class TrecData:
 
 
 # lightrag
-
-from lightrag.core import DataClass
