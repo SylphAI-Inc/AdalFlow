@@ -53,6 +53,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install poetry
           poetry env use python${{ matrix.python-version }}
+          cd lightrag
           poetry install --no-dev
       - name: Build the distribution
         run: |
@@ -75,12 +76,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Download distribution
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
       - name: Install Poetry and perform dry run publish
         run: |
           python -m pip install --upgrade pip
           pip install poetry
-          poetry env use python${{ matrix.python-version }}
-          cd lightrag
+          cd dist
           poetry publish --dry-run --build -v
 
   publish-to-pypi:
@@ -98,36 +103,23 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry and publish to PyPI
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
       - name: Download distribution
         uses: actions/download-artifact@v2
         with:
           name: dist
           path: dist
-      - name: List distribution files
+      - name: Install Poetry and publish to PyPI
         run: |
-          cd dist
-          ls -al
-      - name: Publish to PyPI
-        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
           cd dist
           poetry publish --username __token__ --password ${{ secrets.PYPI_KEY }} --verbose
-
 
   create-github-release:
     needs: publish-to-pypi
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Check current ref
-        run: |
-          echo "Current ref: ${{ github.ref }}"
-          echo "Tag name: ${{ github.ref_name }}"
-      - name: Fetch all tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Create Release on GitHub
         id: create_release
         uses: actions/create-release@v1
@@ -139,7 +131,6 @@ jobs:
           body: 'Automated release of version ${{ github.ref_name }}'
           draft: false
           prerelease: false
-
 
   rollback:
     needs: publish-to-pypi
