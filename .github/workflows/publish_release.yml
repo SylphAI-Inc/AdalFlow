@@ -107,10 +107,14 @@ jobs:
         with:
           name: dist
           path: dist
+      - name: List distribution files
+        run: |
+          cd dist
+          ls -al
       - name: Publish to PyPI
         run: |
           cd dist
-          poetry publish --username __token__ --password ${{ secrets.PYPI_KEY }}
+          poetry publish --username __token__ --password ${{ secrets.PYPI_KEY }} --verbose
 
 
   create-github-release:
@@ -118,6 +122,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Check current ref
+        run: |
+          echo "Current ref: ${{ github.ref }}"
+          echo "Tag name: ${{ github.ref_name }}"
+      - name: Fetch all tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Create Release on GitHub
         id: create_release
         uses: actions/create-release@v1
@@ -129,6 +139,7 @@ jobs:
           body: 'Automated release of version ${{ github.ref_name }}'
           draft: false
           prerelease: false
+
 
   rollback:
     needs: publish-to-pypi
