@@ -1,5 +1,3 @@
-"""Cohere ModelClient integration."""
-
 import os
 from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
 import backoff
@@ -13,9 +11,6 @@ from ollama import RequestError, ChatResponse
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput, Embedding
-import ollama
-
-
 log = logging.getLogger(__name__)
 
 
@@ -85,7 +80,7 @@ class OllamaClient(ModelClient):
         r"""
         For LLM, expect model_kwargs to have the following keys:
          model: str,
-         messages: str,
+         prompt: str,
 
         For EMBEDDER, expect model_kwargs to have the following keys:
          model: str,
