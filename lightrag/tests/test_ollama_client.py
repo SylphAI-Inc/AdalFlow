@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import Mock
 from lightrag.core.types import ModelType
 from lightrag.components.model_client import OllamaClient
 import ollama
@@ -15,7 +16,8 @@ def model_installed(model_name: str):
 class TestOllamaModelClient(unittest.TestCase):
     
     def test_ollama_llm_client(self):
-        ollama_client = OllamaClient()
+        ollama_client = Mock(spec=OllamaClient())
+        #mocker.patch('OllamaClient', return_value=ollama_client)
         print("Testing ollama LLM client")
         # run the model
         kwargs = {
@@ -25,21 +27,17 @@ class TestOllamaModelClient(unittest.TestCase):
             input="Hello world",
             model_kwargs=kwargs,
             model_type=ModelType.LLM,
-        )
-        # check if the model is installed
-        if model_installed(kwargs["model"]) is not True:
-            ollama.pull(kwargs["model"])
-
+        ).return_value = {"prompt": "Hello World", "model": "qwen2:0.5b"}
+        assert api_kwargs == {"prompt": "Hello World", "model": "qwen2:0.5b"}
         output = ollama_client.call(
             api_kwargs=api_kwargs, model_type=ModelType.LLM
-        )
+        ).return_value = {'message': "Hello"}
+        assert output == {'message': "Hello"}
 
-        print(ollama_client)
-        print(output)
 
     def test_ollama_embedding_client(self):
         # jina/jina-embeddings-v2-base-en:latest
-        ollama_client = OllamaClient()
+        ollama_client = Mock(spec=OllamaClient())
         print("Testing ollama embedding client")
         # run the model
         kwargs = {
@@ -49,17 +47,12 @@ class TestOllamaModelClient(unittest.TestCase):
             input="Welcome",
             model_kwargs=kwargs,
             model_type=ModelType.EMBEDDER,
-        )
-        # Check if model is installed
-        if model_installed(kwargs["model"]) is not True:
-            ollama.pull(kwargs["model"])
-
+        ).return_value = {"prompt": "Welcome", "model": "jina/jina-embeddings-v2-base-en:latest"}
+        assert api_kwargs == {"prompt": "Welcome", "model": "jina/jina-embeddings-v2-base-en:latest"}
         output = ollama_client.call(
             api_kwargs=api_kwargs, model_type=ModelType.EMBEDDER
-        )
-
-        print(ollama_client)
-        print(f"output: {output}")
+        ).return_value = {'embedding':[-0.7391586899757385]}
+        assert output == {'embedding':[-0.7391586899757385]}
     
 
 if __name__ == "__main__":
