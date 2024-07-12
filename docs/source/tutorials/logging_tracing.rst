@@ -1,8 +1,10 @@
+.. _logging_tracing:
+
 Tracing
 ==================
 
-Tracing
-^^^^^^^^^^^
+
+
 In particular, we provide two tracing methods to help you develop and improve the Generator:
 
 1. Trace the history change(states) on prompt during your development process. Developers typically go through a long process of prompt optimization and it is frustrating

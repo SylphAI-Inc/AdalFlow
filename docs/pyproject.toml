@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "lightrag-docs"
-version = "0.1.0"
+version = "0.0.0.beta.1"
 description = "Documentation for the lightrag project"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
 
 [tool.poetry.dependencies]
-python = ">=3.11, <4.0"
+python = ">=3.9, <4.0"
 lightrag = { path = "../lightrag", develop = true } # document always follow the latest version of the library
 
 [tool.poetry.group.doc.dependencies]
