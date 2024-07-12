@@ -116,8 +116,6 @@ We provide developers with fundamental building blocks of *100% clarity and simp
 
 .. - We use 10X less code than other libraries to achieve 10X more robustness and flexibility.
 
-.. - `Class Hierarchy Visualization <developer_notes/class_hierarchy.html>`_
-.. We support them with require **Maximum Flexibility and Customizability**:
 
 .. Each developer has unique data needs to build their own models/components, experiment with In-context Learning (ICL) or model finetuning, and deploy the LLM applications to production. This means the library must provide fundamental lower-level building blocks and strive for clarity and simplicity:
 
