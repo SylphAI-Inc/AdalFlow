@@ -59,7 +59,7 @@ class OllamaClient(ModelClient):
     def parse_chat_completion(self, completion: ChatResponse) -> Any:
         """Parse the completion to a str."""
         log.debug(f"completion: {completion}")
-        return completion["message"]["content"]
+        return completion["response"]
 
     def parse_embedding_response(self, response: Dict[str, float]) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand.
