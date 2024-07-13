@@ -169,6 +169,13 @@
   </a>
 </li>
 
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
+  </a>
+</li>
+
   </ul>
 </nav></div>
       
@@ -298,6 +305,13 @@ document.write(`
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../apis/index.html">
     API Reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributor/index.html">
+    For Contributors
   </a>
 </li>
 
@@ -464,52 +478,42 @@ document.write(`
                   
   <section id="text-splitter">
 <span id="tutorials-text-splitter"></span><h1>Text Splitter<a class="headerlink" href="#text-splitter" title="Link to this heading">#</a></h1>
-<p>In this tutorial, we will discuss:</p>
+<p>In this tutorial, we will learn:</p>
 <ol class="arabic simple">
 <li><p>TextSplitter Overview</p></li>
 <li><p>How does it work</p></li>
 <li><p>How to use it</p></li>
-<li><p>Chunking Tips</p></li>
-<li><p>Integration with Other Document Types and Customization Tips</p></li>
 </ol>
 <section id="textsplitter-overview">
 <h2>TextSplitter Overview<a class="headerlink" href="#textsplitter-overview" title="Link to this heading">#</a></h2>
 <p>LLMs’s context window is limited and the performance often drops with very long and nonsense input.
 Shorter content is more manageable and fits memory constraint.
-The goal of the <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is to chunk large data into smaller ones, potentially improving embedding and retrieving.</p>
+The goal of the text splitter is to chunk large data into smaller ones, potentially improving embedding and retrieving.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> is designed to efficiently process and chunk <strong>plain text</strong>.
 It leverages configurable separators to facilitate the splitting of <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-obj docutils literal notranslate"><span class="pre">document</span> <span class="pre">object</span></code></a> into smaller manageable document chunks.</p>
 </section>
 <section id="how-does-it-work">
 <h2>How does it work<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> first utilizes <code class="docutils literal notranslate"><span class="pre">split_by</span></code> to specify the text-splitting criterion and breaks the long text into smaller texts.
-Then we create a sliding window with <code class="docutils literal notranslate"><span class="pre">length=</span> <span class="pre">chunk_size</span></code>. It moves at <code class="docutils literal notranslate"><span class="pre">step=</span> <span class="pre">chunk_size</span> <span class="pre">-</span> <span class="pre">chunk_overlap</span></code>.
+Then we create a sliding window with length= <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>. It moves at step= <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> - <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.
 The texts inside each window will get merged to a smaller chunk. The generated chunks from the splitted text will be returned.</p>
-<section id="splitting-types">
-<h3>Splitting Types<a class="headerlink" href="#splitting-types" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> supports 2 types of splitting.
-Here are sample examples and you will see the real output of <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> in the usage section.</p>
+<p><strong>Splitting Types</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> supports 2 types of splitting.</p>
 <ul class="simple">
-<li><p><strong>Type 1:</strong> Specify the exact text splitting point such as space&lt;” “&gt; and periods&lt;”.”&gt;. E.g. if you set <code class="docutils literal notranslate"><span class="pre">split_by</span> <span class="pre">=</span> <span class="pre">&quot;word&quot;</span></code>, you will get:</p></li>
+<li><p><strong>Type 1:</strong> Specify the exact text splitting point such as space&lt;” “&gt; and periods&lt;”.”&gt;. It is intuitive, for example, split_by “word”:</p></li>
 </ul>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello, world!&quot;</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s2">&quot;Hello, &quot;</span> <span class="p">,</span><span class="s2">&quot;world!&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p><strong>Type 2:</strong> Use <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>. It works as:</p></li>
+<li><p><strong>Type 2:</strong> Use <code class="xref py py-class docutils literal notranslate"><span class="pre">tokenizer</span></code>. It works as:</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello, world!&quot;</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot; world&quot;</span><span class="p">,</span> <span class="s2">&quot;!&quot;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;Hello, world!&quot;</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s1">&#39;Hello&#39;</span><span class="p">,</span> <span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39; world&#39;</span><span class="p">,</span> <span class="s1">&#39;!&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Tokenization aligns with how models see text in the form of tokens (<a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>).
-Consider using tokenization when your embedding model works better for tokens or you will input the data chunks to LLM models that are sensitive to token limit.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Tokenizer reflects the real token numbers the models take in and helps the developers control budgets.</p>
-</div>
-</section>
-<section id="definitions">
-<h3>Definitions<a class="headerlink" href="#definitions" title="Link to this heading">#</a></h3>
+<p>This aligns with how models see text in the form of tokens (<a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>),
+Tokenizer reflects the real token numbers the models take in and helps the developers control budgets.</p>
+<p><strong>Definitions</strong></p>
 <ul class="simple">
 <li><p><strong>split_by</strong> specifies the split rule, i.e. the smallest unit during splitting. We support <code class="docutils literal notranslate"><span class="pre">&quot;word&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sentence&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;page&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;passage&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;token&quot;</span></code>. The splitter utilizes the corresponding separator from the <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code> dictionary.</p></li>
 </ul>
@@ -519,14 +523,14 @@ Consider using tokenization when your embedding model works better for tokens or
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For option <code class="docutils literal notranslate"><span class="pre">token</span></code>, its separator is “” because we directly split by a tokenizer, instead of specific text point.</p>
+<p>For option <code class="docutils literal notranslate"><span class="pre">token</span></code>, its separator is “” because we directly split by a tokenizer, instead of text point.</p>
 </div>
 <ul class="simple">
-<li><p><strong>chunk_size</strong> is the the maximum number of units in each chunk. To figure out which <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> works best for you, you can firstly preprocess your raw data, select a range of the <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> and then run the evaluation on your use case with a bunch of queries.</p></li>
+<li><p><strong>chunk_size</strong> is the the maximum number of units in each chunk.</p></li>
 <li><p><strong>chunk_overlap</strong> is the number of units that each chunk should overlap. Including context at the borders prevents sudden meaning shift in text between sentences/context, especially in sentiment analysis.</p></li>
 </ul>
-<p>Here are examples of how <code class="docutils literal notranslate"><span class="pre">split_by</span></code>, <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> works with <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.</p>
-<p>Input Document Text:</p>
+<p>Here are examples of how <code class="docutils literal notranslate"><span class="pre">split_by</span></code>, <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> works with <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.
+Document Text:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hello</span><span class="p">,</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">lightrag</span><span class="o">.</span> <span class="n">Please</span> <span class="n">implement</span> <span class="n">your</span> <span class="n">splitter</span> <span class="n">here</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -564,7 +568,7 @@ Consider using tokenization when your embedding model works better for tokens or
 </tbody>
 </table>
 </div>
-<p>When splitting by <code class="docutils literal notranslate"><span class="pre">word</span></code> with <code class="docutils literal notranslate"><span class="pre">chunk_size</span> <span class="pre">=</span> <span class="pre">5</span></code> and <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span> <span class="pre">=</span> <span class="pre">2</span></code>,
+<p>When splitting by <code class="docutils literal notranslate"><span class="pre">word</span></code> with <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> = 5 and <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code> = 2,
 each chunk will repeat 2 words from the previous chunk. These 2 words are set by <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.
 This means each chunk has <code class="docutils literal notranslate"><span class="pre">5-2=3</span></code> word(split unit) difference compared with its previous.</p>
 <p>When splitting using tokenizer, each chunk still keeps 5 tokens.
@@ -572,15 +576,12 @@ For example, the tokenizer transforms <code class="docutils literal notranslate"
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code> should always be smaller than <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>, otherwise the window won’t move and the splitting stucks.
-Our default tokenization model is <code class="docutils literal notranslate"><span class="pre">cl100k_base</span></code>. If you use tokenization (<code class="docutils literal notranslate"><span class="pre">split_by</span></code> = <code class="docutils literal notranslate"><span class="pre">token</span></code>), the punctuations are also considered as tokens.</p>
+When <code class="docutils literal notranslate"><span class="pre">split_by</span></code> = <code class="docutils literal notranslate"><span class="pre">token</span></code>, the punctuation is considered as a token.</p>
 </div>
-</section>
 </section>
 <section id="how-to-use-it">
 <h2>How to use it<a class="headerlink" href="#how-to-use-it" title="Link to this heading">#</a></h2>
 <p>What you need is to specify the arguments and input your documents this way:</p>
-<section id="split-by-word">
-<h3>Split by word<a class="headerlink" href="#split-by-word" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
 <span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
 
@@ -610,88 +611,16 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 </pre></div>
 </div>
 </section>
-<section id="split-by-token">
-<h3>Split by token<a class="headerlink" href="#split-by-token" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">import</span> <span class="nn">tiktoken</span>
-
-<span class="c1"># Configure the splitter settings</span>
-<span class="n">text_splitter</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="p">(</span>
-    <span class="n">split_by</span><span class="o">=</span><span class="s2">&quot;token&quot;</span><span class="p">,</span>
-    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-    <span class="n">chunk_overlap</span><span class="o">=</span><span class="mi">0</span>
-<span class="p">)</span>
-
-<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span>
-    <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Example text. More example text. Even more text to illustrate.&quot;</span><span class="p">,</span>
-    <span class="nb">id</span> <span class="o">=</span> <span class="s2">&quot;doc1&quot;</span>
-    <span class="p">)</span>
-
-<span class="n">splitted_docs</span> <span class="o">=</span> <span class="p">(</span><span class="n">text_splitter</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">documents</span><span class="o">=</span><span class="p">[</span><span class="n">doc</span><span class="p">]))</span>
-
-<span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">splitted_docs</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span>
-
-<span class="c1"># Output:</span>
-<span class="c1"># Document(id=27cec433-b400-4f11-8871-e386e774d150, text=&#39;Example text. More example&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=0, score=None)</span>
-<span class="c1"># Document(id=8905dc5f-8be5-4ca4-88b1-2ae492258b53, text=&#39; text. Even more text&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=1, score=None)</span>
-<span class="c1"># Document(id=ba8e1e23-82fb-4aa8-bfc5-e22084984bb9, text=&#39; to illustrate.&#39;, meta_data=None, vector=[], parent_doc_id=doc1, order=2, score=None)</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="chunking-tips">
-<h2>Chunking Tips<a class="headerlink" href="#chunking-tips" title="Link to this heading">#</a></h2>
-<p>Choosing the proper chunking strategy involves considering several key factors:</p>
-<ul class="simple">
-<li><p><strong>Content Type</strong>: Adapt your chunking approach to matching the specific type of content, such as articles, books, social media posts, or genetic sequences.</p></li>
-<li><p><strong>Embedding Model</strong>: Select a chunking method that aligns with your embedding model’s training to optimize performance. For example, sentence-based splitting pairs well with <a class="reference external" href="https://huggingface.co/sentence-transformers">sentence-transformer</a> models, while token-based splitting is ideal for OpenAI’s <a class="reference external" href="https://openai.com/index/new-and-improved-embedding-model">text-embedding-ada-002</a>.</p></li>
-<li><p><strong>Query Dynamics</strong>: The length and complexity of queries should influence your chunking strategy. Larger chunks may be better for shorter queries lacking detailed specifications and needing broad context, whereas longer queries(more specific) might have higher accuracy with finer granularity.</p></li>
-<li><p><strong>Application of Results</strong>: The application, whether it be semantic search, question answering, or summarization, dictates the appropriate chunking method, especially considering the limitations of content windows in large language models (LLMs).</p></li>
-<li><p><strong>System Integration</strong>: Efficient chunking aligns with system capabilities. For example, <cite>Full-Text Search:</cite> Use larger chunks to allow algorithms to explore broader contexts effectively. For example, search books based on extensive excerpts or chapters. <cite>Granular Search Systems:</cite> Employ smaller chunks to precisely retrieve information relevant to user queries, such as retrieving specific instructions directly in response to a user’s question. For example, if a user asks, “How do I reset my password?”. The system can retrieve a specific sentence or paragraph addressing that action directly.</p></li>
-</ul>
-<section id="chunking-strategies">
-<h3>Chunking Strategies<a class="headerlink" href="#chunking-strategies" title="Link to this heading">#</a></h3>
-<section id="fixed-size-chunking">
-<h4>Fixed-Size Chunking<a class="headerlink" href="#fixed-size-chunking" title="Link to this heading">#</a></h4>
-<ul class="simple">
-<li><p>Ideal for content requiring uniform chunk sizes like genetic sequences or standardized data entries. This method, which involves splitting text into equal-sized word blocks, is simple and efficient but may compromise semantic coherence and risk breaking important contextual links.</p></li>
-</ul>
-</section>
-<section id="content-aware-chunking">
-<h4>Content-Aware Chunking<a class="headerlink" href="#content-aware-chunking" title="Link to this heading">#</a></h4>
-<ul class="simple">
-<li><p><strong>Split by Sentence</strong>: Proper for texts needing a deep understanding of complete sentences, such as academic articles or medical reports. This method maintains grammatical integrity and contextual flow.</p></li>
-<li><p><strong>Split by Passage</strong>: Useful for maintaining the structure and coherence of large documents. Supports detailed tasks like question answering and summarization by focusing on specific text sections.</p></li>
-<li><p><strong>Split by Page</strong>: Effective for large documents where each page contains distinct information, such as legal or academic texts, facilitating precise navigation and information extraction.</p></li>
-</ul>
-</section>
-<section id="token-based-splitting">
-<h4>Token-Based Splitting<a class="headerlink" href="#token-based-splitting" title="Link to this heading">#</a></h4>
-<ul class="simple">
-<li><p>Beneficial for scenarios where embedding models have strict token limitations. This method divides text based on token count, optimizing compatibility with LLMs like GPT, though it may slow down processing due to model complexities.</p></li>
-</ul>
-</section>
-<section id="upcoming-splitting-features">
-<h4>Upcoming Splitting Features<a class="headerlink" href="#upcoming-splitting-features" title="Link to this heading">#</a></h4>
-<ul class="simple">
-<li><p><strong>Semantic Splitting</strong>: Focuses on grouping texts by meaning rather than structure, enhancing the relevance for thematic searches or advanced contextual retrieval tasks.</p></li>
-</ul>
-<p>If you are using strategies not based on tokenizer, please be careful of your token length when you input the chunks to your model.</p>
-</section>
-</section>
-</section>
 <section id="integration-with-other-document-types">
 <h2>Integration with Other Document Types<a class="headerlink" href="#integration-with-other-document-types" title="Link to this heading">#</a></h2>
 <p>This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
-For <cite>PDFs</cite>, developers will need to extract the text before using the splitter. Libraries like <code class="docutils literal notranslate"><span class="pre">PyPDF2</span></code> or <code class="docutils literal notranslate"><span class="pre">PDFMiner</span></code> can be utilized for this purpose.
+For <strong>PDFs</strong>, developers will need to extract the text before using the splitter. Libraries like <code class="docutils literal notranslate"><span class="pre">PyPDF2</span></code> or <code class="docutils literal notranslate"><span class="pre">PDFMiner</span></code> can be utilized for this purpose.
 <code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>’s future implementations will introduce splitters for <code class="docutils literal notranslate"><span class="pre">JSON</span></code>, <code class="docutils literal notranslate"><span class="pre">HTML</span></code>, <code class="docutils literal notranslate"><span class="pre">markdown</span></code>, and <code class="docutils literal notranslate"><span class="pre">code</span></code>.</p>
-</section>
 <section id="customization-tips">
-<h2>Customization Tips<a class="headerlink" href="#customization-tips" title="Link to this heading">#</a></h2>
-<p>You can also customize the <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code>. For example, by defining <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code> = <code class="docutils literal notranslate"><span class="pre">{&quot;question&quot;:</span> <span class="pre">&quot;?&quot;}</span> <span class="pre">``and</span> <span class="pre">setting</span> <span class="pre">``split_by</span> <span class="pre">=</span> <span class="pre">&quot;question&quot;</span></code>, the document will be split at each <code class="docutils literal notranslate"><span class="pre">?</span></code>, ideal for processing text structured
-as a series of questions. If you need to customize <a class="reference internal" href="../apis/core/core.tokenizer.html#core.tokenizer.Tokenizer" title="core.tokenizer.Tokenizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tokenizer.Tokenizer</span></code></a>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
+<h3>Customization Tips<a class="headerlink" href="#customization-tips" title="Link to this heading">#</a></h3>
+<p>You can also customize the <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code>. For example, by defining <code class="docutils literal notranslate"><span class="pre">SEPARATORS</span></code> = {“question”: “?”} and setting <code class="docutils literal notranslate"><span class="pre">split_by</span></code> = “question”, the document will be split at each <code class="docutils literal notranslate"><span class="pre">?</span></code>, ideal for processing text structured
+as a series of questions. If you need to customize <code class="xref py py-class docutils literal notranslate"><span class="pre">tokenizer</span></code>, please check <a class="reference external" href="https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb">Reference</a>.</p>
+</section>
 </section>
 </section>
 
@@ -742,28 +671,12 @@ as a series of questions. If you need to customize <a class="reference internal"
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#textsplitter-overview">TextSplitter Overview</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#splitting-types">Splitting Types</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#definitions">Definitions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-does-it-work">How does it work</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-it">How to use it</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-other-document-types">Integration with Other Document Types</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customization-tips">Customization Tips</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-it">How to use it</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#split-by-word">Split by word</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#split-by-token">Split by token</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#chunking-tips">Chunking Tips</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chunking-strategies">Chunking Strategies</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#fixed-size-chunking">Fixed-Size Chunking</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#content-aware-chunking">Content-Aware Chunking</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#token-based-splitting">Token-Based Splitting</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#upcoming-splitting-features">Upcoming Splitting Features</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-with-other-document-types">Integration with Other Document Types</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customization-tips">Customization Tips</a></li>
 </ul>
   </nav></div>
 

@@ -83,7 +83,7 @@ LightRAG library does not prioritize the coverage of integration for the followi
 
 Instead, our design goals are:
 
-1. Representative and valable coverage:
+1. Cover representative and valuable retriever methods:
 
    a. High-precision retrieval methods and enabling them to work locally and in-memory so that researchers and developers can build and test more efficiently.
    b. Showcase how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.
@@ -254,7 +254,7 @@ In this note, we will use the following documents and queries for demonstration:
 The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.
 
 FAISSRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 First, let's do semantic search, here we will use in-memory :class:`FAISSRetriever<components.retriever.faiss_retriever.FAISSRetriever>`.
 FAISS retriever takes embeddings which can be ``List[float]`` or ``np.ndarray`` and build an index using FAISS library.
 The query can take both embeddings and str formats.
@@ -334,7 +334,7 @@ In default, the score is a simulated probabity in range ``[0, 1]`` using consine
 You can check the retriever for more type of scores.
 
 BM25Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 So the semantic search works pretty well. We will see how :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` works in comparison.
 We reimplemented the code in [9]_ with one improvement: instead of using ``text.split(" ")``, we use tokenizer to split the text. Here is a comparison of how they different:
 
@@ -408,7 +408,8 @@ This time the retrieval gives us the right answer.
     [RetrieverOutput(doc_indices=[2, 1], doc_scores=[0.5343238380789569, 0.4568096570283078], query='solar panels?', documents=None)]
 
 Reranker as Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Semantic search works well, and reranker basd on mostly `cross-encoder` model is supposed to work even better.
 We have integrated two rerankers: ``BAAI/bge-reranker-base`` [10]_ hosted on ``transformers`` and rerankers provided by ``Cohere`` [11]_.
 These models follow the ``ModelClient`` protocol and are directly accessible as retriever from :class:`RerankerRetriever<components.retriever.reranker_retriever.RerankerRetriever>`.
@@ -518,7 +519,8 @@ Also, if we use both the `title` and `content`, it will also got the right respo
 
 
 LLM as Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 There are differen ways to use LLM as a retriever:
 
@@ -598,12 +600,16 @@ The response is:
     [RetrieverOutput(doc_indices=[1, 2], doc_scores=None, query='How do solar panels impact the environment?', documents=None)]
 
 
+
 PostgresRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Coming soon.
 
 Use Score Threshold instead of top_k
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 In some cases, when the retriever has a computed score and you might prefer to use the score instead of ``top_k`` to filter out the relevant documents.
 To do so, you can simplify set the ``top_k`` to the full size of the documents and use a post-processing step or a component(to chain with the retriever) to filter out the documents with the score below the threshold.
 
@@ -613,7 +619,8 @@ Use together with Database
 When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.
 
 With LocalDB
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 We have previously computed embeddings, now let us :class:`LocalDB<core.db.LocalDB>` to help with the persistence.
 (Although you can totally persist them yourself such as using pickle).
 Additionally, ``LocalDB`` help us keep track of our initial documents and its transformed documents.
