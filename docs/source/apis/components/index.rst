@@ -82,6 +82,7 @@ Reasoning
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
    components.model_client
    components.retriever
