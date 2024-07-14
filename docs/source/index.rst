@@ -10,12 +10,12 @@
 
    <div style="text-align: center; margin-bottom: 20px;">
       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">  <img src="https://img.shields.io/discord/1065084981904429126?style=flat-square" alt="Discord"></a>
       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
    </div>
 
 
-.. <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
 
 ..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
 
@@ -26,8 +26,8 @@
 
     <div style="text-align: center;">
         <p>
-            <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator</em> pipelines.<br>
-            It is light, modular, and robust,  with a 100% readable codebase.
+            <em>LightRAG</em> helps developers build and optimize <em>Retriever-Agent-Generator</em> pipelines.<br>
+            Embracing a design philosophy similar to PyTorch, it is light, modular, and robust, with a 100% readable codebase.
         </p>
     </div>
 
