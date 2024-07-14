@@ -9,13 +9,13 @@
 .. raw:: html
 
    <div style="text-align: center; margin-bottom: 20px;">
-
       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-      <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">  <img src="https://img.shields.io/discord/1065084981904429126?style=flat-square" alt="Discord"></a>
       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
    </div>
 
+
+.. <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
 
 ..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
 
@@ -245,10 +245,9 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
 
 .. hide the for contributors now
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-   :caption: For Contributors
-   :hidden:
+   .. :glob:
+   .. :maxdepth: 1
+   .. :caption: For Contributors
+   .. :hidden:
 
-   contributor/index
+   .. contributor/index
