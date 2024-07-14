@@ -1,3 +1,6 @@
+### Added
+- `Sequential` adds `acall` method.
+
 ## [0.0.0-beta.1] - 2024-07-10
 
 ### Added
