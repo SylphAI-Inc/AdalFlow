@@ -1,21 +1,18 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
-
 <!-- [![release](https://img.shields.io/github/v/release/SylphAI-Inc/LightRAG?sort=semver)](https://github.com/SylphAI-Inc/LightRAG/releases) -->
 <!-- [![Dependency Status](https://img.shields.io/librariesio/github/SylphAI-Inc/LightRAG?style=flat-square)](https://libraries.io/github/SylphAI-Inc/LightRAG) -->
-<!-- [![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG) -->
-[![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![PyPI](https://img.shields.io/pypi/v/lightRAG?style=flat-square)](https://pypi.org/project/lightRAG/)
+[![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG)
 [![Open Issues](https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square)](https://github.com/SylphAI-Inc/LightRAG/issues)
+[![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
 
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
-*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator* pipelines.
-It is *light*, *modular*, and *robust*, with a 100% readable codebase.
-
-
+*LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
+Embracing a design philosophy similar to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
 # Why LightRAG?
@@ -27,7 +24,8 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 This is what LightRAG is: light, modular, and robust, with a 100% readable codebase.
 
 
-Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
+Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
+[Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -247,7 +245,7 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 # Documentation
 
 LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
-
+- [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
 - [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
