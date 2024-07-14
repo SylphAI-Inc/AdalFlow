@@ -39,10 +39,6 @@
 
 
 
-
-
-
-
 .. and Customizability
 
 

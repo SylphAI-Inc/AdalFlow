@@ -12,7 +12,7 @@
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
-Embracing a design philosophy similar to *PyTorch*, it is *light*, *modular*, and *robust*, with a 100% readable codebase.
+Embracing a design philosophy similar to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
 # Why LightRAG?
