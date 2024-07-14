@@ -12,7 +12,7 @@ Generator
 
 
 `Generator` is a user-facing orchestration component with a simple and unified interface for LLM prediction.
-It is a pipeline consisting of three subcomponents.
+It is a pipeline consisting of three subcomponents. By switching the prompt template, model client, and output parser, users have full control and flexibility.
 
 Design
 ---------------------------------------
@@ -26,11 +26,10 @@ Design
 
 
 
-
 The :class:`Generator<core.generator.Generator>` is designed to achieve the following goals:
 
 1. Model Agnostic: The Generator should be able to call any LLM model with the same prompt.
-2. Unified Interface: It should manage the pipeline from prompt(input)->model call -> output parsing.
+2. Unified interface: It manages the pipeline from prompt (input) -> model call -> output parsing, while still giving users full control over each part.
 3. Unified Output: This will make it easy to log and save records of all LLM predictions.
 4. Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.
 
@@ -443,6 +442,7 @@ Besides these examples, LLM is like water, even in our library, we have componen
 - :class:`LLMRetriever<components.retriever.llm_retriever.LLMRetriever>` is a retriever that uses Generator to call LLM to retrieve the most relevant documents.
 - :class:`DefaultLLMJudge<eval.llm_as_judge.DefaultLLMJudge>` is a judge that uses Generator to call LLM to evaluate the quality of the response.
 - :class:`LLMOptimizer<optim.llm_optimizer.LLMOptimizer>` is an optimizer that uses Generator to call LLM to optimize the prompt.
+- :class:`ReAct Agent Planner<components.agent.react.ReActAgent>` is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.
 
 Tracing
 ---------------------------------------
@@ -479,6 +479,7 @@ Coming soon!
    - :class:`tracing.generator_call_logger.GeneratorCallLogger`
    - :class:`tracing.generator_state_logger.GeneratorStateLogger`
    - :class:`components.retriever.llm_retriever.LLMRetriever`
+   - :class:`components.agent.react.ReActAgent`
    - :class:`eval.llm_as_judge.DefaultLLMJudge`
    - :class:`optim.llm_optimizer.LLMOptimizer`
    - :func:`utils.config.new_component`

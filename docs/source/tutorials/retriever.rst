@@ -120,9 +120,14 @@ Working with ``DialogTurn`` can help manage ``conversation_history``, especiall 
 
 
 Retriever Data Types
-^^^^^^^^^^^^^^^^^^^^^^^^
-In most cases, the query is string. But there are cases we might need both text and images as a query, such as "find me a cloth that looks like this".
-We defined the query type as:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Query**
+
+In most cases, the query is string. But there are cases where we might need both text and images as a query, such as "find me a cloth that looks like this".
+We defined the query type `RetrieverQueriesType` so that all of our retrievers should handle both single query and multiple queries at once.
+For text-based retrievers, we defined `RetrieverStrQueriesType` as a string or a sequence of strings.
+
 
 .. code-block:: python
 
@@ -131,28 +136,29 @@ We defined the query type as:
     RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
     RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
 
-As we see, our retriever should be able to handle both single query and multiple queries at once.
+**Documents**
 
-The documents are a sequence of document of any type that will be later specified by the subclass:
+The documents are a sequence of documents of any type, which will be later specified by the subclass:
 
 .. code-block:: python
 
     RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True) # a single document
     RetrieverDocumentsType = Sequence[RetrieverDocumentType] # The final documents types retriever can use
 
+**Output**
 
-We further define  the same output format so that we can easily switch between different retrievers in our task pipeline.
-Here is our output format:
+We further definied the unified output data structure :class:`RetrieverOutput<core.types.RetrieverOutput>` so that we can easily switch between different retrievers in our task pipeline.
+A retriever should return a list of `RetrieverOutput` to support multiple queries at once. This is helpful for:
+
+(1) Batch-processing: Especially for semantic search, where multiple queries can be represented as numpy array and computed all at once, providing faster speeds than processing each query one by one.
+(2) Query expansion: To increase recall, users often generate multiple queries from the original query.
+
 
 
 .. code-block:: python
 
+    @dataclass
     class RetrieverOutput(DataClass):
-        __doc__ = r"""Save the output of a single query in retrievers.
-
-        It is up to the subclass of Retriever to specify the type of query and document.
-        """
-
         doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
         doc_scores: Optional[List[float]] = field(
             default=None, metadata={"desc": "List of document scores"}
@@ -167,11 +173,24 @@ Here is our output format:
 
     RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
 
-You can find the types in :ref:`types<core-types>`. The list of queries and `RetrieverOutput` can be helpful for:
 
-(1) Batch-processing: especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.
-(2) For `query expansion` where to increase the recall, users often generate multiple queries from the original query.
 
+**Document and TextSplitter**
+
+If your documents (in text format) are too large, it is common practise to first use :class:`TextSplitter<components.data_process.text_splitter.TextSplitter>` to split the text into smaller chunks.
+Please refer to the :doc:`text_splitter` tutorial on how to use it.
+
+
+
+Retriever Base Class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Functionally, the base retriever :class:`Retriever<core.retriever.Retriever>` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actual retrieval calls.
+Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
+As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
+with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
+As an example, :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` has the following key attributes to index.
 
 .. code-block:: python
 
@@ -196,24 +215,9 @@ You can find the types in :ref:`types<core-types>`. The list of queries and `Ret
             raise NotImplementedError(f"Async retrieve is not implemented")
 
 
-**Document and TextSplitter**
-
-If your documents(text format) are too large and it is a common practise to first use ``TextSplitter`` to split them into smaller chunks.
-Please refer to :doc:`text_splitter` and our provided notebook on how to use it.
-
-
-
-Retriever Base Class
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Functionally, the base retriever :class:`Retriever<core.retriever.Retriever>` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actual retrieval calls.
-Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
-As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
-with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
-It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
-As an example, :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` has the following key attributes to index.
-
 .. code:: python
+
+
 
     self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","total_documents","top_k","k1","b","epsilon","indexed"]
 
