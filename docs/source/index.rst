@@ -10,6 +10,9 @@
 
    <div style="text-align: center; margin-bottom: 20px;">
       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://github.com/SylphAI-Inc/LightRAG" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      </a>
       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">  <img src="https://img.shields.io/discord/1065084981904429126?style=flat-square" alt="Discord"></a>
       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
