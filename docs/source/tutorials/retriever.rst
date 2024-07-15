@@ -1,3 +1,6 @@
+.. _tutorials-retriever:
+
+
 Retriever
 ============
 
@@ -6,25 +9,26 @@ Retriever
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
-Context
-------------------
+.. Context
+.. ------------------
 
-**Why Retriever for LLM?**
+.. **Why Retriever for LLM?**
 
-LLMs halluciate and also has knowledge cut-off. External and relevant context is needed to increase the factuality, relevancy, and freshness on the LLM answers.
-Due to LLM's context window limit(can only take so much tokens each time), the ``lost-in-the-middle`` problem[6], and the high cost on speed and resources using large context,
-it is practical to use a retriever to retrieve the most relevant information to get the best performance. Retrieval Augemented Generation (RAG)[7] applications become one of main applications in LLMs.
+LLMs halluciate and also have a knowledge cut-off.
+External and relevant context is needed to increase the factuality, relevancy, and freshness of the LLM answers.
+Due to the LLM's context window limit (it can only take so many tokens at a time), the ``lost-in-the-middle`` problem [6]_, and the high cost in speed and resources using large context,
+it is practical to use a retriever to retrieve the most relevant information for the best performance. Retrieval Augemented Generation (RAG) [7]_ applications have become one of main applications in LLMs.
 
 .. It is easy to build a demo, but hard to excel due to the many different parts in the pipeline that made it difficult to evaluate and to optimize.
 
 **What is a retriever?**
 
-Though the definition is simple - "Retrieve relevant information for a given query from a given database", retriever can go as wide as the entire search and information retriever field.
-No doubt the retriever part is the one of the most diversity and have the longest history in LLM application landscapes.
 
+Though the definition is simple-"Retrieve relevant information for a given query from a given database"-the scope of a retriever can extend as wide as the entire search and information retrieval field.
+Numerous search techniques existed long before vector/semantic search and reranking models, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search.
+These techniques can be applied to various data types, including text, time-sensitive data, locations, sensor data, images, videos, and audio.
+Additionally, they can be stored in various types of databases, such as relational databases, NoSQL databases, vector databases, and graph databases.
 
-There are numerous search techniques long existing before the vector/semantic search and reranking models, such as keyword search, fuzzy search, proximity search, phrase search, boolean search, facet search, full-text search,
-and can be applied on various data types, such as text, time-sensitive data, locations, sensor data, and images, videos, audios, etc, and stored in various types of databases, such as relational databases, NoSQL databases, and vector databases.
 
 .. In LightRAG
 .. There are also dense and sparse retrieval methods.
@@ -42,16 +46,18 @@ and can be applied on various data types, such as text, time-sensitive data, loc
 
 **Retrieval in Production**
 
-In real production, retrieval is often of multiple-stages, from the cheapest to the most expensive and most accurate, from millions of candidates to a few hundreds or even less.
-For example, when you want to search for candidates from a pool of profiles stored in realtional db say Postgres, you can search by name simply using keyword, or check if the name equals to the query.
-You also want to search by their profession, which you have already categorized, either by model or human labeling, this makes it a filter search.
-Or if the search query requires more semantic understanding, we will leverage semantic search using embedding models.
-If we want it to be more accurate, we move up to more expensive and more accurate methods such as reranking models and LLM-based retrieval methods.
+
+In real production, retrieval is often a multiple-stage process, progressing from the cheapest to the most expensive and accurate methods, narrowing down from millions of candidates to a few hundred or even less.
+For example, when you want to search for candidates from a pool of profiles stored in a realtional database like Postgres, you can start with a simple keyword search or check if the  name equals the query.
+You may also want to search by profession, which has already been categorized either by a model or human labeling, making it a filter search.
+If the search query requires more semantic understanding, we will leverage semantic search using embedding models.
+If we want it to be even more accurate, we can move up to more expensive and accurate methods such as reranking models and LLM-based retrieval methods.
 
 
 
 
-Design pattern
+
+Design
 ------------------
 
 .. figure:: /_static/images/retriever.png
@@ -59,47 +65,69 @@ Design pattern
     :alt: Retriever design
     :width: 620px
 
-    LightRAG retriever covers high-precision retriever methods and make them work locally and in-memory, this will help researchers and developers build and test.
-    We also showcase how it is like to work with cloud database for **large-scale data** along with its built-in search& filter methods.
+
+    LightRAG retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.
 
 
-LightRAG library does not prioritize the coverage of integration, the reasons are:
+    .. LightRAG retriever covers high-precision retrieval methods and enables them to work locally and in-memory, this will help researchers and developers build and test.
+    .. We also showcase how it is like to work with cloud database for **large-scale data** along with its built-in search& filter methods.
+
+
+Scope and Design Goals
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+LightRAG library does not prioritize the coverage of integration for the following reasons:
 
 1. It is literally too-wide to cover them all.
 2. The challenges with RAG application lies more in evaluation and optimization due to many different moving parts and many hyperparmeters, and less in implementing or integrating a 3rd party retriever.
 
-We instead want to provide a design pattern where users can
+Instead, our design goals are:
 
-1. Learn our existing coverage and implementation and use them out-of-the-box as building blocks.
-2. Easily integrate their own retriever and make them work seamlessly with the remaining part of the LLM application so that they can evaluate and optimize the whole task pipeline.
-3. Easily combine different retriever methods to form a multiple-stage retrieval pipeline.
+1. Cover representative and valuable retriever methods:
 
-A retriever will work hand in hand with the ``database`` and the ``data model``.
-We will have a local database :class:`core.db.LocalDB` and a cloud sql-based database (using ``SQLAlchemy``) that can work with any data class, and espeically with the :class:`core.types.Document` and :class:`core.types.DialogTurn`
-which provides ``context`` and ``conversation_history`` and is key to the LLM application.
-As for the retriever methods, we cover the most representative methods: LLMAsRetriever, Reranker(Cross-encoder), Semantic Search(Bi-encoder), BM25, database's built-in search such as the full-text search/sql based search using Postgres and the semantic search using ``PgVector``.
+   a. High-precision retrieval methods and enabling them to work locally and in-memory so that researchers and developers can build and test more efficiently.
+   b. Showcase how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.
 
-.. so that users can clearly and easily integrate their own retriever, either to work withh local files or to work with cloud databases with the remaining part of an LLM application.
-.. Our goal is for doing so, users get to better evaluate and optimize the whole task pipeline as a whole.
+2. Provide a clear design pattern so that users can:
 
-.. A retriever in our library is a component that potentially retrieves relevant ``context`` and pass it to the ``prompt`` of a ``generator``.
-.. If your data is big, we assume it is users' responsibility to do fuzzy and cheap filter and search that gives high recall even though low precision till to have a manageable set of candidates (fit into local memory or a latency limit) to optimize for high precision.
-.. To optimize recall, often BM25, TF-IDF, and semantic search using embedding models are used. And lastly, reranking models are used for the final precision optimization.
-.. As the layer close to deliver the final user experience, we try to provide a great design pattern so that:
+   a. Easily integrate their own retriever and make it work seamlessly with the remaining part of the LLM task pipeline.
+   b. Easily combine different retriever methods to form a multiple-stage retrieval pipeline.
 
+Here are current coverage on retriever methods:
 
-
-
-.. A retriever will work hand in hand with a ``database``: the retriever will be responsible for building and querying the index and work with a database, either local or cloud to save and load index.
+1. LLMAsRetriever
+2. Reranker (Cross-encoder)
+3. Semantic Search (Bi-encoder)
+4. BM25
+5. Database's built-in search such as full-text search/SQL-based search using Postgres and semantic search using ``PgVector``.
 
 
-.. A retriever will retrieve the `ids` of the ``top_k`` most relevant documents given a query. The user can then use these `ids` to retrieve the actual documents from the database.
-.. The most effective approch would be ``LLMasRetriever``, ``Reranker``, ``Embedding`` + ``BM25``.
+With Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. A retriever will work hand in hand with the ``database`` and the ``data model``.
+.. We will have a :class:`LocalDB<core.db.LocalDB>` and a cloud SQL-based database (using ``SQLAlchemy``) that can work with any data class, and especially with the :class:`core.types.Document` and :class:`core.types.DialogTurn`, which provide ``context`` and ``conversation_history`` and are key to the LLM application.
+
+.. As for the retriever methods, we cover the most representative methods:
+
+
+
+A retriever will work hand in hand with ``database``.
+We will provide a :class:`LocalDB<core.db.LocalDB>` and a cloud SQL-based database (using ``SQLAlchemy``) that can work with any data class/model, espeically with the :class:`Document<core.types.Document>` for data processing and :class:`DialogTurn<core.types.DialogTurn>` for conversational data.
+``Document`` combined with text splitter and embedding models will provide the ``context`` in RAG.
+Working with ``DialogTurn`` can help manage ``conversation_history``, especiall for the lifelong memeory of a chatbot.
+
+
 
 Retriever Data Types
-^^^^^^^^^^^^^^^^^^^^^^^^
-In most cases, the query is string. But there are cases we might need both text and images as a query, such as "find me a cloth that looks like this".
-We defined the query type as:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Query**
+
+In most cases, the query is string. But there are cases where we might need both text and images as a query, such as "find me a cloth that looks like this".
+We defined the query type `RetrieverQueriesType` so that all of our retrievers should handle both single query and multiple queries at once.
+For text-based retrievers, we defined `RetrieverStrQueriesType` as a string or a sequence of strings.
+
 
 .. code-block:: python
 
@@ -108,28 +136,29 @@ We defined the query type as:
     RetrieverQueriesType = Union[RetrieverQueryType, Sequence[RetrieverQueryType]]
     RetrieverStrQueriesType = Union[str, Sequence[RetrieverStrQueryType]]
 
-As we see, our retriever should be able to handle both single query and multiple queries at once.
+**Documents**
 
-The documents are a sequence of document of any type that will be later specified by the subclass:
+The documents are a sequence of documents of any type, which will be later specified by the subclass:
 
 .. code-block:: python
 
     RetrieverDocumentType = TypeVar("RetrieverDocumentType", contravariant=True) # a single document
     RetrieverDocumentsType = Sequence[RetrieverDocumentType] # The final documents types retriever can use
 
+**Output**
 
-We further define  the same output format so that we can easily switch between different retrievers in our task pipeline.
-Here is our output format:
+We further definied the unified output data structure :class:`RetrieverOutput<core.types.RetrieverOutput>` so that we can easily switch between different retrievers in our task pipeline.
+A retriever should return a list of `RetrieverOutput` to support multiple queries at once. This is helpful for:
+
+(1) Batch-processing: Especially for semantic search, where multiple queries can be represented as numpy array and computed all at once, providing faster speeds than processing each query one by one.
+(2) Query expansion: To increase recall, users often generate multiple queries from the original query.
+
 
 
 .. code-block:: python
 
+    @dataclass
     class RetrieverOutput(DataClass):
-        __doc__ = r"""Save the output of a single query in retrievers.
-
-        It is up to the subclass of Retriever to specify the type of query and document.
-        """
-
         doc_indices: List[int] = field(metadata={"desc": "List of document indices"})
         doc_scores: Optional[List[float]] = field(
             default=None, metadata={"desc": "List of document scores"}
@@ -144,11 +173,24 @@ Here is our output format:
 
     RetrieverOutputType = List[RetrieverOutput]  # so to support multiple queries at once
 
-You can find the types in :ref:`core.types<core-types>`. The list of queries and `RetrieverOutput` can be helpful for:
 
-(1) Batch-processing: especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.
-(2) For `query expansion` where to increase the recall, users often generate multiple queries from the original query.
 
+**Document and TextSplitter**
+
+If your documents (in text format) are too large, it is common practise to first use :class:`TextSplitter<components.data_process.text_splitter.TextSplitter>` to split the text into smaller chunks.
+Please refer to the :doc:`text_splitter` tutorial on how to use it.
+
+
+
+Retriever Base Class
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Functionally, the base retriever :class:`Retriever<core.retriever.Retriever>` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actual retrieval calls.
+Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
+As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
+with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
+As an example, :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` has the following key attributes to index.
 
 .. code-block:: python
 
@@ -173,24 +215,9 @@ You can find the types in :ref:`core.types<core-types>`. The list of queries and
             raise NotImplementedError(f"Async retrieve is not implemented")
 
 
-**Document and TextSplitter**
-
-If your documents(text format) are too large and it is a common practise to first use ``TextSplitter`` to split them into smaller chunks.
-Please refer to :doc:`text_splitter` and our provided notebook on how to use it.
-
-
-
-Retriever Base Class
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-Functionally, the base retriever :class:`core.retriever.Retriever` defines another required method ``build_index_from_documents`` where the subclass will prepare the retriever for the actual retrieval calls.
-Optionally, the subclass can implement ``save_to_file`` and ``load_from_file`` to save and load the retriever to/from disk.
-As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as ``to_dict``, ``from_dict``, and ``from_config`` to help
-with the saving and loading process. As for helper attributes, we have ``indexed`` and ``index_keys`` to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
-It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
-As an example, :class:`components.retriever.bm25_retriever.BM25Retriever` has the following key attributes to index.
-
 .. code:: python
+
+
 
     self.index_keys = ["nd", "t2d", "idf","doc_len","avgdl","total_documents","top_k","k1","b","epsilon","indexed"]
 
@@ -199,7 +226,7 @@ Retriever in Action
 --------------------
 All of our retrievers are  subclassed from the base retriever, and they are located in the ``components.retriever`` module.
 You can skim through their implementations here: :ref:`retriever<components-retriever>`.
-Currently only :class:`components.retriever.faiss_retriever.BM25Retriever` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
+Currently only :class:`BM25Retriever<components.retriever.faiss_retriever.BM25Retriever>` needs to have its own ``save_to_file`` and ``load_from_file`` to avoid recomputation again.
 The ``FAISSRetriever`` will work with a database instead to store the embeddings and it alleviates the need for the retriever to deal with states saving.
 
 In this note, we will use the following documents and queries for demonstration:
@@ -230,9 +257,9 @@ In this note, we will use the following documents and queries for demonstration:
 
 The first query should retrieve the first and the last document, and the second query should retrieve the second and the third document.
 
-In-memory FAISSRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
-First, let's do semantic search, here we will use in-memory :class:`components.retriever.faiss_retriever.InMemoryFAISSRetriever`.
+FAISSRetriever
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+First, let's do semantic search, here we will use in-memory :class:`FAISSRetriever<components.retriever.faiss_retriever.FAISSRetriever>`.
 FAISS retriever takes embeddings which can be ``List[float]`` or ``np.ndarray`` and build an index using FAISS library.
 The query can take both embeddings and str formats.
 
@@ -280,7 +307,7 @@ The printout:
      )
     )
 
-We can also pass the documents using :meth:`components.retriever.faiss_retriever.InMemoryFAISSRetriever.build_index_from_documents` method after the initialization.
+We can also pass the documents using :meth:`build_index_from_documents<components.retriever.faiss_retriever.FAISSRetriever.build_index_from_documents>` method after the initialization.
 This is helpful when your retriever would need to work with different pool of documents each time.
 
 .. code-block:: python
@@ -311,8 +338,8 @@ In default, the score is a simulated probabity in range ``[0, 1]`` using consine
 You can check the retriever for more type of scores.
 
 BM25Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
-So the semantic search works pretty well. We will see how :class:`components.retriever.bm25_retriever.BM25Retriever` works in comparison.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+So the semantic search works pretty well. We will see how :class:`BM25Retriever<components.retriever.bm25_retriever.BM25Retriever>` works in comparison.
 We reimplemented the code in [9]_ with one improvement: instead of using ``text.split(" ")``, we use tokenizer to split the text. Here is a comparison of how they different:
 
 .. code-block:: python
@@ -385,10 +412,11 @@ This time the retrieval gives us the right answer.
     [RetrieverOutput(doc_indices=[2, 1], doc_scores=[0.5343238380789569, 0.4568096570283078], query='solar panels?', documents=None)]
 
 Reranker as Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Semantic search works well, and reranker basd on mostly `cross-encoder` model is supposed to work even better.
 We have integrated two rerankers: ``BAAI/bge-reranker-base`` [10]_ hosted on ``transformers`` and rerankers provided by ``Cohere`` [11]_.
-These models follow the ``ModelClient`` protocol and are directly accessible as retriever from :class:`components.retriever.reranker_retriever.RerankerRetriever`.
+These models follow the ``ModelClient`` protocol and are directly accessible as retriever from :class:`RerankerRetriever<components.retriever.reranker_retriever.RerankerRetriever>`.
 
 
 
@@ -397,8 +425,8 @@ These models follow the ``ModelClient`` protocol and are directly accessible as 
 
 A reranker will take ``ModelType.RERANKER`` and the standard LightRAG library requires it to have four arguments in the ``model_kwargs``:
 ``['model', 'top_k', 'documents', 'query']``. It is in the ModelClient which converts LightRAG's standard arguments to the model's specific arguments.
-If you want to intergrate your reranker, either locally or using APIs, check out :class:`components.model_client.transformers_client.TransformersClient` and
-:class:`components.model_client.cohere_client.CohereAPIClient` for how to do it.
+If you want to intergrate your reranker, either locally or using APIs, check out :class:`TransformersClient<components.model_client.transformers_client.TransformersClient>` and
+:class:`CohereAPIClient<components.model_client.cohere_client.CohereAPIClient>` for how to do it.
 
 
 To use it from the ``RerankerRetriever``, we only need to pass the ``model`` along with other arguments who does not
@@ -495,7 +523,8 @@ Also, if we use both the `title` and `content`, it will also got the right respo
 
 
 LLM as Retriever
-^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 
 There are differen ways to use LLM as a retriever:
 
@@ -575,12 +604,16 @@ The response is:
     [RetrieverOutput(doc_indices=[1, 2], doc_scores=None, query='How do solar panels impact the environment?', documents=None)]
 
 
-PostgresRetriever
-^^^^^^^^^^^^^^^^^^^^^^^^
 
+PostgresRetriever
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Coming soon.
 
 Use Score Threshold instead of top_k
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 In some cases, when the retriever has a computed score and you might prefer to use the score instead of ``top_k`` to filter out the relevant documents.
 To do so, you can simplify set the ``top_k`` to the full size of the documents and use a post-processing step or a component(to chain with the retriever) to filter out the documents with the score below the threshold.
 
@@ -590,8 +623,9 @@ Use together with Database
 When the scale of data is large, we will use a database to store the computed embeddings and indexes from the documents.
 
 With LocalDB
-^^^^^^^^^^^^^^^^^^^^^^^^
-We have previously computed embeddings, now let us :class:`core.db.LocalDB` to help with the persistence.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We have previously computed embeddings, now let us :class:`LocalDB<core.db.LocalDB>` to help with the persistence.
 (Although you can totally persist them yourself such as using pickle).
 Additionally, ``LocalDB`` help us keep track of our initial documents and its transformed documents.
 
@@ -599,17 +633,17 @@ Additionally, ``LocalDB`` help us keep track of our initial documents and its tr
 .. admonition:: References
    :class: highlight
 
-   1. Full-text search on PostgreSQL: https://www.postgresql.org/docs/current/textsearch.html
-   2. BM25: https://en.wikipedia.org/wiki/Okapi_BM25
-   3. Representative learning models: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   4. Reranking models: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   5. FAISS: https://github.com/facebookresearch/faiss
-   6. Lost-in-the-middle: https://arxiv.org/abs/2104.08663 [Find the right reference]
-   7. RAG: https://arxiv.org/abs/2104.08663 [Find the first paper on RAG]
-   8. Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
-   9. Rank_bm25: https://github.com/dorianbrown/rank_bm25
-   10. https://huggingface.co/BAAI/bge-reranker-base
-   11. Cohere reranker: https://docs.cohere.com/reference/rerank
+   .. [1] Full-text search on PostgreSQL: https://www.postgresql.org/docs/current/textsearch.html
+   .. [2] BM25: https://en.wikipedia.org/wiki/Okapi_BM25
+   .. [3] Representative learning models: https://arxiv.org/abs/2310.07554
+   .. [4] Reranking models: https://github.com/FlagOpen/FlagEmbedding/tree/master/FlagEmbedding/llm_reranker
+   .. [5] FAISS: https://github.com/facebookresearch/faiss
+   .. [6] Lost-in-the-middle: https://arxiv.org/abs/2307.03172
+   .. [7] Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks(RAG): https://arxiv.org/abs/2005.11401
+   .. [8] Use LLM as Reranker along with logprobs: https://cookbook.openai.com/examples/search_reranking_with_cross-encoders/
+   .. [9] Rank_bm25: https://github.com/dorianbrown/rank_bm25
+   .. [10] https://huggingface.co/BAAI/bge-reranker-base
+   .. [11] Cohere reranker: https://docs.cohere.com/reference/rerank
 
 
 .. admonition:: API References

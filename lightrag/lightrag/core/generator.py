@@ -139,16 +139,6 @@ class Generator(Component):
         assert "model_client" in config, "model_client is required in the config"
         return super().from_config(config)
 
-    # def _compose_lm_input_non_chat(self, **kwargs: Any) -> str:
-    #     """
-    #     This combines the default lm input using Prompt, and the passed input. history, steps, etc.
-    #     It builds the final chat input to the model.
-
-    #     As
-    #     """
-    #     prompt_text = self.prompt.call(**kwargs)
-    #     return prompt_text
-
     def _compose_model_kwargs(self, **model_kwargs) -> Dict:
         r"""
         The model configuration exclude the input itself.
@@ -184,7 +174,6 @@ class Generator(Component):
         # the output processors operate on the str, the raw_response field.
         output: GeneratorOutputType = GeneratorOutput(raw_response=response)
 
-        # TODO: this output processing patterns need to be more clear
         response = deepcopy(response)
         if self.output_processors:
             try:

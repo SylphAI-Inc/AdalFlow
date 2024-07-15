@@ -1,3 +1,5 @@
+.. _llm_intro:
+
 Introduction
 ====================================
 
@@ -13,7 +15,7 @@ Here is one example from OpenAI:
 
    from openai import OpenAI
    client = OpenAI()
-   
+
    response = client.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
@@ -43,7 +45,7 @@ Different API providers may have different input format, e.g. Anthropic's system
 
 Why do we need chat completion instead of the previous text completion?
 -----------------------------------------------------------------------
-There are generally three roles("system", "user", "assistant") in chat, and potentially more especially in multi-agent. 
+There are generally three roles("system", "user", "assistant") in chat, and potentially more especially in multi-agent.
 Behind the scene, when the API provider receives the messages, they will compose them into a single text using special tokens to denote different messages.
 If we follow `Llama3 special tokens <https://llama.meta.com/docs/model-cards-and-prompt-formats/meta-llama-3/>`_, the above anthropic example will be converted into text:
 

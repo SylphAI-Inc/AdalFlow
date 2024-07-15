@@ -1,4 +1,4 @@
-"""Implementation of ReAct Agent."""
+"""Implementation and optimization of React agent."""
 
 from typing import List, Union, Callable, Optional, Any, Dict
 from copy import deepcopy
@@ -35,7 +35,6 @@ Each step you will read the previous Thought, Action, and Observation(execution 
 {% if tools %}
 <TOOLS>
 You available tools are:
-{# tools #}
 {% for tool in tools %}
 {{ loop.index }}.
 {{tool}}
@@ -43,10 +42,12 @@ You available tools are:
 {% endfor %}
 </TOOLS>
 {% endif %}
-{# output format and examples #}
+{# output format and examples for output format #}
+<OUTPUT_FORMAT>
 {{output_format_str}}
+</OUTPUT_FORMAT>
 <TASK_SPEC>
-{# Specifications TODO: preference between the usage of llm tool vs the other tool #}
+{# Task specification to teach the agent how to think using 'divide and conquer' strategy #}
 - For simple queries: Directly call the ``finish`` action and provide the answer.
 - For complex queries:
     - Step 1: Read the user query and potentially divide it into subqueries. And get started with the first subquery.
@@ -84,6 +85,7 @@ class ReActAgent(Component):
     - use_llm_as_fallback: a boolean to decide whether to use an additional LLM model as a fallback tool to answer the query.
     - model_client: the model client to use to generate the response.
     - model_kwargs: the model kwargs to use to generate the response.
+    - template: the template to use to generate the prompt. Default is DEFAULT_REACT_AGENT_SYSTEM_PROMPT.
 
     For the generator, the default arguments are:
     (1) default prompt: DEFAULT_REACT_AGENT_SYSTEM_PROMPT
@@ -94,6 +96,7 @@ class ReActAgent(Component):
     Example:
 
     .. code-block:: python
+
         from core.openai_client import OpenAIClient
         from components.agent.react import ReActAgent
         from core.func_tool import FunctionTool
@@ -105,20 +108,17 @@ class ReActAgent(Component):
             '''Add two numbers.'''
             return a + b
         agent = ReActAgent(
-        tools=[multiply, add],
-        model_client=OpenAIClient,
-        model_kwargs={"model": "gpt-3.5-turbo"},
+            tools=[multiply, add],
+            model_client=OpenAIClient(),
+            model_kwargs={"model": "gpt-3.5-turbo"},
         )
 
-        Using examples:
+        # Using examples:
 
-        preset_prompt_kwargs = {"examples": examples}
-        agent = ReActAgent(
-        tools=[multiply, add],
-        model_client=OpenAIClient,
-        model_kwargs={"model": "gpt-3.5-turbo"},
-        preset_prompt_kwargs=preset_prompt_kwargs,
-        )
+        call_multiply = FunctionExpression.from_function(
+            thought="I want to multiply 3 and 4.",
+
+
 
     Reference:
     [1] https://arxiv.org/abs/2210.03629, published in Mar, 2023.
@@ -131,14 +131,16 @@ class ReActAgent(Component):
         tools: List[Union[Callable, AsyncCallable, FunctionTool]] = [],
         max_steps: int = 10,
         add_llm_as_fallback: bool = True,
+        # TODO: the examples are just for specifying the output format, not end to end input-output examples, need further optimization
         examples: List[FunctionExpression] = [],
         *,
         # the following arguments are mainly for the planner
         model_client: ModelClient,
         model_kwargs: Dict = {},
+        template: Optional[str] = None,  # allow users to customize the template
     ):
         super().__init__()
-        template = DEFAULT_REACT_AGENT_SYSTEM_PROMPT
+        template = template or DEFAULT_REACT_AGENT_SYSTEM_PROMPT
 
         self.max_steps = max_steps
 
@@ -187,7 +189,6 @@ class ReActAgent(Component):
 
         def llm_tool(input: str) -> str:
             """I answer any input query with llm's world knowledge. Use me as a fallback tool or when the query is simple."""
-            # use the generator to answer the query
             try:
                 output: GeneratorOutput = _additional_llm_tool(
                     prompt_kwargs={"input_str": input}
@@ -216,9 +217,7 @@ class ReActAgent(Component):
         self.step_history = []
 
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
-        """
-        Parse the action string to a function call and execute it. Update the action_step with the result.
-        """
+        """Parse the action string to a function call and execute it. Update the action_step with the result."""
         action = action_step.action
         try:
 
@@ -235,9 +234,7 @@ class ReActAgent(Component):
             return action_step
 
     def _run_one_step(self, step: int, prompt_kwargs: Dict, model_kwargs: Dict) -> str:
-        """
-        Run one step of the agent. Plan and execute the action for the step.
-        """
+        """Run one step of the agent. Plan and execute the action for the step."""
         step_output: StepOutput = StepOutput(step=step)
         prompt_kwargs["step_history"] = self.step_history
 
@@ -257,7 +254,6 @@ class ReActAgent(Component):
             try:
                 fun_expr: FunctionExpression = response.data
                 step_output.action = fun_expr
-                # print the func expr
                 log.debug(f"Step {step}: {fun_expr}")
 
                 # execute the action
@@ -283,7 +279,6 @@ class ReActAgent(Component):
     ) -> Any:
         r"""prompt_kwargs: additional prompt kwargs to either replace or add to the preset prompt kwargs."""
         prompt_kwargs = {**promt_kwargs, "input_str": input}
-        # prompt_kwargs["input_str"] = input
         printc(f"input_query: {input}", color="red")
         for i in range(self.max_steps):
             step = i + 1

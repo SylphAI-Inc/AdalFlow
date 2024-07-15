@@ -1,32 +1,31 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
-
 <!-- [![release](https://img.shields.io/github/v/release/SylphAI-Inc/LightRAG?sort=semver)](https://github.com/SylphAI-Inc/LightRAG/releases) -->
 <!-- [![Dependency Status](https://img.shields.io/librariesio/github/SylphAI-Inc/LightRAG?style=flat-square)](https://libraries.io/github/SylphAI-Inc/LightRAG) -->
-[![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![PyPI](https://img.shields.io/pypi/v/lightRAG?style=flat-square)](https://pypi.org/project/lightRAG/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightrag)
 [![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG)
 [![Open Issues](https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square)](https://github.com/SylphAI-Inc/LightRAG/issues)
+[![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
 
 
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
-*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator* pipelines.
-It is *light*, *modular*, and *robust*, with a 100% readable codebase.
-
-
+*LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
+Embracing a design philosophy similar to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
 # Why LightRAG?
 
 LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
-Because of this, no library can provide out-of-the-box solutions. Users must build toward their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
+Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
-LightRAG is born to be light, modular, and robust, with a 100% readable codebase.
+This is what LightRAG is: light, modular, and robust, with a 100% readable codebase.
 
-Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html).
+
+Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
+[Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -57,8 +56,11 @@ class Net(nn.Module):
 ``` -->
 # LightRAG Task Pipeline
 
+We will ask the model to respond with ``explanation`` and ``example`` of a concept. To achieve this, we will build a simple pipeline to get the structured output as ``QAOutput``.
 
-We will ask the model to respond with ``explanation`` and ``example`` of a concept. And we will build a pipeline to get the structured output as ``QAOutput``.
+## Well-designed Base Classes
+
+This leverages our two and only powerful base classes: `Component` as building blocks for the pipeline and `DataClass` to ease the data interaction with LLMs.
 
 ```python
 
@@ -119,9 +121,9 @@ output = qa("What is LLM?")
 print(output)
 ```
 
-**Structure of the pipeline**
+## Clear Pipeline Structure
 
-Here is what we get from ``print(qa)``:
+Simply by using `print(qa)`, you can see the pipeline structure, which helps users understand any LLM workflow quickly.
 
 ```
 QA(
@@ -161,16 +163,17 @@ QA(
 )
 ```
 
-**The output**
+**The Output**
 
+We structure the output to both track the data and potential errors if any part of the Generator component fails.
 Here is what we get from ``print(output)``:
 
 ```
 GeneratorOutput(data=QAOutput(explanation='LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.', example='For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input.'), error=None, usage=None, raw_response='```\n{\n  "explanation": "LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.",\n  "example": "For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input."\n}', metadata=None)
 ```
-**See the prompt**
+**Focus on the Prompt**
 
-Use the following code:
+Use the following code will let us see the prompt after it is formatted:
 
 ```python
 
@@ -203,6 +206,28 @@ User: What is LLM?
 You:
 ````
 
+## Model-agnostic
+
+
+You can switch to any model simply by using a different model_client (provider) and model_kwargs.
+Let's use OpenAI's gpt-3.5-turbo model on the same pipeline.
+
+
+You can switch to any model simply by using a different `model_client` (provider) and `model_kwargs`.
+Let's use OpenAI's `gpt-3.5-turbo` model.
+
+```python
+from lightrag.components.model_client import OpenAIClient
+
+self.generator = Generator(
+    model_client=OpenAIClient(),
+    model_kwargs={"model": "gpt-3.5-turbo"},
+    template=qa_template,
+    prompt_kwargs={"output_format_str": parser.format_instructions()},
+    output_processors=parser,
+)
+```
+
 
 # Quick Install
 
@@ -220,12 +245,12 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 # Documentation
 
 LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
-
+- [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/developer_notes/lightrag_design_philosophy.html)
-- [Class hierarchy](https://lightrag.sylph.ai/developer_notes/class_hierarchy.html)
-- [Tutorials](https://lightrag.sylph.ai/developer_notes/index.html)
+- [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
+- [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
+- [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 

@@ -233,7 +233,7 @@ if __name__ == "__main__":
         input_str="What is LLM?",
     )
 
-    # minimum_generator()
+    minimum_generator()
     # use_a_json_parser()
     # use_its_own_template()
     # use_model_client_enum_to_switch_client()
