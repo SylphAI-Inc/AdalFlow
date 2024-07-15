@@ -179,8 +179,8 @@ Use the following code will let us see the prompt after it is formatted:
 
 ```python
 
-qa2.generator.print_prompt(
-        output_format_str=qa2.generator.output_processors.format_instructions(),
+qa.generator.print_prompt(
+        output_format_str=qa.generator.output_processors.format_instructions(),
         input_str="What is LLM?",
 )
 ```
