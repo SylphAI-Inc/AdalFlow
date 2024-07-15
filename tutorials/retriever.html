@@ -527,30 +527,34 @@ If we want it to be even more accurate, we can move up to more expensive and acc
 We will provide a <a class="reference internal" href="../apis/core/core.db.html#core.db.LocalDB" title="core.db.LocalDB"><code class="xref py py-class docutils literal notranslate"><span class="pre">LocalDB</span></code></a> and a cloud SQL-based database (using <code class="docutils literal notranslate"><span class="pre">SQLAlchemy</span></code>) that can work with any data class/model, espeically with the <a class="reference internal" href="../apis/core/core.types.html#core.types.Document" title="core.types.Document"><code class="xref py py-class docutils literal notranslate"><span class="pre">Document</span></code></a> for data processing and <a class="reference internal" href="../apis/core/core.types.html#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-class docutils literal notranslate"><span class="pre">DialogTurn</span></code></a> for conversational data.
 <code class="docutils literal notranslate"><span class="pre">Document</span></code> combined with text splitter and embedding models will provide the <code class="docutils literal notranslate"><span class="pre">context</span></code> in RAG.
 Working with <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> can help manage <code class="docutils literal notranslate"><span class="pre">conversation_history</span></code>, especiall for the lifelong memeory of a chatbot.</p>
+</section>
 <section id="retriever-data-types">
-<h4>Retriever Data Types<a class="headerlink" href="#retriever-data-types" title="Link to this heading">#</a></h4>
-<p>In most cases, the query is string. But there are cases we might need both text and images as a query, such as “find me a cloth that looks like this”.
-We defined the query type as:</p>
+<h3>Retriever Data Types<a class="headerlink" href="#retriever-data-types" title="Link to this heading">#</a></h3>
+<p><strong>Query</strong></p>
+<p>In most cases, the query is string. But there are cases where we might need both text and images as a query, such as “find me a cloth that looks like this”.
+We defined the query type <cite>RetrieverQueriesType</cite> so that all of our retrievers should handle both single query and multiple queries at once.
+For text-based retrievers, we defined <cite>RetrieverStrQueriesType</cite> as a string or a sequence of strings.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RetrieverQueryType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverQueryType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">RetrieverStrQueryType</span> <span class="o">=</span> <span class="nb">str</span>
 <span class="n">RetrieverQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverQueryType</span><span class="p">]]</span>
 <span class="n">RetrieverStrQueriesType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverStrQueryType</span><span class="p">]]</span>
 </pre></div>
 </div>
-<p>As we see, our retriever should be able to handle both single query and multiple queries at once.</p>
-<p>The documents are a sequence of document of any type that will be later specified by the subclass:</p>
+<p><strong>Documents</strong></p>
+<p>The documents are a sequence of documents of any type, which will be later specified by the subclass:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RetrieverDocumentType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RetrieverDocumentType&quot;</span><span class="p">,</span> <span class="n">contravariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># a single document</span>
 <span class="n">RetrieverDocumentsType</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">]</span> <span class="c1"># The final documents types retriever can use</span>
 </pre></div>
 </div>
-<p>We further define  the same output format so that we can easily switch between different retrievers in our task pipeline.
-Here is our output format:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Save the output of a single query in retrievers.</span>
-
-<span class="s2">    It is up to the subclass of Retriever to specify the type of query and document.</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-
+<p><strong>Output</strong></p>
+<p>We further definied the unified output data structure <a class="reference internal" href="../apis/core/core.types.html#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a> so that we can easily switch between different retrievers in our task pipeline.
+A retriever should return a list of <cite>RetrieverOutput</cite> to support multiple queries at once. This is helpful for:</p>
+<ol class="arabic simple">
+<li><p>Batch-processing: Especially for semantic search, where multiple queries can be represented as numpy array and computed all at once, providing faster speeds than processing each query one by one.</p></li>
+<li><p>Query expansion: To increase recall, users often generate multiple queries from the original query.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RetrieverOutput</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
     <span class="n">doc_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document indices&quot;</span><span class="p">})</span>
     <span class="n">doc_scores</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;List of document scores&quot;</span><span class="p">}</span>
@@ -566,11 +570,18 @@ Here is our output format:</p>
 <span class="n">RetrieverOutputType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">RetrieverOutput</span><span class="p">]</span>  <span class="c1"># so to support multiple queries at once</span>
 </pre></div>
 </div>
-<p>You can find the types in <a class="reference internal" href="../apis/core/core.types.html#core-types"><span class="std std-ref">types</span></a>. The list of queries and <cite>RetrieverOutput</cite> can be helpful for:</p>
-<ol class="arabic simple">
-<li><p>Batch-processing: especially for semantic search where multiple queries can be represented as numpy array and be computed all at once with faster speed than doing one by one.</p></li>
-<li><p>For <cite>query expansion</cite> where to increase the recall, users often generate multiple queries from the original query.</p></li>
-</ol>
+<p><strong>Document and TextSplitter</strong></p>
+<p>If your documents (in text format) are too large, it is common practise to first use <a class="reference internal" href="../apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter" title="components.data_process.text_splitter.TextSplitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">TextSplitter</span></code></a> to split the text into smaller chunks.
+Please refer to the <a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a> tutorial on how to use it.</p>
+</section>
+<section id="retriever-base-class">
+<h3>Retriever Base Class<a class="headerlink" href="#retriever-base-class" title="Link to this heading">#</a></h3>
+<p>Functionally, the base retriever <a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code></a> defines another required method <code class="docutils literal notranslate"><span class="pre">build_index_from_documents</span></code> where the subclass will prepare the retriever for the actual retrieval calls.
+Optionally, the subclass can implement <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to save and load the retriever to/from disk.
+As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_config</span></code> to help
+with the saving and loading process. As for helper attributes, we have <code class="docutils literal notranslate"><span class="pre">indexed</span></code> and <code class="docutils literal notranslate"><span class="pre">index_keys</span></code> to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
+It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
+As an example, <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> has the following key attributes to index.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Retriever</span><span class="p">(</span><span class="n">Component</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">RetrieverDocumentType</span><span class="p">,</span> <span class="n">RetrieverQueryType</span><span class="p">]):</span>
 
     <span class="o">...</span>
@@ -592,22 +603,9 @@ Here is our output format:</p>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Async retrieve is not implemented&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><strong>Document and TextSplitter</strong></p>
-<p>If your documents(text format) are too large and it is a common practise to first use <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> to split them into smaller chunks.
-Please refer to <a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a> and our provided notebook on how to use it.</p>
-</section>
-<section id="retriever-base-class">
-<h4>Retriever Base Class<a class="headerlink" href="#retriever-base-class" title="Link to this heading">#</a></h4>
-<p>Functionally, the base retriever <a class="reference internal" href="../apis/core/core.retriever.html#core.retriever.Retriever" title="core.retriever.Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retriever</span></code></a> defines another required method <code class="docutils literal notranslate"><span class="pre">build_index_from_documents</span></code> where the subclass will prepare the retriever for the actual retrieval calls.
-Optionally, the subclass can implement <code class="docutils literal notranslate"><span class="pre">save_to_file</span></code> and <code class="docutils literal notranslate"><span class="pre">load_from_file</span></code> to save and load the retriever to/from disk.
-As the retriever is a subclass of component, you already inherited powerful serialization and deserialization methods such as <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">from_dict</span></code>, and <code class="docutils literal notranslate"><span class="pre">from_config</span></code> to help
-with the saving and loading process. As for helper attributes, we have <code class="docutils literal notranslate"><span class="pre">indexed</span></code> and <code class="docutils literal notranslate"><span class="pre">index_keys</span></code> to differentiate if the retriever is ready for retrieval and the attributes that are key to restore the functionality/states of the retriever.
-It is up the subclass to decide how to decide the storage of the index, it can be in-memory, local disk, or cloud storage, or save as json or pickle file or even a db table.
-As an example, <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> has the following key attributes to index.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">index_keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nd&quot;</span><span class="p">,</span> <span class="s2">&quot;t2d&quot;</span><span class="p">,</span> <span class="s2">&quot;idf&quot;</span><span class="p">,</span><span class="s2">&quot;doc_len&quot;</span><span class="p">,</span><span class="s2">&quot;avgdl&quot;</span><span class="p">,</span><span class="s2">&quot;total_documents&quot;</span><span class="p">,</span><span class="s2">&quot;top_k&quot;</span><span class="p">,</span><span class="s2">&quot;k1&quot;</span><span class="p">,</span><span class="s2">&quot;b&quot;</span><span class="p">,</span><span class="s2">&quot;epsilon&quot;</span><span class="p">,</span><span class="s2">&quot;indexed&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-</section>
 </section>
 </section>
 <section id="retriever-in-action">
@@ -1051,11 +1049,9 @@ Additionally, <code class="docutils literal notranslate"><span class="pre">Local
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#design">Design</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-and-design-goals">Scope and Design Goals</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-database">With Database</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-data-types">Retriever Data Types</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-base-class">Retriever Base Class</a></li>
-</ul>
-</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#with-database">With Database</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-data-types">Retriever Data Types</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-base-class">Retriever Base Class</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retriever-in-action">Retriever in Action</a><ul class="nav section-nav flex-column">

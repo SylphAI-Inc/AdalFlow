@@ -426,7 +426,7 @@ document.write(`
 <div class="viewcode-block" id="LocalDB">
 <a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB">[docs]</a>
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">LocalDB</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">LocalDB</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.</span>
 
 <span class="s2">    LocalDB is highly flexible.</span>
@@ -516,6 +516,9 @@ document.write(`
     <span class="n">mapper_setups</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;Map function setup by key&quot;</span><span class="p">}</span>
     <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -703,6 +706,7 @@ document.write(`
                 <span class="bp">self</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">transformed_docs</span><span class="p">)</span></div>
 
 
+    <span class="c1"># TODO: rename it better to add the condition filter</span>
 <div class="viewcode-block" id="LocalDB.fetch_items">
 <a class="viewcode-back" href="../../apis/core/core.db.html#core.db.LocalDB.fetch_items">[docs]</a>
     <span class="k">def</span> <span class="nf">fetch_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">condition</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>

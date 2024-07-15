@@ -560,6 +560,13 @@ The data type dtype must be float32.</p>
 - faiss.IndexFlatL2: L2 or Euclidean distance, [-inf, inf]
 - faiss.IndexFlatIP: Inner product of embeddings (inner product of normalized vectors will be cosine similarity, [-1, 1])</p>
 <p>We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability in [0, 1]</p>
+<p>Install FAISS:</p>
+<p>As FAISS is optional package, you can install it with pip for cpu version:
+<code class="docutils literal notranslate"><span class="pre">`bash</span>
+<span class="pre">pip</span> <span class="pre">install</span> <span class="pre">faiss-cpu</span>
+<span class="pre">`</span></code>
+For GPU version:
+You might have to use conda to install faiss-gpu:https://github.com/facebookresearch/faiss/wiki/Installing-Faiss</p>
 <p>References:
 - FAISS: <a class="github reference external" href="https://github.com/facebookresearch/faiss">facebookresearch/faiss</a></p>
 <dl class="py method">

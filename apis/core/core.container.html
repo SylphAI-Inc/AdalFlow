@@ -533,7 +533,7 @@ document.write(`
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Sequential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OrderedDict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Component</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
 <p>A sequential container.</p>
-<p>Follows the same design pattern as PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code>.</p>
+<p>Adapted from PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code>.</p>
 <p>Components will be added to it in the order they are passed to the constructor.
 Alternatively, an <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> of components can be passed in.
 It “chains” outputs of the previous component to the input of the next component sequentially.
@@ -659,6 +659,14 @@ This can be useful for In-context learning training.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="core.container.Sequential.acall">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="reference internal" href="../../_modules/core/container.html#Sequential.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.Sequential.acall" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span></dt>
+<dd><p>When you for loop or multiple await calls inside each component, use acall method can potentially speed up the execution.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="core.container.Sequential.append">
 <span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#core.container.Sequential" title="core.container.Sequential"><span class="pre">Sequential</span></a></span></span><a class="reference internal" href="../../_modules/core/container.html#Sequential.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.container.Sequential.append" title="Link to this definition">#</a></dt>
 <dd><p>Appends a component to the end of the Sequential.</p>
@@ -728,6 +736,7 @@ This can be useful for In-context learning training.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential"><code class="docutils literal notranslate"><span class="pre">Sequential</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.call"><code class="docutils literal notranslate"><span class="pre">Sequential.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.acall"><code class="docutils literal notranslate"><span class="pre">Sequential.acall()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.append"><code class="docutils literal notranslate"><span class="pre">Sequential.append()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.insert"><code class="docutils literal notranslate"><span class="pre">Sequential.insert()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.container.Sequential.extend"><code class="docutils literal notranslate"><span class="pre">Sequential.extend()</span></code></a></li>

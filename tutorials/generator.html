@@ -465,7 +465,7 @@ document.write(`
   <section id="generator">
 <span id="id1"></span><h1>Generator<a class="headerlink" href="#generator" title="Link to this heading">#</a></h1>
 <p><cite>Generator</cite> is a user-facing orchestration component with a simple and unified interface for LLM prediction.
-It is a pipeline consisting of three subcomponents.</p>
+It is a pipeline consisting of three subcomponents. By switching the prompt template, model client, and output parser, users have full control and flexibility.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
 <figure class="align-center" id="id2">
@@ -478,7 +478,7 @@ It is a pipeline consisting of three subcomponents.</p>
 <p>The <a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generator</span></code></a> is designed to achieve the following goals:</p>
 <ol class="arabic simple">
 <li><p>Model Agnostic: The Generator should be able to call any LLM model with the same prompt.</p></li>
-<li><p>Unified Interface: It should manage the pipeline from prompt(input)-&gt;model call -&gt; output parsing.</p></li>
+<li><p>Unified interface: It manages the pipeline from prompt (input) -&gt; model call -&gt; output parsing, while still giving users full control over each part.</p></li>
 <li><p>Unified Output: This will make it easy to log and save records of all LLM predictions.</p></li>
 <li><p>Work with Optimizer: It should be able to work with Optimizer to optimize the prompt.</p></li>
 </ol>
@@ -820,6 +820,7 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
 <li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMOptimizer</span></code></a> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code></a> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
 </ul>
 </section>
 </section>
@@ -848,6 +849,7 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.llm_optimizer.LLMOptimizer</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/utils/utils.config.html#utils.config.new_component" title="utils.config.new_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.config.new_component()</span></code></a></p></li>

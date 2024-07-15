@@ -423,12 +423,20 @@ document.write(`
                   
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
-<p>LightRAG is available in Python.</p>
+<p id="id1">LightRAG is available in Python.</p>
 <section id="install-lightrag">
 <h2>1. Install LightRAG<a class="headerlink" href="#install-lightrag" title="Link to this heading">#</a></h2>
 <p>To install the package, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>lightrag
 </pre></div>
+</div>
+<p>If you know you will need <cite>openai</cite> and <cite>faiss-cpu</cite>, you can do so with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>lightrag<span class="o">[</span>openai,<span class="w"> </span>faiss<span class="o">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Check the <cite>Optional Packages</cite> section for more information on the available packages.</p>
 </div>
 </section>
 <section id="set-up-api-keys">
@@ -463,19 +471,21 @@ Here is an example:</p>
 <section id="install-optional-packages">
 <h2>4. Install Optional Packages<a class="headerlink" href="#install-optional-packages" title="Link to this heading">#</a></h2>
 <p>LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, and (2) FAISS and Transformers.
-You can find all optional packages at <a class="reference internal" href="../apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-class docutils literal notranslate"><span class="pre">utils.lazy_import.OptionalPackages</span></code></a>.
+You can find all optional packages at <a class="reference internal" href="../apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-class docutils literal notranslate"><span class="pre">OptionalPackages</span></code></a>.
 Make sure to install the necessary SDKs for the components you plan to use.
 Here is the list of our tested versions:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">openai</span> <span class="o">=</span> <span class="s2">&quot;^1.12.0&quot;</span>
 <span class="n">groq</span> <span class="o">=</span> <span class="s2">&quot;^0.5.0&quot;</span>
 <span class="n">faiss</span><span class="o">-</span><span class="n">cpu</span> <span class="o">=</span> <span class="s2">&quot;^1.8.0&quot;</span>
 <span class="n">sqlalchemy</span> <span class="o">=</span> <span class="s2">&quot;^2.0.30&quot;</span>
+<span class="n">pgvector</span> <span class="o">=</span> <span class="s2">&quot;^0.3.1&quot;</span>
+<span class="n">torch</span> <span class="o">=</span> <span class="s2">&quot;^2.3.1&quot;</span>
+<span class="n">anthropic</span> <span class="o">=</span> <span class="s2">&quot;^0.31.1&quot;</span>
+<span class="n">google</span><span class="o">-</span><span class="n">generativeai</span> <span class="o">=</span> <span class="s2">&quot;^0.7.2&quot;</span>
 <span class="n">cohere</span> <span class="o">=</span> <span class="s2">&quot;^5.5.8&quot;</span>
-<span class="n">pgvector</span> <span class="o">=</span> <span class="s2">&quot;^0.2.5&quot;</span>
-<span class="n">anthropic</span> <span class="o">=</span> <span class="s2">&quot;^0.26.0&quot;</span>
-<span class="n">google</span><span class="o">-</span><span class="n">generativeai</span> <span class="o">=</span> <span class="s2">&quot;^0.5.4&quot;</span>
 </pre></div>
 </div>
+<p>You can install the optional packages with either <cite>pip install package_name</cite> or <cite>pip install lightrag[package_name]</cite>.</p>
 </section>
 </section>
 
