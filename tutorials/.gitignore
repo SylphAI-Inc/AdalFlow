@@ -2,3 +2,4 @@
 *logs
 test*
 *.pkl
+.storage/

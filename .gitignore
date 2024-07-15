@@ -42,3 +42,4 @@ storage/
 /*.dot
 /*.svg
 /*.csv
+index.faiss

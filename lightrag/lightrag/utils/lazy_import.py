@@ -21,7 +21,7 @@ class OptionalPackages(Enum):
     ANTHROPIC = ("anthropic", "Please install anthropic with: pip install anthropic")
     GOOGLE_GENERATIVEAI = (
         "google.generativeai",
-        "Please install google-generativeai to use GoogleGenAIClient",
+        "Please install google-generativeai with: pip install google-generativeai",
     )
     TRANSFORMERS = (
         "transformers",
