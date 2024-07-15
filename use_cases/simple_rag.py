@@ -1,87 +1,74 @@
 from typing import Any, List, Optional
-
-
-from lightrag.core.generator import Generator
-from lightrag.core.embedder import Embedder
-
-from lightrag.core.types import Document
+import os
+from lightrag.core import Component, Generator, Embedder, Sequential
+from lightrag.core.types import Document, ModelClientType
 from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Component, Sequential
 from lightrag.core.db import LocalDB
+from lightrag.utils import setup_env
 
-from lightrag.components.retriever import FAISSRetriever
+from lightrag.components.retriever.faiss_retriever import FAISSRetriever
 from lightrag.components.model_client import OpenAIClient
 
 from lightrag.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
-    DocumentSplitter,
+    TextSplitter,
 )
 
-
+setup_env()
 # TODO: RAG can potentially be a component itsefl and be provided to the users
-class RAG(Component):
 
-    def __init__(self):
-        super().__init__()
+configs = {
+    "embedder": {
+        "batch_size": 100,
+        "model_kwargs": {
+            "model": "text-embedding-3-small",
+            "dimensions": 256,
+            "encoding_format": "float",
+        },
+    },
+    "retriever": {
+        "top_k": 2,
+    },
+    "generator": {
+        "model": "gpt-3.5-turbo",
+        "temperature": 0.3,
+        "stream": False,
+    },
+    "text_splitter": {
+        "split_by": "word",
+        "chunk_size": 400,
+        "chunk_overlap": 200,
+    },
+}
 
-        self.vectorizer_settings = {
-            "batch_size": 100,
-            "model_kwargs": {
-                "model": "text-embedding-3-small",
-                "dimensions": 256,
-                "encoding_format": "float",
-            },
-        }
-        self.retriever_settings = {
-            "top_k": 2,
-        }
-        self.generator_model_kwargs = {
-            "model": "gpt-3.5-turbo",
-            "temperature": 0.3,
-            "stream": False,
-        }
-        self.text_splitter_settings = {  # TODO: change it to direct to spliter kwargs
-            "split_by": "word",
-            "chunk_size": 400,
-            "chunk_overlap": 200,
-        }
 
-        vectorizer = Embedder(
-            model_client=OpenAIClient(),
-            # batch_size=self.vectorizer_settings["batch_size"], #TODO: where to put the batch size control and how big can it go?
-            model_kwargs=self.vectorizer_settings["model_kwargs"],
-            # output_processors=ToEmbedderResponse(),
-        )
-        # TODO: check document splitter, how to process the parent and order of the chunks
-        text_splitter = DocumentSplitter(
-            split_by=self.text_splitter_settings["split_by"],
-            split_length=self.text_splitter_settings["chunk_size"],
-            split_overlap=self.text_splitter_settings["chunk_overlap"],
-        )
-        self.data_transformer = Sequential(
-            text_splitter,
-            ToEmbeddings(
-                embedder=vectorizer,
-                batch_size=self.vectorizer_settings["batch_size"],
-            ),
-        )
-        # TODO: make a new key
-        self.data_transformer_key = self.data_transformer._get_name()
-        # initialize retriever, which depends on the vectorizer too
-        self.retriever = FAISSRetriever(
-            top_k=self.retriever_settings["top_k"],
-            dimensions=self.vectorizer_settings["model_kwargs"]["dimensions"],
-            vectorizer=vectorizer,
-        )
-        self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
-        # TODO: currently retriever will be applied on transformed data. but its not very obvious design pattern
-        self.db = LocalDB()
+# use data process complete that will transform on Document structure
+def prepare_data_pipeline():
+    splitter = TextSplitter(**configs["text_splitter"])
+    embedder = Embedder(
+        model_client=ModelClientType.OPENAI(),
+        model_kwargs=configs["embedder"]["model_kwargs"],
+    )
+    embedder_transformer = ToEmbeddings(
+        embedder=embedder, batch_size=configs["embedder"]["batch_size"]
+    )
+    data_transformer = Sequential(splitter, embedder_transformer)
+    return data_transformer
 
-        # initialize generator
-        self.generator = Generator(
-            preset_prompt_kwargs={
-                "task_desc_str": r"""
+
+def prepare_database_with_index(docs: List[Document], index_path: str = "index.faiss"):
+    if os.path.exists(index_path):
+        return None
+    db = LocalDB()
+    db.load(docs)
+    data_transformer = prepare_data_pipeline()
+    db.transform(data_transformer, key="data_transformer")
+    # store
+    db.save_state(index_path)
+
+
+rag_prompt_task_desc = r"""
 You are a helpful assistant.
 
 Your task is to answer the query that may or may not come with context information.
@@ -91,23 +78,44 @@ Output JSON format:
 {
     "answer": "The answer to the query",
 }"""
-            },
-            model_client=OpenAIClient(),
-            model_kwargs=self.generator_model_kwargs,
+
+
+class RAG(Component):
+
+    def __init__(self, index_path: str = "index.faiss"):
+        super().__init__()
+
+        self.db = LocalDB.load_state(index_path)
+
+        self.transformed_docs: List[Document] = self.db.get_transformed_data(
+            "data_transformer"
+        )
+        embedder = Embedder(
+            model_client=ModelClientType.OPENAI(),
+            model_kwargs=configs["embedder"]["model_kwargs"],
+        )
+        # map the documents to embeddings
+        self.retriever = FAISSRetriever(
+            **configs["retriever"],
+            embedder=embedder,
+            documents=self.transformed_docs,
+            document_map_func=lambda doc: doc.vector,
+        )
+        self.retriever_output_processors = RetrieverOutputToContextStr(deduplicate=True)
+        self.generator = Generator(
+            model_client=ModelClientType.OPENAI(),
+            model_kwargs=configs["generator"],
             output_processors=JsonParser(),
         )
-        self.tracking = {
-            "vectorizer": {"num_calls": 0, "num_tokens": 0}
-        }  # TODO: tracking of the usage can be added in default in APIClient component
 
-    def build_index(self, documents: List[Document]):
-        self.db.load_documents(documents)
-        self.map_key = self.db.map_data()
-        print(f"map_key: {self.map_key}")
-        self.data_key = self.db.transform_data(self.data_transformer)
-        print(f"data_key: {self.data_key}")
-        self.transformed_documents = self.db.get_transformed_data(self.data_key)
-        self.retriever.build_index_from_documents(self.transformed_documents)
+        self.generator = Generator(
+            prompt_kwargs={
+                "task_desc_str": rag_prompt_task_desc,
+            },
+            model_client=OpenAIClient(),
+            model_kwargs=configs["generator"],
+            output_processors=JsonParser(),
+        )
 
     def generate(self, query: str, context: Optional[str] = None) -> Any:
         if not self.generator:
@@ -125,18 +133,19 @@ Output JSON format:
         # fill in the document
         for i, retriever_output in enumerate(retrieved_documents):
             retrieved_documents[i].documents = [
-                self.transformed_documents[doc_index]
-                for doc_index in retriever_output.doc_indexes
+                self.transformed_docs[doc_index]
+                for doc_index in retriever_output.doc_indices
             ]
-        # convert all the documents to context string
 
+        print(f"retrieved_documents: \n {retrieved_documents}")
         context_str = self.retriever_output_processors(retrieved_documents)
+
+        print(f"context_str: \n {context_str}")
 
         return self.generate(query, context=context_str)
 
 
 if __name__ == "__main__":
-    # NOTE: for the ouput of this following code, check text_lightrag.txt
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,
@@ -145,19 +154,16 @@ if __name__ == "__main__":
     doc2 = Document(
         meta_data={"title": "Interviewing Li Yin"},
         text="lots of more nonsense text" * 250
-        + "Li Yin is a software developer and AI researcher"
+        + "Li Yin is an AI researcher and a software engineer"
         + "lots of more nonsense text" * 250,
         id="doc2",
     )
-    rag = RAG()
+    # only run it once to prepare the data, if index exists, it will not run
+    prepare_database_with_index([doc1, doc2], index_path="index.faiss")
+    rag = RAG(index_path="index.faiss")
     print(rag)
-    rag.build_index([doc1, doc2])
-    print(rag.tracking)
     query = "What is Li Yin's hobby and profession?"
 
     response = rag.call(query)
 
-    # print(f"execution graph: {rag._execution_graph}")
     print(f"response: {response}")
-    # print(f"subcomponents: {rag._components}")
-    # rag.visualize_graph_html("my_component_graph.html")

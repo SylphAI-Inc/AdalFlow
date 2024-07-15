@@ -1,5 +1,14 @@
+## [0.1.0-beta.2] - 2024-07-15
+
+### Modified
+- Make `LocalDB` a component for better visualization.
+- Add extra packages in dependencides.
+
+## [0.1.0-beta.1] - 2024-07-15
+
 ### Added
 - `Sequential` adds `acall` method.
+- Add extra packages so that users can install them with `pip install lightrag[extra]`.
 
 ## [0.0.0-beta.1] - 2024-07-10
 

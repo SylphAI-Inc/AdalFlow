@@ -19,7 +19,7 @@ U = TypeVar("U")  # U will be the type after transformation
 
 
 @dataclass
-class LocalDB(Generic[T]):
+class LocalDB(Generic[T], Component):
     __doc__ = r"""LocalDB with in-memory CRUD operations, data transformation/processing pipelines, and persistence.
 
     LocalDB is highly flexible.
@@ -109,6 +109,9 @@ class LocalDB(Generic[T]):
     mapper_setups: Dict[str, Callable[[T], Any]] = field(
         default_factory=dict, metadata={"description": "Map function setup by key"}
     )
+
+    def __post_init__(self):
+        super().__init__()
 
     @property
     def length(self):
@@ -272,6 +275,7 @@ class LocalDB(Generic[T]):
             for key, transformed_docs in transformed_items.items():
                 self.transformed_items[key].extend(transformed_docs)
 
+    # TODO: rename it better to add the condition filter
     def fetch_items(self, condition: Callable[[T], bool]) -> List[T]:
         """Fetch items with a condition."""
         return [item for item in self.items if condition(item)]

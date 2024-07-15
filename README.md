@@ -10,12 +10,15 @@
     <a href="https://pypi.org/project/lightRAG/">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
     </a>
-    <a href="https://pypistats.org/packages/lightRAG">
+    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+    <!-- <a href="https://pypistats.org/packages/lightRAG">
         <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
-    </a>
-    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
+    </a> -->
+    <!-- <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
         <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
-    </a>
+    </a> -->
     <a href="https://opensource.org/license/MIT">
         <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
     </a>
@@ -33,7 +36,7 @@
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
-Embracing a design philosophy similar to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
+Embracing similar design pattern to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
 # Why LightRAG?
