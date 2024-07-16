@@ -1,26 +1,29 @@
 ![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
 
 <p align="center">
-    <a href="https://discord.gg/ezzszrRZvT">
-        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
     </a>
 </p>
 
 <p align="center">
-    <a href="https://pypi.org/project/lightRAG/">
+    <a href="https://pypi.org/project/lightRAG">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
     </a>
-    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
-        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
     </a>
-    <!-- <a href="https://pypistats.org/packages/lightRAG">
+    <a href="https://pypistats.org/packages/lightRAG">
         <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
-    </a> -->
-    <!-- <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
+    </a>
+    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
         <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
-    </a> -->
+    </a>
     <a href="https://opensource.org/license/MIT">
         <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
+    </a>
+      <a href="https://discord.gg/ezzszrRZvT">
+        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
     </a>
 </p>
 
@@ -33,7 +36,7 @@
 
 
 
-### ⚡ The Lightning Library for Large Language Model Applications ⚡
+### ⚡ The PyTorch Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
 Embracing similar design pattern to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
