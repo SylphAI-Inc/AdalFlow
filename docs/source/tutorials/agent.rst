@@ -170,7 +170,7 @@ We define the class :class:`ReActAgent<components.agent.react.ReActAgent>` to pu
 It will orchestrate two components:
 
 - ``planner``: A ``Generator`` that works with a ``JsonOutputParser`` to parse the output format and examples of the function calls using ``FunctionExpression``.
-- ``ToolManager``: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.
+- :class:`ToolManager<core.tool_manager.ToolManager>`: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.
 
 Additionally, it manages `step_history` as a list of ``StepOutput`` instances for the agent's internal state.
 

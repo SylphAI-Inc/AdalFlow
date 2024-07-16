@@ -118,7 +118,7 @@ This is not only more flexible, but also it is also a more efficient/compact way
 
 **Data Models**
 
-We have four ``DataClass`` models: :class:`core.types.FunctionDefinition`, :class:`core.types.Function`, :class:`core.types.FunctionExpression`, and :class:`core.types.FunctionOutput` to handle function calls.
+We have four ``DataClass`` models: :class:`FunctionDefinition<core.types.FunctionDefinition>`, :class:`Function<core.types.Function>`, :class:`FunctionExpression<core.types.FunctionExpression>`, and :class:`FunctionOutput<core.types.FunctionOutput>` to handle function calls.
 
 These classes not only help with data structuring but also by being a subclass of ``DataClass``, it can be easily used in the prompt.
 ``Function`` has three important attributes: ``name``, ``args``, and ``kwargs`` for the function name, positional arguments and keyword arguments.
@@ -127,7 +127,7 @@ Both can be used to format the output in the prompt. We will demonstrate how to 
 
 **Components**
 
-We have two components: :class:`core.func_tool.FunctionTool` and :class:`core.tool_manager.ToolManager` to streamline the lifecyle of (1)
+We have two components: :class:`FunctionTool<core.func_tool.FunctionTool>` and :class:`ToolManager<core.tool_manager.ToolManager>` to streamline the lifecyle of (1)
 creating the function definition (2) formatting the prompt with the definitions and output format (3) parsing the response (4) executing the function.
 
 ``FunctionTool`` is a container of a single function. It handles the function definition and executing of the function. It supports both sync and async functions.
