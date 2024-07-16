@@ -13,7 +13,7 @@
     <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
     </a>
-    <a href="https://pypistats.org/packages/lightRAG">
+    <a href="https://pypistats.org/packages/lightrag">
         <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
     </a>
     <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
