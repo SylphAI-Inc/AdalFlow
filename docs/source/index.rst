@@ -30,12 +30,12 @@
 
 
 
-..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
+..  <a href="https://pypistats.org/packages/lightrag"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
 
 
 .. raw:: html
 
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The Lightning Library for Large Language Model Applications ⚡</h1>
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
 
     <div style="text-align: center;">
         <p>
