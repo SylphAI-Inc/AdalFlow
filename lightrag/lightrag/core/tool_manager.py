@@ -1,9 +1,11 @@
 """
 The ToolManager manages a list of tools, context, and all ways to execute functions.
 """
+
 from typing import List, Dict, Optional, Any, Callable, Awaitable, Union
 import logging
 from copy import deepcopy
+import asyncio
 
 from lightrag.core import Component
 from lightrag.core.func_tool import FunctionTool
@@ -86,20 +88,47 @@ class ToolManager(Component):
             raise ValueError(f"Error {e} parsing function call expression: {expr_str}")
 
     def execute_func(self, func: Function) -> FunctionOutput:
-        r"""Execute the function. Support both sync and async functions."""
+        r"""Execute the function. If the function is async, use asyncio.run to execute it."""
         try:
-            tool = self.context[func.name]
-            return tool(*func.args, **func.kwargs)
+            tool: FunctionTool = self.context[func.name]
+            if tool.is_async:
+                return asyncio.run(tool.acall(*func.args, **func.kwargs))
+            else:
+                return tool.call(*func.args, **func.kwargs)
+        except Exception as e:
+            log.error(f"Error {e} executing function: {func}")
+            raise ValueError(f"Error {e} executing function: {func}")
+
+    async def execute_func_async(self, func: Function) -> FunctionOutput:
+        r"""Execute the function. If the function is sync, use await to execute it."""
+        try:
+            tool: FunctionTool = self.context[func.name]
+            if tool.is_async:
+                return await tool.acall(*func.args, **func.kwargs)
+            else:
+                return asyncio.to_thread(self.call, *func.args, **func.kwargs)
         except Exception as e:
             log.error(f"Error {e} executing function: {func}")
             raise ValueError(f"Error {e} executing function: {func}")
 
     def execute_func_expr(self, expr: FunctionExpression) -> FunctionOutput:
         r"""Execute the function expression. Support both sync and async functions."""
+        func: Function = self.parse_func_expr(expr)
         try:
-            func: Function = self.parse_func_expr(expr)
+
             return self.execute_func(func)
         except Exception as e:
+            # NOTE: if the function expression is not a function call, try to execute it as a function expression
+            log.error(f"Error {e} executing function expression: {expr}")
+            raise ValueError(f"Error {e} executing function expression: {expr}")
+
+    async def execute_func_expr_async(self, expr: FunctionExpression) -> FunctionOutput:
+        r"""Execute the function expression. Support both sync and async functions."""
+        func: Function = self.parse_func_expr(expr)
+        try:
+            return await self.execute_func_async(func)
+        except Exception as e:
+            # NOTE: if the function expression is not a function call, try to execute it as a function expression
             log.error(f"Error {e} executing function expression: {expr}")
             raise ValueError(f"Error {e} executing function expression: {expr}")
 

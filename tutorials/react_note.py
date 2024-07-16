@@ -28,7 +28,7 @@ def divide(a: float, b: float) -> float:
 
 
 llama3_model_kwargs = {
-    "model": "llama3-70b-8192",  # llama3 70b works better than 8b here.
+    "model": "llama3-8b-8192",  # llama3 70b works better than 8b here.
     "temperature": 0.0,
 }
 gpt_model_kwargs = {
@@ -106,6 +106,10 @@ def test_react_agent_use_examples(model_client: ModelClient, model_kwargs: dict)
 
 
 if __name__ == "__main__":
+    from lightrag.utils import get_logger
+
+    get_logger(level="DEBUG")
+
     test_react_agent(ModelClientType.GROQ(), llama3_model_kwargs)
     test_react_agent(ModelClientType.OPENAI(), gpt_model_kwargs)
     print("Done")

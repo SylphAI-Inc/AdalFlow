@@ -56,9 +56,10 @@ html_theme_options = {
 
 html_static_path = ["_static"]
 
-html_short_title = "LightRAG"
+# html_short_title = "Lightrag"
+html_title = "LightRAG: The Lightning Library for LLM Applications"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
-
+html_context = {"docstitle": "LightRAG: The Lightning Library for LLM Applications"}
 # html_meta = {
 #     "description": "The Lightning Library for LLM Applications",
 #     "keywords": "LLM, Large language models, nlp, agent, machine-learning framework, ai, chatbot, rag, generative-ai",

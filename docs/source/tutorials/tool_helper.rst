@@ -670,7 +670,7 @@ This time, let us try to execute all function concurrently and treating them all
             func_expr = FunctionExpression.from_dict(result.data)
             print(f"Function_expr: {func_expr}")
             func = tool_manager.parse_func_expr(func_expr)
-            func_output = await tool_manager.execute_func(func)
+            func_output = await tool_manager.execute_func_async(func)
             print(f"Function output: {func_output}")
             return func_output
         except Exception as e:
