@@ -1,6 +1,9 @@
 Installation
 ============
 
+
+.. _Installation:
+
 LightRAG is available in Python.
 
 1. Install LightRAG
@@ -12,7 +15,14 @@ To install the package, run:
 
    pip install lightrag
 
+If you know you will need `openai` and `faiss-cpu`, you can do so with:
 
+.. code-block:: bash
+
+   pip install lightrag[openai, faiss-cpu]
+
+.. note::
+   Check the `Optional Packages` section for more information on the available packages.
 
 2. Set up API keys
 ~~~~~~~~~~~~~~~~~~~
@@ -58,21 +68,24 @@ This setup ensures that LightRAG can access all necessary configurations during 
 
 
 LightRAG currently has built-in support for (1) OpenAI, Groq, Anthropic, Google, and Cohere, and (2) FAISS and Transformers.
-You can find all optional packages at :class:`utils.lazy_import.OptionalPackages`.
+You can find all optional packages at :class:`OptionalPackages<utils.lazy_import.OptionalPackages>`.
 Make sure to install the necessary SDKs for the components you plan to use.
 Here is the list of our tested versions:
 
 
 .. code-block::
 
-    openai = "^1.12.0"
-    groq = "^0.5.0"
-    faiss-cpu = "^1.8.0"
-    sqlalchemy = "^2.0.30"
-    cohere = "^5.5.8"
-    pgvector = "^0.2.5"
-    anthropic = "^0.26.0"
-    google-generativeai = "^0.5.4"
+   openai = "^1.12.0"
+   groq = "^0.5.0"
+   faiss-cpu = "^1.8.0"
+   sqlalchemy = "^2.0.30"
+   pgvector = "^0.3.1"
+   torch = "^2.3.1"
+   anthropic = "^0.31.1"
+   google-generativeai = "^0.7.2"
+   cohere = "^5.5.8"
+
+You can install the optional packages with either ``pip install package_name`` or ``pip install lightrag[package_name]``.
 
 
 

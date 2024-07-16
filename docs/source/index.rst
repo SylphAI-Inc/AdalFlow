@@ -8,32 +8,41 @@
 
 .. raw:: html
 
-   <div style="text-align: center; margin-bottom: 20px;">
+   <p align="center">
 
+
+    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+   </p>
+
+   <div style="text-align: center; margin-bottom: 20px;">
       <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://github.com/SylphAI-Inc/LightRAG" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      </a>
       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
-      <a href="https://discord.gg/zt2mTPcu"><img src="https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat" alt="Discord"></a>
+      <a href="https://discord.gg/ezzszrRZvT">
+        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+      </a>
       <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
    </div>
 
 
-..  <a href="https://pypistats.org/packages/lightRAG"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
+
+..  <a href="https://pypistats.org/packages/lightrag"><img src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square" alt="PyPI Downloads"></a>
 
 
 .. raw:: html
 
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The Lightning Library for Large Language Model Applications ⚡</h1>
+    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
 
     <div style="text-align: center;">
         <p>
-            <em>LightRAG</em> helps developers with both building and optimizing <em>Retriever-Agent-Generator</em> pipelines.<br>
-            It is light, modular, and robust,  with a 100% readable codebase.
+            <em>LightRAG</em> helps developers build and optimize <em>Retriever-Agent-Generator</em> pipelines.<br>
+            Embracing a design philosophy similar to PyTorch, it is light, modular, and robust, with a 100% readable codebase.
         </p>
     </div>
-
-
-
-
 
 
 
@@ -244,9 +253,10 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
 ..    resources/index
 
 .. hide the for contributors now
-..    :glob:
-..    :maxdepth: 1
-..    :caption: For Contributors
-..    :hidden:
 
-..    contributor/index
+   .. :glob:
+   .. :maxdepth: 1
+   .. :caption: For Contributors
+   .. :hidden:
+
+   .. contributor/index

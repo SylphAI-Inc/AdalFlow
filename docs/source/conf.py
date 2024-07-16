@@ -23,6 +23,7 @@ extensions = [
     "sphinx_copybutton",
     "nbsphinx",
     "sphinx_search.extension",
+    # "sphinx_sitemap",
 ]
 
 html_show_sphinx = False
@@ -57,6 +58,11 @@ html_static_path = ["_static"]
 
 html_short_title = "LightRAG"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
+
+# html_meta = {
+#     "description": "The Lightning Library for LLM Applications",
+#     "keywords": "LLM, Large language models, nlp, agent, machine-learning framework, ai, chatbot, rag, generative-ai",
+# }
 
 autosummary_generate = False
 autosummary_imported_members = False

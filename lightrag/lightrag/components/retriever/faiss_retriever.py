@@ -80,6 +80,15 @@ class FAISSRetriever(
 
     We choose cosine similarity and convert it to range [0, 1] by adding 1 and dividing by 2 to simulate probability in [0, 1]
 
+    Install FAISS:
+
+    As FAISS is optional package, you can install it with pip for cpu version:
+    ```bash
+    pip install faiss-cpu
+    ```
+    For GPU version:
+    You might have to use conda to install faiss-gpu:https://github.com/facebookresearch/faiss/wiki/Installing-Faiss
+
     References:
     - FAISS: https://github.com/facebookresearch/faiss
     """

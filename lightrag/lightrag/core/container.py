@@ -13,7 +13,7 @@ T = TypeVar("T", bound=Component)
 class Sequential(Component):
     __doc__ = r"""A sequential container.
 
-    Follows the same design pattern as PyTorch's ``nn.Sequential``.
+    Adapted from PyTorch's ``nn.Sequential``.
 
     Components will be added to it in the order they are passed to the constructor.
     Alternatively, an ``OrderedDict`` of components can be passed in.
@@ -97,7 +97,7 @@ class Sequential(Component):
         >>> result = seq.call(2, 3)
     """
 
-    _components: Dict[str, Component]  # = OrderedDict()
+    _components: Dict[str, Component] = OrderedDict()  # type: ignore[assignment]
 
     @overload
     def __init__(self, *args: Component) -> None: ...
@@ -114,7 +114,7 @@ class Sequential(Component):
             for idx, component in enumerate(args):
                 self.add_component(str(idx), component)
 
-    def _get_item_by_idx(self, iterator: Iterator[T], idx: int) -> T:
+    def _get_item_by_idx(self, iterator: Iterator[Component], idx: int) -> Component:
         """Get the idx-th item of the iterator."""
         size = len(self)
         idx = operator.index(idx)
@@ -132,15 +132,18 @@ class Sequential(Component):
         elif isinstance(idx, str):
             return self._components[idx]
         else:
-            return self._get_item_by_idx(self._components.values(), idx)
+            return self._get_item_by_idx(iter(self._components.values()), idx)
 
     def __setitem__(self, idx: Union[int, str], component: Component) -> None:
         """Set the idx-th component of the Sequential."""
         if isinstance(idx, str):
             self._components[idx] = component
         else:
-            key: str = self._get_item_by_idx(self._components.keys(), idx)
-            return setattr(self, key, component)
+            # key: str = self._get_item_by_idx(iter(self._components.keys()), idx)
+            # self._components[key] = component
+            key_list = list(self._components.keys())
+            key = key_list[idx]
+            self._components[key] = component
 
     def __delitem__(self, idx: Union[slice, int, str]) -> None:
         """Delete the idx-th component of the Sequential."""
@@ -150,15 +153,18 @@ class Sequential(Component):
         elif isinstance(idx, str):
             del self._components[idx]
         else:
-            key = self._get_item_by_idx(self._components.keys(), idx)
+            # key = self._get_item_by_idx(iter(self._components.keys()), idx)
+            key_list = list(self._components.keys())
+            key = key_list[idx]
+
             delattr(self, key)
-        # To preserve numbering
-        str_indices = [str(i) for i in range(len(self._components))]
+
+        # Reordering is needed if numerical keys are used to keep the sequence
         self._components = OrderedDict(
-            list(zip(str_indices, self._components.values()))
+            (str(i), comp) for i, comp in enumerate(self._components.values())
         )
 
-    def __iter__(self) -> Iterable[Component]:
+    def __iter__(self) -> Iterator[Component]:
         r"""Iterates over the components of the Sequential.
 
         Examples:
@@ -250,6 +256,33 @@ class Sequential(Component):
                     kwargs = {}
             return args[0] if len(args) == 1 else (args, kwargs)
 
+    @overload
+    async def acall(self, input: Any) -> object: ...
+
+    @overload
+    async def acall(self, *args: Any, **kwargs: Any) -> object: ...
+
+    async def acall(self, *args: Any, **kwargs: Any) -> object:
+        r"""When you for loop or multiple await calls inside each component, use acall method can potentially speed up the execution."""
+        if len(args) == 1 and not kwargs:
+            input = args[0]
+            for component in self._components.values():
+                input = await component(input)
+            return input
+        else:
+            for component in self._components.values():
+                result = await component(*args, **kwargs)
+                if (
+                    isinstance(result, tuple)
+                    and len(result) == 2
+                    and isinstance(result[1], dict)
+                ):
+                    args, kwargs = result
+                else:
+                    args = (result,)
+                    kwargs = {}
+            return args[0] if len(args) == 1 else (args, kwargs)
+
     def append(self, component: Component) -> "Sequential":
         r"""Appends a component to the end of the Sequential."""
         idx = len(self._components)
@@ -259,7 +292,7 @@ class Sequential(Component):
     def insert(self, idx: int, component: Component) -> None:
         r"""Inserts a component at a given index in the Sequential."""
         if not isinstance(component, Component):
-            raise AssertionError(
+            raise TypeError(
                 f"component should be an instance of Component, but got {type(component)}"
             )
         n = len(self._components)
@@ -272,7 +305,6 @@ class Sequential(Component):
         for i in range(n, idx, -1):
             self._components[str(i)] = self._components[str(i - 1)]
         self._components[str(idx)] = component
-        return self
 
     def extend(self, components: Iterable[Component]) -> "Sequential":
         r"""Extends the Sequential with components from an iterable."""
