@@ -122,3 +122,31 @@ table {
 table tr:hover {
   background-color: transparent !important;
 }
+
+/* Adjust the banner background and setting */
+.bd-header-announcement {
+  background-color: #74bad6; /* Change this to your desired background color */
+  color: white; /* Change this to your desired text color */
+  padding: 10px; /* Optional: Add some padding */
+  text-align: center; /* Optional: Center the text */
+}
+
+.bd-header-announcement a {
+  color: white; /* Change this to your desired link color */
+  font-weight: bold; /* Optional: Make the link bold */
+}
+
+/* customize the search bar */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align items to the right */
+}
+
+.navbar .icon-link {
+  margin: 0 10px;
+}
+
+.navbar .search {
+  margin-left: 20px;
+}

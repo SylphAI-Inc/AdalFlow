@@ -52,12 +52,16 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
+    "navbar_end": ["navbar-icon-links.html", "search-field.html"],
 }
 
 html_static_path = ["_static"]
 
 html_short_title = "LightRAG"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
+html_theme_options = {
+   "announcement": "⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'> GitHub! </a> ⭐️",
+}
 
 # html_meta = {
 #     "description": "The Lightning Library for LLM Applications",
