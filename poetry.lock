@@ -2202,6 +2202,7 @@ cohere = ["cohere (>=5.5.8,<6.0.0)"]
 faiss-cpu = ["faiss-cpu (>=1.8.0,<2.0.0)"]
 google-generativeai = ["google-generativeai (>=0.7.2,<0.8.0)"]
 groq = ["groq (>=0.5.0,<0.6.0)"]
+ollama = ["ollama (>=0.2.1,<0.3.0)"]
 openai = ["openai (>=1.12.0,<2.0.0)"]
 pgvector = ["pgvector (>=0.3.1,<0.4.0)"]
 sqlalchemy = ["sqlalchemy (>=2.0.30,<3.0.0)"]
@@ -2757,6 +2758,20 @@ files = [
     {file = "nvidia_nvtx_cu12-12.1.105-py3-none-manylinux1_x86_64.whl", hash = "sha256:dc21cf308ca5691e7c04d962e213f8a4aa9bbfa23d95412f452254c2caeb09e5"},
     {file = "nvidia_nvtx_cu12-12.1.105-py3-none-win_amd64.whl", hash = "sha256:65f4d98982b31b60026e0e6de73fbdfc09d08a96f4656dd3665ca616a11e1e82"},
 ]
+
+[[package]]
+name = "ollama"
+version = "0.2.1"
+description = "The official Python client for Ollama."
+optional = false
+python-versions = "<4.0,>=3.8"
+files = [
+    {file = "ollama-0.2.1-py3-none-any.whl", hash = "sha256:b6e2414921c94f573a903d1069d682ba2fb2607070ea9e19ca4a7872f2a460ec"},
+    {file = "ollama-0.2.1.tar.gz", hash = "sha256:fa316baa9a81eac3beb4affb0a17deb3008fdd6ed05b123c26306cfbe4c349b6"},
+]
+
+[package.dependencies]
+httpx = ">=0.27.0,<0.28.0"
 
 [[package]]
 name = "openai"
@@ -4907,4 +4922,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11, <4.0"
-content-hash = "c37f91cb9a72abd5d4d561cec7b938e75979dcafb7afdc753837caaae841fbd5"
+content-hash = "dc9e88d16683eb12a219f4aa043774eef4818d69a473c7df84fb2435a695db96"

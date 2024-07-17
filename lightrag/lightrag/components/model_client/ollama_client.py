@@ -2,11 +2,13 @@ import os
 from typing import Dict, Optional, Any
 import backoff
 import logging
+import warnings
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
-from ollama import RequestError, ChatResponse
+import ollama
+from ollama import RequestError, GenerateResponse
 
 
 from lightrag.core.model_client import ModelClient
@@ -18,11 +20,31 @@ log = logging.getLogger(__name__)
 class OllamaClient(ModelClient):
     __doc__ = r"""A component wrapper for the Ollama SDK client.
 
+    To make a model work, you need to:
+    - [Download Ollama app] Go to https://github.com/ollama/ollama?tab=readme-ov-file to download the Ollama app (command line tool).
+      Choose the appropriate version for your operating system.
+
+    - [Pull a model] Run the following command to pull a model:
+
+            ```shell
+            ollama pull llama3
+            ```
+    - [Run a model] Run the following command to run a model:
+
+        ```shell
+        ollama run llama3
+        ```
+
+        This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
+
+    -
+
+
     Visit https://github.com/ollama/ollama-python for more SDK information details.
 
     References:
-    - 
-    
+    -
+
     Tested Ollama models: 7/9/24
     -  internlm2:latest
     -  jina/jina-embeddings-v2-base-en:latest
@@ -30,36 +52,46 @@ class OllamaClient(ModelClient):
     .. note::
     """
 
-    def __init__(self, host: Optional[str] = "http://localhost:11434"):
+    def __init__(self, host: Optional[str] = None):
         r"""
 
         Args:
-            host (Optional[str], optional): Optional host URI. Defaults to locally running ollama instance.
+            host (Optional[str], optional): Optional host URI.
+                If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
+                The default host is "http://localhost:11434".
         """
         super().__init__()
 
-        self._host = host
+        self._host = host or os.getenv("OLLAMA_HOST")
+        if not self._host:
+            warnings.warn(
+                "Better to provide host or set OLLAMA_HOST env variable, we will use the default host"
+            )
+            self._host = "http://localhost:11434"
+
+        log.debug(f"Using host: {self._host}")
+
         self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
 
     def init_sync_client(self):
         """Create the synchronous client"""
-        host = self._host or os.getenv("OLLAMA_HOST")
-        if not host:
-            raise ValueError("Must provide host or set OLLAMA_HOST env variable")
-        self.sync_client = ollama.Client(host=host)
+
+        self.sync_client = ollama.Client(host=self._host)
 
     def init_async_client(self):
         """Create the asynchronous client"""
-        host = self._host or os.getenv("OLLAMA_HOST")
-        if not host:
-            raise ValueError("Must provide host or set OLLAMA_HOST env variable")
-        self.async_client = ollama.AsyncClient(host=host)
 
-    def parse_chat_completion(self, completion: ChatResponse) -> Any:
-        """Parse the completion to a str."""
+        self.async_client = ollama.AsyncClient(host=self._host)
+
+    def parse_chat_completion(self, completion: GenerateResponse) -> Any:
+        """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
         log.debug(f"completion: {completion}")
-        return completion["response"]
+        if "response" in completion:
+            return completion["response"]
+        else:
+            log.error(f"Error parsing the completion: {completion}")
+            raise ValueError(f"Error parsing the completion: {completion}")
 
     def parse_embedding_response(self, response: Dict[str, float]) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand.

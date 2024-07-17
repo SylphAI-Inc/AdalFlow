@@ -30,6 +30,7 @@ cohere = "^5.5.8"
 pydot = "^2.0.0"
 matplotlib = "^3.9.0"
 pyvis = "^0.3.2"
+ollama = "^0.2.1"
 
 
 [tool.poetry.group.doc.dependencies]
