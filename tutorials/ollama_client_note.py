@@ -23,6 +23,9 @@ async def poems_async(poem_generator: Generator, topics: list[str]) -> list[str]
 if __name__ == "__main__":
     # We'll start with a poem
     # Create the template for the Generator and define the model to use
+    # Note: You can pass the host to OllamaClient(host='remotehost:11434') if you're running ollama on another server.
+    #       DEFAULT is http://localhost:11434 - You'll need to ensure that you have ollama running on this port
+    #       See: https://github.com/ollama/ollama/blob/main/docs/linux.md for linux system service instructions. (if you need to restart the service)
     poem_prompt_template = """Generate a haiku about {{topic}}."""
     model_kwargs = {"model": "qwen2:0.5b"}
     poem_generator = Generator(
