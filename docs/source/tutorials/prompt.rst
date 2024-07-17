@@ -5,6 +5,13 @@ Prompt
 
 ..    `Li Yin <https://github.com/liyin2015>`_
 
+.. raw:: html
+   <p align=“center”>
+    <a href=“https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing”>
+        <img alt=“Try Quickstart in Colab” src=“https://colab.research.google.com/assets/colab-badge.svg”>
+    </a>
+   </p>
+
 Context
 ----------------
 
@@ -20,7 +27,7 @@ Design
 
 `LightRAG` seeks to maximize developers' control over the prompt.
 Thus, in most cases, we help developers gather different sections and form them into one prompt.
-This prompt will then be send to the LLM as a single message.
+This prompt will then be sent to the LLM as a single message.
 The default role of the message we use is `system`.
 Though it is not a special token, we use ``<SYS></SYS>`` to represent the system message in the prompt, which works quite well.
 
