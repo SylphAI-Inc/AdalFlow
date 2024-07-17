@@ -98,7 +98,7 @@ class OllamaClient(ModelClient):
         Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:
-            embeddings = Embedding(embedding=response["embedding"])
+            embeddings = Embedding(embedding=response["embedding"], index=None)
             return EmbedderOutput(data=[embeddings])
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")

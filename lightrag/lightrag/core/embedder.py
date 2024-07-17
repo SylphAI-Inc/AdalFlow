@@ -147,7 +147,7 @@ class Embedder(Component):
         log.debug(f"Calling {self.__class__.__name__} with input: {input}")
         composed_model_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
         response = await self.model_client.acall(
-            input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
+            composed_model_kwargs, self.model_type
         )
         output = self._post_call(response)
         log.debug(f"Output from {self.__class__.__name__}: {output}")
