@@ -123,30 +123,83 @@ table tr:hover {
   background-color: transparent !important;
 }
 
-/* Adjust the banner background and setting */
-.bd-header-announcement {
-background-color: #74bad6; /* Change this to your desired background color */
-color: white; /* Change this to your desired text color */
-padding: 10px; /* Optional: Add some padding */
-text-align: center; /* Optional: Center the text */
+.announcement-banner {
+  background-color: #7acef0; /* Deep purple background */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding inside the banner */
+  position: fixed; /* Make it fixed at the top */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Make sure it's on top of other content */
+  top: 0; /* Stick to the top */
+  left: 0; /* Align to the left */
+  text-align: center; /* Center the text */
 }
 
-.bd-header-announcement a {
-color: white; /* Change this to your desired link color */
-font-weight: bold; /* Optional: Make the link bold */
+.announcement-banner p {
+  margin: 0; /* Remove default margin */
+  color: white; /* White text color */
+  display: inline; /* Display inline with the button */
 }
 
-/* customize the search bar */
-.navbar {
-display: flex;
-align-items: center;
-justify-content: flex-end; /* Align items to the right */
+.announcement-banner a {
+  color: white !important;  /* Ensures that this color override takes precedence */
 }
 
-.navbar .icon-link {
-margin: 0 10px;
+.announcement-banner button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: large;
+  cursor: pointer;
+  float: right; /* Align the button to the right */
 }
 
-.navbar .search {
-margin-left: 20px;
+.bd-header-announcement,
+.bd-header-announcement__content {
+    background-color: transparent; /* Make background transparent */
+    padding: 0; /* Remove padding if any */
+    margin: 0; /* Remove margin if any */
+}
+
+.navbar-header-items__end {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-icon-links {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem; /* Adjust as needed */
+}
+
+.search-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.DocSearch-Button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #494a49;
+  cursor: pointer;
+}
+
+.DocSearch-Button-Container {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+.DocSearch-Button-Placeholder {
+  margin-left: 0.5rem;
+}
+
+/* Hide the duplicate search button */
+.search-button-field {
+  display: none !important;
 }
