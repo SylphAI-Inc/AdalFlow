@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional, Any, TypeVar
+from typing import Dict, Optional, Any, TypeVar, List, Type
 import backoff
 import logging
 import warnings
@@ -91,12 +91,14 @@ class OllamaClient(ModelClient):
             log.error(f"Error parsing the completion: {completion}")
             raise ValueError(f"Error parsing the completion: {completion}")
 
-    def parse_embedding_response(self, response: Dict[str, float]) -> EmbedderOutput:
+    def parse_embedding_response(
+        self, response: Dict[str, List[float]]
+    ) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand.
         Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
         try:
-            embeddings = Embedding(embedding=response["embedding"], index=None)
+            embeddings = Embedding(embedding=response["embedding"], index=0)
             return EmbedderOutput(data=[embeddings])
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")
@@ -147,6 +149,10 @@ class OllamaClient(ModelClient):
         if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         log.info(f"api_kwargs: {api_kwargs}")
+        if not self.sync_client:
+            self.init_sync_client()
+        if self.sync_client is None:
+            raise RuntimeError("Sync client is not initialized")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings(**api_kwargs)
         if model_type == ModelType.LLM:
@@ -167,6 +173,8 @@ class OllamaClient(ModelClient):
         """
         if self.async_client is None:
             self.init_async_client()
+        if self.async_client is None:
+            raise RuntimeError("Async client is not initialized")
         if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         if model_type == ModelType.EMBEDDER:
@@ -177,19 +185,18 @@ class OllamaClient(ModelClient):
             raise ValueError(f"model_type {model_type} is not supported")
 
     @classmethod
-    def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
+    def from_dict(cls: Type["OllamaClient"], data: Dict[str, Any]) -> "OllamaClient":
         obj = super().from_dict(data)
         # recreate the existing clients
         obj.sync_client = obj.init_sync_client()
         obj.async_client = obj.init_async_client()
         return obj
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self, exclude: Optional[List[str]] = None) -> Dict[str, Any]:
         r"""Convert the component to a dictionary."""
-        # TODO: not exclude but save yes or no for recreating the clients
-        exclude = [
-            "sync_client",
-            "async_client",
-        ]  # unserializable object
+
+        # combine the exclude list
+        exclude = list(set(exclude or []) | {"sync_client", "async_client"})
+
         output = super().to_dict(exclude=exclude)
         return output
