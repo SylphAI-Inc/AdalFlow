@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, TypeVar
 import backoff
 import logging
 import warnings
@@ -8,13 +8,15 @@ from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 ollama = safe_import(OptionalPackages.OLLAMA.value[0], OptionalPackages.OLLAMA.value[1])
 import ollama
-from ollama import RequestError, GenerateResponse
+from ollama import RequestError, ResponseError, GenerateResponse
 
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType, EmbedderOutput, Embedding
 
 log = logging.getLogger(__name__)
+
+T = TypeVar("T")
 
 
 class OllamaClient(ModelClient):
@@ -37,35 +39,31 @@ class OllamaClient(ModelClient):
 
         This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
 
-    -
-
-
-    Visit https://github.com/ollama/ollama-python for more SDK information details.
+    Args:
+        host (Optional[str], optional): Optional host URI.
+            If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
+            The default host is "http://localhost:11434".
 
     References:
-    -
+    - https://github.com/ollama/ollama-python
 
     Tested Ollama models: 7/9/24
     -  internlm2:latest
+    -  llama3
     -  jina/jina-embeddings-v2-base-en:latest
 
     .. note::
+       We use `embeddings` and `generate` apis from Ollama SDK.
+       Please refer to https://github.com/ollama/ollama-python/blob/main/ollama/_client.py for model_kwargs details.
     """
 
     def __init__(self, host: Optional[str] = None):
-        r"""
-
-        Args:
-            host (Optional[str], optional): Optional host URI.
-                If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
-                The default host is "http://localhost:11434".
-        """
         super().__init__()
 
         self._host = host or os.getenv("OLLAMA_HOST")
         if not self._host:
             warnings.warn(
-                "Better to provide host or set OLLAMA_HOST env variable, we will use the default host"
+                "Better to provide host or set OLLAMA_HOST env variable. We will use the default host http://localhost:11434 for now."
             )
             self._host = "http://localhost:11434"
 
@@ -121,13 +119,14 @@ class OllamaClient(ModelClient):
         """
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
-            # make sure input is a string
-            if input is not None and input != "":
+            if isinstance(input, str):
                 final_model_kwargs["prompt"] = input
                 return final_model_kwargs
             else:
-                raise ValueError("input must be text")
-        if model_type == ModelType.LLM:
+                raise ValueError(
+                    "Ollama only accept a single string for input, make sure you are not passing a list of strings"
+                )
+        elif model_type == ModelType.LLM:
             if input is not None and input != "":
                 final_model_kwargs["prompt"] = input
                 return final_model_kwargs
@@ -138,7 +137,7 @@ class OllamaClient(ModelClient):
 
     @backoff.on_exception(
         backoff.expo,
-        (RequestError,),
+        (RequestError, ResponseError),
         max_time=5,
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
@@ -157,7 +156,7 @@ class OllamaClient(ModelClient):
 
     @backoff.on_exception(
         backoff.expo,
-        (RequestError),
+        (RequestError, ResponseError),
         max_time=5,
     )
     async def acall(
@@ -176,3 +175,21 @@ class OllamaClient(ModelClient):
             return await self.async_client.generate(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+    @classmethod
+    def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
+        obj = super().from_dict(data)
+        # recreate the existing clients
+        obj.sync_client = obj.init_sync_client()
+        obj.async_client = obj.init_async_client()
+        return obj
+
+    def to_dict(self) -> Dict[str, Any]:
+        r"""Convert the component to a dictionary."""
+        # TODO: not exclude but save yes or no for recreating the clients
+        exclude = [
+            "sync_client",
+            "async_client",
+        ]  # unserializable object
+        output = super().to_dict(exclude=exclude)
+        return output

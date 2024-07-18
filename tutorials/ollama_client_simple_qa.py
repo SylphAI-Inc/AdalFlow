@@ -1,5 +1,6 @@
 from lightrag.core.generator import Generator
 from lightrag.core.component import Component
+from lightrag.core.embedder import Embedder
 from lightrag.components.model_client.ollama_client import OllamaClient
 from lightrag.utils import setup_env
 
@@ -25,6 +26,16 @@ client = Client(host="http://localhost:11434")
 # )
 # print(response)
 
+kwargs = {
+    "model": "jina/jina-embeddings-v2-base-en:latest",
+}
+
+response = client.embeddings(
+    model="jina/jina-embeddings-v2-base-en:latest",
+    prompt="Welcome",
+)
+print(response)
+
 
 # Create components that will serve as function calls to our local LLM
 class SimpleQA(Component):
@@ -40,6 +51,16 @@ class SimpleQA(Component):
         return self.generator.call({"input_str": str(input)})
 
 
+def test_embedder():
+    # ollama pull jina/jina-embeddings-v2-base-en:latest
+
+    model_kwargs = {"model": "jina/jina-embeddings-v2-base-en:latest"}
+    embedder = Embedder(model_client=OllamaClient(), model_kwargs=model_kwargs)
+    response = embedder.call(input="Hello world")
+    print(response)
+
+
 if __name__ == "__main__":
-    qa = SimpleQA()
-    print(qa("What is the capital of France?"))
+    test_embedder()
+# qa = SimpleQA()
+# print(qa("What is the capital of France?"))
