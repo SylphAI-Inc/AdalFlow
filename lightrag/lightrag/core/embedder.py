@@ -104,7 +104,6 @@ class Embedder(Component):
             model_type=self.model_type,
         )
         log.debug(f"api_kwargs: {api_kwargs}")
-        print(api_kwargs)
         return api_kwargs
 
     def _post_call(self, response: Any) -> EmbedderOutputType:

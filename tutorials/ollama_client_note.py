@@ -27,7 +27,7 @@ from lightrag.core.types import ModelType
 
 load_dotenv()
 class PoemGenerator(Component):
-    def __init__(self, client: ModelClient) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.generator = Generator(
             model_client=OllamaClient(host="http://localhost:11434"),
