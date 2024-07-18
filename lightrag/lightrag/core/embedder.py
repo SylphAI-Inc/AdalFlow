@@ -104,6 +104,7 @@ class Embedder(Component):
             model_type=self.model_type,
         )
         log.debug(f"api_kwargs: {api_kwargs}")
+        print(api_kwargs)
         return api_kwargs
 
     def _post_call(self, response: Any) -> EmbedderOutputType:
@@ -147,7 +148,7 @@ class Embedder(Component):
         log.debug(f"Calling {self.__class__.__name__} with input: {input}")
         composed_model_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
         response = await self.model_client.acall(
-            composed_model_kwargs, self.model_type
+            input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
         )
         output = self._post_call(response)
         log.debug(f"Output from {self.__class__.__name__}: {output}")
