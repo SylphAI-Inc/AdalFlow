@@ -68,6 +68,7 @@ openai = "^1.12.0"
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
 types-pyyaml = "^6.0.12.20240311" # for mypy
+types-tqdm = "^4.66.0.20240417"
 
 
 [tool.poetry.group.dev.dependencies] # specify the versions for extras
