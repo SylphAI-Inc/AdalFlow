@@ -122,3 +122,84 @@ table {
 table tr:hover {
   background-color: transparent !important;
 }
+
+.announcement-banner {
+  background-color: #7acef0; /* Deep purple background */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding inside the banner */
+  position: fixed; /* Make it fixed at the top */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Make sure it's on top of other content */
+  top: 0; /* Stick to the top */
+  left: 0; /* Align to the left */
+  text-align: center; /* Center the text */
+}
+
+.announcement-banner p {
+  margin: 0; /* Remove default margin */
+  color: white; /* White text color */
+  display: inline; /* Display inline with the button */
+}
+
+.announcement-banner a {
+  color: white !important;  /* Ensures that this color override takes precedence */
+}
+
+.announcement-banner button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: large;
+  cursor: pointer;
+  float: right; /* Align the button to the right */
+}
+
+.bd-header-announcement,
+.bd-header-announcement__content {
+    background-color: transparent; /* Make background transparent */
+    padding: 0; /* Remove padding if any */
+    margin: 0; /* Remove margin if any */
+}
+
+.navbar-header-items__end {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-icon-links {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem; /* Adjust as needed */
+}
+
+.search-container {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.DocSearch-Button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #494a49;
+  cursor: pointer;
+}
+
+.DocSearch-Button-Container {
+  display: flex;
+  align-items: center;
+  margin-right: 0.5rem;
+}
+
+.DocSearch-Button-Placeholder {
+  margin-left: 0.5rem;
+}
+
+/* Hide the duplicate search button */
+.search-button-field {
+  display: none !important;
+}

@@ -50,17 +50,13 @@ class Embedder(Component):
 
         super().__init__(model_kwargs=model_kwargs)
         if not isinstance(model_kwargs, Dict):
-            raise ValueError(
+            raise TypeError(
                 f"{type(self).__name__} requires a dictionary for model_kwargs, not a string"
             )
         self.model_kwargs = model_kwargs.copy()
-        # if "model" not in model_kwargs:
-        #     raise ValueError(
-        #         f"{type(self).__name__} requires a 'model' to be passed in the model_kwargs"
-        #     )
-        # ensure the model_client is an instance of ModelClient
+
         if not isinstance(model_client, ModelClient):
-            raise ValueError(
+            raise TypeError(
                 f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
             )
         self.model_client = model_client
@@ -88,15 +84,19 @@ class Embedder(Component):
 
             embedder = Embedder.from_config(embedder_config)
         """
-        assert "model_client" in config, "model_client is required in the config"
+        if "model_client" not in config:
+            raise ValueError("model_client is required in the config")
         return super().from_config(config)
 
-    def update_default_model_kwargs(self, **model_kwargs) -> Dict:
+    def _compose_model_kwargs(self, **model_kwargs) -> Dict[str, object]:
+        r"""Add new arguments or overwrite existing arguments in the model_kwargs."""
         return F.compose_model_kwargs(self.model_kwargs, model_kwargs)
 
-    def _pre_call(self, input: EmbedderInputType, model_kwargs: Dict) -> Dict:
+    def _pre_call(
+        self, input: EmbedderInputType, model_kwargs: Optional[Dict] = {}
+    ) -> Dict:
         # step 1: combine the model_kwargs with the default model_kwargs
-        composed_model_kwargs = self.update_default_model_kwargs(**model_kwargs)
+        composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
         # step 2: convert the input to the api_kwargs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
             input=input,
@@ -145,11 +145,13 @@ class Embedder(Component):
         model_kwargs: Optional[Dict] = {},
     ) -> EmbedderOutputType:
         log.debug(f"Calling {self.__class__.__name__} with input: {input}")
-        composed_model_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
+        api_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
         response = await self.model_client.acall(
-            input=input, model_kwargs=composed_model_kwargs, model_type=self.model_type
+            api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(response)
+        # add back the input
+        output.input = [input] if isinstance(input, str) else input
         log.debug(f"Output from {self.__class__.__name__}: {output}")
         return output
 

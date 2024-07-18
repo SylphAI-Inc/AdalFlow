@@ -23,6 +23,8 @@ ModelClient
 
    components.model_client.transformers_client
 
+   components.model_client.ollama_client
+
    components.model_client.utils
 
 

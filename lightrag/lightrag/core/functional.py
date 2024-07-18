@@ -778,9 +778,8 @@ def sandbox_exec(
 # For ** component
 ########################################################################################
 def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict:
-    r"""
-    The model configuration exclude the input itself.
-    Combine the default model, model_kwargs with the passed model_kwargs.
+    r"""Add new arguments or overwrite the default arguments with the new arguments.
+
     Example:
     model_kwargs = {"temperature": 0.5, "model": "gpt-3.5-turbo"}
     self.model_kwargs = {"model": "gpt-3.5"}

@@ -28,7 +28,7 @@ class OptionalPackages(Enum):
         "Please install transformers with: pip install transformers",
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
-
+    OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
 

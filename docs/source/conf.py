@@ -52,6 +52,15 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
+    "announcement": """<div id="announcement-banner" class="announcement-banner">
+                          <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                          <button onclick="var element = document.getElementById('announcement-banner').parentNode.parentNode; element.parentNode.removeChild(element);">×</button>
+                      </div>""",
+    "navbar_end": [
+        "navbar-icon-links.html",
+        "search-field.html",
+    ],  # Add search field here
+    "search_bar_text": "Search...",
 }
 
 html_static_path = ["_static"]
@@ -59,7 +68,12 @@ html_static_path = ["_static"]
 # html_short_title = "Lightrag"
 html_title = "LightRAG: The Lightning Library for LLM Applications"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
-html_context = {"docstitle": "LightRAG: The Lightning Library for LLM Applications"}
+html_context = {
+    "docstitle": "LightRAG: The Lightning Library for LLM Applications"
+}  # html_theme_options = {
+#    "announcement": "⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'> GitHub! </a> ⭐️",
+# }
+
 # html_meta = {
 #     "description": "The Lightning Library for LLM Applications",
 #     "keywords": "LLM, Large language models, nlp, agent, machine-learning framework, ai, chatbot, rag, generative-ai",
