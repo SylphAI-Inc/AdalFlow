@@ -4,8 +4,6 @@ from lightrag.core.embedder import Embedder
 from lightrag.components.model_client import OllamaClient
 from dotenv import load_dotenv
 import asyncio
-
-from lightrag.core.model_client import ModelClient
 from lightrag.core.types import ModelType
 
 
@@ -26,6 +24,8 @@ from lightrag.core.types import ModelType
 #       See: https://github.com/ollama/ollama/blob/main/docs/linux.md for linux system service instructions. (if you need to restart the service)
 
 load_dotenv()
+
+
 class PoemGenerator(Component):
     def __init__(self) -> None:
         super().__init__()
@@ -43,8 +43,7 @@ class PoemGenerator(Component):
         if model_type == ModelType.LLM:
             return self.generator.call(prompt_kwargs)
         if model_type == ModelType.EMBEDDER:
-            return self.embedder.call(prompt_kwargs['topic'])
-    
+            return self.embedder.call(prompt_kwargs["topic"])
 
     async def acall(self, topics: list[str], model_type: ModelType) -> list[str]:
         results = []
@@ -58,7 +57,7 @@ class PoemGenerator(Component):
                 result = await self.embedder.acall(topic)
                 results.append(result.data)
             return results
-        
+
 
 if __name__ == "__main__":
     # Create the kwargs to call the model with. This is going to simply use the topic our prompt expects.
@@ -72,18 +71,18 @@ if __name__ == "__main__":
     print(sync_output.data)
     print("Sync Embedding:")
     print(sync_embed.data)
-    
+
     # Async Generator and Embedding Output
     async_output = asyncio.run(poem_gen.acall(topics, ModelType.LLM))
     async_embed = asyncio.run(poem_gen.acall(topics, ModelType.EMBEDDER))
 
     # Print the output
-    print(f"Multiple Poems:\n")
+    print("Multiple Poems:\n")
     for idx, poem in enumerate(async_output):
         print(f"Topic: {topics[idx]}")
         print(f"{poem}\n")
 
-    print(f"\nEmbedded Topics:\n")
+    print("\nEmbedded Topics:\n")
     for idx, poem in enumerate(async_embed):
         print(f"Topic: {topics[idx]}")
         print(f"{poem}\n")
