@@ -51,16 +51,32 @@ class SimpleQA(Component):
         return self.generator.call({"input_str": str(input)})
 
 
-def test_embedder():
+def prepare_embedder():
     # ollama pull jina/jina-embeddings-v2-base-en:latest
+    embedder = Embedder(
+        model_client=OllamaClient(),
+        model_kwargs={"model": "jina/jina-embeddings-v2-base-en:latest"},
+    )
+    return embedder
 
-    model_kwargs = {"model": "jina/jina-embeddings-v2-base-en:latest"}
-    embedder = Embedder(model_client=OllamaClient(), model_kwargs=model_kwargs)
+
+def test_embedder():
+    embedder = prepare_embedder()
     response = embedder.call(input="Hello world")
     print(response)
 
 
+async def test_async_embedder():
+    embedder = prepare_embedder()
+    response = await embedder.acall(input="Hello world")
+    print(response)
+    return response
+
+
 if __name__ == "__main__":
+    import asyncio
+
     test_embedder()
+    asyncio.run(test_async_embedder())
 # qa = SimpleQA()
 # print(qa("What is the capital of France?"))
