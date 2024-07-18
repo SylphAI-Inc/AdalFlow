@@ -23,21 +23,23 @@ class OllamaClient(ModelClient):
     __doc__ = r"""A component wrapper for the Ollama SDK client.
 
     To make a model work, you need to:
+
     - [Download Ollama app] Go to https://github.com/ollama/ollama?tab=readme-ov-file to download the Ollama app (command line tool).
       Choose the appropriate version for your operating system.
 
     - [Pull a model] Run the following command to pull a model:
 
-            ```shell
-            ollama pull llama3
-            ```
+    .. code-block:: shell
+
+        ollama pull llama3
+
     - [Run a model] Run the following command to run a model:
 
-        ```shell
-        ollama run llama3
-        ```
+    .. code-block:: shell
 
-        This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
+        ollama run llama3
+
+    This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
 
     Args:
         host (Optional[str], optional): Optional host URI.
@@ -45,9 +47,13 @@ class OllamaClient(ModelClient):
             The default host is "http://localhost:11434".
 
     References:
-    - https://github.com/ollama/ollama-python
+
+        - https://github.com/ollama/ollama-python
+        - https://github.com/ollama/ollama
+        - Models: https://ollama.com/library
 
     Tested Ollama models: 7/9/24
+
     -  internlm2:latest
     -  llama3
     -  jina/jina-embeddings-v2-base-en:latest

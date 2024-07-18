@@ -10,4 +10,5 @@ Here is the content of our documentation project.
 
    installation
    community
-   lightrag_in_10_mins
+
+.. lightrag_in_10_mins
