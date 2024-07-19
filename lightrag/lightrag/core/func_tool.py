@@ -7,6 +7,7 @@ from typing import Any, Optional, Callable, Awaitable, Union
 from inspect import iscoroutinefunction
 import logging
 import asyncio
+import nest_asyncio
 
 
 from lightrag.core.types import (
@@ -70,6 +71,7 @@ class FunctionTool(Component):
         definition: Optional[FunctionDefinition] = None,
     ):
         super().__init__()
+        nest_asyncio.apply()
         assert fn is not None, "fn must be provided"
 
         self.fn = fn

@@ -6,6 +6,7 @@ from typing import List, Dict, Optional, Any, Callable, Awaitable, Union
 import logging
 from copy import deepcopy
 import asyncio
+import nest_asyncio
 
 from lightrag.core import Component
 from lightrag.core.func_tool import FunctionTool
@@ -30,6 +31,17 @@ ToolType = Union[FunctionTool, Callable[..., Any], Awaitable[Callable[..., Any]]
 ToolsType = List[ToolType]
 
 
+def run_async_in_new_loop(coro):
+    """Run async function in a new event loop."""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+        asyncio.set_event_loop(None)
+
+
 # TODO: good to track all the failed function calls
 class ToolManager(Component):
     __doc__ = r""""Manage a list of tools, context, and all ways to execute functions.
@@ -49,6 +61,7 @@ class ToolManager(Component):
         ] = {},  # anything besides the tools
     ):
         super().__init__()
+        nest_asyncio.apply()  # Apply nest_asyncio to handle nested loops
         # super(LocalDB, self).__init__()
         self.tools = [
             (
@@ -92,7 +105,14 @@ class ToolManager(Component):
         try:
             tool: FunctionTool = self.context[func.name]
             if tool.is_async:
-                return asyncio.run(tool.acall(*func.args, **func.kwargs))
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    result = loop.create_task(tool.acall(*func.args, **func.kwargs))
+                    return asyncio.run_coroutine_threadsafe(result, loop).result()
+                else:
+                    return loop.run_until_complete(
+                        tool.acall(*func.args, **func.kwargs)
+                    )
             else:
                 return tool.call(*func.args, **func.kwargs)
         except Exception as e:

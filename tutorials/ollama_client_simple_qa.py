@@ -20,21 +20,21 @@ client = Client(host="http://localhost:11434")
 # )
 # print(response)
 
-# response = client.generate(
-#     model="llama3",
-#     prompt="Why is the sky blue?",
-# )
+response = client.generate(
+    model="llama3",
+    prompt="Why is the sky blue?",
+)
 # print(response)
 
-kwargs = {
-    "model": "jina/jina-embeddings-v2-base-en:latest",
-}
+# kwargs = {
+#     "model": "jina/jina-embeddings-v2-base-en:latest",
+# }
 
-response = client.embeddings(
-    model="jina/jina-embeddings-v2-base-en:latest",
-    prompt="Welcome",
-)
-print(response)
+# response = client.embeddings(
+#     model="jina/jina-embeddings-v2-base-en:latest",
+#     prompt="Welcome",
+# )
+# print(response)
 
 
 # Create components that will serve as function calls to our local LLM
@@ -49,6 +49,9 @@ class SimpleQA(Component):
 
     def call(self, input: dict) -> str:
         return self.generator.call({"input_str": str(input)})
+
+    async def acall(self, input: dict) -> str:
+        return await self.generator.acall({"input_str": str(input)})
 
 
 def prepare_embedder():
@@ -78,5 +81,5 @@ if __name__ == "__main__":
 
     test_embedder()
     asyncio.run(test_async_embedder())
-# qa = SimpleQA()
-# print(qa("What is the capital of France?"))
+    qa = SimpleQA()
+    print(qa("What is the capital of France?"))
