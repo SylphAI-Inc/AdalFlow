@@ -105,14 +105,8 @@ class ToolManager(Component):
         try:
             tool: FunctionTool = self.context[func.name]
             if tool.is_async:
-                loop = asyncio.get_event_loop()
-                if loop.is_running():
-                    result = loop.create_task(tool.acall(*func.args, **func.kwargs))
-                    return asyncio.run_coroutine_threadsafe(result, loop).result()
-                else:
-                    return loop.run_until_complete(
-                        tool.acall(*func.args, **func.kwargs)
-                    )
+                log.debug("Running async function in new loop")
+                return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
             else:
                 return tool.call(*func.args, **func.kwargs)
         except Exception as e:

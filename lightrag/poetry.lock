@@ -1219,6 +1219,17 @@ files = [
 ]
 
 [[package]]
+name = "nest-asyncio"
+version = "1.6.0"
+description = "Patch asyncio to allow nested event loops"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "nest_asyncio-1.6.0-py3-none-any.whl", hash = "sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c"},
+    {file = "nest_asyncio-1.6.0.tar.gz", hash = "sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe"},
+]
+
+[[package]]
 name = "networkx"
 version = "3.2.1"
 description = "Python package for creating and manipulating graphs and networks"
@@ -2591,4 +2602,4 @@ torch = ["torch"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <4.0"
-content-hash = "8f21b3e497711a8f9eee0cb3bed7cfefaf6f5e83d63ac4a489e8cb4e30e41f06"
+content-hash = "4b1f781652210c84c629b89cd8ff7ccab4ba342cf1039aceb8691b981ed64300"
