@@ -216,6 +216,7 @@ class ReActAgent(Component):
         r"""Reset the agent to start a new query."""
         self.step_history = []
 
+    # TODO: add async execution
     def _execute_action(self, action_step: StepOutput) -> Optional[StepOutput]:
         """Parse the action string to a function call and execute it. Update the action_step with the result."""
         action = action_step.action
@@ -242,7 +243,6 @@ class ReActAgent(Component):
             f"Running step {step} with prompt: {self.planner.prompt(**prompt_kwargs)}"
         )
 
-        # call the super class Generator to get the response
         response: GeneratorOutput = self.planner(
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
@@ -256,7 +256,6 @@ class ReActAgent(Component):
                 step_output.action = fun_expr
                 log.debug(f"Step {step}: {fun_expr}")
 
-                # execute the action
                 if step_output and step_output.action:
                     step_output = self._execute_action(step_output)
                     printc(f"Step {step}: \n{step_output}\n_______\n", color="blue")

@@ -1,6 +1,19 @@
 .. _tutorials-agent:
 
 
+
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/drive/1mpocvG8lPyW1ISOK7SJ4bCt9KmQCP0SJ?usp=sharing" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/react_note.py" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
 Agent
 ====================
 
@@ -170,7 +183,7 @@ We define the class :class:`ReActAgent<components.agent.react.ReActAgent>` to pu
 It will orchestrate two components:
 
 - ``planner``: A ``Generator`` that works with a ``JsonOutputParser`` to parse the output format and examples of the function calls using ``FunctionExpression``.
-- ``ToolManager``: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.
+- :class:`ToolManager<core.tool_manager.ToolManager>`: Manages a given list of tools, the finish function, and the LLM tool. It is responsible for parsing and executing the functions.
 
 Additionally, it manages `step_history` as a list of ``StepOutput`` instances for the agent's internal state.
 

@@ -570,6 +570,7 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         elif isinstance(node.op, ast.Pow):
             return left**right
         else:
+            log.error(f"Unsupported binary operator: {type(node.op)}")
             raise ValueError(f"Unsupported binary operator: {type(node.op)}")
     elif isinstance(node, ast.Name):  # variable name
         try:
@@ -577,6 +578,7 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
             return output_fun
         # TODO: raise the error back to the caller so that the llm can get the error message
         except KeyError as e:
+            log.error(f"Error: {e}, {node.id} does not exist in the context_map.")
             raise ValueError(
                 f"Error: {e}, {node.id} does not exist in the context_map."
             )
@@ -600,6 +602,7 @@ def evaluate_ast_node(node: ast.AST, context_map: Dict[str, Any] = None):
         # directly evaluate the node
         # print(f"Unsupported AST node type: {type(node)}")
         # return eval(compile(ast.Expression(node), filename="<ast>", mode="eval"))
+        log.error(f"Unsupported AST node type: {type(node)}")
         raise ValueError(f"Unsupported AST node type: {type(node)}")
 
 
@@ -614,23 +617,38 @@ def parse_function_call_expr(
                                       This context is used to resolve names and execute functions.
     """
     function_expr = function_expr.strip()
+
+    # detect if it is missing the right parenthesis
+    # if function_expr[-1] != ")":
+    #     # add the right parenthesis
+    #     function_expr += ")"
+
     # Parse the string into an AST
-    tree = ast.parse(function_expr, mode="eval")
+    try:
+        function_expr = extract_function_expression(function_expr)
+        tree = ast.parse(function_expr, mode="eval")
 
-    if isinstance(tree.body, ast.Call):
-        # Extract the function name
-        func_name = tree.body.func.id if isinstance(tree.body.func, ast.Name) else None
+        if isinstance(tree.body, ast.Call):
+            # Extract the function name
+            func_name = (
+                tree.body.func.id if isinstance(tree.body.func, ast.Name) else None
+            )
 
-        # Prepare the list of arguments and keyword arguments
-        args = [evaluate_ast_node(arg, context_map) for arg in tree.body.args]
-        keywords = {
-            kw.arg: evaluate_ast_node(kw.value, context_map)
-            for kw in tree.body.keywords
-        }
+            # Prepare the list of arguments and keyword arguments
+            args = [evaluate_ast_node(arg, context_map) for arg in tree.body.args]
+            keywords = {
+                kw.arg: evaluate_ast_node(kw.value, context_map)
+                for kw in tree.body.keywords
+            }
 
-        return func_name, args, keywords
-    else:
-        raise ValueError("Provided string is not a function call.")
+            return func_name, args, keywords
+        else:
+            log.error("Provided string is not a function call.")
+            raise ValueError("Provided string is not a function call.")
+
+    except Exception as e:
+        log.error(f"Error at parse_function_call_expr: {e}")
+        raise e
 
 
 def generate_function_call_expression_from_callable(
@@ -760,9 +778,8 @@ def sandbox_exec(
 # For ** component
 ########################################################################################
 def compose_model_kwargs(default_model_kwargs: Dict, model_kwargs: Dict) -> Dict:
-    r"""
-    The model configuration exclude the input itself.
-    Combine the default model, model_kwargs with the passed model_kwargs.
+    r"""Add new arguments or overwrite the default arguments with the new arguments.
+
     Example:
     model_kwargs = {"temperature": 0.5, "model": "gpt-3.5-turbo"}
     self.model_kwargs = {"model": "gpt-3.5"}
@@ -886,6 +903,54 @@ def extract_first_boolean(text: str) -> bool:
     if match:
         return match.group().lower() == "true"
     raise ValueError("No boolean found in the text.")
+
+
+def extract_function_expression(
+    text: str, add_missing_right_parenthesis: bool = True
+) -> str:
+    """Extract function expression from text.
+
+    It will extract the first function expression found in the text by searching for '('.
+    If the right parenthesis is not found, we add one to the end of the string.
+
+    Args:
+        text (str): The text containing the potential function expression.
+        add_missing_right_parenthesis (bool): Whether to add a missing right parenthesis if it is missing.
+
+    Returns:
+        str: The extracted function expression.
+
+    Raises:
+        ValueError: If no function expression is found or if the function extraction is incomplete
+                    without the option to add a missing parenthesis.
+    """
+    text = text.strip()
+    start = text.find("(")
+    if start == -1:
+        raise ValueError(f"No function expression found in the text: {text}")
+
+    brace_count = 0
+    end = -1
+    for i in range(start, len(text)):
+        if text[i] == "(":
+            brace_count += 1
+        elif text[i] == ")":
+            brace_count -= 1
+
+        if brace_count == 0:
+            end = i
+            break
+
+    if end == -1 and add_missing_right_parenthesis:
+        # If no closing parenthesis is found, but we are allowed to add one
+        text += ")"
+        end = len(text) - 1
+    elif end == -1:
+        raise ValueError(
+            "Incomplete function expression found and add_missing_right_parenthesis is False."
+        )
+
+    return text[: end + 1]
 
 
 def extract_json_str(text: str, add_missing_right_brace: bool = True) -> str:

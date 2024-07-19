@@ -52,12 +52,78 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
+    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
+    # "announcement": """<div id="announcement-banner" class="announcement-banner">
+    #                       <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+    #                       <button onclick="var element = document.getElementById('announcement-banner').parentNode.parentNode; element.parentNode.removeChild(element);">×</button>
+    #                   </div>""",
+    # dynamic announcement
+    "announcement": """
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var bannerClosed = localStorage.getItem("bannerClosed");
+            var bannerHeader = document.querySelector('.bd-header-announcement');
+
+            if (bannerClosed !== "true") {
+                // Create the announcement banner div dynamically
+                var banner = document.createElement('div');
+                banner.id = 'announcement-banner';
+                banner.className = 'announcement-banner';
+
+                // Create the content for the announcement
+                banner.innerHTML = `
+                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                    <button onclick="closeBanner()">×</button>
+                `;
+
+                // Append the banner to the banner header
+                if (bannerHeader) {
+                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                }
+
+                // Function to close the banner and remove it from the DOM
+                window.closeBanner = function() {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                    localStorage.setItem('bannerClosed', 'true');
+                };
+
+                // Scroll listener to hide banner on scroll
+                window.addEventListener('scroll', function() {
+                    if (document.documentElement.scrollTop > 0) {
+                        banner.style.display = 'none';
+                    } else {
+                        banner.style.display = 'block';
+                    }
+                });
+            } else {
+                if (bannerHeader) {
+                    bannerHeader.parentNode.removeChild(bannerHeader);
+                }
+            }
+        });
+    </script>
+    """,
+    "navbar_end": [
+        "navbar-icon-links.html",
+        "search-field.html",
+    ],  # Add search field here
+    "search_bar_text": "Search...",
 }
+
 
 html_static_path = ["_static"]
 
-html_short_title = "LightRAG"
+# html_short_title = "Lightrag"
+html_title = "LightRAG: The Lightning Library for LLM Applications"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
+# html_context = {
+#     "docstitle": "LightRAG: The Lightning Library for LLM Applications"
+# }
+# html_theme_options = {
+#    "announcement": "⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'> GitHub! </a> ⭐️",
+# }
 
 # html_meta = {
 #     "description": "The Lightning Library for LLM Applications",

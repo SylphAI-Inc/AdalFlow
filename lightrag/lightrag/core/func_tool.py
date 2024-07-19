@@ -7,6 +7,7 @@ from typing import Any, Optional, Callable, Awaitable, Union
 from inspect import iscoroutinefunction
 import logging
 import asyncio
+import nest_asyncio
 
 
 from lightrag.core.types import (
@@ -27,10 +28,11 @@ log = logging.getLogger(__name__)
 
 def is_running_in_event_loop() -> bool:
     try:
-        import asyncio
-
-        asyncio.get_running_loop()
-        return True
+        loop = asyncio.get_running_loop()
+        if loop.is_running():
+            return True
+        else:
+            return False
     except RuntimeError:
         return False
 
@@ -69,6 +71,7 @@ class FunctionTool(Component):
         definition: Optional[FunctionDefinition] = None,
     ):
         super().__init__()
+        nest_asyncio.apply()
         assert fn is not None, "fn must be provided"
 
         self.fn = fn
@@ -77,6 +80,10 @@ class FunctionTool(Component):
         self.definition = definition or self._create_fn_definition()
         if self._is_async:
             log.info(f"FunctionTool: {fn} is async: {self._is_async}")
+
+    @property
+    def is_async(self) -> bool:
+        return self._is_async
 
     def _create_fn_definition(self) -> FunctionDefinition:
         name = self.fn.__name__
@@ -226,40 +233,20 @@ class FunctionTool(Component):
             asyncio.run(run_sync_and_async_mix())
         """
         if self._is_async:
+            log.debug(f"Running async function: {self.fn}")
             if is_running_in_event_loop():
                 result = asyncio.create_task(self.acall(*args, **kwargs))
             else:
                 result = asyncio.run(self.acall(*args, **kwargs))
+        # NOTE: in juptyer notebook, it is always running in event loop
         else:
+            log.debug(f"Running sync function: {self.fn}")
             if is_running_in_event_loop():
+                log.debug(f"Running sync function in event loop: {self.fn}")
                 result = asyncio.to_thread(self.call, *args, **kwargs)
             else:
                 result = self.call(*args, **kwargs)
-        # return result
-        # if is_running_in_event_loop():  # is called in an event loop
-        #     if self._is_async:
-        #         result = asyncio.create_task(self.acall(*args, **kwargs))
-        #     else:
-        #         result = asyncio.to_thread(self.call, *args, **kwargs)
 
-        # else:
-        #     if self._is_async:
-        #         result = asyncio.run(self.acall(*args, **kwargs))
-        #     else:
-        #         result = self.call(*args, **kwargs)
-        # if self._is_async:
-
-        #     if is_running_in_event_loop():
-        #         # future = asyncio.run_coroutine_threadsafe(
-        #         #     self.acall(*args, **kwargs), asyncio.get_running_loop()
-        #         # )
-        #         future = asyncio.create_task(self.acall(*args, **kwargs))
-
-        #         result = asyncio.run(future)
-        #     else:
-        #         result = asyncio.run(self.acall(*args, **kwargs))
-        # else:
-        #     result = self.call(*args, **kwargs)
         return result
 
     def __call__(self, *args, **kwargs) -> FunctionOutput:

@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "lightrag"
 
-version = "0.1.0-beta.2"
+version = "0.1.0-beta.4"
 description = "The Lightning Library for LLM Applications."
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
@@ -42,6 +42,8 @@ tiktoken = "^0.7.0"
 numpy = "^1.26.4"
 tqdm = "^4.66.4"
 pyyaml = "^6.0.1"
+nest-asyncio = "^1.6.0"
+
 
 # Optional dependencies
 openai = { version = "^1.12.0", optional = true }
@@ -53,12 +55,14 @@ torch = { version = "^2.3.1", optional = true }
 anthropic = { version = "^0.31.1", optional = true }
 google-generativeai = { version = "^0.7.2", optional = true }
 cohere = { version = "^5.5.8", optional = true }
+ollama = { version = "^0.2.1", optional = true }
 
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.1.1"
 pytest-mock = "^3.14.0"
 torch = "^2.3.1"
+ollama = "^0.2.1"
 faiss-cpu = "^1.8.0"
 openai = "^1.12.0"
 
@@ -66,6 +70,7 @@ openai = "^1.12.0"
 [tool.poetry.group.typing.dependencies]
 mypy = "^1"
 types-pyyaml = "^6.0.12.20240311" # for mypy
+types-tqdm = "^4.66.0.20240417"
 
 
 [tool.poetry.group.dev.dependencies] # specify the versions for extras
@@ -82,7 +87,21 @@ pgvector = ["pgvector"]
 faiss-cpu = ["faiss-cpu"]
 sqlalchemy = ["sqlalchemy"]
 torch = ["torch"]
+ollama = ["ollama"]
 
+
+# [[tool.poetry.source]]
+# name = "pypi"
+# url = "https://pypi.org/simple"
+# default = true
+[[tool.poetry.source]]
+name = "nvidia-pypi"
+priority = "supplemental"
+url = "https://pypi.nvidia.com"
+# [[tool.poetry.source]]
+# name = "nvidia-pypi"
+# priority = "supplemental"
+# url = "https://pypi.nvidia.com"
 
 [tool.ruff]
 exclude = ["images"]
