@@ -395,11 +395,15 @@ def get_type_schema(
         enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
         return f"Enum[{type_obj.__name__}({enum_members})]"
 
-    # elif is_dataclass(type_obj):
-    #     # Recursively handle nested dataclasses
-    #     output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
-    #     return output
     return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
+
+
+def get_enum_schema(enum_cls: Type[Enum]) -> Dict[str, object]:
+    return {
+        "type": "string",
+        "enum": [e.value for e in enum_cls],
+        "description": enum_cls.__doc__ if enum_cls.__doc__ else "",
+    }
 
 
 def get_dataclass_schema(
@@ -421,9 +425,21 @@ def get_dataclass_schema(
 
     type_var_map = type_var_map or {}
 
-    schema = {"type": cls.__name__, "properties": {}, "required": []}
+    # TODO: Add support for having a description in the dataclass
+    schema = {
+        "type": cls.__name__,
+        "properties": {},
+        "required": [],
+        # "description": cls.__doc__ if cls.__doc__ else "",
+    }
     # get the exclude list for the current class
     current_exclude = exclude.get(cls.__name__, []) if exclude else []
+
+    # handle Combination of Enum and dataclass
+    if issubclass(cls, Enum):
+        schema["type"] = get_type_schema(cls, exclude, type_var_map)
+        return schema
+
     for f in fields(cls):
         if f.name in current_exclude:
             continue

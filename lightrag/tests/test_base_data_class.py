@@ -298,27 +298,52 @@ class TestGetTypeSchema(unittest.TestCase):
         print(f"instance: {instance}")
         self.assertEqual(restored_instance, instance)
 
-        from lightrag.core import Generator
-        from lightrag.components.model_client.openai_client import OpenAIClient
-        from lightrag.components.output_parsers import JsonOutputParser
-        from lightrag.utils import setup_env
+        # from lightrag.core import Generator
+        # from lightrag.components.model_client.openai_client import OpenAIClient
+        # from lightrag.components.output_parsers import JsonOutputParser
+        # from lightrag.utils import setup_env
 
-        setup_env()
-        parser = JsonOutputParser(
-            data_class=EnumListClassificationOutput, return_data_class=True
-        )
-        generator = Generator(
-            model_client=OpenAIClient(),
-            prompt_kwargs={
-                "task_desc_str": "Classify the following text as spam or not spam.",
-                "output_format_str": parser.format_instructions(),
+        # setup_env()
+        # parser = JsonOutputParser(
+        #     data_class=EnumListClassificationOutput, return_data_class=True
+        # )
+        # generator = Generator(
+        #     model_client=OpenAIClient(),
+        #     prompt_kwargs={
+        #         "task_desc_str": "Classify the following text as spam or not spam.",
+        #         "output_format_str": parser.format_instructions(),
+        #     },
+        #     model_kwargs={"model": "gpt-3.5-turbo"},
+        #     output_processors=parser,
+        # )
+        # prompt_kwargs = {"input_str": "This is a spam message."}
+        # result = generator(prompt_kwargs)
+        # print(f"result: {result}")
+
+    def test_enum_as_data_class(self):
+        @dataclass
+        class LabelDataClass(DataClass, str, enum.Enum):
+            """Enumeration for single-label text classification."""
+
+            SPAM = "spam"
+            NOT_SPAM = "not_spam"
+
+        schema = LabelDataClass.to_schema()
+        print(f"schema: {schema}")
+        type_schema = get_type_schema(LabelDataClass)
+        print(f"type_schema: {type_schema}")
+        self.assertEqual(
+            schema,
+            {
+                "type": "Enum[LabelDataClass(SPAM=spam, NOT_SPAM=not_spam)]",
+                "properties": {},
+                "required": [],
             },
-            model_kwargs={"model": "gpt-3.5-turbo"},
-            output_processors=parser,
         )
-        prompt_kwargs = {"input_str": "This is a spam message."}
-        result = generator(prompt_kwargs)
-        print(f"result: {result}")
+        self.assertEqual(
+            type_schema,
+            "Enum[LabelDataClass(SPAM=spam, NOT_SPAM=not_spam)]",
+        )
 
 
 if __name__ == "__main__":
