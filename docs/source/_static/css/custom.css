@@ -130,7 +130,7 @@ table tr:hover {
   background-color: #7acef0; /* Deep purple background */
   color: white; /* White text color */
   padding: 10px 20px; /* Padding inside the banner */
-  position: flex; /* Make it fixed at the top */
+  position: fixed; /* Make it fixed at the top */
   width: 100%; /* Full width */
   z-index: 1000; /* Make sure it's on top of other content */
   top: 0; /* Stick to the top */
