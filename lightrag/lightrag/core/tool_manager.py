@@ -1,9 +1,12 @@
 """
 The ToolManager manages a list of tools, context, and all ways to execute functions.
 """
+
 from typing import List, Dict, Optional, Any, Callable, Awaitable, Union
 import logging
 from copy import deepcopy
+import asyncio
+import nest_asyncio
 
 from lightrag.core import Component
 from lightrag.core.func_tool import FunctionTool
@@ -28,6 +31,17 @@ ToolType = Union[FunctionTool, Callable[..., Any], Awaitable[Callable[..., Any]]
 ToolsType = List[ToolType]
 
 
+def run_async_in_new_loop(coro):
+    """Run async function in a new event loop."""
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        loop.close()
+        asyncio.set_event_loop(None)
+
+
 # TODO: good to track all the failed function calls
 class ToolManager(Component):
     __doc__ = r""""Manage a list of tools, context, and all ways to execute functions.
@@ -47,6 +61,7 @@ class ToolManager(Component):
         ] = {},  # anything besides the tools
     ):
         super().__init__()
+        nest_asyncio.apply()  # Apply nest_asyncio to handle nested loops
         # super(LocalDB, self).__init__()
         self.tools = [
             (
@@ -86,20 +101,48 @@ class ToolManager(Component):
             raise ValueError(f"Error {e} parsing function call expression: {expr_str}")
 
     def execute_func(self, func: Function) -> FunctionOutput:
-        r"""Execute the function. Support both sync and async functions."""
+        r"""Execute the function. If the function is async, use asyncio.run to execute it."""
         try:
-            tool = self.context[func.name]
-            return tool(*func.args, **func.kwargs)
+            tool: FunctionTool = self.context[func.name]
+            if tool.is_async:
+                log.debug("Running async function in new loop")
+                return run_async_in_new_loop(tool.acall(*func.args, **func.kwargs))
+            else:
+                return tool.call(*func.args, **func.kwargs)
+        except Exception as e:
+            log.error(f"Error {e} executing function: {func}")
+            raise ValueError(f"Error {e} executing function: {func}")
+
+    async def execute_func_async(self, func: Function) -> FunctionOutput:
+        r"""Execute the function. If the function is sync, use await to execute it."""
+        try:
+            tool: FunctionTool = self.context[func.name]
+            if tool.is_async:
+                return await tool.acall(*func.args, **func.kwargs)
+            else:
+                return asyncio.to_thread(self.call, *func.args, **func.kwargs)
         except Exception as e:
             log.error(f"Error {e} executing function: {func}")
             raise ValueError(f"Error {e} executing function: {func}")
 
     def execute_func_expr(self, expr: FunctionExpression) -> FunctionOutput:
         r"""Execute the function expression. Support both sync and async functions."""
+        func: Function = self.parse_func_expr(expr)
         try:
-            func: Function = self.parse_func_expr(expr)
+
             return self.execute_func(func)
         except Exception as e:
+            # NOTE: if the function expression is not a function call, try to execute it as a function expression
+            log.error(f"Error {e} executing function expression: {expr}")
+            raise ValueError(f"Error {e} executing function expression: {expr}")
+
+    async def execute_func_expr_async(self, expr: FunctionExpression) -> FunctionOutput:
+        r"""Execute the function expression. Support both sync and async functions."""
+        func: Function = self.parse_func_expr(expr)
+        try:
+            return await self.execute_func_async(func)
+        except Exception as e:
+            # NOTE: if the function expression is not a function call, try to execute it as a function expression
             log.error(f"Error {e} executing function expression: {expr}")
             raise ValueError(f"Error {e} executing function expression: {expr}")
 

@@ -23,21 +23,23 @@ class OllamaClient(ModelClient):
     __doc__ = r"""A component wrapper for the Ollama SDK client.
 
     To make a model work, you need to:
+
     - [Download Ollama app] Go to https://github.com/ollama/ollama?tab=readme-ov-file to download the Ollama app (command line tool).
       Choose the appropriate version for your operating system.
 
     - [Pull a model] Run the following command to pull a model:
 
-            ```shell
-            ollama pull llama3
-            ```
+    .. code-block:: shell
+
+        ollama pull llama3
+
     - [Run a model] Run the following command to run a model:
 
-        ```shell
-        ollama run llama3
-        ```
+    .. code-block:: shell
 
-        This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
+        ollama run llama3
+
+    This model will be available at http://localhost:11434. You can also chat with the model at the terminal after running the command.
 
     Args:
         host (Optional[str], optional): Optional host URI.
@@ -45,9 +47,13 @@ class OllamaClient(ModelClient):
             The default host is "http://localhost:11434".
 
     References:
-    - https://github.com/ollama/ollama-python
+
+        - https://github.com/ollama/ollama-python
+        - https://github.com/ollama/ollama
+        - Models: https://ollama.com/library
 
     Tested Ollama models: 7/9/24
+
     -  internlm2:latest
     -  llama3
     -  jina/jina-embeddings-v2-base-en:latest
@@ -119,6 +125,7 @@ class OllamaClient(ModelClient):
          model: str,
          prompt: str,
         """
+        # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
@@ -126,7 +133,7 @@ class OllamaClient(ModelClient):
                 return final_model_kwargs
             else:
                 raise ValueError(
-                    "Ollama only accept a single string for input, make sure you are not passing a list of strings"
+                    "Ollama does not support batch embedding yet. It only accepts a single string for input for now. Make sure you are not passing a list of strings"
                 )
         elif model_type == ModelType.LLM:
             if input is not None and input != "":
@@ -143,9 +150,6 @@ class OllamaClient(ModelClient):
         max_time=5,
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
-        r"""
-        kwargs is the combined input and model_kwargs
-        """
         if "model" not in api_kwargs:
             raise ValueError("model must be specified")
         log.info(f"api_kwargs: {api_kwargs}")
@@ -168,9 +172,6 @@ class OllamaClient(ModelClient):
     async def acall(
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
-        """
-        kwargs is the combined input and model_kwargs
-        """
         if self.async_client is None:
             self.init_async_client()
         if self.async_client is None:

@@ -122,6 +122,8 @@ table {
 table tr:hover {
   background-color: transparent !important;
 }
+/* .bd-header-announcement{
+  display: none;
 
 /* Navigation bar style*/
 .navbar-header-items__end {

@@ -29,6 +29,7 @@ openai = "^1.35.12"
 groq = "^0.9.0"
 pgvector = "^0.3.0"
 faiss-cpu = "^1.8.0.post1"
+ollama = "^0.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
