@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>tool_manager &#8212; LightRAG  documentation</title>
+    <title>tool_manager &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -92,8 +92,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
+         placeholder="Search..."
+         aria-label="Search..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -105,6 +105,55 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var bannerClosed = localStorage.getItem("bannerClosed");
+            var bannerHeader = document.querySelector('.bd-header-announcement');
+
+            if (bannerClosed !== "true") {
+                // Create the announcement banner div dynamically
+                var banner = document.createElement('div');
+                banner.id = 'announcement-banner';
+                banner.className = 'announcement-banner';
+
+                // Create the content for the announcement
+                banner.innerHTML = `
+                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                    <button onclick="closeBanner()">×</button>
+                `;
+
+                // Append the banner to the banner header
+                if (bannerHeader) {
+                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                }
+
+                // Function to close the banner and remove it from the DOM
+                window.closeBanner = function() {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                    localStorage.setItem('bannerClosed', 'true');
+                };
+
+                // Scroll listener to hide banner on scroll
+                window.addEventListener('scroll', function() {
+                    if (document.documentElement.scrollTop > 0) {
+                        banner.style.display = 'none';
+                    } else {
+                        banner.style.display = 'block';
+                    }
+                });
+            } else {
+                if (bannerHeader) {
+                    bannerHeader.parentNode.removeChild(bannerHeader);
+                }
+            }
+        });
+    </script>
+    </div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -133,8 +182,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -192,18 +241,6 @@
         </div>
       
       
-        <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -232,6 +269,24 @@ document.write(`
         </li>
 </ul></div>
       
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
     </div>
     
   </div>
@@ -251,10 +306,6 @@ document.write(`
     </div>
   
 
-  
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
   
 </div>
 
@@ -311,18 +362,6 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -350,6 +389,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
         
       </div>
     
@@ -387,6 +444,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.openai_client.html">openai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.transformers_client.html">transformers_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.utils.html">utils</a></li>
@@ -514,73 +572,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-core.tool_manager">
-<span id="tool-manager"></span><span id="core-tool-manager"></span><h1>tool_manager<a class="headerlink" href="#module-core.tool_manager" title="Link to this heading">#</a></h1>
-<p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ToolManager</span></code></a>([tools, additional_context])</p></td>
-<td><p>&quot;Manage a list of tools, context, and all ways to execute functions.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ToolManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tools</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">FunctionTool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Awaitable</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
-<p>“Manage a list of tools, context, and all ways to execute functions.</p>
-<p>yaml and json definitions are for quick access to the definitions of the tools.
-If you need more specification, such as using exclude field, you can use the function_definitions.
-Args:</p>
-<dl class="py property">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.yaml_definitions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">yaml_definitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.tool_manager.ToolManager.yaml_definitions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.json_definitions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">json_definitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.tool_manager.ToolManager.json_definitions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.function_definitions">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">function_definitions</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">FunctionDefinition</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#core.tool_manager.ToolManager.function_definitions" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.parse_func_expr">
-<span class="sig-name descname"><span class="pre">parse_func_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionExpression</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Function</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.parse_func_expr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.parse_func_expr" title="Link to this definition">#</a></dt>
-<dd><p>Parse the function call expression.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.execute_func">
-<span class="sig-name descname"><span class="pre">execute_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Function</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func" title="Link to this definition">#</a></dt>
-<dd><p>Execute the function. Support both sync and async functions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.execute_func_expr">
-<span class="sig-name descname"><span class="pre">execute_func_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionExpression</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func_expr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func_expr" title="Link to this definition">#</a></dt>
-<dd><p>Execute the function expression. Support both sync and async functions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.execute_func_expr_via_sandbox">
-<span class="sig-name descname"><span class="pre">execute_func_expr_via_sandbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionExpression</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func_expr_via_sandbox"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func_expr_via_sandbox" title="Link to this definition">#</a></dt>
-<dd><p>Execute the function expression via sandbox. Only support sync functions.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="core.tool_manager.ToolManager.execute_func_expr_via_eval">
-<span class="sig-name descname"><span class="pre">execute_func_expr_via_eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">FunctionExpression</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">FunctionOutput</span></span></span><a class="reference internal" href="../../_modules/core/tool_manager.html#ToolManager.execute_func_expr_via_eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.tool_manager.ToolManager.execute_func_expr_via_eval" title="Link to this definition">#</a></dt>
-<dd><p>Execute the function expression via eval. Only support sync functions.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="tool-manager">
+<span id="core-tool-manager"></span><h1>tool_manager<a class="headerlink" href="#tool-manager" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -617,33 +610,6 @@ Args:</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager"><code class="docutils literal notranslate"><span class="pre">ToolManager</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.yaml_definitions"><code class="docutils literal notranslate"><span class="pre">ToolManager.yaml_definitions</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.json_definitions"><code class="docutils literal notranslate"><span class="pre">ToolManager.json_definitions</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.function_definitions"><code class="docutils literal notranslate"><span class="pre">ToolManager.function_definitions</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.parse_func_expr"><code class="docutils literal notranslate"><span class="pre">ToolManager.parse_func_expr()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.execute_func"><code class="docutils literal notranslate"><span class="pre">ToolManager.execute_func()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.execute_func_expr"><code class="docutils literal notranslate"><span class="pre">ToolManager.execute_func_expr()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.execute_func_expr_via_sandbox"><code class="docutils literal notranslate"><span class="pre">ToolManager.execute_func_expr_via_sandbox()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.tool_manager.ToolManager.execute_func_expr_via_eval"><code class="docutils literal notranslate"><span class="pre">ToolManager.execute_func_expr_via_eval()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

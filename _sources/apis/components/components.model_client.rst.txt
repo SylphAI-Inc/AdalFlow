@@ -13,6 +13,7 @@ Submodules
    components.model_client.cohere_client
    components.model_client.google_client
    components.model_client.groq_client
+   components.model_client.ollama_client
    components.model_client.openai_client
    components.model_client.transformers_client
    components.model_client.utils

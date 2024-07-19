@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>API Reference &#8212; LightRAG  documentation</title>
+    <title>API Reference &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=86688317" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
@@ -94,8 +94,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
+         placeholder="Search..."
+         aria-label="Search..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -107,6 +107,55 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var bannerClosed = localStorage.getItem("bannerClosed");
+            var bannerHeader = document.querySelector('.bd-header-announcement');
+
+            if (bannerClosed !== "true") {
+                // Create the announcement banner div dynamically
+                var banner = document.createElement('div');
+                banner.id = 'announcement-banner';
+                banner.className = 'announcement-banner';
+
+                // Create the content for the announcement
+                banner.innerHTML = `
+                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                    <button onclick="closeBanner()">×</button>
+                `;
+
+                // Append the banner to the banner header
+                if (bannerHeader) {
+                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                }
+
+                // Function to close the banner and remove it from the DOM
+                window.closeBanner = function() {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                    localStorage.setItem('bannerClosed', 'true');
+                };
+
+                // Scroll listener to hide banner on scroll
+                window.addEventListener('scroll', function() {
+                    if (document.documentElement.scrollTop > 0) {
+                        banner.style.display = 'none';
+                    } else {
+                        banner.style.display = 'block';
+                    }
+                });
+            } else {
+                if (bannerHeader) {
+                    bannerHeader.parentNode.removeChild(bannerHeader);
+                }
+            }
+        });
+    </script>
+    </div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -135,8 +184,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -194,18 +243,6 @@
         </div>
       
       
-        <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -233,6 +270,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
       
     </div>
     
@@ -313,18 +368,6 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -352,6 +395,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
         
       </div>
     
@@ -389,6 +450,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.cohere_client.html">cohere_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.google_client.html">google_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="components/components.model_client.ollama_client.html">ollama_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.openai_client.html">openai_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.transformers_client.html">transformers_client</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components/components.model_client.utils.html">utils</a></li>
@@ -558,12 +620,6 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
 <td><p>Tokenizer from tiktoken.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
-<td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
-<td><p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
 <td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
 </tr>
@@ -579,52 +635,49 @@ The API reference is organized by subdirectories.</p>
 <p>Functional components like model client, retriever, agent, local data processing, and output parsers are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
-<td><p>Implementation and optimization of React agent.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
 <td><p>Anthropic ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
 <td><p>Cohere ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
 <td><p>Groq ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
 <td><p>Helpers for model client for integrating models and parsing the output.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.data_components.html#module-components.data_process.data_components" title="components.data_process.data_components"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.data_components</span></code></a></p></td>
 <td><p>Helper components for data transformation such as embeddings and document splitting.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.data_process.text_splitter.html#module-components.data_process.text_splitter" title="components.data_process.text_splitter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.data_process.text_splitter</span></code></a></p></td>
 <td><p>Splitting texts is commonly used as a preprocessing step before embedding and retrieving texts.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.reasoning.chain_of_thought.html#module-components.reasoning.chain_of_thought" title="components.reasoning.chain_of_thought"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.reasoning.chain_of_thought</span></code></a></p></td>
 <td><p>Chain of the thought(CoT) is to mimic a step-by-step thought process for arriving at the answer.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.bm25_retriever.html#module-components.retriever.bm25_retriever" title="components.retriever.bm25_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.bm25_retriever</span></code></a></p></td>
 <td><p>BM25 retriever implementation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.faiss_retriever.html#module-components.retriever.faiss_retriever" title="components.retriever.faiss_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.faiss_retriever</span></code></a></p></td>
 <td><p>Semantic search/embedding-based retriever using FAISS.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
 <td><p>Leverage a postgres database to store and retrieve documents.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
 <td><p>The most commonly used output parsers for the Generator.</p></td>
 </tr>
 </tbody>

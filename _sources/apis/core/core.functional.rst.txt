@@ -22,6 +22,7 @@ functional
       extract_first_boolean
       extract_first_float
       extract_first_int
+      extract_function_expression
       extract_json_str
       extract_list_str
       extract_yaml_str

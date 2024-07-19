@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; LightRAG  documentation</title>
+    <title>Index &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=86688317" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="_static/css/rtd_sphinx_search.min.css" />
   
@@ -89,8 +89,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
+         placeholder="Search..."
+         aria-label="Search..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -102,6 +102,55 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var bannerClosed = localStorage.getItem("bannerClosed");
+            var bannerHeader = document.querySelector('.bd-header-announcement');
+
+            if (bannerClosed !== "true") {
+                // Create the announcement banner div dynamically
+                var banner = document.createElement('div');
+                banner.id = 'announcement-banner';
+                banner.className = 'announcement-banner';
+
+                // Create the content for the announcement
+                banner.innerHTML = `
+                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                    <button onclick="closeBanner()">×</button>
+                `;
+
+                // Append the banner to the banner header
+                if (bannerHeader) {
+                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                }
+
+                // Function to close the banner and remove it from the DOM
+                window.closeBanner = function() {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                    localStorage.setItem('bannerClosed', 'true');
+                };
+
+                // Scroll listener to hide banner on scroll
+                window.addEventListener('scroll', function() {
+                    if (document.documentElement.scrollTop > 0) {
+                        banner.style.display = 'none';
+                    } else {
+                        banner.style.display = 'block';
+                    }
+                });
+            } else {
+                if (bannerHeader) {
+                    bannerHeader.parentNode.removeChild(bannerHeader);
+                }
+            }
+        });
+    </script>
+    </div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -130,8 +179,8 @@
       
     
     
-    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
-    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -189,18 +238,6 @@
         </div>
       
       
-        <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -228,6 +265,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
       
     </div>
     
@@ -306,18 +361,6 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -345,6 +388,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
         
       </div>
     
@@ -414,13 +475,13 @@ document.write(`
 </li>
         <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.acall">(Embedder method)</a>
 </li>
-        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.acall">(FunctionTool method)</a>
-</li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.acall">(Generator method)</a>
 </li>
         <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall">(GroqAPIClient method)</a>
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.acall">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.acall">(OllamaClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.acall">(OpenAIClient method)</a>
 </li>
@@ -538,8 +599,6 @@ document.write(`
 </li>
         <li><a href="apis/core/core.component.html#core.component.FunComponent.call">(FunComponent method)</a>
 </li>
-        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.call">(FunctionTool method)</a>
-</li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.call">(Generator method)</a>
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.call">(GoogleGenAIClient method)</a>
@@ -558,6 +617,8 @@ document.write(`
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.call">(ModelClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.call">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call">(OpenAIClient method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">(OutputParser method)</a>
@@ -567,8 +628,6 @@ document.write(`
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">(Prompt method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.RandomSampler.call">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.call">[1]</a>
-</li>
-        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.call">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.call">[1]</a>
 </li>
         <li><a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.call">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[1]</a>
 </li>
@@ -609,20 +668,6 @@ document.write(`
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.components">components() (Component method)</a>
 </li>
-      <li>
-    components.agent
-
-      <ul>
-        <li><a href="apis/components/components.agent.html#module-components.agent">module</a>
-</li>
-      </ul></li>
-      <li>
-    components.agent.react
-
-      <ul>
-        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">module</a>
-</li>
-      </ul></li>
       <li>
     components.data_process
 
@@ -691,6 +736,13 @@ document.write(`
 
       <ul>
         <li><a href="apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.model_client.ollama_client
+
+      <ul>
+        <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">module</a>
 </li>
       </ul></li>
       <li>
@@ -808,6 +860,8 @@ document.write(`
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.convert_inputs_to_api_kwargs">(ModelClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">(OpenAIClient method)</a>
 </li>
       </ul></li>
@@ -853,13 +907,6 @@ document.write(`
 
       <ul>
         <li><a href="apis/core/core.embedder.html#module-core.embedder">module</a>
-</li>
-      </ul></li>
-      <li>
-    core.func_tool
-
-      <ul>
-        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">module</a>
 </li>
       </ul></li>
       <li>
@@ -919,13 +966,6 @@ document.write(`
 </li>
       </ul></li>
       <li>
-    core.tool_manager
-
-      <ul>
-        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">module</a>
-</li>
-      </ul></li>
-      <li>
     core.types
 
       <ul>
@@ -969,8 +1009,6 @@ document.write(`
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
 </li>
       <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>, <a href="apis/core/core.default_prompt_template.html#id0">[1]</a>
-</li>
-      <li><a href="apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">DEFAULT_REACT_AGENT_SYSTEM_PROMPT (in module components.agent.react)</a>
 </li>
       <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
 </li>
@@ -1050,6 +1088,8 @@ document.write(`
         <li><a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eval.llm_as_judge
 
@@ -1057,8 +1097,6 @@ document.write(`
         <li><a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eval.retriever_recall
 
@@ -1079,16 +1117,6 @@ document.write(`
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_YAML">EXAMPLE_YAML (DataClassFormatType attribute)</a>
 </li>
-      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.execute">execute() (FunctionTool method)</a>
-</li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">execute_func() (ToolManager method)</a>
-</li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr">execute_func_expr() (ToolManager method)</a>
-</li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_eval">execute_func_expr_via_eval() (ToolManager method)</a>
-</li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">execute_func_expr_via_sandbox() (ToolManager method)</a>
-</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.extend">extend() (LocalDB method)</a>
 
       <ul>
@@ -1102,6 +1130,8 @@ document.write(`
       <li><a href="apis/core/core.functional.html#core.functional.extract_first_float">extract_first_float() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_first_int">extract_first_int() (in module core.functional)</a>
+</li>
+      <li><a href="apis/core/core.functional.html#core.functional.extract_function_expression">extract_function_expression() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_json_str">extract_json_str() (in module core.functional)</a>
 </li>
@@ -1164,6 +1194,8 @@ document.write(`
 </li>
         <li><a href="apis/core/core.types.html#core.types.Document.from_dict">(Document class method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.from_dict">(OllamaClient class method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">(OpenAIClient class method)</a>
 </li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.from_dict">(Prompt class method)</a>
@@ -1199,15 +1231,11 @@ document.write(`
 </li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput.function">function (StepOutput attribute)</a>
 </li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.function_definitions">function_definitions (ToolManager property)</a>
-</li>
       <li><a href="apis/core/core.types.html#core.types.FunctionDefinition">FunctionDefinition (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionExpression">FunctionExpression (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput">FunctionOutput (class in core.types)</a>
-</li>
-      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool">FunctionTool (class in core.func_tool)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1342,6 +1370,8 @@ document.write(`
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_async_client">(ModelClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_async_client">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
 </li>
       </ul></li>
@@ -1355,6 +1385,8 @@ document.write(`
         <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_sync_client">(GroqAPIClient method)</a>
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_sync_client">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client">(OllamaClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">(OpenAIClient method)</a>
 </li>
@@ -1389,8 +1421,6 @@ document.write(`
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.is_potential_dataclass">is_potential_dataclass() (in module core.functional)</a>
 </li>
-      <li><a href="apis/core/core.func_tool.html#core.func_tool.is_running_in_event_loop">is_running_in_event_loop() (in module core.func_tool)</a>
-</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.items">items (LocalDB attribute)</a>
 </li>
   </ul></td>
@@ -1399,8 +1429,6 @@ document.write(`
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.json_definitions">json_definitions (ToolManager property)</a>
-</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser">JsonOutputParser (class in components.output_parsers)</a>
 
       <ul>
@@ -1565,10 +1593,6 @@ document.write(`
     module
 
       <ul>
-        <li><a href="apis/components/components.agent.html#module-components.agent">components.agent</a>
-</li>
-        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">components.agent.react</a>
-</li>
         <li><a href="apis/components/components.data_process.html#module-components.data_process">components.data_process</a>
 </li>
         <li><a href="apis/components/components.data_process.data_components.html#module-components.data_process.data_components">components.data_process.data_components</a>
@@ -1588,6 +1612,8 @@ document.write(`
         <li><a href="apis/components/components.model_client.google_client.html#module-components.model_client.google_client">components.model_client.google_client</a>
 </li>
         <li><a href="apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client">components.model_client.groq_client</a>
+</li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">components.model_client.ollama_client</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">components.model_client.openai_client</a>
 </li>
@@ -1625,8 +1651,6 @@ document.write(`
 </li>
         <li><a href="apis/core/core.embedder.html#module-core.embedder">core.embedder</a>
 </li>
-        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">core.func_tool</a>
-</li>
         <li><a href="apis/core/core.functional.html#module-core.functional">core.functional</a>
 </li>
         <li><a href="apis/core/core.generator.html#module-core.generator">core.generator</a>
@@ -1642,8 +1666,6 @@ document.write(`
         <li><a href="apis/core/core.string_parser.html#module-core.string_parser">core.string_parser</a>
 </li>
         <li><a href="apis/core/core.tokenizer.html#module-core.tokenizer">core.tokenizer</a>
-</li>
-        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">core.tool_manager</a>
 </li>
         <li><a href="apis/core/core.types.html#module-core.types">core.types</a>
 </li>
@@ -1731,6 +1753,10 @@ document.write(`
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes">ObjectTypes (class in utils.serialization)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput.observation">observation (StepOutput attribute)</a>
+</li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.OLLAMA">OLLAMA (OptionalPackages attribute)</a>
+</li>
+      <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient">OllamaClient (class in components.model_client.ollama_client)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelClientType.OPENAI">OPENAI (ModelClientType attribute)</a>
 
@@ -1829,6 +1855,8 @@ document.write(`
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_chat_completion">(ModelClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_chat_completion">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">(OpenAIClient method)</a>
 </li>
       </ul></li>
@@ -1837,19 +1865,19 @@ document.write(`
       <ul>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">(ModelClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_embedding_response">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">(OpenAIClient method)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr">parse_func_expr() (ToolManager method)</a>
-</li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_function_call_expr">parse_function_call_expr() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
 </li>
-      <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
@@ -1930,12 +1958,6 @@ document.write(`
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.raw_response">(GeneratorOutput attribute)</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.agent.html#components.agent.ReActAgent">ReActAgent (class in components.agent)</a>
-
-      <ul>
-        <li><a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent">(class in components.agent.react)</a>
-</li>
-      </ul></li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.register_component">register_component() (Component method)</a>
@@ -1964,8 +1986,6 @@ document.write(`
         <li><a href="apis/optim/index.html#optim.LLMOptimizer.reset">(LLMOptimizer method)</a>, <a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset">[1]</a>
 </li>
         <li><a href="apis/core/core.db.html#core.db.LocalDB.reset">(LocalDB method)</a>
-</li>
-        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.reset">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.reset">[1]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2153,6 +2173,8 @@ document.write(`
 </li>
         <li><a href="apis/utils/utils.serialization.html#utils.serialization.to_dict">(in module utils.serialization)</a>
 </li>
+        <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.to_dict">(OllamaClient method)</a>
+</li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">(OpenAIClient method)</a>
 </li>
         <li><a href="apis/core/core.parameter.html#core.parameter.Parameter.to_dict">(Parameter method)</a>
@@ -2176,10 +2198,10 @@ document.write(`
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">to_yaml() (DataClass method)</a>
 </li>
-      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">to_yaml_obj() (DataClass method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">to_yaml_obj() (DataClass method)</a>
+</li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">to_yaml_signature() (DataClass class method)</a>
 </li>
       <li><a href="apis/components/components.data_process.html#components.data_process.ToEmbeddings">ToEmbeddings (class in components.data_process)</a>
@@ -2193,8 +2215,6 @@ document.write(`
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer">Tokenizer (class in core.tokenizer)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb">TokenLogProb (class in core.types)</a>
-</li>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager">ToolManager (class in core.tool_manager)</a>
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TORCH">TORCH (OptionalPackages attribute)</a>
 </li>
@@ -2247,8 +2267,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.ModelType.UNDEFINED">UNDEFINED (ModelType attribute)</a>
 </li>
-      <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.update_default_model_kwargs">update_default_model_kwargs() (Embedder method)</a>
-</li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.update_dialog_turn">update_dialog_turn() (Conversation method)</a>
 </li>
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot.update_parameter">update_parameter() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.update_parameter">[1]</a>
@@ -2279,10 +2297,10 @@ document.write(`
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.user_query_timestamp">user_query_timestamp (DialogTurn attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.UserQuery">UserQuery (class in core.types)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     utils.config
 
@@ -2366,8 +2384,6 @@ document.write(`
 <h2 id="Y">Y</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.yaml_definitions">yaml_definitions (ToolManager property)</a>
-</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser">YamlOutputParser (class in components.output_parsers)</a>
 
       <ul>

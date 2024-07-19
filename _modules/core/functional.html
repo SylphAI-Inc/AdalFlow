@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>core.functional &#8212; LightRAG  documentation</title>
+    <title>core.functional &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=12e5180f" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -89,8 +89,8 @@
          class="form-control"
          name="q"
          id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
+         placeholder="Search..."
+         aria-label="Search..."
          autocomplete="off"
          autocorrect="off"
          autocapitalize="off"
@@ -102,6 +102,55 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
+<aside class="bd-header-announcement" aria-label="Announcement">
+  <div class="bd-header-announcement__content">
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var bannerClosed = localStorage.getItem("bannerClosed");
+            var bannerHeader = document.querySelector('.bd-header-announcement');
+
+            if (bannerClosed !== "true") {
+                // Create the announcement banner div dynamically
+                var banner = document.createElement('div');
+                banner.id = 'announcement-banner';
+                banner.className = 'announcement-banner';
+
+                // Create the content for the announcement
+                banner.innerHTML = `
+                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                    <button onclick="closeBanner()">×</button>
+                `;
+
+                // Append the banner to the banner header
+                if (bannerHeader) {
+                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                }
+
+                // Function to close the banner and remove it from the DOM
+                window.closeBanner = function() {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                    localStorage.setItem('bannerClosed', 'true');
+                };
+
+                // Scroll listener to hide banner on scroll
+                window.addEventListener('scroll', function() {
+                    if (document.documentElement.scrollTop > 0) {
+                        banner.style.display = 'none';
+                    } else {
+                        banner.style.display = 'block';
+                    }
+                });
+            } else {
+                if (bannerHeader) {
+                    bannerHeader.parentNode.removeChild(bannerHeader);
+                }
+            }
+        });
+    </script>
+    </div>
+</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -130,8 +179,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG  documentation - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG  documentation - Home"/>`);</script>
+    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -189,18 +238,6 @@
         </div>
       
       
-        <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -228,6 +265,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
       
     </div>
     
@@ -306,18 +361,6 @@ document.write(`
     
       <div class="sidebar-header-items__end">
         
-          <div class="navbar-item">
-
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script></div>
-        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -345,6 +388,24 @@ document.write(`
             <span class="sr-only">Discord</span></a>
         </li>
 </ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
         
       </div>
     
@@ -1022,6 +1083,7 @@ document.write(`
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Pow</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">left</span><span class="o">**</span><span class="n">right</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported binary operator: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported binary operator: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">):</span>  <span class="c1"># variable name</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1029,6 +1091,7 @@ document.write(`
             <span class="k">return</span> <span class="n">output_fun</span>
         <span class="c1"># TODO: raise the error back to the caller so that the llm can get the error message</span>
         <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> does not exist in the context_map.&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> does not exist in the context_map.&quot;</span>
             <span class="p">)</span>
@@ -1052,6 +1115,7 @@ document.write(`
         <span class="c1"># directly evaluate the node</span>
         <span class="c1"># print(f&quot;Unsupported AST node type: {type(node)}&quot;)</span>
         <span class="c1"># return eval(compile(ast.Expression(node), filename=&quot;&lt;ast&gt;&quot;, mode=&quot;eval&quot;))</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported AST node type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported AST node type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
@@ -1069,23 +1133,38 @@ document.write(`
 <span class="sd">                                      This context is used to resolve names and execute functions.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">function_expr</span> <span class="o">=</span> <span class="n">function_expr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="c1"># detect if it is missing the right parenthesis</span>
+    <span class="c1"># if function_expr[-1] != &quot;)&quot;:</span>
+    <span class="c1">#     # add the right parenthesis</span>
+    <span class="c1">#     function_expr += &quot;)&quot;</span>
+
     <span class="c1"># Parse the string into an AST</span>
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">function_expr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;eval&quot;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">function_expr</span> <span class="o">=</span> <span class="n">extract_function_expression</span><span class="p">(</span><span class="n">function_expr</span><span class="p">)</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">function_expr</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;eval&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
-        <span class="c1"># Extract the function name</span>
-        <span class="n">func_name</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Call</span><span class="p">):</span>
+            <span class="c1"># Extract the function name</span>
+            <span class="n">func_name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="o">.</span><span class="n">id</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">ast</span><span class="o">.</span><span class="n">Name</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
 
-        <span class="c1"># Prepare the list of arguments and keyword arguments</span>
-        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">args</span><span class="p">]</span>
-        <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">kw</span><span class="o">.</span><span class="n">arg</span><span class="p">:</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">keywords</span>
-        <span class="p">}</span>
+            <span class="c1"># Prepare the list of arguments and keyword arguments</span>
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">args</span><span class="p">]</span>
+            <span class="n">keywords</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">kw</span><span class="o">.</span><span class="n">arg</span><span class="p">:</span> <span class="n">evaluate_ast_node</span><span class="p">(</span><span class="n">kw</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">context_map</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">tree</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">keywords</span>
+            <span class="p">}</span>
 
-        <span class="k">return</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">keywords</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided string is not a function call.&quot;</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">func_name</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">keywords</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Provided string is not a function call.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Provided string is not a function call.&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at parse_function_call_expr: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">e</span></div>
 
 
 
@@ -1224,9 +1303,8 @@ document.write(`
 <div class="viewcode-block" id="compose_model_kwargs">
 <a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.compose_model_kwargs">[docs]</a>
 <span class="k">def</span> <span class="nf">compose_model_kwargs</span><span class="p">(</span><span class="n">default_model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The model configuration exclude the input itself.</span>
-<span class="sd">    Combine the default model, model_kwargs with the passed model_kwargs.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Add new arguments or overwrite the default arguments with the new arguments.</span>
+
 <span class="sd">    Example:</span>
 <span class="sd">    model_kwargs = {&quot;temperature&quot;: 0.5, &quot;model&quot;: &quot;gpt-3.5-turbo&quot;}</span>
 <span class="sd">    self.model_kwargs = {&quot;model&quot;: &quot;gpt-3.5&quot;}</span>
@@ -1374,6 +1452,57 @@ document.write(`
     <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No boolean found in the text.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="extract_function_expression">
+<a class="viewcode-back" href="../../apis/core/core.functional.html#core.functional.extract_function_expression">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_function_expression</span><span class="p">(</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">add_missing_right_parenthesis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract function expression from text.</span>
+
+<span class="sd">    It will extract the first function expression found in the text by searching for &#39;(&#39;.</span>
+<span class="sd">    If the right parenthesis is not found, we add one to the end of the string.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): The text containing the potential function expression.</span>
+<span class="sd">        add_missing_right_parenthesis (bool): Whether to add a missing right parenthesis if it is missing.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The extracted function expression.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If no function expression is found or if the function extraction is incomplete</span>
+<span class="sd">                    without the option to add a missing parenthesis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No function expression found in the text: </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">brace_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+            <span class="n">brace_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+            <span class="n">brace_count</span> <span class="o">-=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">brace_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">i</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">add_missing_right_parenthesis</span><span class="p">:</span>
+        <span class="c1"># If no closing parenthesis is found, but we are allowed to add one</span>
+        <span class="n">text</span> <span class="o">+=</span> <span class="s2">&quot;)&quot;</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">end</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Incomplete function expression found and add_missing_right_parenthesis is False.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">text</span><span class="p">[:</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span></div>
 
 
 

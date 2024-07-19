@@ -19,7 +19,7 @@ If you know you will need `openai` and `faiss-cpu`, you can do so with:
 
 .. code-block:: bash
 
-   pip install lightrag[openai, faiss]
+   pip install lightrag[openai, faiss-cpu]
 
 .. note::
    Check the `Optional Packages` section for more information on the available packages.
@@ -85,7 +85,7 @@ Here is the list of our tested versions:
    google-generativeai = "^0.7.2"
    cohere = "^5.5.8"
 
-You can install the optional packages with either `pip install package_name` or `pip install lightrag[package_name]`.
+You can install the optional packages with either ``pip install package_name`` or ``pip install lightrag[package_name]``.
 
 
 
