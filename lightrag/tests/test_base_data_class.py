@@ -237,7 +237,7 @@ class TestBaseDataClass(unittest.TestCase):
         }
         output = Person.to_dict_class(exclude=exclude)
         print(f"output 1: {output}")
-        # self.assertEqual(output, expected_result)
+        self.assertEqual(output, expected_result)
 
     def test_error_non_dataclass(self):
         """Test error handling when to_dict is called on a non-dataclass."""
@@ -347,8 +347,5 @@ class TestGetTypeSchema(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # class_format = ClassificationOutput.to_schema()
-    # class_instance = ClassificationOutput(label=Label.NOT_SPAM)
-    # print(class_format)
-    # print(class_instance.to_dict())
+
     unittest.main()
