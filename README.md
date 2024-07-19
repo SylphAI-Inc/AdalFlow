@@ -6,15 +6,21 @@
     </a>
 </p>
 
+<h4 align="center">
+    <p>
+        <a href="https://lightrag.sylph.ai/">Documentation</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.model_client.html">Models</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.agent.html">Agents</a>
+    <p>
+</h4>
+
 <p align="center">
     <a href="https://pypi.org/project/lightRAG">
         <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
     </a>
     <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
-    </a>
-    <a href="https://pypistats.org/packages/lightrag">
-        <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
     </a>
     <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
         <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
@@ -32,6 +38,10 @@
 <!-- <a href="https://colab.research.google.com/drive/1PPxYEBa6eu__LquGoFFJZkhYgWVYE6kh?usp=sharing">
         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
     </a> -->
+
+<!-- <a href="https://pypistats.org/packages/lightrag">
+<img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
+</a> -->
 
 
 
@@ -274,6 +284,8 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 - [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
 - [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
 - [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
+- [Supported Models](https://lightrag.sylph.ai/apis/components/components.model_client.html)
+- [Supported Retrievers](https://lightrag.sylph.ai/apis/components/components.retriever.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 
