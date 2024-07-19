@@ -19,6 +19,7 @@ from typing import (
 )
 import logging
 import numpy as np
+from enum import Enum
 import re
 import json
 import yaml
@@ -381,9 +382,23 @@ def get_type_schema(
         return "Tuple"
 
     elif is_dataclass(type_obj):
+        if issubclass(type_obj, Enum):
+            # Handle Enum dataclass types
+            enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
+            return f"Enum[{type_obj.__name__}({enum_members})]"
         # Recursively handle nested dataclasses
         output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
         return output
+
+    elif isinstance(type_obj, type) and issubclass(type_obj, Enum):
+        # Handle Enum types
+        enum_members = ", ".join([f"{e.name}={e.value}" for e in type_obj])
+        return f"Enum[{type_obj.__name__}({enum_members})]"
+
+    # elif is_dataclass(type_obj):
+    #     # Recursively handle nested dataclasses
+    #     output = str(get_dataclass_schema(type_obj, exclude, type_var_map))
+    #     return output
     return type_obj.__name__ if hasattr(type_obj, "__name__") else str(type_obj)
 
 

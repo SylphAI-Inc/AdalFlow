@@ -2,6 +2,8 @@ import unittest
 from lightrag.core import DataClass, required_field
 from dataclasses import field, MISSING, dataclass, asdict
 
+from lightrag.core.functional import get_type_schema
+
 
 from typing import List, Dict, Optional, Set
 
@@ -25,6 +27,26 @@ class Address:
     street: str
     city: str
     zipcode: str
+
+
+import enum
+
+
+# @dataclass
+class Label(str, enum.Enum):
+    """Enumeration for single-label text classification."""
+
+    SPAM = "spam"
+    NOT_SPAM = "not_spam"
+
+
+@dataclass
+class ClassificationOutput(DataClass):
+    """
+    Class for a single class label prediction.
+    """
+
+    label: Label = field(metadata={"desc": "Label of the category."})
 
 
 # Example instance of the nested dataclasses and complex data types as list, dict
@@ -222,3 +244,86 @@ class TestBaseDataClass(unittest.TestCase):
         with self.assertRaises(AttributeError):
             non_dataclass = "Not a dataclass"
             non_dataclass.to_dict()
+
+
+class TestGetTypeSchema(unittest.TestCase):
+
+    def test_enum_schema(self):
+        result = get_type_schema(Label)
+        expected = "Enum[Label(SPAM=spam, NOT_SPAM=not_spam)]"
+        self.assertEqual(result, expected)
+
+    def test_enum_field_in_dataclass(self):
+        result = get_type_schema(ClassificationOutput)
+        expected = "{'type': 'ClassificationOutput', 'properties': {'label': {'type': 'Enum[Label(SPAM=spam, NOT_SPAM=not_spam)]', 'desc': 'Label of the category.'}}, 'required': ['label']}"
+        self.assertEqual(result, expected)
+
+    def test_optional_enum_field(self):
+        @dataclass
+        class OptionalClassificationOutput:
+            label: Optional[Label] = field(
+                default=None, metadata={"desc": "Label of the category."}
+            )
+
+        result = get_type_schema(OptionalClassificationOutput)
+        expected = "{'type': 'OptionalClassificationOutput', 'properties': {'label': {'type': 'Optional[Enum[Label(SPAM=spam, NOT_SPAM=not_spam)]]', 'desc': 'Label of the category.'}}, 'required': []}"
+        self.assertEqual(result, expected)
+
+    def test_enum_as_list_element(self):
+        @dataclass
+        class EnumListClassificationOutput:
+            labels: List[Label] = field(
+                default_factory=list, metadata={"desc": "List of labels."}
+            )
+
+        result = get_type_schema(EnumListClassificationOutput)
+        print(f"result: {result}")
+        expected = "{'type': 'EnumListClassificationOutput', 'properties': {'labels': {'type': 'List[Enum[Label(SPAM=spam, NOT_SPAM=not_spam)]]', 'desc': 'List of labels.'}}, 'required': []}"
+        self.assertEqual(result, expected)
+
+        # test instance with DataClass
+        @dataclass
+        class EnumListClassificationOutput(DataClass):
+            labels: List[Label] = field(
+                default_factory=list, metadata={"desc": "List of labels."}
+            )
+
+        instance = EnumListClassificationOutput(labels=[Label.SPAM, Label.NOT_SPAM])
+        result = instance.to_dict()
+        print(f"EnumListClassificationOutput instance: {result}")
+        expected = "{'labels': [<Label.SPAM: 'spam'>, <Label.NOT_SPAM: 'not_spam'>]}"
+        self.assertEqual(str(result), expected)
+        restored_instance = EnumListClassificationOutput.from_dict(result)
+        print(f"restored_instance: {restored_instance}")
+        print(f"instance: {instance}")
+        self.assertEqual(restored_instance, instance)
+
+        from lightrag.core import Generator
+        from lightrag.components.model_client.openai_client import OpenAIClient
+        from lightrag.components.output_parsers import JsonOutputParser
+        from lightrag.utils import setup_env
+
+        setup_env()
+        parser = JsonOutputParser(
+            data_class=EnumListClassificationOutput, return_data_class=True
+        )
+        generator = Generator(
+            model_client=OpenAIClient(),
+            prompt_kwargs={
+                "task_desc_str": "Classify the following text as spam or not spam.",
+                "output_format_str": parser.format_instructions(),
+            },
+            model_kwargs={"model": "gpt-3.5-turbo"},
+            output_processors=parser,
+        )
+        prompt_kwargs = {"input_str": "This is a spam message."}
+        result = generator(prompt_kwargs)
+        print(f"result: {result}")
+
+
+if __name__ == "__main__":
+    # class_format = ClassificationOutput.to_schema()
+    # class_instance = ClassificationOutput(label=Label.NOT_SPAM)
+    # print(class_format)
+    # print(class_instance.to_dict())
+    unittest.main()
