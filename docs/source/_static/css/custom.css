@@ -123,44 +123,7 @@ table tr:hover {
   background-color: transparent !important;
 }
 
-.announcement-banner {
-  background-color: #7acef0; /* Deep purple background */
-  color: white; /* White text color */
-  padding: 10px 20px; /* Padding inside the banner */
-  position: fixed; /* Make it fixed at the top */
-  width: 100%; /* Full width */
-  z-index: 1000; /* Make sure it's on top of other content */
-  top: 0; /* Stick to the top */
-  left: 0; /* Align to the left */
-  text-align: center; /* Center the text */
-}
-
-.announcement-banner p {
-  margin: 0; /* Remove default margin */
-  color: white; /* White text color */
-  display: inline; /* Display inline with the button */
-}
-
-.announcement-banner a {
-  color: white !important;  /* Ensures that this color override takes precedence */
-}
-
-.announcement-banner button {
-  background: none;
-  border: none;
-  color: white;
-  font-size: large;
-  cursor: pointer;
-  float: right; /* Align the button to the right */
-}
-
-.bd-header-announcement,
-.bd-header-announcement__content {
-    background-color: transparent; /* Make background transparent */
-    padding: 0; /* Remove padding if any */
-    margin: 0; /* Remove margin if any */
-}
-
+/* Navigation bar style*/
 .navbar-header-items__end {
   display: flex;
   align-items: center;
@@ -202,4 +165,116 @@ table tr:hover {
 /* Hide the duplicate search button */
 .search-button-field {
   display: none !important;
+}
+
+/* Default banner layout */
+.announcement-banner {
+  background-color: #7acef0; /* Light blue background */
+  color: white; /* White text color */
+  padding: 10px 20px;
+  position: fixed; /* Fixed at the top */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Make sure it's on top of other content */
+  top: 0; /* Stick to the top */
+  left: 0; /* Align to the left */
+  text-align: center; /* Center the text */
+  display: flex; /* Use Flexbox for layout */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center content horizontally */
+  box-sizing: border-box; /* Ensure padding is included in width calculation */
+  flex-wrap: nowrap; /* No wrapping */
+  font-size: 18px; /* Adjust font size for smaller screens */
+}
+
+.announcement-banner p {
+  margin: 0; /* Remove default margin */
+  color: white; /* White text color */
+  flex: 0 1 auto; /* Do not allow the text to take up all available space */
+  word-wrap: break-word; /* Ensure long words break and wrap */
+  text-align: center; /* Center text */
+  font-size: 18px; /* Adjust font size for smaller screens */
+}
+
+.announcement-banner a {
+  color: white !important; /* Ensures that this color override takes precedence */
+}
+
+.announcement-banner button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0; /* Prevent the button from shrinking */
+  display: flex;
+  align-items: center; /* Center the button vertically */
+  margin-left: 10px; /* Space between text and button */
+}
+
+.bd-header-announcement,
+.bd-header-announcement__content {
+  background-color: transparent; /* Make background transparent */
+  padding: 0; /* Remove padding if any */
+  margin: 0; /* Remove margin if any */
+}
+
+/* Override styles for medium screens */
+@media (max-width: 1200px) {
+  .announcement-banner {
+    flex-direction: row; /* Row layout for medium screens */
+    align-items: center; /* Align items to the center */
+  }
+
+  .announcement-banner p {
+    text-align: center; /* Center text */
+    width: auto; /* Automatic width for text */
+  }
+
+  .announcement-banner button {
+    margin-left: 10px; /* Add left margin */
+  }
+}
+
+/* Adjustments for even smaller screens */
+@media (max-width: 600px) {
+  .announcement-banner {
+    font-size: 14px; /* Adjust font size for smaller screens */
+  }
+
+  .announcement-banner button {
+    font-size: 14px; /* Adjust button size for smaller screens */
+  }
+
+  .announcement-banner p {
+    font-size: 14px; /* Adjust text size for smaller screens */
+  }
+}
+
+/* Adjustments for smallest screens */
+@media (max-width: 500px) {
+  .announcement-banner {
+    font-size: 10px; /* Further adjust font size for smaller screens */
+  }
+
+  .announcement-banner button {
+    font-size: 10px; /* Further adjust button size for smaller screens */
+  }
+
+  .announcement-banner p {
+    font-size: 10px; /* Further adjust text size for smaller screens */
+  }
+}
+
+@media (max-width: 380px) {
+  .announcement-banner {
+    font-size: 8px; /* Further adjust font size for smallest screens */
+  }
+
+  .announcement-banner button {
+    font-size: 8px; /* Further adjust button size for smallest screens */
+  }
+
+  .announcement-banner p {
+    font-size: 8px; /* Further adjust text size for smallest screens */
+  }
 }

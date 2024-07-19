@@ -52,10 +52,50 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
-    "announcement": """<div id="announcement-banner" class="announcement-banner">
-                          <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                          <button onclick="var element = document.getElementById('announcement-banner').parentNode.parentNode; element.parentNode.removeChild(element);">×</button>
-                      </div>""",
+    "announcement": """
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var bannerClosed = localStorage.getItem('bannerClosed');
+                var bannerHeader = document.querySelector('.bd-header-announcement');
+                if (bannerClosed !== 'true') {
+                    // Create the announcement banner div dynamically
+                    var banner = document.createElement('div');
+                    banner.id = 'announcement-banner';
+                    banner.className = 'announcement-banner';
+                    // Create the content for the announcement
+                    banner.innerHTML = `
+                        <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+                        <button onclick="closeBanner()">×</button>
+                    `;
+                    // Append the banner to the banner header
+                    if (bannerHeader) {
+                        bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+                    }
+                    // Set the banner's display to block
+                    banner.style.display = 'flex';
+                    // Function to close the banner and remove it from the DOM
+                    window.closeBanner = function() {
+                        if (bannerHeader) {
+                            bannerHeader.parentNode.removeChild(bannerHeader);
+                        }
+                        localStorage.setItem('bannerClosed', 'true');
+                    };
+                    // Scroll listener to hide banner on scroll
+                    window.addEventListener('scroll', function() {
+                        if (document.documentElement.scrollTop > 0) {
+                            banner.style.display = 'none';
+                        } else {
+                            banner.style.display = 'flex';
+                        }
+                    });
+                } else {
+                    if (bannerHeader) {
+                        bannerHeader.parentNode.removeChild(bannerHeader);
+                    }
+                }
+            });
+        </script>
+    """,
     "navbar_end": ["navbar-icon-links.html", "search-field.html"],  # Add search field here
     "search_bar_text": "Search...",
 }
