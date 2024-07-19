@@ -1,17 +1,19 @@
-Prompt
-============
+
 
 .. raw:: html
 
-   <div style="display: flex; justify-content: flex-end; align-items: center; margin-top: -50px;">
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
       <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG" target="_blank" style="display: flex; align-items: center;">
+      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
-         <span style="vertical-align: middle;">GitHub</span>
+         <span style="vertical-align: middle;"> Open Source Code</span>
       </a>
    </div>
+
+Prompt
+============
 
 
 
@@ -21,8 +23,8 @@ Prompt
 ..    `Li Yin <https://github.com/liyin2015>`_
 
 
-Context
-----------------
+.. Context
+.. ----------------
 
 The prompt refers to the text input to the LLM models.
 When sent to an LLM, the model uses the prompt to auto-regressively generate the next tokens, continuing the process until it reaches a specified stopping criterion.

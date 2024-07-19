@@ -162,7 +162,7 @@ class FunctionCall(Component):
         return generator, tool_manager
 
     def run_function_call(self, generator: Generator, tool_manager: ToolManager):
-
+        start_time = time.time()
         for idx, query in enumerate(queries):
             prompt_kwargs = {"input_str": query}
             print(f"\n{idx} Query: {query}")
@@ -178,6 +178,8 @@ class FunctionCall(Component):
                 print(
                     f"Failed to execute the function for query: {query}, func: {result.data}, error: {e}"
                 )
+        end_time = time.time()
+        print(f"Total time taken: {end_time - start_time :.2f} seconds")
 
 
 class FunctionCallWithFunctionExpression(Component):
@@ -265,7 +267,7 @@ class FunctionCallWithFunctionExpression(Component):
             # func = tool_manager.parse_func_expr(func_expr)
             # func_output = await tool_manager.execute_func(func)
             # or
-            func_output = await tool_manager.execute_func_expr(func_expr)
+            func_output = await tool_manager.execute_func_expr_async(func_expr)
 
             print(f"Function output: {func_output}")
             return func_output
@@ -343,18 +345,21 @@ class MultiFunctionCallWithFunctionExpression(Component):
 
 
 if __name__ == "__main__":
+    from lightrag.utils import setup_env
+
+    setup_env()
     # fc = FunctionCall()
     # generator, tool_manager = fc.prepare_single_function_call_generator()
-    # fc.run_function_call(generator, tool_manager)
+    # fc.run_function_call(generator, tool_manager)  # 18.86s
 
     # fc = FunctionCallWithFunctionExpression()
     # generator, tool_manager = fc.prepare_single_function_call_generator()
-    # fc.run_function_call(generator, tool_manager)  # 15.92s
-    # asyncio.run(fc.run_async_function_call(generator, tool_manager))  # 7.8s
+    # fc.run_function_call(generator, tool_manager)  # 15.99s
+    # asyncio.run(fc.run_async_function_call(generator, tool_manager))  # 10.76s
 
     output = eval("add(a=y, b=5)", {"y": 3, "add": add})
     print(output)
 
     mul_fc = MultiFunctionCallWithFunctionExpression()
     generator, tool_manager = mul_fc.prepare_single_function_call_generator()
-    mul_fc.run_function_call(generator, tool_manager)
+    mul_fc.run_function_call(generator, tool_manager)  # 17.69s

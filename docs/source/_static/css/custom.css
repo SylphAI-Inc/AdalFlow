@@ -122,7 +122,10 @@ table {
 table tr:hover {
   background-color: transparent !important;
 }
+/* .bd-header-announcement{
+  display: none;
 
+} */
 .announcement-banner {
   background-color: #7acef0; /* Deep purple background */
   color: white; /* White text color */

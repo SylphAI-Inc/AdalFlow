@@ -13,7 +13,7 @@
     <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
     </a>
-    <a href="https://pypistats.org/packages/lightRAG">
+    <a href="https://pypistats.org/packages/lightrag">
         <img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
     </a>
     <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
@@ -36,7 +36,7 @@
 
 
 
-### ⚡ The PyTorch Library for Large Language Model Applications ⚡
+### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
 *LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
 Embracing similar design pattern to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
@@ -48,7 +48,7 @@ LLMs are like water; they can be shaped into anything, from GenAI applications s
 
 Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
-This is what LightRAG is: light, modular, and robust, with a 100% readable codebase.
+<!-- This is what LightRAG is: light, modular, and robust, with a 100% readable codebase. -->
 
 
 Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),

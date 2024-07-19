@@ -1,3 +1,16 @@
+## [0.1.0-beta.3] - 2024-07-18
+
+### Added
+- Ollama model client v1.
+
+### Fixed
+- func_tool.execute fails to run sync function in jupyter notebook. We avoid calling execute and instead in ToolManager, we
+  add sync and async for each function method and call the `call` and `acall` method of func_tool directly.
+- ModelClient acall bug.
+
+### Improved
+- Add function `extract_function_expression` in `functional`, and it will add missing right parenthesis to the function expression if LLMs fail to do so. This will make function expression more robust.
+
 ## [0.1.0-beta.2] - 2024-07-15
 
 ### Modified
