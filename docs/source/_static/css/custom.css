@@ -171,7 +171,6 @@ display: none !important;
 .announcement-banner {
 background-color: #7acef0; /* Light blue background */
 color: white; /* White text color */
-padding: 10px 20px;
 position: fixed; /* Fixed at the top */
 width: 100%; /* Full width */
 z-index: 1000; /* Make sure it's on top of other content */
@@ -183,7 +182,7 @@ align-items: center; /* Center items vertically */
 justify-content: center; /* Center content horizontally */
 box-sizing: border-box; /* Ensure padding is included in width calculation */
 flex-wrap: nowrap; /* No wrapping */
-font-size: 18px; /* Adjust font size for smaller screens */
+font-size: 16px; /* Adjust font size for smaller screens */
 }
 
 .announcement-banner p {
@@ -192,7 +191,7 @@ color: white; /* White text color */
 flex: 0 1 auto; /* Do not allow the text to take up all available space */
 word-wrap: break-word; /* Ensure long words break and wrap */
 text-align: center; /* Center text */
-font-size: 18px; /* Adjust font size for smaller screens */
+font-size: 16px; /* Adjust font size for smaller screens */
 }
 
 .announcement-banner a {
@@ -203,7 +202,7 @@ color: white !important; /* Ensures that this color override takes precedence */
 background: none;
 border: none;
 color: white;
-font-size: 18px;
+font-size: 16px;
 cursor: pointer;
 flex-shrink: 0; /* Prevent the button from shrinking */
 display: flex;
