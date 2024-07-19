@@ -5,9 +5,9 @@
 <!-- [![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG) -->
 [![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
 [![PyPI](https://img.shields.io/pypi/v/lightRAG?style=flat-square)](https://pypi.org/project/lightRAG/)
-[![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG)
 [![Open Issues](https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square)](https://github.com/SylphAI-Inc/LightRAG/issues)
 [![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
+<!-- [![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG) -->
 
 
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
