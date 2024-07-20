@@ -1,3 +1,5 @@
+"""Ollama ModelClient integration."""
+
 import os
 from typing import Dict, Optional, Any, TypeVar, List, Type
 import backoff
@@ -117,13 +119,38 @@ class OllamaClient(ModelClient):
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
         r"""
+        Reference: https://github.com/ollama/ollama/blob/main/docs/api.md
+        *Note: The options parameters listed in this documented are documented within the Ollama Github https://github.com/ollama/ollama/blob/main/docs/modelfile.md.
+        *      for the omitted parameters below, you can find lower level implementation via LlamaCPP API documentation https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api
+
         For LLM, expect model_kwargs to have the following keys:
-         model: str,
-         prompt: str,
+        model: str,
+            - You can find this name by utilizing `ollama list` via your CLI.
+            - You can also find this name via the model page on https://ollama.com/library .
+        prompt: str,
+        options: dict,
+            - Possible values here are as follows. The value set here is the default.:
+            {
+                "seed": 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.
+                "num_predict": 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)
+                "top_k": 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.
+                "top_p": 0.9, - 	Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.
+                "tfs_z": 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)
+                "repeat_last_n": 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)
+                "temperature": 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.
+                "repeat_penalty": 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values *e.g., 0.9 will be more lenient.)
+                "mirostat": 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)
+                "mirostat_tau": 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.
+                "mirostat_eta": 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.
+                "stop": ["\n", "user:"], - 	Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.
+                "num_ctx": 2048, - Sets the size of the context window used to generate the next token.
+            }
 
         For EMBEDDER, expect model_kwargs to have the following keys:
-         model: str,
-         prompt: str,
+        *See LLM for explanations*
+        model: str,
+        prompt: str,
+        options: dict,
         """
         # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
         final_model_kwargs = model_kwargs.copy()
