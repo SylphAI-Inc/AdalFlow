@@ -1,4 +1,9 @@
-## [0.1.0-beta.3] - 2024-07-18
+## [0.1.0-beta.5] - 2024-07-20
+
+### Fixed
+- Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
+
+## [0.1.0-beta.3, 4] - 2024-07-18
 
 ### Added
 - Ollama model client v1.
