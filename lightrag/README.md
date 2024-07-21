@@ -1,33 +1,68 @@
-![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
+![LightFlow Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightFlow_logo.png)
 
-<!-- [![release](https://img.shields.io/github/v/release/SylphAI-Inc/LightRAG?sort=semver)](https://github.com/SylphAI-Inc/LightRAG/releases) -->
-<!-- [![Dependency Status](https://img.shields.io/librariesio/github/SylphAI-Inc/LightRAG?style=flat-square)](https://libraries.io/github/SylphAI-Inc/LightRAG) -->
-<!-- [![GitHub star chart](https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square)](https://star-history.com/#SylphAI-Inc/LightRAG) -->
-[![License](https://img.shields.io/github/license/SylphAI-Inc/LightRAG)](https://opensource.org/license/MIT)
-[![PyPI](https://img.shields.io/pypi/v/lightRAG?style=flat-square)](https://pypi.org/project/lightRAG/)
-[![Open Issues](https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square)](https://github.com/SylphAI-Inc/LightRAG/issues)
-[![](https://dcbadge.vercel.app/api/server/zt2mTPcu?compact=true&style=flat)](https://discord.gg/zt2mTPcu)
-<!-- [![PyPI - Downloads](https://img.shields.io/pypi/dm/lightRAG?style=flat-square)](https://pypistats.org/packages/lightRAG) -->
+<p align="center">
+    <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a>
+</p>
+
+<h4 align="center">
+    <p>
+        <a href="https://lightrag.sylph.ai/">Documentation</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.model_client.html">Models</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
+        <a href="https://lightrag.sylph.ai/apis/components/components.agent.html">Agents</a>
+    <p>
+</h4>
+
+<p align="center">
+    <a href="https://pypi.org/project/lightRAG">
+        <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
+    </a>
+    <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
+        <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
+    </a>
+    <a href="https://github.com/SylphAI-Inc/LightRAG/issues">
+        <img alt="Open Issues" src="https://img.shields.io/github/issues-raw/SylphAI-Inc/LightRAG?style=flat-square">
+    </a>
+    <a href="https://opensource.org/license/MIT">
+        <img alt="License" src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG">
+    </a>
+      <a href="https://discord.gg/ezzszrRZvT">
+        <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
+    </a>
+</p>
+
+
+
+<!-- <a href="https://colab.research.google.com/drive/1PPxYEBa6eu__LquGoFFJZkhYgWVYE6kh?usp=sharing">
+        <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
+    </a> -->
+
+<!-- <a href="https://pypistats.org/packages/lightrag">
+<img alt="PyPI Downloads" src="https://img.shields.io/pypi/dm/lightRAG?style=flat-square">
+</a> -->
+
+
 
 
 ### ⚡ The Lightning Library for Large Language Model Applications ⚡
 
-*LightRAG* helps developers with both building and optimizing *Retriever-Agent-Generator* pipelines.
-It is *light*, *modular*, and *robust*, with a 100% readable codebase.
+*LightFlow* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
+Embracing similar design pattern to *PyTorch*, LightFlow is *light*, *modular*, and *robust*, with a 100% readable codebase.
 
 
-
-
-# Why LightRAG?
+# Why LightFlow?
 
 LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
 Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
-This is what LightRAG is: light, modular, and robust, with a 100% readable codebase.
+<!-- This is what LightFlow is: light, modular, and robust, with a 100% readable codebase. -->
 
 
-Further reading: [Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
+Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
+[Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -56,7 +91,7 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-# LightRAG Task Pipeline
+# LightFlow Task Pipeline
 
 We will ask the model to respond with ``explanation`` and ``example`` of a concept. To achieve this, we will build a simple pipeline to get the structured output as ``QAOutput``.
 
@@ -179,8 +214,8 @@ Use the following code will let us see the prompt after it is formatted:
 
 ```python
 
-qa.generator.print_prompt(
-        output_format_str=qa.generator.output_processors.format_instructions(),
+qa2.generator.print_prompt(
+        output_format_str=qa2.generator.output_processors.format_instructions(),
         input_str="What is LLM?",
 )
 ```
@@ -211,10 +246,6 @@ You:
 ## Model-agnostic
 
 
-You can switch to any model simply by using a different model_client (provider) and model_kwargs.
-Let's use OpenAI's gpt-3.5-turbo model on the same pipeline.
-
-
 You can switch to any model simply by using a different `model_client` (provider) and `model_kwargs`.
 Let's use OpenAI's `gpt-3.5-turbo` model.
 
@@ -233,7 +264,7 @@ self.generator = Generator(
 
 # Quick Install
 
-Install LightRAG with pip:
+Install LightFlow with pip:
 
 ```bash
 pip install lightrag
@@ -246,13 +277,15 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 
 # Documentation
 
-LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
-
+LightFlow full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
+- [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
 - [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
 - [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
 - [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
+- [Supported Models](https://lightrag.sylph.ai/apis/components/components.model_client.html)
+- [Supported Retrievers](https://lightrag.sylph.ai/apis/components/components.retriever.html)
 - [API reference](https://lightrag.sylph.ai/apis/index.html)
 
 
@@ -265,9 +298,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 # Citation
 
 ```bibtex
-@software{Yin2024LightRAG,
+@software{Yin2024LightFlow,
   author = {Li Yin},
-  title = {{LightRAG: The Lightning Library for Large Language Model (LLM) Applications}},
+  title = {{LightFlow: The Lightning Library for Large Language Model (LLM) Applications}},
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},
