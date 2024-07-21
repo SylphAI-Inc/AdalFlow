@@ -199,6 +199,7 @@ table tr:hover {
 	/* Light blue background */
 	color: white;
 	/* White text color */
+	padding: 10px 20px;
 	position: fixed;
 	/* Fixed at the top */
 	width: 100%;
