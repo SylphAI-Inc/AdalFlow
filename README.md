@@ -1,5 +1,5 @@
 ![LightFlow Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightFlow_logo.png)
-
+<!-- ![LightFlow logo](docs/source/_static/images/LightFlow_logo.png) -->
 <p align="center">
     <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg">
