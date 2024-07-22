@@ -29,9 +29,8 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
 
-      - name: Install root dependencies(expecially doc dependencies) using Poetry
+      - name: Install doc dependencies using Poetry
         run: |
-          poetry config virtualenvs.create false  # Avoid creating a virtual environment
           poetry install --only doc  # Install only the documentation dependencies
 
       - name: Install package dependencies
