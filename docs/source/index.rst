@@ -44,6 +44,7 @@
         </p>
     </div>
 
+    <h2 style="text-align: center; font-size: 1.5em; margin-top: 10px;"> We are in the progress of renaming to AdalFlow from LightRAG.</h2>
 
 
 

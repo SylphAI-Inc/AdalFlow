@@ -62,6 +62,8 @@
 AdalFlow helps developers build and optimize LLM task pipelines.
 Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
 
+Note: We are in the progress of renaming to adalflow from lightrag.
+
 # AdalFlow: A Tribute to Ada Lovelace
 
 AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
