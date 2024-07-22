@@ -32,7 +32,7 @@ jobs:
       - name: Install root dependencies(expecially doc dependencies) using Poetry
         run: |
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --only docs  # Install only the documentation dependencies
+          poetry install --only doc  # Install only the documentation dependencies
 
       - name: Install package dependencies
         run: |
