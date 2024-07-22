@@ -64,6 +64,7 @@ User query:
 {# Step History #}
 {% if step_history %}
 <STEPS>
+Your previous steps:
 {% for history in step_history %}
 Step {{ loop.index }}.
 "Thought": "{{history.action.thought}}",

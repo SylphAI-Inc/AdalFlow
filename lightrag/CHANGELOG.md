@@ -1,5 +1,7 @@
 ## [0.1.0-beta.5] - 2024-07-20
 
+Rename the `lightrag` package to `adalflow`.
+
 ### Fixed
 - Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
 

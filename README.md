@@ -55,16 +55,16 @@
 
 <h1>
     <p align="center">
-        AdalFlow: The Library for Large Language Model Applications
+        AdalFlow: The Library for LLM Applications
     </p>
 </h1>
 
 AdalFlow helps developers build and optimize LLM task pipelines.
 Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
 
-# AdalFlow: A Tribute to Ada Lovelace
+# AdalFlow: In honor of Ada Lovelace
 
-AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+[Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace) was a pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we named our library AdalFlow to inspire more women to enter the AI field.
 
 # Why AdalFlow?
 

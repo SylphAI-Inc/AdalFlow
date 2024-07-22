@@ -55,7 +55,7 @@
 
 <h1>
     <p align="center">
-        AdalFlow: The Library for Large Language Model Applications
+        AdalFlow: The Library for LLM Applications
     </p>
 </h1>
 
