@@ -29,7 +29,7 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
 
-      - name: Install doc dependencies using Poetry
+      - name: Install documentation dependencies using Poetry
         run: |
           poetry install --only doc  # Install only the documentation dependencies
 
