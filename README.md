@@ -64,7 +64,7 @@ Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and rob
 
 # AdalFlow: In honor of Ada Lovelace
 
-[Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace) was a pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we named our library AdalFlow to inspire more women to enter the AI field.
+[Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace) was a pioneering female mathematician who first recognized that machines could do more than just calculations. As a team led by female founder, we named our library AdalFlow to inspire more women to enter the AI field.
 
 # Why AdalFlow?
 

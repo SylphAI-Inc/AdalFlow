@@ -5,7 +5,10 @@ version = "0.1.0"
 description = "A project to develop and test the lightrag library"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
-packages = [{ from = "_lightrag", include = "lightrag" }]          # empty packages list
+
+include = ["use_cases/*", "tutorials/*"]
+packages = [{ from = "_lightrag", include = "lightrag" }] # empty packages list
+
 
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"
@@ -32,6 +35,7 @@ matplotlib = "^3.9.0"
 pyvis = "^0.3.2"
 ollama = "^0.2.1"
 torch = ">=2.0, <3.0"
+textgrad = "^0.1.4"
 
 
 [tool.poetry.group.doc.dependencies]

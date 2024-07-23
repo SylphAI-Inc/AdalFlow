@@ -5,7 +5,8 @@ import os
 import re
 
 
-from lightrag.core.component import Component, Sequential, fun_to_component
+from lightrag.core.component import Component, fun_to_component
+from lightrag.core.container import Sequential
 from lightrag.core.generator import Generator
 from lightrag.components.model_client import (
     GroqAPIClient,
