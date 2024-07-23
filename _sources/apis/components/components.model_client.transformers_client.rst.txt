@@ -7,20 +7,3 @@ transformers_client
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      average_pool
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      TransformerEmbedder
-      TransformerLLM
-      TransformerReranker
-      TransformersClient
-

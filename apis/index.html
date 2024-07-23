@@ -620,12 +620,6 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
 <td><p>Tokenizer from tiktoken.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
-<td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
-<td><p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p></td>
-</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
 <td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
 </tr>
@@ -641,26 +635,20 @@ The API reference is organized by subdirectories.</p>
 <p>Functional components like model client, retriever, agent, local data processing, and output parsers are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
-<td><p>Implementation and optimization of React agent.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
 <td><p>Anthropic ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
 <td><p>Cohere ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
 <td><p>Groq ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.transformers_client.html#module-components.model_client.transformers_client" title="components.model_client.transformers_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.transformers_client</span></code></a></p></td>
-<td><p>Huggingface transformers ModelClient integration.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
 <td><p>Helpers for model client for integrating models and parsing the output.</p></td>
