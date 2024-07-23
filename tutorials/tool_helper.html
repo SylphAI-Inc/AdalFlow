@@ -614,7 +614,7 @@ But it is limiting:</p>
 <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> only has one action for the function call expression.
 Both can be used to format the output in the prompt. We will demonstrate how to use it later.</p>
 <p><strong>Components</strong></p>
-<p>We have two components: <code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code> and <code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code> to streamline the lifecyle of (1)
+<p>We have two components: <a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunctionTool</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">ToolManager</span></code></a> to streamline the lifecyle of (1)
 creating the function definition (2) formatting the prompt with the definitions and output format (3) parsing the response (4) executing the function.</p>
 <p><code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> is a container of a single function. It handles the function definition and executing of the function. It supports both sync and async functions.
 <code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> manages all tools. And it handles the execution and context_map that is used to parse the functions sercurely.</p>
@@ -994,7 +994,7 @@ The output is:</p>
 </pre></div>
 </div>
 <p><strong>Run Queries</strong></p>
-<p>We will use <code class="docutils literal notranslate"><span class="pre">Function.from_dict</span></code> to get the final output type from the json object. Here we use <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code> to execute it directly.</p>
+<p>We will use <code class="docutils literal notranslate"><span class="pre">Function.from_dict</span></code> to get the final output type from the json object. Here we use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute it directly.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">queries</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;add 2 and 3&quot;</span><span class="p">,</span>
     <span class="s2">&quot;search for something&quot;</span><span class="p">,</span>
@@ -1119,8 +1119,8 @@ We will use FunctionExpression this time in the parser. And we added the necessa
         <span class="k">return</span> <span class="kc">None</span>
 </pre></div>
 </div>
-<p>In this case, we used <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.parse_func_expr()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code> to execute the function.
-Or we can directly use <code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func_expr()</span></code> to execute the function expression. Both are equivalent.</p>
+<p>In this case, we used <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr" title="core.tool_manager.ToolManager.parse_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.parse_func_expr()</span></code></a> and <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func" title="core.tool_manager.ToolManager.execute_func"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func()</span></code></a> to execute the function.
+Or we can directly use <a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr" title="core.tool_manager.ToolManager.execute_func_expr"><code class="xref py py-meth docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager.execute_func_expr()</span></code></a> to execute the function expression. Both are equivalent.</p>
 <p>From the output shown below, this time we get all function calls executed successfully.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">0</span> <span class="n">Query</span><span class="p">:</span> <span class="n">add</span> <span class="mi">2</span> <span class="ow">and</span> <span class="mi">3</span>
 <span class="o">--------------------------------------------------</span>
@@ -1279,8 +1279,8 @@ Do not call multiple functions in one action field.
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.Function" title="core.types.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.Function</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionExpression</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.FunctionOutput</span></code></a></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></p></li>
-<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.func_tool.html#core.func_tool.FunctionTool" title="core.func_tool.FunctionTool"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.func_tool.FunctionTool</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.tool_manager.html#core.tool_manager.ToolManager" title="core.tool_manager.ToolManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.tool_manager.ToolManager</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.get_fun_schema()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.functional.html#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.parse_function_call_expr()</span></code></a></p></li>
 <li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">core.functional.sandbox_execute()</span></code></p></li>
