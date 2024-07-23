@@ -192,6 +192,7 @@ class JsonParser(Component):
         # Parse JSON string with json.loads and yaml.safe_load
         try:
             json_obj = F.parse_json_str_to_obj(json_str)
+            log.debug(f"json_obj: {json_obj}")
             return json_obj
         except Exception as e:
             log.error(f"Error at parsing JSON string: {e}")

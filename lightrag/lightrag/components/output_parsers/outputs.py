@@ -275,11 +275,17 @@ class JsonOutputParser(OutputParser):
     def call(self, input: str) -> Any:
         try:
             output_dict = self.output_processors(input)
+            log.debug(f"{__class__.__name__} output_dict: {output_dict}")
+
+        except Exception as e:
+            log.error(f"Error in parsing JSON to JSON: {e}")
+            raise e
+        try:
             if self._return_data_class:
                 return self.data_class.from_dict(output_dict)
             return output_dict
         except Exception as e:
-            log.error(f"Error in parsing JSON to JSON: {e}")
+            log.error(f"Error in converting dict to data class: {e}")
             raise e
 
     def _extra_repr(self) -> str:
