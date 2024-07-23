@@ -33,7 +33,13 @@ jobs:
         run: |
           cd docs
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install   # Install only the doc dependencies as specified in pyproject.toml
+          poetry install --with doc  # Install dependencies as specified in pyproject.toml
+          pip install nest-asyncio # manually install nest-asyncio
+          pip install torch # manually install torch
+          # pip install transformers  # manually install transformers
+          poetry show
+          poetry show lightrag
+
 
       - name: Build documentation using Makefile
         run: |
