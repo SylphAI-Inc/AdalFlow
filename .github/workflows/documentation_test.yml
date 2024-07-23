@@ -34,6 +34,7 @@ jobs:
           cd docs
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
           poetry install   # Install only the doc dependencies as specified in pyproject.toml
+          pip install nest-asyncio
 
       - name: Build documentation using Makefile
         run: |
