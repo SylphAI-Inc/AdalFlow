@@ -28,24 +28,19 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
-
-      - name: Install package dependencies using Poetry
-        run: |
-          cd lightrag
-          poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --all-extras --verbose  # Install all optional dependencies
-          cd ..  # Change back to the root directory
+          echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
+          source $BASH_ENV
 
       - name: Install documentation dependencies using Poetry
         run: |
-          poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --only doc  # Install only the doc dependencies as specified in pyproject.toml
+          cd docs
+          poetry install --with doc  # Install all dependencies including those from the main project
 
       - name: Build documentation using Makefile
         run: |
           echo "Building documentation from: $(pwd)"
           ls -l  # Debug: List current directory contents
-          poetry run make html  # Run Makefile in docs directory to build HTML docs
+          poetry run make html SPHINXOPTS=-v  # Run Makefile in docs directory to build HTML docs with verbose output
         working-directory: ${{ github.workspace }}/docs
 
       - name: List built documentation
