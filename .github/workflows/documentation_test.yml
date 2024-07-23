@@ -33,7 +33,7 @@ jobs:
         run: |
           cd lightrag
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install   # Install only the package dependencies as specified in lightrag/pyproject.toml
+          poetry install --all-extras  # Install all optional dependencies
           cd ..  # Change back to the root directory
 
       - name: Install documentation dependencies using Poetry
