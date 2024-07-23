@@ -13,6 +13,8 @@ functional
 
    .. autosummary::
 
+      check_data_class_field_args_one
+      check_data_class_field_args_zero
       compose_model_kwargs
       convert_schema_to_signature
       custom_asdict

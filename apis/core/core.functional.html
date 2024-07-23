@@ -584,6 +584,12 @@ Users can leverage these functions to customize their own components.</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_one" title="core.functional.check_data_class_field_args_one"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_one</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_zero" title="core.functional.check_data_class_field_args_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_zero</span></code></a>(cls)</p></td>
+<td><p>Check if the field is a dataclass.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.compose_model_kwargs" title="core.functional.compose_model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_model_kwargs</span></code></a>(default_model_kwargs, ...)</p></td>
 <td><p>Add new arguments or overwrite the default arguments with the new arguments.</p></td>
 </tr>
@@ -725,6 +731,18 @@ tuples, lists, and dicts.</p>
 <dt class="sig sig-object py" id="core.functional.extract_dataclass_type">
 <span class="sig-name descname"><span class="pre">extract_dataclass_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_hint</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#extract_dataclass_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.extract_dataclass_type" title="Link to this definition">#</a></dt>
 <dd><p>Extract the actual dataclass type from a type hint that could be Optional or other generic.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_data_class_field_args_zero">
+<span class="sig-name descname"><span class="pre">check_data_class_field_args_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_data_class_field_args_zero"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_data_class_field_args_zero" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.check_data_class_field_args_one">
+<span class="sig-name descname"><span class="pre">check_data_class_field_args_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/functional.html#check_data_class_field_args_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.check_data_class_field_args_one" title="Link to this definition">#</a></dt>
+<dd><p>Check if the field is a dataclass.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1227,6 +1245,8 @@ it is crucial to have a format such as <code class="docutils literal notranslate
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.validate_data"><code class="docutils literal notranslate"><span class="pre">validate_data()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.is_potential_dataclass"><code class="docutils literal notranslate"><span class="pre">is_potential_dataclass()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.extract_dataclass_type"><code class="docutils literal notranslate"><span class="pre">extract_dataclass_type()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_data_class_field_args_zero"><code class="docutils literal notranslate"><span class="pre">check_data_class_field_args_zero()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.check_data_class_field_args_one"><code class="docutils literal notranslate"><span class="pre">check_data_class_field_args_one()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.dataclass_obj_from_dict"><code class="docutils literal notranslate"><span class="pre">dataclass_obj_from_dict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.represent_ordereddict"><code class="docutils literal notranslate"><span class="pre">represent_ordereddict()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.from_dict_to_json"><code class="docutils literal notranslate"><span class="pre">from_dict_to_json()</span></code></a></li>

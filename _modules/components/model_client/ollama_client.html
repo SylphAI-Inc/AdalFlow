@@ -467,7 +467,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Ollama ModelClient integration.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -516,11 +516,67 @@
 <span class="s2">            If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.</span>
 <span class="s2">            The default host is &quot;http://localhost:11434&quot;.</span>
 
+<span class="s2">    Setting model_kwargs:</span>
+
+<span class="s2">        For LLM, expect model_kwargs to have the following keys:</span>
+
+<span class="s2">        model (str, required):</span>
+<span class="s2">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
+
+<span class="s2">        stream (bool, default: False ) – Whether to stream the results.</span>
+
+
+<span class="s2">        options (Optional[dict], optional)</span>
+<span class="s2">            Options that affect model output.</span>
+
+<span class="s2">            # If not specified the following defaults will be assigned.</span>
+
+<span class="s2">                &quot;seed&quot;: 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.</span>
+
+<span class="s2">                &quot;num_predict&quot;: 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)</span>
+
+<span class="s2">                &quot;top_k&quot;: 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.</span>
+
+<span class="s2">                &quot;top_p&quot;: 0.9, - 	Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.</span>
+
+<span class="s2">                &quot;tfs_z&quot;: 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)</span>
+
+<span class="s2">                &quot;repeat_last_n&quot;: 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)</span>
+
+<span class="s2">                &quot;temperature&quot;: 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.</span>
+
+<span class="s2">                &quot;repeat_penalty&quot;: 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values *e.g., 0.9 will be more lenient.)</span>
+
+<span class="s2">                &quot;mirostat&quot;: 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)</span>
+
+<span class="s2">                &quot;mirostat_tau&quot;: 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.</span>
+
+<span class="s2">                &quot;mirostat_eta&quot;: 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.</span>
+
+<span class="s2">                &quot;stop&quot;: [&quot;\n&quot;, &quot;user:&quot;], - 	Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.</span>
+
+<span class="s2">                &quot;num_ctx&quot;: 2048, - Sets the size of the context window used to generate the next token.</span>
+
+<span class="s2">        For EMBEDDER, expect model_kwargs to have the following keys:</span>
+
+<span class="s2">        model (str, required):</span>
+<span class="s2">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
+
+<span class="s2">        prompt (str, required):</span>
+<span class="s2">            String that is sent to the Embedding model.</span>
+
+<span class="s2">        options (Optional[dict], optional):</span>
+<span class="s2">            See LLM args for defaults.</span>
+
 <span class="s2">    References:</span>
 
 <span class="s2">        - https://github.com/ollama/ollama-python</span>
 <span class="s2">        - https://github.com/ollama/ollama</span>
 <span class="s2">        - Models: https://ollama.com/library</span>
+<span class="s2">        - Ollama API: https://github.com/ollama/ollama/blob/main/docs/api.md</span>
+<span class="s2">        - Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.</span>
+<span class="s2">        - LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</span>
+<span class="s2">        - LLM API: https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion</span>
 
 <span class="s2">    Tested Ollama models: 7/9/24</span>
 
@@ -566,14 +622,25 @@
 
 <div class="viewcode-block" id="OllamaClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GenerateResponse</span><span class="p">,</span> <span class="n">Generator</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str. We use the generate with prompt instead of chat with messages.&quot;&quot;&quot;</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span><span class="w"> </span><span class="n">Generator</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>  <span class="c1"># streaming</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw chunk: </span><span class="si">{</span><span class="n">chunk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">chunk</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OllamaClient.parse_embedding_response">
@@ -600,63 +667,7 @@
         <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span>
         <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        API Reference: https://github.com/ollama/ollama/blob/main/docs/api.md</span>
-
-<span class="sd">        Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.</span>
-
-<span class="sd">        LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</span>
-
-<span class="sd">        For LLM, expect model_kwargs to have the following keys:</span>
-
-<span class="sd">        model (str, required):</span>
-<span class="sd">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
-
-<span class="sd">        prompt (str, required):</span>
-<span class="sd">            String that is sent to the LLM.</span>
-
-<span class="sd">        options (Optional[dict], optional)</span>
-<span class="sd">            Options that affect model output.</span>
-
-<span class="sd">            # If not specified the following defaults will be assigned.</span>
-
-<span class="sd">                &quot;seed&quot;: 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.</span>
-
-<span class="sd">                &quot;num_predict&quot;: 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)</span>
-
-<span class="sd">                &quot;top_k&quot;: 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.</span>
-
-<span class="sd">                &quot;top_p&quot;: 0.9, - 	Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.</span>
-
-<span class="sd">                &quot;tfs_z&quot;: 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)</span>
-
-<span class="sd">                &quot;repeat_last_n&quot;: 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)</span>
-
-<span class="sd">                &quot;temperature&quot;: 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.</span>
-
-<span class="sd">                &quot;repeat_penalty&quot;: 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values *e.g., 0.9 will be more lenient.)</span>
-
-<span class="sd">                &quot;mirostat&quot;: 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)</span>
-
-<span class="sd">                &quot;mirostat_tau&quot;: 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.</span>
-
-<span class="sd">                &quot;mirostat_eta&quot;: 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.</span>
-
-<span class="sd">                &quot;stop&quot;: [&quot;\n&quot;, &quot;user:&quot;], - 	Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.</span>
-
-<span class="sd">                &quot;num_ctx&quot;: 2048, - Sets the size of the context window used to generate the next token.</span>
-
-<span class="sd">        For EMBEDDER, expect model_kwargs to have the following keys:</span>
-
-<span class="sd">        model (str, required):</span>
-<span class="sd">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
-
-<span class="sd">        prompt (str, required):</span>
-<span class="sd">            String that is sent to the Embedding model.</span>
-
-<span class="sd">        options (Optional[dict], optional):</span>
-<span class="sd">            See LLM args for defaults.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the input and model_kwargs to api_kwargs for the Ollama SDK client.&quot;&quot;&quot;</span>
         <span class="c1"># TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models</span>
         <span class="n">final_model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
@@ -747,6 +758,23 @@
         <span class="k">return</span> <span class="n">output</span></div>
 </div>
 
+
+
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     from lightrag.core.generator import Generator</span>
+<span class="c1">#     from lightrag.components.model_client import OllamaClient</span>
+<span class="c1">#     from lightrag.utils import setup_env, get_logger</span>
+
+<span class="c1">#     # log = get_logger(level=&quot;DEBUG&quot;)</span>
+
+<span class="c1">#     setup_env()</span>
+
+<span class="c1">#     model_client = OllamaClient()</span>
+<span class="c1">#     model_kwargs = {&quot;model&quot;: &quot;phi3&quot;, &quot;stream&quot;: True}</span>
+<span class="c1">#     generator = Generator(model_client=model_client, model_kwargs=model_kwargs)</span>
+<span class="c1">#     output = generator({&quot;input_str&quot;: &quot;What is the capital of France?&quot;})</span>
+<span class="c1">#     for chunk in output.data:</span>
+<span class="c1">#         print(chunk)</span>
 </pre></div>
 
                 </article>

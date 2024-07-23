@@ -621,60 +621,15 @@ If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
 The default host is “<a class="reference external" href="http://localhost:11434">http://localhost:11434</a>”.</p>
 </dd>
 </dl>
-<p class="rubric">References</p>
-<ul class="simple">
-<li><p><a class="github reference external" href="https://github.com/ollama/ollama-python">ollama/ollama-python</a></p></li>
-<li><p><a class="github reference external" href="https://github.com/ollama/ollama">ollama/ollama</a></p></li>
-<li><p>Models: <a class="reference external" href="https://ollama.com/library">https://ollama.com/library</a></p></li>
-</ul>
-<p>Tested Ollama models: 7/9/24</p>
-<ul class="simple">
-<li><p>internlm2:latest</p></li>
-<li><p>llama3</p></li>
-<li><p>jina/jina-embeddings-v2-base-en:latest</p></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>We use <cite>embeddings</cite> and <cite>generate</cite> apis from Ollama SDK.
-Please refer to <a class="github reference external" href="https://github.com/ollama/ollama-python/blob/main/ollama/_client.py">ollama/ollama-python</a> for model_kwargs details.</p>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.init_sync_client" title="Link to this definition">#</a></dt>
-<dd><p>Create the synchronous client</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.init_async_client" title="Link to this definition">#</a></dt>
-<dd><p>Create the asynchronous client</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_chat_completion" title="Link to this definition">#</a></dt>
-<dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.parse_embedding_response">
-<span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_embedding_response" title="Link to this definition">#</a></dt>
-<dd><p>Parse the embedding response to a structure LightRAG components can understand.
-Pull the embedding from response[‘embedding’] and store it Embedding dataclass</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
-<dd><p>API Reference: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/api.md">ollama/ollama</a></p>
-<p>Options Parameters: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/modelfile.md">ollama/ollama</a>.</p>
-<p>LlamaCPP API documentation(Ollama is based on this): <a class="reference external" href="https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api">https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</a></p>
-<p>For LLM, expect model_kwargs to have the following keys:</p>
-<dl>
+<p>Setting model_kwargs:</p>
+<blockquote>
+<div><p>For LLM, expect model_kwargs to have the following keys:</p>
+<dl class="simple">
 <dt>model (str, required):</dt><dd><p>Use <cite>ollama list</cite> via your CLI or  visit ollama model page on <a class="reference external" href="https://ollama.com/library">https://ollama.com/library</a></p>
 </dd>
-<dt>prompt (str, required):</dt><dd><p>String that is sent to the LLM.</p>
-</dd>
+</dl>
+<p>stream (bool, default: False ) – Whether to stream the results.</p>
+<dl>
 <dt>options (Optional[dict], optional)</dt><dd><p>Options that affect model output.</p>
 <p># If not specified the following defaults will be assigned.</p>
 <blockquote>
@@ -703,6 +658,57 @@ Pull the embedding from response[‘embedding’] and store it Embedding datacla
 <dt>options (Optional[dict], optional):</dt><dd><p>See LLM args for defaults.</p>
 </dd>
 </dl>
+</div></blockquote>
+<p class="rubric">References</p>
+<ul class="simple">
+<li><p><a class="github reference external" href="https://github.com/ollama/ollama-python">ollama/ollama-python</a></p></li>
+<li><p><a class="github reference external" href="https://github.com/ollama/ollama">ollama/ollama</a></p></li>
+<li><p>Models: <a class="reference external" href="https://ollama.com/library">https://ollama.com/library</a></p></li>
+<li><p>Ollama API: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/api.md">ollama/ollama</a></p></li>
+<li><p>Options Parameters: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/modelfile.md">ollama/ollama</a>.</p></li>
+<li><p>LlamaCPP API documentation(Ollama is based on this): <a class="reference external" href="https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api">https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</a></p></li>
+<li><p>LLM API: <a class="reference external" href="https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion">https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion</a></p></li>
+</ul>
+<p>Tested Ollama models: 7/9/24</p>
+<ul class="simple">
+<li><p>internlm2:latest</p></li>
+<li><p>llama3</p></li>
+<li><p>jina/jina-embeddings-v2-base-en:latest</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We use <cite>embeddings</cite> and <cite>generate</cite> apis from Ollama SDK.
+Please refer to <a class="github reference external" href="https://github.com/ollama/ollama-python/blob/main/ollama/_client.py">ollama/ollama-python</a> for model_kwargs details.</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.init_sync_client">
+<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.init_sync_client" title="Link to this definition">#</a></dt>
+<dd><p>Create the synchronous client</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.init_async_client">
+<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.init_async_client" title="Link to this definition">#</a></dt>
+<dd><p>Create the asynchronous client</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.parse_chat_completion">
+<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Generator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_chat_completion" title="Link to this definition">#</a></dt>
+<dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.parse_embedding_response">
+<span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.parse_embedding_response" title="Link to this definition">#</a></dt>
+<dd><p>Parse the embedding response to a structure LightRAG components can understand.
+Pull the embedding from response[‘embedding’] and store it Embedding dataclass</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">
+<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
+<dd><p>Convert the input and model_kwargs to api_kwargs for the Ollama SDK client.</p>
 </dd></dl>
 
 <dl class="py method">

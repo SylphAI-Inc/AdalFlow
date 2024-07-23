@@ -674,6 +674,7 @@
         <span class="c1"># Parse JSON string with json.loads and yaml.safe_load</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">json_obj</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">parse_json_str_to_obj</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;json_obj: </span><span class="si">{</span><span class="n">json_obj</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">json_obj</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at parsing JSON string: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

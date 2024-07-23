@@ -467,7 +467,17 @@
 <span></span><span class="sd">&quot;&quot;&quot;OpenAI ModelClient integration.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Generator</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
@@ -483,7 +493,7 @@
 
 <span class="n">openai</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span>
+<span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="n">OpenAI</span><span class="p">,</span> <span class="n">AsyncOpenAI</span><span class="p">,</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">openai</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">APITimeoutError</span><span class="p">,</span>
     <span class="n">InternalServerError</span><span class="p">,</span>
@@ -492,6 +502,7 @@
     <span class="n">BadRequestError</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="n">Completion</span><span class="p">,</span> <span class="n">CreateEmbeddingResponse</span>
+<span class="kn">from</span> <span class="nn">openai.types.chat</span> <span class="kn">import</span> <span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="n">ChatCompletion</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -501,16 +512,35 @@
 <span class="c1"># completion parsing functions and you can combine them into one singple chat completion parser</span>
 <div class="viewcode-block" id="get_first_message_content">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">[docs]</a>
-<span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_first_message_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When we only need the content of the first message.</span>
 <span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span></div>
 
 
 
+<div class="viewcode-block" id="parse_stream_response">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.parse_stream_response">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletionChunk</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the response of the stream API.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">delta</span><span class="o">.</span><span class="n">content</span></div>
+
+
+
+<div class="viewcode-block" id="handle_streaming_response">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response">[docs]</a>
+<span class="k">def</span> <span class="nf">handle_streaming_response</span><span class="p">(</span><span class="n">generator</span><span class="p">:</span> <span class="n">Stream</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">]):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Handle the streaming response.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">completion</span> <span class="ow">in</span> <span class="n">generator</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw chunk completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">parsed_content</span> <span class="o">=</span> <span class="n">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">parsed_content</span></div>
+
+
+
 <div class="viewcode-block" id="get_all_messages_content">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">[docs]</a>
-<span class="k">def</span> <span class="nf">get_all_messages_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">get_all_messages_content</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;When the n &gt; 1, get all the messages content.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">]</span></div>
 
@@ -518,7 +548,7 @@
 
 <div class="viewcode-block" id="get_probabilities">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">[docs]</a>
-<span class="k">def</span> <span class="nf">get_probabilities</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TokenLogProb</span><span class="p">]]:</span>
+<span class="k">def</span> <span class="nf">get_probabilities</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">ChatCompletion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TokenLogProb</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get the probabilities of each token in the completion.&quot;&quot;&quot;</span>
     <span class="n">log_probs</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">:</span>
@@ -599,9 +629,12 @@
 
 <div class="viewcode-block" id="OpenAIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Completion</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str.&quot;&quot;&quot;</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, parser: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span></div>
 
 
@@ -667,12 +700,16 @@
     <span class="p">)</span>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_kwargs</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{},</span> <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        kwargs is the combined input and model_kwargs</span>
+<span class="sd">        kwargs is the combined input and model_kwargs.  Support streaming call.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;api_kwargs: </span><span class="si">{</span><span class="n">api_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">embeddings</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s2">&quot;stream&quot;</span> <span class="ow">in</span> <span class="n">api_kwargs</span> <span class="ow">and</span> <span class="n">api_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stream&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;streaming call&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="n">handle_streaming_response</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sync_client</span><span class="o">.</span><span class="n">chat</span><span class="o">.</span><span class="n">completions</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">**</span><span class="n">api_kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
@@ -731,6 +768,26 @@
         <span class="k">return</span> <span class="n">output</span></div>
 </div>
 
+
+
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     from lightrag.core import Generator</span>
+<span class="c1">#     from lightrag.utils import setup_env, get_logger</span>
+
+<span class="c1">#     log = get_logger(level=&quot;DEBUG&quot;)</span>
+
+<span class="c1">#     setup_env()</span>
+<span class="c1">#     prompt_kwargs = {&quot;input_str&quot;: &quot;What is the meaning of life?&quot;}</span>
+
+<span class="c1">#     gen = Generator(</span>
+<span class="c1">#         model_client=OpenAIClient(),</span>
+<span class="c1">#         model_kwargs={&quot;model&quot;: &quot;gpt-3.5-turbo&quot;, &quot;stream&quot;: True},</span>
+<span class="c1">#     )</span>
+<span class="c1">#     gen_response = gen(prompt_kwargs)</span>
+<span class="c1">#     print(f&quot;gen_response: {gen_response}&quot;)</span>
+
+<span class="c1">#     for genout in gen_response.data:</span>
+<span class="c1">#         print(f&quot;genout: {genout}&quot;)</span>
 </pre></div>
 
                 </article>
