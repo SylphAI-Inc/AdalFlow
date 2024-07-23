@@ -36,6 +36,8 @@ jobs:
           poetry install --with doc  # Install only the doc dependencies as specified in pyproject.toml
           # pip install nest-asyncio
           poetry show
+          poetry show lightrag
+
 
       - name: Build documentation using Makefile
         run: |
