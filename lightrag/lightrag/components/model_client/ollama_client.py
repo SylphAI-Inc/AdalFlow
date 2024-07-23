@@ -1,7 +1,7 @@
 """Ollama ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any, TypeVar, List, Type
+from typing import Dict, Optional, Any, TypeVar, List, Type, Generator, Union
 import backoff
 import logging
 import warnings
@@ -48,90 +48,15 @@ class OllamaClient(ModelClient):
             If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
             The default host is "http://localhost:11434".
 
-    References:
-
-        - https://github.com/ollama/ollama-python
-        - https://github.com/ollama/ollama
-        - Models: https://ollama.com/library
-
-    Tested Ollama models: 7/9/24
-
-    -  internlm2:latest
-    -  llama3
-    -  jina/jina-embeddings-v2-base-en:latest
-
-    .. note::
-       We use `embeddings` and `generate` apis from Ollama SDK.
-       Please refer to https://github.com/ollama/ollama-python/blob/main/ollama/_client.py for model_kwargs details.
-    """
-
-    def __init__(self, host: Optional[str] = None):
-        super().__init__()
-
-        self._host = host or os.getenv("OLLAMA_HOST")
-        if not self._host:
-            warnings.warn(
-                "Better to provide host or set OLLAMA_HOST env variable. We will use the default host http://localhost:11434 for now."
-            )
-            self._host = "http://localhost:11434"
-
-        log.debug(f"Using host: {self._host}")
-
-        self.init_sync_client()
-        self.async_client = None  # only initialize if the async call is called
-
-    def init_sync_client(self):
-        """Create the synchronous client"""
-
-        self.sync_client = ollama.Client(host=self._host)
-
-    def init_async_client(self):
-        """Create the asynchronous client"""
-
-        self.async_client = ollama.AsyncClient(host=self._host)
-
-    def parse_chat_completion(self, completion: GenerateResponse) -> Any:
-        """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
-        log.debug(f"completion: {completion}")
-        if "response" in completion:
-            return completion["response"]
-        else:
-            log.error(f"Error parsing the completion: {completion}")
-            raise ValueError(f"Error parsing the completion: {completion}")
-
-    def parse_embedding_response(
-        self, response: Dict[str, List[float]]
-    ) -> EmbedderOutput:
-        r"""Parse the embedding response to a structure LightRAG components can understand.
-        Pull the embedding from response['embedding'] and store it Embedding dataclass
-        """
-        try:
-            embeddings = Embedding(embedding=response["embedding"], index=0)
-            return EmbedderOutput(data=[embeddings])
-        except Exception as e:
-            log.error(f"Error parsing the embedding response: {e}")
-            return EmbedderOutput(data=[], error=str(e), raw_response=response)
-
-    def convert_inputs_to_api_kwargs(
-        self,
-        input: Optional[Any] = None,
-        model_kwargs: Dict = {},
-        model_type: ModelType = ModelType.UNDEFINED,
-    ) -> Dict:
-        r"""
-        API Reference: https://github.com/ollama/ollama/blob/main/docs/api.md
-
-        Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.
-
-        LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api
+    Setting model_kwargs:
 
         For LLM, expect model_kwargs to have the following keys:
 
         model (str, required):
             Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library
 
-        prompt (str, required):
-            String that is sent to the LLM.
+        stream (bool, default: False ) – Whether to stream the results.
+
 
         options (Optional[dict], optional)
             Options that affect model output.
@@ -174,7 +99,93 @@ class OllamaClient(ModelClient):
 
         options (Optional[dict], optional):
             See LLM args for defaults.
+
+    References:
+
+        - https://github.com/ollama/ollama-python
+        - https://github.com/ollama/ollama
+        - Models: https://ollama.com/library
+        - Ollama API: https://github.com/ollama/ollama/blob/main/docs/api.md
+        - Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.
+        - LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api
+        - LLM API: https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion
+
+    Tested Ollama models: 7/9/24
+
+    -  internlm2:latest
+    -  llama3
+    -  jina/jina-embeddings-v2-base-en:latest
+
+    .. note::
+       We use `embeddings` and `generate` apis from Ollama SDK.
+       Please refer to https://github.com/ollama/ollama-python/blob/main/ollama/_client.py for model_kwargs details.
+    """
+
+    def __init__(self, host: Optional[str] = None):
+        super().__init__()
+
+        self._host = host or os.getenv("OLLAMA_HOST")
+        if not self._host:
+            warnings.warn(
+                "Better to provide host or set OLLAMA_HOST env variable. We will use the default host http://localhost:11434 for now."
+            )
+            self._host = "http://localhost:11434"
+
+        log.debug(f"Using host: {self._host}")
+
+        self.init_sync_client()
+        self.async_client = None  # only initialize if the async call is called
+
+    def init_sync_client(self):
+        """Create the synchronous client"""
+
+        self.sync_client = ollama.Client(host=self._host)
+
+    def init_async_client(self):
+        """Create the asynchronous client"""
+
+        self.async_client = ollama.AsyncClient(host=self._host)
+
+    def parse_chat_completion(
+        self, completion: Union[GenerateResponse, Generator]
+    ) -> Any:
+        """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+        log.debug(f"completion: {completion}, {isinstance(completion, Generator)}")
+        if isinstance(completion, Generator):  # streaming
+            for chunk in completion:
+                log.debug(f"Raw chunk: {chunk}")
+                yield chunk["response"] if "response" in chunk else None
+        else:
+            if "response" in completion:
+                return completion["response"]
+            else:
+                log.error(
+                    f"Error parsing the completion: {completion}, type: {type(completion)}"
+                )
+                raise ValueError(
+                    f"Error parsing the completion: {completion}, type: {type(completion)}"
+                )
+
+    def parse_embedding_response(
+        self, response: Dict[str, List[float]]
+    ) -> EmbedderOutput:
+        r"""Parse the embedding response to a structure LightRAG components can understand.
+        Pull the embedding from response['embedding'] and store it Embedding dataclass
         """
+        try:
+            embeddings = Embedding(embedding=response["embedding"], index=0)
+            return EmbedderOutput(data=[embeddings])
+        except Exception as e:
+            log.error(f"Error parsing the embedding response: {e}")
+            return EmbedderOutput(data=[], error=str(e), raw_response=response)
+
+    def convert_inputs_to_api_kwargs(
+        self,
+        input: Optional[Any] = None,
+        model_kwargs: Dict = {},
+        model_type: ModelType = ModelType.UNDEFINED,
+    ) -> Dict:
+        r"""Convert the input and model_kwargs to api_kwargs for the Ollama SDK client."""
         # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
@@ -251,3 +262,20 @@ class OllamaClient(ModelClient):
 
         output = super().to_dict(exclude=exclude)
         return output
+
+
+# if __name__ == "__main__":
+#     from lightrag.core.generator import Generator
+#     from lightrag.components.model_client import OllamaClient
+#     from lightrag.utils import setup_env, get_logger
+
+#     # log = get_logger(level="DEBUG")
+
+#     setup_env()
+
+#     model_client = OllamaClient()
+#     model_kwargs = {"model": "phi3", "stream": True}
+#     generator = Generator(model_client=model_client, model_kwargs=model_kwargs)
+#     output = generator({"input_str": "What is the capital of France?"})
+#     for chunk in output.data:
+#         print(chunk)
