@@ -178,6 +178,26 @@ def extract_dataclass_type(type_hint):
     return type_hint if is_dataclass(type_hint) else None
 
 
+def check_data_class_field_args_zero(cls):
+    """Check if the field is a dataclass."""
+    return (
+        hasattr(cls, "__args__")
+        and len(cls.__args__) > 0
+        and cls.__args__[0]
+        and hasattr(cls.__args__[0], "__dataclass_fields__")
+    )
+
+
+def check_data_class_field_args_one(cls):
+    """Check if the field is a dataclass."""
+    return (
+        hasattr(cls, "__args__")
+        and len(cls.__args__) > 1
+        and cls.__args__[1]
+        and hasattr(cls.__args__[1], "__dataclass_fields__")
+    )
+
+
 def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
     r"""Convert a dictionary to a dataclass object.
 
@@ -213,7 +233,7 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
        # TrecDataList(data=[TrecData(question='What is the capital of France?', label=0)], name='trec_data_list')
 
     """
-
+    log.debug(f"Dataclass: {cls}, Data: {data}")
     if is_dataclass(cls) or is_potential_dataclass(
         cls
     ):  # Optional[Address] will be false, and true for each check
@@ -230,44 +250,40 @@ def dataclass_obj_from_dict(cls: Type[object], data: Dict[str, object]) -> Any:
             }
         )
     elif isinstance(data, (list, tuple)):
+        log.debug(f"List or Tuple: {cls}, {data}")
         restored_data = []
         for item in data:
-            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+            if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
                 restored_data.append(dataclass_obj_from_dict(cls.__args__[0], item))
             else:
                 # Use the original data [Any]
                 restored_data.append(item)
-
         return restored_data
 
     elif isinstance(data, set):
+        log.debug(f"Set: {cls}, {data}")
         restored_data = set()
         for item in data:
-            if cls.__args__[0] and hasattr(cls.__args__[0], "__dataclass_fields__"):
+            if check_data_class_field_args_zero(cls):
                 # restore the value to its dataclass type
                 restored_data.add(dataclass_obj_from_dict(cls.__args__[0], item))
             else:
                 # Use the original data [Any]
                 restored_data.add(item)
-
         return restored_data
 
     elif isinstance(data, dict):
+        log.debug(f"Dict: {cls}, {data}")
         for key, value in data.items():
-            if (
-                hasattr(cls, "__args__")
-                and len(cls.__args__) > 1
-                and cls.__args__[1]
-                and hasattr(cls.__args__[1], "__dataclass_fields__")
-            ):
+            if check_data_class_field_args_one(cls):
                 # restore the value to its dataclass type
                 data[key] = dataclass_obj_from_dict(cls.__args__[1], value)
             else:
                 # Use the original data [Any]
                 data[key] = value
         return data
-
+    # else normal data like int, str, float, etc.
     else:
         log.debug(f"Not datclass, or list, or dict: {cls}, use the original data.")
         return data
