@@ -28,8 +28,6 @@ jobs:
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
-          echo 'export PATH="$HOME/.local/bin:$PATH"' >> $BASH_ENV
-          source $BASH_ENV
 
       - name: Install documentation dependencies using Poetry
         run: |
