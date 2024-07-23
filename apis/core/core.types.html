@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -142,7 +142,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -696,21 +696,6 @@ It helps ModelClient identify the model type required to correctly call the mode
 </div>
 <p>from lightrag.core.types import ModelClientType</p>
 <p>model_client = ModelClientType.OPENAI()</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.COHERE">
-<span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.ANTHROPIC">
-<span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.ANTHROPIC" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="core.types.ModelClientType.GROQ">
-<span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GROQ" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.OPENAI">
 <span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">#</a></dt>
@@ -1497,9 +1482,6 @@ record or history.</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType"><code class="docutils literal notranslate"><span class="pre">ModelClientType</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.COHERE"><code class="docutils literal notranslate"><span class="pre">ModelClientType.COHERE</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.ANTHROPIC"><code class="docutils literal notranslate"><span class="pre">ModelClientType.ANTHROPIC</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.GROQ"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GROQ</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.OPENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.OPENAI</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.ModelClientType.GOOGLE_GENAI"><code class="docutils literal notranslate"><span class="pre">ModelClientType.GOOGLE_GENAI</span></code></a></li>
 </ul>

@@ -35,6 +35,7 @@ functional
       generate_function_call_expression_from_callable
       generate_readable_key_for_function
       get_dataclass_schema
+      get_enum_schema
       get_fun_schema
       get_top_k_indices_scores
       get_type_schema

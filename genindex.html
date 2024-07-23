@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="_static/css/rtd_sphinx_search.min.css" />
   
@@ -139,7 +139,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -466,18 +466,14 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall">acall() (AnthropicAPIClient method)</a>
+      <li><a href="apis/core/core.component.html#core.component.Component.acall">acall() (Component method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.acall">(CohereAPIClient method)</a>
-</li>
-        <li><a href="apis/core/core.component.html#core.component.Component.acall">(Component method)</a>
-</li>
         <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.acall">(Embedder method)</a>
 </li>
-        <li><a href="apis/core/core.generator.html#core.generator.Generator.acall">(Generator method)</a>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.acall">(FunctionTool method)</a>
 </li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall">(GroqAPIClient method)</a>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.acall">(Generator method)</a>
 </li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.acall">(ModelClient method)</a>
 </li>
@@ -508,13 +504,7 @@
         <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc">(class in eval.answer_match_acc)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.types.html#core.types.ModelClientType.ANTHROPIC">ANTHROPIC (ModelClientType attribute)</a>
-
-      <ul>
-        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.ANTHROPIC">(OptionalPackages attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient">AnthropicAPIClient (class in components.model_client.anthropic_client)</a>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.ANTHROPIC">ANTHROPIC (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/core/core.container.html#core.container.Sequential.append">append() (Sequential method)</a>
 </li>
@@ -576,18 +566,14 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">call() (AnthropicAPIClient method)</a>
+      <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">call() (BatchEmbedder method)</a>
 
       <ul>
-        <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder.call">(BatchEmbedder method)</a>
-</li>
         <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.call">(BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.call">[1]</a>
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.call">(BooleanOutputParser method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.ClassSampler.call">(ClassSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.call">[1]</a>
-</li>
-        <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.call">(CohereAPIClient method)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.Component.call">(Component method)</a>
 </li>
@@ -599,11 +585,11 @@
 </li>
         <li><a href="apis/core/core.component.html#core.component.FunComponent.call">(FunComponent method)</a>
 </li>
+        <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.call">(FunctionTool method)</a>
+</li>
         <li><a href="apis/core/core.generator.html#core.generator.Generator.call">(Generator method)</a>
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.call">(GoogleGenAIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.call">(GroqAPIClient method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser.call">(JsonOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.call">[1]</a>
 </li>
@@ -623,11 +609,11 @@
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">(OutputParser method)</a>
 </li>
-        <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call">(PostgresRetriever method)</a>
-</li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">(Prompt method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.RandomSampler.call">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.call">[1]</a>
+</li>
+        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.call">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.call">[1]</a>
 </li>
         <li><a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.call">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[1]</a>
 </li>
@@ -656,18 +642,26 @@
         <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler">(class in optim.sampler)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.types.html#core.types.ModelClientType.COHERE">COHERE (ModelClientType attribute)</a>
-
-      <ul>
-        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.COHERE">(OptionalPackages attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient">CohereAPIClient (class in components.model_client.cohere_client)</a>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.COHERE">COHERE (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component">Component (class in core.component)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.components">components() (Component method)</a>
 </li>
+      <li>
+    components.agent
+
+      <ul>
+        <li><a href="apis/components/components.agent.html#module-components.agent">module</a>
+</li>
+      </ul></li>
+      <li>
+    components.agent.react
+
+      <ul>
+        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">module</a>
+</li>
+      </ul></li>
       <li>
     components.data_process
 
@@ -711,31 +705,10 @@
 </li>
       </ul></li>
       <li>
-    components.model_client.anthropic_client
-
-      <ul>
-        <li><a href="apis/components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client">module</a>
-</li>
-      </ul></li>
-      <li>
-    components.model_client.cohere_client
-
-      <ul>
-        <li><a href="apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client">module</a>
-</li>
-      </ul></li>
-      <li>
     components.model_client.google_client
 
       <ul>
         <li><a href="apis/components/components.model_client.google_client.html#module-components.model_client.google_client">module</a>
-</li>
-      </ul></li>
-      <li>
-    components.model_client.groq_client
-
-      <ul>
-        <li><a href="apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client">module</a>
 </li>
       </ul></li>
       <li>
@@ -766,8 +739,6 @@
         <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.output_parsers.outputs
 
@@ -775,6 +746,8 @@
         <li><a href="apis/components/components.output_parsers.outputs.html#module-components.output_parsers.outputs">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.reasoning
 
@@ -818,13 +791,6 @@
 </li>
       </ul></li>
       <li>
-    components.retriever.postgres_retriever
-
-      <ul>
-        <li><a href="apis/components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever">module</a>
-</li>
-      </ul></li>
-      <li>
     components.retriever.reranker_retriever
 
       <ul>
@@ -849,15 +815,9 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.conversation_id">conversation_id (DialogTurn attribute)</a>
 </li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">convert_inputs_to_api_kwargs() (AnthropicAPIClient method)</a>
+      <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.convert_inputs_to_api_kwargs">convert_inputs_to_api_kwargs() (GoogleGenAIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.convert_inputs_to_api_kwargs">(CohereAPIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.convert_inputs_to_api_kwargs">(GoogleGenAIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.convert_inputs_to_api_kwargs">(GroqAPIClient method)</a>
-</li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.convert_inputs_to_api_kwargs">(ModelClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">(OllamaClient method)</a>
@@ -907,6 +867,13 @@
 
       <ul>
         <li><a href="apis/core/core.embedder.html#module-core.embedder">module</a>
+</li>
+      </ul></li>
+      <li>
+    core.func_tool
+
+      <ul>
+        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">module</a>
 </li>
       </ul></li>
       <li>
@@ -966,14 +933,19 @@
 </li>
       </ul></li>
       <li>
+    core.tool_manager
+
+      <ul>
+        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">module</a>
+</li>
+      </ul></li>
+      <li>
     core.types
 
       <ul>
         <li><a href="apis/core/core.types.html#module-core.types">module</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.COSINE">COSINE (DistanceToOperator attribute)</a>
-</li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.count_tokens">count_tokens() (Tokenizer method)</a>
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.create_from_dict">create_from_dict() (DynamicDataClassFactory static method)</a>
@@ -1010,10 +982,12 @@
 </li>
       <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>, <a href="apis/core/core.default_prompt_template.html#id0">[1]</a>
 </li>
-      <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
+      <li><a href="apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">DEFAULT_REACT_AGENT_SYSTEM_PROMPT (in module components.agent.react)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
+</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.delete">delete() (LocalDB method)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.delete_dialog_turn">delete_dialog_turn() (Conversation method)</a>
@@ -1025,8 +999,6 @@
       <li><a href="apis/core/core.types.html#core.types.Conversation.dialog_turns_input">dialog_turns_input (Conversation attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn">DialogTurn (class in core.types)</a>
-</li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator">DistanceToOperator (class in components.retriever.postgres_retriever)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.doc_indices">doc_indices (RetrieverOutput attribute)</a>
 </li>
@@ -1088,8 +1060,6 @@
         <li><a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eval.llm_as_judge
 
@@ -1104,6 +1074,8 @@
         <li><a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eval.retriever_relevance
 
@@ -1116,6 +1088,20 @@
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_JSON">EXAMPLE_JSON (DataClassFormatType attribute)</a>
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_YAML">EXAMPLE_YAML (DataClassFormatType attribute)</a>
+</li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.execute">execute() (FunctionTool method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func">execute_func() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_async">execute_func_async() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr">execute_func_expr() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_async">execute_func_expr_async() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_eval">execute_func_expr_via_eval() (ToolManager method)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.execute_func_expr_via_sandbox">execute_func_expr_via_sandbox() (ToolManager method)</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.extend">extend() (LocalDB method)</a>
 
@@ -1177,8 +1163,6 @@
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser.format_instructions">(YamlOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.format_instructions">[1]</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query">format_vector_search_query() (PostgresRetriever class method)</a>
-</li>
       <li><a href="apis/core/core.component.html#core.component.Component.from_config">from_config() (Component class method)</a>
 
       <ul>
@@ -1231,11 +1215,15 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput.function">function (StepOutput attribute)</a>
 </li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.function_definitions">function_definitions (ToolManager property)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.FunctionDefinition">FunctionDefinition (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionExpression">FunctionExpression (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput">FunctionOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool">FunctionTool (class in core.func_tool)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1279,16 +1267,14 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.get_dialog_turns">get_dialog_turns() (Conversation method)</a>
 </li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">get_first_message_content() (in module components.model_client.anthropic_client)</a>
-
-      <ul>
-        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">(in module components.model_client.openai_client)</a>
+      <li><a href="apis/core/core.functional.html#core.functional.get_enum_schema">get_enum_schema() (in module core.functional)</a>
 </li>
-      </ul></li>
-      <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
+      <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">get_first_message_content() (in module components.model_client.openai_client)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
+</li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">get_jinja2_environment() (in module core.prompt_builder)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">get_log_location() (GeneratorCallLogger method)</a>
@@ -1325,13 +1311,7 @@
 </li>
       <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient">GoogleGenAIClient (class in components.model_client.google_client)</a>
 </li>
-      <li><a href="apis/core/core.types.html#core.types.ModelClientType.GROQ">GROQ (ModelClientType attribute)</a>
-
-      <ul>
-        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GROQ">(OptionalPackages attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient">GroqAPIClient (class in components.model_client.groq_client)</a>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GROQ">GROQ (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.gts">gts (Instruction attribute)</a>
 </li>
@@ -1361,29 +1341,17 @@
 </li>
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot.init">init() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.init">[1]</a>
 </li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">init_async_client() (AnthropicAPIClient method)</a>
+      <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_async_client">init_async_client() (ModelClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_async_client">(CohereAPIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_async_client">(GroqAPIClient method)</a>
-</li>
-        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_async_client">(ModelClient method)</a>
-</li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_async_client">(OllamaClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">init_sync_client() (AnthropicAPIClient method)</a>
+      <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client">init_sync_client() (GoogleGenAIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.init_sync_client">(CohereAPIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client">(GoogleGenAIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_sync_client">(GroqAPIClient method)</a>
-</li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.init_sync_client">(ModelClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client">(OllamaClient method)</a>
@@ -1393,8 +1361,6 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT">INNER_PRODUCT (DistanceToOperator attribute)</a>
-</li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.input">input (EmbedderOutput attribute)</a>
 
       <ul>
@@ -1409,6 +1375,8 @@
 </li>
       <li><a href="apis/core/core.string_parser.html#core.string_parser.IntParser">IntParser (class in core.string_parser)</a>
 </li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.FunctionTool.is_async">is_async (FunctionTool property)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.is_dataclass_instance">is_dataclass_instance() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.is_key_in_template">is_key_in_template() (Prompt method)</a>
@@ -1421,6 +1389,8 @@
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.is_potential_dataclass">is_potential_dataclass() (in module core.functional)</a>
 </li>
+      <li><a href="apis/core/core.func_tool.html#core.func_tool.is_running_in_event_loop">is_running_in_event_loop() (in module core.func_tool)</a>
+</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.items">items (LocalDB attribute)</a>
 </li>
   </ul></td>
@@ -1429,6 +1399,8 @@
 <h2 id="J">J</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.json_definitions">json_definitions (ToolManager property)</a>
+</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser">JsonOutputParser (class in components.output_parsers)</a>
 
       <ul>
@@ -1453,10 +1425,6 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.L1">L1 (DistanceToOperator attribute)</a>
-</li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.L2">L2 (DistanceToOperator attribute)</a>
-</li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport">LazyImport (class in utils.lazy_import)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.length">length (EmbedderOutput property)</a>
@@ -1499,8 +1467,6 @@
         <li><a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever">(class in components.retriever.llm_retriever)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load">load() (GeneratorCallLogger method)</a>
 
       <ul>
@@ -1511,6 +1477,8 @@
         <li><a href="apis/core/core.db.html#core.db.LocalDB.load">(LocalDB method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport.load_class">load_class() (LazyImport method)</a>
 </li>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">load_from_file() (BM25Retriever class method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.load_from_file">[1]</a>
@@ -1593,6 +1561,10 @@
     module
 
       <ul>
+        <li><a href="apis/components/components.agent.html#module-components.agent">components.agent</a>
+</li>
+        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">components.agent.react</a>
+</li>
         <li><a href="apis/components/components.data_process.html#module-components.data_process">components.data_process</a>
 </li>
         <li><a href="apis/components/components.data_process.data_components.html#module-components.data_process.data_components">components.data_process.data_components</a>
@@ -1605,13 +1577,7 @@
 </li>
         <li><a href="apis/components/components.model_client.html#module-components.model_client">components.model_client</a>
 </li>
-        <li><a href="apis/components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client">components.model_client.anthropic_client</a>
-</li>
-        <li><a href="apis/components/components.model_client.cohere_client.html#module-components.model_client.cohere_client">components.model_client.cohere_client</a>
-</li>
         <li><a href="apis/components/components.model_client.google_client.html#module-components.model_client.google_client">components.model_client.google_client</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#module-components.model_client.groq_client">components.model_client.groq_client</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">components.model_client.ollama_client</a>
 </li>
@@ -1635,8 +1601,6 @@
 </li>
         <li><a href="apis/components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever">components.retriever.llm_retriever</a>
 </li>
-        <li><a href="apis/components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever">components.retriever.postgres_retriever</a>
-</li>
         <li><a href="apis/components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever">components.retriever.reranker_retriever</a>
 </li>
         <li><a href="apis/core/core.base_data_class.html#module-core.base_data_class">core.base_data_class</a>
@@ -1650,6 +1614,8 @@
         <li><a href="apis/core/core.default_prompt_template.html#module-core.default_prompt_template">core.default_prompt_template</a>
 </li>
         <li><a href="apis/core/core.embedder.html#module-core.embedder">core.embedder</a>
+</li>
+        <li><a href="apis/core/core.func_tool.html#module-core.func_tool">core.func_tool</a>
 </li>
         <li><a href="apis/core/core.functional.html#module-core.functional">core.functional</a>
 </li>
@@ -1666,6 +1632,8 @@
         <li><a href="apis/core/core.string_parser.html#module-core.string_parser">core.string_parser</a>
 </li>
         <li><a href="apis/core/core.tokenizer.html#module-core.tokenizer">core.tokenizer</a>
+</li>
+        <li><a href="apis/core/core.tool_manager.html#module-core.tool_manager">core.tool_manager</a>
 </li>
         <li><a href="apis/core/core.types.html#module-core.types">core.types</a>
 </li>
@@ -1846,13 +1814,9 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.Document.parent_doc_id">parent_doc_id (Document attribute)</a>
 </li>
-      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">parse_chat_completion() (AnthropicAPIClient method)</a>
+      <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion">parse_chat_completion() (GoogleGenAIClient method)</a>
 
       <ul>
-        <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion">(GoogleGenAIClient method)</a>
-</li>
-        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.parse_chat_completion">(GroqAPIClient method)</a>
-</li>
         <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.parse_chat_completion">(ModelClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_chat_completion">(OllamaClient method)</a>
@@ -1870,6 +1834,8 @@
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">(OpenAIClient method)</a>
 </li>
       </ul></li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr">parse_func_expr() (ToolManager method)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_function_call_expr">parse_function_call_expr() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
@@ -1883,8 +1849,6 @@
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.pickle_to_file">pickle_to_file() (Component method)</a>
-</li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever">PostgresRetriever (class in components.retriever.postgres_retriever)</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.preprocess">preprocess() (Tokenizer method)</a>
 </li>
@@ -1958,6 +1922,12 @@
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.raw_response">(GeneratorOutput attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apis/components/components.agent.html#components.agent.ReActAgent">ReActAgent (class in components.agent)</a>
+
+      <ul>
+        <li><a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent">(class in components.agent.react)</a>
+</li>
+      </ul></li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.register_component">register_component() (Component method)</a>
@@ -1987,6 +1957,8 @@
 </li>
         <li><a href="apis/core/core.db.html#core.db.LocalDB.reset">(LocalDB method)</a>
 </li>
+        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.reset">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.reset">[1]</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -2011,8 +1983,6 @@
       <li><a href="apis/core/core.types.html#core.types.AssistantResponse.response_str">response_str (AssistantResponse attribute)</a>
 </li>
       <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.responses">responses (Instruction attribute)</a>
-</li>
-      <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">retrieve_by_sql() (PostgresRetriever method)</a>
 </li>
       <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_embedding_queries">retrieve_embedding_queries() (FAISSRetriever method)</a>
 </li>
@@ -2042,6 +2012,8 @@
         <li><a href="apis/eval/eval.retriever_relevance.html#eval.retriever_relevance.RetrieverRelevance">(class in eval.retriever_relevance)</a>
 </li>
       </ul></li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.run_async_in_new_loop">run_async_in_new_loop() (in module core.tool_manager)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2198,10 +2170,10 @@
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">to_yaml() (DataClass method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">to_yaml_obj() (DataClass method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">to_yaml_signature() (DataClass class method)</a>
 </li>
       <li><a href="apis/components/components.data_process.html#components.data_process.ToEmbeddings">ToEmbeddings (class in components.data_process)</a>
@@ -2215,6 +2187,8 @@
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer">Tokenizer (class in core.tokenizer)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb">TokenLogProb (class in core.types)</a>
+</li>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager">ToolManager (class in core.tool_manager)</a>
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TORCH">TORCH (OptionalPackages attribute)</a>
 </li>
@@ -2384,6 +2358,8 @@
 <h2 id="Y">Y</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.yaml_definitions">yaml_definitions (ToolManager property)</a>
+</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser">YamlOutputParser (class in components.output_parsers)</a>
 
       <ul>

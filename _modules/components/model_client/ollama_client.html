@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -139,7 +139,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -464,7 +464,9 @@
                 <article class="bd-article">
                   
   <h1>Source code for components.model_client.ollama_client</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;Ollama ModelClient integration.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -599,13 +601,61 @@
         <span class="n">model_type</span><span class="p">:</span> <span class="n">ModelType</span> <span class="o">=</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">UNDEFINED</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        API Reference: https://github.com/ollama/ollama/blob/main/docs/api.md</span>
+
+<span class="sd">        Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.</span>
+
+<span class="sd">        LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</span>
+
 <span class="sd">        For LLM, expect model_kwargs to have the following keys:</span>
-<span class="sd">         model: str,</span>
-<span class="sd">         prompt: str,</span>
+
+<span class="sd">        model (str, required):</span>
+<span class="sd">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
+
+<span class="sd">        prompt (str, required):</span>
+<span class="sd">            String that is sent to the LLM.</span>
+
+<span class="sd">        options (Optional[dict], optional)</span>
+<span class="sd">            Options that affect model output.</span>
+
+<span class="sd">            # If not specified the following defaults will be assigned.</span>
+
+<span class="sd">                &quot;seed&quot;: 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.</span>
+
+<span class="sd">                &quot;num_predict&quot;: 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)</span>
+
+<span class="sd">                &quot;top_k&quot;: 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.</span>
+
+<span class="sd">                &quot;top_p&quot;: 0.9, - 	Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.</span>
+
+<span class="sd">                &quot;tfs_z&quot;: 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)</span>
+
+<span class="sd">                &quot;repeat_last_n&quot;: 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)</span>
+
+<span class="sd">                &quot;temperature&quot;: 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.</span>
+
+<span class="sd">                &quot;repeat_penalty&quot;: 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values *e.g., 0.9 will be more lenient.)</span>
+
+<span class="sd">                &quot;mirostat&quot;: 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)</span>
+
+<span class="sd">                &quot;mirostat_tau&quot;: 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.</span>
+
+<span class="sd">                &quot;mirostat_eta&quot;: 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.</span>
+
+<span class="sd">                &quot;stop&quot;: [&quot;\n&quot;, &quot;user:&quot;], - 	Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.</span>
+
+<span class="sd">                &quot;num_ctx&quot;: 2048, - Sets the size of the context window used to generate the next token.</span>
 
 <span class="sd">        For EMBEDDER, expect model_kwargs to have the following keys:</span>
-<span class="sd">         model: str,</span>
-<span class="sd">         prompt: str,</span>
+
+<span class="sd">        model (str, required):</span>
+<span class="sd">            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library</span>
+
+<span class="sd">        prompt (str, required):</span>
+<span class="sd">            String that is sent to the Embedding model.</span>
+
+<span class="sd">        options (Optional[dict], optional):</span>
+<span class="sd">            See LLM args for defaults.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models</span>
         <span class="n">final_model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>

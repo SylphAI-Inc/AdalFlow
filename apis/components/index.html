@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -144,7 +144,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -581,25 +581,16 @@
 <h2>ModelClient<a class="headerlink" href="#modelclient" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
-<td><p>Anthropic ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
-<td><p>Cohere ModelClient integration.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
-<td><p>Groq ModelClient integration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.ollama_client.html#module-components.model_client.ollama_client" title="components.model_client.ollama_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.ollama_client</span></code></a></p></td>
-<td><p></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.ollama_client.html#module-components.model_client.ollama_client" title="components.model_client.ollama_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.ollama_client</span></code></a></p></td>
+<td><p>Ollama ModelClient integration.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components.model_client.utils.html#module-components.model_client.utils" title="components.model_client.utils"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.utils</span></code></a></p></td>
 <td><p>Helpers for model client for integrating models and parsing the output.</p></td>
 </tr>
 </tbody>
@@ -619,10 +610,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
-<td><p>Leverage a postgres database to store and retrieve documents.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
 </tbody>
@@ -644,6 +632,9 @@
 <h2>Agent<a class="headerlink" href="#agent" title="Link to this heading">#</a></h2>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation and optimization of React agent.</p></td>
+</tr>
 </tbody>
 </table>
 </div>

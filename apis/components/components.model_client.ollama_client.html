@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -142,7 +142,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -583,6 +583,7 @@
                   
   <section id="module-components.model_client.ollama_client">
 <span id="ollama-client"></span><span id="components-model-client-ollama-client"></span><h1>ollama_client<a class="headerlink" href="#module-components.model_client.ollama_client" title="Link to this heading">#</a></h1>
+<p>Ollama ModelClient integration.</p>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -665,12 +666,41 @@ Pull the embedding from response[‘embedding’] and store it Embedding datacla
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">
 <span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>For LLM, expect model_kwargs to have the following keys:</dt><dd><p>model: str,
-prompt: str,</p>
+<dd><p>API Reference: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/api.md">ollama/ollama</a></p>
+<p>Options Parameters: <a class="github reference external" href="https://github.com/ollama/ollama/blob/main/docs/modelfile.md">ollama/ollama</a>.</p>
+<p>LlamaCPP API documentation(Ollama is based on this): <a class="reference external" href="https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api">https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api</a></p>
+<p>For LLM, expect model_kwargs to have the following keys:</p>
+<dl>
+<dt>model (str, required):</dt><dd><p>Use <cite>ollama list</cite> via your CLI or  visit ollama model page on <a class="reference external" href="https://ollama.com/library">https://ollama.com/library</a></p>
 </dd>
-<dt>For EMBEDDER, expect model_kwargs to have the following keys:</dt><dd><p>model: str,
-prompt: str,</p>
+<dt>prompt (str, required):</dt><dd><p>String that is sent to the LLM.</p>
+</dd>
+<dt>options (Optional[dict], optional)</dt><dd><p>Options that affect model output.</p>
+<p># If not specified the following defaults will be assigned.</p>
+<blockquote>
+<div><p>“seed”: 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.</p>
+<p>“num_predict”: 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)</p>
+<p>“top_k”: 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.</p>
+<p>“top_p”: 0.9, -         Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.</p>
+<p>“tfs_z”: 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)</p>
+<p>“repeat_last_n”: 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)</p>
+<p>“temperature”: 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.</p>
+<p>“repeat_penalty”: 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values <a href="#id1"><span class="problematic" id="id2">*</span></a>e.g., 0.9 will be more lenient.)</p>
+<p>“mirostat”: 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)</p>
+<p>“mirostat_tau”: 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.</p>
+<p>“mirostat_eta”: 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.</p>
+<p>“stop”: [”n”, “user:”], -      Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.</p>
+<p>“num_ctx”: 2048, - Sets the size of the context window used to generate the next token.</p>
+</div></blockquote>
+</dd>
+</dl>
+<p>For EMBEDDER, expect model_kwargs to have the following keys:</p>
+<dl class="simple">
+<dt>model (str, required):</dt><dd><p>Use <cite>ollama list</cite> via your CLI or  visit ollama model page on <a class="reference external" href="https://ollama.com/library">https://ollama.com/library</a></p>
+</dd>
+<dt>prompt (str, required):</dt><dd><p>String that is sent to the Embedding model.</p>
+</dd>
+<dt>options (Optional[dict], optional):</dt><dd><p>See LLM args for defaults.</p>
 </dd>
 </dl>
 </dd></dl>

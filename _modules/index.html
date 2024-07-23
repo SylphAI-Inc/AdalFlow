@@ -29,7 +29,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
@@ -139,7 +139,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -461,13 +461,11 @@
                 <article class="bd-article">
                   
   <h1>All modules for which code is available</h1>
-<ul><li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
+<ul><li><a href="components/agent/react.html">components.agent.react</a></li>
+<li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
 <li><a href="components/data_process/text_splitter.html">components.data_process.text_splitter</a></li>
 <li><a href="components/memory/memory.html">components.memory.memory</a></li>
-<li><a href="components/model_client/anthropic_client.html">components.model_client.anthropic_client</a></li>
-<li><a href="components/model_client/cohere_client.html">components.model_client.cohere_client</a></li>
 <li><a href="components/model_client/google_client.html">components.model_client.google_client</a></li>
-<li><a href="components/model_client/groq_client.html">components.model_client.groq_client</a></li>
 <li><a href="components/model_client/ollama_client.html">components.model_client.ollama_client</a></li>
 <li><a href="components/model_client/openai_client.html">components.model_client.openai_client</a></li>
 <li><a href="components/model_client/utils.html">components.model_client.utils</a></li>
@@ -475,13 +473,13 @@
 <li><a href="components/retriever/bm25_retriever.html">components.retriever.bm25_retriever</a></li>
 <li><a href="components/retriever/faiss_retriever.html">components.retriever.faiss_retriever</a></li>
 <li><a href="components/retriever/llm_retriever.html">components.retriever.llm_retriever</a></li>
-<li><a href="components/retriever/postgres_retriever.html">components.retriever.postgres_retriever</a></li>
 <li><a href="components/retriever/reranker_retriever.html">components.retriever.reranker_retriever</a></li>
 <li><a href="core/base_data_class.html">core.base_data_class</a></li>
 <li><a href="core/component.html">core.component</a></li>
 <li><a href="core/container.html">core.container</a></li>
 <li><a href="core/db.html">core.db</a></li>
 <li><a href="core/embedder.html">core.embedder</a></li>
+<li><a href="core/func_tool.html">core.func_tool</a></li>
 <li><a href="core/functional.html">core.functional</a></li>
 <li><a href="core/generator.html">core.generator</a></li>
 <li><a href="core/model_client.html">core.model_client</a></li>
@@ -490,6 +488,7 @@
 <li><a href="core/retriever.html">core.retriever</a></li>
 <li><a href="core/string_parser.html">core.string_parser</a></li>
 <li><a href="core/tokenizer.html">core.tokenizer</a></li>
+<li><a href="core/tool_manager.html">core.tool_manager</a></li>
 <li><a href="core/types.html">core.types</a></li>
 <li><a href="eval/answer_match_acc.html">eval.answer_match_acc</a></li>
 <li><a href="eval/llm_as_judge.html">eval.llm_as_judge</a></li>

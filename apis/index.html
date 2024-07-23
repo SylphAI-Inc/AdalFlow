@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
   
@@ -144,7 +144,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -620,6 +620,12 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="core/core.tokenizer.html#module-core.tokenizer" title="core.tokenizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tokenizer</span></code></a></p></td>
 <td><p>Tokenizer from tiktoken.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="core/core.func_tool.html#module-core.func_tool" title="core.func_tool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.func_tool</span></code></a></p></td>
+<td><p>Tool is LLM's extended capability which is one of the core design pattern of Agent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="core/core.tool_manager.html#module-core.tool_manager" title="core.tool_manager"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.tool_manager</span></code></a></p></td>
+<td><p>The ToolManager manages a list of tools, context, and all ways to execute functions.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="core/core.types.html#module-core.types" title="core.types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">core.types</span></code></a></p></td>
 <td><p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p></td>
 </tr>
@@ -635,17 +641,11 @@ The API reference is organized by subdirectories.</p>
 <p>Functional components like model client, retriever, agent, local data processing, and output parsers are here.</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.anthropic_client.html#module-components.model_client.anthropic_client" title="components.model_client.anthropic_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.anthropic_client</span></code></a></p></td>
-<td><p>Anthropic ModelClient integration.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.agent.react.html#module-components.agent.react" title="components.agent.react"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.agent.react</span></code></a></p></td>
+<td><p>Implementation and optimization of React agent.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.cohere_client.html#module-components.model_client.cohere_client" title="components.model_client.cohere_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.cohere_client</span></code></a></p></td>
-<td><p>Cohere ModelClient integration.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.google_client.html#module-components.model_client.google_client" title="components.model_client.google_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.google_client</span></code></a></p></td>
 <td><p>Google GenAI ModelClient integration.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.model_client.groq_client.html#module-components.model_client.groq_client" title="components.model_client.groq_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.groq_client</span></code></a></p></td>
-<td><p>Groq ModelClient integration.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="components/components.model_client.openai_client.html#module-components.model_client.openai_client" title="components.model_client.openai_client"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.model_client.openai_client</span></code></a></p></td>
 <td><p>OpenAI ModelClient integration.</p></td>
@@ -671,13 +671,10 @@ The API reference is organized by subdirectories.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.llm_retriever.html#module-components.retriever.llm_retriever" title="components.retriever.llm_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.llm_retriever</span></code></a></p></td>
 <td><p>LLM as retriever module.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.postgres_retriever.html#module-components.retriever.postgres_retriever" title="components.retriever.postgres_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.postgres_retriever</span></code></a></p></td>
-<td><p>Leverage a postgres database to store and retrieve documents.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="components/components.retriever.reranker_retriever.html#module-components.retriever.reranker_retriever" title="components.retriever.reranker_retriever"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.retriever.reranker_retriever</span></code></a></p></td>
 <td><p>Reranking model using modelclient as a retriever.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="components/components.output_parsers.outputs.html#module-components.output_parsers.outputs" title="components.output_parsers.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">components.output_parsers.outputs</span></code></a></p></td>
 <td><p>The most commonly used output parsers for the Generator.</p></td>
 </tr>
 </tbody>

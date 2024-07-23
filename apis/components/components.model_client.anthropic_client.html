@@ -30,7 +30,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=86688317" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
   
@@ -142,7 +142,7 @@
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {
@@ -306,10 +306,6 @@
     </div>
   
 
-  
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
   
 </div>
 
@@ -581,78 +577,8 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="module-components.model_client.anthropic_client">
-<span id="anthropic-client"></span><span id="components-model-client-anthropic-client"></span><h1>anthropic_client<a class="headerlink" href="#module-components.model_client.anthropic_client" title="Link to this heading">#</a></h1>
-<p>Anthropic ModelClient integration.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.anthropic_client.get_first_message_content" title="components.model_client.anthropic_client.get_first_message_content"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_first_message_content</span></code></a>(completion)</p></td>
-<td><p>When we only need the content of the first message.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.anthropic_client.AnthropicAPIClient" title="components.model_client.anthropic_client.AnthropicAPIClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a>([api_key, ...])</p></td>
-<td><p>A component wrapper for the Anthropic API client.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py class">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnthropicAPIClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_completion_parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Message</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
-<p>A component wrapper for the Anthropic API client.</p>
-<p>Visit <a class="reference external" href="https://docs.anthropic.com/en/docs/intro-to-claude">https://docs.anthropic.com/en/docs/intro-to-claude</a> for more api details.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">
-<span class="sig-name descname"><span class="pre">init_sync_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.init_sync_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">
-<span class="sig-name descname"><span class="pre">init_async_client</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.init_async_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion" title="Link to this definition">#</a></dt>
-<dd><p>Parse the chat completion to str.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs">
-<span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
-<dd><p>Anthropic API messages separates the system and the user messages.</p>
-<p>As we focus on one prompt, we have to use the user message as the input.</p>
-<p>api: <a class="reference external" href="https://docs.anthropic.com/en/api/messages">https://docs.anthropic.com/en/api/messages</a></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.call" title="Link to this definition">#</a></dt>
-<dd><p>kwargs is the combined input and model_kwargs</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.AnthropicAPIClient.acall">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">acall</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">api_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#AnthropicAPIClient.acall"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.AnthropicAPIClient.acall" title="Link to this definition">#</a></dt>
-<dd><p>kwargs is the combined input and model_kwargs</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="components.model_client.anthropic_client.get_first_message_content">
-<span class="sig-name descname"><span class="pre">get_first_message_content</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/anthropic_client.html#get_first_message_content"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.anthropic_client.get_first_message_content" title="Link to this definition">#</a></dt>
-<dd><p>When we only need the content of the first message.
-It is the default parser for chat completion.</p>
-</dd></dl>
-
+  <section id="anthropic-client">
+<span id="components-model-client-anthropic-client"></span><h1>anthropic_client<a class="headerlink" href="#anthropic-client" title="Link to this heading">#</a></h1>
 </section>
 
 
@@ -689,32 +615,6 @@ It is the default parser for chat completion.</p>
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_sync_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_async_client()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.parse_chat_completion()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.call"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.call()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.AnthropicAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.acall()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.anthropic_client.get_first_message_content"><code class="docutils literal notranslate"><span class="pre">get_first_message_content()</span></code></a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
