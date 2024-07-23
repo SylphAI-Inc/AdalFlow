@@ -259,40 +259,21 @@ class OpenAIClient(ModelClient):
         return output
 
 
-if __name__ == "__main__":
-    from lightrag.core import Generator
-    from lightrag.utils import setup_env, get_logger
+# if __name__ == "__main__":
+#     from lightrag.core import Generator
+#     from lightrag.utils import setup_env, get_logger
 
-    log = get_logger(level="DEBUG")
+#     log = get_logger(level="DEBUG")
 
-    setup_env()
-    prompt_kwargs = {"input_str": "What is the meaning of life?"}
+#     setup_env()
+#     prompt_kwargs = {"input_str": "What is the meaning of life?"}
 
-    gen = Generator(
-        model_client=OpenAIClient(),
-        model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
-    )
-    gen_response = gen(prompt_kwargs)
-    print(f"gen_response: {gen_response}")
+#     gen = Generator(
+#         model_client=OpenAIClient(),
+#         model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
+#     )
+#     gen_response = gen(prompt_kwargs)
+#     print(f"gen_response: {gen_response}")
 
-    for genout in gen_response.data:
-        print(f"genout: {genout}")
-    # client = OpenAIClient()
-    # model_kwargs = {"model": "gpt-3.5-turbo", "stream": True}
-    # api_kwargs = client.convert_inputs_to_api_kwargs(
-    #     input=prompt_kwargs["input"],
-    #     model_kwargs=model_kwargs,
-    #     model_type=ModelType.LLM,
-    # )
-    # response = client.call(api_kwargs=api_kwargs, model_type=ModelType.LLM)
-
-    # for text in client.parse_chat_completion(response):
-    #     print(f"text: {text}")
-
-    # for completion in response:
-    #     print(f"completion: {completion}")
-    #     response = client.parse_chat_completion(completion)
-    #     print(f"response: {response}")
-    # prompt_kwargs = {"input_str": "What is the meaning of life?"}
-    # for response in gen(prompt_kwargs):
-    #     log.info(f"response: {response}")
+#     for genout in gen_response.data:
+#         print(f"genout: {genout}")
