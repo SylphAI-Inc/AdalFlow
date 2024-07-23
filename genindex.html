@@ -498,10 +498,10 @@
         <li><a href="apis/core/core.types.html#core.types.StepOutput.action">(StepOutput attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.add">add() (LocalDB method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.component.html#core.component.Component.add_component">add_component() (Component method)</a>
 </li>
       <li><a href="apis/eval/index.html#eval.AnswerMatchAcc">AnswerMatchAcc (class in eval)</a>
@@ -533,6 +533,8 @@
       <li><a href="apis/core/core.types.html#core.types.AssistantResponse">AssistantResponse (class in core.types)</a>
 </li>
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot.augment_samples">augment_samples() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.augment_samples">[1]</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool">average_pool() (in module components.model_client.transformers_client)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -644,6 +646,10 @@
         <li><a href="apis/core/core.container.html#core.container.Sequential.call">(Sequential method)</a>
 </li>
         <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter.call">(TextSplitter method)</a>, <a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.call">[1]</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call">(TransformerLLM method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call">(TransformersClient method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser.call">(YamlOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.call">[1]</a>
 </li>
@@ -773,14 +779,21 @@
 </li>
       </ul></li>
       <li>
+    components.model_client.transformers_client
+
+      <ul>
+        <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     components.model_client.utils
 
       <ul>
         <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.output_parsers
 
@@ -883,6 +896,8 @@
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.convert_inputs_to_api_kwargs">(OllamaClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">(TransformersClient method)</a>
 </li>
       </ul></li>
       <li><a href="apis/core/core.functional.html#core.functional.convert_schema_to_signature">convert_schema_to_signature() (in module core.functional)</a>
@@ -1415,6 +1430,10 @@
 </li>
       <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.indexed">indexed (Retriever attribute)</a>
 </li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.infer_bge_reranker_base">infer_bge_reranker_base() (TransformerReranker method)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding">infer_gte_base_embedding() (TransformerEmbedder method)</a>
+</li>
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot.init">init() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.init">[1]</a>
 </li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">init_async_client() (AnthropicAPIClient method)</a>
@@ -1431,6 +1450,18 @@
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client">(OpenAIClient method)</a>
 </li>
       </ul></li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client">init_llm_client() (TransformersClient method)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.init_model">init_model() (TransformerEmbedder method)</a>
+
+      <ul>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.init_model">(TransformerLLM method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.init_model">(TransformerReranker method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client">init_reranker_client() (TransformersClient method)</a>
+</li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client">init_sync_client() (AnthropicAPIClient method)</a>
 
       <ul>
@@ -1445,6 +1476,8 @@
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.init_sync_client">(OllamaClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">(OpenAIClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client">(TransformersClient method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1649,6 +1682,14 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelClientType">ModelClientType (class in core.types)</a>
 </li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.models">models (TransformerEmbedder attribute)</a>
+
+      <ul>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.models">(TransformerLLM attribute)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.models">(TransformerReranker attribute)</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.types.html#core.types.ModelType">ModelType (class in core.types)</a>
 </li>
       <li>
@@ -1682,6 +1723,8 @@
         <li><a href="apis/components/components.model_client.ollama_client.html#module-components.model_client.ollama_client">components.model_client.ollama_client</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#module-components.model_client.openai_client">components.model_client.openai_client</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">components.model_client.transformers_client</a>
 </li>
         <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">components.model_client.utils</a>
 </li>
@@ -1929,6 +1972,8 @@
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">(OpenAIClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">(TransformerLLM method)</a>
+</li>
       </ul></li>
       <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">parse_embedding_response() (in module components.model_client.utils)</a>
 
@@ -1939,15 +1984,17 @@
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response">(OpenAIClient method)</a>
 </li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response">(TransformersClient method)</a>
+</li>
       </ul></li>
       <li><a href="apis/core/core.tool_manager.html#core.tool_manager.ToolManager.parse_func_expr">parse_func_expr() (ToolManager method)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_function_call_expr">parse_function_call_expr() (in module core.functional)</a>
 </li>
-      <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.parse_yaml_str_to_obj">parse_yaml_str_to_obj() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
@@ -2218,6 +2265,8 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput">StepOutput (class in core.types)</a>
 </li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.support_models">support_models (TransformersClient attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2282,8 +2331,6 @@
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">to_yaml_obj() (DataClass method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">to_yaml_signature() (DataClass class method)</a>
 </li>
       <li><a href="apis/components/components.data_process.html#components.data_process.ToEmbeddings">ToEmbeddings (class in components.data_process)</a>
@@ -2292,6 +2339,8 @@
         <li><a href="apis/components/components.data_process.data_components.html#components.data_process.data_components.ToEmbeddings">(class in components.data_process.data_components)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb.token">token (TokenLogProb attribute)</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer">Tokenizer (class in core.tokenizer)</a>
@@ -2339,7 +2388,19 @@
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.transformer_setups">transformer_setups (LocalDB attribute)</a>
 </li>
-      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TRANSFORMERS">TRANSFORMERS (OptionalPackages attribute)</a>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder">TransformerEmbedder (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM">TransformerLLM (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker">TransformerReranker (class in components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.ModelClientType.TRANSFORMERS">TRANSFORMERS (ModelClientType attribute)</a>
+
+      <ul>
+        <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TRANSFORMERS">(OptionalPackages attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">TransformersClient (class in components.model_client.transformers_client)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.TYPE">TYPE (ObjectTypes attribute)</a>
 </li>
