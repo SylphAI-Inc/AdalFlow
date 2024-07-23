@@ -1,10 +1,11 @@
-## [0.1.0-beta.5] - 2024-07-20
+## [0.1.0-beta.5] - 2024-07-23
 
 ### Fixed
-- Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
+- [issue 134](https://github.com/SylphAI-Inc/AdalFlow/issues/134) Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
+- [issue 154](https://github.com/SylphAI-Inc/AdalFlow/issues/154) Fixed the `DataClass.from_dict` failure on `list[int]` type due to conditional check failure in the functional.
 
 ### Added
-- Support streaming in Generator (sync call)
+- Support streaming in Generator (sync call) [issue 149](https://github.com/SylphAI-Inc/AdalFlow/issues/149)
 - Support streaming in OpenAIClient (sync call)
 
 ## [0.1.0-beta.3, 4] - 2024-07-18
