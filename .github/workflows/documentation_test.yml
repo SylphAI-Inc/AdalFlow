@@ -33,7 +33,8 @@ jobs:
         run: |
           cd lightrag
           poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --all-extras  # Install all optional dependencies
+          poetry install --all-extras --verbose  # Install all optional dependencies
+          pip install transformers
           cd ..  # Change back to the root directory
 
       - name: Install documentation dependencies using Poetry
