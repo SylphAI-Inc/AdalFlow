@@ -3,6 +3,10 @@
 ### Fixed
 - Suppport Enum in `DataClass` schema. https://github.com/SylphAI-Inc/LightRAG/pull/135
 
+### Added
+- Support streaming in Generator (sync call)
+- Support streaming in OpenAIClient (sync call)
+
 ## [0.1.0-beta.3, 4] - 2024-07-18
 
 ### Added
