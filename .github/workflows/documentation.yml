@@ -29,15 +29,17 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH  # Ensure Poetry's bin directory is in PATH
 
-      - name: Install root dependencies(expecially doc dependencies) using Poetry
-        run: |
-          poetry config virtualenvs.create false  # Avoid creating a virtual environment
-          poetry install --only docs  # Install only the documentation dependencies
-
-      - name: Install package dependencies
+      - name: Install package dependencies using Poetry
         run: |
           cd lightrag
-          poetry install  # Install package dependencies
+          poetry config virtualenvs.create false  # Avoid creating a virtual environment
+          poetry install --all-extras --verbose  # Install all optional dependencies
+          cd ..  # Change back to the root directory
+
+      - name: Install documentation dependencies using Poetry
+        run: |
+          poetry config virtualenvs.create false  # Avoid creating a virtual environment
+          poetry install --only doc  # Install only the doc dependencies as specified in pyproject.toml
 
       - name: Build documentation using Makefile
         run: |
@@ -69,3 +71,11 @@ jobs:
           publish_dir: ./docs/build/ # Directory containing the built documentation
           user_name: github-actions[bot] # Username for the commit
           user_email: github-actions[bot]@users.noreply.github.com # Email for the commit
+
+# Uncomment below for debugging purposes
+#      - name: Debug Output
+#        run: |
+#          pwd  # Print the current working directory
+#          ls -l ./build/  # List files in the build directory
+#          cat ./source/conf.py  # Display the Sphinx configuration file
+#        working-directory: ${{ github.workspace }}/docs/build
