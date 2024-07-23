@@ -2208,6 +2208,7 @@ openai = ["openai (>=1.12.0,<2.0.0)"]
 pgvector = ["pgvector (>=0.3.1,<0.4.0)"]
 sqlalchemy = ["sqlalchemy (>=2.0.30,<3.0.0)"]
 torch = ["torch (>=2.3.1,<3.0.0)"]
+transformers = []
 
 [package.source]
 type = "directory"
