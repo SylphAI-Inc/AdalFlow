@@ -44,6 +44,10 @@ class Parameter(Generic[T]):
         param.update_value(456)
         # expect a TypeError if the type is incorrect
         param.update_value("a string")
+
+    References:
+
+    1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py
     """
 
     def __init__(
