@@ -685,17 +685,17 @@ It helps ModelClient identify the model type required to correctly call the mode
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A quick way to access all model clients in the ModelClient module.</p>
 <p>From this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">CohereAPIClient</span><span class="p">,</span> <span class="n">TransformersClient</span><span class="p">,</span> <span class="n">AnthropicAPIClient</span><span class="p">,</span> <span class="n">GroqAPIClient</span><span class="p">,</span> <span class="n">OpenAIClient</span>
+
+<span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</p>
-<p>model_client = OpenAIClient()</p>
 <p>To this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+
+<span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>from lightrag.core.types import ModelClientType</p>
-<p>model_client = ModelClientType.OPENAI()</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.COHERE">
 <span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">#</a></dt>

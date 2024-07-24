@@ -9,6 +9,13 @@ ollama_client
    :show-inheritance:
 
 
+   .. rubric:: Functions
+
+   .. autosummary::
+
+      parse_generate_response
+      parse_stream_response
+
    .. rubric:: Classes
 
    .. autosummary::

@@ -584,6 +584,18 @@
   <section id="module-components.model_client.ollama_client">
 <span id="ollama-client"></span><span id="components-model-client-ollama-client"></span><h1>ollama_client<a class="headerlink" href="#module-components.model_client.ollama_client" title="Link to this heading">#</a></h1>
 <p>Ollama ModelClient integration.</p>
+<p class="rubric">Functions</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_generate_response" title="components.model_client.ollama_client.parse_generate_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_generate_response</span></code></a>(completion)</p></td>
+<td><p>Parse the completion to a str.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.ollama_client.parse_stream_response" title="components.model_client.ollama_client.parse_stream_response"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_stream_response</span></code></a>(completion)</p></td>
+<td><p>Parse the completion to a str.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <p class="rubric">Classes</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
@@ -593,6 +605,18 @@
 </tbody>
 </table>
 </div>
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_stream_response">
+<span class="sig-name descname"><span class="pre">parse_stream_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Generator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_stream_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_stream_response" title="Link to this definition">#</a></dt>
+<dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.ollama_client.parse_generate_response">
+<span class="sig-name descname"><span class="pre">parse_generate_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">GenerateResponse</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#parse_generate_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.parse_generate_response" title="Link to this definition">#</a></dt>
+<dd><p>Parse the completion to a str. We use the generate with prompt instead of chat with messages.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="components.model_client.ollama_client.OllamaClient">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OllamaClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/ollama_client.html#OllamaClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.ollama_client.OllamaClient" title="Link to this definition">#</a></dt>
@@ -789,6 +813,8 @@ using <a class="reference internal" href="#components.model_client.ollama_client
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.ollama_client.parse_stream_response"><code class="docutils literal notranslate"><span class="pre">parse_stream_response()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.ollama_client.parse_generate_response"><code class="docutils literal notranslate"><span class="pre">parse_generate_response()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.ollama_client.OllamaClient"><code class="docutils literal notranslate"><span class="pre">OllamaClient</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.ollama_client.OllamaClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_sync_client()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.ollama_client.OllamaClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OllamaClient.init_async_client()</span></code></a></li>

@@ -539,17 +539,17 @@
 
 <span class="s2">    .. code-block:: python</span>
 
-<span class="s2">    from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
+<span class="s2">        from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
 
-<span class="s2">    model_client = OpenAIClient()</span>
+<span class="s2">        model_client = OpenAIClient()</span>
 
 <span class="s2">    To this:</span>
 
 <span class="s2">    .. code-block:: python</span>
 
-<span class="s2">    from lightrag.core.types import ModelClientType</span>
+<span class="s2">        from lightrag.core.types import ModelClientType</span>
 
-<span class="s2">    model_client = ModelClientType.OPENAI()</span>
+<span class="s2">        model_client = ModelClientType.OPENAI()</span>
 <span class="s2">    &quot;&quot;&quot;</span>
     <span class="n">COHERE</span> <span class="o">=</span> <span class="n">CohereAPIClient</span>
     <span class="n">TRANSFORMERS</span> <span class="o">=</span> <span class="n">TransformersClient</span>

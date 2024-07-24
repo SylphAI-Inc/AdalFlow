@@ -523,8 +523,16 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="generator">
-<span id="id1"></span><h1>Generator<a class="headerlink" href="#generator" title="Link to this heading">#</a></h1>
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+   <a href="https://colab.research.google.com/drive/1gmxeX1UuUxZDouWhkLGQYrD4hAdt9IVX?usp=sharing" target="_blank" style="margin-right: 10px;">
+      <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+   </a>
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/generator_note.py" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="id1">
+<h1>Generator<a class="headerlink" href="#id1" title="Link to this heading">#</a></h1>
 <p><cite>Generator</cite> is a user-facing orchestration component with a simple and unified interface for LLM prediction.
 It is a pipeline consisting of three subcomponents. By switching the prompt template, model client, and output parser, users have full control and flexibility.</p>
 <section id="design">
@@ -739,7 +747,7 @@ We will use the <cite>JsonParser</cite> to parse the output back to a <cite>dict
 
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard JSON object with two keys:</span>
 <span class="s2">{</span>
-<span class="s2">    &quot;explaination&quot;: &quot;A brief explaination of the concept in one sentence.&quot;,</span>
+<span class="s2">    &quot;explanation&quot;: &quot;A brief explanation of the concept in one sentence.&quot;,</span>
 <span class="s2">    &quot;example&quot;: &quot;An example of the concept in a sentence.&quot;</span>
 <span class="s2">}</span>
 <span class="s2">&quot;&quot;&quot;</span>
@@ -764,7 +772,7 @@ We will use the <cite>JsonParser</cite> to parse the output back to a <cite>dict
 &lt;OUTPUT_FORMAT&gt;
 Your output should be formatted as a standard JSON object with two keys:
     {
-        &quot;explaination&quot;: &quot;A brief explaination of the concept in one sentence.&quot;,
+        &quot;explanation&quot;: &quot;A brief explanation of the concept in one sentence.&quot;,
         &quot;example&quot;: &quot;An example of the concept in a sentence.&quot;
     }
 
@@ -778,7 +786,7 @@ You:
 </div>
 <p>The above printout is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;dict&#39;&gt;
-{&#39;explaination&#39;: &#39;LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.&#39;, &#39;example&#39;: &#39;An example of a LLM is GPT-3, which can generate human-like text based on the input provided.&#39;}
+{&#39;explanation&#39;: &#39;LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.&#39;, &#39;example&#39;: &#39;An example of a LLM is GPT-3, which can generate human-like text based on the input provided.&#39;}
 </pre></div>
 </div>
 <p>Please refer to <a class="reference internal" href="output_parsers.html"><span class="doc">Parser</span></a> for a more comprehensive guide on the <cite>Parser</cite> components.</p>

@@ -467,7 +467,16 @@
 <span></span><span class="sd">&quot;&quot;&quot;Ollama ModelClient integration.&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">Generator</span> <span class="k">as</span> <span class="n">GeneratorType</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -485,6 +494,33 @@
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="parse_stream_response">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">GeneratorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str. We use the generate with prompt instead of chat with messages.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw chunk: </span><span class="si">{</span><span class="n">chunk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">yield</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">chunk</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="parse_generate_response">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response">[docs]</a>
+<span class="k">def</span> <span class="nf">parse_generate_response</span><span class="p">(</span><span class="n">completion</span><span class="p">:</span> <span class="n">GenerateResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str. We use the generate with prompt instead of chat with messages.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;response: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="OllamaClient">
@@ -620,27 +656,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">async_client</span> <span class="o">=</span> <span class="n">ollama</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_host</span><span class="p">)</span></div>
 
 
+    <span class="c1"># NOTE: do not put yield and return in the same function, thus we separate the functions</span>
 <div class="viewcode-block" id="OllamaClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GenerateResponse</span><span class="p">,</span> <span class="n">Generator</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">GenerateResponse</span><span class="p">,</span> <span class="n">GeneratorType</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str. We use the generate with prompt instead of chat with messages.&quot;&quot;&quot;</span>
-        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span><span class="w"> </span><span class="n">Generator</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">):</span>  <span class="c1"># streaming</span>
-            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Raw chunk: </span><span class="si">{</span><span class="n">chunk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">yield</span> <span class="n">chunk</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">chunk</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span><span class="w"> </span><span class="n">GeneratorType</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">GeneratorType</span><span class="p">):</span>  <span class="c1"># streaming</span>
+            <span class="k">return</span> <span class="n">parse_stream_response</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;response&quot;</span> <span class="ow">in</span> <span class="n">completion</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">completion</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">parse_generate_response</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OllamaClient.parse_embedding_response">
@@ -760,21 +787,37 @@
 
 
 
+<span class="c1"># TODO: add tests to stream and non stream case</span>
 <span class="c1"># if __name__ == &quot;__main__&quot;:</span>
 <span class="c1">#     from lightrag.core.generator import Generator</span>
-<span class="c1">#     from lightrag.components.model_client import OllamaClient</span>
+<span class="c1">#     from lightrag.components.model_client import OllamaClient, OpenAIClient</span>
 <span class="c1">#     from lightrag.utils import setup_env, get_logger</span>
 
-<span class="c1">#     # log = get_logger(level=&quot;DEBUG&quot;)</span>
+<span class="c1">#     log = get_logger(level=&quot;DEBUG&quot;)</span>
 
 <span class="c1">#     setup_env()</span>
 
-<span class="c1">#     model_client = OllamaClient()</span>
-<span class="c1">#     model_kwargs = {&quot;model&quot;: &quot;phi3&quot;, &quot;stream&quot;: True}</span>
-<span class="c1">#     generator = Generator(model_client=model_client, model_kwargs=model_kwargs)</span>
-<span class="c1">#     output = generator({&quot;input_str&quot;: &quot;What is the capital of France?&quot;})</span>
-<span class="c1">#     for chunk in output.data:</span>
-<span class="c1">#         print(chunk)</span>
+<span class="c1">#     ollama_ai = {</span>
+<span class="c1">#         &quot;model_client&quot;: OllamaClient(),</span>
+<span class="c1">#         &quot;model_kwargs&quot;: {</span>
+<span class="c1">#             &quot;model&quot;: &quot;qwen2:0.5b&quot;,</span>
+<span class="c1">#             &quot;stream&quot;: True,</span>
+<span class="c1">#         },</span>
+<span class="c1">#     }</span>
+<span class="c1">#     open_ai = {</span>
+<span class="c1">#         &quot;model_client&quot;: OpenAIClient(),</span>
+<span class="c1">#         &quot;model_kwargs&quot;: {</span>
+<span class="c1">#             &quot;model&quot;: &quot;gpt-3.5-turbo&quot;,</span>
+<span class="c1">#             &quot;stream&quot;: False,</span>
+<span class="c1">#         },</span>
+<span class="c1">#     }</span>
+<span class="c1">#     # generator = Generator(**open_ai)</span>
+<span class="c1">#     # output = generator({&quot;input_str&quot;: &quot;What is the capital of France?&quot;})</span>
+<span class="c1">#     # print(output)</span>
+
+<span class="c1">#     # generator = Generator(**ollama_ai)</span>
+<span class="c1">#     # output = generator({&quot;input_str&quot;: &quot;What is the capital of France?&quot;})</span>
+<span class="c1">#     # print(output)</span>
 </pre></div>
 
                 </article>
