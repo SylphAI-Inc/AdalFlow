@@ -59,8 +59,9 @@
     </p>
 </h1>
 
-AdalFlow helps developers build and optimize LLM task pipelines.
-Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
+AdalFlow is an LLM library that not only helps developers build but also optimizes LLM task pipelines. Embracing a design pattern similar to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
+
+*Note: We are in the process of renaming to adalflow from lightrag.*
 
 # AdalFlow: In honor of Ada Lovelace
 

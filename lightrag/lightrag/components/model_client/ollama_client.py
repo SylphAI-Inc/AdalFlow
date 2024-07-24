@@ -1,5 +1,16 @@
+"""Ollama ModelClient integration."""
+
 import os
-from typing import Dict, Optional, Any, TypeVar, List, Type
+from typing import (
+    Dict,
+    Optional,
+    Any,
+    TypeVar,
+    List,
+    Type,
+    Generator as GeneratorType,
+    Union,
+)
 import backoff
 import logging
 import warnings
@@ -17,6 +28,27 @@ from lightrag.core.types import ModelType, EmbedderOutput, Embedding
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
+
+def parse_stream_response(completion: GeneratorType) -> Any:
+    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+    for chunk in completion:
+        log.debug(f"Raw chunk: {chunk}")
+        yield chunk["response"] if "response" in chunk else None
+
+
+def parse_generate_response(completion: GenerateResponse) -> Any:
+    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+    if "response" in completion:
+        log.debug(f"response: {completion}")
+        return completion["response"]
+    else:
+        log.error(
+            f"Error parsing the completion: {completion}, type: {type(completion)}"
+        )
+        raise ValueError(
+            f"Error parsing the completion: {completion}, type: {type(completion)}"
+        )
 
 
 class OllamaClient(ModelClient):
@@ -46,11 +78,67 @@ class OllamaClient(ModelClient):
             If not provided, it will look for OLLAMA_HOST env variable. Defaults to None.
             The default host is "http://localhost:11434".
 
+    Setting model_kwargs:
+
+        For LLM, expect model_kwargs to have the following keys:
+
+        model (str, required):
+            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library
+
+        stream (bool, default: False ) – Whether to stream the results.
+
+
+        options (Optional[dict], optional)
+            Options that affect model output.
+
+            # If not specified the following defaults will be assigned.
+
+                "seed": 0, - Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt.
+
+                "num_predict": 128, - Maximum number of tokens to predict when generating text. (-1  = infinite generation, -2 = fill context)
+
+                "top_k": 40, - Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative.
+
+                "top_p": 0.9, - 	Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text.
+
+                "tfs_z": 1, - Tail free sampling. This is used to reduce the impact of less probable tokens from the output. Disabled by default (e.g. 1) (More documentation here for specifics)
+
+                "repeat_last_n": 64, - Sets how far back the model should look back to prevent repetition. (0 = disabled, -1 = num_ctx)
+
+                "temperature": 0.8, - The temperature of the model. Increasing the temperature will make the model answer more creatively.
+
+                "repeat_penalty": 1.1, - Sets how strongly to penalize repetitions. A higher value(e.g., 1.5 will penlaize repetitions more strongly, while lowe values *e.g., 0.9 will be more lenient.)
+
+                "mirostat": 0.0, - Enable microstat smapling for controlling perplexity. (0 = disabled, 1 = microstat, 2 = microstat 2.0)
+
+                "mirostat_tau": 0.5, - Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text.
+
+                "mirostat_eta": 0.1, - Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive.
+
+                "stop": ["\n", "user:"], - 	Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate stop parameters in a modelfile.
+
+                "num_ctx": 2048, - Sets the size of the context window used to generate the next token.
+
+        For EMBEDDER, expect model_kwargs to have the following keys:
+
+        model (str, required):
+            Use `ollama list` via your CLI or  visit ollama model page on https://ollama.com/library
+
+        prompt (str, required):
+            String that is sent to the Embedding model.
+
+        options (Optional[dict], optional):
+            See LLM args for defaults.
+
     References:
 
         - https://github.com/ollama/ollama-python
         - https://github.com/ollama/ollama
         - Models: https://ollama.com/library
+        - Ollama API: https://github.com/ollama/ollama/blob/main/docs/api.md
+        - Options Parameters: https://github.com/ollama/ollama/blob/main/docs/modelfile.md.
+        - LlamaCPP API documentation(Ollama is based on this): https://llama-cpp-python.readthedocs.io/en/latest/api-reference/#low-level-api
+        - LLM API: https://llama-cpp-python.readthedocs.io/en/stable/api-reference/#llama_cpp.Llama.create_completion
 
     Tested Ollama models: 7/9/24
 
@@ -88,14 +176,16 @@ class OllamaClient(ModelClient):
 
         self.async_client = ollama.AsyncClient(host=self._host)
 
-    def parse_chat_completion(self, completion: GenerateResponse) -> Any:
+    # NOTE: do not put yield and return in the same function, thus we separate the functions
+    def parse_chat_completion(
+        self, completion: Union[GenerateResponse, GeneratorType]
+    ) -> Any:
         """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
-        log.debug(f"completion: {completion}")
-        if "response" in completion:
-            return completion["response"]
+        log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
+        if isinstance(completion, GeneratorType):  # streaming
+            return parse_stream_response(completion)
         else:
-            log.error(f"Error parsing the completion: {completion}")
-            raise ValueError(f"Error parsing the completion: {completion}")
+            return parse_generate_response(completion)
 
     def parse_embedding_response(
         self, response: Dict[str, List[float]]
@@ -116,15 +206,7 @@ class OllamaClient(ModelClient):
         model_kwargs: Dict = {},
         model_type: ModelType = ModelType.UNDEFINED,
     ) -> Dict:
-        r"""
-        For LLM, expect model_kwargs to have the following keys:
-         model: str,
-         prompt: str,
-
-        For EMBEDDER, expect model_kwargs to have the following keys:
-         model: str,
-         prompt: str,
-        """
+        r"""Convert the input and model_kwargs to api_kwargs for the Ollama SDK client."""
         # TODO: ollama will support batch embedding in the future: https://ollama.com/blog/embedding-models
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
@@ -201,3 +283,36 @@ class OllamaClient(ModelClient):
 
         output = super().to_dict(exclude=exclude)
         return output
+
+
+# TODO: add tests to stream and non stream case
+# if __name__ == "__main__":
+#     from lightrag.core.generator import Generator
+#     from lightrag.components.model_client import OllamaClient, OpenAIClient
+#     from lightrag.utils import setup_env, get_logger
+
+#     log = get_logger(level="DEBUG")
+
+#     setup_env()
+
+#     ollama_ai = {
+#         "model_client": OllamaClient(),
+#         "model_kwargs": {
+#             "model": "qwen2:0.5b",
+#             "stream": True,
+#         },
+#     }
+#     open_ai = {
+#         "model_client": OpenAIClient(),
+#         "model_kwargs": {
+#             "model": "gpt-3.5-turbo",
+#             "stream": False,
+#         },
+#     }
+#     # generator = Generator(**open_ai)
+#     # output = generator({"input_str": "What is the capital of France?"})
+#     # print(output)
+
+#     # generator = Generator(**ollama_ai)
+#     # output = generator({"input_str": "What is the capital of France?"})
+#     # print(output)

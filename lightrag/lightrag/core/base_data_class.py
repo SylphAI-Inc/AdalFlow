@@ -262,7 +262,12 @@ class DataClass:
         - Convert the json/yaml output from LLM prediction to a dataclass instance.
         - Restore the dataclass instance from the serialized output used for states saving.
         """
-        return dataclass_obj_from_dict(cls, data)
+        try:
+            dclass = dataclass_obj_from_dict(cls, data)
+            logger.debug(f"Dataclass instance created from dict: {dclass}")
+            return dclass
+        except TypeError as e:
+            raise ValueError(f"Failed to load data: {e}")
 
     @classmethod
     def from_json(cls, json_str: str) -> "DataClass":
