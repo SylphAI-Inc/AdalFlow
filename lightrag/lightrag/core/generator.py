@@ -168,7 +168,6 @@ class Generator(Component):
             response = self.model_client.parse_chat_completion(completion)
         except Exception as e:
             log.error(f"Error parsing the completion {completion}: {e}")
-            # response = str(completion)
             return GeneratorOutput(raw_response=str(completion), error=str(e))
 
         # the output processors operate on the str, the raw_response field.
@@ -227,20 +226,22 @@ class Generator(Component):
         log.debug(f"api_kwargs: {api_kwargs}")
         output: GeneratorOutputType = None
         # call the model client
+        completion = None
         try:
             completion = self.model_client.call(
                 api_kwargs=api_kwargs, model_type=self.model_type
             )
-
         except Exception as e:
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e))
+        # process the completion
+        if completion:
+            try:
+                output = self._post_call(completion)
 
-        try:
-            output = self._post_call(completion)
-        except Exception as e:
-            log.error(f"Error processing the output: {e}")
-            output = GeneratorOutput(raw_response=str(completion), error=str(e))
+            except Exception as e:
+                log.error(f"Error processing the output: {e}")
+                output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
         log.info(f"output: {output}")
         return output
