@@ -1,7 +1,16 @@
 """Ollama ModelClient integration."""
 
 import os
-from typing import Dict, Optional, Any, TypeVar, List, Type, Generator, Union
+from typing import (
+    Dict,
+    Optional,
+    Any,
+    TypeVar,
+    List,
+    Type,
+    Generator as GeneratorType,
+    Union,
+)
 import backoff
 import logging
 import warnings
@@ -19,6 +28,27 @@ from lightrag.core.types import ModelType, EmbedderOutput, Embedding
 log = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
+
+def parse_stream_response(completion: GeneratorType) -> Any:
+    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+    for chunk in completion:
+        log.debug(f"Raw chunk: {chunk}")
+        yield chunk["response"] if "response" in chunk else None
+
+
+def parse_generate_response(completion: GenerateResponse) -> Any:
+    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+    if "response" in completion:
+        log.debug(f"response: {completion}")
+        return completion["response"]
+    else:
+        log.error(
+            f"Error parsing the completion: {completion}, type: {type(completion)}"
+        )
+        raise ValueError(
+            f"Error parsing the completion: {completion}, type: {type(completion)}"
+        )
 
 
 class OllamaClient(ModelClient):
@@ -146,25 +176,16 @@ class OllamaClient(ModelClient):
 
         self.async_client = ollama.AsyncClient(host=self._host)
 
+    # NOTE: do not put yield and return in the same function, thus we separate the functions
     def parse_chat_completion(
-        self, completion: Union[GenerateResponse, Generator]
+        self, completion: Union[GenerateResponse, GeneratorType]
     ) -> Any:
         """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
-        log.debug(f"completion: {completion}, {isinstance(completion, Generator)}")
-        if isinstance(completion, Generator):  # streaming
-            for chunk in completion:
-                log.debug(f"Raw chunk: {chunk}")
-                yield chunk["response"] if "response" in chunk else None
+        log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
+        if isinstance(completion, GeneratorType):  # streaming
+            return parse_stream_response(completion)
         else:
-            if "response" in completion:
-                return completion["response"]
-            else:
-                log.error(
-                    f"Error parsing the completion: {completion}, type: {type(completion)}"
-                )
-                raise ValueError(
-                    f"Error parsing the completion: {completion}, type: {type(completion)}"
-                )
+            return parse_generate_response(completion)
 
     def parse_embedding_response(
         self, response: Dict[str, List[float]]
@@ -264,18 +285,34 @@ class OllamaClient(ModelClient):
         return output
 
 
+# TODO: add tests to stream and non stream case
 # if __name__ == "__main__":
 #     from lightrag.core.generator import Generator
-#     from lightrag.components.model_client import OllamaClient
+#     from lightrag.components.model_client import OllamaClient, OpenAIClient
 #     from lightrag.utils import setup_env, get_logger
 
-#     # log = get_logger(level="DEBUG")
+#     log = get_logger(level="DEBUG")
 
 #     setup_env()
 
-#     model_client = OllamaClient()
-#     model_kwargs = {"model": "phi3", "stream": True}
-#     generator = Generator(model_client=model_client, model_kwargs=model_kwargs)
-#     output = generator({"input_str": "What is the capital of France?"})
-#     for chunk in output.data:
-#         print(chunk)
+#     ollama_ai = {
+#         "model_client": OllamaClient(),
+#         "model_kwargs": {
+#             "model": "qwen2:0.5b",
+#             "stream": True,
+#         },
+#     }
+#     open_ai = {
+#         "model_client": OpenAIClient(),
+#         "model_kwargs": {
+#             "model": "gpt-3.5-turbo",
+#             "stream": False,
+#         },
+#     }
+#     # generator = Generator(**open_ai)
+#     # output = generator({"input_str": "What is the capital of France?"})
+#     # print(output)
+
+#     # generator = Generator(**ollama_ai)
+#     # output = generator({"input_str": "What is the capital of France?"})
+#     # print(output)
