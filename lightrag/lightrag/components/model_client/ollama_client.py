@@ -9,6 +9,7 @@ from typing import (
     List,
     Type,
     Generator as GeneratorType,
+    AsyncGenerator as AsyncGeneratorType,
     Union,
 )
 import backoff
@@ -33,6 +34,12 @@ T = TypeVar("T")
 def parse_stream_response(completion: GeneratorType) -> Any:
     """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
     for chunk in completion:
+        log.debug(f"Raw chunk: {chunk}")
+        yield chunk["response"] if "response" in chunk else None
+
+async def aparse_stream_response(completion: GeneratorType) -> Any:
+    """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+    async for chunk in completion:
         log.debug(f"Raw chunk: {chunk}")
         yield chunk["response"] if "response" in chunk else None
 
@@ -184,6 +191,16 @@ class OllamaClient(ModelClient):
         log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
         if isinstance(completion, GeneratorType):  # streaming
             return parse_stream_response(completion)
+        else:
+            return parse_generate_response(completion)
+
+    async def aparse_chat_completion(
+        self, completion: Union[GenerateResponse, GeneratorType]
+    ) -> Any:
+        """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
+        log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
+        if isinstance(completion, AsyncGeneratorType):  # streaming
+            return aparse_stream_response(completion)
         else:
             return parse_generate_response(completion)
 

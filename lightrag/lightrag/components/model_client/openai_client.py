@@ -236,6 +236,10 @@ class OpenAIClient(ModelClient):
         if model_type == ModelType.EMBEDDER:
             return await self.async_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("streaming call")
+                self.chat_completion_parser = handle_streaming_response
+                return await self.async_client.chat.completions.create(**api_kwargs)
             return await self.async_client.chat.completions.create(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
