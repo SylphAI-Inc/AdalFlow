@@ -6,8 +6,12 @@ description = "A project to develop and test the lightrag library"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 
-include = ["use_cases/*", "tutorials/*"]
-packages = [{ from = "_lightrag", include = "lightrag" }] # empty packages list
+# include = ["use_cases/*", "tutorials/*"]
+packages = [
+    { from = "_lightrag", include = "lightrag" },
+    { from = ".", include = "use_cases" },
+    { from = ".", include = "tutorials" },
+]
 
 
 [tool.poetry.dependencies]

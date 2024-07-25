@@ -2,13 +2,18 @@
 
 from typing import Generic, TypeVar, Any, List, Set, Dict
 from collections import defaultdict
+import logging
 
+# from lightrag.core import Generator
 from lightrag.core.prompt_builder import Prompt
 from lightrag.optim.text_grad.prompt_template import GRADIENT_TEMPLATE
 
 T = TypeVar("T")  # covariant set to False to allow for in-place updates
 
+log = logging.getLogger(__name__)
 
+
+# tensor has the backward function
 # Future direction: potentially subclass DataClass, especially when parameter becomes more complex
 class Parameter(Generic[T]):
     r"""A data container to represent a component parameter.
@@ -69,6 +74,13 @@ class Parameter(Generic[T]):
         self.predecessors = set(predecessors)
         self.gradients: Set[Parameter] = set()
         self.gradients_context: Dict[Parameter, str] = defaultdict(lambda: None)
+        self.grad_fn = None
+
+    def set_grad_fn(self, grad_fn):
+        self.grad_fn = grad_fn
+
+    def get_grad_fn(self):
+        return self.grad_fn
 
     def _check_data_type(self, new_data: Any):
         """Check the type of new_data against the expected data type."""
@@ -114,8 +126,52 @@ class Parameter(Generic[T]):
 
         return gradient_text
 
-    def backward(self):
-        pass
+    def get_short_value(self, n_words_offset: int = 10) -> str:
+        """
+        Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don't want to see the entire value.
+        This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
+        :param n_words_offset: The number of words to show from the beginning and the end of the value.
+        :type n_words_offset: int
+        """
+        words = self.data.split(" ")
+        if len(words) <= 2 * n_words_offset:
+            return self.data
+        short_value = (
+            " ".join(words[:n_words_offset])
+            + " (...) "
+            + " ".join(words[-n_words_offset:])
+        )
+        return short_value
+
+    def backward(self):  # engine should be the llm
+        # if engine is None:
+        #     raise ValueError("Engine is not provided.")
+        # topological sort of all the predecessors of the current parameter in the graph
+        log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
+        topo: List[Parameter] = []
+        visited = set()
+
+        def build_topo(node: Parameter):
+            if node in visited:
+                return
+            visited.add(node)
+            for pred in node.predecessors:
+                build_topo(pred)
+            topo.append(node)
+
+        build_topo(self)
+        # backpropagation
+
+        self.gradients = set()
+        for node in reversed(topo):
+            if not node.requires_opt:
+                log.debug(f"Skipping {node.data} as it does not require optimization")
+                continue
+            node.gradients = _check_and_reduce_gradients(node)
+            log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
+            if node.get_grad_fn() is not None:  # gradient function takes in the engine
+                log.debug(f"Calling gradient function for {node.data}")
+                node.grad_fn()
 
     def to_dict(self):
         return {
@@ -130,4 +186,21 @@ class Parameter(Generic[T]):
         return cls(data=data["data"], requires_opt=data["requires_opt"])
 
     def __repr__(self):
-        return f"Parameter(data={self.data}, requires_opt={self.requires_opt}, role_desc={self.role_desc}, predecessors={self.predecessors})"
+        return f"Parameter(data={self.data}, requires_opt={self.requires_opt}, role_desc={self.role_desc}, predecessors={self.predecessors}, gradients={self.gradients})"
+
+
+def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:
+
+    if variable.get_gradient_text() == "":
+        log.debug(f"No gradients detected for {variable.data}")
+        return variable.gradients
+    if len(variable.gradients) == 1:
+        log.debug(f"Only one gradient, no need to reduce: {variable.gradients}")
+        return variable.gradients
+    else:
+        log.warning(
+            f"Multiple gradients detected for {variable.data}. Reducing the gradients."
+        )
+        return variable.gradients
+
+    # TODO: Implement the reduction logic later

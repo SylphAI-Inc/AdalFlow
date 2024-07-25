@@ -12,7 +12,7 @@ from lightrag.core.types import (
     GeneratorOutputType,
 )
 from lightrag.core.component import Component
-from lightrag.core.parameter import Parameter
+from lightrag.optim.parameter import Parameter
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
@@ -200,6 +200,9 @@ class Generator(Component):
             model_type=self.model_type,
         )
         return api_kwargs
+
+    # NOTE: when training is true, we use forward instead of call
+    # def forward(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Parameter:
 
     def call(
         self,

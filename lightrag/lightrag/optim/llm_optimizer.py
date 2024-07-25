@@ -13,7 +13,7 @@ from lightrag.core.base_data_class import DataClass
 
 from lightrag.core.model_client import ModelClient
 from lightrag.core.generator import Generator, GeneratorOutput
-from lightrag.core.parameter import Parameter
+from lightrag.optim.parameter import Parameter
 from lightrag.optim.optimizer import Optimizer
 
 # TODO: add the responses and gts
