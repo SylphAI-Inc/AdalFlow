@@ -2,7 +2,7 @@
 
 It is a pipeline that consists of three subcomponents."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
 from copy import deepcopy
 import logging
 
@@ -12,7 +12,11 @@ from lightrag.core.types import (
     GeneratorOutputType,
 )
 from lightrag.core.component import Component
-from lightrag.optim.parameter import Parameter
+
+# Avoid circular import
+if TYPE_CHECKING:
+    from lightrag.optim.parameter import Parameter
+
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
