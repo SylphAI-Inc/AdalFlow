@@ -41,3 +41,7 @@ class Optimizer:
 
     def step(self, *args, **kwargs):
         raise NotImplementedError("step method is not implemented")
+
+    def zero_grad(self):
+        """Clear all the gradients of the parameters."""
+        raise NotImplementedError("zero_grad method is not implemented")

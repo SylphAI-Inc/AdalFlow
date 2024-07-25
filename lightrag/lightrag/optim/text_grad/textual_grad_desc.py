@@ -33,15 +33,21 @@ GLOSSARY_TEXT = """
 # NOTE: {{improved variable}} is used to escape the curly braces in the string, after jinja2 templating, it will be {improved variable}
 # {{{}}} is to replace it with the actual value
 # {{{{}}}} is to have the actual variable in the string
-OPTIMIZER_SYSTEM_PROMPT = f"""You are part of an optimization system that improves text (i.e., variable).
+OPTIMIZER_SYSTEM_PROMPT = (
+    """You are part of an optimization system that improves text (i.e., variable).
 
 You will be asked to creatively and critically improve prompts, solutions to problems, code, or any other text-based variable.
 You will receive some feedback, and use the feedback to improve the variable.
 The feedback may be noisy, identify what is important and what is correct.
 Remember:
 - Pay attention to the role description of the variable, and the context in which it is used.
-- You MUST give your response by sending the improved variable between {{{{new_variable_start_tag}}}} $improved variable {{{{new_variable_end_tag}}}} tags.
-{{{GLOSSARY_TEXT}}}"""
+- You MUST give your response by sending the improved variable between {{new_variable_start_tag}} $improved_variable {{new_variable_end_tag}} tags.
+"""
+    + GLOSSARY_TEXT
+)
+
+
+print(OPTIMIZER_SYSTEM_PROMPT)
 
 # TGD update instruction
 TGD_PROMPT_PREFIX = (
@@ -202,6 +208,10 @@ class TextualGradientDescent(Optimizer):
     # TODO: better way to update the gradient memory
     def update_gradient_memory(self, param: Parameter):
         self.gradient_memory_dict[param].append({"value": param.get_gradient_text()})
+
+    def zero_grad(self):
+        for p in self.params:
+            p.reset_gradients()
 
     def step(self):
         r"""Take a step in the optimization process.
