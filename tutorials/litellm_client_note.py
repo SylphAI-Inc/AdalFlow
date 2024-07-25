@@ -36,10 +36,10 @@ class LinkedinGenerator(Component):
         super().__init__()
         self.generator = Generator(
             model_client=LiteClient(
-                model="together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+                model="groq/llama3-70b-8192"
             ),
             model_kwargs={
-                "model": "together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+                "model": "groq/llama3-70b-8192"
             },
             template="""Generate a linkedin post about {{news}}. Be accurate, use bullets points and emojis to make it more engaging.""",
         )
@@ -79,20 +79,20 @@ if __name__ == "__main__":
     print(sync_output.data)
 
     # and Embedding Output
-    sync_embed = generator.call(prompt_kwargs, ModelType.EMBEDDER)
-    print("Sync Embedding:")
-    print(sync_embed)  # this output desn't have data attribute
+    # sync_embed = generator.call(prompt_kwargs, ModelType.EMBEDDER)
+    # print("Sync Embedding:")
+    # print(sync_embed)  # this output desn't have data attribute
 
     # async function completed
-    news = ["discovers america", "fall of berlin wall"]
-    async_output = asyncio.run(generator.acall(news, ModelType.LLM))
-    for idx, post in enumerate(async_output):
-        print(f"Post {idx+1}: {post}")
+    # news = ["discovers america", "fall of berlin wall"]
+    # async_output = asyncio.run(generator.acall(news, ModelType.LLM))
+    # for idx, post in enumerate(async_output):
+    #     print(f"Post {idx+1}: {post}")
 
     # async embedding
-    news = ["discovers america", "fall of berlin wall"]
-    async_embed = asyncio.run(generator.acall(news, ModelType.EMBEDDER))
-    for idx, post in enumerate(async_embed):
-        print(f"Embeddings {idx+1}: {post}")
+    # news = ["discovers america", "fall of berlin wall"]
+    # async_embed = asyncio.run(generator.acall(news, ModelType.EMBEDDER))
+    # for idx, post in enumerate(async_embed):
+    #     print(f"Embeddings {idx+1}: {post}")
 
 # commment each step to get the results, news is used maby times in the code
