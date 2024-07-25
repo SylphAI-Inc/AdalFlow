@@ -11,7 +11,9 @@ from typing import (
     Callable,
     Generator,
     Union,
+    Literal,
 )
+import re
 
 import logging
 import backoff
@@ -112,6 +114,7 @@ class OpenAIClient(ModelClient):
         self,
         api_key: Optional[str] = None,
         chat_completion_parser: Callable[[Completion], Any] = None,
+        input_type: Literal["text", "messages"] = "text",
     ):
         r"""It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.
 
@@ -125,6 +128,7 @@ class OpenAIClient(ModelClient):
         self.chat_completion_parser = (
             chat_completion_parser or get_first_message_content
         )
+        self._input_type = input_type
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("OPENAI_API_KEY")
@@ -169,6 +173,7 @@ class OpenAIClient(ModelClient):
         Specify the API input type and output api_kwargs that will be used in _call and _acall methods.
         Convert the Component's standard input, and system_input(chat model) and model_kwargs into API-specific format
         """
+
         final_model_kwargs = model_kwargs.copy()
         if model_type == ModelType.EMBEDDER:
             if isinstance(input, str):
@@ -180,8 +185,29 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
-            if input is not None and input != "":
+            # if input is not None and input != "":
+            #     messages.append({"role": "system", "content": input})
+            if self._input_type == "messages":
+                pattern = r"<SYS>(.*?)</SYS><USER>(.*?)</USER>"
+                # Compile the regular expression
+                regex = re.compile(pattern)
+                # Match the pattern
+                match = regex.search(input)
+                system_prompt, input_str = None, None
+
+                if match:
+                    system_prompt = match.group(1)
+                    input_str = match.group(2)
+                    print(f"System Prompt: {system_prompt}")
+                    print(f"Input String: {input_str}")
+                else:
+                    print("No match found.")
+                if system_prompt and input_str:
+                    messages.append({"role": "system", "content": system_prompt})
+                    messages.append({"role": "user", "content": input_str})
+            if len(messages) == 0:
                 messages.append({"role": "system", "content": input})
+            print(f"messages: {messages}")
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")

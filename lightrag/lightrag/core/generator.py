@@ -2,7 +2,7 @@
 
 It is a pipeline that consists of three subcomponents."""
 
-from typing import Any, Dict, List, Optional, Union, TYPE_CHECKING
+from typing import Any, Dict, List, Optional, Union
 from copy import deepcopy
 import logging
 
@@ -14,8 +14,8 @@ from lightrag.core.types import (
 from lightrag.core.component import Component
 
 # Avoid circular import
-if TYPE_CHECKING:
-    from lightrag.optim.parameter import Parameter
+# if TYPE_CHECKING:
+from lightrag.optim.parameter import Parameter
 
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.model_client import ModelClient
@@ -23,6 +23,20 @@ from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 
 
 log = logging.getLogger(__name__)
+
+
+def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
+    r"""Convert the prompt_kwargs to a dictionary with string values."""
+    prompt_kwargs_str: Dict[str, str] = {}
+
+    for key, p in prompt_kwargs.items():
+
+        if isinstance(p, Parameter):
+
+            prompt_kwargs_str[key] = p.data
+        else:
+            prompt_kwargs_str[key] = p
+    return prompt_kwargs_str
 
 
 class Generator(Component):
@@ -91,7 +105,7 @@ class Generator(Component):
             model_kwargs=model_kwargs,
             template=template,
             prompt_kwargs=prompt_kwargs,
-            trainable_params=trainable_params,
+            # trainable_params=trainable_params,
         )
 
         self._init_prompt(template, prompt_kwargs)
@@ -120,7 +134,8 @@ class Generator(Component):
         r"""Initialize the prompt with the template and prompt_kwargs."""
         self.template = template
         self.prompt_kwargs = prompt_kwargs
-        self.prompt = Prompt(template=template, prompt_kwargs=prompt_kwargs)
+        self.prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
+        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs_str)
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
@@ -191,15 +206,16 @@ class Generator(Component):
 
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
-        # 1. render the system prompt from the template
-        system_prompt_str = self.prompt.call(**prompt_kwargs).strip()
+        # 1. render the prompt from the template
+        prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
+        prompt_str = self.prompt.call(**prompt_kwargs_str).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
 
         # 3. convert app's inputs to api inputs
         api_kwargs = self.model_client.convert_inputs_to_api_kwargs(
-            input=system_prompt_str,
+            input=prompt_str,
             model_kwargs=composed_model_kwargs,
             model_type=self.model_type,
         )
@@ -218,13 +234,13 @@ class Generator(Component):
         and passing the combined model_kwargs to the model client.
         """
 
-        if self.training:
-            # add the parameters to the prompt_kwargs
-            # convert attributes to prompt_kwargs
-            trained_prompt_kwargs = {
-                param: getattr(self, param).data for param in self.state_dict()
-            }
-            prompt_kwargs.update(trained_prompt_kwargs)
+        # if self.training:
+        #     # add the parameters to the prompt_kwargs
+        #     # convert attributes to prompt_kwargs
+        #     trained_prompt_kwargs = {
+        #         param: getattr(self, param).data for param in self.state_dict()
+        #     }
+        #     prompt_kwargs.update(trained_prompt_kwargs)
 
         log.debug(f"prompt_kwargs: {prompt_kwargs}")
         log.debug(f"model_kwargs: {model_kwargs}")

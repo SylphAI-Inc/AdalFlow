@@ -10,9 +10,8 @@ import textgrad as tg
 from textgrad.tasks import load_task
 import numpy as np
 import random
-from lightrag.utils import get_logger
 
-get_logger(level="DEBUG", filename="lib_text_grad.log")
+# get_logger(level="DEBUG", filename="lib_text_grad.log")
 
 load_dotenv()
 
@@ -195,6 +194,7 @@ if __name__ == "__main__":
     )
 
     results = {"test_acc": [], "prompt": [], "validation_acc": []}
-    results["test_acc"].append(eval_dataset(test_set, eval_fn, model))
-    results["validation_acc"].append(eval_dataset(val_set, eval_fn, model))
+    results["test_acc"].append(eval_dataset(test_set, eval_fn, model))  # 0.79
+    results["validation_acc"].append(eval_dataset(val_set, eval_fn, model))  # 0.72
     results["prompt"].append(system_prompt.get_value())
+    print(results)
