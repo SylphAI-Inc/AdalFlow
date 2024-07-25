@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import Mock
+import asyncio
+from unittest.mock import Mock, AsyncMock
 from lightrag.core.types import ModelType
 from lightrag.components.model_client.ollama_client import OllamaClient
 
@@ -32,6 +33,24 @@ class TestOllamaModelClient(unittest.TestCase):
         output = ollama_client.call(
             api_kwargs=api_kwargs, model_type=ModelType.LLM
         ).return_value = {"message": "Hello"}
+        assert output == {"message": "Hello"}
+
+    async def test_ollama_llm_client_acall(self):
+        ollama_client = AsyncMock(spec=OllamaClient())
+        ollama_client.acall.return_value = {"message": "Hello"}
+        print("Testing ollama LLM client")
+        # run the model
+        kwargs = {
+            "model": "qwen2:0.5b",
+        }
+        api_kwargs = ollama_client.convert_inputs_to_api_kwargs(
+            input="Hello world",
+            model_kwargs=kwargs,
+            model_type=ModelType.LLM,
+        ).return_value = {"prompt": "Hello World", "model": "qwen2:0.5b"}
+        assert api_kwargs == {"prompt": "Hello World", "model": "qwen2:0.5b"}
+
+        output = await ollama_client.acall(api_kwargs=api_kwargs, model_type=ModelType.LLM)
         assert output == {"message": "Hello"}
 
     def test_ollama_embedding_client(self):

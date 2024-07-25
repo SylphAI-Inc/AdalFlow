@@ -90,6 +90,12 @@ Check the subclasses in `components/model_client/` directory for the functional 
             f"{type(self).__name__} must implement parse_chat_completion method"
         )
 
+    async def aparse_chat_completion(self, completion: Any) -> Any:
+        r"""Parse the chat completion to str."""
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement aparse_chat_completion method"
+        )
+
     def parse_embedding_response(self, response: Any) -> EmbedderOutput:
         r"""Parse the embedding response to a structure LightRAG components can understand."""
         raise NotImplementedError(

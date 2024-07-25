@@ -274,7 +274,7 @@ class Generator(Component):
         self,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
-    ) -> GeneratorOutputType:
+    ) -> GeneratorOutputType:        
         r"""Async call the model with the input and model_kwargs.
 
         :warning::
@@ -286,7 +286,7 @@ class Generator(Component):
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
         completion = await self.model_client.acall(
             api_kwargs=api_kwargs, model_type=self.model_type
-        )
+        )        
         output = await self._apost_call(completion)
         log.info(f"output: {output}")
         return output
