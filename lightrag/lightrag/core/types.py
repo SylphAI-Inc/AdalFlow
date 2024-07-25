@@ -39,6 +39,7 @@ from lightrag.components.model_client import (
     GroqAPIClient,
     OpenAIClient,
     GoogleGenAIClient,
+    LiteClient,
 )
 
 
@@ -86,6 +87,7 @@ class ModelClientType:
     GROQ = GroqAPIClient
     OPENAI = OpenAIClient
     GOOGLE_GENAI = GoogleGenAIClient
+    LITELLM=LiteClient
 
 
 # TODO: define standard required outputs

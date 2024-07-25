@@ -2,6 +2,8 @@ from lightrag.core.generator import Generator
 from lightrag.core.component import Component
 
 from lightrag.components.model_client import GroqAPIClient
+from lightrag.utils import setup_env # ensure you have .env with OPENAI_API_KEY
+setup_env("C:/Users/jean\Documents/molo/LightRAG/.env")  # need to setup env
 
 
 class SimpleQA(Component):

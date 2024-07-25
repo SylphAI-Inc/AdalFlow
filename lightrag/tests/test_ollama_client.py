@@ -36,11 +36,11 @@ class TestOllamaModelClient(unittest.TestCase):
 
     def test_ollama_embedding_client(self):
         ollama_client = Mock(spec=OllamaClient())
-        print("Testing ollama embedding client")
+        print("Testing litellm embedding client")
 
         # run the model
         kwargs = {
-            "model": "jina/jina-embeddings-v2-base-en:latest",
+            "model": "text-embedding-ada-002-v2",
         }
         api_kwargs = ollama_client.convert_inputs_to_api_kwargs(
             input="Welcome",
@@ -52,7 +52,7 @@ class TestOllamaModelClient(unittest.TestCase):
         }
         assert api_kwargs == {
             "prompt": "Welcome",
-            "model": "jina/jina-embeddings-v2-base-en:latest",
+            "model": "text-embedding-ada-002-v2",
         }
 
         output = ollama_client.call(

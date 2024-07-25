@@ -29,9 +29,10 @@ class OptionalPackages(Enum):
     )
     COHERE = ("cohere", "Please install cohere with: pip install cohere")
     OLLAMA = ("ollama", "Please install ollama with: pip install ollama")
+    LITE = ("litellm", "Please install litellm with: pip install litellm")
     # modeling library
     TORCH = ("torch", "Please install torch with: pip install torch")
-
+ 
     # search library
     FAISS = ("faiss", "Please install faiss with: pip install faiss")
 
