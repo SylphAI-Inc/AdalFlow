@@ -62,10 +62,10 @@ Code Tips
 Dependencies
 ^^^^^^^^^^^^^^^^^^^
 If you want to add any new dependencies to the package, please include them in your PR description to inform us.
-Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in 
+Since we have already set up the testing automatic workflow in GitHub, please also set your new dependencies in
 ``./lightrag/pyproject.toml`` file ``[tool.poetry.group.test.dependencies]`` section to avoid dependency errors in our CI/CD workflow.
 
-In order to correctly add the dependency using ``poetry``, please run 
+In order to correctly add the dependency using ``poetry``, please run
 
 .. code-block:: bash
 
@@ -73,7 +73,7 @@ In order to correctly add the dependency using ``poetry``, please run
 
 Testing
 ^^^^^^^^^^^^^^^^^^^
-After you update the code, please make sure your code is well tested before making a pull request. 
+After you update the code, please make sure your code is well tested before making a pull request.
 There is a ``./lightrag/tests`` folder in the project directory to host your unit testing cases.
 
 You might need to install the testing packages using ``poetry``:
@@ -92,5 +92,3 @@ All the test scripts should start with ``test_``. For example, run the individua
 .. code-block:: bash
 
     python lightrag/tests/test_components.py
-
-

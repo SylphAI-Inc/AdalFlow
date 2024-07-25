@@ -5,13 +5,13 @@ Please don't forget to join us on `Discord <https://discord.com/invite/ezzszrRZv
 
 Contribution Process
 ----------------------------
-You are always welcomed to contribute even if you've never participated in open source project before. 
+You are always welcomed to contribute even if you've never participated in open source project before.
 Here is the basic contribution process:
 
 Environment
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When contributing, please note:
-LightRAG separates the source code environment and documentation environment. 
+LightRAG separates the source code environment and documentation environment.
 
 * To activate the code environment, you should run ``poetry install`` and ``poetry shell`` under ``./lightrag``. The ``./lightrag/pyproject.toml`` contains the dependencies for the ``LightRAG`` package.
 
@@ -44,7 +44,7 @@ Pull requests
 **WIP PR:** If you are working on an in pull request that is not ready for review, you can create a PR with **"[WIP]"** to inform us that this PR is a draft **“work in progress”**.
 
 **Finished PR:** You can name your finished PR as **"[New Retriever Integration]"** for example.
-We will carry out code review regularly and provide feedbacks as soon as possible. 
+We will carry out code review regularly and provide feedbacks as soon as possible.
 Please iterate your PR with the feedbacks. We will try our best to reduce the revision workload on your side.
 Once your PR is approved, we will merge the PR for you.
 If you have any concerns about our feedbacks, please feel free to contact us on `Discord <https://discord.com/invite/ezzszrRZvT>`_.
@@ -59,5 +59,3 @@ Please see our `documentation contribution guidelines <./contribute_to_document.
 
 .. admonition:: Resources
    :class: highlight
-
-   

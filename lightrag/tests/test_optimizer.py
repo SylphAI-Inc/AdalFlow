@@ -4,7 +4,7 @@ from typing import List
 from lightrag.core.component import fun_to_component
 from lightrag.core.parameter import Parameter
 from lightrag.optim.few_shot_optimizer import BootstrapFewShot
-from lightrag.optim.sampler import ClassSampler, RandomSampler
+from lightrag.optim.sampler import RandomSampler
 
 
 class TestBootstrapFewShotRandomSampler:
@@ -64,7 +64,7 @@ class TestBootstrapFewShotRandomSampler:
         print(f"examples: {examples}")
 
         assert len(examples) == 10, f"Expected 10 examples, got {len(examples)}"
-        assert len(self.optimizer.proposed) == 10, f"Expected 10 proposed examples"
+        assert len(self.optimizer.proposed) == 10, "Expected 10 proposed examples"
         # ensure there are 5 different examples in the current and proposed
         current_indexes = [item.index for item in self.optimizer.current]
         proposed_indexes = [item.index for item in self.optimizer.proposed]

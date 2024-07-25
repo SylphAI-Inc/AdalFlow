@@ -3,7 +3,7 @@
 Install the required packages:
 ```
 poetry install --with test
-``` 
+```
 
 1. Run `pytest` for all tests.
 2. Run all tests in a specific file:

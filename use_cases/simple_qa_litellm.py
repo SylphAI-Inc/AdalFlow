@@ -9,14 +9,19 @@ from lightrag.utils import setup_env
 # Setup environment variables (e.g., API keys). Remove this in production.
 setup_env("C:/Users/jean\Documents/molo/LightRAG/.env")
 
+
 class SimpleQA(Component):
     def __init__(self):
         super().__init__()
         # Initialize the generator with a LiteClient using the deepseek-chat model
         # Other client options include OpenAIClient, AnthropicClient, GoogleGenAIClient
         self.generator = Generator(
-            model_client=LiteClient(model="together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"),
-            model_kwargs={"model": "together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"}  # Define which parameters are trainable
+            model_client=LiteClient(
+                model="together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+            ),
+            model_kwargs={
+                "model": "together_ai/meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+            },  # Define which parameters are trainable
         )
 
     def call(self, query: str) -> str:

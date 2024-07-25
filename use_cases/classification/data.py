@@ -4,7 +4,7 @@ from typing import Sequence, Dict
 import re
 import os
 
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
+from torch.utils.data import Dataset, WeightedRandomSampler
 import torch
 
 from datasets import load_dataset, DatasetDict, load_from_disk
@@ -37,9 +37,9 @@ _COARSE_LABELS_DESC = [
 ]
 EXAMPLES_STR = r"""Question: {{input}}
 {%if thought%}
-thought: {{thought}} 
+thought: {{thought}}
 {%endif%}
-class_name: {{output}} 
+class_name: {{output}}
 {%if description%}({{description}}){%endif%}
 class_index: {{label}}
 --------

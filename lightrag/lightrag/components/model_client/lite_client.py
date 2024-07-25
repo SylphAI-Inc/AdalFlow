@@ -1,8 +1,7 @@
 import os
-from typing import Dict, Optional, Any, List, Union
+from typing import Dict, Optional, Any, List
 import backoff
 import logging
-import warnings
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 from lightrag.core.model_client import ModelClient
@@ -11,7 +10,9 @@ from lightrag.core.types import ModelType, EmbedderOutput, Embedding
 # Conditional import of litellm
 litellm = safe_import(OptionalPackages.LITE.value[0], OptionalPackages.LITE.value[1])
 
-from litellm import completion, embedding, get_supported_openai_params,acompletion,aembedding
+from litellm import (
+    get_supported_openai_params,
+)
 from litellm.exceptions import (
     Timeout,
     InternalServerError,
@@ -20,6 +21,7 @@ from litellm.exceptions import (
 )
 
 log = logging.getLogger(__name__)
+
 
 class LiteClient(ModelClient):
     """A component wrapper for the LiteLLM API client.
@@ -31,7 +33,7 @@ class LiteClient(ModelClient):
     - mixtral-8x7b
     - gemma-7b-it
     """
-    
+
     def __init__(
         self,
         model: Optional[str] = None,
@@ -39,7 +41,7 @@ class LiteClient(ModelClient):
         base_url: Optional[str] = None,
         api_version: Optional[str] = None,
         timeout: Optional[int] = 600,
-        drop_params: bool = False
+        drop_params: bool = False,
     ):
         super().__init__()
         self.model = model
@@ -53,38 +55,44 @@ class LiteClient(ModelClient):
 
     def init_sync_client(self) -> Any:
         import litellm
+
         validate = litellm.validate_environment(model=self.model)
-        if validate["keys_in_environment"]==False:
+        if not validate["keys_in_environment"]:
             ApiError = validate["missing_keys"]
-            raise ValueError(f"Environment variable {ApiError} required for LiteLM model {self.model} must be set")
-        return litellm 
+            raise ValueError(
+                f"Environment variable {ApiError} required for LiteLM model {self.model} must be set"
+            )
+        return litellm
 
     def init_async_client(self) -> Any:
         import litellm
+
         validate = litellm.validate_environment(self.model)
-        if validate["keys_in_environment"]==False:
+        if not validate["keys_in_environment"]:
             ApiError = validate["missing_keys"]
             raise ValueError(f"Environment variable {ApiError} must be set")
-        return  litellm
-    
+        return litellm
+
     def parse_chat_completion(self, response: Any) -> str:
         """Parse completion output to strings"""
         log.debug(f"completion: {response}")
         if "choices" in response:
-            return response['choices'][0]['message']['content']
+            return response["choices"][0]["message"]["content"]
         else:
             log.error(f"Error parsing the completion: {response}")
             raise ValueError(f"Error parsing the completion: {response}")
-    
-    def parse_embedding_response(self, response: Dict[str, List[float]]) -> EmbedderOutput:
+
+    def parse_embedding_response(
+        self, response: Dict[str, List[float]]
+    ) -> EmbedderOutput:
         """Parse the embedding response to a structure LightRAG components can understand."""
         try:
-            embeddings = Embedding(embedding=response["data"][0]['embedding'], index=0)
+            embeddings = Embedding(embedding=response["data"][0]["embedding"], index=0)
             return EmbedderOutput(data=[embeddings])
         except Exception as e:
             log.error(f"Error parsing the embedding response: {e}")
             return EmbedderOutput(data=[], error=str(e), raw_response=response)
-        
+
     def convert_inputs_to_api_kwargs(
         self,
         input: Optional[Any] = None,
@@ -104,17 +112,24 @@ class LiteClient(ModelClient):
         elif model_type == ModelType.LLM:
             messages: List[Dict[str, str]] = []
             if input is not None and input != "":
-                messages.append({"role": "user","content": input,})
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": input,
+                    }
+                )
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")
 
         # Filter out unsupported params
         if self.drop_params:
-            final_model_kwargs = {k: v for k, v in final_model_kwargs.items() if k in supported_params}
+            final_model_kwargs = {
+                k: v for k, v in final_model_kwargs.items() if k in supported_params
+            }
 
         return final_model_kwargs
-    
+
     @backoff.on_exception(
         backoff.expo,
         (Timeout, APIConnectionError, InternalServerError, RateLimitError),
@@ -134,17 +149,20 @@ class LiteClient(ModelClient):
             return self.sync_client.completion(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
-     
+
     @backoff.on_exception(
         backoff.expo,
         (Timeout, APIConnectionError, InternalServerError, RateLimitError),
         max_time=5,
-    )   
-    async def acall(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
+    )
+    async def acall(
+        self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
+    ):
         """Asynchronous call to the API"""
         import litellm
+
         if self.async_client is None:
-            self.async_client =  self.init_async_client()
+            self.async_client = self.init_async_client()
         if model_type == ModelType.EMBEDDER:
             return await litellm.aembedding(**api_kwargs)
         elif model_type == ModelType.LLM:

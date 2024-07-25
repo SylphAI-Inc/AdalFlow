@@ -2,7 +2,7 @@ import pytest
 from copy import deepcopy
 from typing import Any
 
-from lightrag.optim.sampler import ClassSampler, RandomSampler, Sample
+from lightrag.optim.sampler import ClassSampler, RandomSampler
 
 
 @pytest.fixture

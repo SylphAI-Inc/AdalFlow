@@ -87,7 +87,7 @@ class ModelClientType:
     GROQ = GroqAPIClient
     OPENAI = OpenAIClient
     GOOGLE_GENAI = GoogleGenAIClient
-    LITELLM=LiteClient
+    LITELLM = LiteClient
 
 
 # TODO: define standard required outputs

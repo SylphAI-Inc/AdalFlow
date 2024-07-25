@@ -39,7 +39,7 @@ LightRAG's documentation style is `pydata_sphinx_theme <https://pydata-sphinx-th
 .. .. code-block:: bash
 
 ..     cd docs
-..     pip install -r requirements.txt 
+..     pip install -r requirements.txt
 
 Install by ``poetry`` along with all other dependencies for LightRAG:
 
@@ -59,9 +59,9 @@ Install by ``poetry`` along with all other dependencies for LightRAG:
 
 This file (``docs/source/conf.py``) contains configurations used by Sphinx, including extensions, templates, HTML theme, and language settings.
 
-**Source Code Doc-string** 
+**Source Code Doc-string**
 
-Follow `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ to update your source code docstrings. Limit lines to **80** characters for better readability in various environments. 
+Follow `Google style docstrings <https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html>`_ to update your source code docstrings. Limit lines to **80** characters for better readability in various environments.
 
 **RST Files**: Directly edit ``.rst`` files for broader changes or new sections. Use the ``.. toctree::`` directive to link documents.
 
@@ -74,7 +74,7 @@ The Sphinx build will show warnings but the docs will still be completed.
 If you have a module folder containing code, for example, ``components/``, please add the following line to the ``docs/Makefile`` in the ``apidoc:`` section.
 
 .. code-block:: bash
-    
+
     @sphinx-apidoc -o $(APIDOCOUTDIR)/components ../components --separate --force
 
 
@@ -112,4 +112,3 @@ Commit Changes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After making changes, commit the ``.rst`` and source files, avoiding the ``docs/build`` directory, and push them to your GitHub fork for review.
-

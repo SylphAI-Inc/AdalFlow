@@ -23,7 +23,7 @@ class TestTextSplitter(unittest.TestCase):
         # Test initialization with negative chunk_overlap
         with self.assertRaises(ValueError):
             TextSplitter(split_by="word", chunk_size=5, chunk_overlap=-1)
-    
+
     def test_equal_chunk_overlap_size(self):
         # Test initialization with equal chunk overlap and chunk size
         with self.assertRaises(ValueError):

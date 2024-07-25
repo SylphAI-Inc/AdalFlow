@@ -1,8 +1,7 @@
 import unittest
-from unittest.mock import MagicMock, Mock, patch, call  # Import 'call' here
+from unittest.mock import MagicMock, Mock, patch  # Import 'call' here
 
 from lightrag.components.retriever import LLMRetriever
-from lightrag.core.types import RetrieverOutput
 from lightrag.core.model_client import ModelClient
 
 

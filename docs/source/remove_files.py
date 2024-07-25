@@ -30,6 +30,7 @@ def remove_file(directory: str):
     except Exception:
         print(f"No {name} to remove in {directory}")
 
+
 remove_file("./source/apis/components")
 remove_file("./source/apis/core")
 remove_file("./source/apis/eval")
