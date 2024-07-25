@@ -1,5 +1,18 @@
 .. _generator:
 
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/drive/1gmxeX1UuUxZDouWhkLGQYrD4hAdt9IVX?usp=sharing" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/generator_note.py" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
+
 Generator
 =========
 
@@ -276,7 +289,7 @@ We will use the `JsonParser` to parse the output back to a `dict` object.
 
     output_format_str = r"""Your output should be formatted as a standard JSON object with two keys:
     {
-        "explaination": "A brief explaination of the concept in one sentence.",
+        "explanation": "A brief explanation of the concept in one sentence.",
         "example": "An example of the concept in a sentence."
     }
     """
@@ -304,7 +317,7 @@ The final prompt is:
     <OUTPUT_FORMAT>
     Your output should be formatted as a standard JSON object with two keys:
         {
-            "explaination": "A brief explaination of the concept in one sentence.",
+            "explanation": "A brief explanation of the concept in one sentence.",
             "example": "An example of the concept in a sentence."
         }
 
@@ -320,7 +333,7 @@ The above printout is:
 .. code-block::
 
     <class 'dict'>
-    {'explaination': 'LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.', 'example': 'An example of a LLM is GPT-3, which can generate human-like text based on the input provided.'}
+    {'explanation': 'LLM stands for Large Language Model, which are deep learning models trained on enormous amounts of text data.', 'example': 'An example of a LLM is GPT-3, which can generate human-like text based on the input provided.'}
 
 Please refer to :doc:`output_parsers` for a more comprehensive guide on the `Parser` components.
 

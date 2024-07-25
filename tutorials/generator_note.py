@@ -34,8 +34,8 @@ class SimpleQA(Component):
 
 @dataclass
 class QAOutput(DataClass):
-    explaination: str = field(
-        metadata={"desc": "A brief explaination of the concept in one sentence."}
+    explanation: str = field(
+        metadata={"desc": "A brief explanation of the concept in one sentence."}
     )
     example: str = field(metadata={"desc": "An example of the concept in a sentence."})
 
