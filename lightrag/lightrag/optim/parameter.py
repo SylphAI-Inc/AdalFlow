@@ -61,6 +61,7 @@ class Parameter(Generic[T]):
         requires_opt: bool = True,
         role_desc: str = None,
         predecessors: List["Parameter"] = None,
+        alias: str = None,  # alias is used to refer to the parameter in the prompt, easier to read for humans
     ):
         if predecessors is None:
             predecessors = []
@@ -75,6 +76,7 @@ class Parameter(Generic[T]):
         self.gradients: Set[Parameter] = set()
         self.gradients_context: Dict[Parameter, str] = defaultdict(lambda: None)
         self.grad_fn = None
+        self.alias = alias
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn

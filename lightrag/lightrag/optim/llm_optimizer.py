@@ -1,12 +1,11 @@
-r"""
-Based and optimized from ORPO llm optimizer.
+r"""Based and optimized from ORPO llm optimizer.
 
 https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
 from typing import Dict, Any, List, Optional
-from dataclasses import field
+from dataclasses import field, dataclass
 from copy import deepcopy
 
 from lightrag.core.base_data_class import DataClass
@@ -55,7 +54,7 @@ New Instruction:
 """
 
 
-# @dataclass
+@dataclass
 class Instruction(DataClass):
     # prefix will be the same as text
     text: str = field(metadata={"desc": "The instruction text"})

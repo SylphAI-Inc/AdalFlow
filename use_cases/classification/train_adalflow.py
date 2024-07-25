@@ -2,6 +2,7 @@ from lightrag.optim.parameter import Parameter
 from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.optim.text_grad_optimizer import LLMAsTextLoss
+from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.utils import setup_env, get_logger
 
 logger = get_logger(level="DEBUG", filename="adalflow.log")
@@ -27,20 +28,26 @@ gpt_3_model = {
         "model": "gpt-3.5-turbo",
     },
 }
+
+eval_system_prompt = Parameter(
+    data="Evaluate the correctness of this sentence",
+    role_desc="The system prompt",
+    requires_opt=True,
+)
 # TODO: Only generator needs parameters to optimize
 loss_fn = LLMAsTextLoss(
     prompt_kwargs={
-        "eval_system_prompt": Parameter(
-            data="Evaluate the correctness of this sentence",
-            role_desc="The system prompt",
-            requires_opt=True,
-        )
+        "eval_system_prompt": eval_system_prompt,
     },
     **gpt_3_model,
 )
 print(f"loss_fn: {loss_fn}")
 
+optimizer = TextualGradientDescent(params=[x, eval_system_prompt], **gpt_3_model)
+print(f"optimizer: {optimizer}")
+
 l = loss_fn(prompt_kwargs={"eval_user_prompt": x})  # noqa: E741
 print(f"l: {l}")
 l.backward()
 logger.info(f"l: {l}")
+optimizer.step()  # this will update x prameter
