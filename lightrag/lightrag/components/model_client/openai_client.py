@@ -27,7 +27,7 @@ from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
-from openai import OpenAI, AsyncOpenAI, Stream
+from openai import OpenAI, AsyncOpenAI, Stream, AsyncStream
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -58,6 +58,13 @@ def parse_stream_response(completion: ChatCompletionChunk) -> str:
 def handle_streaming_response(generator: Stream[ChatCompletionChunk]):
     r"""Handle the streaming response."""
     for completion in generator:
+        log.debug(f"Raw chunk completion: {completion}")
+        parsed_content = parse_stream_response(completion)
+        yield parsed_content
+
+async def ahandle_stream_response(generator: AsyncStream[ChatCompletionChunk]):
+    """Handle the streaming response (async)"""
+    async for completion in generator:
         log.debug(f"Raw chunk completion: {completion}")
         parsed_content = parse_stream_response(completion)
         yield parsed_content
@@ -137,6 +144,14 @@ class OpenAIClient(ModelClient):
         if not api_key:
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI(api_key=api_key)
+
+    async def aparse_chat_completion(
+        self,
+        completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
+    ) -> Any:
+        """Parse the completion to a str."""
+        log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
+        return self.chat_completion_parser(completion)
 
     def parse_chat_completion(
         self,
@@ -238,7 +253,7 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             if "stream" in api_kwargs and api_kwargs.get("stream", False):
                 log.debug("streaming call")
-                self.chat_completion_parser = handle_streaming_response
+                self.chat_completion_parser = ahandle_stream_response
                 return await self.async_client.chat.completions.create(**api_kwargs)
             return await self.async_client.chat.completions.create(**api_kwargs)
         else:
