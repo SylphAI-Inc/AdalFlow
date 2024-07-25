@@ -1,4 +1,12 @@
-![LightRAG Logo](https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg)
+
+<!-- <h4 align="center">
+    <img alt="AdalFlow logo" src="docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
+</h4> -->
+
+<h4 align="center">
+    <img alt="AdalFlow logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;">
+</h4>
+
 
 <p align="center">
     <a href="https://colab.research.google.com/drive/1TKw_JHE42Z_AWo8UuRYZCO2iuMgyslTZ?usp=sharing">
@@ -45,20 +53,28 @@
 
 
 
+<h1>
+    <p align="center">
+        AdalFlow: The Library for Large Language Model Applications
+    </p>
+</h1>
 
-### ⚡ The Lightning Library for Large Language Model Applications ⚡
+AdalFlow helps developers build and optimize LLM task pipelines.
+Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
 
-*LightRAG* helps developers build and optimize *Retriever-Agent-Generator* pipelines.
-Embracing similar design pattern to *PyTorch*, LightRAG is *light*, *modular*, and *robust*, with a 100% readable codebase.
+Note: We are in the progress of renaming to adalflow from lightrag.
 
+# AdalFlow: A Tribute to Ada Lovelace
 
-# Why LightRAG?
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
+
+# Why AdalFlow?
 
 LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
 Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
 
-<!-- This is what LightRAG is: light, modular, and robust, with a 100% readable codebase. -->
+<!-- This is what AdalFlow is: light, modular, and robust, with a 100% readable codebase. -->
 
 
 Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
@@ -91,7 +107,7 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-# LightRAG Task Pipeline
+# AdalFlow Task Pipeline
 
 We will ask the model to respond with ``explanation`` and ``example`` of a concept. To achieve this, we will build a simple pipeline to get the structured output as ``QAOutput``.
 
@@ -264,7 +280,7 @@ self.generator = Generator(
 
 # Quick Install
 
-Install LightRAG with pip:
+Install AdalFlow with pip:
 
 ```bash
 pip install lightrag
@@ -277,7 +293,7 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 
 # Documentation
 
-LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
+AdalFlow full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
 - [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
 - [Introduction](https://lightrag.sylph.ai/)
 - [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
@@ -298,9 +314,9 @@ LightRAG full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 # Citation
 
 ```bibtex
-@software{Yin2024LightRAG,
+@software{Yin2024AdalFlow,
   author = {Li Yin},
-  title = {{LightRAG: The Lightning Library for Large Language Model (LLM) Applications}},
+  title = {{AdalFlow: The Library for Large Language Model (LLM) Applications}},
   month = {7},
   year = {2024},
   doi = {10.5281/zenodo.12639531},

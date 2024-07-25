@@ -1,7 +1,17 @@
 """OpenAI ModelClient integration."""
 
 import os
-from typing import Dict, Sequence, Optional, List, Any, TypeVar, Callable
+from typing import (
+    Dict,
+    Sequence,
+    Optional,
+    List,
+    Any,
+    TypeVar,
+    Callable,
+    Generator,
+    Union,
+)
 
 import logging
 import backoff
@@ -17,7 +27,7 @@ from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 openai = safe_import(OptionalPackages.OPENAI.value[0], OptionalPackages.OPENAI.value[1])
 
-from openai import OpenAI, AsyncOpenAI
+from openai import OpenAI, AsyncOpenAI, Stream
 from openai import (
     APITimeoutError,
     InternalServerError,
@@ -26,6 +36,7 @@ from openai import (
     BadRequestError,
 )
 from openai.types import Completion, CreateEmbeddingResponse
+from openai.types.chat import ChatCompletionChunk, ChatCompletion
 
 
 log = logging.getLogger(__name__)
@@ -33,18 +44,31 @@ T = TypeVar("T")
 
 
 # completion parsing functions and you can combine them into one singple chat completion parser
-def get_first_message_content(completion: Completion) -> str:
+def get_first_message_content(completion: ChatCompletion) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
     return completion.choices[0].message.content
 
 
-def get_all_messages_content(completion: Completion) -> List[str]:
+def parse_stream_response(completion: ChatCompletionChunk) -> str:
+    r"""Parse the response of the stream API."""
+    return completion.choices[0].delta.content
+
+
+def handle_streaming_response(generator: Stream[ChatCompletionChunk]):
+    r"""Handle the streaming response."""
+    for completion in generator:
+        log.debug(f"Raw chunk completion: {completion}")
+        parsed_content = parse_stream_response(completion)
+        yield parsed_content
+
+
+def get_all_messages_content(completion: ChatCompletion) -> List[str]:
     r"""When the n > 1, get all the messages content."""
     return [c.message.content for c in completion.choices]
 
 
-def get_probabilities(completion: Completion) -> List[List[TokenLogProb]]:
+def get_probabilities(completion: ChatCompletion) -> List[List[TokenLogProb]]:
     r"""Get the probabilities of each token in the completion."""
     log_probs = []
     for c in completion.choices:
@@ -114,9 +138,12 @@ class OpenAIClient(ModelClient):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI(api_key=api_key)
 
-    def parse_chat_completion(self, completion: Completion) -> Any:
+    def parse_chat_completion(
+        self,
+        completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
+    ) -> Any:
         """Parse the completion to a str."""
-        log.debug(f"completion: {completion}")
+        log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
         return self.chat_completion_parser(completion)
 
     def parse_embedding_response(
@@ -173,12 +200,16 @@ class OpenAIClient(ModelClient):
     )
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         """
-        kwargs is the combined input and model_kwargs
+        kwargs is the combined input and model_kwargs.  Support streaming call.
         """
         log.info(f"api_kwargs: {api_kwargs}")
         if model_type == ModelType.EMBEDDER:
             return self.sync_client.embeddings.create(**api_kwargs)
         elif model_type == ModelType.LLM:
+            if "stream" in api_kwargs and api_kwargs.get("stream", False):
+                log.debug("streaming call")
+                self.chat_completion_parser = handle_streaming_response
+                return self.sync_client.chat.completions.create(**api_kwargs)
             return self.sync_client.chat.completions.create(**api_kwargs)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
@@ -226,3 +257,23 @@ class OpenAIClient(ModelClient):
         ]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
+
+
+# if __name__ == "__main__":
+#     from lightrag.core import Generator
+#     from lightrag.utils import setup_env, get_logger
+
+#     log = get_logger(level="DEBUG")
+
+#     setup_env()
+#     prompt_kwargs = {"input_str": "What is the meaning of life?"}
+
+#     gen = Generator(
+#         model_client=OpenAIClient(),
+#         model_kwargs={"model": "gpt-3.5-turbo", "stream": True},
+#     )
+#     gen_response = gen(prompt_kwargs)
+#     print(f"gen_response: {gen_response}")
+
+#     for genout in gen_response.data:
+#         print(f"genout: {genout}")

@@ -69,17 +69,17 @@ class ModelClientType:
 
     .. code-block:: python
 
-    from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient
+        from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient
 
-    model_client = OpenAIClient()
+        model_client = OpenAIClient()
 
     To this:
 
     .. code-block:: python
 
-    from lightrag.core.types import ModelClientType
+        from lightrag.core.types import ModelClientType
 
-    model_client = ModelClientType.OPENAI()
+        model_client = ModelClientType.OPENAI()
     """
     COHERE = CohereAPIClient
     TRANSFORMERS = TransformersClient

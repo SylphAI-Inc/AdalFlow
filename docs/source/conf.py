@@ -52,12 +52,6 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
-    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
-    # "announcement": """<div id="announcement-banner" class="announcement-banner">
-    #                       <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-    #                       <button onclick="var element = document.getElementById('announcement-banner').parentNode.parentNode; element.parentNode.removeChild(element);">×</button>
-    #                   </div>""",
-    # dynamic announcement
     "announcement": """
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -94,7 +88,7 @@ html_theme_options = {
                     if (document.documentElement.scrollTop > 0) {
                         banner.style.display = 'none';
                     } else {
-                        banner.style.display = 'block';
+                        banner.style.display = 'flex'; // Ensure it remains flex
                     }
                 });
             } else {

@@ -346,6 +346,57 @@ class TestGetTypeSchema(unittest.TestCase):
         )
 
 
+@dataclass
+class ListDataclass(DataClass):
+    answer: str = field(metadata={"desc": "The answer to the user question."})
+    pmids: list[int] = field(
+        metadata={"desc": "The PMIDs of the relevant articles used to answer."}
+    )
+
+
+class TestUnnestedDataclass(unittest.TestCase):
+    def test_list_dataclass(self):
+        instance = ListDataclass(answer="answer", pmids=[1, 2, 3])
+        result = instance.to_dict()
+        print(f"result: {result}")
+        expected = "{'answer': 'answer', 'pmids': [1, 2, 3]}"
+        self.assertEqual(str(result), expected)
+        restored_instance = ListDataclass.from_dict(result)
+        self.assertEqual(restored_instance, instance)
+
+    def test_dict_dataclass(self):
+        @dataclass
+        class DictDataclass(DataClass):
+            answer: str = field(metadata={"desc": "The answer to the user question."})
+            pmids: Dict[str, int] = field(
+                metadata={"desc": "The PMIDs of the relevant articles used to answer."}
+            )
+
+        instance = DictDataclass(answer="answer", pmids={"a": 1, "b": 2, "c": 3})
+        result = instance.to_dict()
+        print(f"result: {result}")
+        expected = "{'answer': 'answer', 'pmids': {'a': 1, 'b': 2, 'c': 3}}"
+        self.assertEqual(str(result), expected)
+        restored_instance = DictDataclass.from_dict(result)
+        self.assertEqual(restored_instance, instance)
+
+    def test_set_dataclass(self):
+        @dataclass
+        class SetDataclass(DataClass):
+            answer: str = field(metadata={"desc": "The answer to the user question."})
+            pmids: Set[int] = field(
+                metadata={"desc": "The PMIDs of the relevant articles used to answer."}
+            )
+
+        instance = SetDataclass(answer="answer", pmids={1, 2, 3})
+        result = instance.to_dict()
+        print(f"result: {result}")
+        expected = "{'answer': 'answer', 'pmids': {1, 2, 3}}"
+        self.assertEqual(str(result), expected)
+        restored_instance = SetDataclass.from_dict(result)
+        self.assertEqual(restored_instance, instance)
+
+
 if __name__ == "__main__":
 
     unittest.main()
