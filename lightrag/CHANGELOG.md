@@ -1,3 +1,9 @@
+## [0.1.0-beta.6] - 2024-07-23
+
+### Fixed
+
+- We introduced a bug in the previous release, the ollama model client non-streaming call was not working. We fixed it as we cannot put yield and return in the same function.
+
 ## [0.1.0-beta.5] - 2024-07-23
 
 ### Fixed
