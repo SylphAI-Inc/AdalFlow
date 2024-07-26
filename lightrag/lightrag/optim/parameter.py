@@ -6,7 +6,7 @@ import logging
 
 # from lightrag.core import Generator
 
-from lightrag.optim.text_grad.prompt_template import GRADIENT_TEMPLATE
+from lightrag.optim.text_grad.backend_engine_prompt import GRADIENT_TEMPLATE
 
 if TYPE_CHECKING:
     pass  # Import Generator for type checking only
