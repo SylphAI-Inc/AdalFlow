@@ -1,7 +1,7 @@
 from lightrag.optim.parameter import Parameter
 from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
-from lightrag.optim.text_grad_optimizer import LLMAsTextLoss
+from lightrag.optim.text_grad.llm_text_loss import LLMAsTextLoss
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.utils import setup_env, get_logger, save_json
 

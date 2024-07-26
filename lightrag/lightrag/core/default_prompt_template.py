@@ -31,7 +31,7 @@ SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<SYS>{{task_desc_str}}</SYS>
 User: {{input_str}}
 You:"""
 
-DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<SYS>
+DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {# task desc #}
 {% if task_desc_str %}
 {{task_desc_str}}
@@ -74,13 +74,12 @@ You are a helpful assistant.
 {{steps_str}}
 </STEPS>
 {% endif %}
-</SYS>
+<END_OF_SYSTEM_PROMPT>
 {% if input_str %}
 <User>
 {{input_str}}
 </User>
 {% endif %}
-You:
 """
 """This is the default system prompt template used in the LightRAG.
 

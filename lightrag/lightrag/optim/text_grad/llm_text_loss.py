@@ -8,7 +8,7 @@ from lightrag.core.generator import Generator
 
 from lightrag.core.component import Component
 from lightrag.core import ModelClient
-from .parameter import Parameter
+from ..parameter import Parameter
 from typing import Dict
 from copy import deepcopy
 import logging
@@ -26,7 +26,20 @@ TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 
 
 # TODO: limit to one engine
+# TODO: this can be merged with its numerical eval_function
 class LLMAsTextLoss(Component):
+    __doc__ = r"""Evaluate the final RAG response using an LLM judge.
+
+    The LLM judge will have:
+    - eval_system_prompt: The system prompt to evaluate the response.
+    - y_hat: The response to evaluate.
+    - Optional: y: The correct response to compare against.
+
+    The loss will be a Parameter with the evaluation result and can be used to compute gradients.
+    This loss use LLM/Generator as the computation/transformation operator, so it's gradient will be
+    found from the Generator's backward method.
+    """
+
     def __init__(
         self,
         prompt_kwargs: Dict[str, Union[str, Parameter]],
