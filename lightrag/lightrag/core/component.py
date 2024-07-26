@@ -19,8 +19,8 @@ import logging
 import pickle
 import inspect
 
-
-# from lightrag.core.parameter import Parameter
+# if TYPE_CHECKING:
+from lightrag.optim.parameter import Parameter
 from lightrag.utils.serialization import default
 from lightrag.utils.config import new_component
 
@@ -124,7 +124,7 @@ class Component:
     # _execution_graph: List[str] = []  # This will store the graph of execution.
     # _graph = nx.DiGraph()
     # _last_called = None  # Tracks the last component called
-    # _parameters: Dict[str, Optional[Parameter]]
+    _parameters: Dict[str, Optional[Parameter]]
     training: bool
 
     # def _generate_unique_name(self):
@@ -333,52 +333,52 @@ class Component:
         with open(filepath, "rb") as file:
             return pickle.load(file)
 
-    # def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
-    #     r"""Add a parameter to the component.
+    def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
+        r"""Add a parameter to the component.
 
-    #     The parameter can be accessed as an attribute using given name.
+        The parameter can be accessed as an attribute using given name.
 
-    #     Args:
-    #         name (str): name of the parameter. The parameter can be accessed using this name.
-    #         param (Parameter): parameter to be added.
+        Args:
+            name (str): name of the parameter. The parameter can be accessed using this name.
+            param (Parameter): parameter to be added.
 
-    #     """
-    #     if "_parameters" not in self.__dict__:
-    #         raise AttributeError(
-    #             "cant assign parameter before Component.__init__() call"
-    #         )
-    #     elif "." in name:
-    #         raise ValueError('parameter name can\'t contain "."')
-    #     elif name == "":
-    #         raise ValueError('parameter name can\'t be empty string ""')
-    #     elif hasattr(self, name) and name not in self._parameters:
-    #         raise KeyError("attribute '{}' already exists".format(name))
+        """
+        if "_parameters" not in self.__dict__:
+            raise AttributeError(
+                "cant assign parameter before Component.__init__() call"
+            )
+        elif "." in name:
+            raise ValueError('parameter name can\'t contain "."')
+        elif name == "":
+            raise ValueError('parameter name can\'t be empty string ""')
+        elif hasattr(self, name) and name not in self._parameters:
+            raise KeyError("attribute '{}' already exists".format(name))
 
-    #     if param is None:
-    #         self._parameters[name] = None
-    #     elif not isinstance(param, Parameter):
-    #         raise TypeError(
-    #             f"cannot assign'{type(param)}' object to parameter '{name}'(Parameter or None required)"
-    #         )
-    #     else:
-    #         self._parameters[name] = param
+        if param is None:
+            self._parameters[name] = None
+        elif not isinstance(param, Parameter):
+            raise TypeError(
+                f"cannot assign'{type(param)}' object to parameter '{name}'(Parameter or None required)"
+            )
+        else:
+            self._parameters[name] = param
 
-    # def parameters(self, recursive: bool = True) -> Iterable[Parameter]:
-    #     r"""Returns an iterator over module parameters.
+    def parameters(self, recursive: bool = True) -> Iterable[Parameter]:
+        r"""Returns an iterator over module parameters.
 
-    #     Args:
-    #         recursive (bool): if True, then yields parameters of this component and all subcomponents.
-    #             Otherwise, yields only parameters that are direct members of this component.
+        Args:
+            recursive (bool): if True, then yields parameters of this component and all subcomponents.
+                Otherwise, yields only parameters that are direct members of this component.
 
-    #     Yields:
-    #         Parameter: module parameter
+        Yields:
+            Parameter: module parameter
 
-    #     Examples:
-    #         >>> for param in model.parameters():
-    #         >>>     print(param)
-    #     """
-    #     for name, param in self.named_parameters(recursive=recursive):
-    #         yield param
+        Examples:
+            >>> for param in model.parameters():
+            >>>     print(param)
+        """
+        for name, param in self.named_parameters(recursive=recursive):
+            yield param
 
     def _named_members(
         self,
@@ -418,32 +418,32 @@ class Component:
                 name = component_prefix + ("." if component_prefix else "") + k
                 yield name, v
 
-    # def named_parameters(
-    #     self, prefix: str = "", recursive: bool = True, remove_duplicate: bool = True
-    # ) -> Iterable[Tuple[str, Parameter]]:
-    #     r"""Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.
+    def named_parameters(
+        self, prefix: str = "", recursive: bool = True, remove_duplicate: bool = True
+    ) -> Iterable[Tuple[str, Parameter]]:
+        r"""Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.
 
-    #     Args:
-    #         prefix (str): prefix to prepend to all parameter names.
-    #         recursive (bool): if True, then yields parameters of this component and all subcomponents.
-    #             Otherwise, yields only parameters that are direct members of this component.
-    #             are direct members of this component.
-    #         remove_duplicate (bool): if True, then yields only unique parameters.
+        Args:
+            prefix (str): prefix to prepend to all parameter names.
+            recursive (bool): if True, then yields parameters of this component and all subcomponents.
+                Otherwise, yields only parameters that are direct members of this component.
+                are direct members of this component.
+            remove_duplicate (bool): if True, then yields only unique parameters.
 
-    #     Yields:
-    #         Tuple[str, Parameter]: Tuple containing the name and parameter
+        Yields:
+            Tuple[str, Parameter]: Tuple containing the name and parameter
 
-    #     Examples:
-    #         >>> for name, param in model.named_parameters():
-    #         >>>     print(name, param)
-    #     """
-    #     gen = self._named_members(
-    #         lambda component: component._parameters.items(),
-    #         prefix=prefix,
-    #         recursive=recursive,
-    #         remove_duplicate=remove_duplicate,
-    #     )
-    #     yield from gen
+        Examples:
+            >>> for name, param in model.named_parameters():
+            >>>     print(name, param)
+        """
+        gen = self._named_members(
+            lambda component: component._parameters.items(),
+            prefix=prefix,
+            recursive=recursive,
+            remove_duplicate=remove_duplicate,
+        )
+        yield from gen
 
     # @staticmethod
     # def visualize_graph_html(filename="graph.html"):
@@ -665,12 +665,11 @@ class Component:
         for name, param in local_state.items():
             key = prefix + name
             if key in state_dict:
-                pass
-                # input_param = state_dict[key]
-                # if isinstance(input_param, Parameter):
-                #     input_param = input_param.data
-                # if input_param is not None:
-                #     param.update_value(input_param)  # update the value of the parameter
+                input_param = state_dict[key]
+                if isinstance(input_param, Parameter):
+                    input_param = input_param.data
+                if input_param is not None:
+                    param.update_value(input_param)  # update the value of the parameter
             elif strict:
                 missing_keys.append(key)
 
@@ -774,40 +773,40 @@ class Component:
                     else:
                         d.discard(name)
 
-            # set parameter
-            # params = self.__dict__.get("_parameters")
-            # if isinstance(value, Parameter):
-            #     if params is None:
-            #         raise AttributeError(
-            #             "cant assign parameter before Component.__init__() call"
-            #         )
-            #     remove_from(self.__dict__)
-            #     self.register_parameter(name, value)
-            # elif params is not None and name in params:
-            #     if value is not None:
-            #         raise TypeError(
-            #             f"cannot assign '{type(value)}' object to parameter '{name}' (Parameter or None required)"
-            #         )
-            #     self.register_parameter(name, value)
-            # else:  # set component
-
-        components = self.__dict__.get("_components")
-        if isinstance(value, Component):
-            if components is None:
+        # set parameter
+        params = self.__dict__.get("_parameters")
+        if isinstance(value, Parameter):
+            if params is None:
                 raise AttributeError(
-                    "cant assign component before Component.__init__() call"
+                    "cant assign parameter before Component.__init__() call"
                 )
             remove_from(self.__dict__)
-            components[name] = value
+            self.register_parameter(name, value)
+        elif params is not None and name in params:
+            if value is not None:
+                raise TypeError(
+                    f"cannot assign '{type(value)}' object to parameter '{name}' (Parameter or None required)"
+                )
+            self.register_parameter(name, value)
+        else:  # set component
 
-        else:  # set attribute
-            super().__setattr__(name, value)
+            components = self.__dict__.get("_components")
+            if isinstance(value, Component):
+                if components is None:
+                    raise AttributeError(
+                        "cant assign component before Component.__init__() call"
+                    )
+                remove_from(self.__dict__)
+                components[name] = value
+
+            else:  # set attribute
+                super().__setattr__(name, value)
 
     def __getattr__(self, name: str) -> Any:
-        # if "_parameters" in self.__dict__:
-        #     parameters = self.__dict__["_parameters"]
-        #     if name in parameters:
-        #         return parameters[name]
+        if "_parameters" in self.__dict__:
+            parameters = self.__dict__["_parameters"]
+            if name in parameters:
+                return parameters[name]
         if "_components" in self.__dict__:
             components = self.__dict__["_components"]
             if name in components:
@@ -818,8 +817,8 @@ class Component:
         )
 
     def __delattr__(self, name: str) -> None:
-        # if name in self._parameters:
-        #     del self._parameters[name]
+        if name in self._parameters:
+            del self._parameters[name]
         if name in self._components:
             del self._components[name]
         else:

@@ -1,4 +1,5 @@
 from .base_data_class import DataClass, required_field, DataClassFormatType
+
 from .component import Component, FunComponent, fun_to_component
 from .container import Sequential
 from .db import LocalDB

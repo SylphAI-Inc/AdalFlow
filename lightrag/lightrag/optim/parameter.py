@@ -5,7 +5,7 @@ from collections import defaultdict
 import logging
 
 # from lightrag.core import Generator
-from lightrag.core.prompt_builder import Prompt
+
 from lightrag.optim.text_grad.prompt_template import GRADIENT_TEMPLATE
 
 if TYPE_CHECKING:
@@ -114,6 +114,7 @@ class Parameter(Generic[T]):
         1. the gradients
         2. the context text for which the gradients are computed
         """
+        from lightrag.core.prompt_builder import Prompt
 
         gradients: List[str] = []
         for g in self.gradients:

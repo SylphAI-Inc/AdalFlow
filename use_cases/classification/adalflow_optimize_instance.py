@@ -4,9 +4,9 @@ from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.optim.text_grad.llm_text_loss import LLMAsTextLoss
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
-from lightrag.utils import setup_env, get_logger
+from lightrag.utils import setup_env
 
-logger = get_logger(level="DEBUG", filename="adalflow.log")
+# logger = get_logger(level="DEBUG", filename="adalflow.log")
 
 setup_env()
 llama3_model = {
@@ -44,6 +44,8 @@ question_string = (
 )
 
 
+# TODO: test the optimization of a prompt
+# this is instance optimization, it also be a single step prompt optimization
 class SimpleQA(Component):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
@@ -60,18 +62,27 @@ class SimpleQA(Component):
             "input_str": Parameter(
                 data=question, requires_opt=False, role_desc="input to the LLM"
             ),
+            "task_desc_str": Parameter(
+                data="Answer the following question",
+                requires_opt=True,
+                role_desc="task description prompt to the LLM",
+            ),
         }
-        return self.llm(prompt_kwargs).data  # use forward method
+        return self.llm(prompt_kwargs)  # use forward method
 
 
 qa = SimpleQA(**gpt_4o_model)
+qa.train()
+print(qa.llm.training)
+
 answer = qa.call(question_string)
 print("eval answer: ", answer)
 
-
-answer_param = Parameter(
-    data=answer, requires_opt=True, role_desc="The response of the LLM"
-)
+answer_param = answer
+answer_param.role_desc = "The response of the LLM"
+# answer_param = Parameter(
+#     data=answer, requires_opt=True, role_desc="The response of the LLM"
+# )
 # TODO: Only generator needs parameters to optimize
 loss_fn = LLMAsTextLoss(
     prompt_kwargs={
@@ -85,17 +96,32 @@ loss_fn = LLMAsTextLoss(
     **gpt_4o_model,
 )
 print(f"loss_fn: {loss_fn}")
+import itertools
 
-optimizer = TextualGradientDescent(params=[answer_param], **gpt_4o_model)
+params_generator = itertools.chain(qa.parameters(), [answer_param])
+
+print(f"qa.parameters(): {list(qa.parameters())}, {qa})")
+
+print("params_generator", list(params_generator))
+exit()
+
+# params = qa.parameters()
+# all_params = params + [answer_param]
+
+optimizer = TextualGradientDescent(
+    params=list(params_generator),
+    **gpt_4o_model,
+)
 print(f"optimizer: {optimizer}")
 
 l = loss_fn(prompt_kwargs={"eval_user_prompt": answer_param})  # noqa: E741
 print(f"l: {l}")
 l.backward()
-logger.info(f"l: {l}")
 dict_data = l.to_dict()
 print(f"dict_data: {dict_data}")
 # save dict_data to a file
 # save_json(dict_data, "dict_data.json")
 optimizer.step()  # this will update x prameter
-print(f"optimized answer: {answer_param}")
+# print(f"optimized answer: {answer_param}")
+for param in list(params_generator):
+    print(f"optimized param: {param}")

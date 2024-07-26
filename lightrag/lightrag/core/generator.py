@@ -127,17 +127,20 @@ class Generator(Component):
         self.output_processors = output_processors
 
         # add trainable_params to generator
-        prompt_variables = self.prompt.get_prompt_variables()
-        self._trainable_params: List[str] = []
-        for param in trainable_params:
-            if param not in prompt_variables:
-                raise ValueError(
-                    f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
-                )
-            # Create a Parameter object and assign it as an attribute with the same name as the value of param
-            default_value = self.prompt_kwargs.get(param, None)
-            setattr(self, param, Parameter[Union[str, None]](data=default_value))
-            self._trainable_params.append(param)
+        # prompt_variables = self.prompt.get_prompt_variables()
+        for key, p in prompt_kwargs.items():
+            if isinstance(p, Parameter):
+                setattr(self, key, p)
+        # self._trainable_params: List[str] = []
+        # for param in trainable_params:
+        #     if param not in prompt_variables:
+        #         raise ValueError(
+        #             f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
+        #         )
+        #     # Create a Parameter object and assign it as an attribute with the same name as the value of param
+        #     default_value = self.prompt_kwargs.get(param, None)
+        #     setattr(self, param, Parameter[Union[str, None]](data=default_value))
+        #     self._trainable_params.append(param)
         # end of trainable parameters
         self.backward_engine: Generator = None
 
@@ -492,8 +495,10 @@ class Generator(Component):
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
         if self.training:
+            print("Training mode")
             return self.forward(*args, **kwargs)
         else:
+            print("Inference mode")
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:
