@@ -79,18 +79,7 @@ FEEDBACK_ENGINE_TEMPLATE = f"""<START_OF_SYSTEM_PROMPT>
 <END_OF_USER_PROMPT>"""
 
 
-# Note: the separation of the sytem and user prompt fits well that the system prompt is fixed between calls
-# x is the parameter?
-# 1. use dataclass and structured output to get the output [potentially]
-# 2. input is a variable and the system prompt (no gradient?, it is to optimize the system prompt) is another variable -> parameters
-TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-{{eval_system_prompt}}
-<END_OF_SYSTEM_PROMPT>
-<USER>
-{{eval_user_prompt}}
-</USER>
-"""
-
+# TODO: Not fully sure about the function of this template
 GRADIENT_TEMPLATE = r"""Here is a conversation:
 <CONVERSATION>{{context}}</CONVERSATION>
 This conversation is potentially part of a larger system. The output is used as {{response_desc}}
