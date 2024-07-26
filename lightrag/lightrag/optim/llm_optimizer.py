@@ -4,15 +4,20 @@ https://arxiv.org/abs/2309.03409
 Source code: https://github.com/google-deepmind/opro
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TYPE_CHECKING
 from dataclasses import field, dataclass
 from copy import deepcopy
 
 from lightrag.core.base_data_class import DataClass
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.generator import Generator, GeneratorOutput
+
+# if TYPE_CHECKING:
 from lightrag.optim.parameter import Parameter
+
+if TYPE_CHECKING:
+    from lightrag.core.generator import Generator, GeneratorOutput
+
 from lightrag.optim.optimizer import Optimizer
 
 # TODO: add the responses and gts

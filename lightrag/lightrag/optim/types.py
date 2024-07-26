@@ -20,4 +20,6 @@ class OptimizeGoal(Enum):
 
 LightRAG_optimizer_notes = [
     "tags like <SYS></SYS> or <SYSTEM></SYSTEM>  or <START_OF_SYSTEM_PROMPT> <END_OF_SYSTEM_PROMPT>can lead to different performance",
+    "System prompt",
+    "output format, the description of field",
 ]

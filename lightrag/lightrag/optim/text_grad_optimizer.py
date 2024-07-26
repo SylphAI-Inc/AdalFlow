@@ -21,13 +21,12 @@ GLOSSARY_TEXT_BACKWARD = """
 # - <VARIABLE>: Specifies the span of the variable.
 # - <ROLE>: The role description of the variable."""
 
-TEXT_LOSS_TEMPLATE = r"""<SYS>
+TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{eval_system_prompt}}
-</SYS>
+<END_OF_SYSTEM_PROMPT>
 <USER>
 {{eval_user_prompt}}
 </USER>
-You:
 """
 
 # CONVERSATION_TEMPLATE = (
@@ -103,7 +102,6 @@ class LLMAsTextLoss(Component):
                     data=value, requires_opt=False, role_desc=key  # TODO: role_desc
                 )
         self.prompt_kwargs = prompt_kwargs
-        # TODO: adapt generator to take both str and Parameter as input
         self.loss_llm = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
@@ -111,6 +109,7 @@ class LLMAsTextLoss(Component):
             prompt_kwargs=prompt_kwargs,
         )
 
+        # this is an llm judge to help optimize the response without reference.
         self.backward_engine = engine or Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
@@ -132,6 +131,7 @@ class LLMAsTextLoss(Component):
         output: GeneratorOutput = self.loss_llm(combined_prompt_kwargs_str)
         data = output.data
         response = Parameter(
+            alias="llm_judge_loss",
             data=data,
             requires_opt=True,
             predecessors=list(combined_prompt_kwargs.values()),
@@ -265,6 +265,7 @@ class LLMAsTextLoss(Component):
         prompt_kwargs: Dict[str, str],
         backward_engine: Generator,
     ):
+        print("Backward through LLM chain")
         for v in children_parameters:
             if not v.requires_opt:
                 continue

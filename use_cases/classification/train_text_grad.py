@@ -68,6 +68,7 @@ def eval_dataset(test_set, eval_fn, model, max_samples: int = None):
     return accuracy_list
 
 
+# use ours propose if accept, set, if not , revert
 def run_validation_revert(system_prompt: tg.Variable, results, model, eval_fn, val_set):
     val_performance = np.mean(eval_dataset(val_set, eval_fn, model))
     previous_performance = np.mean(results["validation_acc"][-1])
@@ -198,3 +199,43 @@ if __name__ == "__main__":
     results["validation_acc"].append(eval_dataset(val_set, eval_fn, model))  # 0.72
     results["prompt"].append(system_prompt.get_value())
     print(results)
+    # train the model
+    for epoch in range(3):
+        for steps, (batch_x, batch_y) in enumerate(
+            (pbar := tqdm(train_loader, position=0))
+        ):
+            pbar.set_description(f"Training step {steps}. Epoch {epoch}")
+            optimizer.zero_grad()
+            losses = []
+            for x, y in zip(batch_x, batch_y):
+                x = tg.Variable(
+                    x,
+                    requires_grad=False,
+                    role_description="query to the language model",
+                )
+                y = tg.Variable(
+                    y,
+                    requires_grad=False,
+                    role_description="correct answer for the query",
+                )
+                response = model(x)
+                try:
+                    eval_output_variable = eval_fn(
+                        inputs=dict(prediction=response, ground_truth_answer=y)
+                    )
+                except Exception as e:
+                    log.info(f"Error: {e}")
+                    eval_output_variable = eval_fn([x, y, response])
+                losses.append(eval_output_variable)
+            total_loss = tg.sum(losses)  # operator aggregrate the feedbacks,
+            total_loss.backward()
+            optimizer.step()
+
+            run_validation_revert(system_prompt, results, model, eval_fn, val_set)
+
+            print("sys prompt: ", system_prompt)
+            test_acc = eval_dataset(test_set, eval_fn, model)
+            results["test_acc"].append(test_acc)
+            results["prompt"].append(system_prompt.get_value())
+            if steps == 3:
+                break

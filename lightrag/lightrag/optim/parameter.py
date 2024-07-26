@@ -1,12 +1,15 @@
 """WIP"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict
+from typing import Generic, TypeVar, Any, List, Set, Dict, TYPE_CHECKING
 from collections import defaultdict
 import logging
 
 # from lightrag.core import Generator
 from lightrag.core.prompt_builder import Prompt
 from lightrag.optim.text_grad.prompt_template import GRADIENT_TEMPLATE
+
+if TYPE_CHECKING:
+    pass  # Import Generator for type checking only
 
 T = TypeVar("T")  # covariant set to False to allow for in-place updates
 
@@ -77,6 +80,7 @@ class Parameter(Generic[T]):
         self.gradients_context: Dict[Parameter, str] = defaultdict(lambda: None)
         self.grad_fn = None
         self.alias = alias
+        self.proposed_data: T = None  # this is for the optimizer to propose a new value
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
@@ -175,20 +179,56 @@ class Parameter(Generic[T]):
                 log.debug(f"Calling gradient function for {node.data}")
                 node.grad_fn()
 
+    # def to_dict(self):
+    #     return {
+    #         "data": self.data,
+    #         "requires_opt": self.requires_opt,
+    #         "role_desc": self.role_desc,
+    #         "predecessors": self.predecessors,
+    #     }
+
+    # @classmethod
+    # def from_dict(cls, data: dict):
+    #     return cls(data=data["data"], requires_opt=data["requires_opt"])
+
     def to_dict(self):
         return {
+            "alias": self.alias,
             "data": self.data,
             "requires_opt": self.requires_opt,
             "role_desc": self.role_desc,
-            "predecessors": self.predecessors,
+            "predecessors": [pred.to_dict() for pred in self.predecessors],
+            "gradients": [grad.to_dict() for grad in self.gradients],
+            "proposed_data": self.proposed_data,
+            "gradients_context": [
+                (k.to_dict(), v) for k, v in self.gradients_context.items()
+            ],
+            "grad_fn": str(
+                self.grad_fn
+            ),  # Simplify for serialization, modify as needed
         }
 
     @classmethod
     def from_dict(cls, data: dict):
-        return cls(data=data["data"], requires_opt=data["requires_opt"])
+        predecessors = [cls.from_dict(pred) for pred in data["predecessors"]]
+        param = cls(
+            data=data["data"],
+            requires_opt=data["requires_opt"],
+            role_desc=data["role_desc"],
+            predecessors=predecessors,
+            alias=data["alias"],
+            gradients=[cls.from_dict(grad) for grad in data["gradients"]],
+            proposed_data=data["proposed_data"],
+        )
+        # Reconstruct gradients_context from the list of tuples
+        param.gradients_context = defaultdict(
+            lambda: None, {cls.from_dict(k): v for k, v in data["gradients_context"]}
+        )
+        return param
 
+    # TODO: very hard to read directly, need to simplify and let users use to_dict for better readability
     def __repr__(self):
-        return f"Parameter(data={self.data}, requires_opt={self.requires_opt}, role_desc={self.role_desc}, predecessors={self.predecessors}, gradients={self.gradients})"
+        return f"Parameter(alias={self.alias}, data={self.data}, requires_opt={self.requires_opt}, role_desc={self.role_desc}, predecessors={self.predecessors}, gradients={self.gradients})"
 
 
 def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:

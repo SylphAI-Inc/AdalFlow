@@ -3,7 +3,7 @@ from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.optim.text_grad_optimizer import LLMAsTextLoss
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
-from lightrag.utils import setup_env, get_logger
+from lightrag.utils import setup_env, get_logger, save_json
 
 logger = get_logger(level="DEBUG", filename="adalflow.log")
 
@@ -14,6 +14,7 @@ x = Parameter(
     data="A sntence with a typo",
     role_desc="The input sentence",
     requires_opt=True,
+    alias="llm_output",
 )  # weights
 
 llama3_model = {
@@ -36,6 +37,7 @@ gpt_3_model = {
 }
 
 eval_system_prompt = Parameter(
+    alias="llm_judge_sys_prompt",
     data="Evaluate the correctness of this sentence",
     role_desc="The system prompt",
     requires_opt=True,
@@ -56,4 +58,8 @@ l = loss_fn(prompt_kwargs={"eval_user_prompt": x})  # noqa: E741
 print(f"l: {l}")
 l.backward()
 logger.info(f"l: {l}")
-optimizer.step()  # this will update x prameter
+dict_data = l.to_dict()
+print(f"dict_data: {dict_data}")
+# save dict_data to a file
+save_json(dict_data, "dict_data.json")
+# optimizer.step()  # this will update x prameter
