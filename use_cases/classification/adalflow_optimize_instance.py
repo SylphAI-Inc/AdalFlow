@@ -52,25 +52,31 @@ class SimpleQA(Component):
         self.model_client = model_client
         self.model_kwargs = model_kwargs
 
-        self.llm = Generator(
-            model_client=model_client,
-            model_kwargs=model_kwargs,
-        )
-
-    def call(self, question: str):
         prompt_kwargs = {
-            "input_str": Parameter(
-                data=question, requires_opt=False, role_desc="input to the LLM"
-            ),
             "task_desc_str": Parameter(
                 data="Answer the following question",
                 requires_opt=True,
                 role_desc="task description prompt to the LLM",
             ),
         }
+
+        self.llm = Generator(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            prompt_kwargs=prompt_kwargs,
+        )
+
+    # TODO: add this in parameter
+    def call(self, question: str):
+        prompt_kwargs = {
+            "input_str": Parameter(
+                data=question, requires_opt=False, role_desc="input to the LLM"
+            )
+        }
         return self.llm(prompt_kwargs)  # use forward method
 
 
+# Might be extended to optimize hyperparameters
 qa = SimpleQA(**gpt_4o_model)
 qa.train()
 print(qa.llm.training)
@@ -83,7 +89,6 @@ answer_param.role_desc = "The response of the LLM"
 # answer_param = Parameter(
 #     data=answer, requires_opt=True, role_desc="The response of the LLM"
 # )
-# TODO: Only generator needs parameters to optimize
 loss_fn = LLMAsTextLoss(
     prompt_kwargs={
         "eval_system_prompt": (
@@ -98,18 +103,13 @@ loss_fn = LLMAsTextLoss(
 print(f"loss_fn: {loss_fn}")
 import itertools
 
-params_generator = itertools.chain(qa.parameters(), [answer_param])
+params = list(itertools.chain(qa.parameters(), [answer_param]))
+for p in qa.named_parameters():
+    print(f"qa.parameters: {p}")
 
-print(f"qa.parameters(): {list(qa.parameters())}, {qa})")
-
-print("params_generator", list(params_generator))
-exit()
-
-# params = qa.parameters()
-# all_params = params + [answer_param]
 
 optimizer = TextualGradientDescent(
-    params=list(params_generator),
+    params=params,  # noqa: F841
     **gpt_4o_model,
 )
 print(f"optimizer: {optimizer}")
@@ -123,5 +123,5 @@ print(f"dict_data: {dict_data}")
 # save_json(dict_data, "dict_data.json")
 optimizer.step()  # this will update x prameter
 # print(f"optimized answer: {answer_param}")
-for param in list(params_generator):
+for param in params:
     print(f"optimized param: {param}")

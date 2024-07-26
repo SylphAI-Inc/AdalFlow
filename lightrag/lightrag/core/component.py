@@ -869,10 +869,10 @@ class Component:
         for i, (key, param) in enumerate(params.items()):
             if key == "self":
                 continue
-            # if param.default == inspect.Parameter.empty:
-            #     init_args[key] = args[i] if i < len(args) else kwargs.get(key)
-            # else:
-            #     init_args[key] = kwargs.get(key, param.default)
+            if param.default == inspect.Parameter.empty:
+                init_args[key] = args[i] if i < len(args) else kwargs.get(key)
+            else:
+                init_args[key] = kwargs.get(key, param.default)
         return init_args
 
 

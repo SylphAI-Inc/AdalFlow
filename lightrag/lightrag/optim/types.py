@@ -14,9 +14,10 @@ class OptimizeGoal(Enum):
     LLM_RESPONSE = (
         auto()
     )  # similar to reflection, to optimize the response with optimizer
+    HYPERPARAMETER_TUNING = auto()  # optimize hyperparameters
 
 
-# Goal: write arxiv paper on this.
+# Goal: The optimization method can be potentially used for hyperparameter tuning too
 
 LightRAG_optimizer_notes = [
     "tags like <SYS></SYS> or <SYSTEM></SYSTEM>  or <START_OF_SYSTEM_PROMPT> <END_OF_SYSTEM_PROMPT>can lead to different performance",

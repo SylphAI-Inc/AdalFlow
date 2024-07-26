@@ -61,7 +61,7 @@ TGD_PROMPT_PREFIX = (
 
 TGD_PROMPT_SUFFIX = (
     "Send the improved variable "
-    "in the following format:\n\n{new_variable_start_tag}$the improved variable{new_variable_end_tag}\n\n"
+    "in the following format:\n\n{new_variable_start_tag}the_improved_variable{new_variable_end_tag}\n\n"
     "Send ONLY the improved variable between the <IMPROVED_VARIABLE> tags, and nothing else."
 )
 
