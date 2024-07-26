@@ -18,9 +18,17 @@ from lightrag.core.component import Component
 from lightrag.optim.parameter import Parameter
 
 from lightrag.core.prompt_builder import Prompt
+from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-
+from lightrag.optim.text_grad.function import BackwardContext
+from lightrag.optim.text_grad.prompt_template import (
+    FEEDBACK_ENGINE_TEMPLATE,
+    CONVERSATION_TEMPLATE,
+    CONVERSATION_START_INSTRUCTION_BASE,
+    EVALUATE_VARIABLE_INSTRUCTION,
+    OBJECTIVE_INSTRUCTION_BASE,
+)
 
 log = logging.getLogger(__name__)
 
@@ -77,6 +85,7 @@ class Generator(Component):
         output_processors: Optional[Component] = None,
         # args for the trainable parameters
         trainable_params: Optional[List[str]] = [],
+        name: Optional[str] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -107,6 +116,7 @@ class Generator(Component):
             prompt_kwargs=prompt_kwargs,
             # trainable_params=trainable_params,
         )
+        self.name = name or self.__class__.__name__
 
         self._init_prompt(template, prompt_kwargs)
 
@@ -129,6 +139,7 @@ class Generator(Component):
             setattr(self, param, Parameter[Union[str, None]](data=default_value))
             self._trainable_params.append(param)
         # end of trainable parameters
+        self.backward_engine: Generator = None
 
     def _init_prompt(self, template: str, prompt_kwargs: Dict):
         r"""Initialize the prompt with the template and prompt_kwargs."""
@@ -221,8 +232,196 @@ class Generator(Component):
         )
         return api_kwargs
 
+    def set_backward_engine(
+        self, model_client: ModelClient = None, model_kwargs: Dict[str, Any] = None
+    ):
+        self.backward_engine_model_client = model_client or self.model_client
+        self.backward_engine_model_kwargs = model_kwargs or self.model_kwargs
+
+        # nested generator
+        self.backward_engine = Generator(
+            model_client=self.backward_engine_model_client,
+            model_kwargs=self.backward_engine_model_kwargs,
+            template=FEEDBACK_ENGINE_TEMPLATE,
+            name=f"{self.name}_backward",
+        )
+
     # NOTE: when training is true, we use forward instead of call
-    # def forward(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Parameter:
+    def forward(
+        self,
+        prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
+        model_kwargs: Optional[Dict] = {},
+    ) -> Parameter:
+        # 1. call the model
+        output: GeneratorOutput = self.call(prompt_kwargs, model_kwargs)
+        # 2. Generate a Parameter object from the output
+        parameter_data = None
+        if output.data is None:
+            parameter_data = (
+                f"raw response: {output.raw_response}" + "error: " + output.error
+            )
+
+        else:
+            parameter_data = output.data
+        combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
+        response: Parameter = Parameter(
+            data=parameter_data,
+            alias=self.name,
+            predecessors=list(combined_prompt_kwargs.values()),
+            role_desc=f"response from generator {self.name}",
+        )
+        if not self.backward_engine:
+            self.set_backward_engine()
+
+        response.set_grad_fn(
+            BackwardContext(
+                backward_fn=self.backward,
+                backward_engine=self.backward_engine,
+                response=response,
+                prompt_kwargs=combined_prompt_kwargs,
+            )
+        )
+        return response
+
+    # == pytorch custom autograd function ==
+    def backward(
+        self, response: Parameter, prompt_kwargs: Dict, backward_engine: "Generator"
+    ) -> Parameter:
+        log.info(f"Backward computation for {response.alias}, in generator {self.name}")
+
+        children_parameters = response.predecessors
+        if response.get_gradient_text() == "":
+            log.info(f"No gradients detected for {response.data}")
+            self._backward_through_llm_base(
+                children_parameters, response, prompt_kwargs, backward_engine
+            )
+        else:
+            log.info(f"Gradients detected for {response.data}")
+            self._backward_through_llm_chain(
+                children_parameters, response, prompt_kwargs, backward_engine
+            )
+
+    @staticmethod
+    def _backward_through_llm_base(
+        children_parameters: List[Parameter],
+        response: Parameter,
+        prompt_kwargs: Dict[str, str],
+        backward_engine: "Generator",  # should have a template and prompt_kwargs already
+    ):
+        print("Backward through LLM base")
+        for v in children_parameters:
+            if not v.requires_opt:
+                continue
+            prompt_kwargs_str = {
+                key: p.data if isinstance(p, Parameter) else p
+                for key, p in prompt_kwargs.items()
+            }
+            # v.backward(backward_engine)
+            backward_prompt_kwargs = {
+                "response_desc": response.role_desc,
+                "response_value": response.data,
+                **prompt_kwargs_str,
+                "variable_desc": v.role_desc,
+                "variable_short": v.get_short_value(),
+            }
+            conversation_str = Prompt(  # takes prompt_kwargs and response_value
+                template=CONVERSATION_TEMPLATE, prompt_kwargs=backward_prompt_kwargs
+            )()
+            log.info(f"Conversation str: {conversation_str}")
+            conversation_start_instruction_base_str = Prompt(
+                template=CONVERSATION_START_INSTRUCTION_BASE,
+                prompt_kwargs={
+                    "variable_desc": v.role_desc,
+                    "conversation_str": conversation_str,
+                },
+            )()
+            log.info(
+                f"Conversation start instruction base str: {conversation_start_instruction_base_str}"
+            )
+            # objective_instruction_base_str = Prompt(
+            #     template=OBJECTIVE_INSTRUCTION_BASE, prompt_kwargs={}
+            # )()
+            evaluation_variable_instruction_str = Prompt(
+                template=EVALUATE_VARIABLE_INSTRUCTION,
+                prompt_kwargs={
+                    "variable_desc": v.role_desc,
+                    "variable_short": v.get_short_value(),
+                },
+            )()
+
+            log.info(
+                f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
+            )
+            backward_engine_prompt_kwargs = {
+                "conversation_sec": conversation_start_instruction_base_str,
+                "objective_instruction_sec": OBJECTIVE_INSTRUCTION_BASE,
+                "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
+            }
+
+            gradient_output = backward_engine.call(
+                prompt_kwargs=backward_engine_prompt_kwargs
+            )
+            gradient_value = gradient_output.data
+            # printc(f"Gradient value: {gradient_value}", color="green")
+            log.info(f"Gradient value: {gradient_value}")
+
+            var_gradients = Parameter(
+                data=gradient_value,
+                requires_opt=True,
+                role_desc=f"feedback to {v.role_desc}",
+            )
+            # add the graidents to the variable
+            v.gradients.add(var_gradients)
+
+            # conversation_str = Prompt(
+            #     template=CONVERSATION_TEMPLATE, prompt_kwargs=prompt_kwargs
+            # )()
+
+            v.gradients_context[var_gradients] = {
+                "context": conversation_str,
+                "response_desc": response.role_desc,
+                "variable_desc": v.role_desc,
+            }
+            # TODO: reduce_meta
+
+    @staticmethod
+    def _backward_through_llm_chain(
+        children_parameters: List[Parameter],
+        response: Parameter,
+        prompt_kwargs: Dict[str, str],
+        backward_engine: "Generator",
+    ):
+        print("Backward through LLM chain")
+        for v in children_parameters:
+            if not v.requires_opt:
+                continue
+            backward_prompt_kwargs = {
+                "response_desc": response.role_desc,
+                "response_value": response.data,
+                "response_gradient": response.get_gradient_text(),  # has gradient
+                **prompt_kwargs,
+                "variable_desc": v.role_desc,
+                "variable_short": v.get_short_value(),
+            }
+            gradient_output = backward_engine.call(prompt_kwargs=backward_prompt_kwargs)
+            gradient_value = gradient_output.data
+
+            var_gradients = Parameter(
+                data=gradient_value,
+                requires_opt=False,
+                role_desc=f"feedback to {v.role_desc}",
+            )
+            # add the graidents to the variable
+            v.gradients.add(var_gradients)
+
+            conversation = Prompt(
+                template=CONVERSATION_TEMPLATE, prompt_kwargs=prompt_kwargs
+            )()
+            v.gradients_context[var_gradients] = {
+                "context": conversation,
+                "response_desc": response.role_desc,
+                "variable_desc": v.role_desc,
+            }
 
     def call(
         self,
@@ -290,6 +489,12 @@ class Generator(Component):
         output = self._post_call(completion)
         log.info(f"output: {output}")
         return output
+
+    def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
+        if self.training:
+            return self.forward(*args, **kwargs)
+        else:
+            return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, "

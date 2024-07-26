@@ -2,6 +2,8 @@ from typing import List, Optional, Dict
 from copy import deepcopy
 
 from lightrag.core.base_data_class import DataClass
+
+# if TYPE_CHECKING:
 from lightrag.optim.parameter import Parameter
 from lightrag.core.component import Component
 from lightrag.optim.sampler import Sampler, Sample
