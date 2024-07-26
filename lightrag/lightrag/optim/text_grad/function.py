@@ -9,26 +9,18 @@ if TYPE_CHECKING:
 
 class GradFunction(ABC):
     __doc__ = """The class to define a function that can be called and backpropagated through."""
-    backward_engine: "BackwardEngine" = None
+    backward_engine: "BackwardEngine"
 
     def __init__(self, *args, **kwargs):
-        super().__init__()
+        # super().__init__()
+        super().__setattr__("backward_engine", None)
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
+    @abstractmethod
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
-        from lightrag.core.generator import BackwardEngine
-
-        if backward_engine is None:
-            raise ValueError("backward_engine cannot be None")
-        if not isinstance(backward_engine, BackwardEngine):
-            raise TypeError(
-                f"backward_engine must be an instance of BackwardEngine, got {type(backward_engine)}"
-            )
-        print(f"Setting backward engine: {backward_engine}")
-        self.backward_engine = backward_engine
-        print(f"after backward engine: {self.backward_engine}")
+        pass
 
     @abstractmethod
     def forward(self, *args, **kwargs) -> "Parameter":

@@ -21,9 +21,9 @@ from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-from lightrag.optim.text_grad.function import BackwardContext
+from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 
-from lightrag.optim.text_grad.prompt_template import (
+from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
     CONVERSATION_TEMPLATE,
     CONVERSATION_START_INSTRUCTION_BASE,
@@ -48,7 +48,7 @@ def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
     return prompt_kwargs_str
 
 
-class Generator(Component):
+class Generator(Component, GradFunction):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
     It is also a GradFunction that can be used for backpropagation through the LLM model.
@@ -144,7 +144,7 @@ class Generator(Component):
         #     setattr(self, param, Parameter[Union[str, None]](data=default_value))
         #     self._trainable_params.append(param)
         # end of trainable parameters
-        self.backward_engine: "BackwardEngine" = None
+        # self.backward_engine: "BackwardEngine" = None
         log.info(f"Generator {self.name} initialized.")
 
     def _init_prompt(self, template: str, prompt_kwargs: Dict):
@@ -246,6 +246,7 @@ class Generator(Component):
             )
         print(f"Setting backward engine: {backward_engine}")
         self.backward_engine = backward_engine
+        # super().set_backward_engine(backward_engine)
         print(f"Backward engine set: {self.backward_engine}")
 
     # NOTE: when training is true, we use forward instead of call
