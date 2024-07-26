@@ -1,13 +1,14 @@
 """
 Tokenizer from tiktoken.
 """
+
 import tiktoken
 from typing import List
 
-from lightrag.core.component import Component
+# from lightrag.core.component import BaseComponent
 
 
-class Tokenizer(Component):
+class Tokenizer:
     __doc__ = r"""
     Tokenizer component that wraps around the tokenizer from tiktoken.
     __call__ is the same as forward/encode, so that we can use it in Sequential

@@ -1,20 +1,37 @@
+from typing import TYPE_CHECKING
+
 from abc import ABC, abstractmethod
-from lightrag.optim.parameter import Parameter
+
+if TYPE_CHECKING:
+    from lightrag.optim.parameter import Parameter
+    from lightrag.core.generator import BackwardEngine
 
 
-class Function(ABC):
-    """
-    The class to define a function that can be called and backpropagated through.
-    """
+class GradFunction(ABC):
+    __doc__ = """The class to define a function that can be called and backpropagated through."""
+    backward_engine: "BackwardEngine" = None
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
 
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
+    def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
+        from lightrag.core.generator import BackwardEngine
+
+        if backward_engine is None:
+            raise ValueError("backward_engine cannot be None")
+        if not isinstance(backward_engine, BackwardEngine):
+            raise TypeError(
+                f"backward_engine must be an instance of BackwardEngine, got {type(backward_engine)}"
+            )
+        print(f"Setting backward engine: {backward_engine}")
+        self.backward_engine = backward_engine
+        print(f"after backward engine: {self.backward_engine}")
+
     @abstractmethod
-    def forward(self, *args, **kwargs) -> Parameter:
+    def forward(self, *args, **kwargs) -> "Parameter":
         pass
 
     @abstractmethod

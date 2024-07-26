@@ -3,12 +3,12 @@ r"""ModelClient is the protocol and base class for all models(either via APIs or
 from typing import Any, Dict, Optional
 
 
-from lightrag.core.component import Component
+# from lightrag.core.component import Component
 from lightrag.core.types import ModelType, EmbedderOutput
 
 
 # TODO: global model registry for all available models in users' project.
-class ModelClient(Component):
+class ModelClient:
     __doc__ = r"""The protocol and abstract class for all models(either via APIs or local models) to communicate with components.
 
     We designed the abstract APIClient class to separate the model API calls from the rest of the system,
@@ -35,7 +35,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
 
     def __init__(self, *args, **kwargs) -> None:
         r"""Ensure the subclasses will at least call self._init_sync_client() to initialize the sync client."""
-        super().__init__()
+        # super().__init__()
 
         self.sync_client = None
         self.async_client = None

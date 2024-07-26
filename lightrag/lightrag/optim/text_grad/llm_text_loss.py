@@ -49,6 +49,7 @@ class LLMAsTextLoss(Component):
     ):
         super().__init__()
         prompt_kwargs = deepcopy(prompt_kwargs)
+        # TODO: do we really need to convert str to Parameter? what if not?
         for key, value in prompt_kwargs.items():
             if isinstance(value, str):
                 prompt_kwargs[key] = Parameter(

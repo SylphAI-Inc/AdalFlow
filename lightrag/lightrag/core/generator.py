@@ -22,6 +22,7 @@ from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.optim.text_grad.function import BackwardContext
+
 from lightrag.optim.text_grad.prompt_template import (
     FEEDBACK_ENGINE_TEMPLATE,
     CONVERSATION_TEMPLATE,
@@ -48,8 +49,9 @@ def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
 
 
 class Generator(Component):
-    """
-    An user-facing orchestration component for LLM prediction.
+    __doc__ = """An user-facing orchestration component for LLM prediction.
+
+    It is also a GradFunction that can be used for backpropagation through the LLM model.
 
     By orchestrating the following three components along with their required arguments,
     it enables any LLM prediction with required task output format.
@@ -84,7 +86,7 @@ class Generator(Component):
         # args for the output processing
         output_processors: Optional[Component] = None,
         # args for the trainable parameters
-        trainable_params: Optional[List[str]] = [],
+        # trainable_params: Optional[List[str]] = [],
         name: Optional[str] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
@@ -111,9 +113,9 @@ class Generator(Component):
             prompt_kwargs = prompt_kwargs
 
         super().__init__(
-            model_kwargs=model_kwargs,
-            template=template,
-            prompt_kwargs=prompt_kwargs,
+            # model_kwargs=model_kwargs,
+            # template=template,
+            # prompt_kwargs=prompt_kwargs,
             # trainable_params=trainable_params,
         )
         self.name = name or self.__class__.__name__
@@ -142,7 +144,8 @@ class Generator(Component):
         #     setattr(self, param, Parameter[Union[str, None]](data=default_value))
         #     self._trainable_params.append(param)
         # end of trainable parameters
-        self.backward_engine: Generator = None
+        self.backward_engine: "BackwardEngine" = None
+        log.info(f"Generator {self.name} initialized.")
 
     def _init_prompt(self, template: str, prompt_kwargs: Dict):
         r"""Initialize the prompt with the template and prompt_kwargs."""
@@ -235,26 +238,22 @@ class Generator(Component):
         )
         return api_kwargs
 
-    def set_backward_engine(
-        self, model_client: ModelClient = None, model_kwargs: Dict[str, Any] = None
-    ):
-        self.backward_engine_model_client = model_client or self.model_client
-        self.backward_engine_model_kwargs = model_kwargs or self.model_kwargs
-
-        # nested generator
-        self.backward_engine = Generator(
-            model_client=self.backward_engine_model_client,
-            model_kwargs=self.backward_engine_model_kwargs,
-            template=FEEDBACK_ENGINE_TEMPLATE,
-            name=f"{self.name}_backward",
-        )
+    def set_backward_engine(self, backward_engine: "BackwardEngine" = None):
+        if backward_engine is None:
+            backward_engine = BackwardEngine(
+                model_client=self.model_client,
+                model_kwargs=self.model_kwargs,
+            )
+        print(f"Setting backward engine: {backward_engine}")
+        self.backward_engine = backward_engine
+        print(f"Backward engine set: {self.backward_engine}")
 
     # NOTE: when training is true, we use forward instead of call
     def forward(
         self,
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
-    ) -> Parameter:
+    ) -> "Parameter":
         # 1. call the model
         output: GeneratorOutput = self.call(prompt_kwargs, model_kwargs)
         # 2. Generate a Parameter object from the output
@@ -274,7 +273,9 @@ class Generator(Component):
             role_desc=f"response from generator {self.name}",
         )
         if not self.backward_engine:
+            print("Setting default backward engine")
             self.set_backward_engine()
+            print(f"Backward engine: {self.backward_engine}")
 
         response.set_grad_fn(
             BackwardContext(
@@ -309,7 +310,7 @@ class Generator(Component):
         children_parameters: List[Parameter],
         response: Parameter,
         prompt_kwargs: Dict[str, str],
-        backward_engine: "Generator",  # should have a template and prompt_kwargs already
+        backward_engine: "BackwardEngine",  # should have a template and prompt_kwargs already
     ):
         print("Backward through LLM base")
         for v in children_parameters:
@@ -392,7 +393,7 @@ class Generator(Component):
         children_parameters: List[Parameter],
         response: Parameter,
         prompt_kwargs: Dict[str, str],
-        backward_engine: "Generator",
+        backward_engine: "BackwardEngine",
     ):
         print("Backward through LLM chain")
         for v in children_parameters:
@@ -504,3 +505,11 @@ class Generator(Component):
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, "
         return s
+
+
+class BackwardEngine(Generator):  # it is a generator with defaule template
+
+    def __init__(self, **kwargs):
+        if "template" not in kwargs:
+            kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
+        super().__init__(**kwargs)
