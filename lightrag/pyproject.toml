@@ -75,6 +75,7 @@ types-tqdm = "^4.66.0.20240417"
 
 [tool.poetry.group.dev.dependencies] # specify the versions for extras
 pre-commit = "^3.7.0"
+graphviz = "^0.20.3"
 
 
 [tool.poetry.extras] # allow pip install lightrag[openai, groq]

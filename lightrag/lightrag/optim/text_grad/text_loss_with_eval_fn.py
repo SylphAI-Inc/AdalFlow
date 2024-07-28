@@ -332,7 +332,7 @@ if __name__ == "__main__":
     print(loss.to_dict())
     assert len(loss.predecessors) == 2
     assert len(y.predecessors) == 2
-    # dot = loss.draw_graph()
+    dot = loss.draw_graph(add_grads=True)
     # print("dot: ", dot)
 
 #     Variable(data=1, requires_opt=True, role_desc=Output of the string-based function with purpose:

@@ -2,7 +2,7 @@
 
 It is a pipeline that consists of three subcomponents."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional, Union
 from copy import deepcopy
 import logging
 
@@ -27,8 +27,10 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
     CONVERSATION_TEMPLATE,
     CONVERSATION_START_INSTRUCTION_BASE,
+    CONVERSATION_START_INSTRUCTION_CHAIN,
     EVALUATE_VARIABLE_INSTRUCTION,
     OBJECTIVE_INSTRUCTION_BASE,
+    # OBJECTIVE_INSTRUCTION_CHAIN, # TODO: OBJECTIVE_INSTRUCTION_CHAIN
 )
 
 log = logging.getLogger(__name__)
@@ -205,7 +207,7 @@ class Generator(Component, GradFunction):
         return combined_model_kwargs
 
     def print_prompt(self, **kwargs) -> str:
-        self.prompt.print_prompt(**kwargs)
+        return self.prompt.print_prompt(**kwargs)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
@@ -303,157 +305,132 @@ class Generator(Component, GradFunction):
                 backward_engine=self.backward_engine,
                 response=response,
                 prompt_kwargs=combined_prompt_kwargs,
+                prompt_str=self.prompt(**combined_prompt_kwargs),
             )
         )
         return response
 
     # == pytorch custom autograd function ==
     def backward(
-        self, response: Parameter, prompt_kwargs: Dict, backward_engine: "Generator"
-    ) -> Parameter:
-        log.info(f"Backward computation for {response.alias}, in generator {self.name}")
-
-        children_parameters = response.predecessors
-        if response.get_gradient_text() == "":
-            log.info(f"No gradients detected for {response.data}")
-            self._backward_through_llm_base(
-                children_parameters, response, prompt_kwargs, backward_engine
-            )
-        else:
-            log.info(f"Gradients detected for {response.data}")
-            self._backward_through_llm_chain(
-                children_parameters, response, prompt_kwargs, backward_engine
-            )
-
-    @staticmethod
-    def _backward_through_llm_base(
-        children_parameters: List[Parameter],
+        self,
         response: Parameter,
-        prompt_kwargs: Dict[str, str],
-        backward_engine: "BackwardEngine",  # should have a template and prompt_kwargs already
-    ):
-        print("Backward through LLM base")
-        for v in children_parameters:
-            if not v.requires_opt:
+        prompt_kwargs: Dict,
+        backward_engine: "Generator",
+        prompt_str: str,
+    ) -> Parameter:
+
+        log.info(f"Generator: Backward: {response}")
+
+        children_params = response.predecessors
+        is_chain = True
+        if response.get_gradient_and_context_text().strip() == "":
+            log.info(f"Generator: Backward: No gradient found for {response}.")
+        # go through all child parameters
+        for pred in children_params:
+            if not pred.requires_opt:
+                log.debug(
+                    f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+                )
                 continue
-            prompt_kwargs_str = {
-                key: p.data if isinstance(p, Parameter) else p
-                for key, p in prompt_kwargs.items()
-            }
-            # v.backward(backward_engine)
-            backward_prompt_kwargs = {
-                "response_desc": response.role_desc,
-                "response_value": response.data,
-                **prompt_kwargs_str,
-                "variable_desc": v.role_desc,
-                "variable_short": v.get_short_value(),
-            }
-            conversation_str = Prompt(  # takes prompt_kwargs and response_value
-                template=CONVERSATION_TEMPLATE, prompt_kwargs=backward_prompt_kwargs
-            )()
-            log.info(f"Conversation str: {conversation_str}")
-            conversation_start_instruction_base_str = Prompt(
-                template=CONVERSATION_START_INSTRUCTION_BASE,
-                prompt_kwargs={
-                    "variable_desc": v.role_desc,
-                    "conversation_str": conversation_str,
-                },
-            )()
-            log.info(
-                f"Conversation start instruction base str: {conversation_start_instruction_base_str}"
+            self._backward_through_one_predecessor(
+                pred,
+                response,
+                prompt_kwargs,
+                backward_engine,
+                prompt_str,
+                is_chain,
             )
-            # objective_instruction_base_str = Prompt(
-            #     template=OBJECTIVE_INSTRUCTION_BASE, prompt_kwargs={}
-            # )()
-            evaluation_variable_instruction_str = Prompt(
-                template=EVALUATE_VARIABLE_INSTRUCTION,
-                prompt_kwargs={
-                    "variable_desc": v.role_desc,
-                    "variable_short": v.get_short_value(),
-                },
-            )()
-
-            log.info(
-                f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
-            )
-            backward_engine_prompt_kwargs = {
-                "conversation_sec": conversation_start_instruction_base_str,
-                "objective_instruction_sec": OBJECTIVE_INSTRUCTION_BASE,
-                "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
-            }
-
-            gradient_output: GeneratorOutput = backward_engine(
-                prompt_kwargs=backward_engine_prompt_kwargs
-            )
-            gradient_value = (
-                gradient_output.data
-                or backward_engine.failure_message_to_optimizer(gradient_output)
-            )
-            # printc(f"Gradient value: {gradient_value}", color="green")
-            log.info(f"Gradient value: {gradient_value}")
-
-            var_gradients = Parameter(
-                alias=f"{v.alias}_grad",
-                data=gradient_value,
-                requires_opt=True,
-                role_desc=f"feedback to {v.role_desc}",
-            )
-            # add the graidents to the variable
-            v.gradients.add(var_gradients)
-
-            # conversation_str = Prompt(
-            #     template=CONVERSATION_TEMPLATE, prompt_kwargs=prompt_kwargs
-            # )()
-
-            v.gradients_context[var_gradients] = {
-                "context": conversation_str,
-                "response_desc": response.role_desc,
-                "variable_desc": v.role_desc,
-            }
-            # TODO: reduce_meta
 
     @staticmethod
-    def _backward_through_llm_chain(
-        children_parameters: List[Parameter],
+    def _backward_through_one_predecessor(
+        pred: Parameter,
         response: Parameter,
         prompt_kwargs: Dict[str, str],
         backward_engine: "BackwardEngine",
+        prompt_str: str,
+        is_chain: bool = False,
     ):
-        print("Backward through LLM chain")
-        for v in children_parameters:
-            if not v.requires_opt:
-                continue
-            backward_prompt_kwargs = {
-                "response_desc": response.role_desc,
-                "response_value": response.data,
-                "response_gradient": response.get_gradient_text(),  # has gradient
-                **prompt_kwargs,
-                "variable_desc": v.role_desc,
-                "variable_short": v.get_short_value(),
-            }
-            gradient_output = backward_engine(prompt_kwargs=backward_prompt_kwargs)
-            gradient_value = (
-                gradient_output.data
-                or backward_engine.failure_message_to_optimizer(gradient_output)
+        if not pred.requires_opt:
+            log.debug(
+                f"Generator: Skipping {pred} as it does not require optimization."
+            )
+            return
+        log.debug(f"Generator: Backward through {pred}, is_chain: {is_chain}")
+
+        prompt_kwargs_str = {
+            key: p.data if isinstance(p, Parameter) else p
+            for key, p in prompt_kwargs.items()
+        }
+
+        instruction_str = None
+
+        # 1. Generate the conversation string
+
+        conversation_prompt_kwargs = {
+            "llm_prompt": prompt_str,
+            "response_value": response.data,
+        }
+
+        conversation_str = Prompt(  # takes prompt_kwargs and response_value
+            template=CONVERSATION_TEMPLATE, prompt_kwargs=conversation_prompt_kwargs
+        )()
+        log.info(f"Conversation str: {conversation_str}")
+
+        conv_ins_template = CONVERSATION_START_INSTRUCTION_BASE
+        obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
+        if is_chain:
+            conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
+            obj_ins_template = (
+                OBJECTIVE_INSTRUCTION_BASE  # TODO: OBJECTIVE_INSTRUCTION_CHAIN
             )
 
-            var_gradients = Parameter(
-                alias=f"{v.alias}_grad",
-                data=gradient_value,
-                requires_opt=False,
-                role_desc=f"feedback to {v.role_desc}",
-            )
-            # add the graidents to the variable
-            v.gradients.add(var_gradients)
+        instruction_str = Prompt(
+            template=conv_ins_template,
+            prompt_kwargs={
+                "variable_desc": pred.role_desc,
+                "conversation_str": conversation_str,
+            },
+        )()
+        log.info(f"Conversation start instruction base str: {instruction_str}")
+        evaluation_variable_instruction_str = Prompt(
+            template=EVALUATE_VARIABLE_INSTRUCTION,
+            prompt_kwargs={
+                "variable_desc": pred.role_desc,
+                "variable_short": pred.get_short_value(),
+            },
+        )()
 
-            conversation = Prompt(
-                template=CONVERSATION_TEMPLATE, prompt_kwargs=prompt_kwargs
-            )()
-            v.gradients_context[var_gradients] = {
-                "context": conversation,
-                "response_desc": response.role_desc,
-                "variable_desc": v.role_desc,
-            }
+        log.info(
+            f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
+        )
+        backward_engine_prompt_kwargs = {
+            "conversation_sec": instruction_str,
+            "objective_instruction_sec": obj_ins_template,
+            "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
+        }
+
+        gradient_output: GeneratorOutput = backward_engine(
+            prompt_kwargs=backward_engine_prompt_kwargs
+        )
+        # USE this to trace each node's input and output, all nodes can be visualized
+        log.info(
+            f"Generator Backward Engine Prompt: {backward_engine.print_prompt(**prompt_kwargs_str, **backward_engine_prompt_kwargs)}"
+        )
+        gradient_value = (
+            gradient_output.data
+            or backward_engine.failure_message_to_optimizer(gradient_output)
+        )
+        # printc(f"Gradient value: {gradient_value}", color="green")
+        log.info(f"Gradient value: {gradient_value}")
+
+        var_gradients = Parameter(
+            alias=f"{pred.alias}_grad",
+            data=gradient_value,
+            requires_opt=True,
+            role_desc=f"feedback to {pred.role_desc}",
+        )
+        # add the graidents to the variable
+        pred.gradients.add(var_gradients)
 
     def call(
         self,

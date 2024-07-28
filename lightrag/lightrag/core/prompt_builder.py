@@ -126,7 +126,7 @@ class Prompt(Component):
         print(f"{self.template}")
         print("-------")
 
-    def print_prompt(self, **kwargs):
+    def print_prompt(self, **kwargs) -> str:
         r"""Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs."""
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
@@ -135,6 +135,7 @@ class Prompt(Component):
             prompt_str = self.jinja2_template.render(**pass_kwargs)
             print("Prompt:\n______________________")
             print(prompt_str)
+            return prompt_str
         except Exception as e:
             raise ValueError(f"Error rendering Jinja2 template: {e}")
 

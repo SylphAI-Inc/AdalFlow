@@ -121,14 +121,14 @@ class Parameter(Generic[T]):
             if (
                 self.gradients_context[g] is None
             ):  # no context function provided, directly use the data
-                gradients.append(g.data)
+                gradients.append(f"data: {g.data}\n")  # how come gradient has no data
 
             else:
                 criticism_and_context = Prompt(
                     template=GRADIENT_TEMPLATE,
                     prompt_kwargs={"feedback": g.data, **self.gradients_context[g]},
                 )
-                gradients.append(criticism_and_context())
+                gradients.append(f"criticism_and_context: {criticism_and_context()}")
         gradient_text = "\n".join(gradients)
 
         return gradient_text
@@ -239,6 +239,8 @@ class Parameter(Generic[T]):
             return wrapped_text
 
         def wrap_and_escape(text, width=40):
+            if not isinstance(text, str):
+                text = str(text)
             return wrap_text(text.replace("<", "&lt;").replace(">", "&gt;"), width)
 
         nodes, edges = self.trace(self)
@@ -249,11 +251,12 @@ class Parameter(Generic[T]):
         for n in nodes:
             label_color = "darkblue"
             node_label = (
-                f"<b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
+                f"<br/><b><font color='{label_color}'>Alias: </font></b> {wrap_and_escape(n.alias)}"
+                f"<br/><b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
                 f"<br/><b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
             )
             if add_grads:
-                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_text())}"
+                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_and_context_text())}"
             dot.node(
                 name=n.alias,
                 label=f"<{node_label}>",
