@@ -1,6 +1,6 @@
 """WIP"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict, TYPE_CHECKING
+from typing import Generic, TypeVar, Any, List, Set, Dict, TYPE_CHECKING, Tuple
 from collections import defaultdict
 import logging
 
@@ -154,6 +154,23 @@ class Parameter(Generic[T]):
         )
         return short_value
 
+    @staticmethod
+    def trace(
+        root: "Parameter",
+    ) -> Tuple[Set["Parameter"], Set[Tuple["Parameter", "Parameter"]]]:
+        nodes, edges = set(), set()
+
+        def build_graph(node: "Parameter"):
+            if node in nodes:
+                return
+            nodes.add(node)
+            for pred in node.predecessors:
+                edges.add((pred, node))
+                build_graph(pred)
+
+        build_graph(root)
+        return nodes, edges
+
     def backward(self):  # engine should be the llm
         # if engine is None:
         #     raise ValueError("Engine is not provided.")
@@ -184,17 +201,70 @@ class Parameter(Generic[T]):
                 log.debug(f"Calling gradient function for {node.data}")
                 node.grad_fn()
 
-    # def to_dict(self):
-    #     return {
-    #         "data": self.data,
-    #         "requires_opt": self.requires_opt,
-    #         "role_desc": self.role_desc,
-    #         "predecessors": self.predecessors,
-    #     }
+    def draw_graph(
+        self,
+        add_grads: bool = False,
+        format="svg",
+        rankdir="TB",
+        filepath: str = "gout",
+    ):
+        """
+        format: png | svg | ...
+        rankdir: TB (top to bottom graph) | LR (left to right)
+        """
+        try:
+            from graphviz import Digraph
+        except ImportError as e:
+            raise ImportError(
+                "Please install graphviz using 'pip install graphviz' to use this feature"
+            ) from e
+        assert rankdir in ["LR", "TB"]
 
-    # @classmethod
-    # def from_dict(cls, data: dict):
-    #     return cls(data=data["data"], requires_opt=data["requires_opt"])
+        filepath = filepath + "." + format
+
+        def wrap_text(text, width=40):
+            """Wraps text at a given number of characters using HTML line breaks."""
+            words = text.split()
+            wrapped_text = ""
+            line = ""
+            for word in words:
+                if len(line) + len(word) + 1 > width:
+                    wrapped_text += line + "<br/>"
+                    line = word
+                else:
+                    if line:
+                        line += " "
+                    line += word
+            wrapped_text += line
+            return wrapped_text
+
+        def wrap_and_escape(text, width=40):
+            return wrap_text(text.replace("<", "&lt;").replace(">", "&gt;"), width)
+
+        nodes, edges = self.trace(self)
+        dot = Digraph(
+            format=format, graph_attr={"rankdir": rankdir}
+        )  # , node_attr={'rankdir': 'TB'})
+
+        for n in nodes:
+            label_color = "darkblue"
+            node_label = (
+                f"<b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
+                f"<br/><b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
+            )
+            if add_grads:
+                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_text())}"
+            dot.node(
+                name=n.alias,
+                label=f"<{node_label}>",
+                shape="record",
+            )
+
+        for n1, n2 in edges:
+            dot.edge(n1.alias, n2.alias)
+
+        dot.render(filepath, format=format, cleanup=True)
+        return dot
 
     def to_dict(self):
         return {

@@ -167,24 +167,27 @@ class EvalFnToTextLoss(Component, GradFunction):
             },
         )()
 
+        conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_BASE
+        obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
+
         if is_chain:
-            instruction_str = Prompt(
-                CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN,
-                prompt_kwargs={
-                    "variable_desc": pred.role_desc,
-                    "conversation": conversation_str,
-                },
-            )()
-            objective_str = Prompt(
-                OBJECTIVE_INSTRUCTION_CHAIN,
-                prompt_kwargs={
-                    "response_desc": response.role_desc,
-                    "response_gradient": response.get_short_value(),
-                },
-            )()
-        else:
-            instruction_str = CONVERSATION_START_INSTRUCTION_STRING_FN_BASE
-            objective_str = OBJECTIVE_INSTRUCTION_BASE
+            conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
+            obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
+
+        instruction_str = Prompt(
+            conv_ins_template,
+            prompt_kwargs={
+                "variable_desc": pred.role_desc,
+                "conversation": conversation_str,
+            },
+        )()
+        objective_str = Prompt(
+            obj_ins_template,
+            prompt_kwargs={
+                "response_desc": response.role_desc,
+                "response_gradient": response.get_short_value(),
+            },
+        )()
 
         log.info(f"EvalFnToTextLoss: Instruction: {instruction_str}")
         log.info(f"EvalFnToTextLoss: Objective: {objective_str}")
@@ -238,7 +241,7 @@ class EvalFnToTextLoss(Component, GradFunction):
         # Convert all input arguments to string
         inputs_string = "\n\n".join(
             [
-                f"**{k.replace('_', ' ').capitalize()}(role: {v.role_desc})**: {v.get_short_value()}"
+                f"{k}(role: {v.role_desc}): {v.get_short_value()}"
                 for k, v in kwargs.items()
             ]
         )
@@ -310,7 +313,7 @@ if __name__ == "__main__":
     model.train()
     print(f"model.train: {model.training}")
 
-    y = model(prompt_kwargs={"input_str": x})
+    y: Parameter = model(prompt_kwargs={"input_str": x})
     print(f"y: {y}")
 
     loss = eval_fn_to_text_loss(
@@ -329,6 +332,8 @@ if __name__ == "__main__":
     print(loss.to_dict())
     assert len(loss.predecessors) == 2
     assert len(y.predecessors) == 2
+    # dot = loss.draw_graph()
+    # print("dot: ", dot)
 
 #     Variable(data=1, requires_opt=True, role_desc=Output of the string-based function with purpose:
 #              The runtime of string-based function that checks if the prediction is correct.,

@@ -467,14 +467,6 @@ class Generator(Component, GradFunction):
         if self.mock_output:
             return GeneratorOutput(data=self.mock_output_data)
 
-        # if self.training:
-        #     # add the parameters to the prompt_kwargs
-        #     # convert attributes to prompt_kwargs
-        #     trained_prompt_kwargs = {
-        #         param: getattr(self, param).data for param in self.state_dict()
-        #     }
-        #     prompt_kwargs.update(trained_prompt_kwargs)
-
         log.debug(f"prompt_kwargs: {prompt_kwargs}")
         log.debug(f"model_kwargs: {model_kwargs}")
 
@@ -553,3 +545,22 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
             gradient_value_data = f"The backward engine failed to compute the gradient. Raw response: {gradient_response.raw_response}, Error: {gradient_response.error}"
 
         return gradient_value_data
+
+
+if __name__ == "__main__":
+    # test the generator with backward engine
+    from lightrag.core.model_client import ModelClient
+
+    # setup_env()
+    # llama3_model = {
+    #     "model_client": GroqAPIClient(),
+    #     "model_kwargs": {
+    #         "model": "llama-3.1-8b-instant",
+    #     },
+    # }
+    mock_model = {
+        "model_client": ModelClient(),
+        "model_kwargs": {
+            "model": "mock",
+        },
+    }
