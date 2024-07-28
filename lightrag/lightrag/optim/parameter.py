@@ -140,9 +140,13 @@ class Parameter(Generic[T]):
         :param n_words_offset: The number of words to show from the beginning and the end of the value.
         :type n_words_offset: int
         """
-        words = self.data.split(" ")
+        # 1. ensure the data is a string
+        data = self.data
+        if not isinstance(self.data, str):
+            data = str(self.data)
+        words = data.split(" ")
         if len(words) <= 2 * n_words_offset:
-            return self.data
+            return data
         short_value = (
             " ".join(words[:n_words_offset])
             + " (...) "

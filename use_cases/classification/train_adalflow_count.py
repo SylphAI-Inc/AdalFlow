@@ -1,16 +1,19 @@
 from lightrag.optim.parameter import Parameter
 from lightrag.core import Component, Generator
+from lightrag.core.generator import BackwardEngine
 from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
-from lightrag.utils import setup_env
+from lightrag.utils import setup_env, get_logger
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
 from lightrag.core import DataClass, GeneratorOutput, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
+from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import textgrad as tg
 import numpy as np
+from typing import Dict
 import random
 import concurrent
 from tqdm import tqdm
@@ -103,7 +106,7 @@ class ObjectCountTask(Component):
         # data = (
         #     "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
         # )
-
+        # 1. set up system prompt, but also training goal
         self.system_prompt = Parameter(
             data="You will answer a reasoning question. Think step by step.",
             role_desc="The system prompt",
@@ -128,8 +131,8 @@ class ObjectCountTask(Component):
             },
             output_processors=parser,
         )
-        # self.loss_fn = LLMAsTextLoss(
 
+    # TODO: the error will be a context
     def call(self, question: str) -> int:
         output: GeneratorOutput = self.llm_counter(
             prompt_kwargs={"input_str": question}
@@ -150,7 +153,18 @@ class ObjectCountTask(Component):
 # TODO: improve cache for the training
 # Write a trainer  == PyTorch Trainer
 class ObjectCountTrainer(Component):
-    def __init__(self, model_client, model_kwargs):
+    __doc__ = r"""Text-grad trainer will require:
+    - Task pipeline that defines parameters
+    - Optimizer and its model parameters
+    - Backward engine(to compute gradients) and its model parameters
+    """
+
+    def __init__(
+        self,
+        task_model_config: Dict,
+        backward_engine_model_config: Dict,
+        tgd_model_config: Dict,
+    ):
         super().__init__()
         set_seed(12)
         self.train_set, self.val_set, self.test_set, self.eval_fn = load_task(
@@ -161,34 +175,73 @@ class ObjectCountTrainer(Component):
         # self.val_set = self.val_set[:10]
         # self.test_set = self.test_set[:10]
 
-        self.evaluator = AnswerMatchAcc()
+        self.evaluator = AnswerMatchAcc(type="exact_match")
         print(self.train_set.get_task_description())
         print(f"eval_fn: {self.eval_fn}")
         self.train_loader = tg.tasks.DataLoader(
             self.train_set, batch_size=4, shuffle=True
         )  # why not torch loader?
 
-        self.task = ObjectCountTask(
-            model_client=model_client, model_kwargs=model_kwargs
-        )
+        self.task = ObjectCountTask(**task_model_config)
+        # 2. backward engine will be used by all operators
+        backward_engine = BackwardEngine(**backward_engine_model_config)
+        self.target_params = list(self.task.parameters())
+
+        # 3. optimizer will be used to optimize the parameters
         self.optimizer = TextualGradientDescent(
-            params=self.task.llm_counter.prompt_kwargs.values(), **gpt_3_model
+            params=self.target_params, **tgd_model_config
         )
-        # self.STARTING_SYSTEM_PROMPT = self.train_set.get_task_description()
-        # print(self.STARTING_SYSTEM_PROMPT)
-        # self.train_loader = tg.tasks.DataLoader(
-        #     self.train_set, batch_size=3, shuffle=True
-        # )
+        self.task.llm_counter.set_backward_engine(backward_engine)
+
+        # 4. loss function will be used to compute the loss
+
+        # TODO: set backward_engine should be recursive
+        # pred_answer: object, gt_answer: object for compute_single_item
+        self.loss_fn = EvalFnToTextLoss(
+            eval_fn=self.evaluator.compute_single_item,
+            eval_fn_desc="ObjectCountingEvalFn",
+            backward_engine=backward_engine,
+        )
+
+    def test_train(self):
+        r"""Test a single training step"""
+        self.task.train()
+        self.optimizer.zero_grad()
+        for x, y in self.train_loader:
+            response = self.task.call(
+                question=Parameter(
+                    data=x,
+                    role_desc="query to the language model",
+                    requires_opt=False,
+                )
+            )
+            print(f"response: {response}")
+            loss = self.loss_fn(
+                kwargs={
+                    "y": Parameter(
+                        data=response,
+                        role_desc="The response of the LLM",
+                        requires_opt=True,
+                    ),
+                    "y_gt": Parameter(
+                        data=y,
+                        role_desc="The ground truth",
+                        requires_opt=False,
+                    ),
+                }
+            )
+            loss.backward()
+            print(f"loss dict: {loss.to_dict()}")
+            # self.optimizer.step()
 
     def train(self, max_epochs: int = 1):
         # set it to train mode
-        self.training = True
+        self.task.train()
         for epoch in range(max_epochs):
             pbar = tqdm(self.train_loader, position=0, desc=f"Epoch: {epoch}")
             for steps, (batch_x, batch_y) in enumerate(pbar):
                 pbar.set_description(f"Epoch: {epoch}, Step: {steps}")
                 self.optimizer.zero_grad()
-                # batch_loss = []
                 for x, y in zip(batch_x, batch_y):
                     response = self.task.call(
                         question=Parameter(
@@ -267,6 +320,7 @@ class ObjectCountTrainer(Component):
 # TODO: implement cache for generator(make it configurable)
 if __name__ == "__main__":
     task = ObjectCountTask(**gpt_3_model)
+    logger = get_logger(level="INFO")
     print(task)
     # print(
     #     task.llm_counter.print_prompt(
@@ -279,8 +333,13 @@ if __name__ == "__main__":
     #     )
     # )
 
-    trainer = ObjectCountTrainer(**gpt_3_model)
+    trainer = ObjectCountTrainer(
+        task_model_config=gpt_3_model,
+        backward_engine_model_config=gpt_3_model,
+        tgd_model_config=gpt_3_model,
+    )
     print(trainer)
+    trainer.test_train()
     # trainer.eval(max_samples=None)
     # trainer.eval(dataset=trainer.val_set, max_samples=None)
     # gpt-3.5-turbo test 0.69 [10 samples = 0.8], 0.72 (simple pasing, instead of json)
@@ -292,49 +351,4 @@ if __name__ == "__main__":
     # gpt-4o test 0.94
 
     # eval: 0.8
-    trainer.train(max_epochs=1)
-
-# llama3_model = {
-#     "model_client": GroqAPIClient(),
-#     "model_kwargs": {
-#         "model": "llama-3.1-8b-instant",
-#     },
-# }
-
-# # TODO: add this to generator, we will get all parmeters and pass it to the optimizer
-# x = Parameter(
-#     data="A sntence with a typo",
-#     role_desc="The input sentence",
-#     requires_opt=True,
-# )  # weights
-
-
-# gpt_3_model = {
-#     "model_client": OpenAIClient(),
-#     "model_kwargs": {
-#         "model": "gpt-3.5-turbo",
-#     },
-# }
-
-# eval_system_prompt = Parameter(
-#     data="Evaluate the correctness of this sentence",
-#     role_desc="The system prompt",
-#     requires_opt=True,
-# )
-# # TODO: Only generator needs parameters to optimize
-# loss_fn = LLMAsTextLoss(
-#     prompt_kwargs={
-#         "eval_system_prompt": eval_system_prompt,
-#     },
-#     **gpt_3_model,
-# )
-# print(f"loss_fn: {loss_fn}")
-
-# optimizer = TextualGradientDescent(params=[x, eval_system_prompt], **gpt_3_model)
-# print(f"optimizer: {optimizer}")
-
-# l = loss_fn(prompt_kwargs={"eval_user_prompt": x})  # noqa: E741
-# print(f"l: {l}")
-# l.backward()
-# logger.info(f"l: {l}")
-# optimizer.step()  # this will update x prameter
+    # trainer.train(max_epochs=1)

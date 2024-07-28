@@ -144,8 +144,21 @@ class Generator(Component, GradFunction):
         #     setattr(self, param, Parameter[Union[str, None]](data=default_value))
         #     self._trainable_params.append(param)
         # end of trainable parameters
-        # self.backward_engine: "BackwardEngine" = None
+        self.backward_engine: "BackwardEngine" = None
         log.info(f"Generator {self.name} initialized.")
+        #  to support better testing on the parts beside of the model call
+        self.mock_output: bool = False
+        self.mock_output_data: str = "mock data"
+
+    def set_mock_output(
+        self, mock_output: bool = True, mock_output_data: str = "mock data"
+    ):
+        self.mock_output = mock_output
+        self.mock_output_data = mock_output_data
+
+    def reset_mock_output(self):
+        self.mock_output = False
+        self.mock_output_data = "mock data"
 
     def _init_prompt(self, template: str, prompt_kwargs: Dict):
         r"""Initialize the prompt with the template and prompt_kwargs."""
@@ -244,6 +257,8 @@ class Generator(Component, GradFunction):
                 model_client=self.model_client,
                 model_kwargs=self.model_kwargs,
             )
+            if self.mock_output:
+                backward_engine.set_mock_output()
         print(f"Setting backward engine: {backward_engine}")
         self.backward_engine = backward_engine
         # super().set_backward_engine(backward_engine)
@@ -256,7 +271,11 @@ class Generator(Component, GradFunction):
         model_kwargs: Optional[Dict] = {},
     ) -> "Parameter":
         # 1. call the model
-        output: GeneratorOutput = self.call(prompt_kwargs, model_kwargs)
+        output: GeneratorOutputType = None
+        if self.mock_output:
+            output = GeneratorOutput(data=self.mock_output_data)
+        else:
+            output = self.call(prompt_kwargs, model_kwargs)
         # 2. Generate a Parameter object from the output
         parameter_data = None
         if output.data is None:
@@ -269,7 +288,7 @@ class Generator(Component, GradFunction):
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
         response: Parameter = Parameter(
             data=parameter_data,
-            alias=self.name,
+            alias=self.name + "_output",
             predecessors=list(combined_prompt_kwargs.values()),
             role_desc=f"response from generator {self.name}",
         )
@@ -363,14 +382,18 @@ class Generator(Component, GradFunction):
                 "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
             }
 
-            gradient_output = backward_engine.call(
+            gradient_output: GeneratorOutput = backward_engine(
                 prompt_kwargs=backward_engine_prompt_kwargs
             )
-            gradient_value = gradient_output.data
+            gradient_value = (
+                gradient_output.data
+                or backward_engine.failure_message_to_optimizer(gradient_output)
+            )
             # printc(f"Gradient value: {gradient_value}", color="green")
             log.info(f"Gradient value: {gradient_value}")
 
             var_gradients = Parameter(
+                alias=f"{v.alias}_grad",
                 data=gradient_value,
                 requires_opt=True,
                 role_desc=f"feedback to {v.role_desc}",
@@ -408,10 +431,14 @@ class Generator(Component, GradFunction):
                 "variable_desc": v.role_desc,
                 "variable_short": v.get_short_value(),
             }
-            gradient_output = backward_engine.call(prompt_kwargs=backward_prompt_kwargs)
-            gradient_value = gradient_output.data
+            gradient_output = backward_engine(prompt_kwargs=backward_prompt_kwargs)
+            gradient_value = (
+                gradient_output.data
+                or backward_engine.failure_message_to_optimizer(gradient_output)
+            )
 
             var_gradients = Parameter(
+                alias=f"{v.alias}_grad",
                 data=gradient_value,
                 requires_opt=False,
                 role_desc=f"feedback to {v.role_desc}",
@@ -437,6 +464,8 @@ class Generator(Component, GradFunction):
         Call the model_client by formatting prompt from the prompt_kwargs,
         and passing the combined model_kwargs to the model client.
         """
+        if self.mock_output:
+            return GeneratorOutput(data=self.mock_output_data)
 
         # if self.training:
         #     # add the parameters to the prompt_kwargs
@@ -514,3 +543,13 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
         if "template" not in kwargs:
             kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
         super().__init__(**kwargs)
+
+    @staticmethod
+    def failure_message_to_optimizer(
+        gradient_response: GeneratorOutput,
+    ) -> Optional[str]:
+        gradient_value_data = None
+        if gradient_response.error or not gradient_response.data:
+            gradient_value_data = f"The backward engine failed to compute the gradient. Raw response: {gradient_response.raw_response}, Error: {gradient_response.error}"
+
+        return gradient_value_data

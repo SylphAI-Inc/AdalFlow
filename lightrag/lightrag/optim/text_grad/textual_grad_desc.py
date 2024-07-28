@@ -1,3 +1,5 @@
+"""Text-grad optimizer and prompts."""
+
 from typing import List, Dict
 from collections import defaultdict
 import logging
@@ -46,8 +48,6 @@ Remember:
     + GLOSSARY_TEXT
 )
 
-
-print(OPTIMIZER_SYSTEM_PROMPT)
 
 # TGD update instruction
 TGD_PROMPT_PREFIX = (
@@ -133,6 +133,7 @@ class TextualGradientDescent(Optimizer):
     ):
         r"""Initialize the optimizer."""
         # super().__init__(params)
+        super().__init__()
         self.params = params
         self.constraints = constraints or []
         self.optimizer_system_prompt = Prompt(
@@ -152,7 +153,7 @@ class TextualGradientDescent(Optimizer):
         self.llm_optimizer = Generator(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            template="""<SYS>{{optimizer_system_prompt}}</SYS><USER>{{user_prompt}}</USER> Your response:""",
+            template="""<START_OF_SYSTEM_PROMPT>{{optimizer_system_prompt}}<END_OF_SYSTEM_PROMPT><USER>{{user_prompt}}</USER>""",
         )
 
     @property
@@ -236,3 +237,11 @@ class TextualGradientDescent(Optimizer):
             param.update_value(improved_variable)
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
+
+
+# The variable to improve (dataclass)
+# role_desc: str
+# variable: str, desc (one single variale class) =>
+# 1. it does not need to have a glossary .
+# context(gradients):
+# 1.

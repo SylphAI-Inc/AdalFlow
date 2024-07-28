@@ -223,10 +223,12 @@ if __name__ == "__main__":
                     eval_output_variable = eval_fn(
                         inputs=dict(prediction=response, ground_truth_answer=y)
                     )
+                    print("eval_output_variable: ", eval_output_variable)
                 except Exception as e:
                     log.info(f"Error: {e}")
                     eval_output_variable = eval_fn([x, y, response])
                 losses.append(eval_output_variable)
+                break
             total_loss = tg.sum(losses)  # operator aggregrate the feedbacks,
             total_loss.backward()
             optimizer.step()
@@ -237,5 +239,5 @@ if __name__ == "__main__":
             test_acc = eval_dataset(test_set, eval_fn, model)
             results["test_acc"].append(test_acc)
             results["prompt"].append(system_prompt.get_value())
-            if steps == 3:
-                break
+            break
+        break

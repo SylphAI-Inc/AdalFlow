@@ -1,4 +1,4 @@
-"""Meta-prompt for the backward engine.
+"""Meta-prompts for the backward engine.
 Adapted from TextGrad: Automatic “Differentiation” via Text."""
 
 GLOSSARY_TEXT_BACKWARD = """
