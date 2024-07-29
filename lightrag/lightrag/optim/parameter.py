@@ -93,7 +93,11 @@ class Parameter(Generic[T]):
         self.grad_fn = None
         self.alias = alias
         if not self.alias:
-            self.alias = self.role_desc.capitalize().replace(" ", "_")[0:10]
+            self.alias = (
+                self.role_desc.capitalize().replace(" ", "_")[0:10]
+                if self.role_desc
+                else f"param_{id(self)}"
+            )
         self.proposed_data: T = None  # this is for the optimizer to propose a new value
         self.raw_response = raw_response
 
