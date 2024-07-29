@@ -96,6 +96,7 @@ def parse_integer_answer(answer: str, only_first_line: bool = False):
 
 
 # Build a pipeline like you normally would == PyTorch model
+# TODO: auto saving the prompt and performance.
 class ObjectCountTask(Component):
     def __init__(self, model_client, model_kwargs):
         super().__init__()

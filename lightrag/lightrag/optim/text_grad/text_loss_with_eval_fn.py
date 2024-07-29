@@ -19,8 +19,8 @@ log = logging.getLogger(__name__)
 
 ###  First part of the user prompt in the backward engine:  Eval function context
 CONVERSATION_TEMPLATE_STRING = r"""Eval Function Description: {{eval_fn_desc}}
-<INPUTS_TO_FUNCTION> {{input_str}} </INPUTS_TO_FUNCTION>
-<OUTPUT_OF_FUNCTION> {{response_value}} </OUTPUT_OF_FUNCTION>"""
+<START_OF_INPUTS_TO_FUNCTION> {{input_str}} <END_OF_INPUTS_TO_FUNCTION>
+<START_OF_OUTPUT_OF_FUNCTION> {{response_value}} <END_OF_OUTPUT_OF_FUNCTION>"""
 
 
 # Does not have gradient on the output, the loss function of the backpropagation chain
@@ -155,7 +155,7 @@ class EvalFnToTextLoss(Component, GradFunction):
             return
         log.debug(f"EvalFnToTextLoss: Backward through {pred}, is_chain: {is_chain}")
 
-        instruction_str, objective_str = None, None
+        instruction_str, objective_str, eval_str = None, None, None
 
         # construct the prompt, including three sections
         conversation_str = Prompt(
@@ -163,7 +163,7 @@ class EvalFnToTextLoss(Component, GradFunction):
             prompt_kwargs={
                 "input_str": inputs_string,
                 "eval_fn_desc": eval_fn_desc,
-                "response_value": response.get_short_value(),
+                "response_value": response.data,
             },
         )()
 
@@ -185,7 +185,14 @@ class EvalFnToTextLoss(Component, GradFunction):
             obj_ins_template,
             prompt_kwargs={
                 "response_desc": response.role_desc,
-                "response_gradient": response.get_short_value(),
+                "response_gradient": response.data,
+            },
+        )()
+        eval_str = Prompt(
+            EVALUATE_VARIABLE_INSTRUCTION,
+            prompt_kwargs={
+                "variable_short": pred.raw_response or pred.data,
+                "variable_desc": pred.role_desc,
             },
         )()
 
@@ -194,13 +201,15 @@ class EvalFnToTextLoss(Component, GradFunction):
         log.info(f"EvalFnToTextLoss: Conversation: {conversation_str}")
 
         # Compute the gradient
+        backward_engine_prompt_kwargs = {
+            "conversation_sec": instruction_str,
+            "objective_instruction_sec": objective_str,
+            "evaluate_variable_instruction_sec": eval_str,
+        }
         gradient_value: GeneratorOutput = backward_engine(
-            prompt_kwargs={
-                "conversation_sec": instruction_str,
-                "objective_instruction_sec": objective_str,
-                "evaluate_variable_instruction_sec": EVALUATE_VARIABLE_INSTRUCTION,
-            }
+            prompt_kwargs=backward_engine_prompt_kwargs
         )
+        gradient_prompt = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
@@ -213,6 +222,7 @@ class EvalFnToTextLoss(Component, GradFunction):
             alias=f"{pred.alias}_gradient",
             data=gradient_value_data,
             requires_opt=True,
+            gradient_prompt=gradient_prompt,
             role_desc=f"Feedback for {pred.role_desc}",
         )
         pred.gradients.add(gradient_param)
@@ -240,10 +250,7 @@ class EvalFnToTextLoss(Component, GradFunction):
 
         # Convert all input arguments to string
         inputs_string = "\n\n".join(
-            [
-                f"{k}(role: {v.role_desc}): {v.get_short_value()}"
-                for k, v in kwargs.items()
-            ]
+            [f"{k}(role: {v.role_desc}): {v.data}" for k, v in kwargs.items()]
         )
 
         # go through all child parameters
@@ -269,6 +276,7 @@ if __name__ == "__main__":
     from lightrag.eval.answer_match_acc import AnswerMatchAcc
     from lightrag.components.model_client import OpenAIClient  # dir: model_client
     from lightrag.core.generator import Generator, BackwardEngine
+    from lightrag.core.component import fun_to_component
 
     logger = get_logger(level="DEBUG", filename="lib_text_grad.log")
 
@@ -277,16 +285,42 @@ if __name__ == "__main__":
     gpt_3_model = {
         "model_client": OpenAIClient(),
         "model_kwargs": {
-            "model_name": "gpt-3.5-turbo",
+            "model": "gpt-3.5-turbo",
         },
     }
+    gpt_4o_model = {
+        "model_client": OpenAIClient(),
+        "model_kwargs": {
+            "model": "gpt-4o",
+        },
+    }
+
+    @fun_to_component
+    def parse_integer_answer(answer: str, only_first_line: bool = False):
+        try:
+            if only_first_line:
+                answer = answer.strip().split("\n")[0]
+            answer = answer.strip()
+            # find the last token that has a number in it
+            answer = [
+                token for token in answer.split() if any(c.isdigit() for c in token)
+            ][-1]
+            answer = answer.split(".")[0]
+            answer = "".join([c for c in answer if c.isdigit()])
+            answer = int(answer)
+
+        except (ValueError, IndexError):
+            # print(answer)
+            answer = 0
+
+        return answer
 
     evaluator = AnswerMatchAcc()
     eval_fn_desc = "Answer Match Accuracy"
     single_compute_eval = AnswerMatchAcc().compute_single_item
 
-    backward_engine = BackwardEngine(**gpt_3_model)
-    backward_engine.set_mock_output(mock_output_data="1")
+    backward_engine = BackwardEngine(**gpt_4o_model)
+    # backward_engine.set_mock_output(mock_output_data="1")
 
     eval_fn_to_text_loss = EvalFnToTextLoss(
         eval_fn=single_compute_eval,
@@ -308,8 +342,12 @@ if __name__ == "__main__":
         role_desc="structured system prompt to a somewhat capable language model that specifies the behavior and strategies for the QA task",
     )
 
-    model = Generator(prompt_kwargs={"task_desc_str": system_prompt}, **gpt_3_model)
-    model.set_mock_output(mock_output_data="4")
+    model = Generator(
+        prompt_kwargs={"task_desc_str": system_prompt},
+        **gpt_3_model,
+        output_processors=parse_integer_answer,
+    )
+    # model.set_mock_output(mock_output_data="4")
     model.train()
     print(f"model.train: {model.training}")
 
@@ -321,7 +359,7 @@ if __name__ == "__main__":
             "y": y,
             "y_gt": Parameter(
                 alias="y_gt",
-                data="1",
+                data="4",
                 requires_opt=False,
                 role_desc="Correct answer",
             ),
@@ -332,7 +370,7 @@ if __name__ == "__main__":
     print(loss.to_dict())
     assert len(loss.predecessors) == 2
     assert len(y.predecessors) == 2
-    dot = loss.draw_graph(add_grads=True)
+    dot = loss.draw_graph(add_grads=True, filepath="real_data")
     # print("dot: ", dot)
 
 #     Variable(data=1, requires_opt=True, role_desc=Output of the string-based function with purpose:

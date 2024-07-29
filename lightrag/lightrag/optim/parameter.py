@@ -65,6 +65,8 @@ class Parameter(Generic[T]):
         role_desc: str = None,
         predecessors: List["Parameter"] = None,
         alias: str = None,  # alias is used to refer to the parameter in the prompt, easier to read for humans
+        gradient_prompt: str = None,
+        raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
     ):
         if predecessors is None:
             predecessors = []
@@ -77,10 +79,16 @@ class Parameter(Generic[T]):
         self.role_desc = role_desc
         self.predecessors = set(predecessors)
         self.gradients: Set[Parameter] = set()
-        self.gradients_context: Dict[Parameter, str] = defaultdict(lambda: None)
+        self.gradient_prompt: str = (
+            gradient_prompt  # the whole llm prompt to compute the gradient
+        )
+        self.gradients_context: Dict[Parameter, str] = defaultdict(
+            lambda: None
+        )  # TODO: what is the context
         self.grad_fn = None
         self.alias = alias
         self.proposed_data: T = None  # this is for the optimizer to propose a new value
+        self.raw_response = raw_response
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
@@ -104,6 +112,11 @@ class Parameter(Generic[T]):
 
     def reset_gradients(self):
         self.gradients = set()
+
+    def get_gradients_alias(self) -> str:
+        alias = [g.alias for g in self.gradients]
+        ", ".join(alias)
+        return alias
 
     def get_gradient_text(self) -> str:
         """Aggregates and returns the gradients."""
@@ -133,26 +146,27 @@ class Parameter(Generic[T]):
 
         return gradient_text
 
-    def get_short_value(self, n_words_offset: int = 10) -> str:
-        """
-        Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don't want to see the entire value.
-        This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
-        :param n_words_offset: The number of words to show from the beginning and the end of the value.
-        :type n_words_offset: int
-        """
-        # 1. ensure the data is a string
-        data = self.data
-        if not isinstance(self.data, str):
-            data = str(self.data)
-        words = data.split(" ")
-        if len(words) <= 2 * n_words_offset:
-            return data
-        short_value = (
-            " ".join(words[:n_words_offset])
-            + " (...) "
-            + " ".join(words[-n_words_offset:])
-        )
-        return short_value
+    # TODO: dont use short value
+    # def get_short_value(self, n_words_offset: int = 10) -> str:
+    #     """
+    #     Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don't want to see the entire value.
+    #     This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
+    #     :param n_words_offset: The number of words to show from the beginning and the end of the value.
+    #     :type n_words_offset: int
+    #     """
+    #     # 1. ensure the data is a string
+    #     data = self.data
+    #     if not isinstance(self.data, str):
+    #         data = str(self.data)
+    #     words = data.split(" ")
+    #     if len(words) <= 2 * n_words_offset:
+    #         return data
+    #     short_value = (
+    #         " ".join(words[:n_words_offset])
+    #         + " (...) "
+    #         + " ".join(words[-n_words_offset:])
+    #     )
+    #     return short_value
 
     @staticmethod
     def trace(
@@ -204,7 +218,7 @@ class Parameter(Generic[T]):
     def draw_graph(
         self,
         add_grads: bool = False,
-        format="svg",
+        format="png",
         rankdir="TB",
         filepath: str = "gout",
     ):
@@ -212,13 +226,25 @@ class Parameter(Generic[T]):
         format: png | svg | ...
         rankdir: TB (top to bottom graph) | LR (left to right)
         """
+
         try:
             from graphviz import Digraph
+
         except ImportError as e:
             raise ImportError(
                 "Please install graphviz using 'pip install graphviz' to use this feature"
             ) from e
+
+        try:
+            from tensorboardX import SummaryWriter
+        except ImportError as e:
+            raise ImportError(
+                "Please install tensorboardX using 'pip install tensorboardX' to use this feature"
+            ) from e
         assert rankdir in ["LR", "TB"]
+
+        # Set up TensorBoard logging
+        writer = SummaryWriter(log_dir="logs/simple_net")
 
         filepath = filepath + "." + format
 
@@ -256,34 +282,69 @@ class Parameter(Generic[T]):
                 f"<br/><b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
             )
             if add_grads:
-                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_and_context_text())}"
+                # get the alias of the gradients
+                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradients_alias())}"
+            #     node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_and_context_text())}"
             dot.node(
                 name=n.alias,
                 label=f"<{node_label}>",
                 shape="record",
             )
-
+            writer.add_text(n.alias, str(n.to_dict()))
+            log.info(f"Node: {n.alias}, {n.to_dict()}")
+            # track gradients
+            for g in n.gradients:
+                writer.add_text(g.alias, str(g.to_dict()))
+                writer.add_text(f"{g.alias}_prompt", g.gradient_prompt)
+                log.info(f"Gradient: {g.alias}, {g.to_dict()}")
+                log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:
             dot.edge(n1.alias, n2.alias)
 
         dot.render(filepath, format=format, cleanup=True)
+        # from PIL import Image
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError as e:
+            raise ImportError(
+                "Please install matplotlib using 'pip install matplotlib' to use this feature"
+            ) from e
+        from io import BytesIO
+        import numpy as np
+
+        # Read the rendered image file into memory using matplotlib
+        with open(f"{filepath}.{format}", "rb") as f:
+            image_bytes = f.read()
+
+        # Use matplotlib to read the image from bytes
+        image = plt.imread(BytesIO(image_bytes), format=format)
+
+        # Ensure the image is in the format [H, W, C]
+        if image.ndim == 2:  # Grayscale image
+            image = np.expand_dims(image, axis=2)
+
+        # Read the rendered image file
+        writer.add_image("graph", image, dataformats="HWC", global_step=1)
+        writer.close()
         return dot
 
     def to_dict(self):
         return {
             "alias": self.alias,
-            "data": self.data,
+            "data": str(self.data),
             "requires_opt": self.requires_opt,
             "role_desc": self.role_desc,
             "predecessors": [pred.to_dict() for pred in self.predecessors],
             "gradients": [grad.to_dict() for grad in self.gradients],
             "proposed_data": self.proposed_data,
             "gradients_context": [
-                (k.to_dict(), v) for k, v in self.gradients_context.items()
+                (k.alias, v) for k, v in self.gradients_context.items()
             ],
             "grad_fn": str(
                 self.grad_fn
             ),  # Simplify for serialization, modify as needed
+            "gradient_prompt": str(self.gradient_prompt),
+            "raw_response": self.raw_response,
         }
 
     @classmethod
@@ -297,6 +358,8 @@ class Parameter(Generic[T]):
             alias=data["alias"],
             gradients=[cls.from_dict(grad) for grad in data["gradients"]],
             proposed_data=data["proposed_data"],
+            gradient_prompt=data["gradient_prompt"],
+            raw_response=data["raw_response"],
         )
         # Reconstruct gradients_context from the list of tuples
         param.gradients_context = defaultdict(

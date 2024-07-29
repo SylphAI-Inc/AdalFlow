@@ -207,7 +207,8 @@ class Generator(Component, GradFunction):
         return combined_model_kwargs
 
     def print_prompt(self, **kwargs) -> str:
-        return self.prompt.print_prompt(**kwargs)
+        prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
+        return self.prompt.print_prompt(**prompt_kwargs_str)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
@@ -222,7 +223,7 @@ class Generator(Component, GradFunction):
             return GeneratorOutput(raw_response=str(completion), error=str(e))
 
         # the output processors operate on the str, the raw_response field.
-        output: GeneratorOutputType = GeneratorOutput(raw_response=response)
+        output: GeneratorOutputType = GeneratorOutput(raw_response=str(response))
 
         if self.output_processors:
             try:
@@ -293,6 +294,7 @@ class Generator(Component, GradFunction):
             alias=self.name + "_output",
             predecessors=list(combined_prompt_kwargs.values()),
             role_desc=f"response from generator {self.name}",
+            raw_response=output.raw_response,
         )
         if not self.backward_engine:
             print("Setting default backward engine")
@@ -305,7 +307,7 @@ class Generator(Component, GradFunction):
                 backward_engine=self.backward_engine,
                 response=response,
                 prompt_kwargs=combined_prompt_kwargs,
-                prompt_str=self.prompt(**combined_prompt_kwargs),
+                prompt_str=self.print_prompt(**combined_prompt_kwargs),
             )
         )
         return response
@@ -357,18 +359,13 @@ class Generator(Component, GradFunction):
             return
         log.debug(f"Generator: Backward through {pred}, is_chain: {is_chain}")
 
-        prompt_kwargs_str = {
-            key: p.data if isinstance(p, Parameter) else p
-            for key, p in prompt_kwargs.items()
-        }
-
         instruction_str = None
 
         # 1. Generate the conversation string
 
         conversation_prompt_kwargs = {
             "llm_prompt": prompt_str,
-            "response_value": response.data,
+            "response_value": response.raw_response or response.data,
         }
 
         conversation_str = Prompt(  # takes prompt_kwargs and response_value
@@ -396,7 +393,7 @@ class Generator(Component, GradFunction):
             template=EVALUATE_VARIABLE_INSTRUCTION,
             prompt_kwargs={
                 "variable_desc": pred.role_desc,
-                "variable_short": pred.get_short_value(),
+                "variable_short": pred.raw_response or pred.data,
             },
         )()
 
@@ -414,17 +411,23 @@ class Generator(Component, GradFunction):
         )
         # USE this to trace each node's input and output, all nodes can be visualized
         log.info(
-            f"Generator Backward Engine Prompt: {backward_engine.print_prompt(**prompt_kwargs_str, **backward_engine_prompt_kwargs)}"
+            f"Generator Backward Engine Prompt: {backward_engine.print_prompt( **backward_engine_prompt_kwargs)}"
         )
         gradient_value = (
             gradient_output.data
             or backward_engine.failure_message_to_optimizer(gradient_output)
         )
         # printc(f"Gradient value: {gradient_value}", color="green")
-        log.info(f"Gradient value: {gradient_value}")
+        log.info(
+            f"Generator Gradient value: {gradient_value}, raw response: {gradient_output.raw_response}"
+        )
+        # TODO: make it a debug feature
+        prompt_str = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
 
         var_gradients = Parameter(
             alias=f"{pred.alias}_grad",
+            gradient_prompt=prompt_str,  # trace the prompt
+            # raw_response=gradient_output.raw_response,
             data=gradient_value,
             requires_opt=True,
             role_desc=f"feedback to {pred.role_desc}",

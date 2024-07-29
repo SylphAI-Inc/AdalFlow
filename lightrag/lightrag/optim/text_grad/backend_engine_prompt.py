@@ -32,9 +32,6 @@ You are the gradient (feedback) engine.
 ###  Backward engine: user prompt
 
 # First part to provide context of LLM as gradFunction
-CONVERSATION_TEMPLATE = r"""<LM_SYSTEM_PROMPT> {{eval_system_prompt}} </LM_SYSTEM_PROMPT>
-<LM_INPUT> {{eval_user_prompt}} </LM_INPUT>
-<LM_OUTPUT> {{response_value}} </LM_OUTPUT>"""
 
 CONVERSATION_TEMPLATE = r"""<LM_PROMPT> {{llm_prompt}} </LM_PROMPT>
 <LM_OUTPUT> {{response_value}} </LM_OUTPUT>"""
