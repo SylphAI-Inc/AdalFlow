@@ -45,7 +45,6 @@ class LLMAsTextLoss(Component):
         prompt_kwargs: Dict[str, Union[str, Parameter]],
         model_client: ModelClient,
         model_kwargs: Dict[str, object],
-        engine: Generator = None,
     ):
         super().__init__()
         prompt_kwargs = deepcopy(prompt_kwargs)
@@ -58,6 +57,7 @@ class LLMAsTextLoss(Component):
         self.prompt_kwargs = prompt_kwargs
         # this is llm as judge (loss) to get the loss
         self.loss_llm = Generator(
+            name="llm_judge",
             model_client=model_client,
             model_kwargs=model_kwargs,
             template=TEXT_LOSS_TEMPLATE,

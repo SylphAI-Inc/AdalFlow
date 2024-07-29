@@ -1,6 +1,22 @@
 """Meta-prompts for the backward engine.
 Adapted from TextGrad: Automatic “Differentiation” via Text."""
 
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List
+
+if TYPE_CHECKING:
+    from lightrag.optim.parameter import Parameter
+
+
+@dataclass
+class GradientDataPrep:
+    __doc__ = """The last generator out will  be used in the loss function, so the loss are the successors of the last generator output."""
+    p: "Parameter" = field(metadata={"desc": "The parameter to compute gradients for."})
+    successors: List["Parameter"] = field(
+        metadata={"desc": "The parameters that depend on p as input."}
+    )
+
+
 GLOSSARY_TEXT_BACKWARD = """
 ### Glossary of tags that will be sent to you:
 # - <LM_SYSTEM_PROMPT>: The system prompt for the language model.

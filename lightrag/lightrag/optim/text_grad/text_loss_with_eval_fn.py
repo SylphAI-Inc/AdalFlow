@@ -226,7 +226,7 @@ class EvalFnToTextLoss(Component, GradFunction):
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
         gradient_param = Parameter(
-            alias=f"{pred.alias}_gradient",
+            alias=f"{response.alias}_to_{pred.alias}_grad",
             data=gradient_value_data,
             requires_opt=True,
             gradient_prompt=gradient_prompt,

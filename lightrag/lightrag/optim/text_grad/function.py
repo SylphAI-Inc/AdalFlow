@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from abc import ABC, abstractmethod
 
@@ -18,7 +18,6 @@ class GradFunction(ABC):
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
-    @abstractmethod
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
         pass
 
@@ -53,7 +52,13 @@ class BackwardContext:
         Returns a string representation of the BackwardContext object.
     """
 
-    def __init__(self, backward_fn, backward_engine, *args, **kwargs):
+    def __init__(
+        self,
+        backward_fn: Callable,
+        backward_engine: "BackwardEngine" = None,
+        *args,
+        **kwargs,
+    ):
         self.backward_fn = backward_fn
         self.backward_engine = backward_engine
         self.fn_name = f"{backward_fn.__module__}.{backward_fn.__qualname__}"
@@ -61,6 +66,9 @@ class BackwardContext:
         self.kwargs = kwargs
 
     def __call__(self):
+        if self.backward_engine is None:
+            return self.backward_fn(*self.args, **self.kwargs)
+
         return self.backward_fn(
             *self.args, **self.kwargs, backward_engine=self.backward_engine
         )

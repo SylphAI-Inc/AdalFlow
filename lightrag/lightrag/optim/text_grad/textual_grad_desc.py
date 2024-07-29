@@ -21,20 +21,6 @@ GLOSSARY_TEXT = """
 # - <FOCUS>: The focus of the optimization.
 # - <ROLE>: The role description of the variable."""
 
-# System prompt to TGD
-# OPTIMIZER_SYSTEM_PROMPT = (
-#     "You are part of an optimization system that improves text (i.e., variable). "
-#     "You will be asked to creatively and critically improve prompts, solutions to problems, code, or any other text-based variable. "
-#     "You will receive some feedback, and use the feedback to improve the variable. "
-#     "The feedback may be noisy, identify what is important and what is correct. "
-#     "Pay attention to the role description of the variable, and the context in which it is used. "
-#     "This is very important: You MUST give your response by sending the improved variable between {new_variable_start_tag} {{improved variable}} {new_variable_end_tag} tags. "
-#     "The text you send between the tags will directly replace the variable.\n\n"
-#     f"{GLOSSARY_TEXT}"
-# )
-# NOTE: {{improved variable}} is used to escape the curly braces in the string, after jinja2 templating, it will be {improved variable}
-# {{{}}} is to replace it with the actual value
-# {{{{}}}} is to have the actual variable in the string
 OPTIMIZER_SYSTEM_PROMPT = (
     """You are part of an optimization system that improves text (i.e., variable).
 
@@ -237,11 +223,3 @@ class TextualGradientDescent(Optimizer):
             param.update_value(improved_variable)
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
-
-
-# The variable to improve (dataclass)
-# role_desc: str
-# variable: str, desc (one single variale class) =>
-# 1. it does not need to have a glossary .
-# context(gradients):
-# 1.

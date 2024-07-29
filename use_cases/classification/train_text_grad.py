@@ -172,7 +172,7 @@ if __name__ == "__main__":
     print(STARTING_SYSTEM_PROMPT)
 
     train_loader = tg.tasks.DataLoader(
-        train_set, batch_size=3, shuffle=True
+        train_set, batch_size=2, shuffle=True
     )  # why not torch loader?
 
     # Testing the 0-shot performance of the evaluation engine
@@ -199,6 +199,8 @@ if __name__ == "__main__":
     results["validation_acc"].append(eval_dataset(val_set, eval_fn, model))  # 0.72
     results["prompt"].append(system_prompt.get_value())
     print(results)
+    from lightrag.utils import save_json
+
     # train the model
     for epoch in range(3):
         for steps, (batch_x, batch_y) in enumerate(
@@ -228,9 +230,11 @@ if __name__ == "__main__":
                     log.info(f"Error: {e}")
                     eval_output_variable = eval_fn([x, y, response])
                 losses.append(eval_output_variable)
-                break
             total_loss = tg.sum(losses)  # operator aggregrate the feedbacks,
-            total_loss.backward()
+            total_loss.backward()  # it is still like separete other than the gradients now have a list from the batch.
+            loss_to_dict = total_loss.to_dict()
+            save_json(loss_to_dict, "loss_to_dict.json")
+            print("loss_to_dict: ", loss_to_dict)
             optimizer.step()
 
             run_validation_revert(system_prompt, results, model, eval_fn, val_set)

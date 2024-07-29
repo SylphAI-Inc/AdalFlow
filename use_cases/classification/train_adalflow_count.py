@@ -9,11 +9,13 @@ from lightrag.core import DataClass, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
+from lightrag.optim.text_grad.ops import sum
+from lightrag.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import textgrad as tg
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, List
 import random
 import concurrent
 from tqdm import tqdm
@@ -171,6 +173,7 @@ class ObjectCountTrainer(Component):
         task_model_config: Dict,
         backward_engine_model_config: Dict,
         tgd_model_config: Dict,
+        batch_size: int = 2,
     ):
         super().__init__()
         set_seed(12)
@@ -183,10 +186,11 @@ class ObjectCountTrainer(Component):
         # self.test_set = self.test_set[:10]
 
         self.evaluator = AnswerMatchAcc(type="exact_match")
+        self.training_batch_size = batch_size
         print(self.train_set.get_task_description())
         print(f"eval_fn: {self.eval_fn}")
         self.train_loader = tg.tasks.DataLoader(
-            self.train_set, batch_size=4, shuffle=True
+            self.train_set, batch_size=self.training_batch_size, shuffle=True
         )  # why not torch loader?
 
         self.task = ObjectCountTask(**task_model_config)
@@ -206,7 +210,7 @@ class ObjectCountTrainer(Component):
         # pred_answer: object, gt_answer: object for compute_single_item
         self.loss_fn = EvalFnToTextLoss(
             eval_fn=self.evaluator.compute_single_item,
-            eval_fn_desc="ObjectCountingEvalFn",
+            eval_fn_desc="ObjectCountingEvalFn, Output accuracy score: 1 for correct, 0 for incorrect",  # NOTE: important to explain to optimizer what the metric mean.
             backward_engine=backward_engine,
         )
 
@@ -215,30 +219,48 @@ class ObjectCountTrainer(Component):
         self.task.train()
         self.optimizer.zero_grad()
         logger.info(f"Training started: {self.task.training}")
-        for x, y in self.train_loader:
-            logger.info(f"x: {x}, y: {y}")
-            response = self.task.call(
-                question=Parameter(
-                    data=x[0],
-                    role_desc="query to the language model",
-                    requires_opt=False,
-                )
-            )
-            logger.info(f"response: {response}")
-            # TODO: when it is train, need to pass the data to be something used for eval.
-            loss = self.loss_fn(
-                kwargs={
-                    "y": response,
-                    "y_gt": Parameter(
-                        data=y[0],
-                        role_desc="The ground truth",
+        for steps, (batch_x, batch_y) in enumerate(
+            (pbar := tqdm(self.train_loader, position=0))
+        ):
+            pbar.set_description(f"Training Step: {steps}")
+
+            losses: List[Parameter] = []
+            for i, (x, y) in enumerate(zip(batch_x, batch_y)):
+                # compute loss on one data point
+                logger.info(f"x: {x}, y: {y}")
+                response = self.task.call(
+                    question=Parameter(
+                        data=x,
+                        role_desc="query to the language model",
                         requires_opt=False,
-                    ),
-                }
-            )
-            loss.backward()
+                        alias=f"x_{i}",
+                    )
+                )
+                logger.info(f"response: {response}")
+                response.alias += f"_{i}"
+                # TODO: when it is train, need to pass the data to be something used for eval.
+                loss = self.loss_fn(
+                    kwargs={
+                        "y": response,
+                        "y_gt": Parameter(
+                            data=y,
+                            role_desc="The ground truth",
+                            requires_opt=False,
+                            alias=f"y_{i}",
+                        ),
+                    }
+                )
+                # loss.backward()
+                loss.alias += f"_step_{steps}_batch_{i}"
+                losses.append(loss)
+                # loss.draw_graph(filepath="loss1")
+
+            total_loss = sum(losses)
             print(f"loss dict: {loss.to_dict()}")
-            loss.draw_graph(filepath="object_trainer")
+            total_loss.backward()
+            total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
+            save_json(total_loss.to_dict(), "total_loss_adalflow.json")
+
             break
             # self.optimizer.step()
 

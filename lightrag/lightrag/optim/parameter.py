@@ -70,7 +70,9 @@ class Parameter(Generic[T]):
     ):
         if predecessors is None:
             predecessors = []
-        for pred in predecessors:
+        self.predecessors = set(predecessors)
+
+        for pred in self.predecessors:
             if not isinstance(pred, Parameter):
                 raise TypeError(
                     f"Expected a list of Parameter instances, got {type(pred).__name__}, {pred}"
@@ -82,7 +84,6 @@ class Parameter(Generic[T]):
             data
         )  # Dynamically infer the data type from the provided data
         self.role_desc = role_desc
-        self.predecessors = set(predecessors)
         self.gradients: Set[Parameter] = set()
         self.gradient_prompt: str = (
             gradient_prompt  # the whole llm prompt to compute the gradient
@@ -228,7 +229,7 @@ class Parameter(Generic[T]):
 
     def draw_graph(
         self,
-        add_grads: bool = False,
+        add_grads: bool = True,
         format="png",
         rankdir="TB",
         filepath: str = "gout",
@@ -295,6 +296,9 @@ class Parameter(Generic[T]):
             )
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_alias())}</td></tr>"
+                # add a list of each gradient with short value
+                for g in n.gradients:
+                    node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias}: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
             node_label += "</table>"
             # if add_grads:
             #     # get the alias of the gradients
@@ -310,7 +314,8 @@ class Parameter(Generic[T]):
             # track gradients
             for g in n.gradients:
                 writer.add_text(g.alias, str(g.to_dict()))
-                writer.add_text(f"{g.alias}_prompt", g.gradient_prompt)
+                if g.gradient_prompt:
+                    writer.add_text(f"{g.alias}_prompt", g.gradient_prompt)
                 log.info(f"Gradient: {g.alias}, {g.to_dict()}")
                 log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:

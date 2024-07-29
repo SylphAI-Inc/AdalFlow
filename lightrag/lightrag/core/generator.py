@@ -345,7 +345,7 @@ class Generator(Component, GradFunction):
         is_chain = True
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
-        # go through all child parameters
+        # Compute all predecessors's gradients based on the current response' note.
         for pred in children_params:
             if not pred.requires_opt:
                 log.debug(
@@ -448,7 +448,7 @@ class Generator(Component, GradFunction):
         prompt_str = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
 
         var_gradients = Parameter(
-            alias=f"{pred.alias}_grad",
+            alias=f"{response.alias}_to_{pred.alias}_grad",
             gradient_prompt=prompt_str,  # trace the prompt
             # raw_response=gradient_output.raw_response,
             data=gradient_value,
