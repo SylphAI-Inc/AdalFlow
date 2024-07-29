@@ -79,16 +79,16 @@ class Component:
         template_doc = r"<SYS> You are a doctor </SYS> User: {{input_str}}"
 
         class DocQA(Component):
-        def __init__(self):
-            super(DocQA, self).__init__()
-            self.doc = Generator(
-                template=template_doc,
-                model_client=OpenAIClient(),
-                model_kwargs={"model": "gpt-3.5-turbo"},
-            )
+            def __init__(self):
+                super(DocQA, self).__init__()
+                self.doc = Generator(
+                    template=template_doc,
+                    model_client=OpenAIClient(),
+                    model_kwargs={"model": "gpt-3.5-turbo"},
+                )
 
-        def call(self, query: str) -> str:
-            return self.doc(query).data
+            def call(self, query: str) -> str:
+                return self.doc(query).data
 
         # instantiate the component
         doc_qa = DocQA()
@@ -112,8 +112,8 @@ class Component:
     Besides, (1) instead of `forward` and `backward` functions, we have `call` and `acall` functions for sync and async calls.
     (2) we provide `to_dict` to handle serialization of the whole component states on top of `state_dict`.
 
-    We purposly avoid using the name "Module" to avoid confusion with PyTorch's nn.Module.
-    As we consider 'Component' to be an extension to 'Moduble' as if you use a local llm model
+    We purposely avoid using the name "Module" to avoid confusion with PyTorch's nn.Module.
+    As we consider 'Component' to be an extension to 'Module' as if you use a local llm model
     for the Generator, you might need the 'Module' within the 'Component'.
     """
 
