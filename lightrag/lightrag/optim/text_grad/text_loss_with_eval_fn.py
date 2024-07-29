@@ -98,6 +98,13 @@ class EvalFnToTextLoss(Component, GradFunction):
                 f"Output of EvalFnToTextLoss with eval_fn_desc: {self.eval_fn_desc}"
             )
 
+        # validate the type of kwargs
+        for k, v in kwargs.items():
+            if not isinstance(v, Parameter):
+                raise TypeError(
+                    f"EvalFnToTextLoss: Input argument {k} must be an instance of Parameter."
+                )
+
         response: str = self.eval_fn(**kwargs)
 
         # Create a parameter

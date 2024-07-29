@@ -2,7 +2,7 @@
 
 It is a pipeline that consists of three subcomponents."""
 
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Union, Callable
 from copy import deepcopy
 import logging
 
@@ -30,7 +30,7 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
     CONVERSATION_START_INSTRUCTION_CHAIN,
     EVALUATE_VARIABLE_INSTRUCTION,
     OBJECTIVE_INSTRUCTION_BASE,
-    # OBJECTIVE_INSTRUCTION_CHAIN, # TODO: OBJECTIVE_INSTRUCTION_CHAIN
+    OBJECTIVE_INSTRUCTION_CHAIN,
 )
 
 log = logging.getLogger(__name__)
@@ -151,6 +151,8 @@ class Generator(Component, GradFunction):
         #  to support better testing on the parts beside of the model call
         self.mock_output: bool = False
         self.mock_output_data: str = "mock data"
+        self.data_map_func: Callable = None
+        self.set_data_map_func()
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -267,6 +269,18 @@ class Generator(Component, GradFunction):
         # super().set_backward_engine(backward_engine)
         print(f"Backward engine set: {self.backward_engine}")
 
+    def set_data_map_func(self, map_func: Callable = None):
+        def default_map_func(data: "GeneratorOutputType") -> str:
+            return (
+                data.data
+                if data.data
+                else self.failure_message_to_backward_engine(data)
+            )
+
+        self.data_map_func = map_func or default_map_func
+
+        log.debug(f"Data map function set: {self.data_map_func}")
+
     # NOTE: when training is true, we use forward instead of call
     def forward(
         self,
@@ -280,19 +294,23 @@ class Generator(Component, GradFunction):
         else:
             output = self.call(prompt_kwargs, model_kwargs)
         # 2. Generate a Parameter object from the output
-        parameter_data = None
-        if output.data is None:
-            parameter_data = (
-                f"raw response: {output.raw_response}" + "error: " + output.error
-            )
+        # parameter_data = None
+        # if output.data is None:
+        #     parameter_data = (
+        #         f"raw response: {output.raw_response}" + "error: " + output.error
+        #     )
 
-        else:
-            parameter_data = output.data
+        # else:
+        #     parameter_data = output.data
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
+        if self.data_map_func is None:
+            self.set_data_map_func()
         response: Parameter = Parameter(
-            data=parameter_data,
+            data=self.data_map_func(output),
             alias=self.name + "_output",
-            predecessors=list(combined_prompt_kwargs.values()),
+            predecessors=[
+                p for p in combined_prompt_kwargs.values() if isinstance(p, Parameter)
+            ],
             role_desc=f"response from generator {self.name}",
             raw_response=output.raw_response,
         )
@@ -359,7 +377,7 @@ class Generator(Component, GradFunction):
             return
         log.debug(f"Generator: Backward through {pred}, is_chain: {is_chain}")
 
-        instruction_str = None
+        instruction_str, objective_str = None, None
 
         # 1. Generate the conversation string
 
@@ -377,9 +395,7 @@ class Generator(Component, GradFunction):
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
         if is_chain:
             conv_ins_template = CONVERSATION_START_INSTRUCTION_CHAIN
-            obj_ins_template = (
-                OBJECTIVE_INSTRUCTION_BASE  # TODO: OBJECTIVE_INSTRUCTION_CHAIN
-            )
+            obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
         instruction_str = Prompt(
             template=conv_ins_template,
@@ -389,6 +405,13 @@ class Generator(Component, GradFunction):
             },
         )()
         log.info(f"Conversation start instruction base str: {instruction_str}")
+        objective_str = Prompt(
+            template=obj_ins_template,
+            prompt_kwargs={
+                "response_desc": response.role_desc,
+                "response_gradient": response.get_gradient_text(),
+            },
+        )()
         evaluation_variable_instruction_str = Prompt(
             template=EVALUATE_VARIABLE_INSTRUCTION,
             prompt_kwargs={
@@ -402,7 +425,7 @@ class Generator(Component, GradFunction):
         )
         backward_engine_prompt_kwargs = {
             "conversation_sec": instruction_str,
-            "objective_instruction_sec": obj_ins_template,
+            "objective_instruction_sec": objective_str,
             "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
         }
 
@@ -507,6 +530,15 @@ class Generator(Component, GradFunction):
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, "
         return s
+
+    @staticmethod
+    def failure_message_to_backward_engine(
+        gradient_response: GeneratorOutput,
+    ) -> Optional[str]:
+        response_value = None
+        if gradient_response.error or not gradient_response.data:
+            response_value = f"Error: {gradient_response.error}, Raw response: {gradient_response.raw_response}"
+        return response_value
 
 
 class BackwardEngine(Generator):  # it is a generator with defaule template

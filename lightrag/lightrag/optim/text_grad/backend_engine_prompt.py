@@ -55,6 +55,11 @@ Here is a conversation with a language model (LM):
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>Your goal is to give feedback and criticism to the variable given the above evaluation output.
 Our only goal is to improve the above metric, and nothing else. </OBJECTIVE_FUNCTION>"""
 
+
+OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
+<OBJECTIVE_FUNCTION>Your goal is to give feedback to the variable to address the following feedback on the LM_OUTPUT: {{response_gradient}} </OBJECTIVE_FUNCTION>"""
+
+
 # Third part pf the user prompt
 
 

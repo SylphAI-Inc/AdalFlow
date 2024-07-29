@@ -60,7 +60,7 @@ class Parameter(Generic[T]):
 
     def __init__(
         self,
-        data: T = None,
+        data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
         role_desc: str = None,
         predecessors: List["Parameter"] = None,
@@ -70,7 +70,12 @@ class Parameter(Generic[T]):
     ):
         if predecessors is None:
             predecessors = []
-        _predecessors_requires_grad = [v for v in predecessors if v.requires_opt]
+        for pred in predecessors:
+            if not isinstance(pred, Parameter):
+                raise TypeError(
+                    f"Expected a list of Parameter instances, got {type(pred).__name__}, {pred}"
+                )
+        self._predecessors_requires_grad = [v for v in predecessors if v.requires_opt]
         self.data = data
         self.requires_opt = requires_opt
         self.data_type = type(
@@ -87,6 +92,8 @@ class Parameter(Generic[T]):
         )  # TODO: what is the context
         self.grad_fn = None
         self.alias = alias
+        if not self.alias:
+            self.alias = self.role_desc.capitalize().replace(" ", "_")[0:10]
         self.proposed_data: T = None  # this is for the optimizer to propose a new value
         self.raw_response = raw_response
 
@@ -242,32 +249,27 @@ class Parameter(Generic[T]):
                 "Please install tensorboardX using 'pip install tensorboardX' to use this feature"
             ) from e
         assert rankdir in ["LR", "TB"]
+        import textwrap
 
         # Set up TensorBoard logging
         writer = SummaryWriter(log_dir="logs/simple_net")
 
         filepath = filepath + "." + format
 
-        def wrap_text(text, width=40):
-            """Wraps text at a given number of characters using HTML line breaks."""
-            words = text.split()
-            wrapped_text = ""
-            line = ""
-            for word in words:
-                if len(line) + len(word) + 1 > width:
-                    wrapped_text += line + "<br/>"
-                    line = word
-                else:
-                    if line:
-                        line += " "
-                    line += word
-            wrapped_text += line
-            return wrapped_text
+        def wrap_text(text, width):
+            # Wrap text to the specified width
+            return "<br/>".join(textwrap.wrap(text, width))
 
         def wrap_and_escape(text, width=40):
             if not isinstance(text, str):
                 text = str(text)
-            return wrap_text(text.replace("<", "&lt;").replace(">", "&gt;"), width)
+            text = (
+                text.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace('"', "&quot;")
+            )
+            return wrap_text(text, width)
 
         nodes, edges = self.trace(self)
         dot = Digraph(
@@ -276,19 +278,28 @@ class Parameter(Generic[T]):
 
         for n in nodes:
             label_color = "darkblue"
+            # node_label = (
+            #     f"<b><font color='{label_color}'>Alias: </font></b> {wrap_and_escape(n.alias)}"
+            #     f"<b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
+            #     f"<b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
+            # )
             node_label = (
-                f"<br/><b><font color='{label_color}'>Alias: </font></b> {wrap_and_escape(n.alias)}"
-                f"<br/><b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
-                f"<br/><b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
+                f"<table border='0' cellborder='1' cellspacing='0'>"
+                f"<tr><td><b><font color='{label_color}'>Alias: </font></b></td><td>{wrap_and_escape(n.alias)}</td></tr>"
+                f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
+                f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
             )
             if add_grads:
-                # get the alias of the gradients
-                node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradients_alias())}"
+                node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_alias())}</td></tr>"
+            node_label += "</table>"
+            # if add_grads:
+            #     # get the alias of the gradients
+            #     node_label += f"<b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradients_alias())}"
             #     node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_and_context_text())}"
             dot.node(
-                name=n.alias,
+                name=n.alias or n.role_desc,
                 label=f"<{node_label}>",
-                shape="record",
+                shape="plaintext",
             )
             writer.add_text(n.alias, str(n.to_dict()))
             log.info(f"Node: {n.alias}, {n.to_dict()}")

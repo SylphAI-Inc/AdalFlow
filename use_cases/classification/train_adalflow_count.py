@@ -5,7 +5,7 @@ from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.utils import setup_env, get_logger
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
-from lightrag.core import DataClass, GeneratorOutput, fun_to_component
+from lightrag.core import DataClass, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import textgrad as tg
 import numpy as np
-from typing import Dict
+from typing import Dict, Any
 import random
 import concurrent
 from tqdm import tqdm
@@ -97,6 +97,11 @@ def parse_integer_answer(answer: str, only_first_line: bool = False):
 
 # Build a pipeline like you normally would == PyTorch model
 # TODO: auto saving the prompt and performance.
+
+
+# 1 Task: with structured output
+# 2. use task pipeline instead of a single generator
+# 3. train for both output format and the system prompt
 class ObjectCountTask(Component):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
@@ -132,19 +137,20 @@ class ObjectCountTask(Component):
             },
             output_processors=parser,
         )
+        # TODO: make this data map function more robust (this is the final answer and the input to eval_fn)
+        self.llm_counter.set_data_map_func(lambda x: x.data.answer)
+        logger.info(f"llm_counter set_data_map_func, {self.llm_counter.data_map_func}")
 
     # TODO: the error will be a context
-    def call(self, question: str) -> int:
-        output: GeneratorOutput = self.llm_counter(
-            prompt_kwargs={"input_str": question}
-        )
-        if output.data is None:
-            logger.error(
-                f"Error in processing the question: {question}, output: {output}"
-            )
-            return -1
-        else:
-            return output.data.answer
+    def call(self, question: str) -> Any:
+        return self.llm_counter(prompt_kwargs={"input_str": question})
+        # if output.data is None:
+        #     logger.error(
+        #         f"Error in processing the question: {question}, output: {output}"
+        #     )
+        #     return -1
+        # else:
+        #     return output.data.answer
 
 
 # Define a evaluator == PyTorch Evaluator
@@ -208,24 +214,23 @@ class ObjectCountTrainer(Component):
         r"""Test a single training step"""
         self.task.train()
         self.optimizer.zero_grad()
+        logger.info(f"Training started: {self.task.training}")
         for x, y in self.train_loader:
+            logger.info(f"x: {x}, y: {y}")
             response = self.task.call(
                 question=Parameter(
-                    data=x,
+                    data=x[0],
                     role_desc="query to the language model",
                     requires_opt=False,
                 )
             )
-            print(f"response: {response}")
+            logger.info(f"response: {response}")
+            # TODO: when it is train, need to pass the data to be something used for eval.
             loss = self.loss_fn(
                 kwargs={
-                    "y": Parameter(
-                        data=response,
-                        role_desc="The response of the LLM",
-                        requires_opt=True,
-                    ),
+                    "y": response,
                     "y_gt": Parameter(
-                        data=y,
+                        data=y[0],
                         role_desc="The ground truth",
                         requires_opt=False,
                     ),
@@ -233,6 +238,8 @@ class ObjectCountTrainer(Component):
             )
             loss.backward()
             print(f"loss dict: {loss.to_dict()}")
+            loss.draw_graph(filepath="object_trainer")
+            break
             # self.optimizer.step()
 
     def train(self, max_epochs: int = 1):
