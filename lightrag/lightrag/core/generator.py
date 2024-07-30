@@ -15,7 +15,7 @@ from lightrag.core.component import Component
 
 # Avoid circular import
 # if TYPE_CHECKING:
-from lightrag.optim.parameter import Parameter
+from lightrag.optim.parameter import Parameter, GradientContext
 
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
@@ -447,7 +447,7 @@ class Generator(Component, GradFunction):
         # TODO: make it a debug feature
         prompt_str = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
 
-        var_gradients = Parameter(
+        var_gradient = Parameter(
             alias=f"{response.alias}_to_{pred.alias}_grad",
             gradient_prompt=prompt_str,  # trace the prompt
             # raw_response=gradient_output.raw_response,
@@ -456,7 +456,14 @@ class Generator(Component, GradFunction):
             role_desc=f"feedback to {pred.role_desc}",
         )
         # add the graidents to the variable
-        pred.gradients.add(var_gradients)
+        pred.gradients.add(var_gradient)
+        # save the gradient context
+        # TODO: add an id for each parameter
+        pred.gradients_context[var_gradient] = GradientContext(
+            context=conversation_str,
+            response_desc=response.role_desc,
+            variable_desc=pred.role_desc,
+        )
 
     def call(
         self,

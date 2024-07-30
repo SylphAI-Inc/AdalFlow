@@ -24,6 +24,7 @@ def sum(parms: List[Parameter]) -> Parameter:
 
 # TODO: there might be a better way to do this.
 # TODO: make all loss functions to support batch losses
+# TODO: use a temlate to format the concatenated values
 class Sum(GradFunction):
     __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
 

@@ -1,19 +1,55 @@
 """WIP"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict, TYPE_CHECKING, Tuple
+from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple
 from collections import defaultdict
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
 
-# from lightrag.core import Generator
-
-from lightrag.optim.text_grad.backend_engine_prompt import GRADIENT_TEMPLATE
-
-if TYPE_CHECKING:
-    pass  # Import Generator for type checking only
 
 T = TypeVar("T")  # covariant set to False to allow for in-place updates
 
 log = logging.getLogger(__name__)
+
+
+class ParameterType(Enum):
+    """Enum for the type of parameter to compute the loss with. And the optimizer needs to know"""
+
+    PROMPT = "prompt"  # need to be generic and it needs to observe large batch size
+    INSTANCE = "instance"  # Focus on fixing issues (more direct)
+
+
+@dataclass
+class GradientContext:
+    context: str = field(
+        metadata={
+            "desc": "The context of the gradient in form of a conversation from the current parameter to compute gradient with to the response parameter"
+        }
+    )
+    response_desc: str = field(
+        metadata={"desc": "The description of the response parameter"}
+    )
+    variable_desc: str = field(
+        metadata={"desc": "The description of the current parameter"}
+    )
+
+
+COMBINED_GRADIENTS_TEMPLATE = r"""
+{% for g in combined_gradients %}
+Feedback {{loop.index}}.
+{% set gradient = g[0] %}
+{% set gradient_context = g[1] %}
+{% if gradient_context %}
+Here is a conversation:
+<CONVERSATION>{{gradient_context.context}}</CONVERSATION>
+This conversation is potentially part of a larger system. The output is used as <{{gradient_context.response_desc}}>
+Here is the feedback we got for <{{gradient_context.variable_desc}}> in the conversation:
+    {#<FEEDBACK>{{gradient.data}}</FEEDBACK>#}
+{% else %}
+{#Data: {{gradient.data}}#}
+{% endif %}
+__________
+{% endfor %}"""
 
 
 # tensor has the backward function
@@ -58,6 +94,8 @@ class Parameter(Generic[T]):
     1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py
     """
 
+    proposing: bool = False  # State of the parameter
+
     def __init__(
         self,
         data: T = None,  # for generator output, the data will be set up as raw_response
@@ -84,13 +122,14 @@ class Parameter(Generic[T]):
             data
         )  # Dynamically infer the data type from the provided data
         self.role_desc = role_desc
-        self.gradients: Set[Parameter] = set()
+        self.gradients: Set[Parameter] = set()  # <FEEDBACK>gradient.data</FEEDBACK>
         self.gradient_prompt: str = (
             gradient_prompt  # the whole llm prompt to compute the gradient
         )
-        self.gradients_context: Dict[Parameter, str] = defaultdict(
+        self.gradients_context: Dict[Parameter, GradientContext] = defaultdict(
             lambda: None
-        )  # TODO: what is the context
+        )  # input and output from an operator, each operator should have a template
+        # <CONVERSATION>...</CONVERSATION>
         self.grad_fn = None
         self.alias = alias
         if not self.alias:
@@ -99,11 +138,40 @@ class Parameter(Generic[T]):
                 if self.role_desc
                 else f"param_{id(self)}"
             )
-        self.proposed_data: T = None  # this is for the optimizer to propose a new value
+        self.previous_data = None  # used to store the previous data
         self.raw_response = raw_response
+        self._combined_gradient_context: Set[str] = set()
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
+
+    ############################################################################################################
+    #   Used for optimizer to propose new data
+    ############################################################################################################
+    def propose_data(self, data: T):
+        r"""Used by optimizer to put the new data, and save the previous data in case of revert."""
+        if self.proposing:
+            raise ValueError("Cannot propose a new data when it is already proposing.")
+        self.previous_data = self.data
+        self.data = data
+        self.proposing = True
+
+    def revert_data(self):
+        r"""Revert the data to the previous data."""
+        if not self.proposing:
+            raise ValueError("Cannot revert data without proposing first.")
+
+        self.data = self.previous_data
+        self.previous_data = None
+        self.proposing = False
+
+    def step_data(self):
+        r"""Use PyTorch's optimizer syntax to finalize the update of the data."""
+        if not self.proposing:
+            raise ValueError("Cannot set data without proposing first.")
+
+        self.previous_data = None
+        self.proposing = False
 
     def get_grad_fn(self):
         return self.grad_fn
@@ -141,44 +209,39 @@ class Parameter(Generic[T]):
         """
         from lightrag.core.prompt_builder import Prompt
 
-        gradients: List[str] = []
-        for g in self.gradients:
-            if (
-                self.gradients_context[g] is None
-            ):  # no context function provided, directly use the data
-                gradients.append(f"data: {g.data}\n")  # how come gradient has no data
+        gradient_context_combined = zip(
+            list(self.gradients),
+            [self.gradients_context[g] for g in list(self.gradients)],
+        )
 
-            else:
-                criticism_and_context = Prompt(
-                    template=GRADIENT_TEMPLATE,
-                    prompt_kwargs={"feedback": g.data, **self.gradients_context[g]},
-                )
-                gradients.append(f"criticism_and_context: {criticism_and_context()}")
-        gradient_text = "\n".join(gradients)
+        gradient_context_combined_str = Prompt(
+            template=COMBINED_GRADIENTS_TEMPLATE,
+            prompt_kwargs={"combined_gradients": gradient_context_combined},
+        )()
 
-        return gradient_text
+        return gradient_context_combined_str
 
     # TODO: dont use short value
-    # def get_short_value(self, n_words_offset: int = 10) -> str:
-    #     """
-    #     Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don't want to see the entire value.
-    #     This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
-    #     :param n_words_offset: The number of words to show from the beginning and the end of the value.
-    #     :type n_words_offset: int
-    #     """
-    #     # 1. ensure the data is a string
-    #     data = self.data
-    #     if not isinstance(self.data, str):
-    #         data = str(self.data)
-    #     words = data.split(" ")
-    #     if len(words) <= 2 * n_words_offset:
-    #         return data
-    #     short_value = (
-    #         " ".join(words[:n_words_offset])
-    #         + " (...) "
-    #         + " ".join(words[-n_words_offset:])
-    #     )
-    #     return short_value
+    def get_short_value(self, n_words_offset: int = 10) -> str:
+        """
+        Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don't want to see the entire value.
+        This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
+        :param n_words_offset: The number of words to show from the beginning and the end of the value.
+        :type n_words_offset: int
+        """
+        # 1. ensure the data is a string
+        data = self.data
+        if not isinstance(self.data, str):
+            data = str(self.data)
+        words = data.split(" ")
+        if len(words) <= 2 * n_words_offset:
+            return data
+        short_value = (
+            " ".join(words[:n_words_offset])
+            + " (...) "
+            + " ".join(words[-n_words_offset:])
+        )
+        return short_value
 
     @staticmethod
     def trace(
@@ -198,8 +261,7 @@ class Parameter(Generic[T]):
         return nodes, edges
 
     def backward(self):  # engine should be the llm
-        # if engine is None:
-        #     raise ValueError("Engine is not provided.")
+
         # topological sort of all the predecessors of the current parameter in the graph
         log.debug(f"Backward pass for {self.data}, backward function: {self.grad_fn}")
         topo: List[Parameter] = []
@@ -283,11 +345,7 @@ class Parameter(Generic[T]):
 
         for n in nodes:
             label_color = "darkblue"
-            # node_label = (
-            #     f"<b><font color='{label_color}'>Alias: </font></b> {wrap_and_escape(n.alias)}"
-            #     f"<b><font color='{label_color}'>Role: </font></b> {wrap_and_escape(n.role_desc.capitalize())}"
-            #     f"<b><font color='{label_color}'>Value: </font></b> {wrap_and_escape(n.data)}"
-            # )
+
             node_label = (
                 f"<table border='0' cellborder='1' cellspacing='0'>"
                 f"<tr><td><b><font color='{label_color}'>Alias: </font></b></td><td>{wrap_and_escape(n.alias)}</td></tr>"
@@ -299,11 +357,10 @@ class Parameter(Generic[T]):
                 # add a list of each gradient with short value
                 for g in n.gradients:
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias}: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
+            if n.proposing:
+                node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{"Yes"}</td></tr>"
+                node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             node_label += "</table>"
-            # if add_grads:
-            #     # get the alias of the gradients
-            #     node_label += f"<b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradients_alias())}"
-            #     node_label += f"<br/><b><font color='{label_color}'>Gradients: </font></b> {wrap_and_escape(n.get_gradient_and_context_text())}"
             dot.node(
                 name=n.alias or n.role_desc,
                 label=f"<{node_label}>",
@@ -356,7 +413,7 @@ class Parameter(Generic[T]):
             "role_desc": self.role_desc,
             "predecessors": [pred.to_dict() for pred in self.predecessors],
             "gradients": [grad.to_dict() for grad in self.gradients],
-            "proposed_data": self.proposed_data,
+            "previous_data": self.previous_data,
             "gradients_context": [
                 (k.alias, v) for k, v in self.gradients_context.items()
             ],
@@ -377,7 +434,7 @@ class Parameter(Generic[T]):
             predecessors=predecessors,
             alias=data["alias"],
             gradients=[cls.from_dict(grad) for grad in data["gradients"]],
-            proposed_data=data["proposed_data"],
+            previous_data=data["previous_data"],
             gradient_prompt=data["gradient_prompt"],
             raw_response=data["raw_response"],
         )

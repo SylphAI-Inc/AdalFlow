@@ -9,7 +9,7 @@ from lightrag.core import ModelClient
 from lightrag.core.generator import BackwardEngine
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.component import Component
-from lightrag.optim.parameter import Parameter
+from lightrag.optim.parameter import Parameter, GradientContext
 from lightrag.optim.text_grad.backend_engine_prompt import EVALUATE_VARIABLE_INSTRUCTION
 from lightrag.core.prompt_builder import Prompt
 from lightrag.eval.base import BaseEvaluator
@@ -233,11 +233,17 @@ class EvalFnToTextLoss(Component, GradFunction):
             role_desc=f"Feedback for {pred.role_desc}",
         )
         pred.gradients.add(gradient_param)
-        pred.gradients_context[gradient_param] = {
-            "context": conversation_str,
-            "response_desc": response.role_desc,
-            "variable_desc": pred.role_desc,
-        }
+        pred.gradients_context[gradient_param] = GradientContext(
+            context=conversation_str,
+            response_desc=response.role_desc,
+            variable_desc=pred.role_desc,
+        )
+
+        # {
+        #     "context": conversation_str,
+        #     "response_desc": response.role_desc,
+        #     "variable_desc": pred.role_desc,
+        # }
 
         # TODO: reduce meta
 

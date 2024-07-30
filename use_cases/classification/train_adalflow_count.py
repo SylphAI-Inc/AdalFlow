@@ -114,16 +114,19 @@ class ObjectCountTask(Component):
         # data = (
         #     "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
         # )
-        # 1. set up system prompt, but also training goal
-        self.system_prompt = Parameter(
+        # 1. set up system prompt, and define the parameters for optimization.
+        # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
+        system_prompt = Parameter(
+            alias="system_prompt",
             data="You will answer a reasoning question. Think step by step.",
-            role_desc="The system prompt",
+            role_desc="To specify the LLM system prompt",
             requires_opt=True,
         )
-        self.output_format_str = Parameter(
+        output_format_str = Parameter(
+            alias="output_format",
             data="Respond with valid JSON object with the following schema:\n"
             + ObjectCountPredData.to_json_signature(),
-            role_desc="The output format string",
+            role_desc="To specify the LLM output format",
             requires_opt=True,
         )
         parser = YamlOutputParser(
@@ -134,8 +137,8 @@ class ObjectCountTask(Component):
             model_kwargs=model_kwargs,
             template=template_2,
             prompt_kwargs={
-                "system_prompt": self.system_prompt,
-                "output_format_str": self.output_format_str,
+                "system_prompt": system_prompt,
+                "output_format_str": output_format_str,
             },
             output_processors=parser,
         )
@@ -173,7 +176,7 @@ class ObjectCountTrainer(Component):
         task_model_config: Dict,
         backward_engine_model_config: Dict,
         tgd_model_config: Dict,
-        batch_size: int = 2,
+        batch_size: int = 4,
     ):
         super().__init__()
         set_seed(12)
@@ -196,12 +199,22 @@ class ObjectCountTrainer(Component):
         self.task = ObjectCountTask(**task_model_config)
         # 2. backward engine will be used by all operators
         backward_engine = BackwardEngine(**backward_engine_model_config)
-        self.target_params = list(self.task.parameters())
+        self.target_params = set(self.task.parameters())
+
+        for param in self.target_params:
+            print(f"param: {param.alias}")
 
         # 3. optimizer will be used to optimize the parameters
         self.optimizer = TextualGradientDescent(
-            params=self.target_params, **tgd_model_config
+            params=self.target_params,
+            **tgd_model_config,
+            constraints=[
+                "Do not stray too far from the original value.",
+                "Do not be too specific to the training data to adapt to new data.",
+                "keep the initial instruction's purpose.",
+            ],
         )
+
         self.task.llm_counter.set_backward_engine(backward_engine)
 
         # 4. loss function will be used to compute the loss
@@ -258,6 +271,7 @@ class ObjectCountTrainer(Component):
             total_loss = sum(losses)
             print(f"loss dict: {loss.to_dict()}")
             total_loss.backward()
+            self.optimizer.propose()
             total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
             save_json(total_loss.to_dict(), "total_loss_adalflow.json")
 
@@ -350,7 +364,7 @@ class ObjectCountTrainer(Component):
 # TODO: implement cache for generator(make it configurable)
 if __name__ == "__main__":
     task = ObjectCountTask(**gpt_3_model)
-    logger = get_logger(level="INFO")
+    logger = get_logger(level="DEBUG")
     print(task)
     # print(
     #     task.llm_counter.print_prompt(
@@ -368,7 +382,7 @@ if __name__ == "__main__":
         backward_engine_model_config=gpt_3_model,
         tgd_model_config=gpt_3_model,
     )
-    print(trainer)
+    # print(trainer)
     trainer.test_train()
     # trainer.eval(max_samples=None)
     # trainer.eval(dataset=trainer.val_set, max_samples=None)

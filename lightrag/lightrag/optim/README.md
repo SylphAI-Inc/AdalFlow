@@ -44,3 +44,20 @@ We could potentially split it into two levels of inheritance.
 
 (1) [BaseComponent] component without parameters as a way in adalflow to visualize the whole pipeline. even the optimizer as most of them are using llm. This basecomponent will not have to be related to parameters at all.
 (2) [Component] component with parameters (module),training as a building block to the actual task pipeline. => name it "Module". To make it able to use text-gradient, it will also be marked as a ``GradFunction``.
+
+# Problem of Text-grad now
+
+1. users have to debug and have control of the prompt themselves. -> We need to make it possible for developers to even debug and customize their optimizer prompt.  [logging + visualization]
+2. The gradients should reflect the actual loss. TODO: we will improve
+3. The prompts are too complicated and not easy to follow. TODO: simplify the prompt and further improve the data structure.
+4. it needs larger batch size so that we can have errors (the actual loss) to backpropagate.
+
+## What really matters to an optimizer
+
+1. use minor changes instead of big changes (we can control the momenetum)
+2. The feedback/gradient just looking at a single example is not good for prompt optimization, maybe the instance.
+
+We will differentiate the prompt or instance.
+
+
+We will have to come with a simplified and more effective version of text-grad, but the structure with our component is solid and powerful.

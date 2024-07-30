@@ -55,7 +55,6 @@ ____
 - It should be clear, concise, and effective.
 - Do not change core information provided in the starter instruction.
 </SYS>
-New Instruction:
 """
 
 
@@ -128,6 +127,7 @@ class LLMOptimizer(Optimizer):
         self.proposed = instruction
         self.instruction_parameter.update_value(instruction)
 
+    # Step
     def update_parameter(self, score: float):
         r"""Load the proposed instruction to the current instruction to complete the optimization step."""
         self.current = deepcopy(self.proposed)
@@ -136,6 +136,7 @@ class LLMOptimizer(Optimizer):
             self.instruction_history.append(Instruction(text=self.current, score=score))
             self.instruction_parameter.update_value(self.current)
 
+    # revert
     def reset_parameter(self):
         r"""The proposed is not leading to a better instruction, reset the parameter."""
         self.proposed = None

@@ -157,6 +157,9 @@ def test_text_grad():
 
 
 if __name__ == "__main__":
+    from lightrag.utils import get_logger
+
+    get_logger(level="DEBUG", filename="lib_text_grad.log")
 
     set_seed(12)
     llm_api_eval = tg.get_engine(engine_name="gpt-4o")
@@ -233,9 +236,10 @@ if __name__ == "__main__":
             total_loss = tg.sum(losses)  # operator aggregrate the feedbacks,
             total_loss.backward()  # it is still like separete other than the gradients now have a list from the batch.
             loss_to_dict = total_loss.to_dict()
-            save_json(loss_to_dict, "loss_to_dict.json")
+
             print("loss_to_dict: ", loss_to_dict)
             optimizer.step()
+            save_json(loss_to_dict, "loss_to_dict.json")
 
             run_validation_revert(system_prompt, results, model, eval_fn, val_set)
 
