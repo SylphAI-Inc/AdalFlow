@@ -358,7 +358,7 @@ class Parameter(Generic[T]):
                 for g in n.gradients:
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias}: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
             if n.proposing:
-                node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{"Yes"}</td></tr>"
+                node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             node_label += "</table>"
             dot.node(
