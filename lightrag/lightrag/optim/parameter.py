@@ -36,17 +36,16 @@ class GradientContext:
 
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% for g in combined_gradients %}
-Feedback {{loop.index}}.
+{{loop.index}}.
 {% set gradient = g[0] %}
 {% set gradient_context = g[1] %}
 {% if gradient_context %}
-Here is a conversation:
+
 <CONVERSATION>{{gradient_context.context}}</CONVERSATION>
 This conversation is potentially part of a larger system. The output is used as <{{gradient_context.response_desc}}>
-Here is the feedback we got for <{{gradient_context.variable_desc}}> in the conversation:
-    {#<FEEDBACK>{{gradient.data}}</FEEDBACK>#}
+    <FEEDBACK>{{gradient.data}}</FEEDBACK>
 {% else %}
-{#Data: {{gradient.data}}#}
+    <FEEDBACK>{{gradient.data}}</FEEDBACK>
 {% endif %}
 __________
 {% endfor %}"""
@@ -140,7 +139,7 @@ class Parameter(Generic[T]):
             )
         self.previous_data = None  # used to store the previous data
         self.raw_response = raw_response
-        self._combined_gradient_context: Set[str] = set()
+        # self._combined_gradient_context: Set[str] = set()
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
@@ -324,10 +323,14 @@ class Parameter(Generic[T]):
         filepath = filepath + "." + format
 
         def wrap_text(text, width):
-            # Wrap text to the specified width
-            return "<br/>".join(textwrap.wrap(text, width))
+            """Wrap text to the specified width, considering HTML breaks."""
+            lines = textwrap.wrap(
+                text, width, break_long_words=False, replace_whitespace=False
+            )
+            return "<br/>".join(lines)
 
         def wrap_and_escape(text, width=40):
+            r"""Wrap text to the specified width, considering HTML breaks, and escape special characters."""
             if not isinstance(text, str):
                 text = str(text)
             text = (
@@ -335,6 +338,10 @@ class Parameter(Generic[T]):
                 .replace("<", "&lt;")
                 .replace(">", "&gt;")
                 .replace('"', "&quot;")
+                .replace("'", "&apos;")
+                .replace(
+                    "\n", "<br/>"
+                )  # Convert newlines to HTML line breaks if using HTML labels
             )
             return wrap_text(text, width)
 
@@ -355,8 +362,17 @@ class Parameter(Generic[T]):
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_alias())}</td></tr>"
                 # add a list of each gradient with short value
-                for g in n.gradients:
-                    node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias}: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
+                # combine the gradients and context
+                combined_gradients_contexts = zip(
+                    n.gradients, [n.gradients_context[g] for g in n.gradients]
+                )
+                for g, context in combined_gradients_contexts:
+                    gradient_context = context
+                    log.info(f"Gradient context display: {gradient_context}")
+                    log.info(f"data: {g.data}")
+                    node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Data: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
+                    if gradient_context != "":
+                        node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
             if n.proposing:
                 node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"

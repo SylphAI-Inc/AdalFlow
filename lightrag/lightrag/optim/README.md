@@ -61,3 +61,6 @@ We will differentiate the prompt or instance.
 
 
 We will have to come with a simplified and more effective version of text-grad, but the structure with our component is solid and powerful.
+
+# Differ from model optimization
+1. we have to manually define parameters but in pytorch, it comes inside of a layer, so you just define a layer instead.

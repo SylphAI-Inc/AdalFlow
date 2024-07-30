@@ -117,9 +117,9 @@ class ObjectCountTask(Component):
         # 1. set up system prompt, and define the parameters for optimization.
         # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="system_prompt",
+            alias="task_instruction",
             data="You will answer a reasoning question. Think step by step.",
-            role_desc="To specify the LLM system prompt",
+            role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
         )
         output_format_str = Parameter(
@@ -127,7 +127,7 @@ class ObjectCountTask(Component):
             data="Respond with valid JSON object with the following schema:\n"
             + ObjectCountPredData.to_json_signature(),
             role_desc="To specify the LLM output format",
-            requires_opt=True,
+            requires_opt=False,
         )
         parser = YamlOutputParser(
             data_class=ObjectCountPredData, return_data_class=True
@@ -176,7 +176,7 @@ class ObjectCountTrainer(Component):
         task_model_config: Dict,
         backward_engine_model_config: Dict,
         tgd_model_config: Dict,
-        batch_size: int = 4,
+        batch_size: int = 2,
     ):
         super().__init__()
         set_seed(12)

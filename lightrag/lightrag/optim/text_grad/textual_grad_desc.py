@@ -11,18 +11,18 @@ from lightrag.core import ModelClient, Prompt
 
 log = logging.getLogger(__name__)
 
-GLOSSARY_TEXT = """
+GLOSSARY_TEXT = r"""
 ### Glossary of tags that will be sent to you:
-# - <LM_SYSTEM_PROMPT>: The system prompt for the language model.
+{# # - <LM_SYSTEM_PROMPT>: The system prompt for the language model.
 # - <LM_INPUT>: The input to the language model.
-# - <LM_OUTPUT>: The output of the language model.
+# - <LM_OUTPUT>: The output of the language model. #}
 # - <FEEDBACK>: The feedback to the variable.
 # - <CONVERSATION>: The conversation history.
 # - <FOCUS>: The focus of the optimization.
 # - <ROLE>: The role description of the variable."""
 
 OPTIMIZER_SYSTEM_PROMPT = (
-    """You are part of an optimization system that improves text (i.e., variable).
+    """You are part of an optimization system that improves variable to achieve better performance.
 
 You will be asked to creatively and critically improve prompts, solutions to problems, code, or any other text-based variable.
 You will receive some feedback, and use the feedback to improve the variable.
@@ -30,41 +30,47 @@ The feedback may be noisy, identify what is important and what is correct.
 Remember:
 - Pay attention to the role description of the variable, and the context in which it is used.
 - You MUST give your response by sending the improved variable between {{new_variable_start_tag}} $improved_variable {{new_variable_end_tag}} tags.
+- Be concise and only modify the variable value in <VARIABLE> tags.
 """
     + GLOSSARY_TEXT
 )
 
 
-# TGD update instruction
-TGD_PROMPT_TARGET_PARAM = """Here is the role of the variable you will improve: <ROLE>{{variable_desc}}</ROLE>.
+# TGD update instruction # 1. delete ({{variable_desc}})
+TGD_PROMPT_TARGET_PARAM = """
+Here is the role of the variable you will improve: <ROLE>{{variable_desc}}</ROLE>.
+The variable is the text within the following span: <VARIABLE> {{variable_value}} </VARIABLE>
 
-The variable is the text within the following span: <VARIABLE> {{variable_short}} </VARIABLE>
-Here is the context and feedback we got for the variable:
+Here are the feedback and context:
 <CONTEXT>{{variable_grad}}</CONTEXT>
-Improve the variable ({{variable_desc}}) using the feedback provided in <FEEDBACK> tags."""
+"""
 
 
 TGD_PROMPT_OUTPUT_FORMAT = """Send the improved variable in the following format:
 
 {{new_variable_start_tag}}the_improved_variable{{new_variable_end_tag}}
 
-Send ONLY the improved variable between the {{new_variable_start_tag}} and {{new_variable_end_tag}} tags, and nothing else."""
+Send ONLY the improved variable between the {{new_variable_start_tag}} and {{new_variable_end_tag}} tags, and nothing else.
+"""
 
 
 MOMENTUM_PROMPT_ADDITION = """Here are the past iterations of this variable:
 
 <PAST_ITERATIONS>{{past_values}}</PAST_ITERATIONS>
 Similar feedbacks across different steps suggests that the modifications to the variable are insufficient.
-If this is the case, please make more significant changes to the variable."""
+If this is the case, please make more significant changes to the variable.
+"""
 
 
 CONSTRAINT_PROMPT_ADDITION = """You must follow the following constraints:
-<CONSTRAINTS>{{constraint_text}}</CONSTRAINTS>"""
+<CONSTRAINTS>{{constraint_text}}</CONSTRAINTS>
+"""
 
 
 IN_CONTEXT_EXAMPLE_PROMPT_ADDITION = """You must base on the following examples when modifying the {{variable_desc}}:
 
-<EXAMPLES>{{in_context_examples}}</EXAMPLES>"""
+<EXAMPLES>{{in_context_examples}}</EXAMPLES>
+"""
 
 
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>{{optimizer_system_prompt}}<END_OF_SYSTEM_PROMPT><USER>{{user_prompt}}</USER>"""
@@ -137,7 +143,7 @@ class TextualGradientDescent(Optimizer):
             TGD_PROMPT_TARGET_PARAM,
             prompt_kwargs={
                 "variable_desc": param.role_desc,
-                "variable_short": param.data,
+                "variable_value": param.data,
                 "variable_grad": param.get_gradient_and_context_text(),
             },
         )()
@@ -204,12 +210,13 @@ class TextualGradientDescent(Optimizer):
                 )
                 continue
             user_prompt = self._update_prompt(param)
-            response = self.llm_optimizer.call(
-                prompt_kwargs={
-                    "optimizer_system_prompt": self.optimizer_system_prompt,
-                    "user_prompt": user_prompt,
-                }
-            )
+            prompt_kwargs = {
+                "optimizer_system_prompt": self.optimizer_system_prompt,
+                "user_prompt": user_prompt,
+            }
+            response = self.llm_optimizer.call(prompt_kwargs=prompt_kwargs)
+            prompt_str = self.llm_optimizer.print_prompt(**prompt_kwargs)
+            log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
             log.info(f"Response from the optimizer: {response}")
             # extract the improved variable from the response
