@@ -43,7 +43,7 @@ class Prompt(Component):
 
     Examples:
         >>> from core.prompt_builder import Prompt
-        >>> prompt = Prompt(preset_prompt_kwargs={"task_desc_str": "You are a helpful assistant."})
+        >>> prompt = Prompt(prompt_kwargs={"task_desc_str": "You are a helpful assistant."})
         >>> print(prompt)
         >>> prompt.print_prompt_template()
         >>> prompt.print_prompt(context_str="This is a context string.")
