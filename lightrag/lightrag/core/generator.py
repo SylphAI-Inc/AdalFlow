@@ -25,10 +25,11 @@ from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 
 from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
+    BAWARD_SYSTEM_PROMPT,
     CONVERSATION_TEMPLATE,
     CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
-    EVALUATE_VARIABLE_INSTRUCTION,
+    # EVALUATE_VARIABLE_INSTRUCTION,
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
@@ -401,6 +402,9 @@ class Generator(Component, GradFunction):
             template=conv_ins_template,
             prompt_kwargs={
                 "variable_desc": pred.role_desc,
+                "variable_value": pred.raw_response or pred.data,
+                "param_type": pred.param_type,
+                "instruction_to_backward_engine": pred.instruction_to_backward_engine,
                 "conversation_str": conversation_str,
             },
         )()
@@ -412,21 +416,22 @@ class Generator(Component, GradFunction):
                 "response_gradient": response.get_gradient_text(),
             },
         )()
-        evaluation_variable_instruction_str = Prompt(
-            template=EVALUATE_VARIABLE_INSTRUCTION,
-            prompt_kwargs={
-                "variable_desc": pred.role_desc,
-                "variable_short": pred.raw_response or pred.data,
-            },
-        )()
+        # evaluation_variable_instruction_str = Prompt(
+        #     template=EVALUATE_VARIABLE_INSTRUCTION,
+        #     prompt_kwargs={
+        #         "variable_desc": pred.role_desc,
+        #         "variable_short": pred.raw_response or pred.data,
+        #     },
+        # )()
 
-        log.info(
-            f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
-        )
+        # log.info(
+        #     f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
+        # )
         backward_engine_prompt_kwargs = {
+            "BAWARD_SYSTEM_PROMPT": Prompt(BAWARD_SYSTEM_PROMPT)(),
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
-            "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
+            # "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
         }
 
         gradient_output: GeneratorOutput = backward_engine(

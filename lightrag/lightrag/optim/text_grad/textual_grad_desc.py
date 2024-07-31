@@ -21,10 +21,12 @@ GLOSSARY_TEXT = r"""
 # - <FOCUS>: The focus of the optimization.
 # - <ROLE>: The role description of the variable."""
 
-OPTIMIZER_SYSTEM_PROMPT = (
-    """You are part of an optimization system that improves variable to achieve better performance.
+# customize the system prompt
+# prompts, solutions to problems, code, or any other text-based variable. -> to the variable type.
+# The optimizer will have an understanding of different variable types.
+OPTIMIZER_SYSTEM_PROMPT = """You are part of an optimization system that improves variable to achieve better performance.
 
-You will be asked to creatively and critically improve prompts, solutions to problems, code, or any other text-based variable.
+You will be asked to creatively and critically modify variable vaule of type: {{param_type}}.
 You will receive some feedback, and use the feedback to improve the variable.
 The feedback may be noisy, identify what is important and what is correct.
 Remember:
@@ -32,17 +34,21 @@ Remember:
 - You MUST give your response by sending the improved variable between {{new_variable_start_tag}} $improved_variable {{new_variable_end_tag}} tags.
 - Be concise and only modify the variable value in <VARIABLE> tags.
 """
-    + GLOSSARY_TEXT
-)
 
 
 # TGD update instruction # 1. delete ({{variable_desc}})
 TGD_PROMPT_TARGET_PARAM = """
-Here is the role of the variable you will improve: <ROLE>{{variable_desc}}</ROLE>.
-The variable is the text within the following span: <VARIABLE> {{variable_value}} </VARIABLE>
+<START_OF_VARIABLE_DESC>
+Variable type: <TYPE>{{param_type}}</TYPE>
+Variable value: <VARIABLE> {{variable_value}} </VARIABLE>
+Role Description: <ROLE>{{variable_desc}}</ROLE>.
+{% if instruction_to_optimizer %}
+Note: {{instruction_to_optimizer}}
+{% endif %}
+<END_OF_VARIABLE_DESC>
 
-Here are the feedback and context:
-<CONTEXT>{{variable_grad}}</CONTEXT>
+Here are the feedback and context for the variable:
+<CONTEXT_FEEDBACK>{{variable_grad}}</CONTEXT_FEEDBACK>
 """
 
 
@@ -99,7 +105,7 @@ class TextualGradientDescent(Optimizer):
                 "new_variable_start_tag": new_variable_tags[0],
                 "new_variable_end_tag": new_variable_tags[1],
             },
-        )()
+        )
         self.do_constrained = len(self.constraints) > 0
         self.new_variable_tags = new_variable_tags
         self.in_context_examples = in_context_examples or []
@@ -138,13 +144,15 @@ class TextualGradientDescent(Optimizer):
     def _update_prompt(self, param: Parameter):
         grad_memory = self.get_gradient_memory_text(param)
 
-        # construct tgd user prompt
+        # Parameter description
         para_desc_str = Prompt(
             TGD_PROMPT_TARGET_PARAM,
             prompt_kwargs={
                 "variable_desc": param.role_desc,
                 "variable_value": param.data,
                 "variable_grad": param.get_gradient_and_context_text(),
+                "param_type": str(param.param_type),
+                "instruction_to_optimizer": param.instruction_to_optimizer,
             },
         )()
 
@@ -209,9 +217,12 @@ class TextualGradientDescent(Optimizer):
                     f"Skipping {param.role_desc} as it does not require optimization."
                 )
                 continue
+            system_prompt = self.optimizer_system_prompt(
+                param_type=str(param.param_type)
+            )
             user_prompt = self._update_prompt(param)
             prompt_kwargs = {
-                "optimizer_system_prompt": self.optimizer_system_prompt,
+                "optimizer_system_prompt": system_prompt,
                 "user_prompt": user_prompt,
             }
             response = self.llm_optimizer.call(prompt_kwargs=prompt_kwargs)
@@ -227,8 +238,6 @@ class TextualGradientDescent(Optimizer):
                 .strip()
             )
             param.propose_data(improved_variable)
-            # if self.do_gradient_memory:
-            #     self.update_gradient_memory(param)
 
     def revert(self):
         """Revert to the previous value when the evaluation is worse."""

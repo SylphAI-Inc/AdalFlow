@@ -1,4 +1,4 @@
-from lightrag.optim.parameter import Parameter
+from lightrag.optim.parameter import Parameter, ParameterType
 from lightrag.core import Component, Generator
 from lightrag.core.generator import BackwardEngine
 from lightrag.components.model_client.groq_client import GroqAPIClient
@@ -121,13 +121,18 @@ class ObjectCountTask(Component):
             data="You will answer a reasoning question. Think step by step.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
+            param_type=ParameterType.PROMPT,
         )
+        instruction = "Do not change the fields in the JSON object. Only improve on the field descriptions."
         output_format_str = Parameter(
             alias="output_format",
             data="Respond with valid JSON object with the following schema:\n"
             + ObjectCountPredData.to_json_signature(),
             role_desc="To specify the LLM output format",
-            requires_opt=False,
+            instruction_to_optimizer=instruction,
+            instruction_to_backward_engine=instruction,
+            param_type=ParameterType.PROMPT,
+            requires_opt=True,
         )
         parser = YamlOutputParser(
             data_class=ObjectCountPredData, return_data_class=True

@@ -10,7 +10,8 @@ from lightrag.core.generator import BackwardEngine
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.optim.parameter import Parameter, GradientContext
-from lightrag.optim.text_grad.backend_engine_prompt import EVALUATE_VARIABLE_INSTRUCTION
+
+# from lightrag.optim.text_grad.backend_engine_prompt import EVALUATE_VARIABLE_INSTRUCTION
 from lightrag.core.prompt_builder import Prompt
 from lightrag.eval.base import BaseEvaluator
 
@@ -162,7 +163,7 @@ class EvalFnToTextLoss(Component, GradFunction):
             return
         log.debug(f"EvalFnToTextLoss: Backward through {pred}, is_chain: {is_chain}")
 
-        instruction_str, objective_str, eval_str = None, None, None
+        instruction_str, objective_str = None, None
 
         # construct the prompt, including three sections
         conversation_str = Prompt(
@@ -195,13 +196,13 @@ class EvalFnToTextLoss(Component, GradFunction):
                 "response_gradient": response.data,
             },
         )()
-        eval_str = Prompt(
-            EVALUATE_VARIABLE_INSTRUCTION,
-            prompt_kwargs={
-                "variable_short": pred.raw_response or pred.data,
-                "variable_desc": pred.role_desc,
-            },
-        )()
+        # eval_str = Prompt(
+        #     EVALUATE_VARIABLE_INSTRUCTION,
+        #     prompt_kwargs={
+        #         "variable_short": pred.raw_response or pred.data,
+        #         "variable_desc": pred.role_desc,
+        #     },
+        # )()
 
         log.info(f"EvalFnToTextLoss: Instruction: {instruction_str}")
         log.info(f"EvalFnToTextLoss: Objective: {objective_str}")
@@ -211,7 +212,7 @@ class EvalFnToTextLoss(Component, GradFunction):
         backward_engine_prompt_kwargs = {
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
-            "evaluate_variable_instruction_sec": eval_str,
+            # "evaluate_variable_instruction_sec": eval_str,
         }
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs

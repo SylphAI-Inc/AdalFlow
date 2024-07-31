@@ -13,10 +13,25 @@ log = logging.getLogger(__name__)
 
 
 class ParameterType(Enum):
-    """Enum for the type of parameter to compute the loss with. And the optimizer needs to know"""
+    """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
 
-    PROMPT = "prompt"  # need to be generic and it needs to observe large batch size
-    INSTANCE = "instance"  # Focus on fixing issues (more direct)
+    PROMPT = (
+        "prompt",
+        "Need to be generic and you can not modify it based on a single example.",
+    )
+    INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
+
+    def __init__(self, value, description):
+        self._value_ = value
+        self.description = description
+
+    def __str__(self):
+        """Return a string representation that includes the enum's value and description."""
+        return f"{self.value} ({self.description})"
+
+    def __repr__(self):
+        """Return an unambiguous representation that is useful for debugging."""
+        return f"<{self.__class__.__name__}.{self.name}: {self.value}, '{self.description}'>"
 
 
 @dataclass
@@ -104,6 +119,9 @@ class Parameter(Generic[T]):
         alias: str = None,  # alias is used to refer to the parameter in the prompt, easier to read for humans
         gradient_prompt: str = None,
         raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
+        instruction_to_optimizer: str = None,
+        instruction_to_backward_engine: str = None,
+        param_type: ParameterType = ParameterType.PROMPT,
     ):
         if predecessors is None:
             predecessors = []
@@ -114,6 +132,7 @@ class Parameter(Generic[T]):
                 raise TypeError(
                     f"Expected a list of Parameter instances, got {type(pred).__name__}, {pred}"
                 )
+        self.param_type = param_type
         self._predecessors_requires_grad = [v for v in predecessors if v.requires_opt]
         self.data = data
         self.requires_opt = requires_opt
@@ -139,6 +158,9 @@ class Parameter(Generic[T]):
             )
         self.previous_data = None  # used to store the previous data
         self.raw_response = raw_response
+
+        self.instruction_to_optimizer: str = instruction_to_optimizer
+        self.instruction_to_backward_engine: str = instruction_to_backward_engine
         # self._combined_gradient_context: Set[str] = set()
 
     def set_grad_fn(self, grad_fn):
@@ -370,7 +392,7 @@ class Parameter(Generic[T]):
                     gradient_context = context
                     log.info(f"Gradient context display: {gradient_context}")
                     log.info(f"data: {g.data}")
-                    node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Data: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
+                    node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Feedback: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
                     if gradient_context != "":
                         node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
             if n.proposing:
