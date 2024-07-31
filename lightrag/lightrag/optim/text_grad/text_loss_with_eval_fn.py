@@ -86,8 +86,6 @@ class EvalFnToTextLoss(Component, GradFunction):
                 )
             self.backward_engine = backward_engine
 
-        print(f"has attr: {hasattr(self, 'backward_engine')}")
-
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
@@ -217,7 +215,7 @@ class EvalFnToTextLoss(Component, GradFunction):
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs
         )
-        gradient_prompt = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
+        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
@@ -324,7 +322,6 @@ if __name__ == "__main__":
             answer = int(answer)
 
         except (ValueError, IndexError):
-            # print(answer)
             answer = 0
 
         return answer
@@ -341,7 +338,6 @@ if __name__ == "__main__":
         eval_fn_desc=eval_fn_desc,
         backward_engine=backward_engine,
     )
-    print(eval_fn_to_text_loss)
     x = Parameter(
         alias="x",
         data="I have a cauliflower, a stalk of celery, a cabbage, and a garlic. How many vegetables do I have?",

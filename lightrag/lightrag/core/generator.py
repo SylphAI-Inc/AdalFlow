@@ -2,9 +2,14 @@
 
 It is a pipeline that consists of three subcomponents."""
 
+import os
+import json
+
 from typing import Any, Dict, Optional, Union, Callable
 from copy import deepcopy
 import logging
+import platformdirs
+
 
 from lightrag.core.types import (
     ModelType,
@@ -22,6 +27,7 @@ from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.optim.text_grad.function import BackwardContext, GradFunction
+from lightrag.utils.cache import CachedEngine
 
 from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
@@ -37,21 +43,7 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
 log = logging.getLogger(__name__)
 
 
-def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
-    r"""Convert the prompt_kwargs to a dictionary with string values."""
-    prompt_kwargs_str: Dict[str, str] = {}
-
-    for key, p in prompt_kwargs.items():
-
-        if isinstance(p, Parameter):
-
-            prompt_kwargs_str[key] = p.data
-        else:
-            prompt_kwargs_str[key] = p
-    return prompt_kwargs_str
-
-
-class Generator(Component, GradFunction):
+class Generator(Component, GradFunction, CachedEngine):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
     It is also a GradFunction that can be used for backpropagation through the LLM model.
@@ -91,6 +83,7 @@ class Generator(Component, GradFunction):
         # args for the trainable parameters
         # trainable_params: Optional[List[str]] = [],
         name: Optional[str] = None,
+        cache_path: Optional[str] = None,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -115,12 +108,26 @@ class Generator(Component, GradFunction):
             log.warning(f"Error copying the prompt_kwargs: {e}")
             prompt_kwargs = prompt_kwargs
 
-        super().__init__(
-            # model_kwargs=model_kwargs,
-            # template=template,
-            # prompt_kwargs=prompt_kwargs,
-            # trainable_params=trainable_params,
+        # Cache
+        root = platformdirs.user_cache_dir("textgrad")
+        model_str = (
+            f"{model_client.__class__.__name__}_{model_kwargs.get('model', 'default')}"
         )
+        cache_path = cache_path or os.path.join(root, f"cache_{model_str}.db")
+        print(f"cache_path: {cache_path}")
+        self.cache_path = cache_path
+
+        # super().__init__(
+        #     cache_path=self.cache_path,
+        #     # model_kwargs=model_kwargs,
+        #     # template=template,
+        #     # prompt_kwargs=prompt_kwargs,
+        #     # trainable_params=trainable_params,
+        # )
+        CachedEngine.__init__(self, cache_path=self.cache_path)
+        Component.__init__(self)
+        GradFunction.__init__(self)
+
         self.name = name or self.__class__.__name__
 
         self._init_prompt(template, prompt_kwargs)
@@ -154,6 +161,7 @@ class Generator(Component, GradFunction):
         self.mock_output_data: str = "mock data"
         self.data_map_func: Callable = None
         self.set_data_map_func()
+        self.model_str = model_str
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -169,8 +177,10 @@ class Generator(Component, GradFunction):
         r"""Initialize the prompt with the template and prompt_kwargs."""
         self.template = template
         self.prompt_kwargs = prompt_kwargs
-        self.prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
-        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs_str)
+        # NOTE: all prompt_kwargs should only be passed
+        # Prompt should deal with parameter too, instead of just string
+        # self.prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
+        self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "Generator":
@@ -210,8 +220,12 @@ class Generator(Component, GradFunction):
         return combined_model_kwargs
 
     def print_prompt(self, **kwargs) -> str:
-        prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
-        return self.prompt.print_prompt(**prompt_kwargs_str)
+        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
+        return self.prompt.print_prompt(**kwargs)
+
+    def get_prompt(self, **kwargs) -> str:
+        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(kwargs)
+        return self.prompt.call(**kwargs)
 
     def _extra_repr(self) -> str:
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
@@ -243,8 +257,8 @@ class Generator(Component, GradFunction):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
-        prompt_str = self.prompt.call(**prompt_kwargs_str).strip()
+        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
+        prompt_str = self.prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
         composed_model_kwargs = self._compose_model_kwargs(**model_kwargs)
@@ -257,6 +271,24 @@ class Generator(Component, GradFunction):
         )
         return api_kwargs
 
+    def _model_client_call(self, api_kwargs: Dict) -> Any:
+        # call the model client
+        try:
+            # check the cache
+            index_content = json.dumps(api_kwargs)  # all messages
+            cached_completion = self._check_cache(index_content)
+            if cached_completion is not None:
+                return cached_completion
+            completion = self.model_client.call(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+            # prepare cache
+            self._save_cache(index_content, completion)
+            return completion
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            raise e
+
     def set_backward_engine(self, backward_engine: "BackwardEngine" = None):
         if backward_engine is None:
             backward_engine = BackwardEngine(
@@ -265,10 +297,7 @@ class Generator(Component, GradFunction):
             )
             if self.mock_output:
                 backward_engine.set_mock_output()
-        print(f"Setting backward engine: {backward_engine}")
         self.backward_engine = backward_engine
-        # super().set_backward_engine(backward_engine)
-        print(f"Backward engine set: {self.backward_engine}")
 
     def set_data_map_func(self, map_func: Callable = None):
         def default_map_func(data: "GeneratorOutputType") -> str:
@@ -316,9 +345,8 @@ class Generator(Component, GradFunction):
             raw_response=output.raw_response,
         )
         if not self.backward_engine:
-            print("Setting default backward engine")
             self.set_backward_engine()
-            print(f"Backward engine: {self.backward_engine}")
+            log.debug(f"Backward engine: {self.backward_engine}")
 
         response.set_grad_fn(
             BackwardContext(
@@ -326,7 +354,7 @@ class Generator(Component, GradFunction):
                 backward_engine=self.backward_engine,
                 response=response,
                 prompt_kwargs=combined_prompt_kwargs,
-                prompt_str=self.print_prompt(**combined_prompt_kwargs),
+                prompt_str=self.get_prompt(**combined_prompt_kwargs),
             )
         )
         return response
@@ -439,7 +467,7 @@ class Generator(Component, GradFunction):
         )
         # USE this to trace each node's input and output, all nodes can be visualized
         log.info(
-            f"Generator Backward Engine Prompt: {backward_engine.print_prompt( **backward_engine_prompt_kwargs)}"
+            f"Generator Backward Engine Prompt: {backward_engine.get_prompt( **backward_engine_prompt_kwargs)}"
         )
         gradient_value = (
             gradient_output.data
@@ -450,7 +478,7 @@ class Generator(Component, GradFunction):
             f"Generator Gradient value: {gradient_value}, raw response: {gradient_output.raw_response}"
         )
         # TODO: make it a debug feature
-        prompt_str = backward_engine.print_prompt(**backward_engine_prompt_kwargs)
+        prompt_str = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
 
         var_gradient = Parameter(
             alias=f"{response.alias}_to_{pred.alias}_grad",
@@ -489,11 +517,10 @@ class Generator(Component, GradFunction):
         log.debug(f"api_kwargs: {api_kwargs}")
         output: GeneratorOutputType = None
         # call the model client
+
         completion = None
         try:
-            completion = self.model_client.call(
-                api_kwargs=api_kwargs, model_type=self.model_type
-            )
+            completion = self._model_client_call(api_kwargs=api_kwargs)
         except Exception as e:
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e))
@@ -533,10 +560,10 @@ class Generator(Component, GradFunction):
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
         if self.training:
-            print("Training mode")
+            log.debug("Training mode")
             return self.forward(*args, **kwargs)
         else:
-            print("Inference mode")
+            log.debug("Inference mode")
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:

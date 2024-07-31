@@ -198,8 +198,7 @@ class OpenAIClient(ModelClient):
                 if match:
                     system_prompt = match.group(1)
                     input_str = match.group(2)
-                    print(f"System Prompt: {system_prompt}")
-                    print(f"Input String: {input_str}")
+
                 else:
                     print("No match found.")
                 if system_prompt and input_str:
@@ -207,7 +206,6 @@ class OpenAIClient(ModelClient):
                     messages.append({"role": "user", "content": input_str})
             if len(messages) == 0:
                 messages.append({"role": "system", "content": input})
-            print(f"messages: {messages}")
             final_model_kwargs["messages"] = messages
         else:
             raise ValueError(f"model_type {model_type} is not supported")

@@ -9,11 +9,26 @@ from jinja2 import Template, Environment, StrictUndefined, meta
 
 from lightrag.core.component import Component
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
+from lightrag.optim.parameter import Parameter
 
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
+
+
+def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
+    r"""Convert the prompt_kwargs to a dictionary with string values."""
+    prompt_kwargs_str: Dict[str, str] = {}
+
+    for key, p in prompt_kwargs.items():
+
+        if isinstance(p, Parameter):
+
+            prompt_kwargs_str[key] = p.data
+        else:
+            prompt_kwargs_str[key] = p
+    return prompt_kwargs_str
 
 
 @lru_cache(None)
@@ -67,7 +82,7 @@ class Prompt(Component):
     def __init__(
         self,
         template: Optional[str] = None,
-        prompt_kwargs: Optional[Dict] = {},
+        prompt_kwargs: Optional[Dict[str, Parameter]] = {},
     ):
         super().__init__()
 
@@ -79,7 +94,7 @@ class Prompt(Component):
 
         logger.info(f"{__class__.__name__} has variables: {self.prompt_variables}")
 
-        self.prompt_kwargs = prompt_kwargs.copy()
+        self.prompt_kwargs = prompt_kwargs
 
     def __create_jinja2_template(self):
         r"""Create the Jinja2 template object."""
@@ -130,6 +145,7 @@ class Prompt(Component):
         r"""Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs."""
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
+            pass_kwargs = _convert_prompt_kwargs_to_str(pass_kwargs)
             logger.debug(f"Prompt kwargs: {pass_kwargs}")
 
             prompt_str = self.jinja2_template.render(**pass_kwargs)
@@ -145,6 +161,7 @@ class Prompt(Component):
         """
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
+            pass_kwargs = _convert_prompt_kwargs_to_str(pass_kwargs)
 
             prompt_str = self.jinja2_template.render(**pass_kwargs)
             return prompt_str
@@ -154,8 +171,9 @@ class Prompt(Component):
 
     def _extra_repr(self) -> str:
         s = f"template: {self.template}"
-        if self.prompt_kwargs:
-            s += f", prompt_kwargs: {self.prompt_kwargs}"
+        prompt_kwargs_str = _convert_prompt_kwargs_to_str(self.prompt_kwargs)
+        if prompt_kwargs_str:
+            s += f", prompt_kwargs: {prompt_kwargs_str}"
         if self.prompt_variables:
             s += f", prompt_variables: {self.prompt_variables}"
         return s

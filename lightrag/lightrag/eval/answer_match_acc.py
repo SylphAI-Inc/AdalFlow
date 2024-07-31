@@ -62,7 +62,6 @@ class AnswerMatchAcc(BaseEvaluator):
             raise ValueError(
                 f"Error converting pred_answer and gt_answer to string: {e}"
             )
-        print("y: ", y, "y_gt: ", y_gt, y == y_gt)
         if type == "exact_match":
             return 1.0 if y == y_gt else 0.0
         elif type == "fuzzy_match":

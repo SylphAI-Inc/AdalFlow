@@ -3,7 +3,7 @@ from lightrag.core import Component, Generator
 from lightrag.core.generator import BackwardEngine
 from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
-from lightrag.utils import setup_env, get_logger
+from lightrag.utils import setup_env
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
 from lightrag.core import DataClass, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
@@ -50,6 +50,8 @@ gpt_4o_model = {
     "model_client": OpenAIClient(),
     "model_kwargs": {
         "model": "gpt-4o",
+        "temperature": 0.9,
+        "top_p": 0.99,
     },
 }
 
@@ -152,15 +154,72 @@ class ObjectCountTask(Component):
         logger.info(f"llm_counter set_data_map_func, {self.llm_counter.data_map_func}")
 
     # TODO: the error will be a context
-    def call(self, question: str) -> Any:
-        return self.llm_counter(prompt_kwargs={"input_str": question})
-        # if output.data is None:
-        #     logger.error(
-        #         f"Error in processing the question: {question}, output: {output}"
-        #     )
-        #     return -1
-        # else:
-        #     return output.data.answer
+    def call(self, question: str) -> Any:  # Union[Parameter, int]:
+        output = self.llm_counter(
+            prompt_kwargs={"input_str": question}
+        )  # already support both training (forward + call)
+
+        if not self.training:  # eval
+
+            if output.data is None:
+                logger.error(
+                    f"Error in processing the question: {question}, output: {output}"
+                )
+                output = -1
+            else:
+                output = output.data.answer
+        return output
+
+
+class ObjectCountTaskOriginal(Component):
+    def __init__(self, model_client, model_kwargs):
+        super().__init__()
+        template = r"""<SYS>{{system_prompt}}
+        <OUTPUT_FORMAT> {{output_format_str}}</OUTPUT_FORMAT></SYS>
+        <USER>{{input_str}}</USER>You:"""  # noqa: F841
+        template_2 = r"""<START_OF_SYSTEM_PROMPT>{{system_prompt}}<OUTPUT_FORMAT> {{output_format_str}}</OUTPUT_FORMAT></END_OF_SYSTEM_PROMPT>{{input_str}}"""
+        # data = (
+        #     "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+        # )
+        # 1. set up system prompt, and define the parameters for optimization.
+        # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
+        system_prompt = Parameter(
+            alias="task_instruction",
+            # data="You will answer a reasoning question. Clearly list each intermediate step before giving the final numerical answer. Double-check each step for accuracy. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            role_desc="To give task instruction to the language model in the system prompt",
+            requires_opt=True,
+            param_type=ParameterType.NONE,
+        )
+        self.llm_counter = Generator(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            template=template_2,
+            prompt_kwargs={
+                "system_prompt": system_prompt,
+            },
+            output_processors=parse_integer_answer,
+        )
+        # TODO: make this data map function more robust (this is the final answer and the input to eval_fn)
+        # self.llm_counter.set_data_map_func(lambda x: x.data.answer)
+        logger.info(f"llm_counter set_data_map_func, {self.llm_counter.data_map_func}")
+
+    # TODO: the error will be a context
+    def call(self, question: str) -> Any:  # Union[Parameter, int]:
+        output = self.llm_counter(
+            prompt_kwargs={"input_str": question}
+        )  # already support both training (forward + call)
+
+        if not self.training:  # eval
+
+            if output.data is None:
+                logger.error(
+                    f"Error in processing the question: {question}, output: {output}"
+                )
+                output = -1
+            else:
+                output = int(output.data)
+        return output
 
 
 # Define a evaluator == PyTorch Evaluator
@@ -181,17 +240,13 @@ class ObjectCountTrainer(Component):
         task_model_config: Dict,
         backward_engine_model_config: Dict,
         tgd_model_config: Dict,
-        batch_size: int = 2,
+        batch_size: int = 4,
     ):
         super().__init__()
         set_seed(12)
         self.train_set, self.val_set, self.test_set, self.eval_fn = load_task(
             "BBH_object_counting", evaluation_api=None
         )
-        # use this for test
-        # self.train_set = self.train_set[:10]
-        # self.val_set = self.val_set[:10]
-        # self.test_set = self.test_set[:10]
 
         self.evaluator = AnswerMatchAcc(type="exact_match")
         self.training_batch_size = batch_size
@@ -201,7 +256,8 @@ class ObjectCountTrainer(Component):
             self.train_set, batch_size=self.training_batch_size, shuffle=True
         )  # why not torch loader?
 
-        self.task = ObjectCountTask(**task_model_config)
+        # self.task = ObjectCountTask(**task_model_config)
+        self.task = ObjectCountTaskOriginal(**task_model_config)
         # 2. backward engine will be used by all operators
         backward_engine = BackwardEngine(**backward_engine_model_config)
         self.target_params = set(self.task.parameters())
@@ -213,11 +269,11 @@ class ObjectCountTrainer(Component):
         self.optimizer = TextualGradientDescent(
             params=self.target_params,
             **tgd_model_config,
-            constraints=[
-                "Do not stray too far from the original value.",
-                "Do not be too specific to the training data to adapt to new data.",
-                "keep the initial instruction's purpose.",
-            ],
+            # constraints=[
+            #     "Do not stray too far from the original value.",
+            #     "Do not be too specific to the training data to adapt to new data.",
+            #     "keep the initial instruction's purpose.",
+            # ],
         )
 
         self.task.llm_counter.set_backward_engine(backward_engine)
@@ -232,15 +288,29 @@ class ObjectCountTrainer(Component):
             backward_engine=backward_engine,
         )
 
-    def test_train(self):
+    def test_train(self, start_val_acc: float, start_test_acc: float, max_samples=20):
+        # TODO: save a best prompt or top 2
         r"""Test a single training step"""
         self.task.train()
         self.optimizer.zero_grad()
         logger.info(f"Training started: {self.task.training}")
+        results = {
+            "val_acc": [start_val_acc],  # by step
+            "test_acc": [start_test_acc],  # by epoch
+            "prompts": [],  # list of dict
+        }
+        print(f"results: {results}")
+        parameters = list(self.task.parameters())  # or use named parameters
+        max_steps = 5
+        max_samples = max_samples
+        save_result_file_path = (
+            f"results_adalflow_max_steps_{max_steps}_max_samples_{max_samples}.json"
+        )
         for steps, (batch_x, batch_y) in enumerate(
             (pbar := tqdm(self.train_loader, position=0))
         ):
             pbar.set_description(f"Training Step: {steps}")
+            self.task.train()
 
             losses: List[Parameter] = []
             for i, (x, y) in enumerate(zip(batch_x, batch_y)):
@@ -270,18 +340,54 @@ class ObjectCountTrainer(Component):
                 )
                 # loss.backward()
                 loss.alias += f"_step_{steps}_batch_{i}"
+                print(f"y_gt: {y})")
                 losses.append(loss)
                 # loss.draw_graph(filepath="loss1")
 
             total_loss = sum(losses)
-            print(f"loss dict: {loss.to_dict()}")
+            # print(f"loss dict: {loss.to_dict()}")
+            print("loss backward...")
             total_loss.backward()
+            print("optimizer propose...")
             self.optimizer.propose()
-            total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
-            save_json(total_loss.to_dict(), "total_loss_adalflow.json")
+            prompts = {p.alias: p.data for p in parameters if p.requires_opt}
+            print(f"new prompt: {prompts}")
+            # total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
+            print("Start evaluate")
 
-            break
-            # self.optimizer.step()
+            # save_json(total_loss.to_dict(), "total_loss_adalflow.json")
+
+            eval_acc, eval_acc_list = self.evaluate_dataset(
+                dataset_type="val", max_samples=max_samples
+            )
+            print(f"val_acc: {eval_acc}, last acc: {results['val_acc'][-1]}")
+            if eval_acc > results["val_acc"][-1]:
+                print("optimizer step")
+                self.optimizer.step()
+                results["val_acc"].append(eval_acc)
+
+            else:
+                self.optimizer.revert()
+                print("optimizer revert")
+                results["val_acc"].append(results["val_acc"][-1])
+            final_prompts = {p.alias: p.data for p in parameters if p.requires_opt}
+            results["prompts"].append(final_prompts)
+
+            test_acc, test_acc_list = self.evaluate_dataset(
+                dataset_type="test", max_samples=max_samples
+            )
+            results["test_acc"].append(test_acc)
+            print(f"test_acc: {test_acc}")
+
+            save_json(results, save_result_file_path)
+            if steps >= max_steps:
+                break
+
+            # if steps % test_steps == 0:
+
+        # save_json(results, "results_adalflow.json")
+        # test only on one epoch, not on each step
+        # self.optimizer.step()
 
     def train(self, max_epochs: int = 1):
         # set it to train mode
@@ -321,13 +427,23 @@ class ObjectCountTrainer(Component):
 
         return self.evaluator.compute(y_pred, y)[1]
 
-    def eval(self, dataset=None, max_samples: int = 100):
-        if dataset is None:
-            print("No dataset provided, using test set")
-            dataset = self.test_set
+    def evaluate_dataset(self, dataset_type: str = "test", max_samples: int = 100):
 
         # set it to eval mode
-        self.training = False
+        dataset = None
+        if dataset_type == "test":
+            dataset = self.test_set
+        elif dataset_type == "val":
+            dataset = self.val_set
+        elif dataset_type == "train":
+            dataset = self.train_set
+        else:
+            raise ValueError(f"dataset_type: {dataset_type} not supported")
+
+        self.task.eval()
+        logger.debug(
+            f"{self.__class__.__name__}: trainer eval stage on {dataset_type} dataset"
+        )
         x, y, y_pred = [], [], []
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
             futures = []
@@ -354,10 +470,10 @@ class ObjectCountTrainer(Component):
                 x.append(associated_sample[0])
 
                 tqdm_loader.set_description(
-                    f"Accuracy: {self.evaluator.compute(y_pred, y)}"
+                    f"{dataset_type} Accuracy: {self.evaluator.compute(y_pred, y)[0]}"
                 )
-                print(f"y: {y}, y_pred: {y_pred}, x: {x}")
-        return self.evaluator.compute(y_pred, y)[1]
+                # print(f"y: {y}, y_pred: {y_pred}, x: {x}")
+        return self.evaluator.compute(y_pred, y)  # acc and acc_list
 
     def _extra_repr(self) -> str:
         s = f"train_set: {len(self.train_set)}, val_set: {len(self.val_set)}, test_set: {len(self.test_set)}, "
@@ -368,9 +484,9 @@ class ObjectCountTrainer(Component):
 
 # TODO: implement cache for generator(make it configurable)
 if __name__ == "__main__":
-    task = ObjectCountTask(**gpt_3_model)
-    logger = get_logger(level="DEBUG")
-    print(task)
+    # task = ObjectCountTask(**gpt_3_model)
+    # logger = get_logger(level="DEBUG")
+    # print(task)
     # print(
     #     task.llm_counter.print_prompt(
     #         input_str="How many musical instruments do I have?"
@@ -384,13 +500,27 @@ if __name__ == "__main__":
 
     trainer = ObjectCountTrainer(
         task_model_config=gpt_3_model,
-        backward_engine_model_config=gpt_3_model,
-        tgd_model_config=gpt_3_model,
+        backward_engine_model_config=gpt_4o_model,
+        tgd_model_config=gpt_4o_model,
     )
     # print(trainer)
-    trainer.test_train()
-    # trainer.eval(max_samples=None)
-    # trainer.eval(dataset=trainer.val_set, max_samples=None)
+    test_acc, test_acc_list = trainer.evaluate_dataset(
+        dataset_type="test", max_samples=None
+    )
+    print(f"test_acc: {test_acc}")
+    val_acc, val_acc_list = trainer.evaluate_dataset(
+        dataset_type="val", max_samples=None
+    )
+    print(f"val_acc: {val_acc}")
+    trainer.test_train(start_val_acc=val_acc, start_test_acc=test_acc, max_samples=100)
+    # test_acc, test_acc_list = trainer.evaluate_dataset(
+    #     dataset_type="test", max_samples=None
+    # )
+    # print(f"test_acc after optimization: {test_acc}")
+    # TODO: use cache for the generator
+    #
+    # output = trainer.eval(dataset=trainer.val_set, max_samples=5)
+    # print(f"eval output: {output}")
     # gpt-3.5-turbo test 0.69 [10 samples = 0.8], 0.72 (simple pasing, instead of json)
     # 0.73 with new parameters close to text-grad, using separate prompt: 0.81
     # single prompt without you: -> 0.82 <SYSTEM> system prompt.<SYS>0.78 <START_OF_SYSTEM_PROMPT> system prompt.<END_OF_SYSTEM_PROMPT> =>0.84 json_output = 0.68

@@ -26,7 +26,7 @@ GLOSSARY_TEXT = r"""
 # The optimizer will have an understanding of different variable types.
 OPTIMIZER_SYSTEM_PROMPT = """You are part of an optimization system that improves variable to achieve better performance.
 
-You will be asked to creatively and critically modify variable vaule of type: {{param_type}}.
+You will be asked to creatively and critically improve value of type: {{param_type}}.
 You will receive some feedback, and use the feedback to improve the variable.
 The feedback may be noisy, identify what is important and what is correct.
 Remember:
@@ -226,7 +226,7 @@ class TextualGradientDescent(Optimizer):
                 "user_prompt": user_prompt,
             }
             response = self.llm_optimizer.call(prompt_kwargs=prompt_kwargs)
-            prompt_str = self.llm_optimizer.print_prompt(**prompt_kwargs)
+            prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
             log.info(f"Response from the optimizer: {response}")

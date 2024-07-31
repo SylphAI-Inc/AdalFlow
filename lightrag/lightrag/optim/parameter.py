@@ -20,6 +20,7 @@ class ParameterType(Enum):
         "Need to be generic and you can not modify it based on a single example.",
     )
     INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
+    NONE = ("none", "")
 
     def __init__(self, value, description):
         self._value_ = value
@@ -496,8 +497,8 @@ def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:
         log.debug(f"Only one gradient, no need to reduce: {variable.gradients}")
         return variable.gradients
     else:
-        log.warning(
-            f"Multiple gradients detected for {variable.data}. Reducing the gradients."
+        log.debug(
+            f"Multiple gradients detected for {variable.data}. But we are not reducting them."
         )
         return variable.gradients
 
