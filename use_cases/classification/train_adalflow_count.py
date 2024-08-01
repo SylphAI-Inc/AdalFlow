@@ -10,16 +10,18 @@ from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
 from lightrag.optim.text_grad.ops import sum
+from lightrag.optim.llm_optimizer import LLMOptimizer
 from lightrag.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
-import textgrad as tg
 import numpy as np
 from typing import Dict, Any, List
 import random
 import concurrent
 from tqdm import tqdm
 import logging
+from torch.utils.data import DataLoader
+
 
 logger = logging.getLogger(__name__)
 
@@ -199,6 +201,7 @@ class ObjectCountTaskOriginal(Component):
                 "system_prompt": system_prompt,
             },
             output_processors=parse_integer_answer,
+            use_cache=True,
         )
         # TODO: make this data map function more robust (this is the final answer and the input to eval_fn)
         # self.llm_counter.set_data_map_func(lambda x: x.data.answer)
@@ -240,7 +243,7 @@ class ObjectCountTrainer(Component):
         task_model_config: Dict,
         backward_engine_model_config: Dict,
         tgd_model_config: Dict,
-        batch_size: int = 4,
+        batch_size: int = 6,
     ):
         super().__init__()
         set_seed(12)
@@ -252,9 +255,12 @@ class ObjectCountTrainer(Component):
         self.training_batch_size = batch_size
         print(self.train_set.get_task_description())
         print(f"eval_fn: {self.eval_fn}")
-        self.train_loader = tg.tasks.DataLoader(
+        # self.train_loader = tg.tasks.DataLoader(
+        #     self.train_set, batch_size=self.training_batch_size, shuffle=True
+        # )  # why not torch loader?
+        self.train_loader = DataLoader(
             self.train_set, batch_size=self.training_batch_size, shuffle=True
-        )  # why not torch loader?
+        )
 
         # self.task = ObjectCountTask(**task_model_config)
         self.task = ObjectCountTaskOriginal(**task_model_config)
@@ -266,6 +272,10 @@ class ObjectCountTrainer(Component):
             print(f"param: {param.alias}")
 
         # 3. optimizer will be used to optimize the parameters
+        self.orpo_optimizer = LLMOptimizer(
+            params=self.target_params,
+            **tgd_model_config,
+        )
         self.optimizer = TextualGradientDescent(
             params=self.target_params,
             **tgd_model_config,
@@ -278,6 +288,14 @@ class ObjectCountTrainer(Component):
 
         self.task.llm_counter.set_backward_engine(backward_engine)
 
+        # track the tokens
+        self.task_total_prompt_tokens = 0
+        self.task_total_completion_tokens = 0
+        self.backward_engine_total_prompt_tokens = 0
+        self.backward_engine_total_completion_tokens = 0
+        self.optimizer_total_prompt_tokens = 0
+        self.optimizer_total_completion_tokens = 0
+
         # 4. loss function will be used to compute the loss
 
         # TODO: set backward_engine should be recursive
@@ -288,24 +306,24 @@ class ObjectCountTrainer(Component):
             backward_engine=backward_engine,
         )
 
-    def test_train(self, start_val_acc: float, start_test_acc: float, max_samples=20):
+    def _get_param_values(self):
+        return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
+
+    def fit_v1(
+        self,
+        max_steps: int = 3,
+        max_samples=20,
+        results: Dict = None,
+    ):
         # TODO: save a best prompt or top 2
-        r"""Test a single training step"""
         self.task.train()
         self.optimizer.zero_grad()
         logger.info(f"Training started: {self.task.training}")
-        results = {
-            "val_acc": [start_val_acc],  # by step
-            "test_acc": [start_test_acc],  # by epoch
-            "prompts": [],  # list of dict
-        }
-        print(f"results: {results}")
-        parameters = list(self.task.parameters())  # or use named parameters
-        max_steps = 5
+        max_steps = max_steps
         max_samples = max_samples
-        save_result_file_path = (
-            f"results_adalflow_max_steps_{max_steps}_max_samples_{max_samples}.json"
-        )
+        task_name = self.task.__class__.__name__
+        save_result_file_path = f"results_adalflow_task_v1_{task_name}_max_steps_{max_steps}_max_samples_{max_samples}.json"
+        # TODO: compute the epoch based on the number of samples
         for steps, (batch_x, batch_y) in enumerate(
             (pbar := tqdm(self.train_loader, position=0))
         ):
@@ -338,19 +356,17 @@ class ObjectCountTrainer(Component):
                         ),
                     }
                 )
-                # loss.backward()
                 loss.alias += f"_step_{steps}_batch_{i}"
                 print(f"y_gt: {y})")
                 losses.append(loss)
                 # loss.draw_graph(filepath="loss1")
 
             total_loss = sum(losses)
-            # print(f"loss dict: {loss.to_dict()}")
             print("loss backward...")
             total_loss.backward()
             print("optimizer propose...")
             self.optimizer.propose()
-            prompts = {p.alias: p.data for p in parameters if p.requires_opt}
+            prompts = self._get_param_values()
             print(f"new prompt: {prompts}")
             # total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
             print("Start evaluate")
@@ -370,7 +386,7 @@ class ObjectCountTrainer(Component):
                 self.optimizer.revert()
                 print("optimizer revert")
                 results["val_acc"].append(results["val_acc"][-1])
-            final_prompts = {p.alias: p.data for p in parameters if p.requires_opt}
+            final_prompts = self._get_param_values()
             results["prompts"].append(final_prompts)
 
             test_acc, test_acc_list = self.evaluate_dataset(
@@ -383,51 +399,514 @@ class ObjectCountTrainer(Component):
             if steps >= max_steps:
                 break
 
-            # if steps % test_steps == 0:
-
-        # save_json(results, "results_adalflow.json")
-        # test only on one epoch, not on each step
-        # self.optimizer.step()
-
-    def train(self, max_epochs: int = 1):
-        # set it to train mode
+    def fit_v2(
+        self,
+        max_steps: int = 3,
+        max_samples=20,
+        results: Dict = None,
+    ):
+        # TODO: save a best prompt or top 2
         self.task.train()
-        for epoch in range(max_epochs):
-            pbar = tqdm(self.train_loader, position=0, desc=f"Epoch: {epoch}")
-            for steps, (batch_x, batch_y) in enumerate(pbar):
-                pbar.set_description(f"Epoch: {epoch}, Step: {steps}")
-                self.optimizer.zero_grad()
-                for x, y in zip(batch_x, batch_y):
-                    response = self.task.call(
-                        question=Parameter(
-                            data=x,
-                            role_desc="query to the language model",
+        self.optimizer.zero_grad()
+        logger.info(f"Training started: {self.task.training}")
+        max_steps = max_steps
+        max_samples = max_samples
+        task_name = self.task.__class__.__name__
+        num_proposals = 4
+        save_result_file_path = f"results_adalflow_v2_task_{task_name}_max_steps_{max_steps}_max_samples_{max_samples}.json"
+        # TODO: compute the epoch based on the number of samples
+        errors_losses: List[Parameter] = []
+        correct_losses: List[Parameter] = []
+
+        for steps, (batch_x, batch_y) in enumerate(
+            (pbar := tqdm(self.train_loader, position=0))
+        ):
+            pbar.set_description(f"Training Step: {steps}")
+            if steps >= max_steps:
+                print(f"steps: {steps} >= max_steps: {max_steps}")
+                break
+            self.task.train()
+
+            losses: List[Parameter] = []
+            y_preds = self.train_batch_worker(
+                batch_x
+            )  # generator should always guarentee data even if it gives error
+            # compute loss each data point
+            for i, (x, y, y_pred) in enumerate(zip(batch_x, batch_y, y_preds)):
+                # compute loss on one data point
+                # print(f"x: {x}, y: {y}")
+                response = y_pred
+                logger.info(f"response: {response}")
+                response.alias += f"_{i}"
+                # TODO: when it is train, need to pass the data to be something used for eval.
+                loss = self.loss_fn(
+                    kwargs={
+                        "y": response,
+                        "y_gt": Parameter(
+                            data=y,
+                            role_desc="The ground truth",
                             requires_opt=False,
-                        )
-                    )
-                    print(f"response: {response}")
+                            alias=f"y_{i}",
+                        ),
+                    }
+                )
+                loss.alias += f"_step_{steps}_batch_{i}"
+                print(f"y_gt: {y})")
+                losses.append(loss)
+                # loss.draw_graph(filepath="loss1")
+            # convert y_pred to value
+            y_preds_data = [y_p.data for y_p in y_preds]
+            batch_y_data = batch_y.tolist()
+            print(f"y_preds_data: {y_preds_data}")
+            print(f"batch_y: {batch_y_data}")
+            acc, acc_list = self.evaluator.compute(y_preds_data, batch_y_data)
+            # 1. Add constraint 1, only train when observe errors/loss > 0
+            # loss = 1 - acc
+            print(f"batch acc: {acc}")
+            if acc == 1:
+                print(f"no training loss, acc: {acc}")
+                continue
+            # resample the losses across batch
+            for i, acc_i in enumerate(acc_list):
+                if acc_i < 1:
+                    errors_losses.append(losses[i])
+                else:
+                    correct_losses.append(losses[i])
+            print(f"len(errors_losses): {len(errors_losses)}")
+            print(f"len(correct_losses): {len(correct_losses)}")
+            sampled_correct_losses = []
+            sampled_errors_losses = []
+            max_error_samples = 4
+            if len(errors_losses) > 0:
+                # sample 2 correct losses
 
-    def eval_no_concurrent(self, dataset=None, max_samples: int = 100):
-        if dataset is None:
-            print("No dataset provided, using test set")
-            dataset = self.test_set
+                sampled_errors_losses = random.sample(
+                    errors_losses, min(max_error_samples, len(errors_losses))
+                )  # limit to 4
+                print(f"sampling errors: {len(sampled_errors_losses)}")
+                sampled_correct_losses = random.sample(
+                    correct_losses, min(len(correct_losses), len(sampled_errors_losses))
+                )
+            # control the actual batch size for proposing
+            print(f"len(sampled_errors_losses): {len(sampled_errors_losses)}")
+            print(f"len(sampled_correct_losses): {len(sampled_correct_losses)}")
+            total_loss = sum(sampled_errors_losses + sampled_correct_losses)
+            # resampled_acc = len(sampled_correct_losses) / (
+            #     len(sampled_correct_losses) + len(sampled_errors_losses)
+            # )
+            # compute the textual loss
+            # TODO: need to observe a batch of data, such that we can see that it always undercount 1
+            # total_loss = sum(losses)
+            print("loss backward...")
+            total_loss.backward()
+            print("optimizer propose...")
+            # 2. Propose and observe on the training set (and even add this in the history)
+            for i in range(num_proposals):
+                print(f"proposal: {i}")
+                self.optimizer.propose()
+                new_preds = self.train_batch_worker(batch_x)
+                new_y_preds_data = [y_p.data for y_p in new_preds]
+                new_batch_y_data = batch_y.tolist()
+                new_acc = self.evaluator.compute(new_y_preds_data, new_batch_y_data)[0]
+                if new_acc > acc:
+                    print(f"new acc: {new_acc} > {acc}")
+                    break
+                else:
+                    print(f"revert: {acc}")
+                    self.optimizer.revert()
+            if not self.optimizer.proposing:
+                print(
+                    "no proposal can improve the training accuracy, no need to validate"
+                )
+                # error still exists, no need to clean
+                continue
 
-        # set it to eval mode
-        self.training = False
-        x, y, y_pred = [], [], []
-        tqdm_loader = tqdm(dataset)
-        for _, sample in enumerate(tqdm_loader):
-            y.append(sample[1])
-            y_pred.append(self.task.call(question=sample[0]))
-            x.append(sample[0])
-            print(f"y: {y}, y_pred: {y_pred}, x: {x}")
-            tqdm_loader.set_description(
-                f"Accuracy: {self.evaluator.compute(y_pred, y)}"
+            # now we get test acc
+            prompts = self._get_param_values()
+            print(f"new prompt: {prompts}")
+            # total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
+            print("Start evaluate")
+
+            # save_json(total_loss.to_dict(), "total_loss_adalflow.json")
+
+            eval_acc, eval_acc_list = self.evaluate_dataset(
+                dataset_type="val", max_samples=max_samples
             )
+            print(f"val_acc: {eval_acc}, last acc: {results['val_acc'][-1]}")
+            if eval_acc > results["val_acc"][-1]:
+                print("optimizer step")
+                self.optimizer.step()
+                results["val_acc"].append(eval_acc)
+                # error and correct signal will never be carried over
+                errors_losses = []
+                correct_losses = []
 
-        return self.evaluator.compute(y_pred, y)[1]
+            else:
+                self.optimizer.revert()
+                print("optimizer revert")
+                results["val_acc"].append(results["val_acc"][-1])
+            final_prompts = self._get_param_values()
+            results["prompts"].append(final_prompts)
 
-    def evaluate_dataset(self, dataset_type: str = "test", max_samples: int = 100):
+            test_acc, test_acc_list = self.evaluate_dataset(
+                dataset_type="test", max_samples=max_samples
+            )
+            results["test_acc"].append(test_acc)
+            print(f"test_acc: {test_acc}")
+
+            save_json(results, save_result_file_path)
+
+    def fit_orpo(
+        self,
+        max_steps: int = 3,
+        max_samples=20,
+        results: Dict = None,
+    ):
+        self.task.train()
+        max_steps = max_steps
+        max_samples = max_samples
+        task_name = self.task.__class__.__name__
+        # num_proposals = 4
+        save_result_file_path = f"results_adalflow_orpo_task_{task_name}_max_steps_{max_steps}_max_samples_{max_samples}.json"
+        num_epochs = max_steps // len(self.train_loader) + 1
+        total_step = 0
+        for epoch in tqdm(range(num_epochs), desc="Epoch"):
+            for steps, (batch_x, batch_y) in enumerate(
+                (pbar := tqdm(self.train_loader, position=0))
+            ):
+                total_step += 1
+                pbar.set_description(f"Training Step: {steps}")
+                if steps >= max_steps:
+                    print(f"steps: {steps} >= max_steps: {max_steps}")
+                    break
+
+                # it does not use train batch yet
+                # self.task.train()
+
+                # y_preds = self.train_batch_worker(batch_x)
+                self.orpo_optimizer.propose()
+                prompts = self._get_param_values()
+                print(f"new prompt: {prompts}")
+
+                # validate
+                val_acc, val_acc_list = self.evaluate_dataset(
+                    dataset_type="val", max_samples=max_samples
+                )
+                if val_acc > results["val_acc"][-1]:
+                    print(
+                        f" optimizer step, val_acc: {val_acc} > {results['val_acc'][-1]}"
+                    )
+                    self.orpo_optimizer.step(score=val_acc)
+                    results["val_acc"].append(val_acc)
+                    results["prompts"].append(prompts)
+                else:
+                    print(
+                        f"optimizer revert, val_acc: {val_acc} <= {results['val_acc'][-1]} "
+                    )
+                    self.orpo_optimizer.revert()
+                    continue  # no need to test
+
+                # test
+                test_acc, test_acc_list = self.evaluate_dataset(
+                    dataset_type="test", max_samples=max_samples
+                )
+                results["test_acc"].append(test_acc)
+                print(f"test_acc: {test_acc}")
+                # save the results
+                save_json(results, save_result_file_path)
+
+    @staticmethod
+    def _compute_losses(batch_x, batch_y, y_preds, loss_fn, steps):
+        losses: List[Parameter] = []
+        for i, (x, y, y_pred) in enumerate(zip(batch_x, batch_y, y_preds)):
+            # compute loss on one data point
+            # print(f"x: {x}, y: {y}")
+            response = y_pred
+            logger.info(f"response: {response}")
+            response.alias += f"_{i}"
+            # TODO: when it is train, need to pass the data to be something used for eval.
+            loss = loss_fn(
+                kwargs={
+                    "y": response,
+                    "y_gt": Parameter(
+                        data=y,
+                        role_desc="The ground truth",
+                        requires_opt=False,
+                        alias=f"y_{i}",
+                    ),
+                }
+            )
+            loss.alias += f"_step_{steps}_batch_{i}"
+            print(f"y_gt: {y})")
+            losses.append(loss)
+        return losses
+
+    def fit_v3(
+        self,
+        max_steps: int = 3,
+        max_samples=20,
+        results: Dict = None,
+        optimizer: TextualGradientDescent = None,
+        optimizer_type: str = "tgd",
+    ):
+        # TODO: save a best prompt or top 2
+        self.task.train()
+        optimizer.zero_grad()
+        logger.info(f"Training started: {self.task.training}")
+        max_steps = max_steps
+        max_samples = max_samples
+        task_name = self.task.__class__.__name__
+        num_proposals = 6
+        save_result_file_path = f"results_adalflow_v3_optimizer_{optimizer.__class__.__name__}_task_{task_name}_max_steps_{max_steps}_max_samples_{max_samples}.json"
+        # TODO: compute the epoch based on the number of samples
+        # errors_losses: List[Parameter] = []
+        # correct_losses: List[Parameter] = []
+        all_x = []
+        all_y = []
+        all_losses = []
+        all_y_preds = []
+
+        # TODO: deduplicate, use set all_x and all_y, they might become too big
+
+        # estimate the epich size with the steps
+        num_epochs = max_steps // len(self.train_loader) + 1
+        total_step = 0
+        for epoch in tqdm(range(num_epochs), desc="Epoch"):
+
+            print(f"epoch: {epoch}")
+
+            for steps, (batch_x, batch_y) in enumerate(
+                (pbar := tqdm(self.train_loader, position=0))
+            ):
+                total_step += 1
+                pbar.set_description(f"Training Step: {steps}")
+                if steps >= max_steps:
+                    print(f"steps: {steps} >= max_steps: {max_steps}")
+                    break
+                self.task.train()
+
+                y_preds = self.train_batch_worker(
+                    batch_x
+                )  # generator should always guarentee data even if it gives error
+                # compute loss each data point
+                losses = []
+                if optimizer_type == "tgd":
+                    losses = self._compute_losses(
+                        batch_x, batch_y, y_preds, self.loss_fn, steps
+                    )
+
+                # loss.draw_graph(filepath="loss1")
+                # convert y_pred to value
+                y_preds_data = [y_p.data for y_p in y_preds]
+                batch_y_data = batch_y.tolist()
+                print(f"y_preds_data: {y_preds_data}")
+                print(f"batch_y: {batch_y_data}")
+                acc, acc_list = self.evaluator.compute(y_preds_data, batch_y_data)
+                # 1. Add constraint 1, only train when observe errors/loss > 0
+                # loss = 1 - acc
+                print(f"batch acc: {acc}")
+                # if acc == 1:
+                #     print(f"no training loss, acc: {acc}")
+                #     continue
+                # gather the data to the last step
+                all_x.extend(batch_x)
+                all_y.extend(batch_y.tolist())
+                all_losses.extend(losses)
+                all_y_preds.extend(y_preds_data)
+                all_acc, all_acc_list = self.evaluator.compute(all_y_preds, all_y)
+                max_error_samples = 4
+                max_correct_samples = 4
+                # NOTE: the real batch size is 8 for the loss.
+                print(f"all_acc: {all_acc}, all_acc_list: {all_acc_list}")
+                correct_indices = [i for i, acc in enumerate(all_acc_list) if acc == 1]
+                error_indices = [i for i, acc in enumerate(all_acc_list) if acc == 0]
+                if len(error_indices) == 0:
+                    print(f"no errors so far, acc: {all_acc}")
+                    continue
+                print(f"len(error_indices): {len(error_indices)}")
+                print(f"len(correct_indices): {len(correct_indices)}")
+
+                # Sample up to four indices from both correct and error lists
+                # NOTE: it is important to make the subset has a higher ratio of errors so that proposals can pass the pipeline
+                sampled_error_indices = random.sample(
+                    error_indices, min(max_error_samples, len(error_indices))
+                )
+                num_errors = len(sampled_error_indices)
+                max_num_correct_samples = 2 * num_errors
+                sampled_correct_indices = random.sample(
+                    correct_indices,
+                    min(
+                        max_correct_samples,
+                        max_num_correct_samples,
+                        len(correct_indices),
+                    ),
+                )
+
+                sampled_batch_x = [all_x[i] for i in sampled_error_indices] + [
+                    all_x[i] for i in sampled_correct_indices
+                ]
+                sampled_batch_y = [all_y[i] for i in sampled_error_indices] + [
+                    all_y[i] for i in sampled_correct_indices
+                ]
+                sampled_y_preds = [all_y_preds[i] for i in sampled_error_indices] + [
+                    all_y_preds[i] for i in sampled_correct_indices
+                ]
+                sample_acc = self.evaluator.compute(sampled_y_preds, sampled_batch_y)[0]
+
+                print(f"len(sampled_errors_losses): {len(sampled_error_indices)}")
+                print(f"len(sampled_correct_losses): {len(sampled_correct_indices)}")
+
+                # compute the textual loss
+                # TODO: need to observe a batch of data, such that we can see that it always undercount 1
+                # total_loss = sum(losses)
+                print("loss backward...")
+                if optimizer_type == "tgd":
+                    # now resample the correct and errors
+                    total_loss = [all_losses[i] for i in sampled_error_indices] + [
+                        all_losses[i] for i in sampled_correct_indices
+                    ]
+                    total_loss = sum(total_loss)
+                    total_loss.backward()
+                print("optimizer propose...")
+                # 2. Propose and observe on the training set (and even add this in the history)
+                for i in range(num_proposals):
+                    print(f"proposal: {i}")
+                    if optimizer_type == "tgd":
+                        optimizer.propose()
+                    elif optimizer_type == "orpo":  # TODO: add raw response
+                        training_samples: List[str] = [
+                            f"{x}\nPrediction: {y_pred},\n Correct Answer: {y_gt}"
+                            for x, y_pred, y_gt in zip(
+                                sampled_batch_x, sampled_y_preds, sampled_batch_y
+                            )
+                        ]
+                        optimizer.propose(training_samples)
+                    else:
+                        raise ValueError(
+                            f"Optimizer type: {optimizer_type} not supported"
+                        )
+                    new_preds = self.train_batch_worker(sampled_batch_x)
+                    new_y_preds_data = [y_p.data for y_p in new_preds]
+                    new_acc = self.evaluator.compute(new_y_preds_data, sampled_batch_y)[
+                        0
+                    ]
+                    if new_acc > sample_acc:
+                        print(
+                            f"Pass the subset check, new acc: {new_acc} > {sample_acc}"
+                        )
+                    else:
+                        print(
+                            f"Failed the subset check, revert: {new_acc} <= {sample_acc}"
+                        )
+                        optimizer.revert()
+                        continue
+                    new_preds = self.train_batch_worker(all_x)
+                    new_y_preds_data = [y_p.data for y_p in new_preds]
+                    new_acc = self.evaluator.compute(new_y_preds_data, all_y)[0]
+                    if new_acc > all_acc:
+                        print(
+                            f"Pass the whole set check, new acc: {new_acc} > {all_acc}"
+                        )
+                        break
+                    else:
+                        print(
+                            f"Fail the whole set check, revert: {new_acc} <= {all_acc}"
+                        )
+                        optimizer.revert()
+                        continue
+                if not optimizer.proposing:
+                    print(
+                        "no proposal can improve the training accuracy, Will try next batch"
+                    )
+                    # error still exists, no need to clean
+                    continue
+
+                # now we get test acc
+                prompts = self._get_param_values()
+                print(f"new prompt: {prompts}")
+                # total_loss.draw_graph(filepath=f"total_loss_step_{steps}")
+                print("Start evaluate")
+
+                # save_json(total_loss.to_dict(), "total_loss_adalflow.json")
+
+                eval_acc, eval_acc_list = self.evaluate_dataset(
+                    dataset_type="val", max_samples=max_samples
+                )
+                print(f"val_acc: {eval_acc}, last acc: {results['val_acc'][-1]}")
+                if eval_acc > results["val_acc"][-1]:
+                    print(
+                        f"Pass the val set check, optimizer step, {eval_acc} > {results['val_acc'][-1]}"
+                    )
+                    if optimizer_type == "tgd":
+                        optimizer.step()
+                    elif optimizer_type == "orpo":
+                        optimizer.step(score=eval_acc)
+                    else:
+                        raise ValueError(
+                            f"Optimizer type: {optimizer_type} not supported"
+                        )
+                    results["val_acc"].append(eval_acc)
+                    # error and correct signal will never be carried over
+                    # errors_losses = []
+                    # correct_losses = []
+                    all_x = []
+                    all_y = []
+                    all_losses = []
+                    all_y_preds = []
+
+                else:
+                    optimizer.revert()
+                    print(
+                        f"Fail the val set check, optimizer revert, {eval_acc} <= {results['val_acc'][-1]}"
+                    )
+                    continue
+                    # results["val_acc"].append(results["val_acc"][-1])
+                final_prompts = self._get_param_values()
+                results["prompts"].append(final_prompts)
+
+                test_acc, test_acc_list = self.evaluate_dataset(
+                    dataset_type="test", max_samples=max_samples
+                )
+                results["test_acc"].append(test_acc)
+                print(f"test_acc: {test_acc}")
+
+                save_json(results, save_result_file_path)
+
+    # def eval_no_concurrent(self, dataset=None, max_samples: int = 100):
+    #     if dataset is None:
+    #         print("No dataset provided, using test set")
+    #         dataset = self.test_set
+
+    #     # set it to eval mode
+    #     self.training = False
+    #     x, y, y_pred = [], [], []
+    #     tqdm_loader = tqdm(dataset)
+    #     for _, sample in enumerate(tqdm_loader):
+    #         y.append(sample[1])
+    #         y_pred.append(self.task.call(question=sample[0]))
+    #         x.append(sample[0])
+    #         print(f"y: {y}, y_pred: {y_pred}, x: {x}")
+    #         tqdm_loader.set_description(
+    #             f"Accuracy: {self.evaluator.compute(y_pred, y)}"
+    #         )
+
+    #     return self.evaluator.compute(y_pred, y)[1]
+
+    def train_batch_worker(self, batch_x, max_workers: int = 4):
+        y_preds = []
+        self.task.train()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = []
+            for _, sample in enumerate(batch_x):
+                future = executor.submit(self.task.call, question=sample)
+                futures.append((future, sample))
+            for future, sample in futures:
+                y_preds.append(future.result())
+        return y_preds
+
+    def evaluate_dataset(
+        self, dataset_type: str = "test", max_samples: int = 100, num_workers: int = 4
+    ):
 
         # set it to eval mode
         dataset = None
@@ -445,7 +924,7 @@ class ObjectCountTrainer(Component):
             f"{self.__class__.__name__}: trainer eval stage on {dataset_type} dataset"
         )
         x, y, y_pred = [], [], []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             futures = []
             for _, sample in enumerate(tqdm(dataset)):
                 future = executor.submit(self.task.call, question=sample[0])
@@ -500,19 +979,38 @@ if __name__ == "__main__":
 
     trainer = ObjectCountTrainer(
         task_model_config=gpt_3_model,
-        backward_engine_model_config=gpt_4o_model,
+        backward_engine_model_config=gpt_3_model,
         tgd_model_config=gpt_4o_model,
     )
     # print(trainer)
+    max_samples = 100
+    max_steps = 10
+    optimizer = trainer.optimizer
+    optimizer_type = "tgd"
+    optimizer = trainer.orpo_optimizer
+    optimizer_type = "orpo"
+
     test_acc, test_acc_list = trainer.evaluate_dataset(
-        dataset_type="test", max_samples=None
+        dataset_type="test", max_samples=max_samples
     )
     print(f"test_acc: {test_acc}")
     val_acc, val_acc_list = trainer.evaluate_dataset(
-        dataset_type="val", max_samples=None
+        dataset_type="val", max_samples=max_samples
     )
+    results = {
+        "val_acc": [val_acc],
+        "test_acc": [test_acc],
+        "prompts": [trainer._get_param_values()],
+    }
     print(f"val_acc: {val_acc}")
-    trainer.test_train(start_val_acc=val_acc, start_test_acc=test_acc, max_samples=100)
+    # trainer.fit_orpo(max_samples=max_samples, results=results, max_steps=max_steps)
+    trainer.fit_v3(
+        max_samples=max_samples,
+        results=results,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        optimizer_type=optimizer_type,
+    )
     # test_acc, test_acc_list = trainer.evaluate_dataset(
     #     dataset_type="test", max_samples=None
     # )

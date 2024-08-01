@@ -1,13 +1,18 @@
 from unittest import IsolatedAsyncioTestCase
 from unittest.mock import patch, Mock
+import unittest
 import os
 import shutil
+
+from openai.types import CompletionUsage
+from openai.types.chat import ChatCompletion
 
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.generator import Generator
 
 
 from lightrag.core.model_client import ModelClient
+from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.tracing import GeneratorStateLogger
 
 
@@ -47,6 +52,7 @@ class TestGenerator(IsolatedAsyncioTestCase):
             prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs
         )
         self.assertIsInstance(output, GeneratorOutput)
+        print(f"output: {output}")
         # self.assertEqual(output.data, "Generated text response")
 
     def test_generator_prompt_logger_first_record(self):
@@ -101,3 +107,63 @@ class TestGenerator(IsolatedAsyncioTestCase):
             "Hello, {{ input_str }}!",
         )
         self._clean_up()
+
+
+def getenv_side_effect(key):
+    # This dictionary can hold more keys and values as needed
+    env_vars = {"GROQ_API_KEY": "fake_api_key"}
+    return env_vars.get(key, None)  # Returns None if key is not found
+
+
+class TestGeneratorWithGroqClient(unittest.TestCase):
+    # @patch("os.getenv", side_effect=getenv_side_effect)
+    def setUp(self) -> None:
+        with patch(
+            "os.getenv", side_effect=getenv_side_effect
+        ):  # Mock the environment variable
+            self.client = GroqAPIClient()
+        self.mock_response = {
+            "id": "cmpl-3Q8Z5J9Z1Z5z5",
+            "created": 1635820005,
+            "object": "chat.completion",
+            "model": "gpt-3.5-turbo",
+            "choices": [
+                {
+                    "message": {
+                        "content": "Hello, world!",
+                        "role": "assistant",
+                    },
+                    "index": 0,
+                    "finish_reason": "stop",
+                }
+            ],
+            "usage": CompletionUsage(
+                completion_tokens=10, prompt_tokens=20, total_tokens=30
+            ),
+        }
+        self.mock_response = ChatCompletion(**self.mock_response)
+
+    @patch.object(GroqAPIClient, "call")
+    def test_groq_client_call(self, mock_call):
+        # Mock the response
+
+        mock_call.return_value = self.mock_response
+
+        # Define prompt and model kwargs
+        prompt_kwargs = {"input_str": "Hello, world!"}
+        model_kwargs = {"model": "gpt-3.5-turbo"}
+        template = "Hello, {{ input_str }}!"
+
+        # Initialize the Generator with the mocked client
+        generator = Generator(model_client=self.client, template=template)
+
+        # Call the generator and get the output
+        output = generator.call(prompt_kwargs=prompt_kwargs, model_kwargs=model_kwargs)
+
+        self.assertIsInstance(output, GeneratorOutput)
+        print(f"output groq: {output}")
+        # self.assertEqual(output.data, "Generated text response")
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -3,10 +3,11 @@
 import os
 from typing import Dict, Sequence, Optional, Any
 import backoff
+import logging
 
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
+from lightrag.core.types import CompletionUsage, ModelType, GeneratorOutput
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
@@ -23,11 +24,34 @@ from google.api_core.exceptions import (
 )
 from google.generativeai.types import GenerateContentResponse
 
+log = logging.getLogger(__name__)
+
 
 class GoogleGenAIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Google GenAI API client.
 
     Visit https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference for more api details.
+
+    Info: 8/1/2024
+    Tested: gemini-1.0-pro, gemini-1.5-pro-latest
+    class UsageMetadata(proto.Message):
+
+        prompt_token_count: int = proto.Field(
+            proto.INT32,
+            number=1,
+        )
+        cached_content_token_count: int = proto.Field(
+            proto.INT32,
+            number=4,
+        )
+        candidates_token_count: int = proto.Field(
+            proto.INT32,
+            number=2,
+        )
+        total_token_count: int = proto.Field(
+            proto.INT32,
+            number=3,
+        )
     """
 
     def __init__(self, api_key: Optional[str] = None):
@@ -45,11 +69,31 @@ class GoogleGenAIClient(ModelClient):
         genai.configure(api_key=api_key)
         return genai
 
-    def parse_chat_completion(self, completion: GenerateContentResponse) -> str:
+    def parse_chat_completion(
+        self, completion: GenerateContentResponse
+    ) -> "GeneratorOutput":
         """
         Parse the completion to a structure your sytem standarizes. (here is str)
         """
-        return completion.text
+        log.debug(f"completion: {completion}")
+        try:
+            data = completion.text
+            usage = self.track_completion_usage(completion)
+            return GeneratorOutput(data=data, usage=usage, raw_response=str(data))
+        except Exception as e:
+            log.error(f"Error parsing completion: {e}")
+            return GeneratorOutput(
+                data=None, error=str(e), raw_response=str(completion)
+            )
+
+    def track_completion_usage(
+        self, completion: GenerateContentResponse
+    ) -> CompletionUsage:
+        return CompletionUsage(
+            completion_tokens=completion.usage_metadata.candidates_token_count,
+            prompt_tokens=completion.usage_metadata.prompt_token_count,
+            total_tokens=completion.usage_metadata.total_token_count,
+        )
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -103,3 +147,10 @@ class GoogleGenAIClient(ModelClient):
             return llm.generate_content(contents=prompt)
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+
+if __name__ == "__main__":
+    from lightrag.utils import setup_env
+
+    setup_env()
+    google_client = GoogleGenAIClient()

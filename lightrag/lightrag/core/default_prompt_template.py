@@ -76,9 +76,7 @@ You are a helpful assistant.
 {% endif %}
 <END_OF_SYSTEM_PROMPT>
 {% if input_str %}
-<User>
 {{input_str}}
-</User>
 {% endif %}
 """
 """This is the default system prompt template used in the LightRAG.

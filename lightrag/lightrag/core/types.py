@@ -129,7 +129,7 @@ class Embedding:
 @dataclass
 class Usage:
     """
-    In sync with api spec, same as openai/types/create_embedding_response.py
+    In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py
     """
 
     prompt_tokens: int
@@ -203,6 +203,23 @@ class TokenLogProb:
 
 
 @dataclass
+class CompletionUsage:
+    __doc__ = r"In sync with OpenAI completion usage api spec at openai/types/completion_usage.py"
+    completion_tokens: Optional[int] = field(
+        metadata={"desc": "Number of tokens in the generated completion"}, default=None
+    )
+    prompt_tokens: Optional[int] = field(
+        metadata={"desc": "Number of tokens in the prompt"}, default=None
+    )
+    total_tokens: Optional[int] = field(
+        metadata={
+            "desc": "Total number of tokens used in the request (prompt + completion)"
+        },
+        default=None,
+    )
+
+
+@dataclass
 class GeneratorOutput(DataClass, Generic[T_co]):
     __doc__ = r"""
     The output data class for the Generator component.
@@ -225,7 +242,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
         default=None,
         metadata={"desc": "Error message if any"},
     )
-    usage: Optional[Usage] = field(default=None, metadata={"desc": "Usage tracking"})
+    usage: Optional[CompletionUsage] = field(
+        default=None, metadata={"desc": "Usage tracking"}
+    )
     raw_response: Optional[str] = field(
         default=None, metadata={"desc": "Raw string response from the model"}
     )  # parsed from model client response

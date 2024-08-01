@@ -35,6 +35,8 @@ class Optimizer:
     #         self.params = [params]
     #     else:
     #         self.params = params
+    proposing: bool = False
+    params: ParamsT
 
     def state_dict(self):
         pass

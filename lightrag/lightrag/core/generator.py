@@ -68,6 +68,7 @@ class Generator(Component, GradFunction, CachedEngine):
 
     model_type: ModelType = ModelType.LLM
     model_client: ModelClient  # for better type checking
+    _use_cache: bool = False
 
     def __init__(
         self,
@@ -84,6 +85,7 @@ class Generator(Component, GradFunction, CachedEngine):
         # trainable_params: Optional[List[str]] = [],
         name: Optional[str] = None,
         cache_path: Optional[str] = None,
+        use_cache: bool = False,
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -162,6 +164,7 @@ class Generator(Component, GradFunction, CachedEngine):
         self.data_map_func: Callable = None
         self.set_data_map_func()
         self.model_str = model_str
+        self._use_cache = use_cache
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -231,26 +234,18 @@ class Generator(Component, GradFunction, CachedEngine):
         s = f"model_kwargs={self.model_kwargs}, model_type={self.model_type}"
         return s
 
-    def _post_call(self, completion: Any) -> GeneratorOutputType:
+    def _post_call(self, completion: Any) -> GeneratorOutput:
         r"""Get string completion and process it with the output_processors."""
-        try:
-            response = self.model_client.parse_chat_completion(completion)
-        except Exception as e:
-            log.error(f"Error parsing the completion {completion}: {e}")
-            return GeneratorOutput(raw_response=str(completion), error=str(e))
-
-        # the output processors operate on the str, the raw_response field.
-        output: GeneratorOutputType = GeneratorOutput(raw_response=str(response))
-
-        if self.output_processors:
+        output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
+        # the output processors operate on the response, most cases it is a string.
+        data = output.data
+        if self.output_processors and data:
             try:
-                response = self.output_processors(response)
-                output.data = response
+                data = self.output_processors(data)
+                output.data = data
             except Exception as e:
                 log.error(f"Error processing the output processors: {e}")
                 output.error = str(e)
-        else:  # default to string output
-            output.data = response
 
         return output
 
@@ -271,19 +266,24 @@ class Generator(Component, GradFunction, CachedEngine):
         )
         return api_kwargs
 
-    def _model_client_call(self, api_kwargs: Dict) -> Any:
+    def _model_client_call(self, api_kwargs: Dict, use_cache: bool = False) -> Any:
         # call the model client
         try:
             # check the cache
             index_content = json.dumps(api_kwargs)  # all messages
-            cached_completion = self._check_cache(index_content)
-            if cached_completion is not None:
-                return cached_completion
+            if use_cache:
+                # print(f"check cache first: {no_cache}")
+
+                cached_completion = self._check_cache(index_content)
+                if cached_completion is not None:
+                    return cached_completion
+
             completion = self.model_client.call(
                 api_kwargs=api_kwargs, model_type=self.model_type
             )
             # prepare cache
-            self._save_cache(index_content, completion)
+            if use_cache:
+                self._save_cache(index_content, completion)
             return completion
         except Exception as e:
             log.error(f"Error calling the model: {e}")
@@ -324,14 +324,6 @@ class Generator(Component, GradFunction, CachedEngine):
         else:
             output = self.call(prompt_kwargs, model_kwargs)
         # 2. Generate a Parameter object from the output
-        # parameter_data = None
-        # if output.data is None:
-        #     parameter_data = (
-        #         f"raw response: {output.raw_response}" + "error: " + output.error
-        #     )
-
-        # else:
-        #     parameter_data = output.data
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
         if self.data_map_func is None:
             self.set_data_map_func()
@@ -502,6 +494,7 @@ class Generator(Component, GradFunction, CachedEngine):
         self,
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
+        use_cache: Optional[bool] = None,
     ) -> GeneratorOutputType:
         r"""
         Call the model_client by formatting prompt from the prompt_kwargs,
@@ -519,8 +512,11 @@ class Generator(Component, GradFunction, CachedEngine):
         # call the model client
 
         completion = None
+        use_cache = use_cache if use_cache is not None else self._use_cache
         try:
-            completion = self._model_client_call(api_kwargs=api_kwargs)
+            completion = self._model_client_call(
+                api_kwargs=api_kwargs, use_cache=use_cache
+            )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e))
@@ -600,18 +596,52 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
 
 if __name__ == "__main__":
     # test the generator with backward engine
+    # TODO: move this to external local tests before packaging
+    from lightrag.components.model_client import (
+        GroqAPIClient,
+        OpenAIClient,
+        GoogleGenAIClient,
+        AnthropicAPIClient,
+    )
+    from lightrag.utils import setup_env
     from lightrag.core.model_client import ModelClient
 
-    # setup_env()
-    # llama3_model = {
-    #     "model_client": GroqAPIClient(),
-    #     "model_kwargs": {
-    #         "model": "llama-3.1-8b-instant",
-    #     },
-    # }
-    mock_model = {
-        "model_client": ModelClient(),
+    setup_env()
+    # log = get_logger(level="DEBUG")
+    llama3_model = {
+        "model_client": GroqAPIClient(),
         "model_kwargs": {
-            "model": "mock",
+            "model": "llama-3.1-8b-instant",
         },
     }
+    gpt_3_model = {
+        "model_client": OpenAIClient(),
+        "model_kwargs": {
+            "model": "gpt-3.5-turbo",
+        },
+    }
+    gemini_model = {
+        "model_client": GoogleGenAIClient(),
+        "model_kwargs": {
+            "model": "gemini-1.0-pro",
+        },
+    }
+    claude_model = {
+        "model_client": AnthropicAPIClient(),
+        "model_kwargs": {
+            "model": "claude-3-opus-20240229",
+            "max_tokens": 100,
+        },
+    }
+    for model in [llama3_model, gpt_3_model, gemini_model, claude_model]:
+        print(f"""model: {model["model_kwargs"]["model"]}""")
+        generator = Generator(**model)
+        output = generator(
+            prompt_kwargs={
+                "input_str": "Hello, world!",
+            }
+        )
+        print(f"output: {output}")
+
+    # test the backward engine
+    # TODO: test ollama and transformer client to update the change

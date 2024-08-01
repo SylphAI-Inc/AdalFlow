@@ -4,21 +4,26 @@ from typing import Any, Dict, Optional
 
 
 # from lightrag.core.component import Component
-from lightrag.core.types import ModelType, EmbedderOutput
+from lightrag.core.types import (
+    ModelType,
+    EmbedderOutput,
+    GeneratorOutput,
+    CompletionUsage,
+)
 
 
 # TODO: global model registry for all available models in users' project.
 class ModelClient:
     __doc__ = r"""The protocol and abstract class for all models(either via APIs or local models) to communicate with components.
 
-    We designed the abstract APIClient class to separate the model API calls from the rest of the system,
+ModelClient is to separate the model API calls from the rest of the system,
 making it a plug-and-play component that can be used in functional components like Generator and Embedder.
 
 
-For a particular API provider, such as OpenAI, we will have a class that inherits from APIClient.
+For a particular API provider, such as OpenAI, we will have a class that inherits from ModelClient.
 It does four things:
 
-(1) Initialize the client, sync and async.
+(1) Initialize the client, including both sync and async.
 
 (2) Convert the standard LightRAG components inputs to the API-specific format.
 
@@ -74,6 +79,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
         r"""
         Bridge the Component's standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.
 
+        All types of models supported by this particular provider should be handled here.
         Args:
             input (Optional[Any], optional): input to the model. Defaults to None.
             model_kwargs (Dict): model kwargs
@@ -84,13 +90,19 @@ Check the subclasses in `components/model_client/` directory for the functional 
             f"{type(self).__name__} must implement _combine_input_and_model_kwargs method"
         )
 
-    def parse_chat_completion(self, completion: Any) -> Any:
+    def parse_chat_completion(self, completion: Any) -> "GeneratorOutput":
         r"""Parse the chat completion to str."""
         raise NotImplementedError(
             f"{type(self).__name__} must implement parse_chat_completion method"
         )
 
-    def parse_embedding_response(self, response: Any) -> EmbedderOutput:
+    def track_completion_usage(self, *args, **kwargs) -> "CompletionUsage":
+        r"""Track the chat completion usage. Use OpenAI standard API for tracking."""
+        raise NotImplementedError(
+            f"{type(self).__name__} must implement track_usage method"
+        )
+
+    def parse_embedding_response(self, response: Any) -> "EmbedderOutput":
         r"""Parse the embedding response to a structure LightRAG components can understand."""
         raise NotImplementedError(
             f"{type(self).__name__} must implement parse_embedding_response method"
@@ -98,9 +110,7 @@ Check the subclasses in `components/model_client/` directory for the functional 
 
     @staticmethod
     def _process_text(text: str) -> str:
-        """
-        This is specific to OpenAI API, as removing new lines could have better performance in the embedder
-        """
+        """This is specific to OpenAI API, as removing new lines could have better performance in the embedder"""
         text = text.replace("\n", " ")
         return text
 

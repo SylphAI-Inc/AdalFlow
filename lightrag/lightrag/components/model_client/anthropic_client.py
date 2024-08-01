@@ -7,7 +7,7 @@ import logging
 
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
+from lightrag.core.types import ModelType, CompletionUsage, GeneratorOutput
 
 # optional import
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
@@ -15,7 +15,7 @@ from lightrag.utils.lazy_import import safe_import, OptionalPackages
 anthropic = safe_import(
     OptionalPackages.ANTHROPIC.value[0], OptionalPackages.ANTHROPIC.value[1]
 )
-
+import anthropic
 from anthropic import (
     RateLimitError,
     APITimeoutError,
@@ -23,7 +23,7 @@ from anthropic import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from anthropic.types import Message
+from anthropic.types import Message, Usage
 
 log = logging.getLogger(__name__)
 
@@ -42,6 +42,11 @@ class AnthropicAPIClient(ModelClient):
     __doc__ = r"""A component wrapper for the Anthropic API client.
 
     Visit https://docs.anthropic.com/en/docs/intro-to-claude for more api details.
+
+    Ensure "max_tokens" are set.
+
+    Reference: 8/1/2024
+    - https://docs.anthropic.com/en/docs/about-claude/models
     """
 
     def __init__(
@@ -71,9 +76,26 @@ class AnthropicAPIClient(ModelClient):
             raise ValueError("Environment variable ANTHROPIC_API_KEY must be set")
         return anthropic.AsyncAnthropic(api_key=api_key)
 
-    def parse_chat_completion(self, completion: Message) -> str:
+    def parse_chat_completion(self, completion: Message) -> GeneratorOutput:
         log.debug(f"completion: {completion}")
-        return completion.content[0].text
+        try:
+            data = completion.content[0].text
+            usage = self.track_completion_usage(completion)
+            return GeneratorOutput(data=data, usage=usage, raw_response=str(data))
+        except Exception as e:
+            log.error(f"Error parsing completion: {e}")
+            return GeneratorOutput(
+                data=None, error=str(e), raw_response=str(completion)
+            )
+
+    def track_completion_usage(self, completion: Message) -> CompletionUsage:
+        r"""Track the completion usage."""
+        usage: Usage = completion.usage
+        return CompletionUsage(
+            completion_tokens=usage.output_tokens,
+            prompt_tokens=usage.input_tokens,
+            total_tokens=usage.output_tokens + usage.input_tokens,
+        )
 
     # TODO: potentially use <SYS></SYS> to separate the system and user messages. This requires user to follow it. If it is not found, then we will only use user message.
     def convert_inputs_to_api_kwargs(

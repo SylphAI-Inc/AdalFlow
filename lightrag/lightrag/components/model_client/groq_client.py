@@ -1,16 +1,18 @@
 """Groq ModelClient integration."""
 
 import os
-from typing import Dict, Sequence, Optional, Any
+from typing import Dict, Sequence, Optional, Any, TypeVar
 import backoff
+import logging
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType
+from lightrag.core.types import ModelType, CompletionUsage, GeneratorOutput
 
 
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 # optional import
 groq = safe_import(OptionalPackages.GROQ.value[0], OptionalPackages.GROQ.value[1])
+
 
 from groq import Groq, AsyncGroq
 from groq import (
@@ -19,6 +21,11 @@ from groq import (
     RateLimitError,
     UnprocessableEntityError,
 )
+from groq.types.chat import ChatCompletion as GroqChatCompletion
+from groq.types import CompletionUsage as GroqCompletionUsage
+
+T = TypeVar("T")
+log = logging.getLogger(__name__)
 
 
 class GroqAPIClient(ModelClient):
@@ -42,27 +49,44 @@ class GroqAPIClient(ModelClient):
         """
         super().__init__()
         self._api_key = api_key
-        self.init_sync_client()
 
+        self.sync_client = self.init_sync_client()
         self.async_client = None  # only initialize if the async call is called
 
     def init_sync_client(self):
         api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
-        self.sync_client = Groq(api_key=api_key)
+        return Groq(api_key=api_key)
 
     def init_async_client(self):
         api_key = self._api_key or os.getenv("GROQ_API_KEY")
         if not api_key:
             raise ValueError("Environment variable GROQ_API_KEY must be set")
-        self.async_client = AsyncGroq(api_key=api_key)
+        return AsyncGroq(api_key=api_key)
 
-    def parse_chat_completion(self, completion: Any) -> str:
+    def parse_chat_completion(
+        self, completion: "GroqChatCompletion"
+    ) -> "GeneratorOutput":
         """
         Parse the completion to a string output.
         """
-        return completion.choices[0].message.content
+        log.debug(f"completion: {completion}")
+        try:
+            data = completion.choices[0].message.content
+            usage = self.track_completion_usage(completion)
+            return GeneratorOutput(data=data, usage=usage, raw_response=str(data))
+        except Exception as e:
+            log.error(f"Error parsing completion: {e}")
+            return GeneratorOutput(data=str(e), usage=None, raw_response=completion)
+
+    def track_completion_usage(self, completion: Any) -> CompletionUsage:
+        usage: GroqCompletionUsage = completion.usage
+        return CompletionUsage(
+            completion_tokens=usage.completion_tokens,
+            prompt_tokens=usage.prompt_tokens,
+            total_tokens=usage.total_tokens,
+        )
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -114,10 +138,28 @@ class GroqAPIClient(ModelClient):
         self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED
     ):
         if self.async_client is None:
-            self.init_async_client()
+            self.async_client = self.init_async_client()
         assert "model" in api_kwargs, "model must be specified"
         if model_type == ModelType.LLM:
             completion = await self.async_client.chat.completions.create(**api_kwargs)
             return completion
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+    @classmethod
+    def from_dict(cls: type[T], data: Dict[str, Any]) -> T:
+        obj = super().from_dict(data)
+        # recreate the existing clients
+        obj.sync_client = obj.init_sync_client()
+        obj.async_client = obj.init_async_client()
+        return obj
+
+    def to_dict(self) -> Dict[str, Any]:
+        r"""Convert the component to a dictionary."""
+        # TODO: not exclude but save yes or no for recreating the clients
+        exclude = [
+            "sync_client",
+            "async_client",
+        ]  # unserializable object
+        output = super().to_dict(exclude=exclude)
+        return output

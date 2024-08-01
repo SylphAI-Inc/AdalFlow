@@ -18,11 +18,6 @@ import re
 import logging
 import backoff
 
-
-from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType, EmbedderOutput, TokenLogProb
-from lightrag.components.model_client.utils import parse_embedding_response
-
 # optional import
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
@@ -37,9 +32,21 @@ from openai import (
     UnprocessableEntityError,
     BadRequestError,
 )
-from openai.types import Completion, CreateEmbeddingResponse
+from openai.types import (
+    Completion,
+    CreateEmbeddingResponse,
+)
 from openai.types.chat import ChatCompletionChunk, ChatCompletion
 
+from lightrag.core.model_client import ModelClient
+from lightrag.core.types import (
+    ModelType,
+    EmbedderOutput,
+    TokenLogProb,
+    CompletionUsage,
+    GeneratorOutput,
+)
+from lightrag.components.model_client.utils import parse_embedding_response
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -50,6 +57,10 @@ def get_first_message_content(completion: ChatCompletion) -> str:
     r"""When we only need the content of the first message.
     It is the default parser for chat completion."""
     return completion.choices[0].message.content
+
+
+# def _get_chat_completion_usage(completion: ChatCompletion) -> OpenAICompletionUsage:
+#     return completion.usage
 
 
 def parse_stream_response(completion: ChatCompletionChunk) -> str:
@@ -142,13 +153,49 @@ class OpenAIClient(ModelClient):
             raise ValueError("Environment variable OPENAI_API_KEY must be set")
         return AsyncOpenAI(api_key=api_key)
 
+    # def _parse_chat_completion(self, completion: ChatCompletion) -> "GeneratorOutput":
+    #     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message
+    #     try:
+    #         data = self.chat_completion_parser(completion)
+    #         usage = self.track_completion_usage(completion)
+    #         return GeneratorOutput(
+    #             data=data, error=None, raw_response=str(data), usage=usage
+    #         )
+    #     except Exception as e:
+    #         log.error(f"Error parsing the completion: {e}")
+    #         return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
     def parse_chat_completion(
         self,
         completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
-    ) -> Any:
-        """Parse the completion to a str."""
+    ) -> "GeneratorOutput":
+        """Parse the completion, including both streaming and non-streaming completion"""
         log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
-        return self.chat_completion_parser(completion)
+        try:
+            data = self.chat_completion_parser(completion)
+            usage = self.track_completion_usage(completion)
+            return GeneratorOutput(
+                data=data, error=None, raw_response=str(data), usage=usage
+            )
+        except Exception as e:
+            log.error(f"Error parsing the completion: {e}")
+            return GeneratorOutput(data=None, error=str(e), raw_response=completion)
+
+    def track_completion_usage(
+        self,
+        completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
+    ) -> CompletionUsage:
+        if isinstance(completion, ChatCompletion):
+            usage: CompletionUsage = CompletionUsage(
+                completion_tokens=completion.usage.completion_tokens,
+                prompt_tokens=completion.usage.prompt_tokens,
+                total_tokens=completion.usage.total_tokens,
+            )
+            return usage
+        else:
+            raise NotImplementedError(
+                "streaming completion usage tracking is not implemented"
+            )
 
     def parse_embedding_response(
         self, response: CreateEmbeddingResponse

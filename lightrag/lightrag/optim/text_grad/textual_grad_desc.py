@@ -85,6 +85,10 @@ TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>{{optimizer_system_prompt}
 class TextualGradientDescent(Optimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
+    proposing: bool = False
+    params: ParamsT
+    constraints: List[str]
+
     def __init__(
         self,
         params: ParamsT,
@@ -209,8 +213,15 @@ class TextualGradientDescent(Optimizer):
         for p in self.params:
             p.reset_gradients()
 
+    # TODO: in the future can propose multiple values at once
     def propose(self):
         r"""Proposing a value while keeping previous value saved on parameter."""
+        if self.proposing:
+            raise ValueError("Already proposing a value.")
+
+        # no cache so that new proposal can be made
+        no_cache = True
+
         for param in self.params:
             if not param.requires_opt:
                 log.info(
@@ -225,7 +236,10 @@ class TextualGradientDescent(Optimizer):
                 "optimizer_system_prompt": system_prompt,
                 "user_prompt": user_prompt,
             }
-            response = self.llm_optimizer.call(prompt_kwargs=prompt_kwargs)
+            # turn off cache
+            response = self.llm_optimizer.call(
+                prompt_kwargs=prompt_kwargs, use_cache=not no_cache
+            )
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
@@ -238,15 +252,22 @@ class TextualGradientDescent(Optimizer):
                 .strip()
             )
             param.propose_data(improved_variable)
+        self.proposing = True
 
     def revert(self):
         """Revert to the previous value when the evaluation is worse."""
+        if not self.proposing:
+            raise ValueError("Not proposing a value.")
         for param in self.params:
             param.revert_data()
+        self.proposing = False
 
     def step(self):
         """Discard the previous value and keep the proposed value."""
+        if not self.proposing:
+            raise ValueError("Not proposing a value.")
         for param in self.params:
             param.step_data()
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)
+        self.proposing = False
