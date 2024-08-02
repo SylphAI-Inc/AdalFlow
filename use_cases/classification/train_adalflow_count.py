@@ -23,7 +23,7 @@ import concurrent
 from tqdm import tqdm
 import logging
 
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, Subset
 
 
 logger = logging.getLogger(__name__)
@@ -306,11 +306,14 @@ class TGDWithEvalFnLoss(AdalComponent):
         )
 
 
-def train_object_count_text_grad_v1(batch_size=6, max_steps=1, max_samples=2):
+def train_object_count_text_grad_v1(
+    batch_size=6, max_steps=1, max_samples=2, num_workers=2
+):
     trainer = Trainer(
         optimizer_type="text-grad",
         strategy="Random",
         max_steps=max_steps,
+        num_workers=num_workers,
         adaltask=TGDWithEvalFnLoss(gpt_3_model, gpt_4o_model, gpt_4o_model),
         ckpt_path="object_count_text_grad_random",
     )
@@ -318,14 +321,14 @@ def train_object_count_text_grad_v1(batch_size=6, max_steps=1, max_samples=2):
         "BBH_object_counting", evaluation_api=None
     )
 
-    # def subset_dataset(dataset, num_samples):
-    #     num_samples = min(num_samples, len(dataset))
-    #     random_subset_indices = random.sample(range(len(dataset)), num_samples)
-    #     return Subset(dataset, random_subset_indices)
+    def subset_dataset(dataset, num_samples):
+        num_samples = min(num_samples, len(dataset))
+        random_subset_indices = random.sample(range(len(dataset)), num_samples)
+        return Subset(dataset, random_subset_indices)
 
-    # train_dataset = subset_dataset(train_dataset, max_samples)
-    # val_dataset = subset_dataset(val_dataset, max_samples)
-    # test_dataset = subset_dataset(test_dataset, max_samples)
+    train_dataset = subset_dataset(train_dataset, max_samples)
+    val_dataset = subset_dataset(val_dataset, max_samples)
+    test_dataset = subset_dataset(test_dataset, max_samples)
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     trainer.fit(
@@ -1141,7 +1144,9 @@ if __name__ == "__main__":
     # )
 
     # test the new trainer
-    train_object_count_text_grad_v1(batch_size=1, max_steps=5, max_samples=100)
+    train_object_count_text_grad_v1(
+        batch_size=1, max_steps=1, max_samples=10, num_workers=4
+    )
     # test_acc, test_acc_list = trainer.evaluate_dataset(
     #     dataset_type="test", max_samples=None
     # )

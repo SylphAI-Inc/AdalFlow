@@ -2,24 +2,29 @@ import hashlib
 import diskcache as dc
 
 
+def hash_text(text: str):
+    return hashlib.sha256(f"{text}".encode()).hexdigest()
+
+
+def hash_text_sha1(text: str):  # 160 bits
+    return hashlib.sha1(text.encode()).hexdigest()
+
+
 class CachedEngine:
     def __init__(self, cache_path: str):
         super().__init__()
         self.cache_path = cache_path
         self.cache = dc.Cache(cache_path)
 
-    def _hash_prompt(self, prompt: str):
-        return hashlib.sha256(f"{prompt}".encode()).hexdigest()
-
     def _check_cache(self, prompt: str):
-        hash_key = self._hash_prompt(prompt)
+        hash_key = hash_text(prompt)
         if hash_key in self.cache:
             return self.cache[hash_key]
         else:
             return None
 
     def _save_cache(self, prompt: str, response: str):
-        hash_key = self._hash_prompt(prompt)
+        hash_key = hash_text(prompt)
         self.cache[hash_key] = response
 
     def __getstate__(self):

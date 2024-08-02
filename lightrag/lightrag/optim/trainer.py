@@ -4,7 +4,10 @@ from typing import Literal, Optional, List, Dict, Any, Callable, Tuple
 import os
 import logging
 from tqdm import tqdm
+import json
 import concurrent
+from dataclasses import dataclass
+
 
 from lightrag.core import Component
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
@@ -13,12 +16,11 @@ from lightrag.optim.text_grad.ops import sum
 from lightrag.eval.base import BaseEvaluator, EvaluationResult
 
 from lightrag.utils import save_json
+from lightrag.utils.cache import hash_text_sha1
 from lightrag.core import DataClass
 
 
 log = logging.getLogger(__name__)
-
-from dataclasses import dataclass
 
 
 @dataclass
@@ -73,7 +75,9 @@ class AdalComponent(Component):
         r"""Run one evaluation sample. Used for debugging and testing."""
         raise NotImplementedError("evaluate_samples method is not implemented")
 
-    def pred_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+    def pred_step(
+        self, batch, batch_idx, num_workers: int = 2, running_eval: bool = False
+    ):
         r"""If you require self.task.train() to be called before training, you can override this method as:
 
         .. code-block:: python
@@ -88,16 +92,23 @@ class AdalComponent(Component):
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
                 task_call, kwargs = self.handle_one_train_sample(sample)
-                futures.append(executor.submit(task_call, **kwargs))
+                future = executor.submit(task_call, **kwargs)
+                futures.append((future, sample))
             tqdm_loader = tqdm(
                 futures,  # Pass only the futures to as_completed
                 total=len(futures),
                 position=0,
                 desc="Evaluating",
             )
-            for future in tqdm_loader:
+            samples = []
+            for future, sample in tqdm_loader:
                 # for future in futures:  # ensure the order of the predictions
                 y_preds.append(future.result())
+                samples.append(sample)
+                if running_eval:
+                    eval_score = self.evaluate_samples(samples, y_preds).avg_score
+                    # TODO: compute max score to end evaluation early if it can not be improved
+                    tqdm_loader.set_description(f"Evaluating: {eval_score}")
         # print("y_preds: ", y_preds)
         return y_preds
 
@@ -120,7 +131,7 @@ class AdalComponent(Component):
                 return super().validation_step(batch, batch_idx, num_workers)
         """
         self.task.eval()
-        y_preds = self.pred_step(batch, batch_idx, num_workers)
+        y_preds = self.pred_step(batch, batch_idx, num_workers, running_eval=True)
         eval_results = self.evaluate_samples(batch, y_preds)
         print(f"eval_results: {eval_results}")
         return eval_results
@@ -163,6 +174,7 @@ class TrainerResult(DataClass):
     val_scores: List[float]
     test_scores: List[float]
     prompts: List[List[Prompt]]
+    hyperparams: Dict[str, Any] = None
 
 
 class Trainer(Component):
@@ -179,6 +191,7 @@ class Trainer(Component):
     # train_dataset = (
     #     None  # accept library dataset  or pytorch dataset or huggingface dataset
     # )
+    train_loader: Any
     # val_dataset = None
     # test_dataset = None
     # evaluator: object = None
@@ -225,6 +238,9 @@ class Trainer(Component):
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
         """
+        self.train_loader = train_loader or self.train_loader
+        self.val_dataset = val_dataset or self.val_dataset
+        self.test_dataset = test_dataset or self.test_dataset
         adaltask = adaltask or self.adaltask
 
         if not isinstance(adaltask, AdalComponent):
@@ -261,21 +277,73 @@ class Trainer(Component):
         print(f"Initial test score: {test_score}")
         return trainer_results
 
+    def gather_all_hyperparams(self):
+        hyperparams = {}
+        hyperparams["optimizer_type"] = self.optimizer_type
+        hyperparams["strategy"] = self.strategy
+        hyperparams["max_steps"] = self.max_steps
+        hyperparams["num_workers"] = self.num_workers
+        hyperparams["batch_size"] = (
+            self.train_loader.batch_size if self.train_loader else None
+        )
+        hyperparams["train_size"] = (
+            len(self.train_loader.dataset) if self.train_loader else None
+        )
+        hyperparams["val_size"] = len(self.val_dataset) if self.val_dataset else None
+        hyperparams["test_size"] = len(self.test_dataset) if self.test_dataset else None
+        hash_key = hash_text_sha1(json.dumps(hyperparams))[0:5]
+        hyperparams["hash_key"] = hash_key
+        return hyperparams
+
+    def prep_ckpt_file_path(self, hyperparams: Dict[str, Any] = None):
+        if self.ckpt_path is None:
+            self.ckpt_path = os.path.join(
+                os.getcwd(), "ckpt", self.adaltask.__class__.__name__
+            )
+            print(f"Checkpoint path: {self.ckpt_path}")
+        os.makedirs(self.ckpt_path, exist_ok=True)
+        # list all existing checkpoints with the same file name prefix
+        file_name_prefix = (
+            f"{self.strategy}_max_steps_{self.max_steps}_{hyperparams['hash_key']}"
+        )
+        ckpt_files = [
+            f for f in os.listdir(self.ckpt_path) if f.startswith(file_name_prefix)
+        ]
+        run: int = 1
+
+        if ckpt_files:
+            # Sort files based on last modification time
+            ckpt_files.sort(
+                key=lambda x: os.path.getmtime(os.path.join(self.ckpt_path, x)),
+                reverse=True,
+            )
+            latest_ckpt_file = ckpt_files[0]
+            # get the run number
+            run = int(latest_ckpt_file.split("_run_")[-1].split(".json")[0]) + 1
+        else:
+            latest_ckpt_file = None
+
+        self.ckpt_file = os.path.join(
+            self.ckpt_path, f"{file_name_prefix}_run_{run}.json"
+        )
+
     def _fit_text_grad_random(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
         log.info("Fitting using Textual Gradient Descent")
         # validate first (separate into another function where we can even save the outputs so that we can highlight error predictions)
+
+        hyperparms = self.gather_all_hyperparams()
         trainer_results: TrainerResult = self.initial_validation(
             val_dataset, test_dataset
         )
+        trainer_results.hyperparams = hyperparms
+        self.prep_ckpt_file_path(hyperparms)
         # end of validation
 
         self.adaltask.train()
         self.optimizer.zero_grad()
-        self.ckpt_file = os.path.join(
-            self.ckpt_path, f"text_grad_{self.strategy}_max_steps_{self.max_steps}.json"
-        )
+
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
         total_steps = 0
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
@@ -336,6 +404,7 @@ class Trainer(Component):
                 final_prompts = self.adaltask._get_param_values()
                 trainer_results.prompts.append(final_prompts)
                 trainer_results.steps.append(total_steps)
+                print(f"Saving checkpoint to {self.ckpt_file}")
                 save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
 
     def validate(

@@ -17,11 +17,15 @@ class Dataset(ABC):
 
 
 class DataLoader:
-    def __init__(self, data, batch_size=32, shuffle=True):
-        self.data = data
+    __doc__ = r"""A simplified version of PyTorch DataLoader.
+
+    The biggest difference is not to handle tensors, but to handle any type of data."""
+
+    def __init__(self, dataset, batch_size: int = 4, shuffle: bool = True):
+        self.dataset = dataset
         self.batch_size = batch_size
         self.shuffle = shuffle
-        self.indices = np.arange(len(data))
+        self.indices = np.arange(len(dataset))
         self.current_index = 0
 
     def __iter__(self):
@@ -31,7 +35,7 @@ class DataLoader:
         return self
 
     def __next__(self):
-        if self.current_index >= len(self.data):
+        if self.current_index >= len(self.dataset):
             raise StopIteration
 
         batch_indices = self.indices[
