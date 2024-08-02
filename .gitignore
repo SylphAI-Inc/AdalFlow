@@ -44,3 +44,4 @@ storage/
 /*.csv
 index.faiss
 *.json
+*.svg
