@@ -1,13 +1,12 @@
 """Implementation of TextGrad: Automatic “Differentiation” via Text"""
 
-from typing import Union
+from typing import Union, TYPE_CHECKING
 
-# if TYPE_CHECKING:
-from lightrag.core.generator import Generator
+if TYPE_CHECKING:
+    from lightrag.core import ModelClient
 
 
 from lightrag.core.component import Component
-from lightrag.core import ModelClient
 from ..parameter import Parameter
 from typing import Dict
 from copy import deepcopy
@@ -43,9 +42,11 @@ class LLMAsTextLoss(Component):
     def __init__(
         self,
         prompt_kwargs: Dict[str, Union[str, Parameter]],
-        model_client: ModelClient,
+        model_client: "ModelClient",
         model_kwargs: Dict[str, object],
     ):
+        from lightrag.core.generator import Generator
+
         super().__init__()
         prompt_kwargs = deepcopy(prompt_kwargs)
         # TODO: do we really need to convert str to Parameter? what if not?

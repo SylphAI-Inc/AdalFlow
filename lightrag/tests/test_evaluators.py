@@ -13,11 +13,13 @@ def test_answer_match_acc():
     pred_answers = ["positive", "negative", "this is neutral"]
     gt_answers = ["positive", "negative", "neutral"]
     answer_match_acc = AnswerMatchAcc(type="exact_match")
-    avg_acc, acc_list = answer_match_acc.compute(pred_answers, gt_answers)
+    acc = answer_match_acc.compute(pred_answers, gt_answers)
+    avg_acc, acc_list = acc.avg_score, acc.per_item_scores
     assert avg_acc == 2 / 3
     assert acc_list == [1.0, 1.0, 0.0]
     answer_match_acc = AnswerMatchAcc(type="fuzzy_match")
-    avg_acc, acc_list = answer_match_acc.compute(pred_answers, gt_answers)
+    acc = answer_match_acc.compute(pred_answers, gt_answers)
+    avg_acc, acc_list = acc.avg_score, acc.per_item_scores
     assert avg_acc == 1.0
     assert acc_list == [1.0, 1.0, 1.0]
 

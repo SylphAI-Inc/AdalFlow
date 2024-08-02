@@ -1,12 +1,14 @@
 """Adapted from text_grad's String Based Function"""
 
-from typing import Callable, Dict, Union
+from typing import Callable, Dict, Union, TYPE_CHECKING
 import logging
 from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 
 
-from lightrag.core import ModelClient
-from lightrag.core.generator import BackwardEngine
+if TYPE_CHECKING:
+    from lightrag.core import ModelClient
+
+    from lightrag.core.generator import BackwardEngine
 from lightrag.core.types import GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.optim.parameter import Parameter, GradientContext
@@ -62,9 +64,11 @@ class EvalFnToTextLoss(Component, GradFunction):
         eval_fn: Union[Callable, BaseEvaluator],
         eval_fn_desc: str,
         backward_engine: "BackwardEngine" = None,
-        model_client: ModelClient = None,
+        model_client: "ModelClient" = None,
         model_kwargs: Dict[str, object] = None,
     ):
+        from lightrag.core.generator import BackwardEngine
+
         super().__init__()
         self.eval_fn = eval_fn
         self.eval_fn_desc = eval_fn_desc
@@ -130,7 +134,7 @@ class EvalFnToTextLoss(Component, GradFunction):
     def set_backward_engine(
         self,
         backward_engine: "BackwardEngine" = None,
-        model_client: ModelClient = None,
+        model_client: "ModelClient" = None,
         model_kwargs: Dict[str, object] = None,
     ):
         self.backward_engine = backward_engine

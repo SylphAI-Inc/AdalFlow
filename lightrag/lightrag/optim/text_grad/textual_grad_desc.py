@@ -1,13 +1,15 @@
 """Text-grad optimizer and prompts."""
 
-from typing import List, Dict
+from typing import List, Dict, TYPE_CHECKING
 from collections import defaultdict
 import logging
 
 from lightrag.optim.optimizer import Optimizer, ParamsT
 from lightrag.optim.parameter import Parameter
-from lightrag.core.generator import Generator
-from lightrag.core import ModelClient, Prompt
+
+if TYPE_CHECKING:
+    from lightrag.core import ModelClient
+
 
 log = logging.getLogger(__name__)
 
@@ -92,7 +94,7 @@ class TextualGradientDescent(Optimizer):
     def __init__(
         self,
         params: ParamsT,
-        model_client: ModelClient,
+        model_client: "ModelClient",
         model_kwargs: Dict[str, object] = {},
         constraints: List[str] = None,
         new_variable_tags: List[str] = ["<IMPROVED_VARIABLE>", "</IMPROVED_VARIABLE>"],
@@ -100,6 +102,9 @@ class TextualGradientDescent(Optimizer):
         in_context_examples: List[str] = None,
         gradient_memory: int = 0,
     ):
+        from lightrag.core.generator import Generator
+        from lightrag.core import Prompt
+
         super().__init__()
         self.params = params
         self.constraints = constraints or []
@@ -146,6 +151,8 @@ class TextualGradientDescent(Optimizer):
         return grad_memory
 
     def _update_prompt(self, param: Parameter):
+        from lightrag.core.prompt_builder import Prompt
+
         grad_memory = self.get_gradient_memory_text(param)
 
         # Parameter description

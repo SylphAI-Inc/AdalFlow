@@ -158,7 +158,7 @@ class Parameter(Generic[T]):
             self.alias = (
                 self.role_desc.capitalize().replace(" ", "_")[0:10]
                 if self.role_desc
-                else f"param_{id(self)}"
+                else f"param_{self.id}"
             )
         self.previous_data = None  # used to store the previous data
         self.raw_response = raw_response

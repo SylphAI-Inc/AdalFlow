@@ -1,5 +1,5 @@
 import unittest
-from lightrag.core import DataClass, required_field
+from lightrag.core.base_data_class import DataClass, required_field
 from dataclasses import field, MISSING, dataclass, asdict
 
 from lightrag.core.functional import get_type_schema

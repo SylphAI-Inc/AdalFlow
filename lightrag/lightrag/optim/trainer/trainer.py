@@ -4,12 +4,11 @@ from typing import Literal, Optional, List, Dict, Any, Callable, Tuple
 import os
 import logging
 from tqdm import tqdm
-import json
 import concurrent
 from dataclasses import dataclass
 
 
-from lightrag.core import Component
+from lightrag.core.component import Component
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.optimizer import Optimizer
 from lightrag.optim.text_grad.ops import sum
@@ -24,7 +23,7 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class Prompt:
+class PromptData:
     id: str  # each parameter's id
     alias: str  # each parameter's alias
     data: str  # each parameter's data
@@ -44,9 +43,9 @@ class AdalComponent(Component):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-    def _get_param_values(self) -> List[Prompt]:
+    def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
-        return [Prompt(p.id, p.alias, p.data) for p in self.task.parameters()]
+        return [PromptData(p.id, p.alias, p.data) for p in self.task.parameters()]
         # return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
 
     def handle_one_train_sample(self, sample: Any) -> Tuple[Callable, Dict]:
@@ -173,7 +172,7 @@ class TrainerResult(DataClass):
     steps: List[int]
     val_scores: List[float]
     test_scores: List[float]
-    prompts: List[List[Prompt]]
+    prompts: List[List[PromptData]]
     hyperparams: Dict[str, Any] = None
 
 
@@ -291,7 +290,17 @@ class Trainer(Component):
         )
         hyperparams["val_size"] = len(self.val_dataset) if self.val_dataset else None
         hyperparams["test_size"] = len(self.test_dataset) if self.test_dataset else None
-        hash_key = hash_text_sha1(json.dumps(hyperparams))[0:5]
+        hyperparams["task_state_dict"] = self.adaltask.to_dict()
+        restore_state = AdalComponent.from_dict(
+            hyperparams["task_state_dict"]
+        )  # tODO: add a test for adalcomponent
+        print(
+            f"restore_state: {str(restore_state.to_dict()) == str(self.adaltask.to_dict())}"
+        )
+        print(f"task_state_dict: {hyperparams['task_state_dict']}")
+        from lightrag.utils.serialization import serialize
+
+        hash_key = hash_text_sha1(serialize(hyperparams))[0:5]
         hyperparams["hash_key"] = hash_key
         return hyperparams
 

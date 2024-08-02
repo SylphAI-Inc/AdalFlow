@@ -9,12 +9,10 @@ from dataclasses import field, dataclass
 
 from lightrag.core.base_data_class import DataClass
 
-from lightrag.core.model_client import ModelClient
-
-# if TYPE_CHECKING:
-
 if TYPE_CHECKING:
-    pass
+
+    from lightrag.core.model_client import ModelClient
+
 
 from lightrag.optim.optimizer import Optimizer, ParamsT
 
@@ -104,7 +102,7 @@ class LLMOptimizer(Optimizer):
     def __init__(
         self,
         params: ParamsT,
-        model_client: ModelClient,
+        model_client: "ModelClient",
         model_kwargs: Dict[str, Any],
     ):
         r"""Initialize the generator with the model client and the model kwargs."""

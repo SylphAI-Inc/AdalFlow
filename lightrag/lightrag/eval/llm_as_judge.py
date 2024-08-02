@@ -1,10 +1,10 @@
 """This is the metric to use an LLM as a judge for evaluating the performance of predicted answers."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 import logging
 
-
-from lightrag.core.generator import Generator
+if TYPE_CHECKING:
+    pass
 from lightrag.core.component import Component
 from lightrag.core.model_client import ModelClient
 
@@ -56,6 +56,8 @@ class DefaultLLMJudge(Component):
         model_client: Optional[ModelClient] = None,
         model_kwargs: Optional[Dict[str, Any]] = None,
     ):
+        from lightrag.core.generator import Generator
+
         super().__init__()
         self.model_client = model_client
         if model_client is None:

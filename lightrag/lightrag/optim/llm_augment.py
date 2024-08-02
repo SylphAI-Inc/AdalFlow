@@ -3,10 +3,11 @@ Given the inputs and outputs, the llm augmenter will fill in any field that is m
 Better to use more performant models to fill in the missing values.
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, TYPE_CHECKING
 import logging
 
-from lightrag.core.model_client import ModelClient
+if TYPE_CHECKING:
+    from lightrag.core.model_client import ModelClient
 from lightrag.core import Generator, GeneratorOutput
 from lightrag.core.component import Component
 from lightrag.core.base_data_class import DataClass
@@ -53,7 +54,7 @@ class LLMAugmenter(Component):
 
     def __init__(
         self,
-        model_client: ModelClient,
+        model_client: "ModelClient",
         model_kwargs: Dict[str, Any],
         task_context_str: Optional[str] = None,
     ):
