@@ -115,7 +115,6 @@ class Embedder(Component):
         except Exception as e:
             log.error(f"Error parsing the embedding {response}: {e}")
             return EmbedderOutput(raw_response=str(response), error=str(e))
-
         output: EmbedderOutputType = EmbedderOutputType(raw_response=embedding_output)
         # data = embedding_output.data
         if self.output_processors:
@@ -126,7 +125,7 @@ class Embedder(Component):
                 log.error(f"Error processing the output: {e}")
                 output.error = str(e)
         else:
-            output.data = embedding_output
+            output.data = embedding_output.data
 
         return output
 
