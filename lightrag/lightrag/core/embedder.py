@@ -4,7 +4,7 @@ from typing import Optional, Any, Dict, List
 import logging
 from tqdm import tqdm
 
-from lightrag.core.types import ModelType
+from lightrag.core.types import ModelType, EmbedderOutput
 from lightrag.core.model_client import ModelClient
 from lightrag.core.types import (
     EmbedderOutputType,
@@ -107,20 +107,28 @@ class Embedder(Component):
         return api_kwargs
 
     def _post_call(self, response: Any) -> EmbedderOutputType:
-        embedding_output: EmbedderOutputType = (
-            self.model_client.parse_embedding_response(response)
-        )
+        r"""Get float list response and process it with output_processor"""
+        try:
+            embedding_output: EmbedderOutputType = (
+                self.model_client.parse_embedding_response(response)
+            )
+        except Exception as e:
+            log.error(f"Error parsing the embedding {response}: {e}")
+            return EmbedderOutput(raw_response=str(response), error=str(e))
 
-        data = embedding_output.data
+        output: EmbedderOutputType = EmbedderOutputType(raw_response=embedding_output)
+        # data = embedding_output.data
         if self.output_processors:
-            if not embedding_output.error and data is not None:
-                embedding_output.data = self.output_processors(data)
-            else:
-                log.debug(
-                    f"Skipping output processors due to error: {embedding_output.error}"
-                )
+            try:
+                embedding_output = self.output_processors(embedding_output)
+                output.data = embedding_output
+            except Exception as e:
+                log.error(f"Error processing the output: {e}")
+                output.error = str(e)
+        else:
+            output.data = embedding_output
 
-        return embedding_output
+        return output
 
     def call(
         self,
@@ -129,11 +137,23 @@ class Embedder(Component):
     ) -> EmbedderOutputType:
         log.debug(f"Calling {self.__class__.__name__} with input: {input}")
         api_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
-        response = self.model_client.call(
-            api_kwargs=api_kwargs, model_type=self.model_type
-        )
-
-        output = self._post_call(response)
+        output: EmbedderOutputType = None
+        response = None
+        try:
+            response = self.model_client.call(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            output = EmbedderOutput(error=str(e))
+        
+        if response:
+            try:
+                output = self._post_call(response)
+            except Exception as e:
+                log.error(f"Error processing output: {e}")
+                output = EmbedderOutput(raw_response=str(response), error=str(e))
+                
         # add back the input
         output.input = [input] if isinstance(input, str) else input
         log.debug(f"Output from {self.__class__.__name__}: {output}")
@@ -146,10 +166,22 @@ class Embedder(Component):
     ) -> EmbedderOutputType:
         log.debug(f"Calling {self.__class__.__name__} with input: {input}")
         api_kwargs = self._pre_call(input=input, model_kwargs=model_kwargs)
-        response = await self.model_client.acall(
-            api_kwargs=api_kwargs, model_type=self.model_type
-        )
-        output = self._post_call(response)
+        output: EmbedderOutputType = None
+        response = None
+        try:
+            response = await self.model_client.acall(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            output = EmbedderOutput(error=str(e))
+        
+        if response:
+            try:
+                output = self._post_call(response)
+            except Exception as e:
+                log.error(f"Error processing output: {e}")
+                output = EmbedderOutput(raw_response=str(response), error=str(e))
         # add back the input
         output.input = [input] if isinstance(input, str) else input
         log.debug(f"Output from {self.__class__.__name__}: {output}")
