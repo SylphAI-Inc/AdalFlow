@@ -5,6 +5,8 @@ from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.utils import setup_env
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
+from lightrag.eval.base import EvaluationResult
+
 from lightrag.core import DataClass, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
@@ -15,11 +17,12 @@ from lightrag.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import numpy as np
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Tuple, Callable
 import random
 import concurrent
 from tqdm import tqdm
 import logging
+
 from torch.utils.data import DataLoader
 
 
@@ -227,6 +230,130 @@ class ObjectCountTaskOriginal(Component):
 
 # Define a evaluator == PyTorch Evaluator
 # class ObjectCountEvaluator(BaseEvaluator):
+from lightrag.optim.trainer import AdalComponent, Trainer
+
+
+class TGDWithEvalFnLoss(AdalComponent):
+    def __init__(
+        self,
+        task_model_config: Dict,  # for task pipeline
+        backward_engine_model_config: Dict,  # for computing gradients
+        optimizer_model_config: Dict,  # for proposal
+    ):
+        super().__init__()
+
+        self.task_model_config = task_model_config
+        self.backward_engine_model_config = backward_engine_model_config
+        self.optimizer_model_config = optimizer_model_config
+
+        self.backward_engine = BackwardEngine(
+            **backward_engine_model_config, use_cache=True
+        )
+        self.task = ObjectCountTaskOriginal(**task_model_config)
+        self.evaluator = AnswerMatchAcc(type="exact_match")
+        self.configure_backward_engine()
+
+    def handle_one_train_sample(self, sample: Any) -> Tuple[Callable, Dict]:
+        return self.task.call, {"question": sample[0]}
+
+    def handle_one_loss_sample(self, sample: Any, y_pred: Any) -> Tuple[Callable, Dict]:
+        return self.loss_fn, {
+            "kwargs": {
+                "y": y_pred,
+                "y_gt": Parameter(
+                    data=sample[1],
+                    role_desc="The ground truth(reference correct answer)",
+                    alias="y_gt",
+                    requires_opt=False,
+                ),
+            }
+        }
+
+    def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
+        return self.evaluator.compute_single_item(y_pred, sample[1])
+
+    def evaluate_samples(self, samples: List, y_preds: List) -> EvaluationResult:
+        return self.evaluator.compute(y_preds, [sample[1] for sample in samples])
+
+    def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+        self.task.train()
+        y_preds = super().pred_step(batch, batch_idx, num_workers)
+        for i, y_pred in enumerate(y_preds):
+            y_pred.alias += f"y_pred_{i}"
+        return y_preds
+
+    def configure_optimizers(self):
+        return TextualGradientDescent(
+            params=list(
+                self.task.parameters()
+            ),  # NOTE: for now it has to be a list not a generator
+            **self.optimizer_model_config,
+        )
+
+    def configure_backward_engine(self):
+        self.backward_engine = BackwardEngine(**self.backward_engine_model_config)
+        # add backward engine to the generator of the task
+        self.task.llm_counter.set_backward_engine(self.backward_engine)
+
+    def configure_loss_fn(self):
+        # share the backward engine with the generator
+        if self.backward_engine is None:
+            self.configure_backwar_engine()
+        self.loss_fn = EvalFnToTextLoss(
+            eval_fn=self.evaluator.compute_single_item,
+            eval_fn_desc="ObjectCountingEvalFn, Output accuracy score: 1 for correct, 0 for incorrect",
+            backward_engine=self.backward_engine,
+        )
+
+
+def train_object_count_text_grad_v1(batch_size=6, max_steps=1, max_samples=2):
+    trainer = Trainer(
+        optimizer_type="text-grad",
+        strategy="Random",
+        max_steps=max_steps,
+        adaltask=TGDWithEvalFnLoss(gpt_3_model, gpt_4o_model, gpt_4o_model),
+        ckpt_path="object_count_text_grad_random",
+    )
+    train_dataset, val_dataset, test_dataset, eval_fn = load_task(
+        "BBH_object_counting", evaluation_api=None
+    )
+
+    # def subset_dataset(dataset, num_samples):
+    #     num_samples = min(num_samples, len(dataset))
+    #     random_subset_indices = random.sample(range(len(dataset)), num_samples)
+    #     return Subset(dataset, random_subset_indices)
+
+    # train_dataset = subset_dataset(train_dataset, max_samples)
+    # val_dataset = subset_dataset(val_dataset, max_samples)
+    # test_dataset = subset_dataset(test_dataset, max_samples)
+
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    trainer.fit(
+        train_loader=train_dataloader,
+        val_dataset=val_dataset,
+        test_dataset=test_dataset,
+    )
+
+
+class ORPOObjectCount(AdalComponent):
+    def __init__(
+        self,
+        task_model_config: Dict,
+        optimizer_model_config: Dict,
+    ):
+        super().__init__()
+
+        self.task_model_config = task_model_config
+        self.optimizer_model_config = optimizer_model_config
+
+        self.task = ObjectCountTaskOriginal(**task_model_config)
+        self.evaluator = AnswerMatchAcc(type="exact_match")
+
+    def configure_optimizers(self):
+        return LLMOptimizer(  # only support one parameter for now
+            params=[self.task.llm_counter.system_prompt],
+            **self.optimizer_model_config,
+        )
 
 
 # TODO: improve cache for the training
@@ -964,8 +1091,9 @@ class ObjectCountTrainer(Component):
 # TODO: implement cache for generator(make it configurable)
 if __name__ == "__main__":
     # task = ObjectCountTask(**gpt_3_model)
-    # logger = get_logger(level="DEBUG")
+    # # logger = get_logger(level="DEBUG")
     # print(task)
+    # exit(0)
     # print(
     #     task.llm_counter.print_prompt(
     #         input_str="How many musical instruments do I have?"
@@ -983,34 +1111,37 @@ if __name__ == "__main__":
         tgd_model_config=gpt_4o_model,
     )
     # print(trainer)
-    max_samples = 100
-    max_steps = 10
-    optimizer = trainer.optimizer
-    optimizer_type = "tgd"
-    optimizer = trainer.orpo_optimizer
-    optimizer_type = "orpo"
+    # max_samples = 100
+    # max_steps = 10
+    # optimizer = trainer.optimizer
+    # optimizer_type = "tgd"
+    # # optimizer = trainer.orpo_optimizer
+    # # optimizer_type = "orpo"
 
-    test_acc, test_acc_list = trainer.evaluate_dataset(
-        dataset_type="test", max_samples=max_samples
-    )
-    print(f"test_acc: {test_acc}")
-    val_acc, val_acc_list = trainer.evaluate_dataset(
-        dataset_type="val", max_samples=max_samples
-    )
-    results = {
-        "val_acc": [val_acc],
-        "test_acc": [test_acc],
-        "prompts": [trainer._get_param_values()],
-    }
-    print(f"val_acc: {val_acc}")
-    # trainer.fit_orpo(max_samples=max_samples, results=results, max_steps=max_steps)
-    trainer.fit_v3(
-        max_samples=max_samples,
-        results=results,
-        max_steps=max_steps,
-        optimizer=optimizer,
-        optimizer_type=optimizer_type,
-    )
+    # test_acc, test_acc_list = trainer.evaluate_dataset(
+    #     dataset_type="test", max_samples=max_samples
+    # )
+    # print(f"test_acc: {test_acc}")
+    # val_acc, val_acc_list = trainer.evaluate_dataset(
+    #     dataset_type="val", max_samples=max_samples
+    # )
+    # results = {
+    #     "val_acc": [val_acc],
+    #     "test_acc": [test_acc],
+    #     "prompts": [trainer._get_param_values()],
+    # }
+    # print(f"val_acc: {val_acc}")
+    # # trainer.fit_orpo(max_samples=max_samples, results=results, max_steps=max_steps)
+    # trainer.fit_v3(
+    #     max_samples=max_samples,
+    #     results=results,
+    #     max_steps=max_steps,
+    #     optimizer=optimizer,
+    #     optimizer_type=optimizer_type,
+    # )
+
+    # test the new trainer
+    train_object_count_text_grad_v1(batch_size=1, max_steps=5, max_samples=100)
     # test_acc, test_acc_list = trainer.evaluate_dataset(
     #     dataset_type="test", max_samples=None
     # )

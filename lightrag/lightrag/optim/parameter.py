@@ -5,6 +5,7 @@ from collections import defaultdict
 import logging
 from dataclasses import dataclass, field
 from enum import Enum
+import uuid
 
 
 T = TypeVar("T")  # covariant set to False to allow for in-place updates
@@ -113,6 +114,7 @@ class Parameter(Generic[T]):
 
     def __init__(
         self,
+        id: str = str(uuid.uuid4()),
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
         role_desc: str = None,
@@ -133,6 +135,7 @@ class Parameter(Generic[T]):
                 raise TypeError(
                     f"Expected a list of Parameter instances, got {type(pred).__name__}, {pred}"
                 )
+        self.id = id
         self.param_type = param_type
         self._predecessors_requires_grad = [v for v in predecessors if v.requires_opt]
         self.data = data

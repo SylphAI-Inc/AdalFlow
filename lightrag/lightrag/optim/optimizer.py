@@ -41,9 +41,15 @@ class Optimizer:
     def state_dict(self):
         pass
 
-    def step(self, *args, **kwargs):
-        raise NotImplementedError("step method is not implemented")
-
     def zero_grad(self):
         """Clear all the gradients of the parameters."""
         raise NotImplementedError("zero_grad method is not implemented")
+
+    def propose(self, *args, **kwargs):
+        raise NotImplementedError("propose method is not implemented")
+
+    def step(self, *args, **kwargs):
+        raise NotImplementedError("step method is not implemented")
+
+    def revert(self, *args, **kwargs):
+        raise NotImplementedError("revert method is not implemented")

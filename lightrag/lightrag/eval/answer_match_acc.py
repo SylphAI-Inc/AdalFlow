@@ -1,7 +1,7 @@
 """This is the metric for answer matching. It compares the predicted answer with the ground truth answer."""
 
-from typing import List, Tuple, Literal
-from lightrag.eval.base import BaseEvaluator
+from typing import List, Literal
+from lightrag.eval.base import BaseEvaluator, EvaluationResult
 from lightrag.optim.parameter import Parameter
 
 
@@ -32,11 +32,10 @@ class AnswerMatchAcc(BaseEvaluator):
     def __init__(self, type: Literal["exact_match", "fuzzy_match"] = "exact_match"):
         self.type = type
 
-    @staticmethod  # use this as the eval fun
     def compute_single_item(
+        self,
         y: object,
         y_gt: object,
-        type: Literal["exact_match", "fuzzy_match"] = "exact_match",
     ) -> float:
         r"""
         Compute the match accuracy of the predicted answer for a single query.
@@ -62,44 +61,48 @@ class AnswerMatchAcc(BaseEvaluator):
             raise ValueError(
                 f"Error converting pred_answer and gt_answer to string: {e}"
             )
-        if type == "exact_match":
+        if self.type == "exact_match":
             return 1.0 if y == y_gt else 0.0
-        elif type == "fuzzy_match":
+        elif self.type == "fuzzy_match":
             return 1.0 if y_gt in y else 0.0
         else:
             raise NotImplementedError
 
-    def _compute_single_item(self, pred_answer: object, gt_answer: object) -> float:
-        r"""
-        Compute the match accuracy of the predicted answer for a single query.
+    # def compute_single_item(self, pred_answer: object, gt_answer: object) -> float:
+    #     r"""
+    #     Compute the match accuracy of the predicted answer for a single query.
 
-        Allow any type of input for pred_answer and gt_answer.
-        When evaluating, the input will be converted to string.
+    #     Allow any type of input for pred_answer and gt_answer.
+    #     When evaluating, the input will be converted to string.
 
-        Args:
-            pred_answer (object): Predicted answer.
-            gt_answer (object): Ground truth answer.
+    #     Args:
+    #         pred_answer (object): Predicted answer.
+    #         gt_answer (object): Ground truth answer.
 
-        Returns:
-            float: Match accuracy.
-        """
-        try:
-            pred_answer = str(pred_answer)
-            gt_answer = str(gt_answer)
-        except Exception as e:
-            raise ValueError(
-                f"Error converting pred_answer and gt_answer to string: {e}"
-            )
-        if self.type == "exact_match":
-            return 1.0 if pred_answer == gt_answer else 0.0
-        elif self.type == "fuzzy_match":
-            return 1.0 if gt_answer in pred_answer else 0.0
-        else:
-            raise NotImplementedError
+    #     Returns:
+    #         float: Match accuracy.
+    #     """
+    #     if isinstance(pred_answer, Parameter):
+    #         pred_answer = pred_answer.data
+    #     if isinstance(gt_answer, Parameter):
+    #         gt_answer = gt_answer.data
+    #     try:
+    #         pred_answer = str(pred_answer).split(" ")
+    #         gt_answer = str(gt_answer).split(" ")
+    #     except Exception as e:
+    #         raise ValueError(
+    #             f"Error converting pred_answer and gt_answer to string: {e}"
+    #         )
+    #     if self.type == "exact_match":
+    #         return 1.0 if pred_answer == gt_answer else 0.0
+    #     elif self.type == "fuzzy_match":
+    #         return 1.0 if gt_answer in pred_answer else 0.0
+    #     else:
+    #         raise NotImplementedError
 
     def compute(
         self, pred_answers: List[str], gt_answers: List[str]
-    ) -> Tuple[float, List[float]]:
+    ) -> EvaluationResult:
         r"""
         Compute the match accuracy of the predicted answer for a list of queries.
 
@@ -114,7 +117,10 @@ class AnswerMatchAcc(BaseEvaluator):
         """
         match_acc_list = []
         for pred_answer, gt_answer in zip(pred_answers, gt_answers):
-            match = self._compute_single_item(pred_answer, gt_answer)
+            match = self.compute_single_item(pred_answer, gt_answer)
             match_acc_list.append(match)
 
-        return sum(match_acc_list) / len(match_acc_list), match_acc_list
+        return EvaluationResult(
+            avg_score=sum(match_acc_list) / len(match_acc_list),
+            per_item_scores=match_acc_list,
+        )
