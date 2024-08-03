@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "lightrag"
+name = "adalflow"
 
-version = "0.1.0-beta.6"
-description = "The Lightning Library for LLM Applications."
+version = "0.2.0.beta.1"
+description = "The Library for LLM Applications."
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
 repository = "https://github.com/SylphAI-Inc/LightRAG"
@@ -24,7 +24,6 @@ include = [
     "lightrag/utils/*",
     "lightrag/tracing/*",
     "lightrag/optim/*",
-    # "lightrag/icl/*",
 ]
 
 

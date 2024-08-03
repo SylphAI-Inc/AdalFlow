@@ -72,6 +72,10 @@ class Trainer(Component):
         **kwargs,
     ) -> None:
         super().__init__()
+        if not isinstance(adaltask, AdalComponent):
+            raise ValueError("Task should be an instance of AdalComponent")
+        if strategy not in ["random", "constrained"]:
+            raise ValueError("Strategy should be either random or constrained")
         self.optimizer_type = optimizer_type
         self.strategy = strategy
         self.max_steps = max_steps
@@ -85,6 +89,35 @@ class Trainer(Component):
         self.max_error_samples = max_error_samples
         self.max_correct_samples = max_correct_samples
         self.max_proposals_per_step = max_proposals_per_step
+
+    def diagnose(self, train_dataset: Any):
+        """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
+
+        Example:
+
+        .. code-block:: python
+
+            trainset, valset, testset = load_datasets(max_samples=10)
+            adaltask = TGDWithEvalFnLoss(
+                task_model_config=llama3_model,
+                backward_engine_model_config=llama3_model,
+                optimizer_model_config=llama3_model,
+            )
+
+            trainer = Trainer(adaltask=adaltask)
+            diagnose = trainer.diagnose(train_dataset=trainset)
+            print(diagnose)
+        """
+        # 1. track all intermediate outputs
+        if not self.ckpt_path:
+            trainer_state = self.gather_trainer_states()
+            self.prep_ckpt_file_path(trainer_state)
+        log_paths = self.adaltask.configure_callbacks(save_dir=self.ckpt_path)
+        # 2. evaluate
+        acc = self.adaltask.validation_step(train_dataset, 0, self.num_workers)
+        acc_score = acc.avg_score
+        acc_per_item_scores = acc.per_item_scores
+        return acc_score, acc_per_item_scores, log_paths
 
     def fit(
         self,
@@ -175,6 +208,7 @@ class Trainer(Component):
 
         hash_key = hash_text_sha1(serialize(trainer_state))[0:5]
         trainer_state["hash_key"] = hash_key
+        print(f"adal task hash key: {self.adaltask}")
         trainer_state["task_state_dict"] = self.adaltask.to_dict()
         restore_state = AdalComponent.from_dict(
             trainer_state["task_state_dict"]

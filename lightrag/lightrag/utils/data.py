@@ -1,5 +1,6 @@
 from typing import Union, Tuple, List, Sequence, TypeVar, Generic
 import numpy as np
+import random
 
 T_co = TypeVar("T_co", covariant=True)
 
@@ -104,11 +105,8 @@ class DataLoader:
         return batch_data
 
 
-# concat two batches
-def cat(batch1, batch2) -> Union[np.ndarray, Tuple]:
-    if not batch1 or not batch2:
-        return batch1 or batch2
-    if isinstance(batch1, tuple):  # return tuple
-        return tuple([np.concatenate([b1, b2]) for b1, b2 in zip(batch1, batch2)])
-    else:
-        return np.concatenate([batch1, batch2])
+def subset_dataset(dataset, num_samples: int):
+    r"""This function will be useful for testing and debugging purposes."""
+    num_samples = min(num_samples, len(dataset))
+    random_subset_indices = random.sample(range(len(dataset)), num_samples)
+    return Subset(dataset, random_subset_indices)

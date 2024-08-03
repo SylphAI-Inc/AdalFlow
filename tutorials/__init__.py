@@ -1,4 +1,1 @@
-from lightrag.utils import setup_env
-
-print("initiating setup_env()...")
-setup_env()
+"""Demonstrating how to use each component and api accross the library."""

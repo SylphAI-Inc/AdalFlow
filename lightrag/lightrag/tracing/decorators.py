@@ -1,9 +1,10 @@
 import functools
 import warnings
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, TYPE_CHECKING
 import logging
 
-from lightrag.core.generator import Generator
+if TYPE_CHECKING:
+    from lightrag.core.generator import Generator
 from lightrag.tracing import GeneratorStateLogger, GeneratorCallLogger
 
 log = logging.getLogger(__name__)
@@ -48,6 +49,8 @@ def trace_generator_states(
     """
 
     def decorator(cls):
+        from lightrag.core.generator import Generator
+
         original_init = cls.__init__
         class_name = cls.__name__
         logger_project_name = project_name or class_name
@@ -156,10 +159,11 @@ def trace_generator_call(
     def decorator(cls):
         original_init = cls.__init__
         class_name = cls.__name__
+        from lightrag.core.generator import Generator
 
         def _wrap_generator(
             generator_name: str,
-            generator: Generator,
+            generator: "Generator",
             error_only: bool,
             logger: GeneratorCallLogger,
         ):

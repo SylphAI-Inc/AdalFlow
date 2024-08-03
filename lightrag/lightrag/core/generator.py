@@ -18,8 +18,7 @@ from lightrag.core.types import (
 )
 from lightrag.core.component import Component
 
-# Avoid circular import
-# if TYPE_CHECKING:
+
 from lightrag.optim.parameter import Parameter, GradientContext
 
 from lightrag.core.prompt_builder import Prompt
@@ -28,6 +27,7 @@ from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 from lightrag.utils.cache import CachedEngine
+from lightrag.tracing.callback_manager import CallbackManager
 
 from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
@@ -43,7 +43,7 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
 log = logging.getLogger(__name__)
 
 
-class Generator(Component, GradFunction, CachedEngine):
+class Generator(Component, GradFunction, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
     It is also a GradFunction that can be used for backpropagation through the LLM model.
@@ -119,16 +119,10 @@ class Generator(Component, GradFunction, CachedEngine):
         print(f"cache_path: {cache_path}")
         self.cache_path = cache_path
 
-        # super().__init__(
-        #     cache_path=self.cache_path,
-        #     # model_kwargs=model_kwargs,
-        #     # template=template,
-        #     # prompt_kwargs=prompt_kwargs,
-        #     # trainable_params=trainable_params,
-        # )
         CachedEngine.__init__(self, cache_path=self.cache_path)
         Component.__init__(self)
         GradFunction.__init__(self)
+        CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
 
@@ -141,20 +135,10 @@ class Generator(Component, GradFunction, CachedEngine):
         self.output_processors = output_processors
 
         # add trainable_params to generator
-        # prompt_variables = self.prompt.get_prompt_variables()
         for key, p in prompt_kwargs.items():
             if isinstance(p, Parameter):
                 setattr(self, key, p)
-        # self._trainable_params: List[str] = []
-        # for param in trainable_params:
-        #     if param not in prompt_variables:
-        #         raise ValueError(
-        #             f"trainable_params: {param} not found in the prompt_variables: {prompt_variables}"
-        #         )
-        #     # Create a Parameter object and assign it as an attribute with the same name as the value of param
-        #     default_value = self.prompt_kwargs.get(param, None)
-        #     setattr(self, param, Parameter[Union[str, None]](data=default_value))
-        #     self._trainable_params.append(param)
+
         # end of trainable parameters
         self.backward_engine: "BackwardEngine" = None
         log.info(f"Generator {self.name} initialized.")
@@ -180,9 +164,7 @@ class Generator(Component, GradFunction, CachedEngine):
         r"""Initialize the prompt with the template and prompt_kwargs."""
         self.template = template
         self.prompt_kwargs = prompt_kwargs
-        # NOTE: all prompt_kwargs should only be passed
-        # Prompt should deal with parameter too, instead of just string
-        # self.prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
+        # NOTE: Prompt can handle parameters
         self.prompt = Prompt(template=template, prompt_kwargs=self.prompt_kwargs)
 
     @classmethod
@@ -252,7 +234,6 @@ class Generator(Component, GradFunction, CachedEngine):
     def _pre_call(self, prompt_kwargs: Dict, model_kwargs: Dict) -> Dict[str, Any]:
         r"""Prepare the input, prompt_kwargs, model_kwargs for the model call."""
         # 1. render the prompt from the template
-        # prompt_kwargs_str = _convert_prompt_kwargs_to_str(prompt_kwargs)
         prompt_str = self.prompt.call(**prompt_kwargs).strip()
 
         # 2. combine the model_kwargs with the default model_kwargs
@@ -311,7 +292,7 @@ class Generator(Component, GradFunction, CachedEngine):
 
         log.debug(f"Data map function set: {self.data_map_func}")
 
-    # NOTE: when training is true, we use forward instead of call
+    # NOTE: when training is true, forward will be called in __call__ instead of call
     def forward(
         self,
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
@@ -529,6 +510,31 @@ class Generator(Component, GradFunction, CachedEngine):
                 log.error(f"Error processing the output: {e}")
                 output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
+        # User only need to use one of them, no need to use them all.
+        self.trigger_callbacks(
+            "on_complete",
+            output=output,
+            input=api_kwargs,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+        )
+        if output.error:
+            self.trigger_callbacks(
+                "on_failure",
+                output=output,
+                input=api_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+            )  # one failure will trace all errors in both call and data processing
+        else:
+            self.trigger_callbacks(
+                "on_success",
+                output=output,
+                input=api_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+            )
+
         log.info(f"output: {output}")
         return output
 
@@ -633,15 +639,39 @@ if __name__ == "__main__":
             "max_tokens": 100,
         },
     }
+    from lightrag.tracing.generator_call_logger import GeneratorCallLogger
+    from functools import partial
+
+    # setup the logger
+    call_logger = GeneratorCallLogger(save_dir="traces")
+
+    def on_complete(output, input, prompt_kwargs, model_kwargs, logger_call: Callable):
+        print(f"on_complet  output: {output}")
+        logger_call(
+            output=output,
+            input=input,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+        )
+
     for model in [llama3_model, gpt_3_model, gemini_model, claude_model]:
         print(f"""model: {model["model_kwargs"]["model"]}""")
         generator = Generator(**model)
+
+        call_logger.register_generator("generator", "generator_call")
+        # setup the callback
+        logger_call = partial(call_logger.log_call, name="generator")
+        generator.register_callback(
+            "on_complete", partial(on_complete, logger_call=logger_call)
+        )
+
         output = generator(
             prompt_kwargs={
                 "input_str": "Hello, world!",
             }
         )
         print(f"output: {output}")
+        break
 
     # test the backward engine
     # TODO: test ollama and transformer client to update the change

@@ -17,10 +17,23 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class GeneratorCallRecord(DataClass):
-    prompt_kwargs: Dict[str, Any] = field(default_factory=dict)
-    model_kwargs: Dict[str, Any] = field(default_factory=dict)
-    output: GeneratorOutput = field(default_factory=GeneratorOutput)
-    time_stamp: str = field(default_factory=str)
+    prompt_kwargs: Dict[str, Any] = field(
+        default_factory=dict, metadata={"desc": "The prompt kwargs"}
+    )
+    model_kwargs: Dict[str, Any] = field(
+        default_factory=dict, metadata={"desc": "The model kwargs"}
+    )
+    input: Dict[str, Any] = field(
+        default_factory=dict,
+        metadata={"desc": "Everything sent to the model api provider"},
+    )
+    output: GeneratorOutput = field(
+        default_factory=GeneratorOutput, metadata={"desc": "The generator output"}
+    )
+    metadata: Dict[str, Any] = field(
+        default_factory=dict, metadata={"desc": "The metadata"}
+    )
+    time_stamp: str = field(default_factory=str, metadata={"desc": "The time stamp"})
 
 
 class GeneratorCallLogger:
@@ -107,9 +120,10 @@ class GeneratorCallLogger:
     def log_call(
         self,
         name: str,
-        model_kwargs: Dict[str, Any],
-        prompt_kwargs: Dict[str, Any],
         output: GeneratorOutput,
+        input: Optional[Dict[str, Any]] = None,
+        prompt_kwargs: Optional[Dict[str, Any]] = None,
+        model_kwargs: Optional[Dict[str, Any]] = None,
     ):
         r"""Log the generator call."""
 
@@ -120,6 +134,7 @@ class GeneratorCallLogger:
         record = GeneratorCallRecord(
             prompt_kwargs=prompt_kwargs,
             model_kwargs=model_kwargs,
+            input=input,
             output=output,
             time_stamp=datetime.now().isoformat(),
         )

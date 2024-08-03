@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, TYPE_CHECKING
 import os
 import logging
 
@@ -7,7 +7,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 import json
 
-from lightrag.core.generator import Generator
+if TYPE_CHECKING:
+    from lightrag.core.generator import Generator
 from lightrag.core.base_data_class import DataClass
 from lightrag.utils import serialize
 
@@ -72,7 +73,7 @@ class GeneratorStateLogger:
     def generator_names(self):
         return self._generator_names
 
-    def log_prompt(self, generator: Generator, name: str):
+    def log_prompt(self, generator: "Generator", name: str):
         r"""Log the prompt states of the generator with the given name."""
         self._generator_names.add(name)
 

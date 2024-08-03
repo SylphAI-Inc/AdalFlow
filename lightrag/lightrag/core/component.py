@@ -1221,7 +1221,7 @@ class Component:
         prefix: str = "",
         remove_duplicate: bool = True,
     ):
-        r"""Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself.
+        r"""Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself as a tuple.
 
         This can be used to represent the state of the component in a dictionary format.
         Args:
@@ -1591,7 +1591,6 @@ def fun_to_component(fun) -> FunComponent:
     class_name = (
         "".join(part.capitalize() for part in fun.__name__.split("_")) + "Component"
     )
-    print(f"Class name: {class_name}, function name: {fun.__name__}")
     # register the function
     EntityMapping.register(fun.__name__, fun)
     # Define a new component class dynamically

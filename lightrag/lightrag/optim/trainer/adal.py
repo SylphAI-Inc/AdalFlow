@@ -92,7 +92,6 @@ class AdalComponent(Component):
                     eval_score = self.evaluate_samples(samples, y_preds).avg_score
                     # TODO: compute max score to end evaluation early if it can not be improved
                     tqdm_loader.set_description(f"Evaluating: {eval_score}")
-        # print("y_preds: ", y_preds)
         return y_preds
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
@@ -116,7 +115,6 @@ class AdalComponent(Component):
         self.task.eval()
         y_preds = self.pred_step(batch, batch_idx, num_workers, running_eval=True)
         eval_results = self.evaluate_samples(batch, y_preds)
-        print(f"eval_results: {eval_results}")
         return eval_results
 
     def loss_step(self, batch, y_preds, batch_idx, num_workers: int = 2):
@@ -149,3 +147,57 @@ class AdalComponent(Component):
 
     def configure_loss_fn(self, *args, **kwargs):
         raise NotImplementedError("configure_loss_fn method is not implemented")
+
+    def configure_callbacks(self, save_dir: str = "traces", *args, **kwargs):
+        """In default we config the failure generator callback. User can overwrite this method to add more callbacks."""
+        return self._auto_generator_callbacks(save_dir)
+
+    def _auto_generator_callbacks(self, save_dir: str = "traces"):
+        r"""Automatically generate callbacks."""
+        from lightrag.core import Generator
+        from lightrag.core.types import GeneratorOutput
+        from lightrag.tracing.generator_call_logger import (
+            GeneratorCallLogger,
+        )
+        from functools import partial
+
+        # Find all generators automatically from the task
+        all_generators: List[Tuple[str, Generator]] = []
+        for name, comp in self.task.named_components():
+            print(f"comp: {comp}")
+            if isinstance(comp, Generator):
+                all_generators.append((name, comp))
+
+        print(f"all_generators: {all_generators}")
+
+        def _on_complete_callback(
+            output: GeneratorOutput,
+            input: Dict[str, Any],
+            prompt_kwargs: Dict[str, Any],
+            model_kwargs: Dict[str, Any],
+            logger_call: Callable,
+        ):
+            r"""Log the generator output."""
+            logger_call(
+                output=output,
+                input=input,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
+            )
+
+        # Register the callback for each generator
+        call_logger = GeneratorCallLogger(save_dir=save_dir)
+        file_paths = []
+        for name, generator in all_generators:
+            call_logger.register_generator(name, f"{name}_call")
+            logger_call = partial(call_logger.log_call, name)
+            generator.register_callback(
+                "on_complete", partial(_on_complete_callback, logger_call=logger_call)
+            )
+            file_path = call_logger.get_log_location(name)
+            file_paths.append(file_path)
+            print(
+                f"Registered callback for {name}, file path: {file_path}",
+                end="\n",
+            )
+        return file_paths

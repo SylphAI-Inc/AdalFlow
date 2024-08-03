@@ -2,6 +2,7 @@ import csv
 import json
 import sys
 import os
+import uuid
 from typing import Literal
 import subprocess
 from lightrag.utils.data import Dataset
@@ -11,8 +12,12 @@ from lightrag.core.base_data_class import DataClass
 
 @dataclass
 class ObjectCountData(DataClass):
-    x: str = field(metadata={"desc": "The question to be answered"})
-    y: str = field(metadata={"desc": "The answer to the question"})
+    id: str = field(
+        metadata={"desc": "The unique identifier of the example"},
+        default=str(uuid.uuid4()),
+    )
+    x: str = field(metadata={"desc": "The question to be answered"}, default=None)
+    y: str = field(metadata={"desc": "The answer to the question"}, default=None)
 
 
 # TODO: here users clean adalflow created files
@@ -43,7 +48,6 @@ class BigBenchHard(Dataset):
         with open(data_path, newline="") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
-                print(row)
                 self.data.append(
                     ObjectCountData(x=row["x"], y=row["y"])
                 )  # dont use a tuple, use a dict {"x": ..., "y": ...}

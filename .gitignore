@@ -46,3 +46,4 @@ index.faiss
 *.json
 *.svg
 cache_datasets/
+ckpt/
