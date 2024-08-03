@@ -198,13 +198,6 @@ class EvalFnToTextLoss(Component, GradFunction):
                 "response_gradient": response.data,
             },
         )()
-        # eval_str = Prompt(
-        #     EVALUATE_VARIABLE_INSTRUCTION,
-        #     prompt_kwargs={
-        #         "variable_short": pred.raw_response or pred.data,
-        #         "variable_desc": pred.role_desc,
-        #     },
-        # )()
 
         log.info(f"EvalFnToTextLoss: Instruction: {instruction_str}")
         log.info(f"EvalFnToTextLoss: Objective: {objective_str}")
@@ -241,12 +234,6 @@ class EvalFnToTextLoss(Component, GradFunction):
             response_desc=response.role_desc,
             variable_desc=pred.role_desc,
         )
-
-        # {
-        #     "context": conversation_str,
-        #     "response_desc": response.role_desc,
-        #     "variable_desc": pred.role_desc,
-        # }
 
         # TODO: reduce meta
 

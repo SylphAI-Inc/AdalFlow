@@ -24,8 +24,6 @@ TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 """
 
 
-# TODO: limit to one engine
-# TODO: this can be merged with its numerical eval_function
 class LLMAsTextLoss(Component):
     __doc__ = r"""Evaluate the final RAG response using an LLM judge.
 

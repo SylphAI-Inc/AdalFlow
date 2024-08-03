@@ -228,7 +228,7 @@ class TextualGradientDescent(Optimizer):
 
         # no cache so that new proposal can be made
         no_cache = True
-        print("Proposing a new value.")
+        # print("Proposing a new value.")
 
         for param in self.params:
             if not param.requires_opt:
@@ -236,7 +236,7 @@ class TextualGradientDescent(Optimizer):
                     f"Skipping {param.role_desc} as it does not require optimization."
                 )
                 continue
-            print(f"Proposing a new value for {param.alias}.")
+            # print(f"Proposing a new value for {param.alias}.")
             system_prompt = self.optimizer_system_prompt(
                 param_type=str(param.param_type)
             )
@@ -253,7 +253,7 @@ class TextualGradientDescent(Optimizer):
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
             log.info(f"Response from the optimizer: {response}")
-            print(f"Response from the optimizer: {response}")
+            # print(f"Response from the optimizer: {response}")
             # extract the improved variable from the response
             # TODO: make it more robust
             improved_variable = (

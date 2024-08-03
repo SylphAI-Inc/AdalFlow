@@ -1,180 +1,23 @@
 """Ready to use trainer for LLM task pipeline"""
 
-from typing import Literal, Optional, List, Dict, Any, Callable, Tuple
+from typing import Literal, Optional, List, Dict, Any, Tuple
 import os
 import logging
 from tqdm import tqdm
-import concurrent
-from dataclasses import dataclass
-
+import random
 
 from lightrag.core.component import Component
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.optimizer import Optimizer
+from lightrag.optim.types import PromptData, TrainerResult
+from lightrag.optim.trainer.adal import AdalComponent
 from lightrag.optim.text_grad.ops import sum
-from lightrag.eval.base import BaseEvaluator, EvaluationResult
 
 from lightrag.utils import save_json
 from lightrag.utils.cache import hash_text_sha1
-from lightrag.core import DataClass
-from lightrag.utils.data import cat
 
 
 log = logging.getLogger(__name__)
-
-
-@dataclass
-class PromptData:
-    id: str  # each parameter's id
-    alias: str  # each parameter's alias
-    data: str  # each parameter's data
-
-
-class AdalComponent(Component):
-    """Define a train, eval, and test step for a task pipeline.
-
-    This serves the following purposes:
-    1. Organize all parts for training a task pipeline organized in one place.
-    2. Help with debugging and testing before the actual training.
-    """
-
-    task: Component
-    evaluator: Optional[BaseEvaluator] = None
-
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-    def _get_param_values(self) -> List[PromptData]:
-        r"""Get the current values of the parameters."""
-        return [PromptData(p.id, p.alias, p.data) for p in self.task.parameters()]
-        # return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
-
-    def handle_one_train_sample(self, sample: Any) -> Tuple[Callable, Dict]:
-        r"""Parse the sample to the kwargs that the task pipeline can understand."""
-        raise NotImplementedError("handle_one_train_sample method is not implemented")
-
-    def handle_one_loss_sample(self, sample: Any, y_pred: Any) -> Tuple[Callable, Dict]:
-        r"""Parse the sample to the kwargs that the task pipeline can understand."""
-        raise NotImplementedError("handle_one_loss_sample method is not implemented")
-
-    def run_one_train_sample(self, sample: Any) -> Any:
-        r"""Run one training sample. Used for debugging and testing."""
-        task_call, kwargs = self.handle_one_train_sample(sample)
-        return task_call(**kwargs)
-
-    def run_one_loss_sample(self, sample: Any, y_pred: Any) -> Any:
-        r"""Run one loss sample. Used for debugging and testing."""
-        loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
-        return loss_call(**kwargs)
-
-    def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
-        r"""Run one evaluation sample. Used for debugging and testing."""
-        raise NotImplementedError("evaluate_one_sample method is not implemented")
-
-    def evaluate_samples(self, samples: List, y_preds: List) -> EvaluationResult:
-        r"""Run one evaluation sample. Used for debugging and testing."""
-        raise NotImplementedError("evaluate_samples method is not implemented")
-
-    def pred_step(
-        self, batch, batch_idx, num_workers: int = 2, running_eval: bool = False
-    ):
-        r"""If you require self.task.train() to be called before training, you can override this method as:
-
-        .. code-block:: python
-
-            def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-                self.task.train()
-                return super().train_step(batch, batch_idx, num_workers)
-        """
-        y_preds = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-            futures = []
-            tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
-            for i, sample in enumerate(tqdm_loader):
-                task_call, kwargs = self.handle_one_train_sample(sample)
-                future = executor.submit(task_call, **kwargs)
-                futures.append((future, sample))
-            tqdm_loader = tqdm(
-                futures,  # Pass only the futures to as_completed
-                total=len(futures),
-                position=0,
-                desc="Evaluating",
-            )
-            samples = []
-            for future, sample in tqdm_loader:
-                # for future in futures:  # ensure the order of the predictions
-                y_preds.append(future.result())
-                samples.append(sample)
-                if running_eval:
-                    eval_score = self.evaluate_samples(samples, y_preds).avg_score
-                    # TODO: compute max score to end evaluation early if it can not be improved
-                    tqdm_loader.set_description(f"Evaluating: {eval_score}")
-        # print("y_preds: ", y_preds)
-        return y_preds
-
-    def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-        raise NotImplementedError("train_step method is not implemented")
-
-    def validate_condition(self, steps: int, total_steps: int) -> bool:
-        r"""In default, trainer will validate at every step."""
-        return True
-
-    def validation_step(
-        self, batch, batch_idx, num_workers: int = 2
-    ) -> EvaluationResult:
-        r"""If you require self.task.eval() to be called before validation, you can override this method as:
-
-        .. code-block:: python
-
-            def validation_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-                self.task.eval()
-                return super().validation_step(batch, batch_idx, num_workers)
-        """
-        self.task.eval()
-        y_preds = self.pred_step(batch, batch_idx, num_workers, running_eval=True)
-        eval_results = self.evaluate_samples(batch, y_preds)
-        print(f"eval_results: {eval_results}")
-        return eval_results
-
-    def loss_step(self, batch, y_preds, batch_idx, num_workers: int = 2):
-        r"""Calculate the loss for the batch."""
-        losses = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
-            futures = []
-            tqdm_loader = tqdm(
-                zip(batch, y_preds), total=len(batch), desc="Loading Data"
-            )
-            for i, (sample, y_pred) in enumerate(tqdm_loader):
-                loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
-                # losses.append(executor.submit(loss_call, **kwargs))
-                futures.append(executor.submit(loss_call, **kwargs))
-            tqdm_loader = tqdm(
-                futures,  # Pass only the futures to as_completed
-                total=len(futures),
-                position=0,
-                desc="Calculating Loss",
-            )
-            for future in tqdm_loader:
-                losses.append(future.result())
-        return losses
-
-    def configure_optimizers(self, *args, **kwargs) -> Optimizer:
-        raise NotImplementedError("configure_optimizers method is not implemented")
-
-    def configure_backward_engine(self, *args, **kwargs):
-        raise NotImplementedError("configure_backward_engine method is not implemented")
-
-    def configure_loss_fn(self, *args, **kwargs):
-        raise NotImplementedError("configure_loss_fn method is not implemented")
-
-
-@dataclass
-class TrainerResult(DataClass):
-    steps: List[int]
-    val_scores: List[float]
-    test_scores: List[float]
-    prompts: List[List[PromptData]]
-    trainer_state: Dict[str, Any] = None
 
 
 class Trainer(Component):
@@ -192,8 +35,8 @@ class Trainer(Component):
     #     None  # accept library dataset  or pytorch dataset or huggingface dataset
     # )
     train_loader: Any
-    # val_dataset = None
-    # test_dataset = None
+    val_dataset = None
+    test_dataset = None
     # evaluator: object = None
     optimizer_type: Literal["text-grad", "orpo"] = "text-grad"
     strategy: Literal["random", "constrained"]
@@ -202,6 +45,13 @@ class Trainer(Component):
     ckpt_path: Optional[str] = None
     ckpt_file: Optional[str] = None
     num_workers: int = 2
+    max_proposals_per_step: int = 5
+    # moving batch for speed up the training
+    batch_val_score_threshold: Optional[float] = (
+        1.0  # when acc_score >= this threshold, skip this batch
+    )
+    max_error_samples: Optional[int] = 4
+    max_correct_samples: Optional[int] = 4
 
     def __init__(
         self,
@@ -211,6 +61,10 @@ class Trainer(Component):
         max_steps: int = 1000,
         num_workers: int = 2,
         ckpt_path: str = None,
+        batch_val_score_threshold: Optional[float] = 1.0,
+        max_error_samples: Optional[int] = 4,
+        max_correct_samples: Optional[int] = 4,
+        max_proposals_per_step: int = 5,
         train_loader: Optional[Any] = None,
         val_dataset: Optional[Any] = None,
         test_dataset: Optional[Any] = None,
@@ -227,6 +81,10 @@ class Trainer(Component):
         self.train_loader = train_loader
         self.val_dataset = val_dataset
         self.test_dataset = test_dataset
+        self.batch_val_score_threshold = batch_val_score_threshold
+        self.max_error_samples = max_error_samples
+        self.max_correct_samples = max_correct_samples
+        self.max_proposals_per_step = max_proposals_per_step
 
     def fit(
         self,
@@ -238,9 +96,27 @@ class Trainer(Component):
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
         """
+
         self.train_loader = train_loader or self.train_loader
         self.val_dataset = val_dataset or self.val_dataset
         self.test_dataset = test_dataset or self.test_dataset
+        # check train_loader and val_dataset and test_dataset, reject tuple
+        if self.train_loader:
+            exam_batch = next(iter(self.train_loader))
+            if isinstance(exam_batch, tuple):
+                raise ValueError(
+                    "train_loader should return not be tuple, please use dict or a dataclass or with DataClass"
+                )
+        if self.val_dataset:
+            if isinstance(self.val_dataset, tuple):
+                raise ValueError(
+                    "val_dataset should not be tuple, please use dict or a dataclass or with DataClass"
+                )
+        if self.test_dataset:
+            if isinstance(self.test_dataset, tuple):
+                raise ValueError(
+                    "test_dataset should not be tuple, please use dict or a dataclass or with DataClass"
+                )
         adaltask = adaltask or self.adaltask
 
         if not isinstance(adaltask, AdalComponent):
@@ -425,6 +301,57 @@ class Trainer(Component):
                 print(f"Saving checkpoint to {self.ckpt_file}")
                 save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
 
+    @staticmethod
+    def _add_one_step_in_trainer_results(
+        trainer_results: TrainerResult,
+        val_score: float,
+        test_score: float,
+        prompts: List[PromptData],
+        steps: int,
+    ):
+        trainer_results.val_scores.append(val_score)
+        trainer_results.test_scores.append(test_score)
+        trainer_results.prompts.append(prompts)
+        trainer_results.steps.append(steps)
+
+    def _moving_batch_sample(
+        self, acc_score_list: List[float]
+    ) -> Tuple[float, List[int]]:
+        """Sample from both correct and error samples according to max_error_samples and max_correct_samples"""
+        # ensure only 0 and 1 in the acc_score_list
+        import numpy as np
+
+        if not all([score in [0, 1] for score in acc_score_list]):
+            raise ValueError("acc_score_list should only contain 0 and 1")
+        correct_indices = [i for i, score in enumerate(acc_score_list) if score == 1]
+        error_indices = [i for i, score in enumerate(acc_score_list) if score == 0]
+        print(f"Moving batch correct size: {len(correct_indices)}")
+        print(f"Moving batch error size: {len(error_indices)}")
+        if len(error_indices) == 0:
+            raise ValueError("No error samples found")
+        sampled_error_indices = random.sample(
+            error_indices, min(self.max_error_samples, len(error_indices))
+        )
+        num_errors = len(sampled_error_indices)
+        max_num_correct_samples = 2 * num_errors
+        sampled_correct_indices = random.sample(
+            correct_indices,
+            min(
+                self.max_correct_samples,
+                max_num_correct_samples,
+                len(correct_indices),
+            ),
+        )
+        print(f"Subset Error size: {len(sampled_error_indices)}")
+        print(f"Subset Correct size: {len(sampled_correct_indices)}")
+        subset = sampled_error_indices + sampled_correct_indices
+        # subset_samples = samples[sampled_error_indices + sampled_correct_indices]
+        subset_score = np.mean(np.array(acc_score_list)[subset])
+        print(f"Subset score: {subset_score}")
+
+        return subset_score, subset
+
+    # TODO: miss one step somehow
     def _fit_text_grad_constraint(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
@@ -439,7 +366,7 @@ class Trainer(Component):
 
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
         total_steps = 0
-        all_samples, all_losses, all_y_preds = None, [], []
+        all_samples, all_losses, all_y_preds = [], [], []
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
             for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
                 total_steps += 1
@@ -454,25 +381,99 @@ class Trainer(Component):
                 )
                 # moving batch
 
-                all_samples = cat(all_samples, batch)  # a big batch
+                all_samples.extend(batch)
                 all_losses.extend(losses)
                 all_y_preds.extend(y_preds)
-                print(f"batch: {batch}, type: {type(batch)}")
-                print("all samples: ", all_samples)
                 # comptute moving batch acc
                 # self.adaltask.eval()
-                eval_acc = self.adaltask.evaluate_samples(
+                move_batch_eval = self.adaltask.evaluate_samples(
                     all_samples, all_y_preds
-                ).avg_score
-                print(f"Moving batch acc: {eval_acc}, {all_y_preds}, {all_samples}")
-                break
-                total_loss = sum(losses)
-                print("Loss backward...")
-                total_loss.backward()
+                )
+                move_batch_score = move_batch_eval.avg_score
+                move_batch_acc_score_list = move_batch_eval.per_item_scores
+                print(f"Moving batch acc: {move_batch_score}")
+                if move_batch_score >= self.batch_val_score_threshold:
+                    print(f"Skipping batch {steps} as acc: {move_batch_score}")
+                    self._add_one_step_in_trainer_results(
+                        trainer_results,
+                        trainer_results.val_scores[-1],
+                        trainer_results.test_scores[-1],
+                        trainer_results.prompts[-1],
+                        total_steps,
+                    )
+                    # reset the moving batch
+                    all_samples, all_losses, all_y_preds = [], [], []
+                    continue
+
+                # create a subset with a more balanced error and correct samples
+                subset_score, subset_indices = self._moving_batch_sample(
+                    move_batch_acc_score_list
+                )
+                print(f"Subset batch acc: {subset_score}")
+                # compute the subset loss
+                subset_losses = [all_losses[i] for i in subset_indices]
+                subset_loss = sum(subset_losses)
+                print("Subset loss backward...")
+                subset_loss.backward()
                 print("Optimizer propose...")
-                self.optimizer.propose()
-                new_prompts = self.adaltask._get_param_values()
-                print("New prompts: ", new_prompts)
+
+                # TODO: make this a step
+                for i in range(self.max_proposals_per_step):
+                    print(f"Proposing step: {i}")
+                    self.optimizer.propose()
+                    new_prompts = self.adaltask._get_param_values()
+                    print("New prompts: ", new_prompts)
+                    # valide the subset
+                    subset_samples = [all_samples[i] for i in subset_indices]
+                    # validate the subset
+                    val_output = self.adaltask.validation_step(
+                        subset_samples, steps, self.num_workers
+                    )
+                    # check subset validation score
+                    val_score = val_output.avg_score
+                    if val_score > subset_score:
+                        print(f"Pass subset check: {val_score} > {subset_score}")
+                        # self.optimizer.step()
+                    else:
+                        print(
+                            f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
+                        )
+                        self.optimizer.revert()
+                        continue  #
+                    # validate the full set
+                    move_batch_result = self.adaltask.validation_step(
+                        all_samples, steps, self.num_workers
+                    )
+                    new_move_batch_score = move_batch_result.avg_score
+                    if new_move_batch_score > move_batch_score:
+                        print(
+                            f"Pass full check: {new_move_batch_score} > {move_batch_score}"
+                        )
+                        break
+                    else:
+                        print(
+                            f"Fail full check, try next proposal: {new_move_batch_score} <= {move_batch_score}"
+                        )
+                        self.optimizer.revert()
+                        continue
+
+                print("Done with proposals")
+                # check optimizer stages to see if the proposal was accepted so far
+                if not self.optimizer.proposing:
+                    print(
+                        "No proposal can improve the subset and full set, go to next step"
+                    )
+                    self._add_one_step_in_trainer_results(
+                        trainer_results,
+                        trainer_results.val_scores[-1],
+                        trainer_results.test_scores[-1],
+                        trainer_results.prompts[-1],
+                        total_steps,
+                    )
+                    continue
+
+                # prune the correct sample size if its too big, same with error samples
+                # run the tests as any other optimizer
                 if self.adaltask.validate_condition(steps, total_steps):
                     # set the batch size to the size of the validation set
                     val_output = self.adaltask.validation_step(
@@ -493,24 +494,23 @@ class Trainer(Component):
                         )
                         test_score = test_output.avg_score
                         trainer_results.test_scores.append(test_score)
+                        # save the prompts
+                        final_prompts = self.adaltask._get_param_values()
+                        trainer_results.prompts.append(final_prompts)
+                        # reset the moving batch (the only difference from normal training)
+                        all_samples, all_losses, all_y_preds = [], [], []
                     else:
                         print(
                             f"Optimizer revert: {val_score} <= {trainer_results.val_scores[-1]}"
                         )
                         self.optimizer.revert()
-                        # save the score, no change
-                        trainer_results.val_scores.append(
-                            trainer_results.val_scores[-1]
+                        self._add_one_step_in_trainer_results(
+                            trainer_results,
+                            trainer_results.val_scores[-1],
+                            trainer_results.test_scores[-1],
+                            trainer_results.prompts[-1],
+                            total_steps,
                         )
-                        trainer_results.test_scores.append(
-                            trainer_results.test_scores[-1]
-                        )
-                #
-                # save the results
-                final_prompts = self.adaltask._get_param_values()
-                trainer_results.prompts.append(final_prompts)
-                trainer_results.steps.append(total_steps)
-                print(f"Saving checkpoint to {self.ckpt_file}")
                 save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
 
     def validate(

@@ -1,4 +1,24 @@
+from typing import List, Dict, Any
 from enum import Enum, auto
+from dataclasses import dataclass
+
+from lightrag.core import DataClass
+
+
+@dataclass
+class PromptData:
+    id: str  # each parameter's id
+    alias: str  # each parameter's alias
+    data: str  # each parameter's data
+
+
+@dataclass
+class TrainerResult(DataClass):
+    steps: List[int]
+    val_scores: List[float]
+    test_scores: List[float]
+    prompts: List[List[PromptData]]
+    trainer_state: Dict[str, Any] = None
 
 
 class OptimizeGoal(Enum):

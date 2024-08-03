@@ -13,11 +13,12 @@ from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
 from lightrag.optim.text_grad.ops import sum
 from lightrag.optim.llm_optimizer import LLMOptimizer
+from lightrag.datasets.big_bench_hard import BigBenchHard
 from lightrag.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import numpy as np
-from typing import Dict, Any, List, Tuple, Callable, Union
+from typing import Dict, Any, List, Tuple, Callable
 import random
 import concurrent
 from tqdm import tqdm
@@ -231,7 +232,9 @@ class ObjectCountTaskOriginal(Component):
 
 # Define a evaluator == PyTorch Evaluator
 # class ObjectCountEvaluator(BaseEvaluator):
-from lightrag.optim.trainer import AdalComponent, Trainer
+from lightrag.optim.trainer.adal import AdalComponent
+from lightrag.optim.trainer.trainer import Trainer
+from lightrag.datasets.big_bench_hard import ObjectCountData
 
 
 class TGDWithEvalFnLoss(AdalComponent):
@@ -254,15 +257,17 @@ class TGDWithEvalFnLoss(AdalComponent):
         self.evaluator = AnswerMatchAcc(type="exact_match")
         self.configure_backward_engine()
 
-    def handle_one_train_sample(self, sample: Any) -> Tuple[Callable, Dict]:
-        return self.task.call, {"question": sample[0]}
+    def handle_one_train_sample(self, sample: ObjectCountData) -> Tuple[Callable, Dict]:
+        return self.task.call, {"question": sample.x}
 
-    def handle_one_loss_sample(self, sample: Any, y_pred: Any) -> Tuple[Callable, Dict]:
+    def handle_one_loss_sample(
+        self, sample: ObjectCountData, y_pred: Any
+    ) -> Tuple[Callable, Dict]:
         return self.loss_fn, {
             "kwargs": {
                 "y": y_pred,
                 "y_gt": Parameter(
-                    data=sample[1],
+                    data=sample.y,
                     role_desc="The ground truth(reference correct answer)",
                     alias="y_gt",
                     requires_opt=False,
@@ -270,18 +275,14 @@ class TGDWithEvalFnLoss(AdalComponent):
             }
         }
 
-    def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
-        return self.evaluator.compute_single_item(y_pred, sample[1])
+    def evaluate_one_sample(self, sample: ObjectCountData, y_pred: Any) -> Any:
+        return self.evaluator.compute_single_item(y_pred, sample.y)
 
     def evaluate_samples(
-        self, samples: Union[List, Tuple], y_preds: List
+        self, samples: List[ObjectCountData], y_preds: List
     ) -> EvaluationResult:
         r"""Support both batch and list of samples"""
-        print(f"samples: {samples}")
-        if isinstance(samples, tuple):
-            y_gts = list(samples[1])
-        else:
-            y_gts = [sample[1] for sample in samples]
+        y_gts = [sample.y for sample in samples]
         return self.evaluator.compute(y_preds, y_gts)
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
@@ -318,6 +319,7 @@ class TGDWithEvalFnLoss(AdalComponent):
 def train_object_count_text_grad_v1(
     batch_size=6, max_steps=1, max_samples=2, num_workers=2, strategy="random"
 ):
+
     trainer = Trainer(
         optimizer_type="text-grad",
         strategy=strategy,
@@ -326,9 +328,13 @@ def train_object_count_text_grad_v1(
         adaltask=TGDWithEvalFnLoss(gpt_3_model, gpt_4o_model, gpt_4o_model),
         ckpt_path="object_count_text_grad_random",
     )
-    train_dataset, val_dataset, test_dataset, eval_fn = load_task(
-        "BBH_object_counting", evaluation_api=None
-    )
+    # train_dataset, val_dataset, test_dataset, eval_fn = load_task(
+    #     "BBH_object_counting", evaluation_api=None
+    # )
+    root = "cache_datasets"
+    train_dataset = BigBenchHard("BBH_object_counting", split="train", root=root)
+    val_dataset = BigBenchHard("BBH_object_counting", split="val", root=root)
+    test_dataset = BigBenchHard("BBH_object_counting", split="test", root=root)
 
     def subset_dataset(dataset, num_samples):
         num_samples = min(num_samples, len(dataset))
@@ -951,7 +957,7 @@ class ObjectCountTrainer(Component):
                         print(
                             f"Fail the whole set check, revert: {new_acc} <= {all_acc}"
                         )
-                        optimizer.revert()
+                        # optimizer.revert()
                         continue
                 if not optimizer.proposing:
                     print(
@@ -1154,7 +1160,11 @@ if __name__ == "__main__":
 
     # test the new trainer
     train_object_count_text_grad_v1(
-        batch_size=2, max_steps=1, max_samples=10, num_workers=4, strategy="constrained"
+        batch_size=4,
+        max_steps=5,
+        max_samples=100,
+        num_workers=4,
+        strategy="constrained",
     )
     # import torch
 
