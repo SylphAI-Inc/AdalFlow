@@ -17,6 +17,7 @@ from lightrag.eval.base import BaseEvaluator, EvaluationResult
 from lightrag.utils import save_json
 from lightrag.utils.cache import hash_text_sha1
 from lightrag.core import DataClass
+from lightrag.utils.data import cat
 
 
 log = logging.getLogger(__name__)
@@ -173,7 +174,7 @@ class TrainerResult(DataClass):
     val_scores: List[float]
     test_scores: List[float]
     prompts: List[List[PromptData]]
-    hyperparams: Dict[str, Any] = None
+    trainer_state: Dict[str, Any] = None
 
 
 class Trainer(Component):
@@ -195,7 +196,7 @@ class Trainer(Component):
     # test_dataset = None
     # evaluator: object = None
     optimizer_type: Literal["text-grad", "orpo"] = "text-grad"
-    strategy: Literal["Random", "constrained"]
+    strategy: Literal["random", "constrained"]
     max_steps: int
     optimizer: Optimizer = None
     ckpt_path: Optional[str] = None
@@ -206,7 +207,7 @@ class Trainer(Component):
         self,
         adaltask: AdalComponent,
         optimizer_type: str = "text-grad",
-        strategy: Literal["Random", "constrained"] = "Random",
+        strategy: Literal["random", "constrained"] = "random",
         max_steps: int = 1000,
         num_workers: int = 2,
         ckpt_path: str = None,
@@ -249,10 +250,10 @@ class Trainer(Component):
             self.loss_fn = adaltask.configure_loss_fn()
 
         if self.optimizer_type == "text-grad":
-            if self.strategy == "Random":
+            if self.strategy == "random":
                 self._fit_text_grad_random(train_loader, val_dataset, test_dataset)
             elif self.strategy == "constrained":
-                pass
+                self._fit_text_grad_constraint(train_loader, val_dataset, test_dataset)
         elif self.optimizer_type == "orpo":
             pass
 
@@ -276,35 +277,39 @@ class Trainer(Component):
         print(f"Initial test score: {test_score}")
         return trainer_results
 
-    def gather_all_hyperparams(self):
-        hyperparams = {}
-        hyperparams["optimizer_type"] = self.optimizer_type
-        hyperparams["strategy"] = self.strategy
-        hyperparams["max_steps"] = self.max_steps
-        hyperparams["num_workers"] = self.num_workers
-        hyperparams["batch_size"] = (
+    def gather_trainer_states(self):
+        trainer_state = {}
+        trainer_state["optimizer_type"] = self.optimizer_type
+        trainer_state["strategy"] = self.strategy
+        trainer_state["max_steps"] = self.max_steps
+        trainer_state["num_workers"] = self.num_workers
+        trainer_state["batch_size"] = (
             self.train_loader.batch_size if self.train_loader else None
         )
-        hyperparams["train_size"] = (
+        trainer_state["train_size"] = (
             len(self.train_loader.dataset) if self.train_loader else None
         )
-        hyperparams["val_size"] = len(self.val_dataset) if self.val_dataset else None
-        hyperparams["test_size"] = len(self.test_dataset) if self.test_dataset else None
-        hyperparams["task_state_dict"] = self.adaltask.to_dict()
+        trainer_state["val_size"] = len(self.val_dataset) if self.val_dataset else None
+        trainer_state["test_size"] = (
+            len(self.test_dataset) if self.test_dataset else None
+        )
+        trainer_state["task_class"] = self.adaltask.__class__.__name__
+
+        from lightrag.utils.serialization import serialize
+
+        hash_key = hash_text_sha1(serialize(trainer_state))[0:5]
+        trainer_state["hash_key"] = hash_key
+        trainer_state["task_state_dict"] = self.adaltask.to_dict()
         restore_state = AdalComponent.from_dict(
-            hyperparams["task_state_dict"]
+            trainer_state["task_state_dict"]
         )  # tODO: add a test for adalcomponent
         print(
             f"restore_state: {str(restore_state.to_dict()) == str(self.adaltask.to_dict())}"
         )
-        print(f"task_state_dict: {hyperparams['task_state_dict']}")
-        from lightrag.utils.serialization import serialize
+        print(f"task_state_dict: {trainer_state['task_state_dict']}")
+        return trainer_state
 
-        hash_key = hash_text_sha1(serialize(hyperparams))[0:5]
-        hyperparams["hash_key"] = hash_key
-        return hyperparams
-
-    def prep_ckpt_file_path(self, hyperparams: Dict[str, Any] = None):
+    def prep_ckpt_file_path(self, trainer_state: Dict[str, Any] = None):
         if self.ckpt_path is None:
             self.ckpt_path = os.path.join(
                 os.getcwd(), "ckpt", self.adaltask.__class__.__name__
@@ -313,7 +318,7 @@ class Trainer(Component):
         os.makedirs(self.ckpt_path, exist_ok=True)
         # list all existing checkpoints with the same file name prefix
         file_name_prefix = (
-            f"{self.strategy}_max_steps_{self.max_steps}_{hyperparams['hash_key']}"
+            f"{self.strategy}_max_steps_{self.max_steps}_{trainer_state['hash_key']}"
         )
         ckpt_files = [
             f for f in os.listdir(self.ckpt_path) if f.startswith(file_name_prefix)
@@ -336,19 +341,23 @@ class Trainer(Component):
             self.ckpt_path, f"{file_name_prefix}_run_{run}.json"
         )
 
+    def _pre_fit(self, val_dataset: Any, test_dataset: Any):
+        # validate first (separate into another function where we can even save the outputs so that we can highlight error predictions)
+
+        trainer_state = self.gather_trainer_states()
+        trainer_results: TrainerResult = self.initial_validation(
+            val_dataset, test_dataset
+        )
+        trainer_results.trainer_state = trainer_state
+        self.prep_ckpt_file_path(trainer_state)
+        return trainer_results
+        # end of validation
+
     def _fit_text_grad_random(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
         log.info("Fitting using Textual Gradient Descent")
-        # validate first (separate into another function where we can even save the outputs so that we can highlight error predictions)
-
-        hyperparms = self.gather_all_hyperparams()
-        trainer_results: TrainerResult = self.initial_validation(
-            val_dataset, test_dataset
-        )
-        trainer_results.hyperparams = hyperparms
-        self.prep_ckpt_file_path(hyperparms)
-        # end of validation
+        trainer_results = self._pre_fit(val_dataset, test_dataset)
 
         self.adaltask.train()
         self.optimizer.zero_grad()
@@ -369,6 +378,94 @@ class Trainer(Component):
                 losses = self.adaltask.loss_step(
                     batch_x, y_preds, steps, self.num_workers
                 )
+                total_loss = sum(losses)
+                print("Loss backward...")
+                total_loss.backward()
+                print("Optimizer propose...")
+                self.optimizer.propose()
+                new_prompts = self.adaltask._get_param_values()
+                print("New prompts: ", new_prompts)
+                if self.adaltask.validate_condition(steps, total_steps):
+                    # set the batch size to the size of the validation set
+                    val_output = self.adaltask.validation_step(
+                        val_dataset, steps, self.num_workers
+                    )
+                    val_score = val_output.avg_score
+                    if val_score > trainer_results.val_scores[-1]:
+                        print(
+                            f"Optimizer step: {val_score} > {trainer_results.val_scores[-1]}"
+                        )
+                        self.optimizer.step()
+                        # save the score
+                        trainer_results.val_scores.append(val_score)
+
+                        # test the model
+                        test_output = self.adaltask.validation_step(
+                            test_dataset, steps, self.num_workers
+                        )
+                        test_score = test_output.avg_score
+                        trainer_results.test_scores.append(test_score)
+                    else:
+                        print(
+                            f"Optimizer revert: {val_score} <= {trainer_results.val_scores[-1]}"
+                        )
+                        self.optimizer.revert()
+                        # save the score, no change
+                        trainer_results.val_scores.append(
+                            trainer_results.val_scores[-1]
+                        )
+                        trainer_results.test_scores.append(
+                            trainer_results.test_scores[-1]
+                        )
+                #
+                # save the results
+                final_prompts = self.adaltask._get_param_values()
+                trainer_results.prompts.append(final_prompts)
+                trainer_results.steps.append(total_steps)
+                print(f"Saving checkpoint to {self.ckpt_file}")
+                save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
+
+    def _fit_text_grad_constraint(
+        self, train_loader: Any, val_dataset: Any, test_dataset: Any
+    ):
+        log.info("Fitting using Textual Gradient Descent with constraints")
+        trainer_results = self._pre_fit(val_dataset, test_dataset)
+
+        self.adaltask.train()
+        self.optimizer.zero_grad()
+
+        self.adaltask.train()
+        self.optimizer.zero_grad()
+
+        num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
+        total_steps = 0
+        all_samples, all_losses, all_y_preds = None, [], []
+        for epoch in tqdm(range(num_epochs), desc="Epoch"):
+            for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
+                total_steps += 1
+                if total_steps > self.max_steps:
+                    print("Reached max steps")
+                    break
+                pbar.set_description(f"Training Step: {total_steps}")
+                self.adaltask.train()  # this will turn everything to train mode
+                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                losses = self.adaltask.loss_step(
+                    batch, y_preds, steps, self.num_workers
+                )
+                # moving batch
+
+                all_samples = cat(all_samples, batch)  # a big batch
+                all_losses.extend(losses)
+                all_y_preds.extend(y_preds)
+                print(f"batch: {batch}, type: {type(batch)}")
+                print("all samples: ", all_samples)
+                # comptute moving batch acc
+                # self.adaltask.eval()
+                eval_acc = self.adaltask.evaluate_samples(
+                    all_samples, all_y_preds
+                ).avg_score
+                print(f"Moving batch acc: {eval_acc}, {all_y_preds}, {all_samples}")
+                break
                 total_loss = sum(losses)
                 print("Loss backward...")
                 total_loss.backward()

@@ -55,13 +55,14 @@ class AnswerMatchAcc(BaseEvaluator):
         if isinstance(y_gt, Parameter):
             y_gt = y_gt.data
         try:
-            y = str(y)
-            y_gt = str(y_gt)
+            y = str(y).strip()
+            y_gt = str(y_gt).strip()
         except Exception as e:
             raise ValueError(
                 f"Error converting pred_answer and gt_answer to string: {e}"
             )
         if self.type == "exact_match":
+            print(f"y: {y}, y_gt: {y_gt}")
             return 1.0 if y == y_gt else 0.0
         elif self.type == "fuzzy_match":
             return 1.0 if y_gt in y else 0.0

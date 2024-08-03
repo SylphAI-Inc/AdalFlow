@@ -24,7 +24,7 @@ class TestTrainer(unittest.TestCase):
     def test_directory_creation(self, mock_getcwd, mock_makedirs, mock_listdir):
         # mock_getcwd.return_value = "/fake/dir"
         mock_listdir.return_value = []  # Simulate no existing checkpoint files
-        hyperparms = self.trainer.gather_all_hyperparams()
+        hyperparms = self.trainer.gather_trainer_states()
         print(f"hyperparms: {hyperparms}")
 
         self.trainer.prep_ckpt_file_path(hyperparms)

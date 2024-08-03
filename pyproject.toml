@@ -8,7 +8,7 @@ license = "MIT"
 
 # include = ["use_cases/*", "tutorials/*"]
 packages = [
-    { from = "_lightrag", include = "lightrag" },
+    # { from = "_lightrag", include = "lightrag" },
     { from = ".", include = "use_cases" },
     { from = ".", include = "tutorials" },
 ]

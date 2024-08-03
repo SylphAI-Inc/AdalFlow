@@ -1,12 +1,6 @@
 """Meta-prompts for the backward engine.
 Adapted from TextGrad: Automatic “Differentiation” via Text."""
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    pass
-
-
 GLOSSARY_TEXT_BACKWARD = """
 ### Glossary of tags that will be sent to you:
 # - <LM_SYSTEM_PROMPT>: The system prompt for the language model.

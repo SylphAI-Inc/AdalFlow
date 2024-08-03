@@ -17,13 +17,14 @@ from lightrag.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import numpy as np
-from typing import Dict, Any, List, Tuple, Callable
+from typing import Dict, Any, List, Tuple, Callable, Union
 import random
 import concurrent
 from tqdm import tqdm
 import logging
 
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import Subset
+from lightrag.utils.data import DataLoader
 
 
 logger = logging.getLogger(__name__)
@@ -272,8 +273,16 @@ class TGDWithEvalFnLoss(AdalComponent):
     def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
         return self.evaluator.compute_single_item(y_pred, sample[1])
 
-    def evaluate_samples(self, samples: List, y_preds: List) -> EvaluationResult:
-        return self.evaluator.compute(y_preds, [sample[1] for sample in samples])
+    def evaluate_samples(
+        self, samples: Union[List, Tuple], y_preds: List
+    ) -> EvaluationResult:
+        r"""Support both batch and list of samples"""
+        print(f"samples: {samples}")
+        if isinstance(samples, tuple):
+            y_gts = list(samples[1])
+        else:
+            y_gts = [sample[1] for sample in samples]
+        return self.evaluator.compute(y_preds, y_gts)
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
         self.task.train()
@@ -307,11 +316,11 @@ class TGDWithEvalFnLoss(AdalComponent):
 
 
 def train_object_count_text_grad_v1(
-    batch_size=6, max_steps=1, max_samples=2, num_workers=2
+    batch_size=6, max_steps=1, max_samples=2, num_workers=2, strategy="random"
 ):
     trainer = Trainer(
         optimizer_type="text-grad",
-        strategy="Random",
+        strategy=strategy,
         max_steps=max_steps,
         num_workers=num_workers,
         adaltask=TGDWithEvalFnLoss(gpt_3_model, gpt_4o_model, gpt_4o_model),
@@ -1145,8 +1154,11 @@ if __name__ == "__main__":
 
     # test the new trainer
     train_object_count_text_grad_v1(
-        batch_size=1, max_steps=1, max_samples=10, num_workers=4
+        batch_size=2, max_steps=1, max_samples=10, num_workers=4, strategy="constrained"
     )
+    # import torch
+
+    # torch.cat
     # test_acc, test_acc_list = trainer.evaluate_dataset(
     #     dataset_type="test", max_samples=None
     # )

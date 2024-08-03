@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING, Callable
 
-from abc import ABC, abstractmethod
 
 if TYPE_CHECKING:
     from lightrag.optim.parameter import Parameter
     from lightrag.core.generator import BackwardEngine
 
 
-class GradFunction(ABC):
+class GradFunction:
     __doc__ = """The class to define a function that can be called and backpropagated through."""
     backward_engine: "BackwardEngine"
 
@@ -19,15 +18,13 @@ class GradFunction(ABC):
         return self.forward(*args, **kwargs)
 
     def set_backward_engine(self, backward_engine: "BackwardEngine", *args, **kwargs):
-        pass
+        raise NotImplementedError("set_backward_engine method is not implemented")
 
-    @abstractmethod
     def forward(self, *args, **kwargs) -> "Parameter":
-        pass
+        raise NotImplementedError("forward method is not implemented")
 
-    @abstractmethod
     def backward(self, *args, **kwargs):
-        pass
+        raise NotImplementedError("backward method is not implemented")
 
 
 class BackwardContext:

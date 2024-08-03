@@ -244,7 +244,9 @@ Evaluating
 
 Training
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-**Tutorials in this section are coming soon!**
+
+AdalFlow trainer covers: (1) simple prompt optimization, (2) few-shot examples, (3) the powerful and general textual auto-diff optimizer that can be applied to both LLM prediction and the prompts/system instructions.
+
 
 .. list-table::
    :widths: 20 80
@@ -253,11 +255,18 @@ Training
    * - Part
      - Description
    * - :doc:`parameter`
-     - The parameter class to optimize.
+     - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
    * - :doc:`optimizer`
-     - The optimizer to optimize the parameters.
+     - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We will introduce a simpler `ORPO` optimizer.
+   * - :doc:`few_shot_optimizer`
+     - The few-shot optimizer to optimize the few-shot in-context learning.
+   * - :doc:`auto_text_grad`
+     - Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library.
+   * - :doc:`adalcomponent`
+     - The ``intepreter`` between task pipeline and the trainer, defining train, validate steps, optimizers, evaluator, loss function, and backward engine.
    * - :doc:`trainer`
-     - The trainer to train the model.
+     - The ``Trainer`` will take the ``AdalComponent`` and run the training and validation steps on either data loaders or datasets.
+
 
 .. toctree::
    :maxdepth: 1
@@ -265,9 +274,12 @@ Training
    :hidden:
 
    parameter
-
    optimizer
+   few_shot_optimizer
+   auto_text_grad
+   adalcomponent
    trainer
+
 
 
 Logging & Tracing

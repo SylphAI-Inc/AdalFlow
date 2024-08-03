@@ -191,13 +191,13 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.34.144"
+version = "1.34.153"
 description = "Low-level, data-driven core of boto 3."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "botocore-1.34.144-py3-none-any.whl", hash = "sha256:a2cf26e1bf10d5917a2285e50257bc44e94a1d16574f282f3274f7a5d8d1f08b"},
-    {file = "botocore-1.34.144.tar.gz", hash = "sha256:4215db28d25309d59c99507f1f77df9089e5bebbad35f6e19c7c44ec5383a3e8"},
+    {file = "botocore-1.34.153-py3-none-any.whl", hash = "sha256:9fc2ad40be8c103ab9bfcb48b97b117d299d0b3a542cdd30134ee2935bee827a"},
+    {file = "botocore-1.34.153.tar.gz", hash = "sha256:1634a00f996cfff67f0fd4d0ddc436bc3318b2202dfd82ad0bc11c7169694092"},
 ]
 
 [package.dependencies]
@@ -439,6 +439,17 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
     {file = "defusedxml-0.7.1-py2.py3-none-any.whl", hash = "sha256:a352e7e428770286cc899e2542b6cdaedb2b4953ff269a210103ec58f6198a61"},
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
+]
+
+[[package]]
+name = "diskcache"
+version = "5.6.3"
+description = "Disk Cache -- Disk and file backed persistent cache."
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "diskcache-5.6.3-py3-none-any.whl", hash = "sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19"},
+    {file = "diskcache-5.6.3.tar.gz", hash = "sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc"},
 ]
 
 [[package]]
@@ -1298,7 +1309,7 @@ files = [
 
 [[package]]
 name = "lightrag"
-version = "0.1.0-beta.2"
+version = "0.1.0-beta.6"
 description = "The Lightning Library for LLM Applications."
 optional = false
 python-versions = ">=3.9, <4.0"
@@ -1307,8 +1318,10 @@ develop = true
 
 [package.dependencies]
 backoff = "^2.2.1"
+botocore = "^1.34.149"
 jinja2 = "^3.1.3"
 jsonlines = "^4.0.0"
+nest-asyncio = "^1.6.0"
 numpy = "^1.26.4"
 python-dotenv = "^1.0.1"
 pyyaml = "^6.0.1"
@@ -1320,7 +1333,8 @@ anthropic = ["anthropic (>=0.31.1,<0.32.0)"]
 cohere = ["cohere (>=5.5.8,<6.0.0)"]
 faiss-cpu = ["faiss-cpu (>=1.8.0,<2.0.0)"]
 google-generativeai = ["google-generativeai (>=0.7.2,<0.8.0)"]
-groq = ["groq (>=0.5.0,<0.6.0)"]
+groq = ["groq (>=0.9.0,<0.10.0)"]
+ollama = ["ollama (>=0.2.1,<0.3.0)"]
 openai = ["openai (>=1.12.0,<2.0.0)"]
 pgvector = ["pgvector (>=0.3.1,<0.4.0)"]
 sqlalchemy = ["sqlalchemy (>=2.0.30,<3.0.0)"]
@@ -1509,6 +1523,17 @@ nbconvert = ">=5.3,<5.4 || >5.4"
 nbformat = "*"
 sphinx = ">=1.8"
 traitlets = ">=5"
+
+[[package]]
+name = "nest-asyncio"
+version = "1.6.0"
+description = "Patch asyncio to allow nested event loops"
+optional = false
+python-versions = ">=3.5"
+files = [
+    {file = "nest_asyncio-1.6.0-py3-none-any.whl", hash = "sha256:87af6efd6b5e897c81050477ef65c62e2b2f35d51703cae01aff2905b1852e1c"},
+    {file = "nest_asyncio-1.6.0.tar.gz", hash = "sha256:6f172d5449aca15afd6c646851f4e31e02c598d553a667e38cafa997cfec55fe"},
+]
 
 [[package]]
 name = "numpy"
@@ -3307,4 +3332,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <4.0"
-content-hash = "8a7e7f07c7307e38f4c05b095abfddc37e0e323619d6ff1741e74dbc842254eb"
+content-hash = "a3817c28e5707bf8512b55d00ffcb5a78754111ba3101daa5fe01a500b82f751"
