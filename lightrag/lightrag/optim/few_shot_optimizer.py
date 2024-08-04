@@ -19,21 +19,27 @@ class BootstrapFewShot(Optimizer):
 
     def __init__(
         self,
-        parameter: Parameter,
+        param: Parameter,
         sampler: Sampler,
         num_shots: int,
+        num_raw_demos: int,
+        num_augmented_demos: int,
         llm_augmenter: Optional["Component"] = None,
         task_input_dataclass: Optional[DataClass] = None,
         output_processors: Optional["Component"] = None,
         task_output_dataclass: Optional[DataClass] = None,
     ):
         super().__init__()
-        self.example_parameter = parameter
+        self.example_parameter = param
         self.sampler = sampler
         self.current: List[Sample] = []  # buffer to store the examples
         self.proposed: List[Sample] = []
         self.output_processors = output_processors
         self.num_shots = num_shots
+        self.num_raw_demos = num_raw_demos
+        self.num_augmented_demos = num_augmented_demos
+        if self.num_raw_demos + self.num_augmented_demos != self.num_shots:
+            raise ValueError("num_raw_demos + num_augmented_demos must equal num_shots")
         self.llm_augmenter = llm_augmenter
         self.task_input_dataclass = task_input_dataclass
         self.task_output_dataclass = task_output_dataclass

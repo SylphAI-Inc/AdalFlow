@@ -1,3 +1,5 @@
+"""WIP: Trying to achieve similar performance than boostrap demonstrations: DSPy: Com-piling declarative language model calls into state-of-the-art pipelines."""
+
 r"""
 Given the inputs and outputs, the llm augmenter will fill in any field that is missing in the output field.
 Better to use more performant models to fill in the missing values.
@@ -17,11 +19,12 @@ from lightrag.components.output_parsers import YAML_OUTPUT_FORMAT
 
 log = logging.getLogger(__name__)
 
-LLM_AUGMENTER_TEMPLATE = r"""Given inputs and outputs, you will fill in any field that is missing value.
+LLM_AUGMENTER_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
+Given a set of inputs and outputs, you will fill in any field that is missing value.
 - null or '' means the field is missing.
 - Understand the reasoning between inputs and outputs fields. If the 'thought/reasoning' field is null, you will fill in the reasoning
   between the inputs and existing outputs and explain it well.
-- You answer will only include the missing fields along with your values
+- Your answer will only include the missing fields along with your values
 - {{yaml_format_str}}
 {% if task_context_str %}
 <CONTEXT>
@@ -34,9 +37,10 @@ Question: "Where is the capital of France?"
 Outputs:
 thought: null,
 answer: "Paris"
-Your answer:
+You:
 thought: "I know the capital of France is Paris."
 </EXAMPLES>
+<END_OF_SYSTEM_PROMPT>
 
 
 <Inputs>
@@ -45,7 +49,6 @@ thought: "I know the capital of France is Paris."
 <Outputs>
 {{output_str}}
 </Outputs>
-Your answer:
 """
 
 
@@ -67,7 +70,7 @@ class LLMAugmenter(Component):
             model_kwargs=model_kwargs,
             output_processors=YamlParser(),
             template=LLM_AUGMENTER_TEMPLATE,
-            preset_prompt_kwargs={
+            prompt_kwargs={
                 "task_context_str": task_context_str,
                 "yaml_format_str": YAML_OUTPUT_FORMAT,
             },

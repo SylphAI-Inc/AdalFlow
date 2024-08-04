@@ -56,6 +56,11 @@ def validate(dataset, compiled_count):
 
 if __name__ == "__main__":
     from benchmarks.BHH_object_count.dspy_count import GenerateAnswer
+    import os
+
+    save_path = "benchmarks/BHH_object_count/models/dspy"
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)
 
     example = GenerateAnswer(
         question="How many musical instruments do I have?", answer="5"
@@ -65,7 +70,7 @@ if __name__ == "__main__":
     )
     print(validate_exact_match(example, pred))
 
-    dspy_trainset, dspy_valset, dspy_testset = load_datasets(max_samples=100)
+    dspy_trainset, dspy_valset, dspy_testset = load_datasets(max_samples=4)
 
     start_val_acc = validate(dspy_valset, ObjectCount())
     start_test_acc = validate(dspy_testset, ObjectCount())
@@ -76,5 +81,6 @@ if __name__ == "__main__":
     compiled_count = train(dspy_trainset)
     val_acc = validate(dspy_valset, compiled_count)
     test_acc = validate(dspy_testset, compiled_count)
+    compiled_count.save(os.path.join(save_path, "compiled_count.json"))
     print("Validation accuracy:", val_acc)
     print("Test accuracy:", test_acc)

@@ -11,8 +11,9 @@ class GenerateAnswer(dspy.Signature):
     """You will answer a reasoning question. Think step by step."""  # The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."""
 
     question = dspy.InputField(desc="The question to be answered")
+
     answer: str = dspy.OutputField(
-        desc="The numerical answer, must be an integer, dont use english words to spell out the number"
+        desc="The numerical answer, must be an integer."
     )  # field can only be str or list of str
 
 
@@ -28,7 +29,7 @@ class ObjectCount(dspy.Module):
         pred = self.generate_answer(question=question)
         answer = _parse_integer_answer(pred.answer, only_first_line=False)
         answer = str(answer)  # dspy will assume these fields are strings not integers
-        print(f"Pred: {pred}, Answer: {answer}")
+        # print(f"Pred: {pred}, Answer: {answer}")
         return dspy.Prediction(answer=answer)
 
 

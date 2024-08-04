@@ -29,6 +29,28 @@ def save_json(obj: Mapping[str, Any], f: str = "task.json") -> None:
         raise IOError(f"Error saving object to JSON file {f}: {e}")
 
 
+def save_csv(
+    obj: List[Dict[str, Any]], f: str = "task.csv", fieldnames: List[str] = None
+) -> None:
+    """Save the object to a csv file.
+
+    Args:
+        obj (List[Dict[str, Any]]): The object to be saved.
+        f (str, optional): The file name. Defaults to "task".
+    """
+    import csv
+
+    os.makedirs(os.path.dirname(f) or ".", exist_ok=True)
+    try:
+        with open(f, "w", newline="") as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames or obj[0].keys())
+            writer.writeheader()
+            for row in obj:
+                writer.writerow(row)
+    except IOError as e:
+        raise IOError(f"Error saving object to CSV file {f}: {e}")
+
+
 def save_pickle(obj: Mapping[str, Any], f: str = "task.pickle") -> None:
     """Save the object to a pickle file.
 

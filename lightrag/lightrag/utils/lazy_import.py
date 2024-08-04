@@ -44,6 +44,10 @@ class OptionalPackages(Enum):
         "pgvector",
         "Please install pgvector with: pip install pgvector",
     )
+    DATASETS = (
+        "datasets",
+        "Please install datasets with: pip install datasets",
+    )
 
     def __init__(self, package_name, error_message):
         self.package_name = package_name

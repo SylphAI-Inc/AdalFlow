@@ -12,7 +12,7 @@ class TestTrainer(unittest.TestCase):
             adaltask=MagicMock(spec=AdalComponent),
             train_loader=self.train_loader,
             optimizer_type="text-grad",
-            strategy="Random",
+            strategy="random",
             max_steps=1000,
             num_workers=2,
             ckpt_path=None,
