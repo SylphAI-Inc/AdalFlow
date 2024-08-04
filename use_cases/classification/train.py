@@ -9,7 +9,7 @@ from lightrag.components.model_client import (
 from lightrag.optim import BootstrapFewShot
 from lightrag.optim.sampler import RandomSampler, ClassSampler
 from lightrag.optim.llm_augment import LLMAugmenter
-from lightrag.optim.llm_optimizer import LLMOptimizer
+from lightrag.optim._llm_optimizer import LLMOptimizer
 
 from lightrag.core.component import Component
 from lightrag.utils.file_io import save, save_json

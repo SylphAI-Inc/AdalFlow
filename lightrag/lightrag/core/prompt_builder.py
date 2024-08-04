@@ -130,7 +130,7 @@ class Prompt(Component):
         if kwargs:
             for key, _ in kwargs.items():
                 if key not in composed_kwargs:
-                    logger.warning(f"Key {key} does not exist in the prompt_kwargs.")
+                    logger.debug(f"Key {key} does not exist in the prompt_kwargs.")
             composed_kwargs.update(kwargs)
         return composed_kwargs
 

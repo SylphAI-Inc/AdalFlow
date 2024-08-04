@@ -19,6 +19,7 @@ class TrainerResult(DataClass):
     test_scores: List[float]
     prompts: List[List[PromptData]]
     trainer_state: Dict[str, Any] = None
+    effective_measure: Dict[str, Dict] = None  # stage
 
 
 class OptimizeGoal(Enum):

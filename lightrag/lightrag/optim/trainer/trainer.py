@@ -57,7 +57,7 @@ class Trainer(Component):
         self,
         adaltask: AdalComponent,
         optimizer_type: str = "text-grad",
-        strategy: Literal["random", "constrained"] = "random",
+        strategy: Literal["random", "constrained"] = "constrained",
         max_steps: int = 1000,
         num_workers: int = 2,
         ckpt_path: str = None,
@@ -89,6 +89,15 @@ class Trainer(Component):
         self.max_error_samples = max_error_samples
         self.max_correct_samples = max_correct_samples
         self.max_proposals_per_step = max_proposals_per_step
+
+        self._subset_effect_count = {"pass": 0, "fail": 0}
+        self._fullset_effect_count = {"pass": 0, "fail": 0}
+        self._valset_effect_count = {"pass": 0, "fail": 0}
+        self._effective_measure = {
+            "subset": self._subset_effect_count,
+            "fullset": self._fullset_effect_count,
+            "valset": self._valset_effect_count,
+        }
 
     def diagnose(self, train_dataset: Any):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
@@ -348,6 +357,47 @@ class Trainer(Component):
         trainer_results.prompts.append(prompts)
         trainer_results.steps.append(steps)
 
+    def _downsample_move_batch(
+        self, all_samples, all_losses, all_y_preds, acc_score_list
+    ):
+        """Downsample the moving batch to a more balanced error and correct samples"""
+        if not all([score in [0, 1] for score in acc_score_list]):
+            raise ValueError("acc_score_list should only contain 0 and 1")
+        max_moving_batch_size = 10
+
+        correct_indices = [i for i, score in enumerate(acc_score_list) if score == 1]
+        error_indices = [i for i, score in enumerate(acc_score_list) if score == 0]
+
+        print(f"Moving batch correct size: {len(correct_indices)}")
+        print(f"Moving batch error size: {len(error_indices)}")
+        if (
+            len(error_indices) <= max_moving_batch_size
+            and len(correct_indices) <= max_moving_batch_size
+        ):
+            return all_samples, all_losses, all_y_preds, acc_score_list
+        sampled_error_indices = correct_indices
+        if len(correct_indices) > max_moving_batch_size:
+            sampled_error_indices = random.sample(
+                error_indices, min(max_moving_batch_size, len(error_indices))
+            )
+        sampled_correct_indices = correct_indices
+        if len(correct_indices) > max_moving_batch_size:
+            sampled_correct_indices = random.sample(
+                correct_indices,
+                min(
+                    max_moving_batch_size,
+                    len(correct_indices),
+                ),
+            )
+        print(f"New moving batch size size: {len(sampled_error_indices)}")
+        print(f"Subset Correct size: {len(sampled_correct_indices)}")
+        new_sample_indices = sampled_error_indices + sampled_correct_indices
+        all_samples = [all_samples[i] for i in new_sample_indices]
+        all_losses = [all_losses[i] for i in new_sample_indices]
+        all_y_preds = [all_y_preds[i] for i in new_sample_indices]
+        acc_score_list = [acc_score_list[i] for i in new_sample_indices]
+        return all_samples, all_losses, all_y_preds, acc_score_list
+
     def _moving_batch_sample(
         self, acc_score_list: List[float]
     ) -> Tuple[float, List[int]]:
@@ -385,12 +435,127 @@ class Trainer(Component):
 
         return subset_score, subset
 
+    def _track_effectiveness(
+        self, stage: Literal["subset", "fullset", "valset"], pass_: bool
+    ):
+        if stage == "subset":
+            if pass_:
+                self._subset_effect_count["pass"] += 1
+            else:
+                self._subset_effect_count["fail"] += 1
+        elif stage == "fullset":
+            if pass_:
+                self._fullset_effect_count["pass"] += 1
+            else:
+                self._fullset_effect_count["fail"] += 1
+        elif stage == "valset":
+            if pass_:
+                self._valset_effect_count["pass"] += 1
+            else:
+                self._valset_effect_count["fail"] += 1
+        # return {
+        #     "subset": self._subset_effect_count,
+        #     "fullset": self._fullset_effect_count,
+        #     "valset": self._valset_effect_count,
+        # }
+
+    def _text_grad_constraint_propose_step(
+        self,
+        steps: int,
+        trainer_results: TrainerResult,
+        all_samples,
+        all_losses,
+        all_y_preds,
+    ):
+        # comptute moving batch acc
+        # self.adaltask.eval()
+        move_batch_eval = self.adaltask.evaluate_samples(all_samples, all_y_preds)
+        move_batch_score = move_batch_eval.avg_score
+        move_batch_acc_score_list = move_batch_eval.per_item_scores
+        print(f"Moving batch acc: {move_batch_score}")
+        if move_batch_score >= self.batch_val_score_threshold:
+            print(f"Skipping batch {steps} as acc: {move_batch_score}")
+            # self._add_one_step_in_trainer_results(
+            #     trainer_results,
+            #     trainer_results.val_scores[-1],
+            #     trainer_results.test_scores[-1],
+            #     trainer_results.prompts[-1],
+            #     steps,
+            # )
+            # reset the moving batch
+            all_samples, all_losses, all_y_preds = [], [], []
+            return
+        # downsample the moving batch
+        all_samples, all_losses, all_y_preds, move_batch_acc_score_list = (
+            self._downsample_move_batch(
+                all_samples, all_losses, all_y_preds, move_batch_acc_score_list
+            )
+        )
+
+        # create a subset with a more balanced error and correct samples
+        subset_score, subset_indices = self._moving_batch_sample(
+            move_batch_acc_score_list
+        )
+        print(f"Subset batch acc: {subset_score}")
+        # compute the subset loss
+        subset_losses = [all_losses[i] for i in subset_indices]
+        subset_loss = sum(subset_losses)
+        print("Subset loss backward...")
+        subset_loss.backward()
+        print("Optimizer propose...")
+
+        # TODO: make this a step
+        for i in range(self.max_proposals_per_step):
+            print(f"Proposing step: {i}")
+            self.optimizer.propose()
+            new_prompts = self.adaltask._get_param_values()
+            print("New prompts: ", new_prompts)
+            # valide the subset
+            subset_samples = [all_samples[i] for i in subset_indices]
+            # validate the subset
+            val_output = self.adaltask.validation_step(
+                subset_samples, steps, self.num_workers
+            )
+            # check subset validation score
+            val_score = val_output.avg_score
+            if val_score > subset_score:
+                print(f"Pass subset check: {val_score} > {subset_score}")
+                self._track_effectiveness("subset", True)
+                # self.optimizer.step()
+            else:
+                print(
+                    f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
+                )
+                self._track_effectiveness("subset", False)
+                self.optimizer.revert()
+                continue  #
+            # validate the full set
+            move_batch_result = self.adaltask.validation_step(
+                all_samples, steps, self.num_workers
+            )
+            new_move_batch_score = move_batch_result.avg_score
+            if new_move_batch_score > move_batch_score:
+                print(f"Pass full check: {new_move_batch_score} > {move_batch_score}")
+                self._track_effectiveness("fullset", True)
+                break
+            else:
+                print(
+                    f"Fail full check, try next proposal: {new_move_batch_score} <= {move_batch_score}"
+                )
+                self._track_effectiveness("fullset", False)
+                self.optimizer.revert()
+                continue
+
+        print("Done with proposals")
+
     # TODO: miss one step somehow
     def _fit_text_grad_constraint(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
         log.info("Fitting using Textual Gradient Descent with constraints")
         trainer_results = self._pre_fit(val_dataset, test_dataset)
+
+        print(f"save to {self.ckpt_file}")
 
         self.adaltask.train()
         self.optimizer.zero_grad()
@@ -418,85 +583,21 @@ class Trainer(Component):
                 all_samples.extend(batch)
                 all_losses.extend(losses)
                 all_y_preds.extend(y_preds)
-                # comptute moving batch acc
-                # self.adaltask.eval()
-                move_batch_eval = self.adaltask.evaluate_samples(
-                    all_samples, all_y_preds
+
+                self._text_grad_constraint_propose_step(
+                    steps=steps,
+                    trainer_results=trainer_results,
+                    all_samples=all_samples,
+                    all_losses=all_losses,
+                    all_y_preds=all_y_preds,
                 )
-                move_batch_score = move_batch_eval.avg_score
-                move_batch_acc_score_list = move_batch_eval.per_item_scores
-                print(f"Moving batch acc: {move_batch_score}")
-                if move_batch_score >= self.batch_val_score_threshold:
-                    print(f"Skipping batch {steps} as acc: {move_batch_score}")
-                    self._add_one_step_in_trainer_results(
-                        trainer_results,
-                        trainer_results.val_scores[-1],
-                        trainer_results.test_scores[-1],
-                        trainer_results.prompts[-1],
-                        total_steps,
-                    )
-                    # reset the moving batch
-                    all_samples, all_losses, all_y_preds = [], [], []
-                    continue
 
-                # create a subset with a more balanced error and correct samples
-                subset_score, subset_indices = self._moving_batch_sample(
-                    move_batch_acc_score_list
-                )
-                print(f"Subset batch acc: {subset_score}")
-                # compute the subset loss
-                subset_losses = [all_losses[i] for i in subset_indices]
-                subset_loss = sum(subset_losses)
-                print("Subset loss backward...")
-                subset_loss.backward()
-                print("Optimizer propose...")
-
-                # TODO: make this a step
-                for i in range(self.max_proposals_per_step):
-                    print(f"Proposing step: {i}")
-                    self.optimizer.propose()
-                    new_prompts = self.adaltask._get_param_values()
-                    print("New prompts: ", new_prompts)
-                    # valide the subset
-                    subset_samples = [all_samples[i] for i in subset_indices]
-                    # validate the subset
-                    val_output = self.adaltask.validation_step(
-                        subset_samples, steps, self.num_workers
-                    )
-                    # check subset validation score
-                    val_score = val_output.avg_score
-                    if val_score > subset_score:
-                        print(f"Pass subset check: {val_score} > {subset_score}")
-                        # self.optimizer.step()
-                    else:
-                        print(
-                            f"Fail subset check, try next proposal: {val_score} <= {subset_score}"
-                        )
-                        self.optimizer.revert()
-                        continue  #
-                    # validate the full set
-                    move_batch_result = self.adaltask.validation_step(
-                        all_samples, steps, self.num_workers
-                    )
-                    new_move_batch_score = move_batch_result.avg_score
-                    if new_move_batch_score > move_batch_score:
-                        print(
-                            f"Pass full check: {new_move_batch_score} > {move_batch_score}"
-                        )
-                        break
-                    else:
-                        print(
-                            f"Fail full check, try next proposal: {new_move_batch_score} <= {move_batch_score}"
-                        )
-                        self.optimizer.revert()
-                        continue
-
-                print("Done with proposals")
                 # check optimizer stages to see if the proposal was accepted so far
                 if not self.optimizer.proposing:
                     print(
                         "No proposal can improve the subset and full set, go to next step"
                     )
+
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         trainer_results.val_scores[-1],
@@ -511,7 +612,10 @@ class Trainer(Component):
                 if self.adaltask.validate_condition(steps, total_steps):
                     # set the batch size to the size of the validation set
                     val_output = self.adaltask.validation_step(
-                        val_dataset, steps, self.num_workers
+                        val_dataset,
+                        steps,
+                        self.num_workers,
+                        minimum_score=trainer_results.val_scores[-1],
                     )
                     val_score = val_output.avg_score
                     if val_score > trainer_results.val_scores[-1]:
@@ -520,24 +624,40 @@ class Trainer(Component):
                         )
                         self.optimizer.step()
                         # save the score
-                        trainer_results.val_scores.append(val_score)
+                        step_result = {
+                            "val_score": val_score,
+                        }
+                        # trainer_results.val_scores.append(val_score)
+
+                        self._track_effectiveness("valset", True)
 
                         # test the model
                         test_output = self.adaltask.validation_step(
-                            test_dataset, steps, self.num_workers
+                            test_dataset,
+                            steps,
+                            self.num_workers,
                         )
-                        test_score = test_output.avg_score
-                        trainer_results.test_scores.append(test_score)
-                        # save the prompts
-                        final_prompts = self.adaltask._get_param_values()
-                        trainer_results.prompts.append(final_prompts)
+                        step_result["test_score"] = test_output.avg_score
+                        step_result["prompts"] = self.adaltask._get_param_values()
+                        step_result["steps"] = total_steps
+                        self._add_one_step_in_trainer_results(
+                            trainer_results,
+                            **step_result,
+                        )
+                        # test_score = test_output.avg_score
+                        # trainer_results.test_scores.append(test_score)
+                        # # save the prompts
+                        # final_prompts = self.adaltask._get_param_values()
+                        # trainer_results.prompts.append(final_prompts)
                         # reset the moving batch (the only difference from normal training)
                         all_samples, all_losses, all_y_preds = [], [], []
+
                     else:
                         print(
                             f"Optimizer revert: {val_score} <= {trainer_results.val_scores[-1]}"
                         )
                         self.optimizer.revert()
+                        self._track_effectiveness("valset", False)
                         self._add_one_step_in_trainer_results(
                             trainer_results,
                             trainer_results.val_scores[-1],
@@ -545,7 +665,10 @@ class Trainer(Component):
                             trainer_results.prompts[-1],
                             total_steps,
                         )
+
+                trainer_results.effective_measure = self._effective_measure
                 save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
+        save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
 
     def validate(
         self, adaltask: Optional[AdalComponent], val_dataset: Any, max_samples: int

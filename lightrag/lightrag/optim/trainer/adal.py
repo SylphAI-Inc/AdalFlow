@@ -59,7 +59,12 @@ class AdalComponent(Component):
         raise NotImplementedError("evaluate_samples method is not implemented")
 
     def pred_step(
-        self, batch, batch_idx, num_workers: int = 2, running_eval: bool = False
+        self,
+        batch,
+        batch_idx,
+        num_workers: int = 2,
+        running_eval: bool = False,
+        min_score: Optional[float] = None,
     ):
         r"""If you require self.task.train() to be called before training, you can override this method as:
 
@@ -84,14 +89,20 @@ class AdalComponent(Component):
                 desc="Evaluating",
             )
             samples = []
-            for future, sample in tqdm_loader:
+            for i, (future, sample) in enumerate(tqdm_loader):
                 # for future in futures:  # ensure the order of the predictions
                 y_preds.append(future.result())
                 samples.append(sample)
                 if running_eval:
+                    remain_samples = len(futures) - (i + 1)
                     eval_score = self.evaluate_samples(samples, y_preds).avg_score
+                    max_score = (eval_score * (i + 1) + remain_samples) / len(futures)
+                    if min_score is not None and max_score < min_score:
+                        break
                     # TODO: compute max score to end evaluation early if it can not be improved
-                    tqdm_loader.set_description(f"Evaluating: {eval_score}")
+                    tqdm_loader.set_description(
+                        f"Evaluating: {eval_score}, Max potential: {max_score}"
+                    )
         return y_preds
 
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
@@ -102,7 +113,11 @@ class AdalComponent(Component):
         return True
 
     def validation_step(
-        self, batch, batch_idx, num_workers: int = 2
+        self,
+        batch,
+        batch_idx,
+        num_workers: int = 2,
+        minimum_score: Optional[float] = None,
     ) -> EvaluationResult:
         r"""If you require self.task.eval() to be called before validation, you can override this method as:
 
@@ -113,7 +128,9 @@ class AdalComponent(Component):
                 return super().validation_step(batch, batch_idx, num_workers)
         """
         self.task.eval()
-        y_preds = self.pred_step(batch, batch_idx, num_workers, running_eval=True)
+        y_preds = self.pred_step(
+            batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score
+        )
         eval_results = self.evaluate_samples(batch, y_preds)
         return eval_results
 

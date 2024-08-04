@@ -49,7 +49,6 @@ def trace_generator_states(
     """
 
     def decorator(cls):
-        from lightrag.core.generator import Generator
 
         original_init = cls.__init__
         class_name = cls.__name__
@@ -61,6 +60,8 @@ def trace_generator_states(
 
         @functools.wraps(original_init)
         def new_init(self, *args, **kwargs):
+            from lightrag.core.generator import Generator
+
             original_init(self, *args, **kwargs)
 
             # enable automatic detection of generator attributes

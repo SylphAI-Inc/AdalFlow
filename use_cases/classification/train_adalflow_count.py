@@ -12,7 +12,7 @@ from lightrag.components.output_parsers import YamlOutputParser
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
 from lightrag.optim.text_grad.ops import sum
-from lightrag.optim.llm_optimizer import LLMOptimizer
+from lightrag.optim._llm_optimizer import LLMOptimizer
 from lightrag.datasets.big_bench_hard import BigBenchHard
 from lightrag.utils import save_json
 from dataclasses import dataclass, field

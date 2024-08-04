@@ -75,6 +75,7 @@ class TGDWithEvalFnLoss(AdalComponent):
                 self.task.parameters()
             ),  # NOTE: for now it has to be a list not a generator
             **self.optimizer_model_config,
+            num_gradient_memory=3,
         )
 
     def configure_backward_engine(self):

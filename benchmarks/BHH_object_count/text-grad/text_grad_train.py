@@ -29,6 +29,7 @@ def eval_sample(item, eval_fn, model):
     x = tg.Variable(
         x, requires_grad=False, role_description="query to the language model"
     )
+    y = str(y)
     y = tg.Variable(
         y, requires_grad=False, role_description="correct answer for the query"
     )
@@ -85,6 +86,9 @@ def run_validation_revert(system_prompt: tg.Variable, results, model, eval_fn, v
 
 if __name__ == "__main__":
 
+    from benchmarks.config import text_grad_save_path
+    import os
+
     set_seed(12)
     llm_api_eval = tg.get_engine(engine_name="gpt-4o")
     llm_api_test = tg.get_engine(engine_name="gpt-3.5-turbo")
@@ -115,7 +119,7 @@ if __name__ == "__main__":
     model = tg.BlackboxLLM(llm_api_test, system_prompt)
 
     optimizer = tg.TextualGradientDescent(
-        engine=llm_api_eval, parameters=[system_prompt]
+        engine=llm_api_eval, parameters=[system_prompt], gradient_memory=3
     )
 
     results = {"test_acc": [], "prompt": [], "validation_acc": []}
@@ -125,6 +129,8 @@ if __name__ == "__main__":
     )  # 0.72
     results["prompt"].append(system_prompt.get_value())
     from lightrag.utils import save_json
+
+    file_path = os.path.join(text_grad_save_path, "results_text_grad.json")
 
     max_steps = 5
 
@@ -142,6 +148,7 @@ if __name__ == "__main__":
                     requires_grad=False,
                     role_description="query to the language model",
                 )
+                y = str(y)
                 y = tg.Variable(
                     y,
                     requires_grad=False,
@@ -175,7 +182,7 @@ if __name__ == "__main__":
             test_acc_mean = np.mean(test_acc)
             results["test_acc"].append(test_acc_mean)
             results["prompt"].append(system_prompt.get_value())
-            save_json(results, "results_text_grad.json")
+            save_json(results, file_path)
 
             if steps >= max_steps:
                 break

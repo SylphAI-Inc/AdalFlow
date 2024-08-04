@@ -18,7 +18,7 @@ class ObjectCountTaskOriginal(Component):
     def __init__(self, model_client, model_kwargs):
         super().__init__()
 
-        template = """<START_OF_SYSTEM_PROMPT>{{system_prompt}}<OUTPUT_FORMAT> {{output_format_str}}</OUTPUT_FORMAT></END_OF_SYSTEM_PROMPT>{{input_str}}"""
+        template = """<START_OF_SYSTEM_PROMPT>{{system_prompt}}</END_OF_SYSTEM_PROMPT>{{input_str}}"""
         # 1. set up system prompt, and define the parameters for optimization.
         # NOTE: Dont use self.system_prompt
         # use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
