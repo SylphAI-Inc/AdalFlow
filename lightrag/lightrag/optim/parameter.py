@@ -402,7 +402,7 @@ class Parameter(Generic[T]):
         dot = Digraph(
             format=format, graph_attr={"rankdir": rankdir}
         )  # , node_attr={'rankdir': 'TB'})
-
+        node_names = set()
         for n in nodes:
             label_color = "darkblue"
 
@@ -430,8 +430,13 @@ class Parameter(Generic[T]):
                 node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             node_label += "</table>"
+            # check if the name exists in dot
+            if n.alias in node_names:
+                n.alias = f"{n.alias}_{n.id}"
+            node_names.add(n.alias)
             dot.node(
-                name=n.alias or n.role_desc,
+                # name=n.alias or n.role_desc,
+                name=n.alias,
                 label=f"<{node_label}>",
                 shape="plaintext",
             )
@@ -472,6 +477,20 @@ class Parameter(Generic[T]):
         # Read the rendered image file
         writer.add_image("graph", image, dataformats="HWC", global_step=1)
         writer.close()
+
+        filename = f"{filepath}_prompts.json"
+        prompts = {}
+        for n in nodes:
+            prompts[n.alias] = {
+                "raw_response": n.raw_response,
+            }
+            for g in n.gradients:
+                prompts[g.alias] = {
+                    "gradient_prompt": g.gradient_prompt,
+                }
+        from lightrag.utils import save_json
+
+        save_json(prompts, filename)
         return dot
 
     def to_dict(self):

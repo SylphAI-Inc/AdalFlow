@@ -72,7 +72,8 @@ class TestUpdatePrompt(unittest.TestCase):
         tgd.constraints = ["Some constraint text"]
 
         # Call the method
-        result = tgd._update_prompt(param)
+        user_prompt_kwargs = tgd._get_user_prompt_kwargs(param)
+        result = tgd.llm_optimizer.get_prompt(**user_prompt_kwargs)
 
         # Check if each variable value is in the generated output
         self.assertIn("Role description", result)

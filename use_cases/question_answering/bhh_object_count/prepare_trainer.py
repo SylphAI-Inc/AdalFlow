@@ -55,6 +55,7 @@ class TGDWithEvalFnLoss(AdalComponent):
     def evaluate_one_sample(self, sample: ObjectCountData, y_pred: Any) -> Any:
         return self.evaluator.compute_single_item(y_pred, sample.y)
 
+    # TODO: remove this, one should be enough
     def evaluate_samples(
         self, samples: List[ObjectCountData], y_preds: List
     ) -> EvaluationResult:
@@ -75,7 +76,7 @@ class TGDWithEvalFnLoss(AdalComponent):
                 self.task.parameters()
             ),  # NOTE: for now it has to be a list not a generator
             **self.optimizer_model_config,
-            num_gradient_memory=3,
+            num_gradient_memory=0,
         )
 
     def configure_backward_engine(self):

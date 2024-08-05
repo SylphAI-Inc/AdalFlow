@@ -13,7 +13,12 @@ from lightrag.datasets.big_bench_hard import BigBenchHard
 
 
 def train_object_count_text_grad_v1(
-    batch_size=6, max_steps=1, max_samples=2, num_workers=2, strategy="random"
+    batch_size=6,
+    max_steps=1,
+    max_samples=2,
+    num_workers=2,
+    strategy="random",
+    debug=False,
 ):
 
     trainer = Trainer(
@@ -44,14 +49,16 @@ def train_object_count_text_grad_v1(
         train_loader=train_dataloader,
         val_dataset=val_dataset,
         test_dataset=test_dataset,
+        debug=debug,
     )
 
 
 if __name__ == "__main__":
     train_object_count_text_grad_v1(
-        batch_size=4,
-        max_steps=10,
+        batch_size=12,
+        max_steps=10,  # large batch size helps
         max_samples=100,
         num_workers=4,
         strategy="constrained",
+        debug=False,
     )

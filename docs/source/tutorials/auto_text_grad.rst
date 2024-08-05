@@ -1,6 +1,6 @@
-Auto Text-Diff Optimizer
+Auto Text-Diff
 ===============================================
-
+Show a DAG with parameter nodes and edges.
 
 Textual Gradient Operators
 --------------------------
@@ -30,6 +30,20 @@ Note:
 
  (2) The generator can fail, and an optimizer should capture this failure message as part of the direct feedback. We have `failure_message_to_backward`.
  Here is one failure example: `data=Error: None, Raw response: Sure, I'm ready to help. What's the reasoning question?`.
+
+
+EvalFunction As Loss
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Gradient engine template**
+
+
+Here is one example of d_(1) / d_g_output.
+
+```
+The response from the generator was accurate according to the ObjectCountingEvalFn.
+The output correctly matched the ground truth, resulting in a perfect score of 1.0.
+There is no need for improvement as the generator's output was correct.
 
 
 Textual Gradient Optimizer

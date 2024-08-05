@@ -5,6 +5,7 @@ import os
 import logging
 from tqdm import tqdm
 import random
+import numpy as np
 
 from lightrag.core.component import Component
 from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
@@ -134,6 +135,7 @@ class Trainer(Component):
         train_loader: Optional[Any] = None,
         val_dataset: Optional[Any] = None,
         test_dataset: Optional[Any] = None,
+        debug: bool = False,
     ):
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
@@ -167,13 +169,16 @@ class Trainer(Component):
         if isinstance(self.optimizer, TextualGradientDescent):
             self.loss_fn = adaltask.configure_loss_fn()
 
-        if self.optimizer_type == "text-grad":
-            if self.strategy == "random":
-                self._fit_text_grad_random(train_loader, val_dataset, test_dataset)
-            elif self.strategy == "constrained":
-                self._fit_text_grad_constraint(train_loader, val_dataset, test_dataset)
-        elif self.optimizer_type == "orpo":
-            pass
+        if debug:
+            self._fit_one_step_for_debug(self.train_loader)
+            return
+
+        if self.strategy == "random":
+            self._fit_text_grad_random(train_loader, val_dataset, test_dataset)
+        elif self.strategy == "constrained":
+            self._fit_text_grad_constraint(train_loader, val_dataset, test_dataset)
+        else:
+            raise ValueError(f"Strategy {self.strategy} not supported")
 
     @staticmethod
     def _estimate_num_epochs(train_loader: Any, max_steps: int):
@@ -272,11 +277,27 @@ class Trainer(Component):
         return trainer_results
         # end of validation
 
+    def _fit_one_step_for_debug(self, train_loader: Any):
+        # reset batch size to 2
+        train_loader.batch_size = 2
+        batch = next(iter(train_loader))
+        self.adaltask.train()  # this will turn everything to train mode
+        y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
+        losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
+        total_loss = sum(losses)
+        total_loss.backward()
+        # test optimizer
+        self.optimizer.propose()
+        graph_path = os.path.join(self.ckpt_path, "graph.png")
+        total_loss.draw_graph(filepath=graph_path)
+        print(f"Graph saved to {graph_path}")
+
     def _fit_text_grad_random(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
         log.info("Fitting using Textual Gradient Descent")
         trainer_results = self._pre_fit(val_dataset, test_dataset)
+        print(f"save to {self.ckpt_file}")
 
         self.adaltask.train()
         self.optimizer.zero_grad()
@@ -284,18 +305,16 @@ class Trainer(Component):
         num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
         total_steps = 0
         for epoch in tqdm(range(num_epochs), desc="Epoch"):
-            for steps, (batch_x, batch_y) in enumerate(
-                (pbar := tqdm(train_loader, position=0))
-            ):
+            for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
                 total_steps += 1
                 if total_steps > self.max_steps:
                     print("Reached max steps")
                     break
                 pbar.set_description(f"Training Step: {total_steps}")
                 self.adaltask.train()  # this will turn everything to train mode
-                y_preds = self.adaltask.train_step(batch_x, steps, self.num_workers)
+                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
                 losses = self.adaltask.loss_step(
-                    batch_x, y_preds, steps, self.num_workers
+                    batch, y_preds, steps, self.num_workers
                 )
                 total_loss = sum(losses)
                 print("Loss backward...")
@@ -307,7 +326,10 @@ class Trainer(Component):
                 if self.adaltask.validate_condition(steps, total_steps):
                     # set the batch size to the size of the validation set
                     val_output = self.adaltask.validation_step(
-                        val_dataset, steps, self.num_workers
+                        val_dataset,
+                        steps,
+                        self.num_workers,
+                        minimum_score=trainer_results.val_scores[-1],
                     )
                     val_score = val_output.avg_score
                     if val_score > trainer_results.val_scores[-1]:
@@ -472,7 +494,7 @@ class Trainer(Component):
         move_batch_eval = self.adaltask.evaluate_samples(all_samples, all_y_preds)
         move_batch_score = move_batch_eval.avg_score
         move_batch_acc_score_list = move_batch_eval.per_item_scores
-        print(f"Moving batch acc: {move_batch_score}")
+
         if move_batch_score >= self.batch_val_score_threshold:
             print(f"Skipping batch {steps} as acc: {move_batch_score}")
             # self._add_one_step_in_trainer_results(
@@ -484,13 +506,15 @@ class Trainer(Component):
             # )
             # reset the moving batch
             all_samples, all_losses, all_y_preds = [], [], []
-            return
+            return all_samples, all_losses, all_y_preds
         # downsample the moving batch
         all_samples, all_losses, all_y_preds, move_batch_acc_score_list = (
             self._downsample_move_batch(
                 all_samples, all_losses, all_y_preds, move_batch_acc_score_list
             )
         )
+        move_batch_score = np.mean(np.array(move_batch_acc_score_list))
+        print(f"Moving batch acc: {move_batch_score}")
 
         # create a subset with a more balanced error and correct samples
         subset_score, subset_indices = self._moving_batch_sample(
@@ -547,6 +571,7 @@ class Trainer(Component):
                 continue
 
         print("Done with proposals")
+        return all_samples, all_losses, all_y_preds
 
     # TODO: miss one step somehow
     def _fit_text_grad_constraint(
@@ -584,12 +609,14 @@ class Trainer(Component):
                 all_losses.extend(losses)
                 all_y_preds.extend(y_preds)
 
-                self._text_grad_constraint_propose_step(
-                    steps=steps,
-                    trainer_results=trainer_results,
-                    all_samples=all_samples,
-                    all_losses=all_losses,
-                    all_y_preds=all_y_preds,
+                all_samples, all_losses, all_y_preds = (
+                    self._text_grad_constraint_propose_step(
+                        steps=steps,
+                        trainer_results=trainer_results,
+                        all_samples=all_samples,
+                        all_losses=all_losses,
+                        all_y_preds=all_y_preds,
+                    )
                 )
 
                 # check optimizer stages to see if the proposal was accepted so far
