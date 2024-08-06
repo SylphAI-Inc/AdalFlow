@@ -102,12 +102,11 @@ class TGDWithEvalFnLoss(AdalComponent):
             raw_shots=3,
             bootstrap_shots=2,
         )
-        from lightrag.optim.sampler import RandomSampler
 
         fso = BootstrapFewShot(
             params=parameters,
             few_shot_config=config,
-            sampler=RandomSampler(default_num_shots=5),
+            # sampler=RandomSampler(default_num_shots=5),
         )
         return [fso]
 

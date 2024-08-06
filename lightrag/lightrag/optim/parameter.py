@@ -177,6 +177,10 @@ class Parameter(Generic[T]):
         self._score: float = score  # end to end evaluation score
 
         self._student_traces: Dict[str, DataClass] = {}  # id
+        self._demos: List[DataClass] = (
+            []
+        )  # used for the optimizer to save the proposed demos
+        self._previous_demos: List[DataClass] = []
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
@@ -210,15 +214,18 @@ class Parameter(Generic[T]):
     ############################################################################################################
     #   Used for optimizer to propose new data
     ############################################################################################################
-    def propose_data(self, data: T):
+    def propose_data(self, data: T, demos: Optional[List[DataClass]] = None):
         r"""Used by optimizer to put the new data, and save the previous data in case of revert."""
         if self.proposing:
             raise ValueError("Cannot propose a new data when it is already proposing.")
         self.previous_data = self.data
         self.data = data
         self.proposing = True
+        if demos is not None:
+            self._previous_demos = self._demos
+            self._demos = demos
 
-    def revert_data(self):
+    def revert_data(self, include_demos: bool = False):
         r"""Revert the data to the previous data."""
         if not self.proposing:
             raise ValueError("Cannot revert data without proposing first.")
@@ -230,8 +237,11 @@ class Parameter(Generic[T]):
         # reset the gradients and context
         self.reset_gradients()
         self.reset_gradients_context()
+        if include_demos:
+            self._demos = self._previous_demos
+            self._previous_demos = []
 
-    def step_data(self):
+    def step_data(self, include_demos: bool = False):
         r"""Use PyTorch's optimizer syntax to finalize the update of the data."""
         if not self.proposing:
             raise ValueError("Cannot set data without proposing first.")
@@ -242,6 +252,8 @@ class Parameter(Generic[T]):
         # reset the gradients and context
         self.reset_gradients()
         self.reset_gradients_context()
+        if include_demos:
+            self._previous_demos = []
 
     def get_grad_fn(self):
         return self.grad_fn

@@ -7,6 +7,7 @@ Our sampler directly impact the few-shot examples and can lead to different perf
 
 import random
 from dataclasses import dataclass
+import logging
 
 from typing import (
     List,
@@ -23,6 +24,7 @@ import math
 
 
 T_co = TypeVar("T_co", covariant=True)
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -146,17 +148,7 @@ class RandomSampler(Sampler, Generic[T_co]):
         return self.random_sample(num_shots, replace)
 
 
-def random_sample(
-    dataset: Sequence[T_co], num_shots: int, replace: Optional[bool] = False
-) -> List[Sample]:
-    r"""
-    Randomly sample num_shots from the dataset. If replace is True, sample with replacement.
-    """
-    if replace:
-        return [random.choice(dataset) for _ in range(num_shots)]
-    return random.sample(dataset, num_shots)
-
-
+# TODO: this is only for classification tasks, will need to be further tested
 class ClassSampler(Sampler, Generic[T_co]):
     r"""Sample from the dataset based on the class labels.
 

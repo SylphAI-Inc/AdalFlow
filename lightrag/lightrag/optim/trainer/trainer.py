@@ -107,6 +107,8 @@ class Trainer(Component):
             "valset": self._valset_effect_count,
         }
         self.few_shots_config = few_shots_config
+        self.demo_optimizers: List[DemoOptimizer] = []
+        self.text_optimizers: List[TextOptimizer] = []
 
     def diagnose(self, train_dataset: Any):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
@@ -341,7 +343,7 @@ class Trainer(Component):
     def _set_demo_optimizers_dataset(self, train_dataset: Any):
         # init the dataset
         for opt in self.demo_optimizers:
-            opt.sampler.set_dataset(train_dataset)
+            opt.set_dataset(train_dataset)
 
     def _demo_optimizers_propose(self):
         for opt in self.demo_optimizers:
@@ -471,6 +473,26 @@ class Trainer(Component):
                     loss.backward()
             # propose
             self._demo_optimizers_propose()
+
+            # test step
+            self._demo_optimizers_step()
+
+            for opt in self.demo_optimizers:
+                if opt.proposing:
+                    raise ValueError("Optimizer is still proposing")
+            # check demo params
+            for name, param in self.adaltask.named_parameters():
+                print(f"Param: {name}")
+                if param.param_type == ParameterType.DEMOS:
+                    print(f"Demo param: {name}, value: {param.data}")
+                    if param.data is None:
+                        raise ValueError("Demo param data is None")
+                    if len(param._demos) == 0:
+                        raise ValueError("No demos found")
+                    if len(param._traces) == 0:
+                        raise ValueError("No traces found")
+                    if len(param._previous_demos) > 0:
+                        raise ValueError("Previous demos should be empty")
 
             # validate
             # val_output = self.adaltask.validation_step(

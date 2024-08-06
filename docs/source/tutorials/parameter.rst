@@ -24,3 +24,9 @@ To support auto-diff, we added `predecessors` , and adalflow created `peers` con
 For instance, if no peers context, the system instruction can generate examples or enforce output format while users want to train each of them separately.
 
 These characteristics are important. this means for passing the score
+
+
+teacher
+-----------
+
+Teacher generator should not use any parameter as it will only be used in call.

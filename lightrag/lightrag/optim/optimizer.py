@@ -1,8 +1,9 @@
 from typing_extensions import TypeAlias
-from typing import Dict, Any, Union, Iterable
+from typing import Dict, Any, Union, Iterable, Sequence
 
 from lightrag.optim.parameter import Parameter
 from lightrag.optim.sampler import Sampler
+from lightrag.core.base_data_class import DataClass
 
 ParamsT: TypeAlias = Union[Iterable[Parameter], Iterable[Dict[str, Any]]]
 
@@ -82,6 +83,7 @@ class DemoOptimizer(Optimizer):
 
     sampler: Sampler
     _traces: Dict[str, Any]  # key: parameter_id (demo)
+    dataset: Sequence[DataClass]
 
     def __init__(self, *args, **kwargs):
         pass
@@ -89,3 +91,7 @@ class DemoOptimizer(Optimizer):
     def init_shots(self, *args, **kwargs):
         r"""Initialize the samples for each parameter."""
         raise NotImplementedError("init method is not implemented")
+
+    def set_dataset(self, dataset: Sequence[DataClass]):
+        r"""Set the dataset for the optimizer."""
+        self.dataset = dataset

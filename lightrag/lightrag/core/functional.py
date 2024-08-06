@@ -16,6 +16,7 @@ from typing import (
     get_args,
     Set,
     Sequence,
+    TypeVar,
 )
 import logging
 import numpy as np
@@ -33,6 +34,7 @@ from dataclasses import fields, is_dataclass, MISSING, Field
 log = logging.getLogger(__name__)
 
 ExcludeType = Optional[Dict[str, List[str]]]
+T_co = TypeVar("T_co", covariant=True)
 
 
 ########################################################################################
@@ -1214,3 +1216,38 @@ def parse_json_str_to_obj(json_str: str) -> Union[Dict[str, Any], List[Any]]:
                 raise ValueError(
                     f"Got invalid JSON object with yaml.safe_load. Error: {e}. Got JSON string: {json_str}"
                 )
+
+
+########################################################################################
+# For sampling
+########################################################################################
+def random_sample(
+    dataset: Sequence[T_co],
+    num_shots: int,
+    replace: Optional[bool] = False,
+    weights: Optional[List[float]] = None,
+    delta: float = 1e-5,  # to avoid zero division
+) -> List[T_co]:
+    r"""
+    Randomly sample num_shots from the dataset. If replace is True, sample with replacement.
+    """
+    dataset_size = len(dataset)
+
+    if not replace and num_shots > dataset_size:
+        log.debug(
+            f"num_shots {num_shots} is larger than the dataset size {dataset_size}"
+        )
+        num_shots = dataset_size
+
+    if weights is not None:
+        weights = np.array(weights)
+        # Add a small delta to all weights to avoid zero probabilities
+        weights = weights + delta
+        if weights.sum() == 0:
+            raise ValueError("Sum of weights cannot be zero.")
+        # Normalize weights to sum to 1
+        weights = weights / weights.sum()
+
+    indices = np.random.choice(len(dataset), size=num_shots, replace=replace, p=weights)
+
+    return [dataset[i] for i in indices]

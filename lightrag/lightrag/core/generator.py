@@ -755,6 +755,11 @@ def create_teacher_generator(
 ) -> Generator:
     r"""Create a teacher generator from the student generator.
 
+    Note:
+        Teacher generator will have no parameters.
+        If you want to keep it to be the same as the student, just create one each time your student has been updated.
+        Or else, task.parameters will list teacher parameters.
+
     Args:
         student (Generator): The student generator.
         model_client (ModelClient): The model client to use for the teacher generator.
@@ -765,12 +770,19 @@ def create_teacher_generator(
         Generator: The teacher generator.
     """
     kwargs = student._kwargs.copy()
-    # update the model client and model kwargs
     kwargs["model_client"] = model_client
     kwargs["model_kwargs"] = model_kwargs
     if template:
         kwargs["template"] = template
     kwargs["name"] = f"{student.name}_teacher"
+
+    prompt_kwargs_str: Dict[str, str] = {}
+    for key, p in kwargs["prompt_kwargs"].items():
+        if isinstance(p, Parameter):
+            prompt_kwargs_str[key] = str(p.data)
+        else:
+            prompt_kwargs_str[key] = p
+    kwargs["prompt_kwargs"] = prompt_kwargs_str
     teacher = Generator(
         **kwargs,
     )
