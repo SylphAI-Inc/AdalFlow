@@ -603,7 +603,75 @@ The response is:
     [RetrieverOutput(doc_indices=[0, 1], doc_scores=None, query='What are the benefits of renewable energy?', documents=None)]
     [RetrieverOutput(doc_indices=[1, 2], doc_scores=None, query='How do solar panels impact the environment?', documents=None)]
 
+Qdrant Retriever
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+You can retrieve documents loaded into your `Qdrant <https://qdrant.tech/>`_ collections using the :class:`QdrantRetriever<components.retriever.qdrant_retriever.QdrantRetriever>`.
+
+.. note ::
+    Install the ``qdrant-client`` package in your project to use this retriever.
+
+The retriever supports any embeddings provider. The field to be returned from the Qdrant payload can be configured along with other parameters like filters.
+
+.. code-block:: python
+
+    from lightrag.components.retriever import QdrantRetriever
+    from qdrant_client import QdrantClient
+
+
+    client = QdrantClient(url="http://localhost:6333")
+    qdrant_retriever = QdrantRetriever(
+        collection_name="{collection_name}",
+        client=client,
+        embedder=embedder,
+        top_k=5,
+        text_key="content",
+    )
+    print(qdrant_retriever)
+
+The output is:
+
+.. code-block::
+
+    QdrantRetriever(
+        (_embedder): Embedder(
+            model_kwargs={'model': 'text-embedding-3-small', 'dimensions': 256, 'encoding_format': 'float'},
+            (model_client): OpenAIClient()
+        )
+    )
+
+We can invoke the Qdrant retriever like the others:
+
+.. code-block:: python
+
+    output_1 = qdrant_retriever(input=query_1)
+    output_2 = qdrant_retriever(input=query_2)
+    output_3 = qdrant_retriever(input = [query_1, query_2])
+
+You can use `filters <https://qdrant.tech/documentation/concepts/filtering/>`_ to further refine the search results as per requirements when setting up the retriever.
+
+.. code-block:: python
+
+    from qdrant_client import models
+
+    qdrant_retriever = QdrantRetriever(
+        collection_name="{collection_name}",
+        client=client,
+        embedder=embedder,
+        text_key="content",
+        filter=models.Filter(
+            must=[
+                models.FieldCondition(
+                    key="category",
+                    match=models.MatchValue(value="facts"),
+                ),
+                models.FieldCondition(
+                    key="weight",
+                    range=models.Range(gte=0.98),
+                ),
+            ]
+        )
+    )
 
 PostgresRetriever
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -655,3 +723,4 @@ Additionally, ``LocalDB`` help us keep track of our initial documents and its tr
    - :class:`components.retriever.bm25_retriever.BM25Retriever`
    - :class:`components.retriever.reranker_retriever.RerankerRetriever`
    - :class:`components.retriever.llm_retriever.LLMRetriever`
+   - :class:`components.retriever.qdrant_retriever.QdrantRetriever`

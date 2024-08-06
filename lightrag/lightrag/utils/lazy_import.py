@@ -44,6 +44,10 @@ class OptionalPackages(Enum):
         "pgvector",
         "Please install pgvector with: pip install pgvector",
     )
+    QDRANT = (
+        "qdrant_client",
+        "Please install qdrant_client with: pip install qdrant_client",
+    )
 
     def __init__(self, package_name, error_message):
         self.package_name = package_name

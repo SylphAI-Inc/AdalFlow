@@ -22,12 +22,18 @@ PostgresRetriever = LazyImport(
     OptionalPackages.SQLALCHEMY,
 )
 
+QdrantRetriever = LazyImport(
+    "lightrag.components.retriever.qdrant_retriever.QdrantRetriever",
+    OptionalPackages.QDRANT,
+)
+
 __all__ = [
     "BM25Retriever",
     "LLMRetriever",
     "FAISSRetriever",
     "RerankerRetriever",
     "PostgresRetriever",
+    "QdrantRetriever",
     "split_text_by_word_fn",
     "split_text_by_word_fn_then_lower_tokenized",
 ]
