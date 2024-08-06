@@ -238,7 +238,6 @@ class Generator(Component):
         if completion:
             try:
                 output = self._post_call(completion)
-
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
                 output = GeneratorOutput(raw_response=str(completion), error=str(e))
@@ -261,10 +260,25 @@ class Generator(Component):
         log.info(f"model_kwargs: {model_kwargs}")
 
         api_kwargs = self._pre_call(prompt_kwargs, model_kwargs)
-        completion = await self.model_client.acall(
-            api_kwargs=api_kwargs, model_type=self.model_type
-        )
-        output = self._post_call(completion)
+        output: GeneratorOutputType = None
+        # call the model client
+        completion = None
+
+        try:
+            completion = await self.model_client.acall(
+                api_kwargs=api_kwargs, model_type=self.model_type
+            )
+        except Exception as e:
+            log.error(f"Error calling the model: {e}")
+            output = GeneratorOutput(error=str(e))
+
+        if completion:
+            try:
+                output = self._post_call(completion)
+            except Exception as e:
+                log.error(f"Error processing the output: {e}")
+                output = GeneratorOutput(raw_response=str(completion), error=str(e))
+
         log.info(f"output: {output}")
         return output
 
