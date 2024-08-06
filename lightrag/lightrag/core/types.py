@@ -233,6 +233,9 @@ class GeneratorOutput(DataClass, Generic[T_co]):
 
     Raw_response will depends on the model predict.
     """
+    id: Optional[str] = field(
+        default=None, metadata={"desc": "The unique id of the output"}
+    )
 
     data: T_co = field(
         default=None,

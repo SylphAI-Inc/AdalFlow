@@ -5,6 +5,30 @@ from dataclasses import dataclass
 from lightrag.core import DataClass
 
 
+class ParameterType(Enum):
+    """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
+
+    PROMPT = (
+        "prompt",
+        "Need to be generic and you can not modify it based on a single example.",
+    )
+    DEMOS = ("demos", "A few examples to guide the language model.")
+    INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
+    NONE = ("none", "")
+
+    def __init__(self, value, description):
+        self._value_ = value
+        self.description = description
+
+    def __str__(self):
+        """Return a string representation that includes the enum's value and description."""
+        return f"{self.value} ({self.description})"
+
+    def __repr__(self):
+        """Return an unambiguous representation that is useful for debugging."""
+        return f"<{self.__class__.__name__}.{self.name}: {self.value}, '{self.description}'>"
+
+
 @dataclass
 class PromptData:
     id: str  # each parameter's id
@@ -20,6 +44,13 @@ class TrainerResult(DataClass):
     prompts: List[List[PromptData]]
     trainer_state: Dict[str, Any] = None
     effective_measure: Dict[str, Dict] = None  # stage
+
+
+@dataclass
+class FewShotConfig:
+    num_shots: int  # total shots = raw_shots + bootstrap_shots
+    raw_shots: int  # raw shots
+    bootstrap_shots: int  # bootstrap shots
 
 
 class OptimizeGoal(Enum):

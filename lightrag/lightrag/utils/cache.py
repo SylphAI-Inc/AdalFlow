@@ -10,6 +10,10 @@ def hash_text_sha1(text: str):  # 160 bits
     return hashlib.sha1(text.encode()).hexdigest()
 
 
+def direct(text: str):
+    return text
+
+
 class CachedEngine:
     def __init__(self, cache_path: str):
         super().__init__()

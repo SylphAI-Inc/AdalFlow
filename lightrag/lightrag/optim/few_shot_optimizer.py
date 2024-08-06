@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict, TYPE_CHECKING
 from copy import deepcopy
+import logging
 
 from lightrag.core.base_data_class import DataClass
 
@@ -8,47 +9,64 @@ from lightrag.optim.parameter import Parameter
 
 if TYPE_CHECKING:
     from lightrag.core.component import Component
-from lightrag.optim.sampler import Sampler, Sample
-from lightrag.optim.optimizer import Optimizer
+from lightrag.optim.sampler import Sampler, Sample, random_sample
+from lightrag.optim.optimizer import DemoOptimizer
+from lightrag.optim.types import FewShotConfig, ParameterType
+
+log = logging.getLogger(__name__)
 
 
-class BootstrapFewShot(Optimizer):
+class BootstrapFewShot(DemoOptimizer):
     __doc__ = r"""BootstrapFewShot performs few-shot sampling used in few-shot ICL.
 
     It simply orchestrates a sampler and an output processor to generate examples."""
 
     def __init__(
         self,
-        param: Parameter,
-        sampler: Sampler,
-        num_shots: int,
-        num_raw_demos: int,
-        num_augmented_demos: int,
-        llm_augmenter: Optional["Component"] = None,
+        params: List[Parameter],
+        few_shot_config: FewShotConfig,
+        # num_shots: int,
+        # num_raw_demos: int,
+        # num_augmented_demos: int,
+        # llm_augmenter: Optional["Component"] = None,
+        sampler: Optional[Sampler] = None,
         task_input_dataclass: Optional[DataClass] = None,
         output_processors: Optional["Component"] = None,
         task_output_dataclass: Optional[DataClass] = None,
     ):
         super().__init__()
-        self.example_parameter = param
-        self.sampler = sampler
+        self.params = [
+            param
+            for param in params
+            if param.requires_opt and param.param_type == ParameterType.DEMOS
+        ]
+        log.info(f"BootstrapFewShot: {self.params}")
+        self.sampler: Sampler = sampler
         self.current: List[Sample] = []  # buffer to store the examples
         self.proposed: List[Sample] = []
         self.output_processors = output_processors
-        self.num_shots = num_shots
-        self.num_raw_demos = num_raw_demos
-        self.num_augmented_demos = num_augmented_demos
-        if self.num_raw_demos + self.num_augmented_demos != self.num_shots:
-            raise ValueError("num_raw_demos + num_augmented_demos must equal num_shots")
-        self.llm_augmenter = llm_augmenter
+        self.few_shot_config = few_shot_config
+        if (
+            self.few_shot_config.raw_shots + self.few_shot_config.bootstrap_shots
+            != self.few_shot_config.num_shots
+        ):
+            raise ValueError("raw_shots + bootstrap_shots must equal num_shots")
+
+        self._num_shots = self.few_shot_config.num_shots
+        self._raw_shots = self.few_shot_config.raw_shots
+        self._bootstrap_shots = self.few_shot_config.bootstrap_shots
+        # self.llm_augmenter = llm_augmenter
         self.task_input_dataclass = task_input_dataclass
         self.task_output_dataclass = task_output_dataclass
-        if llm_augmenter is not None:
-            if task_input_dataclass is None or task_output_dataclass is None:
-                raise ValueError(
-                    "task_input_dataclass and task_output_dataclass must be provided when llm_augment is not None"
-                )
+        # if llm_augmenter is not None:
+        #     if task_input_dataclass is None or task_output_dataclass is None:
+        #         raise ValueError(
+        #             "task_input_dataclass and task_output_dataclass must be provided when llm_augment is not None"
+        #         )
         # self.proposing = False
+
+    def set_sampler(self, sampler: Sampler):
+        self.sampler = sampler
 
     def augment_samples(self, samples: List[Sample]) -> List[Sample]:
         if self.llm_augmenter:  # TODO: better represent sample
@@ -76,18 +94,29 @@ class BootstrapFewShot(Optimizer):
         self.current = []
         self.proposed = []
 
-    def init(self, weights: Optional[List[float]] = None, shots: Optional[int] = None):
+    def init_shots(self, shots: Optional[int] = None):
         r"""Initialize the parameters with the initial examples."""
         if shots is None:
-            shots = self.num_shots
-        self.current = self.sampler(shots, replace=False)
-        if self.llm_augmenter:
-            self.current = self.augment_samples(self.current)
+            shots = self._num_shots
+        if self.sampler is None:
+            raise ValueError("sampler must be provided")
+        if self.sampler.dataset is None:
+            raise ValueError(
+                "sampler dataset must be provided to initialize the samples"
+            )
+        self.current = self.sampler(
+            shots, replace=False
+        )  # this is the end to end dataset
+        print(f"current: {self.current}")
+        # if self.llm_augmenter:
+        #     self.current = self.augment_samples(self.current)
         self.proposed = deepcopy(self.current)
         examples = deepcopy(self.current)
         if self.output_processors:
             examples = self.output_processors(examples)
-        self.example_parameter.update_value(examples)
+        for param in self.params:
+            param.update_value(examples)
+            print(f"param: {param}")
 
     def random_replace(
         self, shots: int, weights_per_class: Optional[List[float]] = None
@@ -99,7 +128,29 @@ class BootstrapFewShot(Optimizer):
             shots, deepcopy(self.current), weights_per_class=weights_per_class
         )
 
-    def propose(self, shots: int, weights_per_class: Optional[List[float]] = None):
+    def propose(self):
+        for demo_param in self.params:
+            if demo_param.requires_opt:
+                # sample augmented demos
+                # TODO: teacher mode should only have demo backpropogation
+                augmented_demos = demo_param._traces
+                print(f"augmented_demos: {augmented_demos}")
+                options = list(augmented_demos.values())
+                filtered_options = list(filter(lambda x: x.score > 0.5, options))
+
+                sampled_demos = random_sample(
+                    filtered_options, self._bootstrap_shots, replace=False
+                )
+                demo_strs = []
+                for demo in sampled_demos:
+                    demo_strs.append(demo.to_yaml(exclude=["id", "score"]))
+                demo_str = "\n".join(demo_strs)
+                # sample raw demos
+
+                demo_param.propose_data(demo_str)
+                print(f"demo_param value: {demo_param.data}")
+
+    def propose_old(self, shots: int, weights_per_class: Optional[List[float]] = None):
         r"""
         Update parameter with the proposed examples.
         """
@@ -113,7 +164,7 @@ class BootstrapFewShot(Optimizer):
         # self.proposing = True
         return examples
 
-    def update_parameter(self):
+    def step(self):
         """Load the proposed into the current."""
         self.current = deepcopy(self.proposed)
         self.proposed = []
@@ -123,7 +174,7 @@ class BootstrapFewShot(Optimizer):
             examples = self.output_processors(examples)
         self.example_parameter.update_value(examples)
 
-    def reset_parameter(self):
+    def revert(self):
         r"""When performance did not improve, reset the parameter to the current examples."""
         examples = deepcopy(self.current)
         if self.output_processors:

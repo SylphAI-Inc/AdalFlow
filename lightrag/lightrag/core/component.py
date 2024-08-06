@@ -69,6 +69,12 @@ class Component:
     Components can also contain other Components, allowing to nest them in
     a tree structure. You can assign the subcomponents as regular attributes::
 
+    Component supports three modes:
+    - Training mode: ``train()`` When turned on, any component __call__ will use forward and backward for in-context training.
+      When turned off, the __call__ should only use `call` and `acall` for inference.
+    - Tracing mode: ``trace()`` When turned on, the component will accumulate input, output, and backpropagate the eval score to Parameter of Demo type.
+    - Teacher mode: ``use_teacher()`` When turned on, the component will accumulates the demos to the `_trace`s, otherwise, it will be saved in `_student_traces`.
+
     Example:
 
     .. code-block:: python
@@ -126,6 +132,8 @@ class Component:
     # _last_called = None  # Tracks the last component called
     _parameters: Dict[str, Optional[Parameter]]
     training: bool
+    teacher_mode: bool = False
+    tracing: bool = False
 
     # def _generate_unique_name(self):
     #     # Generate a unique identifier that includes the class name
@@ -135,8 +143,28 @@ class Component:
         super().__setattr__("_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
+        super().__setattr__("teacher_mode", False)
+        super().__setattr__("tracing", False)
         # only for tracking the init args
         super().__setattr__("_init_args", self._get_init_args(*args, **kwargs))
+
+    def use_teacher(self, mode: bool = True):
+        r"""Sets the component in teacher mode."""
+        if not isinstance(mode, bool):
+            raise ValueError("mode should be a boolean")
+        self.teacher_mode = mode
+        for component in self.children():
+            component.use_teacher(mode)
+        return self
+
+    def trace(self, mode: bool = True):
+        r"""Sets the component in tracing mode.This signal will be used in forward and backward to accumulate input and output."""
+        if not isinstance(mode, bool):
+            raise ValueError("mode should be a boolean")
+        self.tracing = mode
+        for component in self.children():
+            component.trace(mode)
+        return self
 
     def train(self, mode: bool = True):
         r"""Sets the component in training mode."""

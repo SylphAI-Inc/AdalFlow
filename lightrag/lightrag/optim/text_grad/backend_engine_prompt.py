@@ -14,7 +14,7 @@ GLOSSARY_TEXT_BACKWARD = """
 
 # TODO: maybe it can propose new values.
 
-BAWARD_SYSTEM_PROMPT = r"""{#Overall optimizer description#}
+BACKWARD_SYSTEM_PROMPT = r"""{#Overall optimizer description#}
 You are the feedback(gradient) engine in a larger optimization system.
 
 Your goal is to give feedback to a variable in <VARIABLE> tags in order to improve the objective specified in <OBJECTIVE_FUNCTION> tags.

@@ -1,7 +1,11 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
 import concurrent
 from tqdm import tqdm
 
+if TYPE_CHECKING:
+    from lightrag.core.model_client import ModelClient
+    from lightrag.core.generator import Generator
+    from lightrag.optim.parameter import Parameter
 
 from lightrag.core.component import Component
 from lightrag.optim.optimizer import Optimizer
@@ -134,7 +138,9 @@ class AdalComponent(Component):
         eval_results = self.evaluate_samples(batch, y_preds)
         return eval_results
 
-    def loss_step(self, batch, y_preds, batch_idx, num_workers: int = 2):
+    def loss_step(
+        self, batch, y_preds: List["Parameter"], batch_idx, num_workers: int = 2
+    ):
         r"""Calculate the loss for the batch."""
         losses = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
@@ -169,21 +175,25 @@ class AdalComponent(Component):
         """In default we config the failure generator callback. User can overwrite this method to add more callbacks."""
         return self._auto_generator_callbacks(save_dir)
 
+    def _find_all_generators(self) -> List[Tuple[str, "Generator"]]:
+        r"""Find all generators automatically from the task."""
+        from lightrag.core import Generator
+
+        all_generators: List[Tuple[str, Generator]] = []
+        for name, comp in self.task.named_components():
+            if isinstance(comp, Generator):
+                all_generators.append((name, comp))
+        return all_generators
+
     def _auto_generator_callbacks(self, save_dir: str = "traces"):
         r"""Automatically generate callbacks."""
-        from lightrag.core import Generator
         from lightrag.core.types import GeneratorOutput
         from lightrag.tracing.generator_call_logger import (
             GeneratorCallLogger,
         )
         from functools import partial
 
-        # Find all generators automatically from the task
-        all_generators: List[Tuple[str, Generator]] = []
-        for name, comp in self.task.named_components():
-            print(f"comp: {comp}")
-            if isinstance(comp, Generator):
-                all_generators.append((name, comp))
+        all_generators = self._find_all_generators()
 
         print(f"all_generators: {all_generators}")
 
@@ -218,3 +228,24 @@ class AdalComponent(Component):
                 end="\n",
             )
         return file_paths
+
+    def configure_teacher_generator(
+        self,
+        model_client: "ModelClient",
+        model_kwargs: Dict[str, Any],
+        template: Optional[str] = None,
+    ):
+        r"""Configure a teach generator for all generators in the task for bootstrapping examples."""
+        from lightrag.core.generator import create_teacher_generator
+
+        all_generators = self._find_all_generators()
+        for _, generator in all_generators:
+            teacher_generator = create_teacher_generator(
+                student=generator,
+                model_client=model_client,
+                model_kwargs=model_kwargs,
+                template=template,
+            )
+            print(f"Configuring teacher generator for {teacher_generator}")
+            generator.set_teacher_generator(teacher_generator)
+        print("Teacher generator configured.")

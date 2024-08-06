@@ -255,7 +255,8 @@ class TGDWithEvalFnLoss(AdalComponent):
         )
         self.task = ObjectCountTaskOriginal(**task_model_config)
         self.evaluator = AnswerMatchAcc(type="exact_match")
-        self.configure_backward_engine()
+
+        # self.configure_backward_engine()
 
     def handle_one_train_sample(self, sample: ObjectCountData) -> Tuple[Callable, Dict]:
         return self.task.call, {"question": sample.x}

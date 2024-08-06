@@ -8,7 +8,6 @@ import json
 from typing import Any, Dict, Optional, Union, Callable
 from copy import deepcopy
 import logging
-import platformdirs
 
 
 from lightrag.core.types import (
@@ -17,9 +16,11 @@ from lightrag.core.types import (
     GeneratorOutputType,
 )
 from lightrag.core.component import Component
+from lightrag.core.base_data_class import DataClass, check_adal_dataclass
 
 
 from lightrag.optim.parameter import Parameter, GradientContext
+from lightrag.optim.types import ParameterType
 
 from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
@@ -28,10 +29,11 @@ from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
 from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 from lightrag.utils.cache import CachedEngine
 from lightrag.tracing.callback_manager import CallbackManager
+from lightrag.utils.global_config import get_adalflow_default_root_path
 
 from lightrag.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
-    BAWARD_SYSTEM_PROMPT,
+    BACKWARD_SYSTEM_PROMPT,
     CONVERSATION_TEMPLATE,
     CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
@@ -68,7 +70,9 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
 
     model_type: ModelType = ModelType.LLM
     model_client: ModelClient  # for better type checking
+
     _use_cache: bool = False
+    _kwargs: Dict[str, Any] = {}
 
     def __init__(
         self,
@@ -86,6 +90,13 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         name: Optional[str] = None,
         cache_path: Optional[str] = None,
         use_cache: bool = False,
+        demo_data_class: Optional[DataClass] = None,
+        demo_data_class_input_mapping: Optional[
+            Dict[str, str]
+        ] = {},  # prompt_kwargs key to demo_data_class field
+        demo_data_class_output_mapping: Optional[
+            Dict[str, Callable]
+        ] = {},  # GeneratorOut will be matched to demo_data_class field via a Callable
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -111,13 +122,15 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             prompt_kwargs = prompt_kwargs
 
         # Cache
-        root = platformdirs.user_cache_dir("textgrad")
         model_str = (
             f"{model_client.__class__.__name__}_{model_kwargs.get('model', 'default')}"
         )
-        cache_path = cache_path or os.path.join(root, f"cache_{model_str}.db")
-        print(f"cache_path: {cache_path}")
-        self.cache_path = cache_path
+        _cache_path = (
+            get_adalflow_default_root_path() if cache_path is None else cache_path
+        )
+        self.cache_path = os.path.join(_cache_path, f"cache_{model_str}.db")
+
+        print(f"cache_path: {self.cache_path}")
 
         CachedEngine.__init__(self, cache_path=self.cache_path)
         Component.__init__(self)
@@ -137,6 +150,13 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         # add trainable_params to generator
         for key, p in prompt_kwargs.items():
             if isinstance(p, Parameter):
+                # peers will be all other parameters
+                peers = [
+                    p
+                    for k, p in prompt_kwargs.items()
+                    if isinstance(p, Parameter) and k != key
+                ]
+                p.set_peers(peers)
                 setattr(self, key, p)
 
         # end of trainable parameters
@@ -149,6 +169,23 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         self.set_data_map_func()
         self.model_str = model_str
         self._use_cache = use_cache
+
+        self._kwargs = {
+            "model_client": model_client,
+            "model_kwargs": model_kwargs,
+            "template": template,
+            "prompt_kwargs": prompt_kwargs,
+            "output_processors": output_processors,
+            "name": name,
+            "cache_path": cache_path,
+            "use_cache": use_cache,
+        }
+        self._teacher: Optional["Generator"] = None
+        if demo_data_class:
+            check_adal_dataclass(demo_data_class)
+        self._demo_data_class = demo_data_class
+        self._demo_data_class_input_mapping = demo_data_class_input_mapping
+        self._demo_data_class_output_mapping = demo_data_class_output_mapping
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -270,6 +307,28 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             log.error(f"Error calling the model: {e}")
             raise e
 
+    ##############################################################################################################
+    ### Forward and backwards, and teacher generator are for training
+    ##############################################################################################################
+    @staticmethod
+    def create_demo_data_instance(
+        demo_class: DataClass,
+        prompt_kwargs: Dict[str, Any],
+        output: GeneratorOutput,
+        demo_data_class_input_mapping: Dict[str, str],
+        demo_data_class_output_mapping: Dict[str, Any],
+        id: Optional[str] = None,
+    ):
+        check_adal_dataclass(demo_class)
+        # map the input fields
+        demo_data = {"id": id}
+        for key, value in demo_data_class_input_mapping.items():
+            demo_data[key] = prompt_kwargs[value]
+        # map the output fields
+        for key, value in demo_data_class_output_mapping.items():
+            demo_data[key] = value(output)
+        return demo_class.from_dict(demo_data)
+
     def set_backward_engine(self, backward_engine: "BackwardEngine" = None):
         if backward_engine is None:
             backward_engine = BackwardEngine(
@@ -279,6 +338,11 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             if self.mock_output:
                 backward_engine.set_mock_output()
         self.backward_engine = backward_engine
+
+    def set_teacher_generator(self, teacher: "Generator" = None):
+        self._teacher = teacher
+        print(f"Teacher generator set: {self._teacher}, teacher {teacher}")
+        log.debug(f"Teacher generator set: {self._teacher}")
 
     def set_data_map_func(self, map_func: Callable = None):
         def default_map_func(data: "GeneratorOutputType") -> str:
@@ -292,18 +356,53 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
 
         log.debug(f"Data map function set: {self.data_map_func}")
 
+    # TODO: limit to only one demo parameter.
+    @staticmethod
+    def find_demo_parameter(prompt_kwargs: Dict) -> Optional[Parameter]:
+        from lightrag.optim.parameter import Parameter, ParameterType
+
+        for p in prompt_kwargs.values():
+            if isinstance(p, Parameter) and p.param_type == ParameterType.DEMOS:
+                return p
+        return None
+
     # NOTE: when training is true, forward will be called in __call__ instead of call
     def forward(
         self,
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
+        id: Optional[str] = None,
     ) -> "Parameter":
         # 1. call the model
         output: GeneratorOutputType = None
+        input_args = {}
         if self.mock_output:
             output = GeneratorOutput(data=self.mock_output_data)
         else:
-            output = self.call(prompt_kwargs, model_kwargs)
+            if self.teacher_mode:
+                if not self._teacher:
+                    raise ValueError("Teacher generator is not set.")
+                log.info(f"Using teacher: {self._teacher}")
+                print(f"using teacher: {self._teacher}")
+                input_args = {
+                    "prompt_kwargs": compose_model_kwargs(
+                        self._teacher.prompt_kwargs, prompt_kwargs
+                    ),
+                    "model_kwargs": compose_model_kwargs(
+                        self._teacher.model_kwargs, model_kwargs
+                    ),
+                }
+                output = self._teacher.call(prompt_kwargs, model_kwargs)
+            else:
+                input_args = {
+                    "prompt_kwargs": compose_model_kwargs(
+                        self.prompt_kwargs, prompt_kwargs
+                    ),
+                    "model_kwargs": compose_model_kwargs(
+                        self.model_kwargs, model_kwargs
+                    ),
+                }
+                output = self.call(prompt_kwargs, model_kwargs)
         # 2. Generate a Parameter object from the output
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
         if self.data_map_func is None:
@@ -315,12 +414,31 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                 p for p in combined_prompt_kwargs.values() if isinstance(p, Parameter)
             ],
             role_desc=f"response from generator {self.name}",
+            # context of the forward pass
+            input_args=input_args,
             raw_response=output.raw_response,
         )
+        # attach the demo to the demo parameter
+        if self.tracing:
+            print("start creating demo data")
+            demo_param = self.find_demo_parameter(combined_prompt_kwargs)
+            if demo_param:
+                print("start creating demo data")
+
+                demo = self.create_demo_data_instance(
+                    self._demo_data_class,
+                    combined_prompt_kwargs,
+                    output,
+                    self._demo_data_class_input_mapping,
+                    self._demo_data_class_output_mapping,
+                    id=id,
+                )
+                demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
         if not self.backward_engine:
-            self.set_backward_engine()
+            # self.set_backward_engine()
             log.debug(f"Backward engine: {self.backward_engine}")
 
+        # attach a funtion to compute gradient for predecessors
         response.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
@@ -328,17 +446,20 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                 response=response,
                 prompt_kwargs=combined_prompt_kwargs,
                 prompt_str=self.get_prompt(**combined_prompt_kwargs),
+                id=id,
             )
         )
+        # attach a function to backpropagate the evaluation score to precessor demos.
         return response
 
     # == pytorch custom autograd function ==
     def backward(
         self,
-        response: Parameter,
+        response: Parameter,  # the output of the forward pass
         prompt_kwargs: Dict,
-        backward_engine: "Generator",
         prompt_str: str,
+        backward_engine: Optional["Generator"] = None,
+        id: Optional[str] = None,  # the id of the input
     ) -> Parameter:
 
         log.info(f"Generator: Backward: {response}")
@@ -348,20 +469,43 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"Generator: Backward: No gradient found for {response}.")
         # Compute all predecessors's gradients based on the current response' note.
-        for pred in children_params:
-            if not pred.requires_opt:
-                log.debug(
-                    f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
-                )
-                continue
-            self._backward_through_one_predecessor(
-                pred,
-                response,
-                prompt_kwargs,
-                backward_engine,
-                prompt_str,
-                is_chain,
+
+        # 1.backward for text-gradients
+        if backward_engine:
+            log.debug(
+                f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
+            for pred in children_params:
+                # NOTE: not requires_opt should only be used to skip the optimization, not the backpropagation
+                if not pred.requires_opt:
+                    log.debug(
+                        f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+                    )
+                    continue
+                self._backward_through_one_predecessor(
+                    pred,
+                    response,
+                    prompt_kwargs,
+                    backward_engine,
+                    prompt_str,
+                    is_chain,
+                )
+        else:
+            log.debug("Backward engine is not set for the generator. No text gradient.")
+        # backward score to the demo parameter
+        for pred in children_params:
+            if pred.requires_opt:
+                # pred._score = float(response._score)
+                pred.set_score(response._score)
+                print(
+                    f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
+                )
+                if pred.param_type == ParameterType.DEMOS:
+                    # Accumulate the score to the demo
+                    pred.add_score_to_trace(
+                        trace_id=id, score=response._score, is_teacher=self.teacher_mode
+                    )
+                    print(f"Pred: {pred.alias}, traces: {pred._traces}")
 
     @staticmethod
     def _backward_through_one_predecessor(
@@ -429,7 +573,7 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         #     f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
         # )
         backward_engine_prompt_kwargs = {
-            "BAWARD_SYSTEM_PROMPT": Prompt(BAWARD_SYSTEM_PROMPT)(),
+            "BACKWARD_SYSTEM_PROMPT": Prompt(BACKWARD_SYSTEM_PROMPT)(),
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
             # "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
@@ -471,11 +615,31 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             variable_desc=pred.role_desc,
         )
 
+    def _run_callbacks(self, output: GeneratorOutput, input: Dict):
+        self.trigger_callbacks(
+            "on_complete",
+            output=output,
+            input=input,
+        )
+        if output.error:
+            self.trigger_callbacks(
+                "on_failure",
+                output=output,
+                input=input,
+            )
+        else:
+            self.trigger_callbacks(
+                "on_success",
+                output=output,
+                input=input,
+            )
+
     def call(
         self,
         prompt_kwargs: Optional[Dict] = {},  # the input need to be passed to the prompt
         model_kwargs: Optional[Dict] = {},
         use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
     ) -> GeneratorOutputType:
         r"""
         Call the model_client by formatting prompt from the prompt_kwargs,
@@ -511,29 +675,8 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                 output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
         # User only need to use one of them, no need to use them all.
-        self.trigger_callbacks(
-            "on_complete",
-            output=output,
-            input=api_kwargs,
-            prompt_kwargs=prompt_kwargs,
-            model_kwargs=model_kwargs,
-        )
-        if output.error:
-            self.trigger_callbacks(
-                "on_failure",
-                output=output,
-                input=api_kwargs,
-                prompt_kwargs=prompt_kwargs,
-                model_kwargs=model_kwargs,
-            )  # one failure will trace all errors in both call and data processing
-        else:
-            self.trigger_callbacks(
-                "on_success",
-                output=output,
-                input=api_kwargs,
-                prompt_kwargs=prompt_kwargs,
-                model_kwargs=model_kwargs,
-            )
+        self._run_callbacks(output, input=api_kwargs)
+        output.id = id
 
         log.info(f"output: {output}")
         return output
@@ -543,6 +686,8 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         self,
         prompt_kwargs: Optional[Dict] = {},
         model_kwargs: Optional[Dict] = {},
+        use_cache: Optional[bool] = None,
+        id: Optional[str] = None,
     ) -> GeneratorOutputType:
         r"""Async call the model with the input and model_kwargs.
 
@@ -557,7 +702,9 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             api_kwargs=api_kwargs, model_type=self.model_type
         )
         output = self._post_call(completion)
+        output.id = id
         log.info(f"output: {output}")
+        self._run_callbacks(output, input=api_kwargs)
         return output
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
@@ -598,6 +745,36 @@ class BackwardEngine(Generator):  # it is a generator with defaule template
             gradient_value_data = f"The backward engine failed to compute the gradient. Raw response: {gradient_response.raw_response}, Error: {gradient_response.error}"
 
         return gradient_value_data
+
+
+def create_teacher_generator(
+    student: Generator,
+    model_client: ModelClient,
+    model_kwargs: Dict[str, Any],
+    template: Optional[str] = None,
+) -> Generator:
+    r"""Create a teacher generator from the student generator.
+
+    Args:
+        student (Generator): The student generator.
+        model_client (ModelClient): The model client to use for the teacher generator.
+        model_kwargs (Dict[str, Any]): The model kwargs to pass to the model client.
+        name (str, optional): The name of the teacher generator. Defaults to "teacher".
+
+    Returns:
+        Generator: The teacher generator.
+    """
+    kwargs = student._kwargs.copy()
+    # update the model client and model kwargs
+    kwargs["model_client"] = model_client
+    kwargs["model_kwargs"] = model_kwargs
+    if template:
+        kwargs["template"] = template
+    kwargs["name"] = f"{student.name}_teacher"
+    teacher = Generator(
+        **kwargs,
+    )
+    return teacher
 
 
 if __name__ == "__main__":
@@ -657,6 +834,11 @@ if __name__ == "__main__":
     for model in [llama3_model, gpt_3_model, gemini_model, claude_model]:
         print(f"""model: {model["model_kwargs"]["model"]}""")
         generator = Generator(**model)
+
+        print("_kwargs: ", generator._kwargs)
+
+        teacher = create_teacher_generator(generator, **claude_model)
+        print(f"teacher: {teacher}")
 
         call_logger.register_generator("generator", "generator_call")
         # setup the callback

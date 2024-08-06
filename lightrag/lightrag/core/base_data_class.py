@@ -2,7 +2,7 @@
 The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
 """
 
-from typing import List, Dict, Any, Optional, Union, Callable
+from typing import List, Dict, Any, Optional, Union, Callable, Type
 import collections
 
 import enum
@@ -485,6 +485,20 @@ class DataClass:
 
     # TODO:support Generic[Type[T]] for the type of fields
     # it will automatically use __type_var_map__ attribute
+
+
+def check_adal_dataclass(data_class: Type) -> None:
+    """Check if the provided class is a valid dataclass for the AdalFlow framework.
+
+    Args:
+        data_class (Type): The class to check.
+    """
+
+    if not is_dataclass(data_class):
+        raise TypeError(f"Provided class is not a dataclass: {data_class}")
+
+    if not issubclass(data_class, DataClass):
+        raise TypeError(f"Provided class is not a subclass of DataClass: {data_class}")
 
 
 """Reserved for Agent to automatically create a dataclass and to manipulate the code"""

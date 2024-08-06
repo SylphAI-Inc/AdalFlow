@@ -1,6 +1,6 @@
 """Adapted from text_grad's String Based Function"""
 
-from typing import Callable, Dict, Union, TYPE_CHECKING
+from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 import logging
 from lightrag.optim.text_grad.function import BackwardContext, GradFunction
 
@@ -57,13 +57,22 @@ class EvalFnToTextLoss(Component, GradFunction):
 
     Can be used for tasks that have y_gt (ground truth).
     The fn will be fn(y, y_gt) -> metric, and the loss will be a Parameter with
-    the evaluation result and can be used to compute gradients."""
+    the evaluation result and can be used to compute gradients.
+
+    Args:
+        eval_fn: The evaluation function that takes a pair of y and y_gt and returns a score.
+        eval_fn_desc: Description of the evaluation function.
+        backward_engine: The backward engine to use for the text prompt optimization.
+        model_client: The model client to use for the backward engine if backward_engine is not provided.
+        model_kwargs: The model kwargs to use for the backward engine if backward_engine is not provided.
+
+    """
 
     def __init__(
         self,
         eval_fn: Union[Callable, BaseEvaluator],
         eval_fn_desc: str,
-        backward_engine: "BackwardEngine" = None,
+        backward_engine: Optional["BackwardEngine"] = None,
         model_client: "ModelClient" = None,
         model_kwargs: Dict[str, object] = None,
     ):
@@ -74,15 +83,15 @@ class EvalFnToTextLoss(Component, GradFunction):
         self.eval_fn_desc = eval_fn_desc
         self.name = f"{self.__class__.__name__}"
 
+        self.backward_engine = None
+
         if backward_engine is None:
             log.info(
                 "EvalFnToTextLoss: No backward engine provided. Creating one using model_client and model_kwargs."
             )
-            if model_client is None or model_kwargs is None:
-                raise ValueError(
-                    "EvalFnToTextLoss: model_client and model_kwargs must be provided if backward_engine is not provided."
-                )
-            self.set_backward_engine(backward_engine, model_client, model_kwargs)
+            if model_client and model_kwargs:
+
+                self.set_backward_engine(backward_engine, model_client, model_kwargs)
         else:
             if not isinstance(backward_engine, BackwardEngine):
                 raise TypeError(
@@ -94,7 +103,9 @@ class EvalFnToTextLoss(Component, GradFunction):
         return self.forward(*args, **kwargs)
 
     def forward(
-        self, kwargs: Dict[str, Parameter], response_desc: str = None
+        self,
+        kwargs: Dict[str, Parameter],
+        response_desc: str = None,
     ) -> Parameter:
         if response_desc is None:
             response_desc = (
@@ -108,28 +119,29 @@ class EvalFnToTextLoss(Component, GradFunction):
                     f"EvalFnToTextLoss: Input argument {k} must be an instance of Parameter."
                 )
 
-        response: str = self.eval_fn(**kwargs)
+        score: float = self.eval_fn(**kwargs)
 
         # Create a parameter
-        response: Parameter = Parameter(
+        # TODO: improve the readability of the input and response
+        eval_param: Parameter = Parameter(
             alias=self.name + "_output",
-            data=response,
+            data=score,
             requires_opt=True,
             predecessors=list(kwargs.values()),
             role_desc=response_desc,
         )
 
-        log.info(f"EvalFnToTextLoss: Input: {kwargs}, Output: {response}")
-        response.set_grad_fn(
+        log.info(f"EvalFnToTextLoss: Input: {kwargs}, Output: {eval_param}")
+        eval_param.set_grad_fn(
             BackwardContext(
                 backward_fn=self.backward,
                 backward_engine=self.backward_engine,
-                response=response,
+                response=eval_param,
                 eval_fn_desc=self.eval_fn_desc,
                 kwargs=kwargs,
             )
         )
-        return response
+        return eval_param
 
     def set_backward_engine(
         self,
@@ -235,6 +247,10 @@ class EvalFnToTextLoss(Component, GradFunction):
             variable_desc=pred.role_desc,
         )
 
+        # backward the end to end score
+        pred._score = response.data
+        print(f"setting pred alias {pred.alias} score to {response.data}")
+
         # TODO: reduce meta
 
     def backward(
@@ -242,8 +258,13 @@ class EvalFnToTextLoss(Component, GradFunction):
         response: Parameter,
         eval_fn_desc: str,
         kwargs: Dict[str, Parameter],
-        backward_engine: "BackwardEngine",
+        backward_engine: Optional[
+            "BackwardEngine"
+        ] = None,  # only needed for text prompt optimization
     ):
+        r"""Ensure to set backward_engine for the text prompt optimization. It can be None if you
+        are only doing demo optimization and it will not have gradients but simply backpropagate the score.
+        """
         log.info(f"EvalFnToTextLoss: Backward: {response}")
         children_params = response.predecessors
         is_chain = True
@@ -257,20 +278,30 @@ class EvalFnToTextLoss(Component, GradFunction):
         )
 
         # go through all child parameters
+        if backward_engine:
+            for pred in children_params:
+                if not pred.requires_opt:
+                    log.debug(
+                        f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
+                    )
+                    continue
+                self._backward_through_one_predecessor(
+                    pred,
+                    inputs_string,
+                    response,
+                    eval_fn_desc,
+                    backward_engine,
+                    is_chain,
+                )
+        # backward for the score for the demo
         for pred in children_params:
             if not pred.requires_opt:
                 log.debug(
                     f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
                 )
                 continue
-            self._backward_through_one_predecessor(
-                pred,
-                inputs_string,
-                response,
-                eval_fn_desc,
-                backward_engine,
-                is_chain,
-            )
+            pred._score = float(response.data)
+            log.info(f"setting pred alias {pred.alias} score to {response.data}")
 
 
 if __name__ == "__main__":

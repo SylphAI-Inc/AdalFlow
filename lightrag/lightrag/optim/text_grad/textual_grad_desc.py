@@ -12,7 +12,7 @@ import logging
 from dataclasses import field, dataclass
 
 
-from lightrag.optim.optimizer import Optimizer, ParamsT
+from lightrag.optim.optimizer import TextOptimizer, ParamsT
 from lightrag.optim.parameter import Parameter
 
 from lightrag.core.base_data_class import DataClass
@@ -168,7 +168,7 @@ new_variable_tags = ["<NEW_VARIABLE>", "</NEW_VARIABLE>"]
 
 
 @trace_generator_states()
-class TextualGradientDescent(Optimizer):
+class TextualGradientDescent(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
     proposing: bool = False

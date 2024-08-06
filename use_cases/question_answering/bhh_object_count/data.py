@@ -18,6 +18,48 @@ class ObjectCountPredData(DataClass):
     )
 
 
+# TODO: user dont have to specify, we can auto generate a dataclass
+@dataclass
+class ObjectCountSimple(DataClass):
+    """Dataclass for string output"""
+
+    # inputs: Dict[str, Any] = field(
+    #     default=None,
+    #     metadata={"desc": "The inputs to the model"},
+    # )
+    id: str = field(
+        default=None,
+        metadata={"desc": "The unique identifier of the example"},
+    )
+
+    question: str = field(
+        default=None,
+        metadata={"desc": "The question to be answered"},
+    )
+
+    answer: str = field(
+        default=None,
+        metadata={"desc": "The raw answer to the question"},  # teacher
+    )
+
+    # student_answer: str = field(
+    #     default=None,
+    #     metadata={"desc": "The student answer to the question"},  # student
+    # )
+    # ground_truth: str = field(
+    #     default=None,
+    #     metadata={"desc": "The ground truth answer to the question"},
+    # )
+    score: float = field(
+        default=None,
+        metadata={
+            "desc": "The score of the answer, in range [0, 1]. The higher the better"
+        },
+    )  # score can be used as weight for demo, weight = score (the higher the more likely to be sampled)
+
+    # score will be weight (1-score) for sampling using ground truth as answer.
+
+
 def _parse_integer_answer(answer: str, only_first_line: bool = False):
     """A function to component that will parse the answer from a string. Used for string output"""
     try:
