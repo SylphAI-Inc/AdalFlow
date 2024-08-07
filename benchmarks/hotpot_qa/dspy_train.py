@@ -1,5 +1,6 @@
 import dspy
 from dspy.datasets import HotPotQA
+import dspy.evaluate
 
 
 turbo = dspy.OpenAI(model="gpt-3.5-turbo")

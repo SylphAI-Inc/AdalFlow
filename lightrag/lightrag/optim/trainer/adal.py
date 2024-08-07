@@ -1,6 +1,7 @@
 from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
 import concurrent
 from tqdm import tqdm
+import numpy as np
 
 if TYPE_CHECKING:
     from lightrag.core.model_client import ModelClient
@@ -23,6 +24,7 @@ class AdalComponent(Component):
 
     task: Component
     evaluator: Optional[BaseEvaluator] = None
+    eval_fn: Optional[Callable] = None
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -60,7 +62,14 @@ class AdalComponent(Component):
         Note:
             ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
         """
-        raise NotImplementedError("evaluate_samples method is not implemented")
+        # in default use evaluate_one_sample
+        acc_list = [
+            self.evaluate_one_sample(sample, y_pred)
+            for sample, y_pred in zip(samples, y_preds)
+        ]
+        avg_score = np.mean(np.array(acc_list))
+        return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
+        # raise NotImplementedError("evaluate_samples method is not implemented")
 
     def pred_step(
         self,
@@ -109,8 +118,15 @@ class AdalComponent(Component):
                     )
         return y_preds
 
+    # def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+    #     raise NotImplementedError("train_step method is not implemented")
+
     def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-        raise NotImplementedError("train_step method is not implemented")
+        self.task.train()
+        y_preds = self.pred_step(batch, batch_idx, num_workers)
+        for i, y_pred in enumerate(y_preds):
+            y_pred.alias += f"y_pred_{i}"
+        return y_preds
 
     def validate_condition(self, steps: int, total_steps: int) -> bool:
         r"""In default, trainer will validate at every step."""

@@ -526,7 +526,7 @@ class DynamicDataClassFactory:
             "name": {"value": "John Doe", "desc": "The name of the person"},
         }
 
-        DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)
+        DynamicOutputs = DynamicDataClassFactory.from_dict(data)
         class_instance = DynamicOutputs()
         print(class_instance)
 
@@ -535,7 +535,7 @@ class DynamicDataClassFactory:
     """
 
     @staticmethod
-    def create_from_dict(data: dict, base_class=DataClass, class_name="DynamicOutputs"):
+    def from_dict(data: dict, base_class=DataClass, class_name="DynamicOutputs"):
         fields_spec = []
         for key, value_dict in data.items():
             field_type = type(value_dict["value"])

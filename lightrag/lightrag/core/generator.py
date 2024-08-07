@@ -327,7 +327,12 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         # map the output fields
         for key, value in demo_data_class_output_mapping.items():
             demo_data[key] = value(output)
-        return demo_class.from_dict(demo_data)
+        obj = demo_class.from_dict(demo_data)
+        if obj is None:
+            raise ValueError(
+                f"Error creating the demo data instance: {demo_class}, {demo_data}"
+            )
+        return obj
 
     def set_backward_engine(self, backward_engine: "BackwardEngine" = None):
         if backward_engine is None:
@@ -420,6 +425,10 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         # attach the demo to the demo parameter
         if self.tracing:
             demo_param = self.find_demo_parameter(combined_prompt_kwargs)
+            if id is None:
+                raise ValueError(
+                    "ID is required for tracing. Please pass it to your Geneartor call."
+                )
             if demo_param:
 
                 demo = self.create_demo_data_instance(
@@ -431,6 +440,13 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                     id=id,
                 )
                 demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
+            else:
+                log.warning(
+                    "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
+                )
+                # raise ValueError(
+                #     "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
+                # )
         if not self.backward_engine:
             # self.set_backward_engine()
             log.debug(f"Backward engine: {self.backward_engine}")

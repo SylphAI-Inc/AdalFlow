@@ -22,6 +22,14 @@ class ObjectCountData(DataClass):
     y: str = field(metadata={"desc": "The answer to the question"}, default=None)
 
 
+def prepare_dataset_path(root: str, task_name: str, split: str):
+    if root is None:
+        root = get_adalflow_default_root_path()
+        print(f"Saving dataset to {root}")
+    os.makedirs(os.path.join(root, task_name), exist_ok=True)
+    return os.path.join(root, task_name, f"{split}.csv")
+
+
 # TODO: here users clean adalflow created files
 class BigBenchHard(Dataset):
     def __init__(
@@ -36,15 +44,16 @@ class BigBenchHard(Dataset):
         if split not in ["train", "val", "test"]:
             raise ValueError("Split must be one of 'train', 'val', 'test'")
 
-        if root is None:
-            root = get_adalflow_default_root_path()
-            print(f"Saving dataset to {root}")
+        # if root is None:
+        #     root = get_adalflow_default_root_path()
+        #     print(f"Saving dataset to {root}")
         self.root = root
         self.split = split
+
         self.task_name = "_".join(task_name.split("_")[1:])
-        self._check_or_download_dataset()
-        os.makedirs(os.path.join(self.root, self.task_name), exist_ok=True)
-        data_path = os.path.join(self.root, self.task_name, f"{split}.csv")
+        data_path = prepare_dataset_path(self.root, self.task_name, split)
+        self._check_or_download_dataset(data_path)
+
         self.data = []
         with open(data_path, newline="") as csvfile:
             reader = csv.DictReader(csvfile)
@@ -54,8 +63,7 @@ class BigBenchHard(Dataset):
                 )  # dont use a tuple, use a dict {"x": ..., "y": ...}
         self._task_description = "You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value."
 
-    def _check_or_download_dataset(self):
-        data_path = os.path.join(self.root, self.task_name, f"{self.split}.csv")
+    def _check_or_download_dataset(self, data_path: str = None):
         if os.path.exists(data_path):
             return
 

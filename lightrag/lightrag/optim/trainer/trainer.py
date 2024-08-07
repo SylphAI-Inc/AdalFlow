@@ -53,7 +53,7 @@ class Trainer(Component):
     """
 
     adaltask: AdalComponent  # task pipeline
-    # train_batch_size: int
+    train_batch_size: Optional[int] = 4
     # train_dataset = (
     #     None  # accept library dataset  or pytorch dataset or huggingface dataset
     # )
@@ -67,7 +67,7 @@ class Trainer(Component):
     optimizer: Optimizer = None
     ckpt_path: Optional[str] = None
     ckpt_file: Optional[str] = None
-    num_workers: int = 2
+    num_workers: int = 4
     max_proposals_per_step: int = 5
     # moving batch for speed up the training
     batch_val_score_threshold: Optional[float] = (
@@ -82,7 +82,7 @@ class Trainer(Component):
         optimizer_type: str = "text-grad",
         strategy: Literal["random", "constrained"] = "constrained",
         max_steps: int = 1000,
-        num_workers: int = 2,
+        num_workers: int = 4,
         ckpt_path: str = None,
         batch_val_score_threshold: Optional[float] = 1.0,
         max_error_samples: Optional[int] = 4,
@@ -96,6 +96,7 @@ class Trainer(Component):
         raw_shots: Optional[int] = None,
         bootstrap_shots: Optional[int] = None,
         save_traces: bool = False,
+        train_batch_size: Optional[int] = 4,
         *args,
         **kwargs,
     ) -> None:
@@ -132,6 +133,7 @@ class Trainer(Component):
         self.demo_optimizers: List[DemoOptimizer] = []
         self.text_optimizers: List[TextOptimizer] = []
         self.save_traces = save_traces
+        self.train_batch_size = train_batch_size
 
     def diagnose(self, train_dataset: Any):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
@@ -187,9 +189,9 @@ class Trainer(Component):
         train_dataset = train_dataset or self.train_dataset
 
         if not self.train_loader and train_dataset:
-            batch_size = 4
-            if self.strategy == "constrained":
-                batch_size = 12
+            batch_size = self.train_batch_size
+            # if self.strategy == "constrained":
+            #     batch_size = self.tra
             train_loader = DataLoader(
                 train_dataset, batch_size=batch_size, shuffle=True
             )
@@ -232,6 +234,17 @@ class Trainer(Component):
             self.loss_fn = adaltask.configure_loss_fn()
         # config demo optimizers
         if len(self.demo_optimizers) > 0:
+            # check the params to see if any of the params is a demo param
+            has_demo_param = False
+            for opt in self.demo_optimizers:
+                for param in opt.params:
+                    if param.param_type == ParameterType.DEMOS:
+                        has_demo_param = True
+                        break
+            if not has_demo_param:
+                raise ValueError(
+                    "No demo parameter found in the optimizer, ensure you have defined at least one demo parameter in your task pipeline"
+                )
             for opt in self.demo_optimizers:
                 opt.config_shots(raw_shots=raw_shots, bootstrap_shots=bootstrap_shots)
                 opt.use_weighted_sampling(weighted=False)
@@ -556,7 +569,9 @@ class Trainer(Component):
             raise ValueError("No demo params found")
 
         if len(demo_params[0]._traces) != 2:
-            raise ValueError(f"Expected 2 traces, got {len(demo_params[0]._traces)}")
+            raise ValueError(
+                f"Expected 2 traces, got {len(demo_params[0]._traces)}, traces: {demo_params[0]._traces}"
+            )
 
         print(f"Teacher y_preds: {y_preds[0].to_dict()}")
 

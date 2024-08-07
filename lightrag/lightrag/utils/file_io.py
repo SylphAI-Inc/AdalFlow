@@ -46,7 +46,8 @@ def save_csv(
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames or obj[0].keys())
             writer.writeheader()
             for row in obj:
-                writer.writerow(row)
+                filtered_row = {k: v for k, v in row.items() if k in fieldnames}
+                writer.writerow(filtered_row)
     except IOError as e:
         raise IOError(f"Error saving object to CSV file {f}: {e}")
 

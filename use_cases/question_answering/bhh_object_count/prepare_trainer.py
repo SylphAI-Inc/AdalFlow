@@ -72,12 +72,12 @@ class TGDWithEvalFnLoss(AdalComponent):
         y_gts = [sample.y for sample in samples]
         return self.evaluator.compute(y_preds, y_gts)
 
-    def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
-        self.task.train()
-        y_preds = super().pred_step(batch, batch_idx, num_workers)
-        for i, y_pred in enumerate(y_preds):
-            y_pred.alias += f"y_pred_{i}"
-        return y_preds
+    # def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
+    #     self.task.train()
+    #     y_preds = super().pred_step(batch, batch_idx, num_workers)
+    #     for i, y_pred in enumerate(y_preds):
+    #         y_pred.alias += f"y_pred_{i}"
+    #     return y_preds
 
     def configure_optimizers(self):
         use_tgd = False

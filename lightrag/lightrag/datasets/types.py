@@ -14,3 +14,12 @@ class Example(DataClass):
         metadata={"desc": "The question to be answered"}, default=None
     )
     answer: str = field(metadata={"desc": "The answer to the question"}, default=None)
+
+
+@dataclass
+class HotPotQAData(Example):
+    __doc__ = """A dataclass for representing examples in the HotPotQA dataset."""
+    gold_titles: set = field(
+        metadata={"desc": "The set of titles that support the answer"},
+        default=None,
+    )
