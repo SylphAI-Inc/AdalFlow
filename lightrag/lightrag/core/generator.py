@@ -383,7 +383,6 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                 if not self._teacher:
                     raise ValueError("Teacher generator is not set.")
                 log.info(f"Using teacher: {self._teacher}")
-                print(f"using teacher: {self._teacher}")
                 input_args = {
                     "prompt_kwargs": compose_model_kwargs(
                         self._teacher.prompt_kwargs, prompt_kwargs
@@ -420,10 +419,8 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         )
         # attach the demo to the demo parameter
         if self.tracing:
-            print("start creating demo data")
             demo_param = self.find_demo_parameter(combined_prompt_kwargs)
             if demo_param:
-                print("start creating demo data")
 
                 demo = self.create_demo_data_instance(
                     self._demo_data_class,
@@ -497,7 +494,7 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             if pred.requires_opt:
                 # pred._score = float(response._score)
                 pred.set_score(response._score)
-                print(
+                log.debug(
                     f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
                 )
                 if pred.param_type == ParameterType.DEMOS:
@@ -505,7 +502,7 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
                     pred.add_score_to_trace(
                         trace_id=id, score=response._score, is_teacher=self.teacher_mode
                     )
-                    print(f"Pred: {pred.alias}, traces: {pred._traces}")
+                    log.debug(f"Pred: {pred.alias}, traces: {pred._traces}")
 
     @staticmethod
     def _backward_through_one_predecessor(

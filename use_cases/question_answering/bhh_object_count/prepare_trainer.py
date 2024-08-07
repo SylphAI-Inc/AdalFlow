@@ -4,7 +4,6 @@ if TYPE_CHECKING:
     from lightrag.core.component import Component
 
 from lightrag.optim.parameter import Parameter
-from lightrag.optim.types import FewShotConfig
 
 from lightrag.optim.trainer.adal import AdalComponent
 from lightrag.datasets.big_bench_hard import ObjectCountData
@@ -13,7 +12,7 @@ from lightrag.core.generator import BackwardEngine
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
 from lightrag.eval.base import EvaluationResult
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
-from lightrag.optim.few_shot_optimizer import BootstrapFewShot
+from lightrag.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 
 
 from use_cases.question_answering.bhh_object_count.task import ObjectCountTaskOriginal
@@ -97,15 +96,15 @@ class TGDWithEvalFnLoss(AdalComponent):
                 **self.optimizer_model_config,
                 num_gradient_memory=0,
             )  # noqa:F841
-        config = FewShotConfig(
-            num_shots=5,
-            raw_shots=3,
-            bootstrap_shots=2,
-        )
+        # config = FewShotConfig(
+        #     num_shots=5,
+        #     raw_shots=3,
+        #     bootstrap_shots=2,
+        # )
 
         fso = BootstrapFewShot(
             params=parameters,
-            few_shot_config=config,
+            # few_shot_config=config,
             # sampler=RandomSampler(default_num_shots=5),
         )
         return [fso]

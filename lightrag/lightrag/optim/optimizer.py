@@ -88,7 +88,7 @@ class DemoOptimizer(Optimizer):
     def __init__(self, *args, **kwargs):
         pass
 
-    def init_shots(self, *args, **kwargs):
+    def config_shots(self, *args, **kwargs):
         r"""Initialize the samples for each parameter."""
         raise NotImplementedError("init method is not implemented")
 

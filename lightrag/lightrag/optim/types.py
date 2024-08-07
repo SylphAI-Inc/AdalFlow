@@ -48,7 +48,6 @@ class TrainerResult(DataClass):
 
 @dataclass
 class FewShotConfig:
-    num_shots: int  # total shots = raw_shots + bootstrap_shots
     raw_shots: int  # raw shots
     bootstrap_shots: int  # bootstrap shots
 

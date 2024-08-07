@@ -79,6 +79,9 @@ def train_object_count_few_shot(
             ObjectCountTaskFewShot, gpt_3_model, gpt_4o_model, gpt_4o_model
         ),
         ckpt_path="object_count_text_grad_few_shot",
+        save_traces=True,
+        raw_shots=raw_shots,
+        bootstrap_shots=bootstrap_shots,
     )
 
     root = "cache_datasets"
@@ -119,11 +122,11 @@ if __name__ == "__main__":
 
     train_object_count_few_shot(
         total_shots=5,
-        raw_shots=3,
+        raw_shots=0,
         bootstrap_shots=2,
         max_steps=10,
-        max_samples=100,
+        max_samples=20,
         num_workers=4,
-        strategy="constrained",
-        debug=True,
+        strategy="random",
+        debug=False,
     )

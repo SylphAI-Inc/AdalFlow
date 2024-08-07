@@ -12,7 +12,7 @@ from lightrag.optim.optimizer import Optimizer, DemoOptimizer, TextOptimizer
 
 if TYPE_CHECKING:
     from lightrag.optim.parameter import Parameter
-from lightrag.optim.types import PromptData, TrainerResult, FewShotConfig, ParameterType
+from lightrag.optim.types import PromptData, TrainerResult, ParameterType
 from lightrag.eval.base import EvaluationResult
 from lightrag.optim.trainer.adal import AdalComponent
 from lightrag.optim.text_grad.ops import sum
@@ -32,6 +32,24 @@ class Trainer(Component):
     Training set: can be used for passing initial proposed prompt or for few-shot sampling.
     Validation set: Will be used to select the final prompt or samples.
     Test set: Will be used to evaluate the final prompt or samples.
+
+    Args:
+        adaltask: AdalComponent: AdalComponent instance
+        optimizer_type: str: Type of optimizer to use, either text-grad or orpo
+        strategy: Literal["random", "constrained"]: Strategy to use for the optimizer
+        max_steps: int: Maximum number of steps to run the optimizer
+        num_workers: int: Number of workers to use for parallel processing
+        ckpt_path: str: Path to save the checkpoint files
+        batch_val_score_threshold: Optional[float]: Threshold for skipping a batch
+        max_error_samples: Optional[int]: Maximum number of error samples to keep
+        max_correct_samples: Optional[int]: Maximum number of correct samples to keep
+        max_proposals_per_step: int: Maximum number of proposals to generate per step
+        train_loader: Any: DataLoader instance for training
+        train_dataset: Any: Training dataset
+        val_dataset: Any: Validation dataset
+        test_dataset: Any: Test dataset
+        few_shots_config: Optional[FewShotConfig]: Few shot configuration
+        save_traces: bool: Save traces for for synthetic data generation or debugging
     """
 
     adaltask: AdalComponent  # task pipeline
@@ -74,7 +92,10 @@ class Trainer(Component):
         train_dataset: Optional[Any] = None,
         val_dataset: Optional[Any] = None,
         test_dataset: Optional[Any] = None,
-        few_shots_config: Optional[FewShotConfig] = None,
+        # few_shots_config: Optional[FewShotConfig] = None,
+        raw_shots: Optional[int] = None,
+        bootstrap_shots: Optional[int] = None,
+        save_traces: bool = False,
         *args,
         **kwargs,
     ) -> None:
@@ -106,9 +127,11 @@ class Trainer(Component):
             "fullset": self._fullset_effect_count,
             "valset": self._valset_effect_count,
         }
-        self.few_shots_config = few_shots_config
+        self._raw_shots = raw_shots
+        self._bootstrap_shots = bootstrap_shots
         self.demo_optimizers: List[DemoOptimizer] = []
         self.text_optimizers: List[TextOptimizer] = []
+        self.save_traces = save_traces
 
     def diagnose(self, train_dataset: Any):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
@@ -147,10 +170,17 @@ class Trainer(Component):
         val_dataset: Optional[Any] = None,
         test_dataset: Optional[Any] = None,
         debug: bool = False,
+        save_traces: bool = False,
+        raw_shots: Optional[int] = None,
+        bootstrap_shots: Optional[int] = None,
     ):
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
         """
+        raw_shots = raw_shots or self._raw_shots
+        bootstrap_shots = bootstrap_shots or self._bootstrap_shots
+        print(f"raw_shots: {raw_shots}, bootstrap_shots: {bootstrap_shots}")
+        self.save_traces = save_traces or self.save_traces
 
         train_loader = train_loader or self.train_loader
 
@@ -200,6 +230,11 @@ class Trainer(Component):
         ]
         if len(self.text_optimizers) > 0 or len(self.demo_optimizers) > 0:
             self.loss_fn = adaltask.configure_loss_fn()
+        # config demo optimizers
+        if len(self.demo_optimizers) > 0:
+            for opt in self.demo_optimizers:
+                opt.config_shots(raw_shots=raw_shots, bootstrap_shots=bootstrap_shots)
+                opt.use_weighted_sampling(weighted=False)
 
         if debug:
             print("Debugging mode")
@@ -226,7 +261,9 @@ class Trainer(Component):
         # Run the demo optimizers
         if len(self.demo_optimizers) > 0:
             adaltask.configure_teacher_generator()
-            pass
+            self._fit_demos_random(
+                train_loader, train_dataset, val_dataset, test_dataset
+            )
 
     @staticmethod
     def _estimate_num_epochs(train_loader: Any, max_steps: int):
@@ -270,15 +307,14 @@ class Trainer(Component):
 
         hash_key = hash_text_sha1(serialize(trainer_state))[0:5]
         trainer_state["hash_key"] = hash_key
-        print(f"adal task hash key: {self.adaltask}")
         trainer_state["task_state_dict"] = self.adaltask.to_dict()
-        restore_state = AdalComponent.from_dict(
-            trainer_state["task_state_dict"]
-        )  # tODO: add a test for adalcomponent
-        print(
-            f"restore_state: {str(restore_state.to_dict()) == str(self.adaltask.to_dict())}"
-        )
-        print(f"task_state_dict: {trainer_state['task_state_dict']}")
+        # restore_state = AdalComponent.from_dict(
+        #     trainer_state["task_state_dict"]
+        # )  # tODO: add a test for adalcomponent
+        # print(
+        #     f"restore_state: {str(restore_state.to_dict()) == str(self.adaltask.to_dict())}"
+        # )
+        # print(f"task_state_dict: {trainer_state['task_state_dict']}")
         return trainer_state
 
     def prep_ckpt_file_path(self, trainer_state: Dict[str, Any] = None):
@@ -362,6 +398,133 @@ class Trainer(Component):
         for opt in self.demo_optimizers:
             opt.init_shots()
 
+    def _fit_demos_random(
+        self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
+    ):
+        log.info("Fitting using Random Demo Optimizer")
+        trainer_results = self._pre_fit(val_dataset, test_dataset)
+        print(f"save to {self.ckpt_file}")
+
+        self.adaltask.train()
+        self.adaltask.trace()
+        self._set_demo_optimizers_dataset(train_dataset)
+
+        num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
+        total_steps = 0
+        teacher_losses_cache: Dict[str, Parameter] = {}
+        for epoch in tqdm(range(num_epochs), desc="Epoch"):
+            for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
+                total_steps += 1
+                if total_steps > self.max_steps:
+                    print("Reached max steps")
+                    break
+                pbar.set_description(f"Training Step: {total_steps}")
+                # Trace the run in the demos
+                self.adaltask.use_teacher(False)
+                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                losses: List[Parameter] = self.adaltask.loss_step(
+                    batch, y_preds, steps, self.num_workers
+                )
+                for loss in losses:
+                    loss.backward()
+                # Trace the teacher run
+                self.adaltask.use_teacher(True)
+                # filter by id
+                batch_for_teacher = []
+                for sample in batch:
+                    if sample.id not in teacher_losses_cache:
+                        batch_for_teacher.append(sample)
+
+                y_preds_teacher = self.adaltask.train_step(
+                    batch_for_teacher, steps, self.num_workers
+                )
+                losses_teacher: List[Parameter] = self.adaltask.loss_step(
+                    batch, y_preds_teacher, steps, self.num_workers
+                )
+                for loss in losses_teacher:
+                    loss.backward()
+                # save the teacher predictions, if Generator is in cache mode, it will also avoid re-running the teacher
+                for idx, (sample, loss) in enumerate(
+                    zip(batch_for_teacher, losses_teacher)
+                ):
+                    teacher_losses_cache[sample.id] = loss
+                # propose
+                self._demo_optimizers_propose()
+
+                new_prompts = self.adaltask._get_param_values()
+                print(f"New prompts: {new_prompts}")
+
+                # validate
+                if self.adaltask.validate_condition(steps, total_steps):
+                    val_output = self.adaltask.validation_step(
+                        val_dataset,
+                        steps,
+                        self.num_workers,
+                        minimum_score=trainer_results.val_scores[-1],
+                    )
+                    val_score = val_output.avg_score
+                    if val_score > trainer_results.val_scores[-1]:
+                        print(
+                            f"Pass validation: {val_score} > {trainer_results.val_scores[-1]}"
+                        )
+                        self._demo_optimizers_step()
+                        for opt in self.demo_optimizers:
+                            if opt.proposing:
+                                raise ValueError("Optimizer is still proposing")
+
+                        # test the new prompts
+                        test_output = self.adaltask.validation_step(
+                            test_dataset, steps, self.num_workers
+                        )
+                        test_score = test_output.avg_score
+                        self._add_one_step_in_trainer_results(
+                            trainer_results,
+                            val_score,
+                            test_score=test_score,
+                            prompts=new_prompts,
+                            steps=total_steps,
+                        )
+                    else:
+                        print(
+                            f"Fail validation: {val_score} <= {trainer_results.val_scores[-1]}"
+                        )
+                        self._demo_optimizers_revert()
+                        # ensure all demo optimizer are not proposing
+                        for opt in self.demo_optimizers:
+                            if opt.proposing:
+                                raise ValueError("Optimizer is still proposing")
+                        self._add_one_step_in_trainer_results(
+                            trainer_results,
+                            trainer_results.val_scores[-1],
+                            test_score=trainer_results.test_scores[-1],
+                            prompts=trainer_results.prompts[-1],
+                            steps=total_steps,
+                        )
+                    save_json(trainer_results.to_dict(), self.ckpt_file)
+        save_json(trainer_results.to_dict(), self.ckpt_file)
+        if self.save_traces:
+            for i, demo_opt in enumerate(self.demo_optimizers):
+                for param in demo_opt.params:
+
+                    teacher_traces = param._traces
+                    student_traces = param._student_traces
+
+                    trace_file = os.path.join(
+                        self.ckpt_path,
+                        f"opt_{i}_param_{param.alias}_teacher_traces.json",
+                    )
+                    save_json(teacher_traces, trace_file)
+                    trace_file = os.path.join(
+                        self.ckpt_path,
+                        f"opt_{i}_param_{param.alias}_student_traces.json",
+                    )
+                    save_json(student_traces, trace_file)
+                    # save demos
+                    demo_file = os.path.join(
+                        self.ckpt_path, f"opt_{i}_param_{param.alias}_demos.json"
+                    )
+                    save_json(param._demos, demo_file)
+
     # TODO: make this the debug
     def _fit_demos_one_step_for_debug(
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
@@ -388,7 +551,6 @@ class Trainer(Component):
             raise ValueError("Expected 2 y_preds")
         nodes: List[Parameter] = y_preds[0].trace_graph(y_preds[0])[0]
         demo_params = [p for p in nodes if p.param_type == ParameterType.DEMOS]
-        print(f"Demo params: {demo_params}")
 
         if len(demo_params) == 0:
             raise ValueError("No demo params found")
@@ -606,7 +768,7 @@ class Trainer(Component):
                         )
 
                 print(f"Saving checkpoint to {self.ckpt_file}")
-                save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
+            save_json(trainer_results.to_dict(), self.ckpt_file)  # checkpoint
 
     @staticmethod
     def _add_one_step_in_trainer_results(

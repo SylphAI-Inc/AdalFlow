@@ -192,7 +192,12 @@ class Parameter(Generic[T]):
         self._score = score
 
     def add_to_trace(self, trace: DataClass, is_teacher: bool = True):
-        r"""Called by the generator.forward to add a trace to the parameter."""
+        r"""Called by the generator.forward to add a trace to the parameter.
+
+        It is important to allow updating to the trace, as this will give different sampling weight.
+        If the score increases as the training going on, it will become less likely to be sampled,
+        allowing the samples to be more diverse. Or else, it will keep sampling failed examples.
+        """
         target = self._traces if is_teacher else self._student_traces
         if not hasattr(trace, "id"):
             raise ValueError("Trace must have an id attribute.")
