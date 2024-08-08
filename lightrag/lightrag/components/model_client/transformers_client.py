@@ -690,10 +690,9 @@ class TransformersClient(ModelClient):
 if __name__ == "__main__":
     from lightrag.core import Generator
 
-    # set
-    import os
+    import lightrag as adal
 
-    os.environ["HF_TOKEN"] = "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"
+    adal.setup_env()
 
     rag_template = r"""<START_OF_SYSTEM_MESSAGE>
 You are a helpful assistant.
