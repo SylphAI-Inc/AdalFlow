@@ -4,6 +4,7 @@ from typing import Any, Dict, Union, List, Optional, Sequence
 import logging
 from functools import lru_cache
 import re
+import warnings
 
 
 from lightrag.core.model_client import ModelClient
@@ -18,6 +19,8 @@ transformers = safe_import(
     OptionalPackages.TRANSFORMERS.value[0], OptionalPackages.TRANSFORMERS.value[1]
 )
 torch = safe_import(OptionalPackages.TORCH.value[0], OptionalPackages.TORCH.value[1])
+
+import torch
 
 import torch.nn.functional as F
 from torch import Tensor
@@ -259,11 +262,22 @@ class TransformerLLM:
 
     References:
     - model: https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
+    - https://huggingface.co/google/gemma-2b
+    - https://huggingface.co/google/gemma-2-2b
 
     """
     models: Dict[str, type] = {}  # to register the model
+    tokenizer: Dict[str, type] = {}
 
-    def __init__(self, model_name: Optional[str] = None):
+    model_to_init_func = {
+        "HuggingFaceH4/zephyr-7b-beta": "use_pipeline",
+        "google/gemma-2-2b": "use_pipeline",
+    }
+
+    def __init__(
+        self,
+        model_name: Optional[str] = None,
+    ):
         super().__init__()
 
         self.model_name = model_name  # current model to use
@@ -271,26 +285,79 @@ class TransformerLLM:
         if model_name is not None and model_name not in self.models:
             self.init_model(model_name=model_name)
 
-    def init_model(self, model_name: str):
-        log.debug(f"Loading model {model_name}")
+    def _check_token(self, token: str):
+        import os
+
+        if os.getenv(token) is None:
+            warnings.warn(
+                f"{token} is not set. You may not be able to access the model."
+            )
+
+    def _init_from_pipeline(self, model_name: str):
         from transformers import pipeline
 
+        clean_device_cache()
+        self._check_token("HF_TOKEN")
         try:
-            clean_device_cache()
+            import os
+
             pipe = pipeline(
                 "text-generation",
                 model=model_name,
                 torch_dtype=torch.bfloat16,
                 device=get_device(),
+                token=os.getenv("HF_TOKEN"),
             )
-
             self.models[model_name] = pipe
-
         except Exception as e:
             log.error(f"Error loading model {model_name}: {e}")
             raise e
 
-    def parse_chat_completion(self, completion: Any) -> str:
+    def _init_from_automodelcasual_lm(self, model_name: str):
+        try:
+            from transformers import AutoTokenizer, AutoModelForCausalLM
+        except ImportError:
+            raise ImportError(
+                "transformers is not installed. Please install it with `pip install transformers`"
+            )
+
+        try:
+            import os
+
+            if os.getenv("HF_TOKEN") is None:
+                warnings.warn(
+                    "HF_TOKEN is not set. You may not be able to access the model."
+                )
+
+            tokenizer = AutoTokenizer.from_pretrained(
+                model_name, token=os.getenv("HF_TOKEN")
+            )
+            model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                torch_dtype=torch.bfloat16,
+                device_map="auto",
+                token=os.getenv("HF_TOKEN"),
+            )
+            self.models[model_name] = model
+            self.tokenizer[model_name] = tokenizer
+        except Exception as e:
+            log.error(f"Error loading model {model_name}: {e}")
+            raise e
+
+    @lru_cache(None)
+    def init_model(self, model_name: str):
+        log.debug(f"Loading model {model_name}")
+
+        model_setup = self.model_to_init_func.get(model_name, None)
+        if model_setup:
+            if model_setup == "use_pipeline":
+                self._init_from_pipeline(model_name)
+            else:
+                self._init_from_automodelcasual_lm(model_name)
+        else:
+            raise ValueError(f"Model {model_name} is not supported")
+
+    def _parse_chat_completion_from_pipeline(self, completion: Any) -> str:
 
         text = completion[0]["generated_text"]
 
@@ -304,7 +371,22 @@ class TransformerLLM:
         else:
             return ""
 
-    def infer_llm(
+    def _parse_chat_completion_from_automodelcasual_lm(self, completion: Any) -> str:
+        print(f"completion: {completion}")
+        return completion[0]
+
+    def parse_chat_completion(self, completion: Any) -> str:
+        model_name = self.model_name
+        model_setup = self.model_to_init_func.get(model_name, None)
+        if model_setup:
+            if model_setup == "use_pipeline":
+                return self._parse_chat_completion_from_pipeline(completion)
+            else:
+                return self._parse_chat_completion_from_automodelcasual_lm(completion)
+        else:
+            raise ValueError(f"Model {model_name} is not supported")
+
+    def _infer_from_pipeline(
         self,
         *,
         model: str,
@@ -312,7 +394,6 @@ class TransformerLLM:
         max_tokens: Optional[int] = None,
         **kwargs,
     ):
-
         if not model:
             raise ValueError("Model is not provided.")
 
@@ -325,24 +406,83 @@ class TransformerLLM:
             f"Start to infer model {model}, messages: {messages}, kwargs: {kwargs}"
         )
 
-        prompt = model_to_use.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        if model == "HuggingFaceH4/zephyr-7b-beta":
 
-        final_kwargs = {
-            "max_new_tokens": max_tokens or 256,
-            "do_sample": True,
-            "temperature": kwargs.get("temperature", 0.7),
-            "top_k": kwargs.get("top_k", 50),
-            "top_p": kwargs.get("top_p", 0.95),
-        }
+            prompt = model_to_use.tokenizer.apply_chat_template(
+                messages, tokenize=False, add_generation_prompt=True
+            )
 
-        outputs = model_to_use(
-            prompt,
-            **final_kwargs,
-        )
+            final_kwargs = {
+                "max_new_tokens": max_tokens or 256,
+                "do_sample": True,
+                "temperature": kwargs.get("temperature", 0.7),
+                "top_k": kwargs.get("top_k", 50),
+                "top_p": kwargs.get("top_p", 0.95),
+            }
+            outputs = model_to_use(prompt, **final_kwargs)
+        elif model == "google/gemma-2-2b":
+            final_kwargs = {
+                "max_new_tokens": max_tokens or 256,
+                "do_sample": True,
+                "temperature": kwargs.get("temperature", 0.7),
+                "top_k": kwargs.get("top_k", 50),
+                "top_p": kwargs.get("top_p", 0.95),
+            }
+            text = messages[0]["content"]
+            outputs = model_to_use(
+                text,
+                **final_kwargs,
+            )
+
         log.info(f"Outputs: {outputs}")
         return outputs
+
+    def _infer_from_automodelcasual_lm(
+        self,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_length: Optional[int] = 8192,  # model-agnostic
+        **kwargs,
+    ):
+        if not model:
+            raise ValueError("Model is not provided.")
+        if model not in self.models:
+            self.init_model(model_name=model)
+        model_to_use = self.models[model]
+        tokenizer_to_use = self.tokenizer[model]
+
+        input_ids = tokenizer_to_use(messages[0]["content"], return_tensors="pt").to(
+            get_device()
+        )
+        print(input_ids)
+        outputs_tokens = model_to_use.generate(**input_ids, max_length=max_length)
+        outputs = []
+        for i, output in enumerate(outputs_tokens):
+            outputs.append(tokenizer_to_use.decode(output))
+        return outputs
+
+    def infer_llm(
+        self,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        **kwargs,
+    ):
+        # TODO: generalize the code for more models
+        model_setup = self.model_to_init_func.get(model, None)
+        if model_setup:
+            if model_setup == "use_pipeline":
+                return self._infer_from_pipeline(
+                    model=model, messages=messages, max_tokens=max_tokens, **kwargs
+                )
+            else:
+                return self._infer_from_automodelcasual_lm(
+                    model=model, messages=messages, max_tokens=max_tokens, **kwargs
+                )
+        else:
+            raise ValueError(f"Model {model} is not supported")
 
     def __call__(self, **kwargs):
         r"""Ensure "model" and "input" are in the kwargs."""
@@ -367,6 +507,10 @@ class TransformersClient(ModelClient):
     __doc__ = r"""LightRAG API client for transformers.
 
     Use: ``ls ~/.cache/huggingface/hub `` to see the cached models.
+
+    Some modeles are gated, you will need to their page to get the access token.
+    Find how to apply tokens here: https://huggingface.co/docs/hub/security-tokens
+    Once you have a token and have access, put the token in the environment variable HF_TOKEN.
     """
 
     support_models = {
@@ -377,6 +521,7 @@ class TransformersClient(ModelClient):
             "type": ModelType.RERANKER,
         },
         "HuggingFaceH4/zephyr-7b-beta": {"type": ModelType.LLM},
+        "google/gemma-2-2b": {"type": ModelType.LLM},
     }
 
     def __init__(self, model_name: Optional[str] = None) -> None:
@@ -402,6 +547,70 @@ class TransformersClient(ModelClient):
 
     def init_llm_client(self):
         return TransformerLLM()
+
+    def set_llm_client(self, llm_client: object):
+        r"""Allow user to pass a custom llm client. Here is an example of a custom llm client:
+
+        Ensure you have parse_chat_completion and __call__ methods which will be applied to api_kwargs specified in transform_client.call().
+
+        .. code-block:: python
+
+            class CustomizeLLM:
+
+                def __init__(self) -> None:
+                    pass
+
+                def parse_chat_completion(self, completion: Any) -> str:
+                    return completion
+
+                def __call__(self, messages: Sequence[Dict[str, str]], model: str, **kwargs):
+                    from transformers import AutoTokenizer, AutoModelForCausalLM
+
+                    tokenizer = AutoTokenizer.from_pretrained(
+                        "deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True
+                    )
+                    model = AutoModelForCausalLM.from_pretrained(
+                        "deepseek-ai/deepseek-coder-1.3b-instruct",
+                        trust_remote_code=True,
+                        torch_dtype=torch.bfloat16,
+                    ).to(get_device())
+                    messages = [
+                        {"role": "user", "content": "write a quick sort algorithm in python."}
+                    ]
+                    inputs = tokenizer.apply_chat_template(
+                        messages, add_generation_prompt=True, return_tensors="pt"
+                    ).to(model.device)
+                    # tokenizer.eos_token_id is the id of <|EOT|> token
+                    outputs = model.generate(
+                        inputs,
+                        max_new_tokens=512,
+                        do_sample=False,
+                        top_k=50,
+                        top_p=0.95,
+                        num_return_sequences=1,
+                        eos_token_id=tokenizer.eos_token_id,
+                    )
+                    print(
+                        tokenizer.decode(outputs[0][len(inputs[0]) :], skip_special_tokens=True)
+                    )
+                    decoded_outputs = []
+                    for output in outputs:
+                        decoded_outputs.append(
+                            tokenizer.decode(output[len(inputs[0]) :], skip_special_tokens=True)
+                        )
+                    return decoded_outputs
+
+            llm_client = CustomizeLLM()
+            transformer_client.set_llm_client(llm_client)
+            # use in the generator
+            generator = Generator(
+                model_client=transformer_client,
+                model_kwargs=model_kwargs,
+                prompt_kwargs=prompt_kwargs,
+                ...)
+
+        """
+        self.llm_client = llm_client
 
     def parse_embedding_response(self, response: Any) -> EmbedderOutput:
         embeddings: List[Embedding] = []
@@ -445,15 +654,13 @@ class TransformersClient(ModelClient):
                 scores, api_kwargs["top_k"]
             )
             return top_k_indices, top_k_scores
-        elif (  # LLM
-            model_type == ModelType.LLM
-            and "model" in api_kwargs
-            and api_kwargs["model"] == "HuggingFaceH4/zephyr-7b-beta"
-        ):
+        elif model_type == ModelType.LLM and "model" in api_kwargs:  # LLM
             if not hasattr(self, "llm_client") or self.llm_client is None:
                 self.llm_client = self.init_llm_client()
             response = self.llm_client(**api_kwargs)
             return response
+        else:
+            raise ValueError(f"model_type {model_type} is not supported")
 
     def convert_inputs_to_api_kwargs(
         self,
@@ -478,3 +685,102 @@ class TransformersClient(ModelClient):
             return final_model_kwargs
         else:
             raise ValueError(f"model_type {model_type} is not supported")
+
+
+if __name__ == "__main__":
+    from lightrag.core import Generator
+
+    # set
+    import os
+
+    os.environ["HF_TOKEN"] = "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"
+
+    rag_template = r"""<START_OF_SYSTEM_MESSAGE>
+You are a helpful assistant.
+
+Your task is to answer the query that may or may not come with context information.
+When context is provided, you should stick to the context and less on your prior knowledge to answer the query.
+<END_OF_SYSTEM_MESSAGE>
+<START_OF_USER_MESSAGE>
+    <START_OF_QUERY>
+    {{input_str}}
+    <END_OF_QUERY>
+    {% if context_str %}
+    <START_OF_CONTEXT>
+    {{context_str}}
+    <END_OF_CONTEXT>
+    {% endif %}
+<END_OF_USER_MESSAGE>
+"""
+
+    template = """{{input_str}}"""
+
+    model_kwargs = {
+        "model": "google/gemma-2-2b",
+        "temperature": 1,
+        "stream": False,
+    }
+    prompt_kwargs = {
+        "input_str": "Where is Brian?",
+        # "context_str": "Brian is in the kitchen.",
+    }
+    prompt_kwargs = {
+        "input_str": "What is the capital of France?",
+    }
+
+    class CustomizeLLM:
+
+        def __init__(self) -> None:
+            pass
+
+        def parse_chat_completion(self, completion: Any) -> str:
+            return completion[0]
+
+        def __call__(self, messages: Sequence[Dict[str, str]], model: str, **kwargs):
+            r"""take api key"""
+            from transformers import AutoTokenizer, AutoModelForCausalLM
+
+            tokenizer = AutoTokenizer.from_pretrained(
+                "deepseek-ai/deepseek-coder-1.3b-instruct", trust_remote_code=True
+            )
+            model = AutoModelForCausalLM.from_pretrained(
+                "deepseek-ai/deepseek-coder-1.3b-instruct",
+                trust_remote_code=True,
+                torch_dtype=torch.bfloat16,
+            ).to(get_device())
+            messages = [
+                {"role": "user", "content": "write a quick sort algorithm in python."}
+            ]
+            inputs = tokenizer.apply_chat_template(
+                messages, add_generation_prompt=True, return_tensors="pt"
+            ).to(model.device)
+            # tokenizer.eos_token_id is the id of <|EOT|> token
+            outputs = model.generate(
+                inputs,
+                max_new_tokens=512,
+                do_sample=False,
+                top_k=50,
+                top_p=0.95,
+                num_return_sequences=1,
+                eos_token_id=tokenizer.eos_token_id,
+            )
+
+            decoded_outputs = []
+            for output in outputs:
+                decoded_outputs.append(
+                    tokenizer.decode(output[len(inputs[0]) :], skip_special_tokens=True)
+                )
+            return decoded_outputs
+
+    transformer_client = TransformersClient()
+    transformer_client.set_llm_client(CustomizeLLM())
+    generator = Generator(
+        model_client=transformer_client,
+        model_kwargs=model_kwargs,
+        # prompt_kwargs=prompt_kwargs,
+        template=template,
+        # output_processors=JsonParser(),
+    )
+
+    output = generator(prompt_kwargs=prompt_kwargs)
+    print(output)

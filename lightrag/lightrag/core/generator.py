@@ -683,7 +683,7 @@ class Generator(GradFunction, CachedEngine, CallbackManager):
             log.error(f"Error calling the model: {e}")
             output = GeneratorOutput(error=str(e), id=id)
         # process the completion
-        if completion:
+        if completion is not None:
             try:
                 output = self._post_call(completion)
 
