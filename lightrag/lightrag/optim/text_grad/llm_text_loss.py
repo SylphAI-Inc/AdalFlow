@@ -4,10 +4,10 @@ from typing import Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from lightrag.core import ModelClient
+    from ..parameter import Parameter
 
 
-from lightrag.core.component import Component
-from ..parameter import Parameter
+from lightrag.core.grad_component import GradComponent
 from typing import Dict
 from copy import deepcopy
 import logging
@@ -24,7 +24,7 @@ TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 """
 
 
-class LLMAsTextLoss(Component):
+class LLMAsTextLoss(GradComponent):
     __doc__ = r"""Evaluate the final RAG response using an LLM judge.
 
     The LLM judge will have:
@@ -39,11 +39,12 @@ class LLMAsTextLoss(Component):
 
     def __init__(
         self,
-        prompt_kwargs: Dict[str, Union[str, Parameter]],
+        prompt_kwargs: Dict[str, Union[str, "Parameter"]],
         model_client: "ModelClient",
         model_kwargs: Dict[str, object],
     ):
         from lightrag.core.generator import Generator
+        from lightrag.optim.parameter import Parameter
 
         super().__init__()
         prompt_kwargs = deepcopy(prompt_kwargs)
@@ -66,6 +67,6 @@ class LLMAsTextLoss(Component):
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
-    def forward(self, *args, **kwargs) -> Parameter:
+    def forward(self, *args, **kwargs) -> "Parameter":
 
         return self.loss_llm.forward(*args, **kwargs)

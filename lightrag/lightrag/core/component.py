@@ -13,14 +13,15 @@ from typing import (
     Mapping,
     TypeVar,
     Type,
+    TYPE_CHECKING,
 )
 
 import logging
 import pickle
 import inspect
 
-# if TYPE_CHECKING:
-from lightrag.optim.parameter import Parameter
+if TYPE_CHECKING:
+    from lightrag.optim.parameter import Parameter
 from lightrag.utils.serialization import default
 from lightrag.utils.config import new_component
 
@@ -130,12 +131,12 @@ class Component:
     # _execution_graph: List[str] = []  # This will store the graph of execution.
     # _graph = nx.DiGraph()
     # _last_called = None  # Tracks the last component called
-    _parameters: Dict[str, Optional[Parameter]]
+    _parameters: Dict[str, Optional["Parameter"]]
     training: bool
     teacher_mode: bool = False
     tracing: bool = False
     name: str = (
-        "Component"  # name will help with GradFunction output naming as "{name}_output"
+        "Component"  # name will help with GradComponent output naming as "{name}_output"
     )
 
     # def _generate_unique_name(self):
@@ -365,7 +366,11 @@ class Component:
         with open(filepath, "rb") as file:
             return pickle.load(file)
 
-    def register_parameter(self, name: str, param: Optional[Parameter] = None) -> None:
+    def register_parameter(
+        self, name: str, param: Optional["Parameter"] = None
+    ) -> None:
+        from lightrag.optim.parameter import Parameter
+
         r"""Add a parameter to the component.
 
         The parameter can be accessed as an attribute using given name.
@@ -395,7 +400,7 @@ class Component:
         else:
             self._parameters[name] = param
 
-    def parameters(self, recursive: bool = True) -> Iterable[Parameter]:
+    def parameters(self, recursive: bool = True) -> Iterable["Parameter"]:
         r"""Returns an iterator over module parameters.
 
         Args:
@@ -452,7 +457,7 @@ class Component:
 
     def named_parameters(
         self, prefix: str = "", recursive: bool = True, remove_duplicate: bool = True
-    ) -> Iterable[Tuple[str, Parameter]]:
+    ) -> Iterable[Tuple[str, "Parameter"]]:
         r"""Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.
 
         Args:
@@ -797,6 +802,8 @@ class Component:
     #     return self
 
     def __setattr__(self, name: str, value: Any) -> None:
+        from lightrag.optim.parameter import Parameter
+
         def remove_from(*dicts_or_sets):
             for d in dicts_or_sets:
                 if name in d:

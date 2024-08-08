@@ -10,16 +10,17 @@ from lightrag.core.types import (
     RetrieverDocumentsType,
     RetrieverOutputType,
 )
+from lightrag.core.grad_component import GradComponent
 
 if TYPE_CHECKING:
     from lightrag.core.generator import Generator
 from lightrag.optim.parameter import Parameter, ParameterType
-from lightrag.optim.function import BackwardContext, GradFunction
+from lightrag.optim.function import BackwardContext
 
 log = logging.getLogger(__name__)
 
 
-class Retriever(GradFunction, Generic[RetrieverDocumentType, RetrieverQueryType]):
+class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType]):
     __doc__ = r"""The base class for all retrievers.
 
     Retriever will manage its own index and retrieve in format of RetrieverOutput

@@ -156,11 +156,12 @@ class DspyRetriever(Retriever):
 
 # example need to have question,
 # pred needs to have query
-from lightrag.optim.text_grad.function import GradFunction
+
+import lightrag as adal
 
 
 # User customize an auto-grad operator
-class MultiHopRetriever(GradFunction):
+class MultiHopRetriever(adal.GradComponent):
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
         super().__init__()
 
@@ -290,9 +291,6 @@ class MultiHopRetriever(GradFunction):
                         trace_id=id, score=response._score, is_teacher=self.teacher_mode
                     )
                     print(f"Pred: {pred.alias}, traces: {pred._traces}")
-
-
-from lightrag.optim.text_grad.function import GradFunction
 
 
 class HotPotQARAG(

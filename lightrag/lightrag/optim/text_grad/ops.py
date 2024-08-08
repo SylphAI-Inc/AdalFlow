@@ -3,8 +3,9 @@
 from typing import List
 import logging
 
-from lightrag.optim.function import GradFunction, BackwardContext
+from lightrag.optim.function import BackwardContext
 from lightrag.optim.parameter import Parameter
+from lightrag.core.grad_component import GradComponent
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ def sum(parms: List[Parameter]) -> Parameter:
 # TODO: there might be a better way to do this.
 # TODO: make all loss functions to support batch losses
 # TODO: use a temlate to format the concatenated values
-class Sum(GradFunction):
+class Sum(GradComponent):
     __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
 
     def forward(self, params: List[Parameter]) -> Parameter:

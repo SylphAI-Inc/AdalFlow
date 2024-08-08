@@ -2,7 +2,8 @@
 
 from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 import logging
-from lightrag.optim.function import BackwardContext, GradFunction
+from lightrag.core.grad_component import GradComponent
+from lightrag.optim.function import BackwardContext
 
 
 if TYPE_CHECKING:
@@ -49,7 +50,7 @@ OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. 
 
 
 # TODO: use BaseComponent instead of Component.
-class EvalFnToTextLoss(GradFunction):
+class EvalFnToTextLoss(GradComponent):
     __doc__ = """Convert an evaluation function to a text loss.
 
     We make it a component for better visualization and serialization.
@@ -99,7 +100,7 @@ class EvalFnToTextLoss(GradFunction):
             self.backward_engine = backward_engine
 
     def __call__(self, *args, **kwargs) -> Parameter:
-        r"""Different from default GradFunction __call__.
+        r"""Different from default GradComponent __call__.
         Only Parameter as this is not needed in a normal task pipeline, but only
         for training generator."""
         return self.forward(*args, **kwargs)

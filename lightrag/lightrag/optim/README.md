@@ -30,9 +30,9 @@ In the case of icl, loss function = collect feedback from batch_run. it will be 
 (1) llm as a loss function
 (2) directly convert accuracy -> text feedback.
 
-## GradFunction
+## GradComponent
 
-Any class inherite from ``GradFunction`` can be thought of a layer in text-grad that can be backpropagated. It will have a forward and backward function. It can be also be used as a loss function.
+Any class inherite from ``GradComponent`` can be thought of a layer in text-grad that can be backpropagated. It will have a forward and backward function. It can be also be used as a loss function.
 
 # The role of a component (note)
 
@@ -43,7 +43,7 @@ In LLM applications, component will be used (1) layers to optimize with the usag
 We could potentially split it into two levels of inheritance.
 
 (1) [BaseComponent] component without parameters as a way in adalflow to visualize the whole pipeline. even the optimizer as most of them are using llm. This basecomponent will not have to be related to parameters at all.
-(2) [Component] component with parameters (module),training as a building block to the actual task pipeline. => name it "Module". To make it able to use text-gradient, it will also be marked as a ``GradFunction``.
+(2) [Component] component with parameters (module),training as a building block to the actual task pipeline. => name it "Module". To make it able to use text-gradient, it will also be marked as a ``GradComponent``.
 
 # Problem of Text-grad now
 

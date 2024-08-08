@@ -16,6 +16,7 @@ from lightrag.core.types import (
     GeneratorOutputType,
 )
 from lightrag.core.component import Component
+from lightrag.core.grad_component import GradComponent
 from lightrag.core.base_data_class import DataClass, check_adal_dataclass
 
 
@@ -26,7 +27,7 @@ from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-from lightrag.optim.function import BackwardContext, GradFunction
+from lightrag.optim.function import BackwardContext
 from lightrag.utils.cache import CachedEngine
 from lightrag.tracing.callback_manager import CallbackManager
 from lightrag.utils.global_config import get_adalflow_default_root_path
@@ -45,10 +46,10 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
 log = logging.getLogger(__name__)
 
 
-class Generator(GradFunction, CachedEngine, CallbackManager):
+class Generator(GradComponent, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
-    It is also a GradFunction that can be used for backpropagation through the LLM model.
+    It is also a GradComponent that can be used for backpropagation through the LLM model.
 
     By orchestrating the following three components along with their required arguments,
     it enables any LLM prediction with required task output format.
@@ -134,7 +135,7 @@ class Generator(GradFunction, CachedEngine, CallbackManager):
 
         CachedEngine.__init__(self, cache_path=self.cache_path)
         Component.__init__(self)
-        GradFunction.__init__(self)
+        GradComponent.__init__(self)
         CallbackManager.__init__(self)
 
         self.name = name or self.__class__.__name__
