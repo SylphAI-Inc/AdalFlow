@@ -1,12 +1,13 @@
 """Huggingface transformers ModelClient integration."""
 
-from typing import Any, Dict, Union, List, Optional
+from typing import Any, Dict, Union, List, Optional, Sequence
 import logging
 from functools import lru_cache
+import re
 
 
 from lightrag.core.model_client import ModelClient
-from lightrag.core.types import ModelType, Embedding, EmbedderOutput
+from lightrag.core.types import GeneratorOutput, ModelType, Embedding, EmbedderOutput
 from lightrag.core.functional import get_top_k_indices_scores
 
 # optional import
@@ -25,7 +26,6 @@ from transformers import (
     AutoTokenizer,
     AutoModel,
     AutoModelForSequenceClassification,
-    AutoModelForCausalLM,
 )
 
 
@@ -123,6 +123,30 @@ class TransformerEmbedder:
             raise ValueError(f"model {model_name} is not supported")
 
 
+def get_device():
+    # Check device availability and set the device
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        log.info("Using CUDA (GPU) for inference.")
+    elif torch.backends.mps.is_available():
+        device = torch.device("mps")
+        log.info("Using MPS (Apple Silicon) for inference.")
+    else:
+        device = torch.device("cpu")
+        log.info("Using CPU for inference.")
+
+    return device
+
+
+def clean_device_cache():
+    import torch
+
+    if torch.has_mps:
+        torch.mps.empty_cache()
+
+        torch.mps.set_per_process_memory_fraction(1.0)
+
+
 class TransformerReranker:
     __doc__ = r"""Local model SDK for a reranker model using transformers.
 
@@ -145,15 +169,7 @@ class TransformerReranker:
             self.tokenizer = AutoTokenizer.from_pretrained(model_name)
             self.model = AutoModelForSequenceClassification.from_pretrained(model_name)
             # Check device availability and set the device
-            if torch.cuda.is_available():
-                device = torch.device("cuda")
-                log.info("Using CUDA (GPU) for inference.")
-            elif torch.backends.mps.is_available():
-                device = torch.device("mps")
-                log.info("Using MPS (Apple Silicon) for inference.")
-            else:
-                device = torch.device("cpu")
-                log.info("Using CPU for inference.")
+            device = get_device()
 
             # Move model to the selected device
             self.device = device
@@ -227,103 +243,124 @@ class TransformerReranker:
 
 
 class TransformerLLM:
-    models: Dict[str, type] = {}
+    __doc__ = r"""Local model SDK for transformers LLM.
 
-    def __init__(self, model_name: Optional[str] = "HuggingFaceH4/zephyr-7b-beta"):
+    NOTE:
+        This inference component is only specific to the HuggingFaceH4/zephyr-7b-beta model.
+
+    The example raw output:
+    # <|system|>
+    # You are a friendly chatbot who always responds in the style of a pirate.</s>
+    # <|user|>
+    # How many helicopters can a human eat in one sitting?</s>
+    # <|assistant|>
+    # Ah, me hearty matey! But yer question be a puzzler! A human cannot eat a helicopter in one sitting, as helicopters are not edible. They be made of metal, plastic, and other materials, not food!
+
+
+    References:
+    - model: https://huggingface.co/HuggingFaceH4/zephyr-7b-beta
+
+    """
+    models: Dict[str, type] = {}  # to register the model
+
+    def __init__(self, model_name: Optional[str] = None):
         super().__init__()
 
-        if model_name is not None:
+        self.model_name = model_name  # current model to use
+
+        if model_name is not None and model_name not in self.models:
             self.init_model(model_name=model_name)
 
     def init_model(self, model_name: str):
+        log.debug(f"Loading model {model_name}")
+        from transformers import pipeline
+
         try:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            self.model = AutoModelForCausalLM.from_pretrained(model_name)
-            # register the model
-            self.models[model_name] = self.model
-            self.device = "cuda" if torch.cuda.is_available() else "cpu"
-            log.info(f"Done loading model {model_name}")
-            # Set pad token if it's not already set
-            if self.tokenizer.pad_token is None:
-                self.tokenizer.pad_token = self.tokenizer.eos_token  # common fallback
-                self.model.config.pad_token_id = (
-                    self.tokenizer.eos_token_id
-                )  # ensure consistency in the model config
+            clean_device_cache()
+            pipe = pipeline(
+                "text-generation",
+                model=model_name,
+                torch_dtype=torch.bfloat16,
+                device=get_device(),
+            )
+
+            self.models[model_name] = pipe
+
         except Exception as e:
             log.error(f"Error loading model {model_name}: {e}")
             raise e
 
-    def parse_chat_completion(self, input_text: str, response: str):
-        parsed_response = response.replace(
-            input_text, ""
-        ).strip()  # Safely handle cases where input_text might not be in response
+    def parse_chat_completion(self, completion: Any) -> str:
 
-        return parsed_response if parsed_response else response
+        text = completion[0]["generated_text"]
 
-    def call(
+        pattern = r"(?<=\|assistant\|>).*"
+
+        match = re.search(pattern, text)
+
+        if match:
+            text = match.group().strip().lstrip("\\n")
+            return text
+        else:
+            return ""
+
+    def infer_llm(
         self,
-        input_text: str,
-        skip_special_tokens: bool = True,
-        clean_up_tokenization_spaces: bool = False,
-        max_length: int = 150,
+        *,
+        model: str,
+        messages: Sequence[Dict[str, str]],
+        max_tokens: Optional[int] = None,
+        **kwargs,
     ):
-        if not self.model:
-            log.error("Model is not initialized.")
-            raise ValueError("Model is not initialized.")
 
-        # Ensure tokenizer has pad token; set it if not
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-            self.model.config.pad_token_id = (
-                self.tokenizer.eos_token_id
-            )  # Sync model config pad token id
+        if not model:
+            raise ValueError("Model is not provided.")
 
-        # Process inputs with attention mask and padding
-        inputs = self.tokenizer(input_text, return_tensors="pt", padding=True).to(
-            self.device
-        )
-        # inputs = self.tokenizer(input_text, return_tensors="pt", padding="longest", truncation=True).to(self.device)
+        if model not in self.models:
+            self.init_model(model_name=model)
 
-        with torch.no_grad():  # Ensures no gradients are calculated to save memory and computations
-            generate_ids = self.model.generate(
-                inputs["input_ids"],
-                attention_mask=inputs["attention_mask"],
-                max_length=max_length,  # Control the output length more precisely
-            )
-        response = self.tokenizer.decode(
-            generate_ids[0],
-            skip_special_tokens=skip_special_tokens,
-            clean_up_tokenization_spaces=clean_up_tokenization_spaces,
-        )
-        parsed_response = self.parse_chat_completion(input_text, response)
-        return parsed_response
+        model_to_use = self.models[model]
 
-    def __call__(
-        self,
-        input_text: str,
-        skip_special_tokens: bool = True,
-        clean_up_tokenization_spaces: bool = False,
-        max_length: int = 150,
-    ):
-        return self.call(
-            input_text,
-            skip_special_tokens=skip_special_tokens,
-            clean_up_tokenization_spaces=clean_up_tokenization_spaces,
-            max_length=max_length,
+        log.info(
+            f"Start to infer model {model}, messages: {messages}, kwargs: {kwargs}"
         )
 
-    # def call(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False):
-    #     if not self.model:
-    #         log.error("Model is not initialized.")
-    #         raise ValueError("Model is not initialized.")
+        prompt = model_to_use.tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True
+        )
 
-    #     inputs = self.tokenizer(input_text, return_tensors="pt")
-    #     generate_ids = self.model.generate(inputs.input_ids, max_length=30)
-    #     response = self.tokenizer.batch_decode(generate_ids, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)[0]
-    #     return response
+        final_kwargs = {
+            "max_new_tokens": max_tokens or 256,
+            "do_sample": True,
+            "temperature": kwargs.get("temperature", 0.7),
+            "top_k": kwargs.get("top_k", 50),
+            "top_p": kwargs.get("top_p", 0.95),
+        }
 
-    # def __call__(self, input_text: str, skip_special_tokens: bool = True, clean_up_tokenization_spaces: bool = False):
-    #     return self.call(input_text, skip_special_tokens=skip_special_tokens, clean_up_tokenization_spaces=clean_up_tokenization_spaces)
+        outputs = model_to_use(
+            prompt,
+            **final_kwargs,
+        )
+        log.info(f"Outputs: {outputs}")
+        return outputs
+
+    def __call__(self, **kwargs):
+        r"""Ensure "model" and "input" are in the kwargs."""
+        log.debug(f"kwargs: {kwargs}")
+        if "model" not in kwargs:
+            raise ValueError("model is required")
+
+        if "messages" not in kwargs:
+            raise ValueError("messages is required")
+
+        model_name = kwargs["model"]
+        if model_name != self.model_name:
+            # need to initialize the model and update the model_name
+            self.model_name = model_name
+            self.init_model(model_name=model_name)
+
+        output = self.infer_llm(**kwargs)
+        return output
 
 
 class TransformersClient(ModelClient):
@@ -372,6 +409,15 @@ class TransformersClient(ModelClient):
             embeddings.append(Embedding(index=idx, embedding=emb))
         response = EmbedderOutput(data=embeddings)
         return response
+
+    def parse_chat_completion(self, completion: Any) -> GeneratorOutput:
+        try:
+            output = self.llm_client.parse_chat_completion(completion)
+
+            return GeneratorOutput(data=output, raw_response=str(completion))
+        except Exception as e:
+            log.error(f"Error parsing chat completion: {e}")
+            return GeneratorOutput(data=None, raw_response=str(completion), error=e)
 
     def call(self, api_kwargs: Dict = {}, model_type: ModelType = ModelType.UNDEFINED):
         if "model" not in api_kwargs:
@@ -427,7 +473,8 @@ class TransformersClient(ModelClient):
             return final_model_kwargs
         elif model_type == ModelType.LLM:
             assert "model" in final_model_kwargs, "model must be specified"
-            final_model_kwargs["input"] = input
+            messages = [{"role": "system", "content": input}]
+            final_model_kwargs["messages"] = messages
             return final_model_kwargs
         else:
             raise ValueError(f"model_type {model_type} is not supported")

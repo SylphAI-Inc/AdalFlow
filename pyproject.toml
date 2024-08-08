@@ -58,6 +58,8 @@ dspy-ai = "^2.4.13"
 # google-generativeai = "^0.7.1"
 # faiss-cpu = "^1.8.0.post1"
 # lightrag = { path = "lightrag", develop = true }
+transformers = "^4.44.0"
+accelerate = "^0.33.0"
 
 
 [build-system]
