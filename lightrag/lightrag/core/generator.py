@@ -26,7 +26,7 @@ from lightrag.core.prompt_builder import Prompt
 from lightrag.core.functional import compose_model_kwargs
 from lightrag.core.model_client import ModelClient
 from lightrag.core.default_prompt_template import DEFAULT_LIGHTRAG_SYSTEM_PROMPT
-from lightrag.optim.text_grad.function import BackwardContext, GradFunction
+from lightrag.optim.function import BackwardContext, GradFunction
 from lightrag.utils.cache import CachedEngine
 from lightrag.tracing.callback_manager import CallbackManager
 from lightrag.utils.global_config import get_adalflow_default_root_path
@@ -45,7 +45,7 @@ from lightrag.optim.text_grad.backend_engine_prompt import (
 log = logging.getLogger(__name__)
 
 
-class Generator(Component, GradFunction, CachedEngine, CallbackManager):
+class Generator(GradFunction, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
 
     It is also a GradFunction that can be used for backpropagation through the LLM model.
@@ -411,12 +411,16 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         combined_prompt_kwargs = compose_model_kwargs(self.prompt_kwargs, prompt_kwargs)
         if self.data_map_func is None:
             self.set_data_map_func()
+
+        predecessors = [
+            p for p in combined_prompt_kwargs.values() if isinstance(p, Parameter)
+        ]
+
+        log.debug(f"Predecessors: {predecessors} for generator {self.name}")
         response: Parameter = Parameter(
             data=self.data_map_func(output),
             alias=self.name + "_output",
-            predecessors=[
-                p for p in combined_prompt_kwargs.values() if isinstance(p, Parameter)
-            ],
+            predecessors=predecessors,
             role_desc=f"response from generator {self.name}",
             # context of the forward pass
             input_args=input_args,
@@ -659,7 +663,7 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
         and passing the combined model_kwargs to the model client.
         """
         if self.mock_output:
-            return GeneratorOutput(data=self.mock_output_data)
+            return GeneratorOutput(data=self.mock_output_data, id=id)
 
         log.debug(f"prompt_kwargs: {prompt_kwargs}")
         log.debug(f"model_kwargs: {model_kwargs}")
@@ -677,7 +681,7 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
             )
         except Exception as e:
             log.error(f"Error calling the model: {e}")
-            output = GeneratorOutput(error=str(e))
+            output = GeneratorOutput(error=str(e), id=id)
         # process the completion
         if completion:
             try:
@@ -685,7 +689,9 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
 
             except Exception as e:
                 log.error(f"Error processing the output: {e}")
-                output = GeneratorOutput(raw_response=str(completion), error=str(e))
+                output = GeneratorOutput(
+                    raw_response=str(completion), error=str(e), id=id
+                )
 
         # User only need to use one of them, no need to use them all.
         self._run_callbacks(output, input=api_kwargs)
@@ -723,9 +729,11 @@ class Generator(Component, GradFunction, CachedEngine, CallbackManager):
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
         if self.training:
             log.debug("Training mode")
+            print("Training mode")
             return self.forward(*args, **kwargs)
         else:
             log.debug("Inference mode")
+            print("Inference mode")
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:

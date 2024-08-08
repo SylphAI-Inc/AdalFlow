@@ -12,6 +12,7 @@ packages = [
     { from = ".", include = "benchmarks" },
 ]
 
+# if you cant import package, use export PYTHONPATH=$(pwd):$PYTHONPATH
 
 [tool.poetry.dependencies]
 python = ">=3.11, <4.0"

@@ -47,3 +47,4 @@ index.faiss
 *.svg
 cache_datasets/
 ckpt/
+hotpot_qa*/

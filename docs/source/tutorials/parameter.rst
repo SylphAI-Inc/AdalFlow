@@ -30,3 +30,42 @@ teacher
 -----------
 
 Teacher generator should not use any parameter as it will only be used in call.
+
+
+Generator Prediction parameters
+--------------------------------
+
+We will track:
+
+.. code-block:: python
+
+    input_args {"Prompt_kwargs", "model_kwargs", ...}
+    raw_response
+    data (processed response)
+
+Potentially we can make the data generator output
+
+Or any component output parameter, it should have a forward
+
+.. code-block:: python
+
+    response = Parameter(
+            data=retriever_reponse,
+            alias=self.name + "_output",
+            role_desc="Retriever response",
+            predecessors=predecessors,
+            input_args=input_args,
+        )
+
+
+Demo Parameter
+----------------
+
+Demo parameter and demo optimizers does not require loss backpropagatin.
+
+It needs a loss function to compute the eval score. but we dont need to run
+`loss.backward()` if we are only doing few-shot optimization.
+
+loss.backward will do two things:
+* backpropagate score to prececessors as a context
+* backpropagate the gradients to text prompts.

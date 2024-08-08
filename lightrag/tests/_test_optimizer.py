@@ -3,7 +3,7 @@ from typing import List
 
 from lightrag.core.component import fun_to_component
 from lightrag.optim.parameter import Parameter
-from lightrag.optim.few_shot_optimizer import BootstrapFewShot
+from lightrag.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 from lightrag.optim.sampler import RandomSampler
 
 

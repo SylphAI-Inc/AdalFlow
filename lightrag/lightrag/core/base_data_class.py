@@ -8,7 +8,6 @@ import collections
 import enum
 from copy import deepcopy
 from dataclasses import (
-    dataclass,
     field,
     fields,
     make_dataclass,
@@ -230,6 +229,17 @@ class DataClass:
         """
         if not is_dataclass(self):
             raise ValueError("to_dict() called on a class type, not an instance.")
+        # convert all fields to its data if its parameter
+        fields = self.__dataclass_fields__
+        from lightrag.optim.parameter import Parameter
+
+        for f in fields.values():
+            print(f"field: {f}")
+            field_value = getattr(self, f.name)
+            # if its a parameter, convert to its data
+            if isinstance(field_value, Parameter):
+                setattr(self, f.name, field_value.data)
+        print(f"adapted self: {self}")
         excluded: Optional[Dict[str, List[str]]] = None
         if exclude and isinstance(exclude, List):
             excluded = {self.__class__.__name__: exclude}
@@ -504,49 +514,94 @@ def check_adal_dataclass(data_class: Type) -> None:
 """Reserved for Agent to automatically create a dataclass and to manipulate the code"""
 
 
-@dataclass
 class DynamicDataClassFactory:
-    __doc__ = r"""
-    This class is used to create a dynamic dataclass called `DynamicOutputs` from a dictionary.
-    The dictionary should have the following structure:
-    {
-        "field_name": {
-            "value": field_value,
-            "desc": "Field description",
-        },
-
-    }
-
-    Examples:
-
-    .. code-block:: python
-
-        data = {
-            "age": {"value": 30, "desc": "The age of the person"},
-            "name": {"value": "John Doe", "desc": "The name of the person"},
+    @staticmethod
+    def from_dict(
+        data: Dict[str, Any],
+        base_class: Type = DataClass,
+        class_name: str = "DynamicDataClass",
+    ) -> DataClass:
+        """
+        Create an instance of a dataclass from a dictionary. The dictionary should have the following structure:
+        {
+            "field_name": field_value,
+            ...
         }
 
-        DynamicOutputs = DynamicDataClassFactory.from_dict(data)
-        class_instance = DynamicOutputs()
-        print(class_instance)
+        Args:
+            data (dict): The dictionary with field names and values.
+            base_class (type): The base class to inherit from (default: BaseDataClass).
+            class_name (str): The name of the generated dataclass (default: DynamicDataClass).
 
-        # Output:
-        # DataClass(age=30, name='John Doe')
-    """
-
-    @staticmethod
-    def from_dict(data: dict, base_class=DataClass, class_name="DynamicOutputs"):
+        Returns:
+            BaseDataClass: An instance of the generated dataclass.
+        """
+        # Create field specifications for the dataclass
+        # fields_spec = [
+        #     (key, type(value), field(default=value)) for key, value in data.items()
+        # ]
         fields_spec = []
-        for key, value_dict in data.items():
-            field_type = type(value_dict["value"])
-            default_value = value_dict["value"]
-            metadata = {
-                "desc": value_dict.get("desc", "No description provided"),
-            }
-            fields_spec.append(
-                (key, field_type, field(default=default_value, metadata=metadata))
-            )
+        for key, value in data.items():
+            field_type = type(value)
+            if isinstance(value, (list, dict, set)):
+                fields_spec.append(
+                    (key, field_type, field(default_factory=lambda v=value: v))
+                )
+            else:
+                fields_spec.append((key, field_type, field(default=value)))
 
+        # Create the dataclass
         dynamic_class = make_dataclass(class_name, fields_spec, bases=(base_class,))
 
-        return dynamic_class
+        # Create an instance of the dataclass with the provided values
+        instance = dynamic_class(**data)
+
+        return instance
+
+
+# @dataclass
+# class DynamicDataClassFactory:
+#     __doc__ = r"""
+#     This class is used to create a dynamic dataclass called `DynamicOutputs` from a dictionary.
+#     The dictionary should have the following structure:
+#     {
+#         "field_name": {
+#             "value": field_value,
+#             "desc": "Field description",
+#         },
+
+#     }
+
+#     Examples:
+
+#     .. code-block:: python
+
+#         data = {
+#             "age": {"value": 30, "desc": "The age of the person"},
+#             "name": {"value": "John Doe", "desc": "The name of the person"},
+#         }
+
+#         DynamicOutputs = DynamicDataClassFactory.from_dict(data)
+#         class_instance = DynamicOutputs()
+#         print(class_instance)
+
+#         # Output:
+#         # DataClass(age=30, name='John Doe')
+#     """
+
+#     @staticmethod
+#     def from_dict(data: dict, base_class=DataClass, class_name="DynamicOutputs"):
+#         fields_spec = []
+#         for key, value_dict in data.items():
+#             field_type = type(value_dict["value"])
+#             default_value = value_dict["value"]
+#             metadata = {
+#                 "desc": value_dict.get("desc", "No description provided"),
+#             }
+#             fields_spec.append(
+#                 (key, field_type, field(default=default_value, metadata=metadata))
+#             )
+
+#         dynamic_class = make_dataclass(class_name, fields_spec, bases=(base_class,))
+
+#         return dynamic_class

@@ -134,6 +134,9 @@ class Component:
     training: bool
     teacher_mode: bool = False
     tracing: bool = False
+    name: str = (
+        "Component"  # name will help with GradFunction output naming as "{name}_output"
+    )
 
     # def _generate_unique_name(self):
     #     # Generate a unique identifier that includes the class name
@@ -145,6 +148,7 @@ class Component:
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
         super().__setattr__("tracing", False)
+        super().__setattr__("name", self.__class__.__name__)
         # only for tracking the init args
         super().__setattr__("_init_args", self._get_init_args(*args, **kwargs))
 

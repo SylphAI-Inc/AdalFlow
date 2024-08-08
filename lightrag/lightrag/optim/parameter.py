@@ -109,7 +109,7 @@ class Parameter(Generic[T]):
         id: str = str(uuid.uuid4()),
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
-        role_desc: str = None,
+        role_desc: str = "",
         predecessors: List["Parameter"] = None,
         peers: List["Parameter"] = None,
         alias: str = None,  # alias is used to refer to the parameter in the prompt, easier to read for humans
@@ -229,6 +229,9 @@ class Parameter(Generic[T]):
         if demos is not None:
             self._previous_demos = self._demos
             self._demos = demos
+            print(
+                f"Proposed demos: {self._demos}, traces: {self._traces}, id: {self.id}"
+            )
 
     def revert_data(self, include_demos: bool = False):
         r"""Revert the data to the previous data."""
@@ -371,7 +374,7 @@ class Parameter(Generic[T]):
         self.gradients = set()
         for node in reversed(topo):
             if not node.requires_opt:
-                log.debug(f"Skipping {node.data} as it does not require optimization")
+                log.debug(f"Skipping {node.alias} as it does not require optimization")
                 continue
             node.gradients = _check_and_reduce_gradients(node)
             log.debug(f"v: {node.data}, grad_fn: {node.grad_fn}, {node.get_grad_fn()}")
@@ -464,6 +467,9 @@ class Parameter(Generic[T]):
                     node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Feedback: </font></b></td><td>{wrap_and_escape(g.data)}</td></tr>"
                     if gradient_context != "":
                         node_label += f"<tr><td><b><font color='{label_color}'>Gradient {g.alias} Context: </font></b></td><td>{wrap_and_escape(gradient_context)}</td></tr>"
+            if len(n._traces.values()) > 0:
+                node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
+                node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
             if n.proposing:
                 node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
@@ -529,6 +535,8 @@ class Parameter(Generic[T]):
         from lightrag.utils import save_json
 
         save_json(prompts, filename)
+        # save root node to_dict to json
+        save_json(self.to_dict(), f"{filepath}_root.json")
         return dot
 
     def to_dict(self):

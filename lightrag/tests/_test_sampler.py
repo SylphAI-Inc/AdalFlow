@@ -2,7 +2,7 @@ import pytest
 from copy import deepcopy
 from typing import Any
 
-from lightrag.optim.sampler import ClassSampler, RandomSampler, Sample
+from lightrag.optim.sampler import ClassSampler, RandomSampler
 
 
 @pytest.fixture
@@ -41,7 +41,7 @@ class TestRandomSampler:
         # Expecting an error if num_shots is not set and not provided on call
         sampler = RandomSampler(dataset=mock_dataset)
         with pytest.raises(ValueError):
-            result = sampler()  # No num_shots provided
+            sampler()  # No num_shots provided
 
     def test_random_replace_method(self, mock_dataset):
         sampler = RandomSampler(dataset=mock_dataset, default_num_shots=10)

@@ -26,7 +26,6 @@ import json
 import yaml
 import ast
 import threading
-from copy import deepcopy
 
 from inspect import signature, Parameter
 from dataclasses import fields, is_dataclass, MISSING, Field
@@ -82,7 +81,8 @@ def _asdict_inner(obj, dict_factory, exclude):
             for k, v in obj.items()
         )
     else:
-        return deepcopy(obj)
+        return obj
+        # return deepcopy(obj)
 
 
 # def dataclass_obj_to_dict(

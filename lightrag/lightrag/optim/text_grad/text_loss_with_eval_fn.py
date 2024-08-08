@@ -2,7 +2,7 @@
 
 from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 import logging
-from lightrag.optim.text_grad.function import BackwardContext, GradFunction
+from lightrag.optim.function import BackwardContext, GradFunction
 
 
 if TYPE_CHECKING:
@@ -10,7 +10,6 @@ if TYPE_CHECKING:
 
     from lightrag.core.generator import BackwardEngine
 from lightrag.core.types import GeneratorOutput
-from lightrag.core.component import Component
 from lightrag.optim.parameter import Parameter, GradientContext
 
 # from lightrag.optim.text_grad.backend_engine_prompt import EVALUATE_VARIABLE_INSTRUCTION
@@ -50,7 +49,7 @@ OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. 
 
 
 # TODO: use BaseComponent instead of Component.
-class EvalFnToTextLoss(Component, GradFunction):
+class EvalFnToTextLoss(GradFunction):
     __doc__ = """Convert an evaluation function to a text loss.
 
     We make it a component for better visualization and serialization.
@@ -99,7 +98,10 @@ class EvalFnToTextLoss(Component, GradFunction):
                 )
             self.backward_engine = backward_engine
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Parameter:
+        r"""Different from default GradFunction __call__.
+        Only Parameter as this is not needed in a normal task pipeline, but only
+        for training generator."""
         return self.forward(*args, **kwargs)
 
     def forward(
@@ -113,11 +115,10 @@ class EvalFnToTextLoss(Component, GradFunction):
             )
 
         # validate the type of kwargs
+        predesessors = []
         for k, v in kwargs.items():
-            if not isinstance(v, Parameter):
-                raise TypeError(
-                    f"EvalFnToTextLoss: Input argument {k} must be an instance of Parameter."
-                )
+            if isinstance(v, Parameter):
+                predesessors.append(v)
 
         score: float = self.eval_fn(**kwargs)
 
@@ -127,7 +128,7 @@ class EvalFnToTextLoss(Component, GradFunction):
             alias=self.name + "_output",
             data=score,
             requires_opt=True,
-            predecessors=list(kwargs.values()),
+            predecessors=predesessors,
             role_desc=response_desc,
         )
 
@@ -272,13 +273,12 @@ class EvalFnToTextLoss(Component, GradFunction):
             log.info(f"EvalFnToTextLoss: Backward: No gradient found for {response}.")
             is_chain = False
 
-        # Convert all input arguments to string
-        inputs_string = "\n\n".join(
-            [f"{k}(role: {v.role_desc}): {v.data}" for k, v in kwargs.items()]
-        )
-
         # go through all child parameters
         if backward_engine:
+            # Convert all input arguments to string
+            inputs_string = "\n\n".join(
+                [f"{k}(role: {v.role_desc}): {v.data}" for k, v in kwargs.items()]
+            )
             for pred in children_params:
                 if not pred.requires_opt:
                     log.debug(

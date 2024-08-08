@@ -3,7 +3,7 @@
 from typing import List
 import logging
 
-from lightrag.optim.text_grad.function import GradFunction, BackwardContext
+from lightrag.optim.function import GradFunction, BackwardContext
 from lightrag.optim.parameter import Parameter
 
 log = logging.getLogger(__name__)

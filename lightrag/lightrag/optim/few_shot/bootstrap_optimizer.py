@@ -54,6 +54,25 @@ class BootstrapFewShot(DemoOptimizer):
 
         self.proposing = False
         self.dataset = dataset
+        self._teacher_scores: Dict[str, float] = {}  # data id to score
+        self._student_scores: Dict[str, float] = {}  # data id to score
+
+    def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
+        if len(ids) != len(scores):
+            raise ValueError("ids and scores must have the same length")
+
+        for score in scores:
+
+            if not isinstance(score, float):
+                raise ValueError(
+                    f"score must be a float, got {type(score)}, score: {score}"
+                )
+            if score < 0 or score > 1:
+                raise ValueError("score must be in range [0, 1]")
+
+        target = self._teacher_scores if is_teacher else self._student_scores
+        for i, id in enumerate(ids):
+            target[id] = scores[i]
 
     def config_shots(self, raw_shots: int, bootstrap_shots: int):
         self._raw_shots = raw_shots
@@ -80,8 +99,8 @@ class BootstrapFewShot(DemoOptimizer):
         )
 
     # TODO: ensure all demo data structure must have id and score.
-    @staticmethod
     def sample(
+        self,
         augmented_demos: Dict[str, DataClass],
         demos: Dict[str, DataClass],
         dataset: List[DataClass],
@@ -92,21 +111,37 @@ class BootstrapFewShot(DemoOptimizer):
         r"""Performs weighted sampling, ensure the score is in range [0, 1]. The higher score means better accuracy."""
         # 1. sample from augmented demos
         # set weights to be score
+        # add 1 to all score to avoid negative weights
         augmented_options = list(augmented_demos.values())
         weights = None
         if weighted:
             weights: List[float] = []
             for demo in augmented_options:
-                if demo.score is None:
-                    raise ValueError("score must be provided for each demo")
-                w = demo.score
-                if demo.id in demos and demos[demo.id].score is not None:
+                demo_score = self._teacher_scores.get(demo.id, None)
+                if demo_score is None:
+                    raise ValueError(
+                        f"score must be provided for each demo, id: {demo.id}, all scores: {self._teacher_scores}"
+                    )
+
+                w = demo_score
+                student_demo_score = self._student_scores.get(demo.id, None)
+                if student_demo_score is not None:
+                    # if demo.id in demos and demos[demo.id].score is not None:
                     w = (
-                        w - demos[demo.id].score
+                        w
+                        - student_demo_score
+                        # w - demos[demo.id].score
                     )  # assign higher weights to failed demos but successful in augmented
+                    if w < 0:
+                        w = 0
                 weights.append(w)
-        sampled_augmented_demos = random_sample(
-            augmented_options, bootstrap_shots, replace=False, weights=weights
+        # print(f"augs: {augmented_options}")
+        sampled_augmented_demos = (
+            random_sample(
+                augmented_options, bootstrap_shots, replace=False, weights=weights
+            )
+            if len(augmented_options) > 0
+            else []
         )
 
         # 2. sample from raw demos
@@ -125,7 +160,7 @@ class BootstrapFewShot(DemoOptimizer):
             # for those exist in the demos, assign higher score with failed demos
             for i, demo in enumerate(filtered_dataset):
                 if demo.id in demos and demos[demo.id].score is not None:
-                    raw_weights[i] = 1 - demos[demo.id].score
+                    raw_weights[i] += 1 - demos[demo.id].score
         sampled_raw_demos = random_sample(
             filtered_dataset, raw_shots, replace=False, weights=raw_weights
         )
@@ -135,7 +170,12 @@ class BootstrapFewShot(DemoOptimizer):
     def samples_to_str(samples: List[DataClass]) -> str:
         sample_strs = []
         for sample in samples:
-            sample_strs.append(sample.to_yaml(exclude=["id", "score"]))
+            print(f"sample: {sample}")
+            try:
+                sample_strs.append(sample.to_yaml(exclude=["id", "score"]))
+            except Exception as e:
+                print(f"Error: {e} to yaml for {sample}")
+                sample_strs.append(str(sample))
         return "\n".join(sample_strs)
 
     def propose(self):
@@ -147,18 +187,26 @@ class BootstrapFewShot(DemoOptimizer):
             if demo_param.requires_opt:
                 augmented_demos = demo_param._traces
                 demos = demo_param._student_traces
-                sampled_augmented_demos, sampled_raw_demos = self.sample(
-                    augmented_demos=augmented_demos,
-                    demos=demos,
-                    dataset=self.dataset,
-                    raw_shots=self._raw_shots,
-                    bootstrap_shots=self._bootstrap_shots,
-                    weighted=self._weighted,
-                )
-                samples = sampled_augmented_demos + sampled_raw_demos
-                demo_str = self.samples_to_str(samples=samples)
+                try:
+                    sampled_augmented_demos, sampled_raw_demos = self.sample(
+                        augmented_demos=augmented_demos,
+                        demos=demos,
+                        dataset=self.dataset,
+                        raw_shots=self._raw_shots,
+                        bootstrap_shots=self._bootstrap_shots,
+                        weighted=self._weighted,
+                    )
+                    samples = sampled_augmented_demos + sampled_raw_demos
+                    demo_str = ""
+                    if len(samples) > 0:
 
-                demo_param.propose_data(demo_str, samples)
+                        demo_str = self.samples_to_str(samples=samples)
+                    print(f"propose: {samples} for param: {demo_param.alias}")
+
+                    demo_param.propose_data(demo_str, samples)
+                except Exception as e:
+                    print(f"Error: {e} for {demo_param.alias}")
+                    raise e
 
         self.proposing = True
 

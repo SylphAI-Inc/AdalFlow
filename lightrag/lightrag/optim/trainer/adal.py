@@ -52,19 +52,25 @@ class AdalComponent(Component):
         loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
         return loss_call(**kwargs)
 
-    def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
+    def evaluate_one_sample(
+        self, sample: Any, y_pred: Any, metadata: Optional[Dict[str, Any]] = None
+    ) -> Any:
         r"""Run one evaluation sample. Used for debugging and testing."""
         raise NotImplementedError("evaluate_one_sample method is not implemented")
 
-    def evaluate_samples(self, samples: Any, y_preds: List) -> EvaluationResult:
+    def evaluate_samples(
+        self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
+    ) -> EvaluationResult:
         r"""Run evaluation on samples.
+
+        Metadata is used for storing context that you can find from generator input.
 
         Note:
             ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
         """
         # in default use evaluate_one_sample
         acc_list = [
-            self.evaluate_one_sample(sample, y_pred)
+            self.evaluate_one_sample(sample, y_pred, metadata=metadata)
             for sample, y_pred in zip(samples, y_preds)
         ]
         avg_score = np.mean(np.array(acc_list))
@@ -116,6 +122,8 @@ class AdalComponent(Component):
                     tqdm_loader.set_description(
                         f"Evaluating: {eval_score}, Max potential: {max_score}"
                     )
+                else:
+                    tqdm_loader.set_description("Evaluating")
         return y_preds
 
     # def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
@@ -125,7 +133,10 @@ class AdalComponent(Component):
         self.task.train()
         y_preds = self.pred_step(batch, batch_idx, num_workers)
         for i, y_pred in enumerate(y_preds):
-            y_pred.alias += f"y_pred_{i}"
+            try:
+                y_pred.alias += f"y_pred_{i}"
+            except AttributeError:
+                raise ValueError(f"y_pred_{i} is not a Parameter, {y_pred}")
         return y_preds
 
     def validate_condition(self, steps: int, total_steps: int) -> bool:
@@ -147,6 +158,7 @@ class AdalComponent(Component):
                 self.task.eval()
                 return super().validation_step(batch, batch_idx, num_workers)
         """
+        # TODO: let use decide which mode to be
         self.task.eval()
         y_preds = self.pred_step(
             batch, batch_idx, num_workers, running_eval=True, min_score=minimum_score

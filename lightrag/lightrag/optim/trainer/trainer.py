@@ -97,6 +97,7 @@ class Trainer(Component):
         bootstrap_shots: Optional[int] = None,
         save_traces: bool = False,
         train_batch_size: Optional[int] = 4,
+        weighted_sampling: bool = False,
         *args,
         **kwargs,
     ) -> None:
@@ -134,6 +135,7 @@ class Trainer(Component):
         self.text_optimizers: List[TextOptimizer] = []
         self.save_traces = save_traces
         self.train_batch_size = train_batch_size
+        self.weighted_sampling = weighted_sampling
 
     def diagnose(self, train_dataset: Any):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
@@ -179,6 +181,10 @@ class Trainer(Component):
         r"""
         train_loader: An iterable or collection of iterables specifying training samples.
         """
+        if debug:
+            from lightrag.utils import get_logger
+
+            get_logger(level="DEBUG")
         raw_shots = raw_shots or self._raw_shots
         bootstrap_shots = bootstrap_shots or self._bootstrap_shots
         print(f"raw_shots: {raw_shots}, bootstrap_shots: {bootstrap_shots}")
@@ -247,7 +253,7 @@ class Trainer(Component):
                 )
             for opt in self.demo_optimizers:
                 opt.config_shots(raw_shots=raw_shots, bootstrap_shots=bootstrap_shots)
-                opt.use_weighted_sampling(weighted=False)
+                opt.use_weighted_sampling(weighted=self.weighted_sampling)
 
         if debug:
             print("Debugging mode")
@@ -284,6 +290,7 @@ class Trainer(Component):
         return max_steps // num_samples + 1
 
     def initial_validation(self, val_dataset: Any, test_dataset: Any):
+
         val_output = self.adaltask.validation_step(val_dataset, 0, self.num_workers)
         val_score = val_output.avg_score
         test_output = self.adaltask.validation_step(test_dataset, 0, self.num_workers)
@@ -374,6 +381,194 @@ class Trainer(Component):
         return trainer_results
         # end of validation
 
+    # TODO: make this the debug
+    def _fit_demos_one_step_for_debug(
+        self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
+    ):
+        from lightrag.utils import get_logger
+
+        get_logger(level="DEBUG")
+        print("Fitting using Random Demo Optimizer")
+        # trainer_results = self._pre_fit(val_dataset, test_dataset)
+        print(f"save to {self.ckpt_file}")
+
+        self.adaltask.train()
+        self.adaltask.trace()
+        self._set_demo_optimizers_dataset(train_dataset)
+        # self.optimizer.zero_grad()
+
+        # test teacher mode
+        self.adaltask.use_teacher()
+        train_loader.batch_size = 2
+        pred_teacher = set()  # id of the teacher predictions
+        batch = next(iter(train_loader))
+        y_preds: List[Parameter] = self.adaltask.train_step(batch, 0, self.num_workers)
+        if len(y_preds) != 2:
+            raise ValueError("Expected 2 y_preds")
+        nodes: List[Parameter] = y_preds[0].trace_graph(y_preds[0])[0]
+        demo_params = [p for p in nodes if p.param_type == ParameterType.DEMOS]
+
+        if len(demo_params) == 0:
+            raise ValueError("No demo params found")
+
+        if len(demo_params[0]._traces) != 2:
+            raise ValueError(
+                f"Expected 2 traces, got {len(demo_params[0]._traces)}, traces: {demo_params[0]._traces}"
+            )
+
+        print(f"Teacher y_preds: {y_preds[0].to_dict()}")
+        # return
+
+        # test validation mode
+
+        batch_eval: EvaluationResult = self.adaltask.evaluate_samples(batch, y_preds)
+        batch_acc = batch_eval.avg_score
+        batch_per_item_scores = batch_eval.per_item_scores
+        print(
+            f"Validation accuracy: {batch_acc}, per item scores: {batch_per_item_scores}"
+        )
+
+        # test loss
+        losses: List[Parameter] = self.adaltask.loss_step(
+            batch, y_preds, 0, self.num_workers
+        )
+        print(f"Losses: {losses[0].to_dict()}")
+        self._demo_optimizers_add_scores(
+            [sample.id for sample in batch], batch_per_item_scores, is_teacher=True
+        )
+        losses[0].backward()
+        losses[1].backward()
+        pred_teacher.add(batch[0].id)
+        pred_teacher.add(batch[1].id)
+        graph_path = os.path.join(self.ckpt_path, "graph.png")
+        losses[0].draw_graph(filepath=graph_path)
+        print(f"Graph saved to {graph_path}")
+
+        # check the score
+        for key, val in demo_params[0]._traces.items():
+            print(f"param: {key}, val: {val}")
+            score = val.score
+            if score is None:
+                raise ValueError("Score is None")
+            print(f"param: {key}, score: {score}")
+        print(f"Loss after backward: {losses[0].to_dict()}")
+
+        # test optimizer
+        # self._init_demo_optimizers()
+        # bootstrap
+        # tracking the bootstrap so we wont repeat the same samples
+
+        for batch_idx, batch in enumerate(train_loader):
+            print(f"Training step: {batch_idx}")
+            if batch_idx > 0:
+                break
+            # eval_student_mode
+            self.adaltask.use_teacher(False)
+            y_preds_student = self.adaltask.train_step(
+                batch, batch_idx, self.num_workers
+            )
+            losses_student: List[Parameter] = self.adaltask.loss_step(  # noqa F841
+                batch, y_preds_student, batch_idx, self.num_workers
+            )
+
+            self._demo_optimizers_add_scores(
+                [sample.id for sample in batch], batch_per_item_scores, is_teacher=False
+            )
+            # for loss in losses_student:
+            #     loss.backward()
+
+            eval_result = self.adaltask.evaluate_samples(batch, y_preds_student)
+            print(f"Eval result: {eval_result.avg_score}")
+            eval_score_per_item = eval_result.per_item_scores
+
+            # bootstrap
+            batch_for_teacher = []
+
+            for i, (sample, item_score) in enumerate(zip(batch, eval_score_per_item)):
+                # use teacher
+                if sample.id in pred_teacher:
+                    continue
+                # if item_score < 0.5:
+                batch_for_teacher.append(sample)
+                pred_teacher.add(sample.id)
+            # run teacher, use teachers's output instead of the initial output (bootstrap)
+            if len(batch_for_teacher) > 0:
+                print(f"Using teacher for {len(batch_for_teacher)} samples")
+                self.adaltask.use_teacher()
+                y_preds_teacher = self.adaltask.train_step(
+                    batch_for_teacher, batch_idx, self.num_workers
+                )
+                losses_teacher: List[Parameter] = self.adaltask.loss_step(  # noqa F841
+                    batch_for_teacher, y_preds_teacher, batch_idx, self.num_workers
+                )
+                self._demo_optimizers_add_scores(
+                    [sample.id for sample in batch_for_teacher],
+                    eval_score_per_item,
+                    is_teacher=True,
+                )
+                # for loss in losses_teacher:
+                #     loss.backward()
+            # propose
+            self._demo_optimizers_propose()
+
+            # test step
+            self._demo_optimizers_step()
+
+            for opt in self.demo_optimizers:
+                if opt.proposing:
+                    raise ValueError("Optimizer is still proposing")
+            # check demo params
+            opt_params = []
+            for opt in self.demo_optimizers:
+                opt_params.extend(opt.params)
+            print(f"Opt params: {opt_params}")
+            for name, param in self.adaltask.named_parameters():
+                print(f"Param: {name}")
+
+                if param.param_type == ParameterType.DEMOS:
+                    print(f"Demo param: {name}, value: {param.data}, param: {param}")
+                    if param.data is None:
+                        raise ValueError("Demo param data is None")
+
+                    if len(param._traces) == 0:
+                        raise ValueError(f"No traces found, param_id: {param.id}")
+                    if len(param._previous_demos) > 0:
+                        raise ValueError(
+                            f"Previous demos should be empty, param: {param.id}"
+                        )
+                    if len(param._demos) == 0:
+                        raise ValueError(f"No demos found, param: {param}")
+
+            # validate
+            # val_output = self.adaltask.validation_step(
+            #     val_dataset, batch_idx, self.num_workers
+            # )
+            # val_score = val_output.avg_score
+            # print(f"Validation score: {val_score}")  # 0.92 for two shot bootstrap
+
+            # bootstrap
+            # prefer to pick failed samples
+
+            #
+
+            # bootstrap
+            # prefer to pick failed samples
+
+        # print(f"Teacher raw y_preds: {y_preds[0].raw_response}")
+        # print(f"Teacher input args: {y_preds[0].input_args}")
+        # self._zero_grad_text_optimizers()
+
+        # num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
+        # total_steps = 0
+        # for epoch in tqdm(range(num_epochs), desc="Epoch"):
+        #     for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
+        #         total_steps += 1
+        #         if total_steps > self.max_steps:
+        #             print("Reached max steps")
+        #             break
+        #         pbar.set_description(f"Training Step: {total_steps}")
+        #         self.adaltask.train()  # this will turn everything to train mode
+
     def _fit_one_step_for_debug(self, train_loader: Any):
         # reset batch size to 2
         train_loader.batch_size = 2
@@ -398,6 +593,12 @@ class Trainer(Component):
         for opt in self.demo_optimizers:
             opt.propose()
 
+    def _demo_optimizers_add_scores(
+        self, ids: List[str], scores: List[float], is_teacher: bool = True
+    ):
+        for opt in self.demo_optimizers:
+            opt.add_scores(ids, scores, is_teacher)
+
     def _demo_optimizers_revert(self):
         for opt in self.demo_optimizers:
             opt.revert()
@@ -415,6 +616,7 @@ class Trainer(Component):
         self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
     ):
         log.info("Fitting using Random Demo Optimizer")
+        # self.adaltask.train()
         trainer_results = self._pre_fit(val_dataset, test_dataset)
         print(f"save to {self.ckpt_file}")
 
@@ -433,15 +635,24 @@ class Trainer(Component):
                     break
                 pbar.set_description(f"Training Step: {total_steps}")
                 # Trace the run in the demos
+                self.adaltask.train()
+                self.adaltask.trace()
                 self.adaltask.use_teacher(False)
-                y_preds = self.adaltask.train_step(batch, steps, self.num_workers)
+                y_preds = self.adaltask.train_step(batch, total_steps, self.num_workers)
                 losses: List[Parameter] = self.adaltask.loss_step(
-                    batch, y_preds, steps, self.num_workers
+                    batch, y_preds, total_steps, self.num_workers
+                )
+                self._demo_optimizers_add_scores(
+                    [sample.id for sample in batch],
+                    [float(loss.data) for loss in losses],
+                    is_teacher=False,
                 )
                 for loss in losses:
                     loss.backward()
                 # Trace the teacher run
                 self.adaltask.use_teacher(True)
+                self.adaltask.train()
+                self.adaltask.trace()
                 # filter by id
                 batch_for_teacher = []
                 for sample in batch:
@@ -449,10 +660,15 @@ class Trainer(Component):
                         batch_for_teacher.append(sample)
 
                 y_preds_teacher = self.adaltask.train_step(
-                    batch_for_teacher, steps, self.num_workers
+                    batch_for_teacher, total_steps, self.num_workers
                 )
                 losses_teacher: List[Parameter] = self.adaltask.loss_step(
-                    batch, y_preds_teacher, steps, self.num_workers
+                    batch_for_teacher, y_preds_teacher, total_steps, self.num_workers
+                )
+                self._demo_optimizers_add_scores(
+                    [sample.id for sample in batch_for_teacher],
+                    [float(loss.data) for loss in losses_teacher],
+                    is_teacher=True,
                 )
                 for loss in losses_teacher:
                     loss.backward()
@@ -471,7 +687,7 @@ class Trainer(Component):
                 if self.adaltask.validate_condition(steps, total_steps):
                     val_output = self.adaltask.validation_step(
                         val_dataset,
-                        steps,
+                        total_steps,
                         self.num_workers,
                         minimum_score=trainer_results.val_scores[-1],
                     )
@@ -537,169 +753,6 @@ class Trainer(Component):
                         self.ckpt_path, f"opt_{i}_param_{param.alias}_demos.json"
                     )
                     save_json(param._demos, demo_file)
-
-    # TODO: make this the debug
-    def _fit_demos_one_step_for_debug(
-        self, train_loader, train_dataset: Any, val_dataset: Any, test_dataset: Any
-    ):
-        from lightrag.utils import get_logger
-
-        get_logger(level="DEBUG")
-        print("Fitting using Random Demo Optimizer")
-        # trainer_results = self._pre_fit(val_dataset, test_dataset)
-        print(f"save to {self.ckpt_file}")
-
-        self.adaltask.train()
-        self.adaltask.trace()
-        self._set_demo_optimizers_dataset(train_dataset)
-        # self.optimizer.zero_grad()
-
-        # test teacher mode
-        self.adaltask.use_teacher()
-        train_loader.batch_size = 2
-        pred_teacher = set()  # id of the teacher predictions
-        batch = next(iter(train_loader))
-        y_preds: List[Parameter] = self.adaltask.train_step(batch, 0, self.num_workers)
-        if len(y_preds) != 2:
-            raise ValueError("Expected 2 y_preds")
-        nodes: List[Parameter] = y_preds[0].trace_graph(y_preds[0])[0]
-        demo_params = [p for p in nodes if p.param_type == ParameterType.DEMOS]
-
-        if len(demo_params) == 0:
-            raise ValueError("No demo params found")
-
-        if len(demo_params[0]._traces) != 2:
-            raise ValueError(
-                f"Expected 2 traces, got {len(demo_params[0]._traces)}, traces: {demo_params[0]._traces}"
-            )
-
-        print(f"Teacher y_preds: {y_preds[0].to_dict()}")
-
-        # test validation mode
-
-        batch_eval: EvaluationResult = self.adaltask.evaluate_samples(batch, y_preds)
-        batch_acc = batch_eval.avg_score
-        batch_per_item_scores = batch_eval.per_item_scores
-        print(
-            f"Validation accuracy: {batch_acc}, per item scores: {batch_per_item_scores}"
-        )
-
-        # test loss
-        losses: List[Parameter] = self.adaltask.loss_step(
-            batch, y_preds, 0, self.num_workers
-        )
-        print(f"Losses: {losses[0].to_dict()}")
-        losses[0].backward()
-        losses[1].backward()
-        pred_teacher.add(batch[0].id)
-        pred_teacher.add(batch[1].id)
-
-        # check the score
-        for key, val in demo_params[0]._traces.items():
-            print(f"param: {key}, val: {val}")
-            score = val.score
-            if score is None:
-                raise ValueError("Score is None")
-            print(f"param: {key}, score: {score}")
-        print(f"Loss after backward: {losses[0].to_dict()}")
-
-        # test optimizer
-        # self._init_demo_optimizers()
-        # bootstrap
-        # tracking the bootstrap so we wont repeat the same samples
-
-        for batch_idx, batch in enumerate(train_loader):
-            print(f"Training step: {batch_idx}")
-            if batch_idx > 0:
-                break
-            # eval_student_mode
-            self.adaltask.use_teacher(False)
-            y_preds_student = self.adaltask.train_step(
-                batch, batch_idx, self.num_workers
-            )
-            losses_student: List[Parameter] = self.adaltask.loss_step(
-                batch, y_preds_student, batch_idx, self.num_workers
-            )
-            for loss in losses_student:
-                loss.backward()
-
-            eval_result = self.adaltask.evaluate_samples(batch, y_preds_student)
-            print(f"Eval result: {eval_result.avg_score}")
-            eval_score_per_item = eval_result.per_item_scores
-
-            # bootstrap
-            batch_for_teacher = []
-
-            for i, (sample, item_score) in enumerate(zip(batch, eval_score_per_item)):
-                # use teacher
-                if sample.id in pred_teacher:
-                    continue
-                if item_score < 0.5:
-                    batch_for_teacher.append(sample)
-                    pred_teacher.add(sample.id)
-            # run teacher, use teachers's output instead of the initial output (bootstrap)
-            if len(batch_for_teacher) > 0:
-                self.adaltask.use_teacher()
-                y_preds_teacher = self.adaltask.train_step(
-                    batch_for_teacher, batch_idx, self.num_workers
-                )
-                losses_teacher: List[Parameter] = self.adaltask.loss_step(
-                    batch_for_teacher, y_preds_teacher, batch_idx, self.num_workers
-                )
-                for loss in losses_teacher:
-                    loss.backward()
-            # propose
-            self._demo_optimizers_propose()
-
-            # test step
-            self._demo_optimizers_step()
-
-            for opt in self.demo_optimizers:
-                if opt.proposing:
-                    raise ValueError("Optimizer is still proposing")
-            # check demo params
-            for name, param in self.adaltask.named_parameters():
-                print(f"Param: {name}")
-                if param.param_type == ParameterType.DEMOS:
-                    print(f"Demo param: {name}, value: {param.data}")
-                    if param.data is None:
-                        raise ValueError("Demo param data is None")
-                    if len(param._demos) == 0:
-                        raise ValueError("No demos found")
-                    if len(param._traces) == 0:
-                        raise ValueError("No traces found")
-                    if len(param._previous_demos) > 0:
-                        raise ValueError("Previous demos should be empty")
-
-            # validate
-            # val_output = self.adaltask.validation_step(
-            #     val_dataset, batch_idx, self.num_workers
-            # )
-            # val_score = val_output.avg_score
-            # print(f"Validation score: {val_score}")  # 0.92 for two shot bootstrap
-
-            # bootstrap
-            # prefer to pick failed samples
-
-            #
-
-            # bootstrap
-            # prefer to pick failed samples
-
-        # print(f"Teacher raw y_preds: {y_preds[0].raw_response}")
-        # print(f"Teacher input args: {y_preds[0].input_args}")
-        # self._zero_grad_text_optimizers()
-
-        # num_epochs = self._estimate_num_epochs(train_loader, self.max_steps)
-        # total_steps = 0
-        # for epoch in tqdm(range(num_epochs), desc="Epoch"):
-        #     for steps, batch in enumerate((pbar := tqdm(train_loader, position=0))):
-        #         total_steps += 1
-        #         if total_steps > self.max_steps:
-        #             print("Reached max steps")
-        #             break
-        #         pbar.set_description(f"Training Step: {total_steps}")
-        #         self.adaltask.train()  # this will turn everything to train mode
 
     def _fit_text_grad_random(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any

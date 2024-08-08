@@ -69,11 +69,18 @@ class SimplifiedBaleen(dspy.Module):
         return dspy.Prediction(context=context, answer=pred.answer)
 
 
+# pred: Prediction
 def validate_context_and_answer_and_hops(example, pred, trace=None):
+    # print(f"example: {example}, pred: {pred}, trace: {trace}")
     if not dspy.evaluate.answer_exact_match(example, pred):
         return False
+    # print("answer_exact_match")
+    return True
     if not dspy.evaluate.answer_passage_match(example, pred):
         return False
+
+    # print("answer_passage_match")
+    return True
 
     hops = [example.question] + [
         outputs.query for *_, outputs in trace if "query" in outputs
@@ -158,5 +165,7 @@ if __name__ == "__main__":
 
     # Load the datasets.
     trainset, devset = load_datasets()
+    from benchmarks.config import dspy_save_path
+
     # train the model
-    # compiled_baleen = train(trainset, dspy_save_path, "hotpotqa.json")
+    compiled_baleen = train(trainset, dspy_save_path, "hotpotqa.json")

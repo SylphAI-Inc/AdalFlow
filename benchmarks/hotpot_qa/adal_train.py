@@ -1,10 +1,13 @@
 """We will use dspy's retriever to keep that the same and only use our generator and optimizer"""
 
 import dspy
+from typing import List, Union, Optional, Dict, Callable
 from lightrag.optim.parameter import Parameter, ParameterType
 
 from lightrag.datasets.hotpot_qa import HotPotQA, HotPotQAData
 from lightrag.datasets.types import Example
+
+from lightrag.core.retriever import Retriever
 
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
@@ -26,7 +29,7 @@ def load_datasets():
 
 
 # task pipeline
-from typing import Any, Tuple, Callable, Dict
+from typing import Any, Tuple
 
 from lightrag.core import Component, Generator
 
@@ -86,13 +89,215 @@ from dataclasses import dataclass, field
 
 @dataclass
 class HotPotQADemoData(Example):
-    context: str = field(
+    context: List[str] = field(
         metadata={"desc": "The context to be used for answering the question"},
+        default_factory=list,
+    )
+    score: float = field(
+        metadata={"desc": "The score of the answer"},
         default=None,
     )
 
 
-class HotPotQARAG(Component):
+from benchmarks.hotpot_qa.dspy_train import validate_context_and_answer_and_hops
+
+
+def convert_y_pred_to_dataclass(y_pred):
+    # y_pred in both eval and train mode
+    context: List[str] = (
+        y_pred.input_args["prompt_kwargs"]["context"]
+        if hasattr(y_pred, "input_args")
+        else []
+    )
+    # context_str = "\n".join(context)
+    data = y_pred.data if hasattr(y_pred, "data") else y_pred
+    return DynamicDataClassFactory.from_dict(
+        class_name="HotPotQAData",
+        data={
+            "answer": data,
+            "context": context,
+        },
+    )
+
+
+def eval_fn(sample, y_pred, metadata):
+    if isinstance(sample, Parameter):
+        sample = sample.data
+    y_pred_obj = convert_y_pred_to_dataclass(y_pred)
+    return 1 if validate_context_and_answer_and_hops(sample, y_pred_obj) else 0
+
+
+from lightrag.core.types import RetrieverOutput, GeneratorOutput
+
+
+# Demonstrating how to wrap other retriever to adalflow retriever and be applied in training pipeline
+class DspyRetriever(Retriever):
+    def __init__(self, k=3):
+        super().__init__()
+        self.k = k
+        self.dspy_retriever = dspy.Retrieve(k=k)
+
+    def call(self, input, top_k=None, id=None):
+        output = self.dspy_retriever(query_or_queries=input, k=self.k)
+        print(f"dsy_retriever output: {output}")
+        final_output: List[RetrieverOutput] = []
+        documents = output.passages
+
+        final_output.append(
+            RetrieverOutput(
+                query=input,
+                documents=documents,
+                doc_indices=[],
+            )
+        )
+        print(f"final_output: {final_output}")
+        return final_output
+
+
+# example need to have question,
+# pred needs to have query
+from lightrag.optim.text_grad.function import GradFunction
+
+
+# User customize an auto-grad operator
+class MultiHopRetriever(GradFunction):
+    def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
+        super().__init__()
+
+        self.passages_per_hop = passages_per_hop
+        self.max_hops = max_hops
+
+        self.query_generator = Generator(
+            name="query_generator",
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            prompt_kwargs={
+                "few_shot_demos": Parameter(
+                    alias="few_shot_demos_1",
+                    data=None,
+                    role_desc="To provide few shot demos to the language model",
+                    requires_opt=True,
+                    param_type=ParameterType.DEMOS,
+                )
+            },
+            template=query_template,
+            output_processors=parse_string_query,
+            use_cache=True,
+            demo_data_class=HotPotQADemoData,
+            demo_data_class_input_mapping={
+                "question": "question",
+                # "context": "context",
+            },
+            demo_data_class_output_mapping={"answer": lambda x: x.raw_response},
+        )
+        self.retrieve = DspyRetriever(k=passages_per_hop)
+
+    def call(self, question: str, id: str = None) -> Any:  # Add id for tracing
+        # inferenc mode
+        # output = self.forward(question, id=id)
+        context = []
+        self.max_hops = 1
+        # for hop in range(self.max_hops):
+        last_context_param = Parameter(
+            data=context,
+            alias=f"query_context_{id}_{0}",
+            requires_opt=True,
+        )
+        query = self.query_generator(
+            prompt_kwargs={
+                "context": last_context_param,
+                "question": question,
+            },
+            id=id,
+        )
+        print(f"query: {query}")
+        if isinstance(query, GeneratorOutput):
+            query = query.data
+        output = self.retrieve(query)
+        print(f"output: {output}")
+        print(f"output call: {output}")
+        return output[0].documents
+
+    def forward(self, question: str, id: str = None) -> Parameter:
+        question_param = question
+        if not isinstance(question, Parameter):
+            question_param = Parameter(
+                data=question,
+                alias="question",
+                role_desc="The question to be answered",
+                requires_opt=False,
+            )
+        context = []
+        self.max_hops = 1
+        # for hop in range(self.max_hops):
+        last_context_param = Parameter(
+            data=context,
+            alias=f"query_context_{id}_{0}",
+            requires_opt=True,
+        )
+        query = self.query_generator(
+            prompt_kwargs={
+                "context": last_context_param,
+                "question": question_param,
+            },
+            id=id,
+        )
+        print(f"query: {query}")
+        if isinstance(query, GeneratorOutput):
+            query = query.data
+        output = self.retrieve(query)
+        print(f"output: {output}")
+        passages = []
+        if isinstance(output, Parameter):
+            passages = output.data[0].documents
+        else:
+            passages = output[0].documents
+        # context = deduplicate(context + passages) # all these needs to gradable
+        # output_param = Parameter(
+        #     data=passages,
+        #     alias=f"qa_context_{id}",
+        #     role_desc="The context to be used for answering the question",
+        #     requires_opt=True,
+        # )
+        output.data = passages  # reset the values to be used in the next
+        if not isinstance(output, Parameter):
+            raise ValueError(f"Output must be a Parameter, got {output}")
+        return output
+        # output_param.set_grad_fn(
+        #     BackwardContext(
+        #         backward_fn=self.backward,
+        #         response=output_param,
+        #         id=id,
+        #         prededecessors=prededecessors,
+        #     )
+        # )
+        # return output_param
+
+    def backward(self, response: Parameter, id: Optional[str] = None):
+        print(f"MultiHopRetriever backward: {response}")
+        children_params = response.predecessors
+        # backward score to the demo parameter
+        for pred in children_params:
+            if pred.requires_opt:
+                # pred._score = float(response._score)
+                pred.set_score(response._score)
+                print(
+                    f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
+                )
+                if pred.param_type == ParameterType.DEMOS:
+                    # Accumulate the score to the demo
+                    pred.add_score_to_trace(
+                        trace_id=id, score=response._score, is_teacher=self.teacher_mode
+                    )
+                    print(f"Pred: {pred.alias}, traces: {pred._traces}")
+
+
+from lightrag.optim.text_grad.function import GradFunction
+
+
+class HotPotQARAG(
+    Component
+):  # use component as not creating a new ops, but assemble existing ops
     r"""Same system prompt as text-grad paper, but with our one message prompt template, which has better starting performance"""
 
     def __init__(self, model_client, model_kwargs, passages_per_hop=3, max_hops=2):
@@ -101,25 +306,15 @@ class HotPotQARAG(Component):
         self.passages_per_hop = passages_per_hop
         self.max_hops = max_hops
 
-        self.query_generator = Generator(
+        self.multi_hop_retriever = MultiHopRetriever(
             model_client=model_client,
             model_kwargs=model_kwargs,
-            # prompt_kwargs={
-            #     "few_shot_demos": Parameter(
-            #         alias="few_shot_demos",
-            #         data=None,
-            #         role_desc="To provide few shot demos to the language model",
-            #         requires_opt=True,
-            #         param_type=ParameterType.DEMOS,
-            #     )
-            # },
-            template=query_template,
-            output_processors=parse_string_query,
-            use_cache=True,
+            passages_per_hop=passages_per_hop,
+            max_hops=max_hops,
         )
-        self.retrieve = dspy.Retrieve(k=passages_per_hop)
         # TODO: sometimes the cache will collide, so we get different evaluation
         self.llm_counter = Generator(
+            name="QuestionAnswering",
             model_client=model_client,
             model_kwargs=model_kwargs,
             prompt_kwargs={
@@ -143,26 +338,61 @@ class HotPotQARAG(Component):
         )
 
     # TODO: the error will be a context
-    def call(self, question: str, id: str = None) -> Any:  # Add id for tracing
+    # a component wont handle training, forward or backward, just passing everything through
+    def call(self, question: str, id: str = None) -> Union[Parameter, str]:
 
-        from dsp.utils import deduplicate
+        # normal component, will be called when in inference mode
 
-        context = []
+        question_param = Parameter(
+            data=question,
+            alias="question",
+            role_desc="The question to be answered",
+            requires_opt=False,
+        )
+        context = []  # noqa: F841
         output = None
-        for hop in range(self.max_hops):
-            query = self.query_generator(
-                prompt_kwargs={"context": context, "question": question}, id=id
-            ).data
-            # print(f"query: {query}")
-            passages = self.retrieve(query).passages
-            context = deduplicate(context + passages)
+        retrieved_context = self.multi_hop_retriever(question_param, id=id)
+
+        # forming a backpropagation graph
+        # Make this step traceable too.
+        # for hop in range(self.max_hops):
+        #     # make context a parameter to be able to trace
+        #     query = self.query_generator(
+        #         prompt_kwargs={
+        #             "context": Parameter(
+        #                 data=context, alias=f"query_context_{id}", requires_opt=True
+        #             ),
+        #             "question": question_param,
+        #         },
+        #         id=id,
+        #     )
+        #     print(f"query: {query}")
+        #     if isinstance(query, GeneratorOutput):
+        #         query = query.data
+        #     output = self.retrieve(query)
+        #     print(f"output: {output}")
+        #     passages = []
+        #     if isinstance(output, Parameter):
+        #         passages = output.data[0].documents
+        #     else:
+        #         output[0].documents
+        #     context = deduplicate(context + passages)
         # print(f"context: {context}")
 
         output = self.llm_counter(
-            prompt_kwargs={"context": context, "question": question}, id=id
+            prompt_kwargs={
+                "context": retrieved_context,
+                "question": question_param,
+            },
+            id=id,
         )  # already support both training (forward + call)
 
-        if not self.training:  # eval
+        if (
+            not self.training
+        ):  # if users want to customize the output, ensure to use if not self.training
+
+            # convert the generator output to a normal data format
+            print(f"converting output: {output}")
 
             if output.data is None:
                 error_msg = (
@@ -172,17 +402,15 @@ class HotPotQARAG(Component):
                 output = error_msg
             else:
                 output = output.data
-
         return output
 
-
-# Create adalcomponent
 
 from lightrag.optim.trainer.adal import AdalComponent
 from lightrag.optim.trainer.trainer import Trainer
 from lightrag.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
+from lightrag.core.base_data_class import DynamicDataClassFactory
 
 
 class HotPotQARAGAdal(AdalComponent):
@@ -194,6 +422,7 @@ class HotPotQARAGAdal(AdalComponent):
 
         self.evaluator = AnswerMatchAcc("fuzzy_match")
         self.eval_fn = self.evaluator.compute_single_item
+        # self.eval_fn = eval_fn
 
     def handle_one_train_sample(
         self, sample: HotPotQAData
@@ -215,6 +444,30 @@ class HotPotQARAGAdal(AdalComponent):
             }
         }
 
+    # def handle_one_loss_sample(
+    #     self,
+    #     sample: HotPotQAData,
+    #     y_pred: Any,
+    #     metadata: Optional[Dict[str, Any]] = None,
+    # ) -> Tuple[Callable, Dict]:
+    #     return self.loss_fn, {
+    #         "kwargs": {
+    #             "y_pred": y_pred,
+    #             "sample": Parameter(
+    #                 data=sample,
+    #                 role_desc="The ground truth(reference correct answer)",
+    #                 alias="y_gt",
+    #                 requires_opt=False,
+    #             ),
+    #             "metadata": metadata,
+    #         }
+    #     }
+
+    # def handle_one_loss_sample(
+    #     self, sample: HotPotQAData, y_pred: Any
+    # ) -> Tuple[Callable, Dict]:
+    #     return self.loss_fn, {"kwargs": {"y_pred": y_pred, "sample": sample}}
+
     def configure_optimizers(self, *args, **kwargs):
 
         # TODO: simplify this, make it accept generator
@@ -225,8 +478,19 @@ class HotPotQARAGAdal(AdalComponent):
         do = BootstrapFewShot(params=parameters)
         return [do]
 
-    def evaluate_one_sample(self, sample: Any, y_pred: Any) -> Any:
+    def evaluate_one_sample(
+        self, sample: Any, y_pred: Any, metadata: Dict[str, Any]
+    ) -> Any:
+
+        # we need "context" be passed as metadata
         # print(f"sample: {sample}, y_pred: {y_pred}")
+        # convert pred to Dspy structure
+
+        # y_obj = convert_y_pred_to_dataclass(y_pred)
+        # print(f"y_obj: {y_obj}")
+        # raise ValueError("Stop here")
+        if metadata:
+            return self.eval_fn(sample, y_pred, metadata)
         return self.eval_fn(sample, y_pred)
 
     def configure_teacher_generator(self):
@@ -240,11 +504,33 @@ class HotPotQARAGAdal(AdalComponent):
         )
 
 
+def validate_dspy_demos(
+    demos_file="benchmarks/BHH_object_count/models/dspy/hotpotqa.json",
+):
+    from lightrag.utils.file_io import load_json
+
+    demos_json = load_json(demos_file)
+
+    demos = demos_json["generate_answer"]["demos"]  # noqa: F841
+
+    task = HotPotQARAG(  # noqa: F841
+        **gpt_3_model,
+        passages_per_hop=3,
+        max_hops=2,
+    )
+    # task.llm_counter.p
+
+
 if __name__ == "__main__":
     ### Try the minimum effort to test on any task
+
+    # get_logger(level="DEBUG")
     trainset, valset, testset = load_datasets()
 
-    from use_cases.question_answering.bhh_object_count.config import gpt_3_model
+    from use_cases.question_answering.bhh_object_count.config import (
+        gpt_3_model,
+        gpt_4o_model,
+    )
     import dspy
 
     task = HotPotQARAG(
@@ -256,22 +542,26 @@ if __name__ == "__main__":
     question = "How long is the highway Whitehorse/Cousins Airport was built to support as of 2012?"
     print(task(question))
 
+    # for name, param in task.named_parameters():
+    #     print(f"name: {name}, param: {param}")
+
     trainset, valset, testset = load_datasets()
 
     trainer = Trainer(
-        adaltask=HotPotQARAGAdal(task=task, teacher_model_config=gpt_3_model),
-        max_steps=4,
+        adaltask=HotPotQARAGAdal(task=task, teacher_model_config=gpt_4o_model),
+        max_steps=10,
         raw_shots=0,
-        bootstrap_shots=2,
+        bootstrap_shots=4,
         train_batch_size=4,
         ckpt_path="hotpot_qa_rag",
         strategy="random",
         save_traces=True,
         debug=True,  # make it having debug mode
+        weighted_sampling=True,
     )
     # fit include max steps
     trainer.fit(
-        train_dataset=trainset, val_dataset=valset, test_dataset=testset, debug=False
+        train_dataset=trainset, val_dataset=valset, test_dataset=testset, debug=True
     )
 
 
