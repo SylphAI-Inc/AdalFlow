@@ -1,7 +1,7 @@
-from lightrag.components.model_client.groq_client import GroqAPIClient
-import lightrag as adal
+from adalflow.components.model_client.groq_client import GroqAPIClient
+import adalflow as adal
 
-# from lightrag.utils import get_logger
+# from adalflow.utils import get_logger
 
 # get_logger(level="DEBUG")
 

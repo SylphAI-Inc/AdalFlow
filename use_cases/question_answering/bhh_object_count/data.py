@@ -3,9 +3,9 @@
 from dataclasses import dataclass, field
 
 
-from lightrag.core import DataClass, fun_to_component
-from lightrag.datasets.big_bench_hard import BigBenchHard
-from lightrag.utils.data import subset_dataset
+from adalflow.core import DataClass, fun_to_component
+from adalflow.datasets.big_bench_hard import BigBenchHard
+from adalflow.utils.data import subset_dataset
 
 
 @dataclass

@@ -5,16 +5,16 @@ import os
 import re
 
 
-from lightrag.core.component import Component, fun_to_component
-from lightrag.core.container import Sequential
-from lightrag.core.generator import Generator
-from lightrag.components.model_client import (
+from adalflow.core.component import Component, fun_to_component
+from adalflow.core.container import Sequential
+from adalflow.core.generator import Generator
+from adalflow.components.model_client import (
     GroqAPIClient,
 )
-from lightrag.core.prompt_builder import Prompt
-from lightrag.components.output_parsers import YamlOutputParser
+from adalflow.core.prompt_builder import Prompt
+from adalflow.components.output_parsers import YamlOutputParser
 
-from lightrag.tracing import trace_generator_states, trace_generator_call
+from adalflow.tracing import trace_generator_states, trace_generator_call
 
 from use_cases.classification.data import (
     _COARSE_LABELS,
@@ -22,7 +22,7 @@ from use_cases.classification.data import (
 )
 
 
-from lightrag.core.base_data_class import DataClass
+from adalflow.core.base_data_class import DataClass
 from use_cases.classification.utils import get_script_dir
 from use_cases.classification.config_log import log
 

@@ -1,6 +1,6 @@
 import random
-from lightrag.optim.trainer.trainer import Trainer
-from lightrag.utils.data import Subset, DataLoader
+from adalflow.optim.trainer.trainer import Trainer
+from adalflow.utils.data import Subset, DataLoader
 
 from use_cases.question_answering.bhh_object_count.task import (
     ObjectCountTaskFewShot,
@@ -13,7 +13,7 @@ from use_cases.question_answering.bhh_object_count.config import (
     gpt_3_model,
     gpt_4o_model,
 )
-from lightrag.datasets.big_bench_hard import BigBenchHard
+from adalflow.datasets.big_bench_hard import BigBenchHard
 
 
 def train_object_count_text_grad_v1(

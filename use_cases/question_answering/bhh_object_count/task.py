@@ -2,9 +2,9 @@
 
 from typing import Any
 
-from lightrag.core import Component, Generator
-from lightrag.optim.parameter import Parameter, ParameterType
-from lightrag.components.output_parsers import YamlOutputParser
+from adalflow.core import Component, Generator
+from adalflow.optim.parameter import Parameter, ParameterType
+from adalflow.components.output_parsers import YamlOutputParser
 
 from use_cases.question_answering.bhh_object_count.data import (
     parse_integer_answer,

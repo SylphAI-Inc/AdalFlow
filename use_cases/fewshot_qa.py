@@ -1,18 +1,18 @@
 from typing import List
 
-from lightrag.core.generator import Generator
-from lightrag.core.types import Document
-from lightrag.core.embedder import Embedder
-from lightrag.components.data_process import (
+from adalflow.core.generator import Generator
+from adalflow.core.types import Document
+from adalflow.core.embedder import Embedder
+from adalflow.components.data_process import (
     RetrieverOutputToContextStr,
     DocumentSplitter,
 )
-from lightrag.core.db import LocalDB
-from lightrag.core.component import Component
-from lightrag.icl.retrieval_icl import RetrievalICL
+from adalflow.core.db import LocalDB
+from adalflow.core.component import Component
+from adalflow.icl.retrieval_icl import RetrievalICL
 
-from lightrag.components.model_client import OpenAIClient
-from lightrag.components.retriever import FAISSRetriever
+from adalflow.components.model_client import OpenAIClient
+from adalflow.components.retriever import FAISSRetriever
 
 
 import dotenv

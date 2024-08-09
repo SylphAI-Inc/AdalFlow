@@ -5,7 +5,7 @@ if __name__ == "__main__":
         TGDWithEvalFnLoss,
     )
 
-    from lightrag.optim.trainer.trainer import Trainer
+    from adalflow.optim.trainer.trainer import Trainer
 
     trainset, valset, testset = load_datasets(max_samples=10)
     adaltask = TGDWithEvalFnLoss(

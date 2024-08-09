@@ -3,16 +3,16 @@ import tqdm
 from copy import deepcopy
 from torch.utils.data import DataLoader
 
-from lightrag.components.model_client import (
+from adalflow.components.model_client import (
     OpenAIClient,
 )
-from lightrag.optim import BootstrapFewShot
-from lightrag.optim.sampler import RandomSampler, ClassSampler
-from lightrag.optim.llm_augment import LLMAugmenter
-from lightrag.optim._llm_optimizer import LLMOptimizer
+from adalflow.optim import BootstrapFewShot
+from adalflow.optim.sampler import RandomSampler, ClassSampler
+from adalflow.optim.llm_augment import LLMAugmenter
+from adalflow.optim._llm_optimizer import LLMOptimizer
 
-from lightrag.core.component import Component
-from lightrag.utils.file_io import save, save_json
+from adalflow.core.component import Component
+from adalflow.utils.file_io import save, save_json
 
 
 from use_cases.classification.task import TRECClassifier, InputFormat, OutputFormat
@@ -527,7 +527,7 @@ class TrecTrainer(Component):
 if __name__ == "__main__":
 
     from use_cases.classification.config_log import log
-    from lightrag.utils import save_json
+    from adalflow.utils import save_json
 
     train_dataset, eval_dataset, test_dataset = load_datasets()
     # TODO: ensure each time the selected eval and test dataset and train dataset are the same

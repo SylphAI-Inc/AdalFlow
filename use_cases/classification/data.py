@@ -4,17 +4,17 @@ from typing import Sequence, Dict
 import re
 import os
 
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
+from torch.utils.data import Dataset, WeightedRandomSampler
 import torch
 
 from datasets import load_dataset, DatasetDict, load_from_disk
 from datasets import Dataset as HFDataset
 
 
-from lightrag.core.prompt_builder import Prompt
-from lightrag.core.component import Component
-from lightrag.optim.sampler import Sample, ClassSampler
-from lightrag.utils import save, load
+from adalflow.core.prompt_builder import Prompt
+from adalflow.core.component import Component
+from adalflow.optim.sampler import Sample, ClassSampler
+from adalflow.utils import save, load
 
 from .utils import get_script_dir
 
@@ -37,9 +37,9 @@ _COARSE_LABELS_DESC = [
 ]
 EXAMPLES_STR = r"""Question: {{input}}
 {%if thought%}
-thought: {{thought}} 
+thought: {{thought}}
 {%endif%}
-class_name: {{output}} 
+class_name: {{output}}
 {%if description%}({{description}}){%endif%}
 class_index: {{label}}
 --------

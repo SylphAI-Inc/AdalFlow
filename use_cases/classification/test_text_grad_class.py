@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from dotenv import load_dotenv
-from lightrag.utils import save_json
+from adalflow.utils import save_json
 
 # get_logger(level="DEBUG", filename="lib_text_grad.log")
 
@@ -16,7 +16,7 @@ def test_text_grad():
     from textgrad import Variable, TextualGradientDescent
     from textgrad.loss import TextLoss
     from dotenv import load_dotenv
-    from lightrag.utils import get_logger
+    from adalflow.utils import get_logger
 
     get_logger(level="DEBUG", filename="lib_text_grad.log")
 

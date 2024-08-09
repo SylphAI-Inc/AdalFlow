@@ -1,18 +1,18 @@
 from typing import Dict, Tuple, Callable, Any, List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from lightrag.core.component import Component
+    from adalflow.core.component import Component
 
-from lightrag.optim.parameter import Parameter
+from adalflow.optim.parameter import Parameter
 
-from lightrag.optim.trainer.adal import AdalComponent
-from lightrag.datasets.big_bench_hard import ObjectCountData
-from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
-from lightrag.core.generator import BackwardEngine
-from lightrag.eval.answer_match_acc import AnswerMatchAcc
-from lightrag.eval.base import EvaluationResult
-from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
-from lightrag.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
+from adalflow.optim.trainer.adal import AdalComponent
+from adalflow.datasets.big_bench_hard import ObjectCountData
+from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+from adalflow.core.generator import BackwardEngine
+from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from adalflow.eval.base import EvaluationResult
+from adalflow.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
+from adalflow.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
 
 
 from use_cases.question_answering.bhh_object_count.task import ObjectCountTaskOriginal

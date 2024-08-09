@@ -1,6 +1,6 @@
 import os
 
-from lightrag.utils import get_logger
+from adalflow.utils import get_logger
 
 from use_cases.classification.utils import get_script_dir
 

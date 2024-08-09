@@ -1,5 +1,5 @@
-from lightrag.components.model_client.groq_client import GroqAPIClient
-from lightrag.components.model_client.openai_client import OpenAIClient
+from adalflow.components.model_client.groq_client import GroqAPIClient
+from adalflow.components.model_client.openai_client import OpenAIClient
 
 
 llama3_model = {

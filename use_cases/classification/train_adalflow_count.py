@@ -1,20 +1,20 @@
-from lightrag.optim.parameter import Parameter, ParameterType
-from lightrag.core import Component, Generator
-from lightrag.core.generator import BackwardEngine
-from lightrag.components.model_client.groq_client import GroqAPIClient
-from lightrag.components.model_client.openai_client import OpenAIClient
-from lightrag.utils import setup_env
-from lightrag.eval.answer_match_acc import AnswerMatchAcc
-from lightrag.eval.base import EvaluationResult
+from adalflow.optim.parameter import Parameter, ParameterType
+from adalflow.core import Component, Generator
+from adalflow.core.generator import BackwardEngine
+from adalflow.components.model_client.groq_client import GroqAPIClient
+from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.utils import setup_env
+from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from adalflow.eval.base import EvaluationResult
 
-from lightrag.core import DataClass, fun_to_component
-from lightrag.components.output_parsers import YamlOutputParser
-from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
-from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
-from lightrag.optim.text_grad.ops import sum
-from lightrag.optim._llm_optimizer import LLMOptimizer
-from lightrag.datasets.big_bench_hard import BigBenchHard
-from lightrag.utils import save_json
+from adalflow.core import DataClass, fun_to_component
+from adalflow.components.output_parsers import YamlOutputParser
+from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+from adalflow.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
+from adalflow.optim.text_grad.ops import sum
+from adalflow.optim._llm_optimizer import LLMOptimizer
+from adalflow.datasets.big_bench_hard import BigBenchHard
+from adalflow.utils import save_json
 from dataclasses import dataclass, field
 from textgrad.tasks import load_task
 import numpy as np
@@ -25,7 +25,7 @@ from tqdm import tqdm
 import logging
 
 from torch.utils.data import Subset
-from lightrag.utils.data import DataLoader
+from adalflow.utils.data import DataLoader
 
 
 logger = logging.getLogger(__name__)
@@ -232,9 +232,9 @@ class ObjectCountTaskOriginal(Component):
 
 # Define a evaluator == PyTorch Evaluator
 # class ObjectCountEvaluator(BaseEvaluator):
-from lightrag.optim.trainer.adal import AdalComponent
-from lightrag.optim.trainer.trainer import Trainer
-from lightrag.datasets.big_bench_hard import ObjectCountData
+from adalflow.optim.trainer.adal import AdalComponent
+from adalflow.optim.trainer.trainer import Trainer
+from adalflow.datasets.big_bench_hard import ObjectCountData
 
 
 class TGDWithEvalFnLoss(AdalComponent):

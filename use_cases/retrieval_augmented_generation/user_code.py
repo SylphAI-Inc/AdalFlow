@@ -5,7 +5,7 @@ import torch
 
 from transformers import AutoTokenizer, AutoModel, AutoModelForCausalLM
 
-from lightrag.core.model_client import ModelClient
+from adalflow.core.model_client import ModelClient
 
 log = logging.getLogger(__name__)
 
@@ -189,7 +189,7 @@ class CustomLlmModelClient(ModelClient):
 
 
 if __name__ == "__main__":
-    from lightrag.core import Generator
+    from adalflow.core import Generator
 
     MODEL = "BAAI/bge-small-en-v1.5"
     context = "Brian is in the kitchen."

@@ -2,10 +2,10 @@
 We just need to very basic generator that can be used to generate text from a prompt.
 """
 
-# from lightrag.core.component import Component
-# from lightrag.core.memory import Memory
+# from adalflow.core.component import Component
+# from adalflow.core.memory import Memory
 
-# from lightrag.components.model_client import OpenAIClient
+# from adalflow.components.model_client import OpenAIClient
 
 
 # class SimpleDialog(Component):

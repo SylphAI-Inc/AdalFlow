@@ -1,9 +1,9 @@
-from lightrag.optim.parameter import Parameter
-from lightrag.components.model_client.groq_client import GroqAPIClient
-from lightrag.components.model_client.openai_client import OpenAIClient
-from lightrag.optim.text_grad.llm_text_loss import LLMAsTextLoss
-from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
-from lightrag.utils import setup_env, get_logger, save_json
+from adalflow.optim.parameter import Parameter
+from adalflow.components.model_client.groq_client import GroqAPIClient
+from adalflow.components.model_client.openai_client import OpenAIClient
+from adalflow.optim.text_grad.llm_text_loss import LLMAsTextLoss
+from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+from adalflow.utils import setup_env, get_logger, save_json
 
 logger = get_logger(level="DEBUG", filename="adalflow.log")
 
