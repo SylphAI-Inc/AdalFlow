@@ -1,4 +1,4 @@
-from typing import Dict, Sequence, List
+from typing import Sequence, List
 
 
 from torchmetrics.classification import MulticlassF1Score, MulticlassAccuracy

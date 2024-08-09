@@ -38,8 +38,7 @@ jobs:
           pip install torch # manually install torch
           # pip install transformers  # manually install transformers
           poetry show
-          poetry show lightrag
-
+          poetry show adalflow
 
       - name: Build documentation using Makefile
         run: |

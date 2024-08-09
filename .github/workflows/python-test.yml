@@ -27,13 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd lightrag
+          cd adalflow
           poetry config virtualenvs.create false
           poetry install
 
       - name: Run tests with pytest
         run: |
-          cd lightrag
+          cd adalflow
           poetry run pytest
 
       - name: Upload pytest results as an artifact (optional)
@@ -41,4 +41,4 @@ jobs:
         if: always() # Always run this step to ensure test results are saved even if previous steps fail
         with:
           name: pytest-results
-          path: lightrag/.pytest_cache
+          path: adalflow/.pytest_cache
