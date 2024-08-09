@@ -3,3 +3,6 @@
 test*
 *.pkl
 .storage/
+data/*
+traces/*
+developer_notes/

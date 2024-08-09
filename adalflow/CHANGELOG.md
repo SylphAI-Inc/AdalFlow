@@ -1,3 +1,6 @@
+## [0.2.0] - 2024-08-02
+### Added
+- Optimizer: `paramter`, `GradComponent`, `Optimizer`, `AdalComponent`, and `Trainer`.
 ## [0.1.0-beta.6] - 2024-07-23
 
 Rename the `lightrag` package to `adalflow`.
