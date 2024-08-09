@@ -6,11 +6,6 @@ from typing import Literal
 from lightrag.utils.lazy_import import safe_import, OptionalPackages
 
 
-datasets = safe_import(
-    OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[1]
-)
-from datasets import load_dataset
-
 from lightrag.utils.data import Dataset
 from lightrag.utils.global_config import get_adalflow_default_root_path
 from lightrag.utils.file_io import save_csv
@@ -66,6 +61,11 @@ class HotPotQA(Dataset):
         only_hard_examples=True,
         keep_details="dev_titles",
     ):
+        datasets = safe_import(  # noqa F841
+            OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[1]
+        )
+        from datasets import load_dataset
+
         if os.path.exists(data_path):
             return
 

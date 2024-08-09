@@ -9,7 +9,7 @@ from lightrag.eval.base import EvaluationResult
 
 from lightrag.core import DataClass, fun_to_component
 from lightrag.components.output_parsers import YamlOutputParser
-from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
+from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
 from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
 from lightrag.optim.text_grad.ops import sum
 from lightrag.optim._llm_optimizer import LLMOptimizer
@@ -294,7 +294,7 @@ class TGDWithEvalFnLoss(AdalComponent):
         return y_preds
 
     def configure_optimizers(self):
-        return TextualGradientDescent(
+        return TGDOptimizer(
             params=list(
                 self.task.parameters()
             ),  # NOTE: for now it has to be a list not a generator
@@ -422,7 +422,7 @@ class ObjectCountTrainer(Component):
             params=self.target_params,
             **tgd_model_config,
         )
-        self.optimizer = TextualGradientDescent(
+        self.optimizer = TGDOptimizer(
             params=self.target_params,
             **tgd_model_config,
             # constraints=[
@@ -792,7 +792,7 @@ class ObjectCountTrainer(Component):
         max_steps: int = 3,
         max_samples=20,
         results: Dict = None,
-        optimizer: TextualGradientDescent = None,
+        optimizer: TGDOptimizer = None,
         optimizer_type: str = "tgd",
     ):
         # TODO: save a best prompt or top 2

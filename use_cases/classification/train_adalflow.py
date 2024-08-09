@@ -2,7 +2,7 @@ from lightrag.optim.parameter import Parameter
 from lightrag.components.model_client.groq_client import GroqAPIClient
 from lightrag.components.model_client.openai_client import OpenAIClient
 from lightrag.optim.text_grad.llm_text_loss import LLMAsTextLoss
-from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
+from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
 from lightrag.utils import setup_env, get_logger, save_json
 
 logger = get_logger(level="DEBUG", filename="adalflow.log")
@@ -51,7 +51,7 @@ loss_fn = LLMAsTextLoss(
 )
 print(f"loss_fn: {loss_fn}")
 
-optimizer = TextualGradientDescent(params=[x, eval_system_prompt], **gpt_3_model)
+optimizer = TGDOptimizer(params=[x, eval_system_prompt], **gpt_3_model)
 print(f"optimizer: {optimizer}")
 
 l = loss_fn(prompt_kwargs={"eval_user_prompt": x})  # noqa: E741

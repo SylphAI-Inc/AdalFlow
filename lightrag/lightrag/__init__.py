@@ -10,7 +10,7 @@ from lightrag.optim import (
     AdalComponent,
     Trainer,
     BootstrapFewShot,
-    TextualGradientDescent,
+    TGDOptimizer,
     EvalFnToTextLoss,
     LLMAsTextLoss,
 )
@@ -25,7 +25,7 @@ __all__ = [
     "AdalComponent",
     "Trainer",
     "BootstrapFewShot",
-    "TextualGradientDescent",
+    "TGDOptimizer",
     "EvalFnToTextLoss",
     "LLMAsTextLoss",
     "setup_env",

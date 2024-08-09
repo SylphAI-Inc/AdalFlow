@@ -21,6 +21,7 @@ include = [
     "lightrag/core/*",
     "lightrag/components/*",
     "lightrag/eval/*",
+    "lightrag/datasets/*",
     "lightrag/utils/*",
     "lightrag/tracing/*",
     "lightrag/optim/*",

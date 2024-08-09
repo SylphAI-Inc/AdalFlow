@@ -13,7 +13,6 @@ if TYPE_CHECKING:
 from lightrag.core.types import GeneratorOutput
 from lightrag.optim.parameter import Parameter, GradientContext
 
-# from lightrag.optim.text_grad.backend_engine_prompt import EVALUATE_VARIABLE_INSTRUCTION
 from lightrag.core.prompt_builder import Prompt
 from lightrag.eval.base import BaseEvaluator
 

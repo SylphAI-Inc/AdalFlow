@@ -28,6 +28,7 @@ if __name__ == "__main__":
         "./source/apis/core",
         "./source/apis/components",
         "./source/apis/utils",
+        "./source/apis/datasets",
         "./source/apis/eval",
         "./source/apis/tracing",
         "./source/apis/optim",

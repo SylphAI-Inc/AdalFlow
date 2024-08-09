@@ -1,4 +1,5 @@
-"""Component is to LLM task pipelines what nn.Module is to PyTorch models."""
+"""Base building block for building LLM task pipelines.
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization."""
 
 from collections import OrderedDict, namedtuple
 from typing import (

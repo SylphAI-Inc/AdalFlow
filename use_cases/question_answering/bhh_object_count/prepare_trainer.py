@@ -7,7 +7,7 @@ from lightrag.optim.parameter import Parameter
 
 from lightrag.optim.trainer.adal import AdalComponent
 from lightrag.datasets.big_bench_hard import ObjectCountData
-from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
+from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
 from lightrag.core.generator import BackwardEngine
 from lightrag.eval.answer_match_acc import AnswerMatchAcc
 from lightrag.eval.base import EvaluationResult
@@ -91,7 +91,7 @@ class TGDWithEvalFnLoss(AdalComponent):
         if use_tgd:
             self.configure_backward_engine()
             # noqa F841
-            tgd = TextualGradientDescent(  # noqa: F841
+            tgd = TGDOptimizer(  # noqa: F841
                 params=parameters,
                 **self.optimizer_model_config,
                 num_gradient_memory=0,

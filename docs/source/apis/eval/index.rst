@@ -7,6 +7,9 @@ Overview
 ----------
 .. autosummary::
 
+
+   eval.base
+
    eval.answer_match_acc
    eval.retriever_recall
    eval.retriever_relevance
@@ -17,6 +20,7 @@ Overview
    :maxdepth: 1
    :hidden:
 
+   eval.base
    eval.answer_match_acc
    eval.retriever_recall
    eval.retriever_relevance

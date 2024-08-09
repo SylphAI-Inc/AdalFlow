@@ -216,6 +216,15 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
 Optimizing
 -------------------
+AdalFlow auto-optimization provides a powerful and unified framework to optimize every single part of the prompt: (1) instruction, (2) few-shot examples, and (3) the prompt template,
+for any task pipeline you have just built. We leverage all SOTA prompt optimization from Dspy, Text-grad, ORPO, to our own research in the library.
+
+
+..  covers: (1) simple prompt optimization, (2) few-shot examples, (3) the powerful and general textual auto-diff optimizer that can be applied to both LLM prediction and the prompts/system instructions.
+
+The optimization requires users to have at least one dataset, an evaluator, and define optimizor to use.
+This section we will briefly cover the datasets and evaluation metrics supported in the library.
+
 
 Evaluating
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -245,8 +254,15 @@ Evaluating
 Training
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-AdalFlow trainer covers: (1) simple prompt optimization, (2) few-shot examples, (3) the powerful and general textual auto-diff optimizer that can be applied to both LLM prediction and the prompts/system instructions.
+Code path: ``lightrag.optim``.
 
+Adalflow defines four important classes for auto-optimization: (1) ``Parameter``, similar to role of ``nn.Tensor`` in PyTorch,
+(2) ``Optimizer`` wh, (3) ``AdalComponent`` to define the training and validation steps, and (4) ``Trainer`` to run the training and validation steps on either data loaders or datasets.
+
+We will first introduce these classes, from their design to important features each class provides.
+
+Classes
+^^^^^^^^^^^^^^^^^^
 
 .. list-table::
    :widths: 20 80
@@ -257,11 +273,11 @@ AdalFlow trainer covers: (1) simple prompt optimization, (2) few-shot examples, 
    * - :doc:`parameter`
      - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
    * - :doc:`optimizer`
-     - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We will introduce a simpler `ORPO` optimizer.
+     - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We defined two variants: `DemoOptimizer` and `TextOptimizer` to cover the prompt optimization and the few-shot optimization.
    * - :doc:`few_shot_optimizer`
-     - The few-shot optimizer to optimize the few-shot in-context learning.
+     - Subclassed from ``DemoOptimizer``, the few-shot optimizer to optimize the few-shot in-context learning.
    * - :doc:`auto_text_grad`
-     - Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library.
+     - Subclassed from ``TextOptimizer``, Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library to optimize instructions or generator output.
    * - :doc:`adalcomponent`
      - The ``intepreter`` between task pipeline and the trainer, defining train, validate steps, optimizers, evaluator, loss function, and backward engine.
    * - :doc:`trainer`
@@ -270,7 +286,7 @@ AdalFlow trainer covers: (1) simple prompt optimization, (2) few-shot examples, 
 
 .. toctree::
    :maxdepth: 1
-   :caption: Training
+   :caption: Training - Classes
    :hidden:
 
    parameter
@@ -279,6 +295,36 @@ AdalFlow trainer covers: (1) simple prompt optimization, (2) few-shot examples, 
    auto_text_grad
    adalcomponent
    trainer
+
+
+Use Cases
+^^^^^^^^^^^^^^^^^^
+Then, we will build use cases end to end, from classification (classicial NLP tasks), to question answering, to RAG, to multiple generators pipeline.
+
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Part
+     - Description
+   * - :doc:`classification`
+     - Classification with llama3.1-8b model and dataset .
+   * - :doc:`question_answering`
+     - Question Answering with `bhh_hard_object_count` dataset, including zero-shot and few-shot learning.
+   * - :doc:`rag_opt`
+     - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning.
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Training - Use Cases
+   :hidden:
+
+    classification
+    question_answering
+    rag_opt
+
 
 
 

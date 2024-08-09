@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "lightrag-docs"
+name = "adalflow-docs"
 version = "0.0.0.beta.1"
-description = "Documentation for the lightrag project"
+description = "Documentation for the adalflow project"
 authors = ["Your Name <your.email@example.com>"]
 license = "MIT"
 packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
@@ -31,6 +31,8 @@ pgvector = "^0.3.0"
 faiss-cpu = "^1.8.0.post1"
 ollama = "^0.3.0"
 diskcache = "^5.6.3"
+datasets = "^2.20.0"
+torch = "^2.4.0"
 
 
 [build-system]

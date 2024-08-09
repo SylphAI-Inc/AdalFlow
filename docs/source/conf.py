@@ -35,7 +35,7 @@ exclude_patterns = ["lightrag/tests", "test_*", "../li_test"]
 html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False
 
-html_logo = "./_static/images/LightRAG-logo-doc.jpeg"
+html_logo = "./_static/images/adalflow-logo.png"
 
 html_theme_options = {
     "collapse_navigation": False,
@@ -52,53 +52,48 @@ html_theme_options = {
             "icon": "fa-brands fa-discord",
         },
     ],
-    "announcement": """
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    """,
+    # "announcement": """
+    # <script>
+    #     document.addEventListener("DOMContentLoaded", function() {
+    #         var bannerClosed = localStorage.getItem("bannerClosed");
+    #         var bannerHeader = document.querySelector('.bd-header-announcement');
+    #         if (bannerClosed !== "true") {
+    #             // Create the announcement banner div dynamically
+    #             var banner = document.createElement('div');
+    #             banner.id = 'announcement-banner';
+    #             banner.className = 'announcement-banner';
+    #             // Create the content for the announcement
+    #             banner.innerHTML = `
+    #                 <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
+    #                 <button onclick="closeBanner()">×</button>
+    #             `;
+    #             // Append the banner to the banner header
+    #             if (bannerHeader) {
+    #                 bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
+    #             }
+    #             // Function to close the banner and remove it from the DOM
+    #             window.closeBanner = function() {
+    #                 if (bannerHeader) {
+    #                     bannerHeader.parentNode.removeChild(bannerHeader);
+    #                 }
+    #                 localStorage.setItem('bannerClosed', 'true');
+    #             };
+    #             // Scroll listener to hide banner on scroll
+    #             window.addEventListener('scroll', function() {
+    #                 if (document.documentElement.scrollTop > 0) {
+    #                     banner.style.display = 'none';
+    #                 } else {
+    #                     banner.style.display = 'flex'; // Ensure it remains flex
+    #                 }
+    #             });
+    #         } else {
+    #             if (bannerHeader) {
+    #                 bannerHeader.parentNode.removeChild(bannerHeader);
+    #             }
+    #         }
+    #     });
+    # </script>
+    # """,
     "navbar_end": [
         "navbar-icon-links.html",
         "search-field.html",

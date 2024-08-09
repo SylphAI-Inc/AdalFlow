@@ -1,3 +1,5 @@
+"""AdalComponent provides an interface to compose different parts, from eval_fn, train_step, loss_step, optimizers, backward engine, teacher generator, etc to work with Trainer."""
+
 from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
 import concurrent
 from tqdm import tqdm

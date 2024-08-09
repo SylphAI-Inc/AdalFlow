@@ -1,3 +1,5 @@
+"""Base class for Autograd Components that can be called and backpropagated through."""
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -8,7 +10,17 @@ from .component import Component
 
 
 class GradComponent(Component):
-    __doc__ = """The class to define a function that can be called and backpropagated through."""
+    __doc__ = """A base class to define interfaces for an auto-grad component/operator.
+
+    Compared with `Component`, `GradComponent` defines three important interfaces:
+    - `forward`: the forward pass of the function, returns a `Parameter` object that can be traced and backpropagated.
+    - `backward`: the backward pass of the function, updates the gradients/prediction score backpropagated from a "loss" parameter.
+    - `set_backward_engine`: set the backward engine(a form of generator) to the component, which is used to backpropagate the gradients.
+
+    The __call__ method will check if the component is in training mode,
+    and call the `forward` method to return a `Parameter` object if it is in training mode,
+    otherwise, it will call the `call` method to return the output such as "GeneratorOutput", "RetrieverOutput", etc.
+    """
     backward_engine: "BackwardEngine"
 
     def __init__(self, *args, **kwargs):

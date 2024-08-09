@@ -1,3 +1,7 @@
+"""Default Dataset, DataLoader similar to `utils.data` in PyTorch.
+
+You can also use those provided by PyTorch or huggingface/datasets."""
+
 from typing import Union, Tuple, List, Sequence, TypeVar, Generic
 import numpy as np
 import random

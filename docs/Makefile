@@ -25,6 +25,7 @@ apidoc:
 #--templatedir=$(SOURCEDIR)/_templates
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/lightrag/eval --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../lightrag/lightrag/optim --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/datasets ../lightrag/lightrag/datasets --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
 	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/lightrag/tracing --separate --force
 

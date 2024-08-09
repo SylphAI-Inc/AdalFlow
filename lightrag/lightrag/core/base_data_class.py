@@ -1,6 +1,4 @@
-"""
-The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.
-"""
+"""A base class that provides an easy way for data to interact with LLMs."""
 
 from typing import List, Dict, Any, Optional, Union, Callable, Type
 import collections

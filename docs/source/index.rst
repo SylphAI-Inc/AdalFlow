@@ -1,7 +1,7 @@
 
-.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg
+.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png
    :width: 100%
-   :alt: LightRAG Logo
+   :alt: Adalflow Logo
 
 
 

@@ -168,7 +168,7 @@ new_variable_tags = ["<NEW_VARIABLE>", "</NEW_VARIABLE>"]
 
 
 @trace_generator_states()
-class TextualGradientDescent(TextOptimizer):
+class TGDOptimizer(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
     proposing: bool = False

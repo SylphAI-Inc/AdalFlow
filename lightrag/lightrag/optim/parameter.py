@@ -1,4 +1,4 @@
-"""WIP"""
+"""Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations"""
 
 from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple, Optional
 from collections import defaultdict

@@ -48,7 +48,7 @@ class TestParameter(unittest.TestCase):
 #         )
 
 
-from lightrag.optim.text_grad.textual_grad_desc import TextualGradientDescent
+from lightrag.optim.text_grad.tgd_optimer import TGDOptimizer
 
 
 class TestUpdatePrompt(unittest.TestCase):
@@ -63,7 +63,7 @@ class TestUpdatePrompt(unittest.TestCase):
         )
 
         # Create an instance of YourClass
-        tgd = TextualGradientDescent(model_client=ModelClient(), params=[param])
+        tgd = TGDOptimizer(model_client=ModelClient(), params=[param])
         tgd.in_context_examples = ["Example 1", "Example 2"]
         tgd.get_gradient_memory_text = Mock(return_value="Gradient memory text")
         tgd.do_in_context_examples = True
