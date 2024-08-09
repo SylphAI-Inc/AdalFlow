@@ -61,13 +61,14 @@ class HotPotQA(Dataset):
         only_hard_examples=True,
         keep_details="dev_titles",
     ):
-        datasets = safe_import(  # noqa F841
-            OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[1]
-        )
-        from datasets import load_dataset
 
         if os.path.exists(data_path):
             return
+
+        safe_import(
+            OptionalPackages.DATASETS.value[0], OptionalPackages.DATASETS.value[1]
+        )
+        from datasets import load_dataset
 
         assert only_hard_examples, (
             "Care must be taken when adding support for easy examples."
