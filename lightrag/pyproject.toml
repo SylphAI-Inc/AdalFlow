@@ -5,10 +5,10 @@ version = "0.2.0.beta.1"
 description = "The Library for LLM Applications."
 authors = ["Li Yin <li@sylphai.com>"]
 readme = "README.md"
-repository = "https://github.com/SylphAI-Inc/LightRAG"
+repository = "https://github.com/SylphAI-Inc/AdalFlow"
 
 license = "MIT"
-maintainers = ["Xiaoyi Gu <xiaoyi@sylphai.com>", "Li Yin <li@sylphai.com>"]
+maintainers = ["Li Yin <li@sylphai.com>"]
 classifiers = [
     "Topic :: Software Development :: Build Tools",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -18,17 +18,17 @@ classifiers = [
 keywords = ["LLM", "NLP", "RAG", "devtools", "retrieval", "agent"]
 
 include = [
-    "lightrag/core/*",
-    "lightrag/components/*",
-    "lightrag/eval/*",
-    "lightrag/datasets/*",
-    "lightrag/utils/*",
-    "lightrag/tracing/*",
-    "lightrag/optim/*",
+    "adalflow/core/*",
+    "adalflow/components/*",
+    "adalflow/eval/*",
+    "adalflow/datasets/*",
+    "adalflow/utils/*",
+    "adalflow/tracing/*",
+    "adalflow/optim/*",
 ]
 
 
-packages = [{ include = "lightrag", from = "." }]
+packages = [{ include = "adalflow", from = "." }]
 
 
 [tool.poetry.dependencies]
@@ -86,7 +86,7 @@ matplotlib = "^3.9.1"
 diskcache = "^5.6.3"
 
 
-[tool.poetry.extras] # allow pip install lightrag[openai, groq]
+[tool.poetry.extras] # allow pip install adalflow[openai, groq]
 openai = ["openai"]
 groq = ["groq"]
 anthropic = ["anthropic"]
