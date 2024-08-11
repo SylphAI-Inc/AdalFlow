@@ -54,8 +54,11 @@ class AdalComponent(Component):
 
     def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
-        return [PromptData(p.id, p.alias, p.data) for p in self.task.parameters()]
-        # return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
+        return [
+            PromptData(p.id, p.name, p.data)
+            for p in self.task.parameters()
+            # if p.requires_opt
+        ]
 
     def handle_one_task_sample(
         self, sample: Any, *args, **kwargs
@@ -182,7 +185,7 @@ class AdalComponent(Component):
         y_preds = self.pred_step(batch, batch_idx, num_workers)
         for i, y_pred in enumerate(y_preds):
             try:
-                y_pred.alias += f"y_pred_{i}"
+                y_pred.name += f"y_pred_{i}"
             except AttributeError:
                 raise ValueError(f"y_pred_{i} is not a Parameter, {y_pred}")
         return y_preds

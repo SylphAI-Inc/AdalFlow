@@ -302,7 +302,7 @@ class TGDOptimizer(TextOptimizer):
                     f"Skipping {param.role_desc} as it does not require optimization."
                 )
                 continue
-            # print(f"Proposing a new value for {param.alias}.")
+            # print(f"Proposing a new value for {param.name}.")
             system_prompt = self.optimizer_system_prompt(
                 param_type=str(param.param_type)
             )

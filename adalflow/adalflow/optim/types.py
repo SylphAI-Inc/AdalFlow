@@ -37,7 +37,7 @@ class ParameterType(Enum):
 @dataclass
 class PromptData:
     id: str  # each parameter's id
-    alias: str  # each parameter's alias
+    name: str  # each parameter's name
     data: str  # each parameter's data
 
 

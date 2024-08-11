@@ -55,7 +55,7 @@ class TGDWithEvalFnLoss(AdalComponent):
                 "y_gt": Parameter(
                     data=sample.y,
                     role_desc="The ground truth(reference correct answer)",
-                    alias="y_gt",
+                    name="y_gt",
                     requires_opt=False,
                 ),
             }
@@ -76,7 +76,7 @@ class TGDWithEvalFnLoss(AdalComponent):
     #     self.task.train()
     #     y_preds = super().pred_step(batch, batch_idx, num_workers)
     #     for i, y_pred in enumerate(y_preds):
-    #         y_pred.alias += f"y_pred_{i}"
+    #         y_pred.name += f"y_pred_{i}"
     #     return y_preds
 
     def configure_optimizers(self):

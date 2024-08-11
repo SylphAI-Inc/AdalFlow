@@ -24,7 +24,7 @@ class ObjectCountTaskOriginal(Component):
         # NOTE: Dont use self.system_prompt
         # use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="task_instruction",
+            name="task_instruction",
             data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
@@ -86,7 +86,7 @@ class ObjectCountTaskFewShot(Component):
         # NOTE: Dont use self.system_prompt
         # use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="task_instruction",
+            name="task_instruction",
             data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
@@ -94,7 +94,7 @@ class ObjectCountTaskFewShot(Component):
             # instruction_to_optimizer="You can show some examples if you think that will help.",
         )
         _few_shot_demos = Parameter(
-            alias="few_shot_demos",
+            name="few_shot_demos",
             data=None,
             role_desc="To provide few shot demos to the language model",
             requires_opt=True,
@@ -151,7 +151,7 @@ class ObjectCountTask(Component):
         # 1. set up system prompt, and define the parameters for optimization.
         # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="task_instruction",
+            name="task_instruction",
             data="You will answer a reasoning question. Think step by step.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
@@ -159,7 +159,7 @@ class ObjectCountTask(Component):
         )
         instruction = "Do not change the fields in the JSON object. Only improve on the field descriptions."
         output_format_str = Parameter(
-            alias="output_format",
+            name="output_format",
             data="Respond with valid JSON object with the following schema:\n"
             + ObjectCountPredData.to_json_signature(),
             role_desc="To specify the LLM output format",

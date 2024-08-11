@@ -47,7 +47,6 @@ OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. 
 <OBJECTIVE_FUNCTION>Your goal is to give feedback to the variable to address the following feedback on the OUTPUT_OF_FUNCTION: {{response_gradient}} </OBJECTIVE_FUNCTION>"""
 
 
-# TODO: use eval_input field
 class EvalFnToTextLoss(LossComponent):
     __doc__ = """Convert an evaluation function to a text loss.
 
@@ -131,12 +130,12 @@ class EvalFnToTextLoss(LossComponent):
         # Create a parameter
         # TODO: improve the readability of the input and response
         eval_param: Parameter = Parameter(
-            alias=self.name + "_output",
+            name=self.name + "_output",
             data=score,
             requires_opt=True,
-            predecessors=predesessors,
             role_desc=response_desc,
         )
+        eval_param.set_predecessors(predesessors)
 
         log.info(f"EvalFnToTextLoss: Input: {kwargs}, Output: {eval_param}")
         eval_param.set_grad_fn(
@@ -251,7 +250,7 @@ class EvalFnToTextLoss(LossComponent):
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
         gradient_param = Parameter(
-            alias=f"{response.alias}_to_{pred.alias}_grad",
+            name=f"{response.name}_to_{pred.name}_grad",
             data=gradient_value_data,
             requires_opt=True,
             gradient_prompt=gradient_prompt,
@@ -266,7 +265,7 @@ class EvalFnToTextLoss(LossComponent):
 
         # backward the end to end score
         pred._score = response.data
-        print(f"setting pred alias {pred.alias} score to {response.data}")
+        print(f"setting pred name {pred.name} score to {response.data}")
 
         # TODO: reduce meta
 
@@ -324,7 +323,7 @@ class EvalFnToTextLoss(LossComponent):
                 )
                 continue
             pred._score = float(response.data)
-            log.info(f"setting pred alias {pred.alias} score to {response.data}")
+            log.info(f"setting pred name {pred.name} score to {response.data}")
 
 
 if __name__ == "__main__":
@@ -384,14 +383,14 @@ if __name__ == "__main__":
         backward_engine=backward_engine,
     )
     x = Parameter(
-        alias="x",
+        name="x",
         data="I have a cauliflower, a stalk of celery, a cabbage, and a garlic. How many vegetables do I have?",
         requires_opt=False,
         role_desc="The question to the language model",
     )
 
     system_prompt = Parameter(
-        alias="system_prompt",
+        name="system_prompt",
         data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
         requires_opt=True,
         role_desc="structured system prompt to a somewhat capable language model that specifies the behavior and strategies for the QA task",
@@ -413,7 +412,7 @@ if __name__ == "__main__":
         {
             "y": y,
             "y_gt": Parameter(
-                alias="y_gt",
+                name="y_gt",
                 data="4",
                 requires_opt=False,
                 role_desc="Correct answer",

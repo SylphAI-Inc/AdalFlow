@@ -126,7 +126,7 @@ class ObjectCountTask(Component):
         # 1. set up system prompt, and define the parameters for optimization.
         # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="task_instruction",
+            name="task_instruction",
             data="You will answer a reasoning question. Think step by step.",
             role_desc="To give task instruction to the language model in the system prompt",
             requires_opt=True,
@@ -134,7 +134,7 @@ class ObjectCountTask(Component):
         )
         instruction = "Do not change the fields in the JSON object. Only improve on the field descriptions."
         output_format_str = Parameter(
-            alias="output_format",
+            name="output_format",
             data="Respond with valid JSON object with the following schema:\n"
             + ObjectCountPredData.to_json_signature(),
             role_desc="To specify the LLM output format",
@@ -191,7 +191,7 @@ class ObjectCountTaskOriginal(Component):
         # 1. set up system prompt, and define the parameters for optimization.
         # NOTE: use self. will double the parameters, so we dont need that as we want the parameter to be part of the generator
         system_prompt = Parameter(
-            alias="task_instruction",
+            name="task_instruction",
             # data="You will answer a reasoning question. Clearly list each intermediate step before giving the final numerical answer. Double-check each step for accuracy. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             role_desc="To give task instruction to the language model in the system prompt",
@@ -270,7 +270,7 @@ class TGDWithEvalFnLoss(AdalComponent):
                 "y_gt": Parameter(
                     data=sample.y,
                     role_desc="The ground truth(reference correct answer)",
-                    alias="y_gt",
+                    name="y_gt",
                     requires_opt=False,
                 ),
             }
@@ -290,7 +290,7 @@ class TGDWithEvalFnLoss(AdalComponent):
         self.task.train()
         y_preds = super().pred_step(batch, batch_idx, num_workers)
         for i, y_pred in enumerate(y_preds):
-            y_pred.alias += f"y_pred_{i}"
+            y_pred.name += f"y_pred_{i}"
         return y_preds
 
     def configure_optimizers(self):
@@ -415,7 +415,7 @@ class ObjectCountTrainer(Component):
         self.target_params = set(self.task.parameters())
 
         for param in self.target_params:
-            print(f"param: {param.alias}")
+            print(f"param: {param.name}")
 
         # 3. optimizer will be used to optimize the parameters
         self.orpo_optimizer = LLMOptimizer(
@@ -453,7 +453,7 @@ class ObjectCountTrainer(Component):
         )
 
     def _get_param_values(self):
-        return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
+        return {p.name: p.data for p in self.task.parameters() if p.requires_opt}
 
     def fit_v1(
         self,
@@ -485,11 +485,11 @@ class ObjectCountTrainer(Component):
                         data=x,
                         role_desc="query to the language model",
                         requires_opt=False,
-                        alias=f"x_{i}",
+                        name=f"x_{i}",
                     )
                 )
                 logger.info(f"response: {response}")
-                response.alias += f"_{i}"
+                response.name += f"_{i}"
                 # TODO: when it is train, need to pass the data to be something used for eval.
                 loss = self.loss_fn(
                     kwargs={
@@ -498,11 +498,11 @@ class ObjectCountTrainer(Component):
                             data=y,
                             role_desc="The ground truth",
                             requires_opt=False,
-                            alias=f"y_{i}",
+                            name=f"y_{i}",
                         ),
                     }
                 )
-                loss.alias += f"_step_{steps}_batch_{i}"
+                loss.name += f"_step_{steps}_batch_{i}"
                 print(f"y_gt: {y})")
                 losses.append(loss)
                 # loss.draw_graph(filepath="loss1")
@@ -583,7 +583,7 @@ class ObjectCountTrainer(Component):
                 # print(f"x: {x}, y: {y}")
                 response = y_pred
                 logger.info(f"response: {response}")
-                response.alias += f"_{i}"
+                response.name += f"_{i}"
                 # TODO: when it is train, need to pass the data to be something used for eval.
                 loss = self.loss_fn(
                     kwargs={
@@ -592,11 +592,11 @@ class ObjectCountTrainer(Component):
                             data=y,
                             role_desc="The ground truth",
                             requires_opt=False,
-                            alias=f"y_{i}",
+                            name=f"y_{i}",
                         ),
                     }
                 )
-                loss.alias += f"_step_{steps}_batch_{i}"
+                loss.name += f"_step_{steps}_batch_{i}"
                 print(f"y_gt: {y})")
                 losses.append(loss)
                 # loss.draw_graph(filepath="loss1")
@@ -769,7 +769,7 @@ class ObjectCountTrainer(Component):
             # print(f"x: {x}, y: {y}")
             response = y_pred
             logger.info(f"response: {response}")
-            response.alias += f"_{i}"
+            response.name += f"_{i}"
             # TODO: when it is train, need to pass the data to be something used for eval.
             loss = loss_fn(
                 kwargs={
@@ -778,11 +778,11 @@ class ObjectCountTrainer(Component):
                         data=y,
                         role_desc="The ground truth",
                         requires_opt=False,
-                        alias=f"y_{i}",
+                        name=f"y_{i}",
                     ),
                 }
             )
-            loss.alias += f"_step_{steps}_batch_{i}"
+            loss.name += f"_step_{steps}_batch_{i}"
             print(f"y_gt: {y})")
             losses.append(loss)
         return losses

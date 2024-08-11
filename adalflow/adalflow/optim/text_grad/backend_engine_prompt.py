@@ -14,7 +14,8 @@ GLOSSARY_TEXT_BACKWARD = """
 
 # TODO: maybe it can propose new values.
 
-BACKWARD_SYSTEM_PROMPT = r"""{#Overall optimizer description#}
+# The full backward engine prompt template
+FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 You are the feedback(gradient) engine in a larger optimization system.
 
 Your goal is to give feedback to a variable in <VARIABLE> tags in order to improve the objective specified in <OBJECTIVE_FUNCTION> tags.
@@ -27,14 +28,20 @@ Remember:
 - DO NOT propose a new version of the variable, that will be the job of the optimizer.
 - Your only job is to send feedback and criticism (compute 'gradients').
     For instance, feedback can be in the form of 'Since language models have the X failure mode...', 'Adding X can fix this error because...', 'Removing X can improve the objective function because...', 'Changing X to Y would fix the mistake ...', that gets at the downstream objective.
-- If a variable is already working well (e.g. the objective function is perfect, an evaluation shows the response is accurate), you should respond with "It works well in this case, no critical feedback."
+- If a variable is already working well (e.g. the objective function is perfect, an evaluation shows the response is accurate),
+    you can speculate on in what way did the variable achieve the correct response so that the optimizer can propose variable that keep this behavior.
 - BE CONCISE, CRITICAL, and CREATIVE.
-"""
+<END_OF_SYSTEM_PROMPT>
+
+<START_OF_USER_PROMPT>
+{{ "\"\"\"" }}{{conversation_sec}}{{ "\"\"\"" }}
+
+{{objective_instruction_sec}}
+
+<END_OF_USER_PROMPT>"""
 
 ###  Backward engine: user prompt
-
-# First part to provide context of LLM as gradFunction
-
+# First part to provide context of LLM as gradComponent
 CONVERSATION_TEMPLATE = r"""<LM_PROMPT> {{llm_prompt}} </LM_PROMPT>
 <LM_OUTPUT> {{response_value}} </LM_OUTPUT>"""
 
@@ -87,30 +94,6 @@ OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. 
 # Given the above history, describe how the {{variable_desc}}
 # could be improved to improve the <OBJECTIVE_FUNCTION>. Be very creative, critical, and intelligent.
 # """
-
-# The full backward engine prompt template
-FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are the feedback(gradient) engine in a larger optimization system.
-
-Your goal is to give feedback to a variable in <VARIABLE> tags in order to improve the objective specified in <OBJECTIVE_FUNCTION> tags.
-The variable may be solution to problems, prompt/instruction to langage model, code, or any other text-based variable.
-{#Task specifics#}
-Remember:
-- Pay attention to the role description of the variable, and the context in which it is used.
-- You should assume that the variable will be used in a similar context in the future.
-{#- Only provide strategies, explanations, and methods to change in the variable.#}
-- DO NOT propose a new version of the variable, that will be the job of the optimizer.
-- Your only job is to send feedback and criticism (compute 'gradients').
-    For instance, feedback can be in the form of 'Since language models have the X failure mode...', 'Adding X can fix this error because...', 'Removing X can improve the objective function because...', 'Changing X to Y would fix the mistake ...', that gets at the downstream objective.
-- If a variable is already working well (e.g. the objective function is perfect, an evaluation shows the response is accurate), you should respond with "It works well in this case, no critical feedback."
-- BE CONCISE, CRITICAL, and CREATIVE.
-<END_OF_SYSTEM_PROMPT>
-<START_OF_USER_PROMPT>
-{{ "\"\"\"" }}{{conversation_sec}}{{ "\"\"\"" }}
-
-{{objective_instruction_sec}}
-
-<END_OF_USER_PROMPT>"""
 
 
 # TODO: Not fully sure about the function of this template

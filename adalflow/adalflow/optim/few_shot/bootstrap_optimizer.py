@@ -203,7 +203,7 @@ class BootstrapFewShot(DemoOptimizer):
 
                     demo_param.propose_data(demo_str, samples)
                 except Exception as e:
-                    print(f"Error: {e} for {demo_param.alias}")
+                    print(f"Error: {e} for {demo_param.name}")
                     raise e
 
         self.proposing = True
@@ -230,7 +230,7 @@ class BootstrapFewShot(DemoOptimizer):
 
     def __str__(self) -> str:
         s = f"BootstrapFewShot(raw_shots={self._raw_shots}, bootstrap_shots={self._bootstrap_shots}, \
-            params={[p.alias for p in self.params]}, dataset={len(self.dataset)})"
+            params={[p.name for p in self.params]}, dataset={len(self.dataset)})"
         return s
 
     def __repr__(self) -> str:

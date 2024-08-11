@@ -174,7 +174,7 @@ class MultiHopRetriever(adal.GradComponent):
             model_kwargs=model_kwargs,
             prompt_kwargs={
                 "few_shot_demos": Parameter(
-                    alias="few_shot_demos_1",
+                    name="few_shot_demos_1",
                     data=None,
                     role_desc="To provide few shot demos to the language model",
                     requires_opt=True,
@@ -201,7 +201,7 @@ class MultiHopRetriever(adal.GradComponent):
         # for hop in range(self.max_hops):
         last_context_param = Parameter(
             data=context,
-            alias=f"query_context_{id}_{0}",
+            name=f"query_context_{id}_{0}",
             requires_opt=True,
         )
         query = self.query_generator(
@@ -224,7 +224,7 @@ class MultiHopRetriever(adal.GradComponent):
         if not isinstance(question, Parameter):
             question_param = Parameter(
                 data=question,
-                alias="question",
+                name="question",
                 role_desc="The question to be answered",
                 requires_opt=False,
             )
@@ -233,7 +233,7 @@ class MultiHopRetriever(adal.GradComponent):
         # for hop in range(self.max_hops):
         last_context_param = Parameter(
             data=context,
-            alias=f"query_context_{id}_{0}",
+            name=f"query_context_{id}_{0}",
             requires_opt=True,
         )
         query = self.query_generator(
@@ -283,14 +283,14 @@ class MultiHopRetriever(adal.GradComponent):
                 # pred._score = float(response._score)
                 pred.set_score(response._score)
                 print(
-                    f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
+                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
                 )
                 if pred.param_type == ParameterType.DEMOS:
                     # Accumulate the score to the demo
                     pred.add_score_to_trace(
                         trace_id=id, score=response._score, is_teacher=self.teacher_mode
                     )
-                    print(f"Pred: {pred.alias}, traces: {pred._traces}")
+                    print(f"Pred: {pred.name}, traces: {pred._traces}")
 
 
 class HotPotQARAG(
@@ -317,7 +317,7 @@ class HotPotQARAG(
             model_kwargs=model_kwargs,
             prompt_kwargs={
                 "few_shot_demos": Parameter(
-                    alias="few_shot_demos",
+                    name="few_shot_demos",
                     data=None,
                     role_desc="To provide few shot demos to the language model",
                     requires_opt=True,
@@ -343,7 +343,7 @@ class HotPotQARAG(
 
         question_param = Parameter(
             data=question,
-            alias="question",
+            name="question",
             role_desc="The question to be answered",
             requires_opt=False,
         )
@@ -436,7 +436,7 @@ class HotPotQARAGAdal(AdalComponent):
                 "y_gt": Parameter(
                     data=sample.answer,
                     role_desc="The ground truth(reference correct answer)",
-                    alias="y_gt",
+                    name="y_gt",
                     requires_opt=False,
                 ),
             }

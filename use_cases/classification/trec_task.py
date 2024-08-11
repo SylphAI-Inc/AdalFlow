@@ -117,24 +117,19 @@ class TRECClassifierV2(adal.Component):
             "task_desc_str": adal.Parameter(
                 data=self.parser.get_task_desc_str(),
                 role_desc="task description",
-                alias="task_desc",
+                # alias="task_desc",
                 requires_opt=True,
             ),
-            # "input_format_str": adal.Parameter(
-            #     data=self.parser.get_input_format_str(),
-            #     role_desc="input format",
-            #     alias="input_format",
-            # ),
             "output_format_str": adal.Parameter(
                 data=self.parser.get_output_format_str(),
                 role_desc="output format",
-                alias="output_format",
+                # alias="output_format",
                 requires_opt=False,
             ),
             "examples_str": adal.Parameter(
                 data=None,
                 role_desc="examples",
-                alias="examples",
+                # alias="examples",
                 param_type=adal.ParameterType.DEMOS,
                 requires_opt=False,
             ),
@@ -212,11 +207,11 @@ class TRECClassifierV2Trainable(adal.AdalComponent):
         # TODO: diferent parameters behave differently
         target_param = adal.Parameter(
             data=int(sample.class_index),
-            eval_input=sample.class_index,
             requires_opt=False,
             role_desc="target class index",
         )
-        y_pred.eval_input = y_pred.full_response.data.class_index
+        target_param.set_eval_fn_input(sample.class_index)
+        y_pred.set_eval_fn_input(y_pred.full_response.data.class_index)
         # print(f"y_pred: {y_pred.}, type: {type(y_pred.data)}")
 
         return self.loss_fn.forward, {

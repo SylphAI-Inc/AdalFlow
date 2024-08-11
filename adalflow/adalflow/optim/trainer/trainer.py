@@ -716,17 +716,17 @@ class Trainer(Component):
 
                     trace_file = os.path.join(
                         self.ckpt_path,
-                        f"opt_{i}_param_{param.alias}_teacher_traces.json",
+                        f"opt_{i}_param_{param.name}_teacher_traces.json",
                     )
                     save_json(teacher_traces, trace_file)
                     trace_file = os.path.join(
                         self.ckpt_path,
-                        f"opt_{i}_param_{param.alias}_student_traces.json",
+                        f"opt_{i}_param_{param.name}_student_traces.json",
                     )
                     save_json(student_traces, trace_file)
                     # save demos
                     demo_file = os.path.join(
-                        self.ckpt_path, f"opt_{i}_param_{param.alias}_demos.json"
+                        self.ckpt_path, f"opt_{i}_param_{param.name}_demos.json"
                     )
                     save_json(param._demos, demo_file)
 

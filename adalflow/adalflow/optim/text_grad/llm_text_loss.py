@@ -52,7 +52,7 @@ class LLMAsTextLoss(LossComponent):
         for key, value in prompt_kwargs.items():
             if isinstance(value, str):
                 prompt_kwargs[key] = Parameter(
-                    data=value, requires_opt=False, role_desc=key  # TODO: role_desc
+                    data=value, requires_opt=False, role_desc=key
                 )
         self.prompt_kwargs = prompt_kwargs
         # this is llm as judge (loss) to get the loss

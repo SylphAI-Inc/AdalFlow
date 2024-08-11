@@ -45,6 +45,8 @@ from adalflow.optim.text_grad.backend_engine_prompt import (
 
 log = logging.getLogger(__name__)
 
+PromptArgType = Dict[str, Union[str, Parameter]]
+
 
 class Generator(GradComponent, CachedEngine, CallbackManager):
     __doc__ = """An user-facing orchestration component for LLM prediction.
@@ -80,15 +82,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         *,
         # args for the model
         model_client: ModelClient,  # will be intialized in the main script
-        model_kwargs: Dict[str, Any] = {},
+        model_kwargs: PromptArgType = {},
         # args for the prompt
         template: Optional[str] = None,
         prompt_kwargs: Optional[Dict] = {},
         # args for the output processing
         output_processors: Optional[Component] = None,
-        # args for the trainable parameters
-        # trainable_params: Optional[List[str]] = [],
         name: Optional[str] = None,
+        # args for the cache
         cache_path: Optional[str] = None,
         use_cache: bool = False,
     ) -> None:
@@ -142,17 +143,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         self.output_processors = output_processors
 
-        # add trainable_params to generator
-        for key, p in prompt_kwargs.items():
-            if isinstance(p, Parameter):
-                # peers will be all other parameters
-                peers = [
-                    p
-                    for k, p in prompt_kwargs.items()
-                    if isinstance(p, Parameter) and k != key
-                ]
-                p.set_peers(peers)
-                setattr(self, key, p)
+        self.set_parameters(prompt_kwargs)
 
         # end of trainable parameters
         self.backward_engine: "BackwardEngine" = None
@@ -209,6 +200,23 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def reset_mock_output(self):
         self.mock_output = False
         self.mock_output_data = "mock data"
+
+    def set_parameters(self, prompt_kwargs: PromptArgType):
+        r"""Set name for each paramter and set all context for each other.
+        Make all parameters attributes to the generator for finding them easily
+        for optimizers and other components."""
+        for key, p in prompt_kwargs.items():
+            if isinstance(p, Parameter):
+                if not p.name or p.name == "":
+                    p.name = key
+                # peers will be all other parameters
+                peers = [
+                    p
+                    for k, p in prompt_kwargs.items()
+                    if isinstance(p, Parameter) and k != key
+                ]
+                p.set_peers(peers)
+                setattr(self, key, p)
 
     def _init_prompt(self, template: str, prompt_kwargs: Dict):
         r"""Initialize the prompt with the template and prompt_kwargs."""
@@ -436,22 +444,19 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         ]
 
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
-        response: Parameter = Parameter(
-            data=(
-                output.raw_response
-                if output and not output.error
-                else f"Error: {output.error}, raw_response: {output.raw_response}"
-            ),  # need a way to compute the loss
-            # data=output,  # data should be any and simplify wrap the component output.
-            alias=self.name + "_output",
-            predecessors=predecessors,
-            role_desc=f"response from generator {self.name}",
-            param_type=ParameterType.GENERATOR_OUTPUT,
-            # context of the forward pass
-            input_args=input_args,
-            raw_response=output.raw_response,
-            full_response=output,
+        param_data = (
+            output.raw_response
+            if output and not output.error
+            else f"Error: {output.error}, raw_response: {output.raw_response}"
         )
+        response: Parameter = Parameter(
+            data=param_data,
+            name=self.name + "_output",
+            role_desc=f"response from generator(llm) {self.name}",
+            param_type=ParameterType.GENERATOR_OUTPUT,
+        )
+        response.set_predecessors(predecessors)
+        response.trace_forward_pass(input_args=input_args, full_response=output)
         # attach the demo to the demo parameter
         # if self.tracing:
         demo_param = self.find_demo_parameter(combined_prompt_kwargs)
@@ -522,7 +527,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
             for pred in children_params:
-                # NOTE: not requires_opt should only be used to skip the optimization, not the backpropagation
                 if not pred.requires_opt:
                     log.debug(
                         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
@@ -544,14 +548,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 # pred._score = float(response._score)
                 pred.set_score(response._score)
                 log.debug(
-                    f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
+                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
                 )
                 if pred.param_type == ParameterType.DEMOS:
                     # Accumulate the score to the demo
                     pred.add_score_to_trace(
                         trace_id=id, score=response._score, is_teacher=self.teacher_mode
                     )
-                    log.debug(f"Pred: {pred.alias}, traces: {pred._traces}")
+                    log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
 
     @staticmethod
     def _backward_through_one_predecessor(
@@ -644,7 +648,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         prompt_str = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
 
         var_gradient = Parameter(
-            alias=f"{response.alias}_to_{pred.alias}_grad",
+            name=f"{response.name}_to_{pred.name}_grad",
             gradient_prompt=prompt_str,  # trace the prompt
             # raw_response=gradient_output.raw_response,
             data=gradient_value,

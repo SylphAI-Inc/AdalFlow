@@ -14,7 +14,7 @@ x = Parameter(
     data="A sntence with a typo",
     role_desc="The input sentence",
     requires_opt=True,
-    alias="llm_output",
+    name="llm_output",
 )  # weights
 
 llama3_model = {
@@ -37,7 +37,7 @@ gpt_3_model = {
 }
 
 eval_system_prompt = Parameter(
-    alias="llm_judge_sys_prompt",
+    name="llm_judge_sys_prompt",
     data="Evaluate the correctness of this sentence",
     role_desc="The system prompt",
     requires_opt=True,

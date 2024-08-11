@@ -29,6 +29,8 @@ def sum(parms: List[Parameter]) -> Parameter:
 class Sum(GradComponent):
     __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
 
+    name = "Sum"
+
     def __call__(self, *args, **kwargs):
         return self.forward(*args, **kwargs)
 
@@ -47,10 +49,11 @@ class Sum(GradComponent):
 
         total = Parameter(
             data=concat_values,
-            predecessors=params,
             role_desc=f"A combination of a list of variables: {role_descriptions}",
             requires_opt=any([p.requires_opt for p in params]),
+            name="sum",
         )
+        total.set_predecessors(params)
 
         log.info("Sum forward", extra={"total": total.data})
 
@@ -87,7 +90,7 @@ class Sum(GradComponent):
             log.info(f"""Idempotent sum backward: {extra}""")
 
             param_gradient = Parameter(
-                alias=f"sum_to_{param.alias}_grad",
+                name=f"sum_to_{param.name}_grad",
                 data=param_gradient_value,
                 role_desc=f"Feedback to {param.role_desc}",
             )

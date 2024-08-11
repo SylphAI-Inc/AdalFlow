@@ -116,10 +116,13 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
 
         response = Parameter(
             data=retriever_reponse,
-            alias=self.name + "_output",
+            name=self.name + "_output",
             role_desc="Retriever response",
-            predecessors=predecessors,
             input_args=input_args,
+        )
+        response.set_predecessors(predecessors)
+        response.trace_forward_pass(
+            input_args=input_args, full_response=retriever_reponse
         )
         response.set_grad_fn(
             BackwardContext(
@@ -147,14 +150,14 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
                 # pred._score = float(response._score)
                 pred.set_score(response._score)
                 log.debug(
-                    f"backpropagate the score {response._score} to {pred.alias}, is_teacher: {self.teacher_mode}"
+                    f"backpropagate the score {response._score} to {pred.name}, is_teacher: {self.teacher_mode}"
                 )
                 if pred.param_type == ParameterType.DEMOS:
                     # Accumulate the score to the demo
                     pred.add_score_to_trace(
                         trace_id=id, score=response._score, is_teacher=self.teacher_mode
                     )
-                    log.debug(f"Pred: {pred.alias}, traces: {pred._traces}")
+                    log.debug(f"Pred: {pred.name}, traces: {pred._traces}")
 
     # def __call__(self, *args, **kwargs) -> Union[RetrieverOutputType, Any]:
     #     if self.training:
