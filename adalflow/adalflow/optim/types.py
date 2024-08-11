@@ -13,7 +13,12 @@ class ParameterType(Enum):
         "Need to be generic and you can not modify it based on a single example.",
     )
     DEMOS = ("demos", "A few examples to guide the language model.")
-    INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
+    # INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
+    GENERATOR_OUTPUT = (
+        "generator_output",
+        "The output of the generator.",
+    )  # use raw response or error message as data, full response in full_response
+    RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.")
     NONE = ("none", "")
 
     def __init__(self, value, description):

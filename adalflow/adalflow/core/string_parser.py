@@ -13,7 +13,19 @@ log = logging.getLogger(__name__)
 BOOLEAN_PARSER_OUTPUT_TYPE = bool
 
 
-class BooleanParser(Component):
+class Parser(Component):
+    __doc__ = r"""Base class for all string parsers."""
+
+    def __init__(self):
+        super().__init__()
+
+    def call(self, input: str) -> object:
+        raise NotImplementedError(
+            "Parser subclasses must implement the __call__ method"
+        )
+
+
+class BooleanParser(Parser):
     __doc__ = r"""Extracts boolean values from text.
 
     Examples:
@@ -25,10 +37,10 @@ class BooleanParser(Component):
         print(boolean_parser(test_input_1))  # Expected to extract True
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
 
-    def __call__(self, input: str) -> BOOLEAN_PARSER_OUTPUT_TYPE:
+    def call(self, input: str) -> BOOLEAN_PARSER_OUTPUT_TYPE:
         input = input.strip()
         try:
             return F.extract_first_boolean(input)
@@ -39,7 +51,7 @@ class BooleanParser(Component):
 INT_PARSER_OUTPUT_TYPE = int
 
 
-class IntParser(Component):
+class IntParser(Parser):
     __doc__ = r"""Extracts integer values from text.
 
     Returns:
@@ -60,7 +72,7 @@ class IntParser(Component):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, input: str) -> INT_PARSER_OUTPUT_TYPE:
+    def call(self, input: str) -> INT_PARSER_OUTPUT_TYPE:
         input = input.strip()
         try:
             return F.extract_first_int(input)
@@ -71,7 +83,7 @@ class IntParser(Component):
 FLOAT_PARSER_OUTPUT_TYPE = float
 
 
-class FloatParser(Component):
+class FloatParser(Parser):
     __doc__ = r"""Extracts float values from text.
 
     Returns:
@@ -92,7 +104,7 @@ class FloatParser(Component):
     def __init__(self):
         super().__init__()
 
-    def __call__(self, input: str) -> FLOAT_PARSER_OUTPUT_TYPE:
+    def call(self, input: str) -> FLOAT_PARSER_OUTPUT_TYPE:
         input = input.strip()
         try:
             return F.extract_first_float(input)
@@ -103,7 +115,7 @@ class FloatParser(Component):
 LIST_PARSER_OUTPUT_TYPE = List[object]
 
 
-class ListParser(Component):
+class ListParser(Parser):
     __doc__ = r"""Extracts list `[...]` strings from text and parses them into a list object.
 
     Args:
@@ -128,7 +140,7 @@ class ListParser(Component):
         super().__init__()
         self.add_missing_right_bracket = add_missing_right_bracket
 
-    def __call__(self, input: str) -> LIST_PARSER_OUTPUT_TYPE:
+    def call(self, input: str) -> LIST_PARSER_OUTPUT_TYPE:
         input = input.strip()
         list_str = None
         # Extract list string
@@ -150,7 +162,7 @@ class ListParser(Component):
 JSON_PARSER_OUTPUT_TYPE = Union[Dict[str, object], List[object]]
 
 
-class JsonParser(Component):
+class JsonParser(Parser):
     __doc__ = r"""Extracts JSON strings `{...}` or `[...]` from text and parses them into a JSON object.
 
     It can output either a dictionary or a list as they are both valid JSON objects.
@@ -202,7 +214,7 @@ class JsonParser(Component):
 YAML_PARSER_OUTPUT_TYPE = JSON_PARSER_OUTPUT_TYPE
 
 
-class YamlParser(Component):
+class YamlParser(Parser):
     __doc__ = r"""To extract YAML strings from text and parse them into a YAML object.
 
     Returns:

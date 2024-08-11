@@ -5,7 +5,7 @@ import logging
 
 from adalflow.optim.function import BackwardContext
 from adalflow.optim.parameter import Parameter
-from adalflow.core.grad_component import GradComponent
+from adalflow.optim.grad_component import GradComponent
 
 log = logging.getLogger(__name__)
 
@@ -28,6 +28,9 @@ def sum(parms: List[Parameter]) -> Parameter:
 # TODO: use a temlate to format the concatenated values
 class Sum(GradComponent):
     __doc__ = """The class to define a sum operation on a list of parameters, such as losses or gradients."""
+
+    def __call__(self, *args, **kwargs):
+        return self.forward(*args, **kwargs)
 
     def forward(self, params: List[Parameter]) -> Parameter:
         """
@@ -63,6 +66,7 @@ class Sum(GradComponent):
         :param summation: The parameter representing the sum.
         :type summation: Parameter
         """
+        log.info(f"Sum backward: {summation.data}")
         pred_params = summation.predecessors  # losses
         summation_gradients = summation.get_gradient_text()
         for param in pred_params:

@@ -24,6 +24,7 @@ from typing import List, Tuple, Optional, Literal
 import inspect
 import os
 from datetime import datetime
+from adalflow.utils.global_config import get_adalflow_default_root_path
 
 LOG_LEVELS = {
     "DEBUG": logging.DEBUG,
@@ -119,7 +120,7 @@ def get_logger(
 
     Example:
 
-    1. Get the root logger and have it log to both console and file (./logs/lib.log):
+    1. Get the root logger and have it log to both console and file (~/.adalflow/logs/lib.log):
 
     .. code-block:: python
 
@@ -141,7 +142,9 @@ def get_logger(
         logger = get_logger(name="app", level="DEBUG", enable_console=True, enable_file=True)
         logger.info("This is an application log, and it will be saved in app.log separately from the library log at lib.log.")
     """
-    save_dir = save_dir or "./logs"
+    # save_dir = save_dir or "./logs"
+    save_dir = save_dir or get_adalflow_default_root_path() + "/logs"
+    print(f"save_dir: {save_dir}")
     os.makedirs(save_dir, exist_ok=True)
     if name is None:
         filename = filename or "lib.log"

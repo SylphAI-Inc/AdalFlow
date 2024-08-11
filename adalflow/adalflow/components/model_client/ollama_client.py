@@ -14,6 +14,7 @@ from typing import (
 import backoff
 import logging
 import warnings
+from adalflow.core.types import ModelType, GeneratorOutput
 
 from adalflow.utils.lazy_import import safe_import, OptionalPackages
 
@@ -23,7 +24,7 @@ from ollama import RequestError, ResponseError, GenerateResponse
 
 
 from adalflow.core.model_client import ModelClient
-from adalflow.core.types import ModelType, EmbedderOutput, Embedding
+from adalflow.core.types import EmbedderOutput, Embedding
 
 log = logging.getLogger(__name__)
 
@@ -34,20 +35,25 @@ def parse_stream_response(completion: GeneratorType) -> Any:
     """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
     for chunk in completion:
         log.debug(f"Raw chunk: {chunk}")
-        yield chunk["response"] if "response" in chunk else None
+        raw_response = chunk["response"] if "response" in chunk else None
+        yield GeneratorOutput(data=None, raw_response=raw_response)
 
 
-def parse_generate_response(completion: GenerateResponse) -> Any:
+def parse_generate_response(completion: GenerateResponse) -> "GeneratorOutput":
     """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
     if "response" in completion:
         log.debug(f"response: {completion}")
-        return completion["response"]
+        raw_response = completion["response"]
+        return GeneratorOutput(data=None, raw_response=raw_response)
     else:
         log.error(
             f"Error parsing the completion: {completion}, type: {type(completion)}"
         )
-        raise ValueError(
-            f"Error parsing the completion: {completion}, type: {type(completion)}"
+        # raise ValueError(
+        #     f"Error parsing the completion: {completion}, type: {type(completion)}"
+        # )
+        return GeneratorOutput(
+            data=None, error="Error parsing the completion", raw_response=completion
         )
 
 
@@ -179,7 +185,7 @@ class OllamaClient(ModelClient):
     # NOTE: do not put yield and return in the same function, thus we separate the functions
     def parse_chat_completion(
         self, completion: Union[GenerateResponse, GeneratorType]
-    ) -> Any:
+    ) -> "GeneratorOutput":
         """Parse the completion to a str. We use the generate with prompt instead of chat with messages."""
         log.debug(f"completion: {completion}, {isinstance(completion, GeneratorType)}")
         if isinstance(completion, GeneratorType):  # streaming

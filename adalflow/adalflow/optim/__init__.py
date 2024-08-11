@@ -9,6 +9,7 @@ from .text_grad.llm_text_loss import LLMAsTextLoss
 from .trainer.trainer import Trainer
 from .trainer.adal import AdalComponent
 from adalflow.utils.registry import EntityMapping
+from .optimizer import DemoOptimizer, TextOptimizer
 
 
 __all__ = [
@@ -24,6 +25,9 @@ __all__ = [
     "LLMAsTextLoss",
     "Trainer",
     "AdalComponent",
+    "Optimizer",
+    "DemoOptimizer",
+    "TextOptimizer",
 ]
 
 for name in __all__:

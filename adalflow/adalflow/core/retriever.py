@@ -10,7 +10,7 @@ from adalflow.core.types import (
     RetrieverDocumentsType,
     RetrieverOutputType,
 )
-from adalflow.core.grad_component import GradComponent
+from adalflow.optim.grad_component import GradComponent
 
 if TYPE_CHECKING:
     from adalflow.core.generator import Generator

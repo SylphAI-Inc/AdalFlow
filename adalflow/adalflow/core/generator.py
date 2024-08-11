@@ -16,8 +16,8 @@ from adalflow.core.types import (
     GeneratorOutputType,
 )
 from adalflow.core.component import Component
-from adalflow.core.grad_component import GradComponent
-from adalflow.core.base_data_class import DataClass, check_adal_dataclass
+from adalflow.optim.grad_component import GradComponent
+from adalflow.core.base_data_class import DataClass
 
 
 from adalflow.optim.parameter import Parameter, GradientContext
@@ -91,13 +91,6 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         name: Optional[str] = None,
         cache_path: Optional[str] = None,
         use_cache: bool = False,
-        demo_data_class: Optional[DataClass] = None,
-        demo_data_class_input_mapping: Optional[
-            Dict[str, str]
-        ] = {},  # prompt_kwargs key to demo_data_class field
-        demo_data_class_output_mapping: Optional[
-            Dict[str, Callable]
-        ] = {},  # GeneratorOut will be matched to demo_data_class field via a Callable
     ) -> None:
         r"""The default prompt is set to the DEFAULT_LIGHTRAG_SYSTEM_PROMPT. It has the following variables:
         - task_desc_str
@@ -112,7 +105,8 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         if not isinstance(model_client, ModelClient):
             raise TypeError(
-                f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example."
+                f"{type(self).__name__} requires a ModelClient instance for model_client, please pass it as OpenAIClient() or GroqAPIClient() for example.\
+                    Got {model_client} instead."
             )
 
         template = template or DEFAULT_LIGHTRAG_SYSTEM_PROMPT
@@ -182,11 +176,29 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             "use_cache": use_cache,
         }
         self._teacher: Optional["Generator"] = None
-        if demo_data_class:
-            check_adal_dataclass(demo_data_class)
-        self._demo_data_class = demo_data_class
-        self._demo_data_class_input_mapping = demo_data_class_input_mapping
-        self._demo_data_class_output_mapping = demo_data_class_output_mapping
+
+    @staticmethod
+    def _get_default_mapping(output: "GeneratorOutput" = None) -> Dict[str, Callable]:
+
+        if (
+            output.data
+            and isinstance(output.data, DataClass)
+            and len(output.data.get_output_fields()) > 0
+        ):
+            output_fields = output.data.get_output_fields()
+
+            output_mapping = {
+                f: lambda x, f=f: getattr(x.data, f) for f in output_fields
+            }
+        elif output.data:
+            output_fields = ["raw_response", "data"]
+            output_mapping = {f: lambda x, f=f: getattr(x, f) for f in output_fields}
+        elif output.error:
+            output_mapping = {
+                "error": lambda x: x.error,
+                "raw_response": lambda x: x.raw_response,
+            }
+        return output_mapping
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -256,16 +268,21 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
     def _post_call(self, completion: Any) -> GeneratorOutput:
         r"""Get string completion and process it with the output_processors."""
+        # parse chat completion will only fill the raw_response
         output: GeneratorOutput = self.model_client.parse_chat_completion(completion)
-        # the output processors operate on the response, most cases it is a string.
-        data = output.data
-        if self.output_processors and data:
-            try:
-                data = self.output_processors(data)
-                output.data = data
-            except Exception as e:
-                log.error(f"Error processing the output processors: {e}")
-                output.error = str(e)
+        # Now adding the data filed to the output
+        data = output.raw_response
+        if self.output_processors:
+            if data:
+                try:
+                    data = self.output_processors(data)
+                    output.data = data
+                except Exception as e:
+                    log.error(f"Error processing the output processors: {e}")
+                    output.error = str(e)
+
+        else:
+            output.data = data
 
         return output
 
@@ -311,28 +328,29 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     ##############################################################################################################
     ### Forward and backwards, and teacher generator are for training
     ##############################################################################################################
-    @staticmethod
+
     def create_demo_data_instance(
-        demo_class: DataClass,
-        prompt_kwargs: Dict[str, Any],
+        self,
+        input_prompt_kwargs: Dict[str, Any],
         output: GeneratorOutput,
-        demo_data_class_input_mapping: Dict[str, str],
-        demo_data_class_output_mapping: Dict[str, Any],
         id: Optional[str] = None,
     ):
-        check_adal_dataclass(demo_class)
+        from adalflow.core.base_data_class import DynamicDataClassFactory
+
         # map the input fields
         demo_data = {"id": id}
-        for key, value in demo_data_class_input_mapping.items():
-            demo_data[key] = prompt_kwargs[value]
+        demo_data_class_output_mapping = self._get_default_mapping(output)
+
+        for k, v in input_prompt_kwargs.items():
+            demo_data[k] = v
         # map the output fields
         for key, value in demo_data_class_output_mapping.items():
             demo_data[key] = value(output)
-        obj = demo_class.from_dict(demo_data)
+
+        obj = DynamicDataClassFactory.from_dict(demo_data)
         if obj is None:
-            raise ValueError(
-                f"Error creating the demo data instance: {demo_class}, {demo_data}"
-            )
+            print(f"Error creating the demo data instance:{demo_data}")
+            raise ValueError(f"Error creating the demo data instance:{demo_data}")
         return obj
 
     def set_backward_engine(self, backward_engine: "BackwardEngine" = None):
@@ -419,39 +437,49 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         log.debug(f"Predecessors: {predecessors} for generator {self.name}")
         response: Parameter = Parameter(
-            data=self.data_map_func(output),
+            data=(
+                output.raw_response
+                if output and not output.error
+                else f"Error: {output.error}, raw_response: {output.raw_response}"
+            ),  # need a way to compute the loss
+            # data=output,  # data should be any and simplify wrap the component output.
             alias=self.name + "_output",
             predecessors=predecessors,
             role_desc=f"response from generator {self.name}",
+            param_type=ParameterType.GENERATOR_OUTPUT,
             # context of the forward pass
             input_args=input_args,
             raw_response=output.raw_response,
+            full_response=output,
         )
         # attach the demo to the demo parameter
-        if self.tracing:
-            demo_param = self.find_demo_parameter(combined_prompt_kwargs)
+        # if self.tracing:
+        demo_param = self.find_demo_parameter(combined_prompt_kwargs)
+
+        if demo_param:
             if id is None:
                 raise ValueError(
                     "ID is required for tracing. Please pass it to your Geneartor call."
                 )
-            if demo_param:
+            input_prompt_kwargs = {
+                k: v.data if isinstance(v, Parameter) else v
+                for k, v in prompt_kwargs.items()
+            }
 
-                demo = self.create_demo_data_instance(
-                    self._demo_data_class,
-                    combined_prompt_kwargs,
-                    output,
-                    self._demo_data_class_input_mapping,
-                    self._demo_data_class_output_mapping,
-                    id=id,
-                )
-                demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
-            else:
-                log.warning(
-                    "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
-                )
-                # raise ValueError(
-                #     "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
-                # )
+            demo = self.create_demo_data_instance(
+                input_prompt_kwargs,
+                output,
+                # self._demo_data_class_output_mapping,
+                id=id,
+            )
+            demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
+        else:
+            log.warning(
+                "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
+            )
+            # raise ValueError(
+            #     "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
+            # )
         if not self.backward_engine:
             # self.set_backward_engine()
             log.debug(f"Backward engine: {self.backward_engine}")
@@ -743,11 +771,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
         if self.training:
             log.debug("Training mode")
-            print("Training mode")
             return self.forward(*args, **kwargs)
         else:
             log.debug("Inference mode")
-            print("Inference mode")
             return self.call(*args, **kwargs)
 
     def _extra_repr(self) -> str:
@@ -766,9 +792,14 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
 class BackwardEngine(Generator):  # it is a generator with defaule template
 
+    __doc__ = """The backward engine is a Generator with a default template for the backward pass.
+
+    If you want to customize the template, you can create your own backward engine"""
+
     def __init__(self, **kwargs):
-        if "template" not in kwargs:
-            kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
+        if kwargs is None:
+            kwargs = {}
+        kwargs["template"] = FEEDBACK_ENGINE_TEMPLATE
         super().__init__(**kwargs)
 
     @staticmethod

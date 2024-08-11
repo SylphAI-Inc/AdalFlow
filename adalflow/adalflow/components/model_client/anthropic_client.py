@@ -81,7 +81,7 @@ class AnthropicAPIClient(ModelClient):
         try:
             data = completion.content[0].text
             usage = self.track_completion_usage(completion)
-            return GeneratorOutput(data=data, usage=usage, raw_response=str(data))
+            return GeneratorOutput(data=None, usage=usage, raw_response=data)
         except Exception as e:
             log.error(f"Error parsing completion: {e}")
             return GeneratorOutput(

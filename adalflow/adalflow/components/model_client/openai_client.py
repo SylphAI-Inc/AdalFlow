@@ -169,13 +169,13 @@ class OpenAIClient(ModelClient):
         self,
         completion: Union[ChatCompletion, Generator[ChatCompletionChunk, None, None]],
     ) -> "GeneratorOutput":
-        """Parse the completion, including both streaming and non-streaming completion"""
+        """Parse the completion, and put it into the raw_response."""
         log.debug(f"completion: {completion}, parser: {self.chat_completion_parser}")
         try:
             data = self.chat_completion_parser(completion)
             usage = self.track_completion_usage(completion)
             return GeneratorOutput(
-                data=data, error=None, raw_response=str(data), usage=usage
+                data=None, error=None, raw_response=data, usage=usage
             )
         except Exception as e:
             log.error(f"Error parsing the completion: {e}")

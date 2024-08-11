@@ -2,12 +2,12 @@
 
 import dspy
 from typing import List, Union, Optional, Dict, Callable
-from lightrag.optim.parameter import Parameter, ParameterType
+from adalflow.optim.parameter import Parameter, ParameterType
 
-from lightrag.datasets.hotpot_qa import HotPotQA, HotPotQAData
-from lightrag.datasets.types import Example
+from adalflow.datasets.hotpot_qa import HotPotQA, HotPotQAData
+from adalflow.datasets.types import Example
 
-from lightrag.core.retriever import Retriever
+from adalflow.core.retriever import Retriever
 
 
 colbertv2_wiki17_abstracts = dspy.ColBERTv2(
@@ -31,7 +31,7 @@ def load_datasets():
 # task pipeline
 from typing import Any, Tuple
 
-from lightrag.core import Component, Generator
+from adalflow.core import Component, Generator
 
 
 query_template = """<START_OF_SYSTEM_PROMPT>
@@ -70,7 +70,7 @@ Context: {{context}}
 Question: {{question}}
 """
 
-from lightrag.core.component import fun_to_component
+from adalflow.core.component import fun_to_component
 import re
 
 
@@ -127,7 +127,7 @@ def eval_fn(sample, y_pred, metadata):
     return 1 if validate_context_and_answer_and_hops(sample, y_pred_obj) else 0
 
 
-from lightrag.core.types import RetrieverOutput, GeneratorOutput
+from adalflow.core.types import RetrieverOutput, GeneratorOutput
 
 
 # Demonstrating how to wrap other retriever to adalflow retriever and be applied in training pipeline
@@ -157,7 +157,7 @@ class DspyRetriever(Retriever):
 # example need to have question,
 # pred needs to have query
 
-import lightrag as adal
+import adalflow as adal
 
 
 # User customize an auto-grad operator
@@ -403,12 +403,12 @@ class HotPotQARAG(
         return output
 
 
-from lightrag.optim.trainer.adal import AdalComponent
-from lightrag.optim.trainer.trainer import Trainer
-from lightrag.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
-from lightrag.eval.answer_match_acc import AnswerMatchAcc
-from lightrag.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
-from lightrag.core.base_data_class import DynamicDataClassFactory
+from adalflow.optim.trainer.adal import AdalComponent
+from adalflow.optim.trainer.trainer import Trainer
+from adalflow.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
+from adalflow.eval.answer_match_acc import AnswerMatchAcc
+from adalflow.optim.text_grad.text_loss_with_eval_fn import EvalFnToTextLoss
+from adalflow.core.base_data_class import DynamicDataClassFactory
 
 
 class HotPotQARAGAdal(AdalComponent):
@@ -422,15 +422,15 @@ class HotPotQARAGAdal(AdalComponent):
         self.eval_fn = self.evaluator.compute_single_item
         # self.eval_fn = eval_fn
 
-    def handle_one_train_sample(
+    def handle_one_task_sample(
         self, sample: HotPotQAData
     ) -> Any:  # TODO: auto id, with index in call train examples
-        return self.task.call, {"question": sample.question, "id": sample.id}
+        return self.task, {"question": sample.question, "id": sample.id}
 
     def handle_one_loss_sample(
         self, sample: HotPotQAData, y_pred: Any
     ) -> Tuple[Callable, Dict]:
-        return self.loss_fn, {
+        return self.loss_fn.forward, {
             "kwargs": {
                 "y": y_pred,
                 "y_gt": Parameter(
@@ -441,30 +441,6 @@ class HotPotQARAGAdal(AdalComponent):
                 ),
             }
         }
-
-    # def handle_one_loss_sample(
-    #     self,
-    #     sample: HotPotQAData,
-    #     y_pred: Any,
-    #     metadata: Optional[Dict[str, Any]] = None,
-    # ) -> Tuple[Callable, Dict]:
-    #     return self.loss_fn, {
-    #         "kwargs": {
-    #             "y_pred": y_pred,
-    #             "sample": Parameter(
-    #                 data=sample,
-    #                 role_desc="The ground truth(reference correct answer)",
-    #                 alias="y_gt",
-    #                 requires_opt=False,
-    #             ),
-    #             "metadata": metadata,
-    #         }
-    #     }
-
-    # def handle_one_loss_sample(
-    #     self, sample: HotPotQAData, y_pred: Any
-    # ) -> Tuple[Callable, Dict]:
-    #     return self.loss_fn, {"kwargs": {"y_pred": y_pred, "sample": sample}}
 
     def configure_optimizers(self, *args, **kwargs):
 
@@ -505,7 +481,7 @@ class HotPotQARAGAdal(AdalComponent):
 def validate_dspy_demos(
     demos_file="benchmarks/BHH_object_count/models/dspy/hotpotqa.json",
 ):
-    from lightrag.utils.file_io import load_json
+    from adalflow.utils.file_io import load_json
 
     demos_json = load_json(demos_file)
 

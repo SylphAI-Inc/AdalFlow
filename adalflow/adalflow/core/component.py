@@ -23,6 +23,7 @@ import inspect
 
 if TYPE_CHECKING:
     from adalflow.optim.parameter import Parameter
+    from adalflow.optim.grad_component import GradComponent
 from adalflow.utils.serialization import default
 from adalflow.utils.config import new_component
 
@@ -128,6 +129,7 @@ class Component:
     _version: int = 1  # Version of the component
     # TODO: the type of module, is it OrderedDict or just Dict?
     _components: Dict[str, Optional["Component"]]
+    # _grad_components: Dict[str, Optional["GradComponent"]]
     _init_args: Dict[str, Any] = {}  # Store the init arguments
     # _execution_graph: List[str] = []  # This will store the graph of execution.
     # _graph = nx.DiGraph()
@@ -139,6 +141,7 @@ class Component:
     name: str = (
         "Component"  # name will help with GradComponent output naming as "{name}_output"
     )
+    _component_type = "base"
 
     # def _generate_unique_name(self):
     #     # Generate a unique identifier that includes the class name
@@ -146,6 +149,7 @@ class Component:
 
     def __init__(self, *args, **kwargs) -> None:
         super().__setattr__("_components", OrderedDict())
+        # super().__setattr__("_grad_components", OrderedDict())
         super().__setattr__("_parameters", OrderedDict())
         super().__setattr__("training", False)
         super().__setattr__("teacher_mode", False)
@@ -517,23 +521,7 @@ class Component:
     # TODO: do we need to disable this format of calling instead use call and acall extensively?
     def __call__(self, *args, **kwargs):
         r"""In default, we use sync call."""
-        # Register the edge if this call follows another component's call
-        # component_name = self._get_name()
-        # input_repr = repr(args) + " " + repr(kwargs)
-
-        # if Component._last_called is not None:
-        #     Component._graph.add_edge(
-        #         Component._last_called, component_name, label=input_repr[0:50]
-        #     )
-
-        # Component._last_called = component_name
-
-        # self._execution_graph.append(
-        #     f"{self._get_name()} called with input {input_repr}"
-        # )
         output = self.call(*args, **kwargs)
-        # Log output
-        # self._execution_graph.append(f"{self._get_name()} output {repr(output)}")
         return output
 
     def call(self, *args, **kwargs):
@@ -547,6 +535,7 @@ class Component:
 
     def add_component(self, name: str, component: Optional["Component"]) -> None:
         r"Add a child component to the current component."
+
         if not isinstance(component, Component) and component is not None:
             raise TypeError(
                 f"component should be an instance of Component, but got {type(component)}"
@@ -560,6 +549,8 @@ class Component:
         elif name == "":
             raise ValueError('component name can\'t be empty string ""')
         self._components[name] = component
+        # if isinstance(component, GradComponent):
+        #     self._grad_components[name] = component
 
     def register_component(self, name: str, component: Optional["Component"]) -> None:
         r"""
@@ -570,28 +561,36 @@ class Component:
     def get_subcomponent(self, name: str) -> Optional["Component"]:
         return self._components.get(name)
 
-    def named_children(self) -> Iterable[Tuple[str, "Component"]]:
+    def named_children(
+        self, grad_component_only: bool = False
+    ) -> Iterable[Tuple[str, "Component"]]:
         r"""
         Returns an iterator over immediate children components.
         """
         memo = set()
         for name, component in self._components.items():
             if component is not None and component not in memo:
+                if grad_component_only and not isinstance(component, GradComponent):
+                    continue
                 memo.add(component)
                 yield name, component
 
-    def children(self) -> Iterable["Component"]:
+    def children(self, grad_component_only: bool = False) -> Iterable["Component"]:
         r"""
         Returns an iterator over immediate children components.
         """
-        for name, component in self.named_children():
+        for name, component in self.named_children(
+            grad_component_only=grad_component_only
+        ):
             yield component
 
-    def components(self) -> Iterable["Component"]:
+    def components(self, grad_component_only: bool = False) -> Iterable["Component"]:
         r"""
         Returns an iterator over all components in the Module.
         """
-        for name, component in self.named_children():
+        for name, component in self.named_children(
+            grad_component_only=grad_component_only
+        ):
             yield component
 
     def named_components(
@@ -599,6 +598,7 @@ class Component:
         memo: Optional[Set["Component"]] = None,
         prefix: str = "",
         remove_duplicate: bool = True,
+        grad_component_only: bool = False,
     ):
         r"""Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself as a tuple.
 
@@ -624,18 +624,29 @@ class Component:
             1 -> ('system_prompt', Prompt(template: User: {{input}}, prompt_variables: ['input']))
             2 -> ('model_client', GroqAPIClient())
         """
+        from adalflow.optim.grad_component import GradComponent
+
         if memo is None:
             memo = set()
         if self not in memo:
             if remove_duplicate:
                 memo.add(self)
-            yield prefix, self
+            if grad_component_only and isinstance(self, GradComponent):
+                yield prefix, self
+            elif not grad_component_only:
+                yield prefix, self
             for name, component in self._components.items():
                 if component is None:
                     continue
+                if grad_component_only and not isinstance(component, GradComponent):
+                    continue
+
                 subcomponent_prefix = prefix + ("." if prefix else "") + name
                 yield from component.named_components(
-                    memo, subcomponent_prefix, remove_duplicate
+                    memo,
+                    subcomponent_prefix,
+                    remove_duplicate,
+                    grad_component_only=grad_component_only,
                 )
 
     def _save_to_state_dict(self, destination, prefix):

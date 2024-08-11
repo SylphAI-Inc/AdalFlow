@@ -4,18 +4,23 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, TYPE_CHECKING
 import concurrent
 from tqdm import tqdm
 import numpy as np
+import warnings
 
 if TYPE_CHECKING:
     from adalflow.core.model_client import ModelClient
-    from adalflow.core.generator import Generator
+    from adalflow.core.generator import Generator, BackwardEngine
     from adalflow.optim.parameter import Parameter
 
 from adalflow.core.component import Component
 from adalflow.optim.optimizer import Optimizer
+from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.types import PromptData
 from adalflow.eval.base import BaseEvaluator, EvaluationResult
 
+from adalflow.optim.optimizer import DemoOptimizer, TextOptimizer
 
+
+# TODO: test step
 class AdalComponent(Component):
     """Define a train, eval, and test step for a task pipeline.
 
@@ -25,40 +30,77 @@ class AdalComponent(Component):
     """
 
     task: Component
-    evaluator: Optional[BaseEvaluator] = None
-    eval_fn: Optional[Callable] = None
+    evaluator: Optional[BaseEvaluator]
+    eval_fn: Optional[Callable]
+    loss_fn: Optional[LossComponent]
+    backward_engine: Optional["BackwardEngine"]
 
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self,
+        task: Component,
+        evaluator: Optional[BaseEvaluator] = None,
+        eval_fn: Optional[Callable] = None,
+        loss_fn: Optional[LossComponent] = None,
+        backward_engine: Optional["BackwardEngine"] = None,
+        *args,
+        **kwargs,
+    ):
+        super().__init__()
+        self.task = task
+        self.evaluator = evaluator
+        self.eval_fn = eval_fn
+        self.loss_fn = loss_fn
+        self.backward_engine = backward_engine
 
     def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
         return [PromptData(p.id, p.alias, p.data) for p in self.task.parameters()]
         # return {p.alias: p.data for p in self.task.parameters() if p.requires_opt}
 
-    def handle_one_train_sample(self, sample: Any) -> Tuple[Callable, Dict]:
-        r"""Parse the sample to the kwargs that the task pipeline can understand."""
-        raise NotImplementedError("handle_one_train_sample method is not implemented")
+    def handle_one_task_sample(
+        self, sample: Any, *args, **kwargs
+    ) -> Tuple[Callable, Dict]:
+        r"""Return a task call and kwargs for one training sample.
 
-    def handle_one_loss_sample(self, sample: Any, y_pred: Any) -> Tuple[Callable, Dict]:
-        r"""Parse the sample to the kwargs that the task pipeline can understand."""
+        Example:
+
+        .. code-block:: python
+
+            def handle_one_task_sample(self, sample: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
+                return self.task, {"x": sample.x}
+        """
+
+        raise NotImplementedError("handle_one_task_sample method is not implemented")
+
+    def handle_one_loss_sample(
+        self, sample: Any, y_pred: "Parameter", *args, **kwargs
+    ) -> Tuple[Callable, Dict]:
+        r"""Return a loss call and kwargs for one loss sample.
+
+        Example:
+
+        .. code-block:: python
+
+            def handle_one_loss_sample(self, sample: Any, y_pred: Any, *args, **kwargs) -> Tuple[Callable, Dict]:
+                return loss_fn, {"y_pred": y_pred, "y": sample.y}
+        """
         raise NotImplementedError("handle_one_loss_sample method is not implemented")
 
-    def run_one_train_sample(self, sample: Any) -> Any:
-        r"""Run one training sample. Used for debugging and testing."""
-        task_call, kwargs = self.handle_one_train_sample(sample)
-        return task_call(**kwargs)
-
-    def run_one_loss_sample(self, sample: Any, y_pred: Any) -> Any:
-        r"""Run one loss sample. Used for debugging and testing."""
-        loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
-        return loss_call(**kwargs)
-
-    def evaluate_one_sample(
-        self, sample: Any, y_pred: Any, metadata: Optional[Dict[str, Any]] = None
-    ) -> Any:
-        r"""Run one evaluation sample. Used for debugging and testing."""
+    # TODO: support more complicated evaluation
+    def evaluate_one_sample(self, sample: Any, y_pred: Any, *args, **kwargs) -> float:
+        r"""Used to evaluate a single sample. Return a score in range [0, 1].
+        The higher the score the better the prediction."""
         raise NotImplementedError("evaluate_one_sample method is not implemented")
+
+    def configure_optimizers(self, *args, **kwargs) -> Optimizer:
+        r"""Note: When you use text optimizor, ensure you call `configure_backward_engine_engine` too."""
+        raise NotImplementedError("configure_optimizers method is not implemented")
+
+    def configure_backward_engine(self, *args, **kwargs):
+        raise NotImplementedError("configure_backward_engine method is not implemented")
+
+    # def configure_loss_fn(self, *args, **kwargs):
+    #     raise NotImplementedError("configure_loss_fn method is not implemented")
 
     def evaluate_samples(
         self, samples: Any, y_preds: List, metadata: Optional[Dict[str, Any]] = None
@@ -95,12 +137,15 @@ class AdalComponent(Component):
                 self.task.train()
                 return super().train_step(batch, batch_idx, num_workers)
         """
+        from adalflow.optim.parameter import Parameter
+
         y_preds = []
+
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             futures = []
             tqdm_loader = tqdm(batch, total=len(batch), desc="Loading Data")
             for i, sample in enumerate(tqdm_loader):
-                task_call, kwargs = self.handle_one_train_sample(sample)
+                task_call, kwargs = self.handle_one_task_sample(sample)
                 future = executor.submit(task_call, **kwargs)
                 futures.append((future, sample))
             tqdm_loader = tqdm(
@@ -112,9 +157,10 @@ class AdalComponent(Component):
             samples = []
             for i, (future, sample) in enumerate(tqdm_loader):
                 # for future in futures:  # ensure the order of the predictions
+                y_pred = future.result()
                 y_preds.append(future.result())
                 samples.append(sample)
-                if running_eval:
+                if running_eval and not isinstance(y_pred, Parameter):
                     remain_samples = len(futures) - (i + 1)
                     eval_score = self.evaluate_samples(samples, y_preds).avg_score
                     max_score = (eval_score * (i + 1) + remain_samples) / len(futures)
@@ -170,8 +216,10 @@ class AdalComponent(Component):
 
     def loss_step(
         self, batch, y_preds: List["Parameter"], batch_idx, num_workers: int = 2
-    ):
+    ) -> List["Parameter"]:
         r"""Calculate the loss for the batch."""
+        from adalflow.optim.parameter import Parameter
+
         losses = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             futures = []
@@ -179,9 +227,9 @@ class AdalComponent(Component):
                 zip(batch, y_preds), total=len(batch), desc="Loading Data"
             )
             for i, (sample, y_pred) in enumerate(tqdm_loader):
-                loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
+                loss_forward, kwargs = self.handle_one_loss_sample(sample, y_pred)
                 # losses.append(executor.submit(loss_call, **kwargs))
-                futures.append(executor.submit(loss_call, **kwargs))
+                futures.append(executor.submit(loss_forward, **kwargs))
             tqdm_loader = tqdm(
                 futures,  # Pass only the futures to as_completed
                 total=len(futures),
@@ -189,21 +237,97 @@ class AdalComponent(Component):
                 desc="Calculating Loss",
             )
             for future in tqdm_loader:
-                losses.append(future.result())
+                loss = future.result()
+                if not isinstance(loss, Parameter):
+                    raise ValueError(f"Loss is not a Parameter: {loss}")
+                losses.append(loss)
         return losses
 
-    def configure_optimizers(self, *args, **kwargs) -> Optimizer:
-        raise NotImplementedError("configure_optimizers method is not implemented")
+    def configure_teacher_generator(self):
+        r"""Configure a teach generator for all generators in the task for bootstrapping examples.
 
-    def configure_backward_engine(self, *args, **kwargs):
-        raise NotImplementedError("configure_backward_engine method is not implemented")
+        You can call `configure_teacher_generator_helper` to easily configure it by passing the model_client and model_kwargs.
+        """
+        raise NotImplementedError(
+            "configure_teacher_generator method is not implemented"
+        )
 
-    def configure_loss_fn(self, *args, **kwargs):
-        raise NotImplementedError("configure_loss_fn method is not implemented")
+    def configure_backward_engine_helper(
+        self,
+        model_client: "ModelClient",
+        model_kwargs: Dict[str, Any],
+        template: Optional[str] = None,
+    ):
+        r"""Configure a backward engine for all generators in the task for bootstrapping examples."""
+        from adalflow.core.generator import BackwardEngine
+
+        self.backward_engine = BackwardEngine(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            template=template,
+        )
+
+        # set all generator's backward engine
+
+        all_generators = self._find_all_generators()
+        for _, generator in all_generators:
+            generator.set_backward_engine(self.backward_engine)
+        print("Backward engine configured for all generators.")
+
+        if not self.loss_fn:
+            raise ValueError("Loss function is not configured.")
+
+        # configure it for loss_fn
+        if self.loss_fn:
+            self.loss_fn.set_backward_engine(self.backward_engine)
+
+    def configure_teacher_generator_helper(
+        self,
+        model_client: "ModelClient",
+        model_kwargs: Dict[str, Any],
+        template: Optional[str] = None,
+    ):
+        r"""Configure a teach generator for all generators in the task for bootstrapping examples."""
+        from adalflow.core.generator import create_teacher_generator
+
+        all_generators = self._find_all_generators()
+        for _, generator in all_generators:
+            teacher_generator = create_teacher_generator(
+                student=generator,
+                model_client=model_client,
+                model_kwargs=model_kwargs,
+                template=template,
+            )
+            print(f"Configuring teacher generator for {teacher_generator}")
+            generator.set_teacher_generator(teacher_generator)
+        print("Teacher generator configured.")
 
     def configure_callbacks(self, save_dir: str = "traces", *args, **kwargs):
         """In default we config the failure generator callback. User can overwrite this method to add more callbacks."""
         return self._auto_generator_callbacks(save_dir)
+
+    def run_one_task_sample(self, sample: Any) -> Any:
+        r"""Run one training sample. Used for debugging and testing."""
+        training = self.task.training
+        # test training
+        self.task.train()
+        task_call, kwargs = self.handle_one_task_sample(sample)
+        output = task_call(**kwargs)
+        if not isinstance(output, Parameter):
+            warnings.warn(f"Output is not a Parameter in training mode: {output}")
+        # eval mode
+        self.task.eval()
+        task_call, kwargs = self.handle_one_task_sample(sample)
+        output = task_call(**kwargs)
+        if isinstance(output, Parameter):
+            warnings.warn(f"Output is a Parameter in evaluation mode: {output}")
+        # reset training
+        self.task.train(training)
+
+    def run_one_loss_sample(self, sample: Any, y_pred: Any) -> Any:
+        r"""Run one loss sample. Used for debugging and testing."""
+        loss_call, kwargs = self.handle_one_loss_sample(sample, y_pred)
+        return loss_call(**kwargs)
 
     def _find_all_generators(self) -> List[Tuple[str, "Generator"]]:
         r"""Find all generators automatically from the task."""
@@ -259,23 +383,38 @@ class AdalComponent(Component):
             )
         return file_paths
 
-    def configure_teacher_generator(
-        self,
-        model_client: "ModelClient",
-        model_kwargs: Dict[str, Any],
-        template: Optional[str] = None,
-    ):
-        r"""Configure a teach generator for all generators in the task for bootstrapping examples."""
-        from adalflow.core.generator import create_teacher_generator
+    def configure_demo_optimizer_helper(self) -> List[DemoOptimizer]:
+        from adalflow.optim.few_shot.bootstrap_optimizer import BootstrapFewShot
+        from adalflow.optim.parameter import ParameterType
 
-        all_generators = self._find_all_generators()
-        for _, generator in all_generators:
-            teacher_generator = create_teacher_generator(
-                student=generator,
-                model_client=model_client,
-                model_kwargs=model_kwargs,
-                template=template,
+        parameters = []
+        for name, param in self.task.named_parameters():
+            param.name = name
+            if not param.param_type == ParameterType.DEMOS:
+                continue
+            parameters.append(param)
+        if not parameters:
+            raise ValueError("No demo parameters found.")
+        do = BootstrapFewShot(params=parameters)
+        return [do]
+
+    def configure_text_optimizer_helper(
+        self, model_client: "ModelClient", model_kwargs: Dict[str, Any]
+    ) -> List[TextOptimizer]:
+        from adalflow.optim.text_grad.tgd_optimer import TGDOptimizer
+        from adalflow.optim.parameter import ParameterType
+
+        parameters = []
+        for name, param in self.task.named_parameters():
+            param.name = name
+            if not param.param_type == ParameterType.PROMPT:
+                continue
+            parameters.append(param)
+        if not parameters:
+            raise ValueError(
+                "No text parameters found. Please define a demo parameter for your generator."
             )
-            print(f"Configuring teacher generator for {teacher_generator}")
-            generator.set_teacher_generator(teacher_generator)
-        print("Teacher generator configured.")
+        to = TGDOptimizer(
+            params=parameters, model_client=model_client, model_kwargs=model_kwargs
+        )
+        return [to]

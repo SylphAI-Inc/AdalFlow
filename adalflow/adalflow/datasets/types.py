@@ -34,25 +34,18 @@ class HotPotQAData(Example):
     )
 
 
-# TODO: maybe get a way to mark input and output fields, we can implement with exclude automatically
-# to generate the to_dict and from_dict methods, when describe the data should exclude the id.
 @dataclass
 class TrecData(BaseData):
     __doc__ = """A dataclass for representing examples in the TREC dataset."""
     question: str = field(
-        metadata={"desc": "The question to be classified", "type": "input"},
+        metadata={"desc": "The question to be classified"},
         default=None,
     )
-    # thought: str = field(
-    #     metadata={
-    #         "desc": "Your reasoning to classify the question to class_name",
-    #     }
-    # )
-    class_name: str = field(
-        metadata={"desc": "The class name", "type": "output"}, default=None
+    class_name: str = field(metadata={"desc": "The class name"}, default=None)
+    class_index: int = field(
+        metadata={"desc": "The class label, in range [0, 5]"},
+        default=-1,
     )
 
-    class_index: int = field(
-        metadata={"desc": "The class label, in range [0, 5]", "type": "output"},
-        default=None,
-    )
+    __input_fields__ = ["question"]  # follow this order too.
+    __output_fields__ = ["class_name", "class_index"]

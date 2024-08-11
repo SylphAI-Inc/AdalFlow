@@ -6,6 +6,7 @@ from .outputs import (
     JSON_OUTPUT_FORMAT,
     LIST_OUTPUT_FORMAT,
 )
+from .dataclass_parser import DataClassParser
 
 __all__ = [
     "YamlOutputParser",
@@ -14,4 +15,5 @@ __all__ = [
     "YAML_OUTPUT_FORMAT",
     "JSON_OUTPUT_FORMAT",
     "LIST_OUTPUT_FORMAT",
+    "DataClassParser",
 ]

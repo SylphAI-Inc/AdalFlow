@@ -38,6 +38,12 @@ DEFAULT_LIGHTRAG_SYSTEM_PROMPT = r"""<START_OF_SYSTEM_PROMPT>
 {% else %}
 You are a helpful assistant.
 {% endif %}
+{#input format#}
+{% if input_format_str %}
+<INPUT_FORMAT>
+{{input_format_str}}
+</INPUT_FORMAT>
+{% endif %}
 {# output format #}
 {% if output_format_str %}
 <OUTPUT_FORMAT>
@@ -68,15 +74,17 @@ You are a helpful assistant.
 {{context_str}}
 </CONTEXT>
 {% endif %}
-{# steps #}
-{% if steps_str %}
-<STEPS>
-{{steps_str}}
-</STEPS>
-{% endif %}
 <END_OF_SYSTEM_PROMPT>
+<START_OF_USER_PROMPT>
 {% if input_str %}
 {{input_str}}
+{% endif %}
+<END_OF_USER_PROMPT>
+{# steps #}
+{% if steps_str %}
+<START_OF_ASSISTANT_STEPS>
+{{steps_str}}
+<END_OF_ASSISTANT_STEPS>
 {% endif %}
 """
 """This is the default system prompt template used in the LightRAG.

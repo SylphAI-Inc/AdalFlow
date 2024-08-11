@@ -75,7 +75,7 @@ class GroqAPIClient(ModelClient):
         try:
             data = completion.choices[0].message.content
             usage = self.track_completion_usage(completion)
-            return GeneratorOutput(data=data, usage=usage, raw_response=str(data))
+            return GeneratorOutput(data=None, usage=usage, raw_response=data)
         except Exception as e:
             log.error(f"Error parsing completion: {e}")
             return GeneratorOutput(data=str(e), usage=None, raw_response=completion)

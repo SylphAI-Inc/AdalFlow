@@ -2,13 +2,12 @@
 
 from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 import logging
-from adalflow.core.grad_component import GradComponent
+from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.function import BackwardContext
 
 
 if TYPE_CHECKING:
     from adalflow.core import ModelClient
-
     from adalflow.core.generator import BackwardEngine
 from adalflow.core.types import GeneratorOutput
 from adalflow.optim.parameter import Parameter, GradientContext
@@ -48,8 +47,8 @@ OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. 
 <OBJECTIVE_FUNCTION>Your goal is to give feedback to the variable to address the following feedback on the OUTPUT_OF_FUNCTION: {{response_gradient}} </OBJECTIVE_FUNCTION>"""
 
 
-# TODO: use BaseComponent instead of Component.
-class EvalFnToTextLoss(GradComponent):
+# TODO: use eval_input field
+class EvalFnToTextLoss(LossComponent):
     __doc__ = """Convert an evaluation function to a text loss.
 
     We make it a component for better visualization and serialization.
@@ -98,11 +97,11 @@ class EvalFnToTextLoss(GradComponent):
                 )
             self.backward_engine = backward_engine
 
-    def __call__(self, *args, **kwargs) -> Parameter:
-        r"""Different from default GradComponent __call__.
-        Only Parameter as this is not needed in a normal task pipeline, but only
-        for training generator."""
-        return self.forward(*args, **kwargs)
+    # def __call__(self, *args, **kwargs) -> Parameter:
+    #     r"""Different from default GradComponent __call__.
+    #     Only Parameter as this is not needed in a normal task pipeline, but only
+    #     for training generator."""
+    #     return self.forward(*args, **kwargs)
 
     def forward(
         self,
@@ -117,10 +116,17 @@ class EvalFnToTextLoss(GradComponent):
         # validate the type of kwargs
         predesessors = []
         for k, v in kwargs.items():
+            if not isinstance(v, Parameter):
+                raise TypeError(
+                    f"EvalFnToTextLoss: All inputs must be Parameters. Got {type(v)} for {k}."
+                )
             if isinstance(v, Parameter):
                 predesessors.append(v)
+        eval_inputs = {}
+        for k, v in kwargs.items():
+            eval_inputs[k] = v.eval_input
 
-        score: float = self.eval_fn(**kwargs)
+        score: float = self.eval_fn(**eval_inputs)
 
         # Create a parameter
         # TODO: improve the readability of the input and response
@@ -150,6 +156,8 @@ class EvalFnToTextLoss(GradComponent):
         model_client: "ModelClient" = None,
         model_kwargs: Dict[str, object] = None,
     ):
+        from adalflow.core.generator import BackwardEngine
+
         self.backward_engine = backward_engine
         if not backward_engine:
             log.info(
@@ -157,9 +165,9 @@ class EvalFnToTextLoss(GradComponent):
             )
             self.backward_engine = BackwardEngine(model_client, model_kwargs)
         else:
-            if isinstance(backward_engine, BackwardEngine):
+            if type(backward_engine) is not BackwardEngine:
                 raise TypeError(
-                    "EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine."
+                    f"EvalFnToTextLoss: backward_engine must be an instance of BackwardEngine. Got {type(backward_engine)}."
                 )
 
     @staticmethod
@@ -177,6 +185,14 @@ class EvalFnToTextLoss(GradComponent):
             )
             return
         log.debug(f"EvalFnToTextLoss: Backward through {pred}, is_chain: {is_chain}")
+
+        if backward_engine is None:
+            log.error(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
+            raise ValueError(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
 
         instruction_str, objective_str = None, None
 
@@ -272,6 +288,13 @@ class EvalFnToTextLoss(GradComponent):
         if response.get_gradient_and_context_text().strip() == "":
             log.info(f"EvalFnToTextLoss: Backward: No gradient found for {response}.")
             is_chain = False
+
+        log.info(f"backward_engine: {backward_engine}")
+
+        if not backward_engine:
+            raise ValueError(
+                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
+            )
 
         # go through all child parameters
         if backward_engine:

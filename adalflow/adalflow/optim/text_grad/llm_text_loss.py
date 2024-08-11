@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..parameter import Parameter
 
 
-from adalflow.core.grad_component import GradComponent
+from adalflow.optim.loss_component import LossComponent
 from typing import Dict
 from copy import deepcopy
 import logging
@@ -24,7 +24,7 @@ TEXT_LOSS_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 """
 
 
-class LLMAsTextLoss(GradComponent):
+class LLMAsTextLoss(LossComponent):
     __doc__ = r"""Evaluate the final RAG response using an LLM judge.
 
     The LLM judge will have:
@@ -64,8 +64,8 @@ class LLMAsTextLoss(GradComponent):
             prompt_kwargs=prompt_kwargs,
         )
 
-    def __call__(self, *args, **kwargs):
-        return self.forward(*args, **kwargs)
+    # def __call__(self, *args, **kwargs):
+    #     return self.forward(*args, **kwargs)
 
     def forward(self, *args, **kwargs) -> "Parameter":
 

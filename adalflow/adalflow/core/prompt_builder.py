@@ -17,36 +17,6 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T")
 
 
-def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
-    r"""Convert the prompt_kwargs to a dictionary with string values."""
-    prompt_kwargs_str: Dict[str, str] = {}
-
-    for key, p in prompt_kwargs.items():
-
-        if isinstance(p, Parameter):
-
-            prompt_kwargs_str[key] = p.data
-        else:
-            prompt_kwargs_str[key] = p
-    return prompt_kwargs_str
-
-
-@lru_cache(None)
-def get_jinja2_environment():
-    r"""Helper function for Prompt component to get the Jinja2 environment with the default settings."""
-    try:
-        default_environment = Environment(
-            undefined=StrictUndefined,
-            trim_blocks=True,
-            keep_trailing_newline=True,
-            lstrip_blocks=True,
-        )
-
-        return default_environment
-    except Exception as e:
-        raise ValueError(f"Invalid Jinja2 environment: {e}")
-
-
 class Prompt(Component):
     __doc__ = r"""Renders a text string(prompt) from a Jinja2 template string.
 
@@ -157,12 +127,11 @@ class Prompt(Component):
 
     def call(self, **kwargs) -> str:
         """
-        Renders the prompt template with keyword arguments.
+        Renders the prompt template with keyword arguments. Allow None values.
         """
         try:
             pass_kwargs = self.compose_prompt_kwargs(**kwargs)
             pass_kwargs = _convert_prompt_kwargs_to_str(pass_kwargs)
-
             prompt_str = self.jinja2_template.render(**pass_kwargs)
             return prompt_str
 
@@ -193,3 +162,33 @@ class Prompt(Component):
         exclude = ["jinja2_template"]  # unserializable object
         output = super().to_dict(exclude=exclude)
         return output
+
+
+def _convert_prompt_kwargs_to_str(prompt_kwargs: Dict) -> Dict[str, str]:
+    r"""Convert the prompt_kwargs to a dictionary with string values."""
+    prompt_kwargs_str: Dict[str, str] = {}
+
+    for key, p in prompt_kwargs.items():
+
+        if isinstance(p, Parameter):
+
+            prompt_kwargs_str[key] = p.data
+        else:
+            prompt_kwargs_str[key] = p
+    return prompt_kwargs_str
+
+
+@lru_cache(None)
+def get_jinja2_environment():
+    r"""Helper function for Prompt component to get the Jinja2 environment with the default settings."""
+    try:
+        default_environment = Environment(
+            undefined=StrictUndefined,
+            trim_blocks=True,
+            keep_trailing_newline=True,
+            lstrip_blocks=True,
+        )
+
+        return default_environment
+    except Exception as e:
+        raise ValueError(f"Invalid Jinja2 environment: {e}")

@@ -113,6 +113,15 @@ def prepare_datasets():
     return train_dataset_split, eval_dataset_split, test_dataset_split
 
 
+_COARSE_LABELS = [
+    "ABBR",
+    "ENTY",
+    "DESC",
+    "HUM",
+    "LOC",
+    "NUM",
+]
+
 _COARSE_LABELS_DESC = [
     "Abbreviation",
     "Entity",
@@ -123,7 +132,7 @@ _COARSE_LABELS_DESC = [
 ]
 
 
-class Trec(Dataset):
+class TrecDataset(Dataset):
     __doc__ = r"""Trec dataset for question classification.
 
 
@@ -201,5 +210,5 @@ class Trec(Dataset):
 
 
 if __name__ == "__main__":
-    dataset = Trec(split="val")
+    dataset = TrecDataset(split="val")
     print(f"train: {len(dataset)}, example: {dataset[0]}")

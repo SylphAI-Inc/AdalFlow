@@ -8,7 +8,7 @@ from adalflow.core.component import Component
 from adalflow.core.prompt_builder import Prompt
 from adalflow.core.string_parser import YamlParser, ListParser, JsonParser
 from adalflow.core.base_data_class import DataClass, DataClassFormatType
-from adalflow.core.base_data_class import ExcludeType
+from adalflow.core.base_data_class import ExcludeType, IncludeType
 
 
 __all__ = [
@@ -21,6 +21,7 @@ __all__ = [
 
 log = logging.getLogger(__name__)
 
+# TODO: delete examples here
 JSON_OUTPUT_FORMAT = r"""Your output should be formatted as a standard JSON instance with the following schema:
 ```
 {{schema}}
@@ -133,6 +134,7 @@ class YamlOutputParser(OutputParser):
         self,
         data_class: DataClass,
         examples: List[DataClass] = None,
+        include_fields: IncludeType = None,
         exclude_fields: ExcludeType = None,
         return_data_class: bool = False,
     ):
@@ -153,6 +155,7 @@ class YamlOutputParser(OutputParser):
             )
         self._return_data_class = return_data_class
         self._exclude_fields = exclude_fields
+        self._include_fields = include_fields
         self.data_class: DataClass = data_class
         self.output_format_prompt = Prompt(template=YAML_OUTPUT_FORMAT)
         self.output_processors = YamlParser()
@@ -172,7 +175,9 @@ class YamlOutputParser(OutputParser):
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_YAML
         schema = self.data_class.format_class_str(
-            format_type=format_type, exclude=self._exclude_fields
+            format_type=format_type,
+            exclude=self._exclude_fields,
+            include=self._include_fields,
         )
         # convert example to string, convert data class to yaml string
         example_str = ""
@@ -182,6 +187,7 @@ class YamlOutputParser(OutputParser):
                     per_example_str = example.format_example_str(
                         format_type=DataClassFormatType.EXAMPLE_YAML,
                         exclude=self._exclude_fields,
+                        include=self._include_fields,
                     )
                     example_str += f"{per_example_str}\n________\n"
                 # remove the last new line
@@ -206,7 +212,8 @@ class YamlOutputParser(OutputParser):
             raise e
 
     def _extra_repr(self) -> str:
-        s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"
+        s = f"data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, \
+        include_fields={self._include_fields},\return_data_class={self._return_data_class}"
         return s
 
 
@@ -215,6 +222,7 @@ class JsonOutputParser(OutputParser):
         self,
         data_class: DataClass,
         examples: List[DataClass] = None,
+        include_fields: IncludeType = None,
         exclude_fields: ExcludeType = None,
         return_data_class: bool = False,
     ):
@@ -233,6 +241,7 @@ class JsonOutputParser(OutputParser):
             )
         self._return_data_class = return_data_class
         self._exclude_fields = exclude_fields
+        self._include_fields = include_fields
         template = JSON_OUTPUT_FORMAT
         self.data_class: DataClass = data_class
         self.output_format_prompt = Prompt(template=template)
@@ -252,7 +261,9 @@ class JsonOutputParser(OutputParser):
         """
         format_type = format_type or DataClassFormatType.SIGNATURE_JSON
         schema = self.data_class.format_class_str(
-            format_type=format_type, exclude=self._exclude_fields
+            format_type=format_type,
+            exclude=self._exclude_fields,
+            include=self._include_fields,
         )
         example_str = ""
         try:
@@ -261,6 +272,7 @@ class JsonOutputParser(OutputParser):
                     per_example_str = example.format_example_str(
                         format_type=DataClassFormatType.EXAMPLE_JSON,
                         exclude=self._exclude_fields,
+                        include=self._include_fields,
                     )
                     example_str += f"{per_example_str}\n________\n"
                 # remove the last new line
@@ -289,7 +301,8 @@ class JsonOutputParser(OutputParser):
             raise e
 
     def _extra_repr(self) -> str:
-        s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, return_data_class={self._return_data_class}"""
+        s = f"""data_class={self.data_class.__name__}, examples={self.examples}, exclude_fields={self._exclude_fields}, \
+            include_fields={self._include_fields}, return_data_class={self._return_data_class}"""
         return s
 
 

@@ -9,6 +9,7 @@ Source code: https://github.com/google-deepmind/opro
 from typing import List, Dict, TYPE_CHECKING, Optional
 from collections import defaultdict
 import logging
+import re
 from dataclasses import field, dataclass
 
 
@@ -167,6 +168,18 @@ from adalflow.tracing.decorators import trace_generator_states
 new_variable_tags = ["<NEW_VARIABLE>", "</NEW_VARIABLE>"]
 
 
+def extract_new_variable(text: str) -> str:
+    pattern = re.compile(r"<NEW_VARIABLE>(.*?)</NEW_VARIABLE>", re.DOTALL)
+
+    # Find all matches
+    matches = pattern.findall(text)
+
+    if len(matches) == 0:
+        return text.strip()
+    log.debug(f"Extracted new variable: {matches[0].strip()}")
+    return matches[0].strip()
+
+
 @trace_generator_states()
 class TGDOptimizer(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
@@ -311,16 +324,7 @@ class TGDOptimizer(TextOptimizer):
             # print(f"Response from the optimizer: {response}")
             # extract the improved variable from the response
             # TODO: make it more robust
-            try:
-                improved_variable = (
-                    proposed_data.split(new_variable_tags[0])[1]
-                    .split(new_variable_tags[1])[0]
-                    .strip()
-                )
-            except Exception as e:
-                log.error(f"Error extracting improved variable: {e}")
-                log.error(f"Proposed data: {proposed_data}")
-                improved_variable = proposed_data
+            improved_variable = extract_new_variable(proposed_data)
             param.propose_data(improved_variable)
         self.proposing = True
 
@@ -329,6 +333,8 @@ class TGDOptimizer(TextOptimizer):
         if not self.proposing:
             raise ValueError("Not proposing a value.")
         for param in self.params:
+            if not param.requires_opt:
+                continue
             param.revert_data()
         self.proposing = False
 
@@ -337,6 +343,8 @@ class TGDOptimizer(TextOptimizer):
         if not self.proposing:
             raise ValueError("Not proposing a value.")
         for param in self.params:
+            if not param.requires_opt:
+                continue
             param.step_data()
             if self.do_gradient_memory:
                 self.update_gradient_memory(param)

@@ -170,7 +170,6 @@ class BootstrapFewShot(DemoOptimizer):
     def samples_to_str(samples: List[DataClass]) -> str:
         sample_strs = []
         for sample in samples:
-            print(f"sample: {sample}")
             try:
                 sample_strs.append(sample.to_yaml(exclude=["id", "score"]))
             except Exception as e:
@@ -201,7 +200,6 @@ class BootstrapFewShot(DemoOptimizer):
                     if len(samples) > 0:
 
                         demo_str = self.samples_to_str(samples=samples)
-                    print(f"propose: {samples} for param: {demo_param.alias}")
 
                     demo_param.propose_data(demo_str, samples)
                 except Exception as e:

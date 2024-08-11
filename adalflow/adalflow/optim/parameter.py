@@ -106,6 +106,7 @@ class Parameter(Generic[T]):
 
     def __init__(
         self,
+        *,
         id: str = str(uuid.uuid4()),
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
@@ -118,9 +119,11 @@ class Parameter(Generic[T]):
         # context of the forward pass
         input_args: Dict[str, Any] = None,
         raw_response: str = None,  # use this to track the raw response of generator instead of the data (can be parsed)
+        full_response: object = None,  # use this to track the full response of generator
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
         param_type: ParameterType = ParameterType.PROMPT,
+        eval_input: object = None,  # used for loss as the eval_fn input # TODO: to make it more clear
         score: Optional[float] = None,
     ):
         if predecessors is None:
@@ -144,6 +147,7 @@ class Parameter(Generic[T]):
         self.data = data  # often string and will be used in the prompts
 
         self.requires_opt = requires_opt
+        self.full_response = full_response
         self.data_type = type(
             data
         )  # Dynamically infer the data type from the provided data
@@ -181,6 +185,7 @@ class Parameter(Generic[T]):
             []
         )  # used for the optimizer to save the proposed demos
         self._previous_demos: List[DataClass] = []
+        self.eval_input = eval_input
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
@@ -229,9 +234,6 @@ class Parameter(Generic[T]):
         if demos is not None:
             self._previous_demos = self._demos
             self._demos = demos
-            print(
-                f"Proposed demos: {self._demos}, traces: {self._traces}, id: {self.id}"
-            )
 
     def revert_data(self, include_demos: bool = False):
         r"""Revert the data to the previous data."""
@@ -410,9 +412,15 @@ class Parameter(Generic[T]):
             ) from e
         assert rankdir in ["LR", "TB"]
         import textwrap
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+        import os
+
+        root_path = get_adalflow_default_root_path()
+        # prepare the log directory
+        log_dir = os.path.join(root_path, "logs")
 
         # Set up TensorBoard logging
-        writer = SummaryWriter(log_dir="logs/simple_net")
+        writer = SummaryWriter(log_dir)
 
         filepath = filepath + "." + format
 
@@ -453,6 +461,8 @@ class Parameter(Generic[T]):
                 f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
             )
+            if n.requires_opt:
+                node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
             if add_grads:
                 node_label += f"<tr><td><b><font color='{label_color}'>Gradients: </font></b></td><td>{wrap_and_escape(n.get_gradients_alias())}</td></tr>"
                 # add a list of each gradient with short value
