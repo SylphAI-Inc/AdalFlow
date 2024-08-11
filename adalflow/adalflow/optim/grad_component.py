@@ -25,7 +25,6 @@ class GradComponent(Component):
     _component_type = "grad"
 
     def __init__(self, *args, **kwargs):
-        # super().__init__()
         super().__init__()
         super().__setattr__("backward_engine", None)
 

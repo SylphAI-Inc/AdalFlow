@@ -25,7 +25,6 @@ class LossComponent(Component):
     _component_type = "loss"
 
     def __init__(self, *args, **kwargs):
-        # super().__init__()
         super().__init__()
         super().__setattr__("backward_engine", None)
 
