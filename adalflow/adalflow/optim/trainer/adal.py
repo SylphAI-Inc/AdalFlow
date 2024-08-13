@@ -41,7 +41,7 @@ class AdalComponent(Component):
         evaluator: Optional[BaseEvaluator] = None,
         eval_fn: Optional[Callable] = None,
         loss_fn: Optional[LossComponent] = None,
-        backward_engine: Optional["BackwardEngine"] = None,
+        # backward_engine: Optional["BackwardEngine"] = None,
         *args,
         **kwargs,
     ):
@@ -50,12 +50,12 @@ class AdalComponent(Component):
         self.evaluator = evaluator
         self.eval_fn = eval_fn
         self.loss_fn = loss_fn
-        self.backward_engine = backward_engine
+        # self.backward_engine = backward_engine
 
     def _get_param_values(self) -> List[PromptData]:
         r"""Get the current values of the parameters."""
         return [
-            PromptData(p.id, p.name, p.data)
+            PromptData(p.id, p.name, p.data, p.requires_opt)
             for p in self.task.parameters()
             # if p.requires_opt
         ]
@@ -116,10 +116,16 @@ class AdalComponent(Component):
             ensure it supports both Tuple(batch) and a list of any type (fits for datasets).
         """
         # in default use evaluate_one_sample
-        acc_list = [
-            self.evaluate_one_sample(sample, y_pred, metadata=metadata)
-            for sample, y_pred in zip(samples, y_preds)
-        ]
+        if metadata is None:
+            acc_list = [
+                self.evaluate_one_sample(sample, y_pred)
+                for sample, y_pred in zip(samples, y_preds)
+            ]
+        else:
+            acc_list = [
+                self.evaluate_one_sample(sample, y_pred, metadata=metadata)
+                for sample, y_pred in zip(samples, y_preds)
+            ]
         avg_score = np.mean(np.array(acc_list))
         return EvaluationResult(avg_score=avg_score, per_item_scores=acc_list)
         # raise NotImplementedError("evaluate_samples method is not implemented")
@@ -142,7 +148,11 @@ class AdalComponent(Component):
         """
         from adalflow.optim.parameter import Parameter
 
-        y_preds = []
+        y_preds = [None] * len(
+            batch
+        )  # Preallocate list for predictions to keep the order
+        samples = [None] * len(batch)  # Preallocate list for samples to keep the order
+        completed_indices = set()
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=num_workers) as executor:
             futures = []
@@ -150,31 +160,54 @@ class AdalComponent(Component):
             for i, sample in enumerate(tqdm_loader):
                 task_call, kwargs = self.handle_one_task_sample(sample)
                 future = executor.submit(task_call, **kwargs)
-                futures.append((future, sample))
+                futures.append((future, i, sample))  # preserve the order of the samples
+
             tqdm_loader = tqdm(
-                futures,  # Pass only the futures to as_completed
+                # futures.items(),  # Pass only the futures to as_completed
                 total=len(futures),
                 position=0,
                 desc="Evaluating",
             )
-            samples = []
-            for i, (future, sample) in enumerate(tqdm_loader):
+            for future, i, sample in futures:
                 # for future in futures:  # ensure the order of the predictions
                 y_pred = future.result()
-                y_preds.append(future.result())
-                samples.append(sample)
+                print(f"{len(y_preds)},{len(samples)} {i}")
+                y_preds[i] = y_pred  # Place the prediction in the correct position
+                samples[i] = sample  # Keep the sample order aligned
+                # check the ordering
+                assert (
+                    y_pred.id == sample.id
+                ), f"ID mismatch: {y_pred.id} != {sample.id}"
+                completed_indices.add(i)  # Mark this index as completed
+
                 if running_eval and not isinstance(y_pred, Parameter):
-                    remain_samples = len(futures) - (i + 1)
-                    eval_score = self.evaluate_samples(samples, y_preds).avg_score
-                    max_score = (eval_score * (i + 1) + remain_samples) / len(futures)
+                    # Perform running evaluation only on completed samples
+                    completed_y_preds = [
+                        y_preds[idx] for idx in sorted(completed_indices)
+                    ]
+                    completed_samples = [
+                        samples[idx] for idx in sorted(completed_indices)
+                    ]
+                    eval_score = self.evaluate_samples(
+                        completed_samples, completed_y_preds
+                    ).avg_score
+
+                    remaining_samples = len(batch) - len(completed_indices)
+                    max_score = (
+                        eval_score * len(completed_indices) + remaining_samples
+                    ) / len(batch)
+
                     if min_score is not None and max_score < min_score:
                         break
-                    # TODO: compute max score to end evaluation early if it can not be improved
+
                     tqdm_loader.set_description(
-                        f"Evaluating: {eval_score}, Max potential: {max_score}"
+                        f"Evaluating: {eval_score} / {len(completed_indices)} samples, Max potential: {max_score}"
                     )
                 else:
                     tqdm_loader.set_description("Evaluating")
+
+                tqdm_loader.update(1)  # Update the progress bar
+
         return y_preds
 
     # def train_step(self, batch, batch_idx, num_workers: int = 2) -> List:
@@ -305,8 +338,15 @@ class AdalComponent(Component):
             generator.set_teacher_generator(teacher_generator)
         print("Teacher generator configured.")
 
-    def configure_callbacks(self, save_dir: str = "traces", *args, **kwargs):
+    def configure_callbacks(self, save_dir: Optional[str] = "traces", *args, **kwargs):
         """In default we config the failure generator callback. User can overwrite this method to add more callbacks."""
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+        import os
+
+        if not save_dir:
+            save_dir = "traces"
+            save_dir = os.path.join(get_adalflow_default_root_path(), save_dir)
+        print(f"Saving traces to {save_dir}")
         return self._auto_generator_callbacks(save_dir)
 
     def run_one_task_sample(self, sample: Any) -> Any:
@@ -354,7 +394,7 @@ class AdalComponent(Component):
 
         print(f"all_generators: {all_generators}")
 
-        def _on_complete_callback(
+        def _on_completion_callback(
             output: GeneratorOutput,
             input: Dict[str, Any],
             prompt_kwargs: Dict[str, Any],
@@ -373,10 +413,10 @@ class AdalComponent(Component):
         call_logger = GeneratorCallLogger(save_dir=save_dir)
         file_paths = []
         for name, generator in all_generators:
-            call_logger.register_generator(name, f"{name}_call")
+            call_logger.register_generator(name)
             logger_call = partial(call_logger.log_call, name)
             generator.register_callback(
-                "on_complete", partial(_on_complete_callback, logger_call=logger_call)
+                "on_complete", partial(_on_completion_callback, logger_call=logger_call)
             )
             file_path = call_logger.get_log_location(name)
             file_paths.append(file_path)
@@ -396,8 +436,9 @@ class AdalComponent(Component):
             if not param.param_type == ParameterType.DEMOS:
                 continue
             parameters.append(param)
-        if not parameters:
-            raise ValueError("No demo parameters found.")
+        if len(parameters) == 0:
+            print("No demo parameters found.")
+            return []
         do = BootstrapFewShot(params=parameters)
         return [do]
 

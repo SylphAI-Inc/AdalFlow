@@ -2,6 +2,7 @@
 
 from typing import Callable, Dict, Union, TYPE_CHECKING, Optional
 import logging
+import json
 from adalflow.optim.loss_component import LossComponent
 from adalflow.optim.function import BackwardContext
 
@@ -18,43 +19,73 @@ from adalflow.eval.base import BaseEvaluator
 
 log = logging.getLogger(__name__)
 
-###  First part of the user prompt in the backward engine:  Eval function context
-CONVERSATION_TEMPLATE_STRING = r"""Eval Function Description: {{eval_fn_desc}}
-<START_OF_INPUTS_TO_FUNCTION> {{input_str}} <END_OF_INPUTS_TO_FUNCTION>
-<START_OF_OUTPUT_OF_FUNCTION> {{response_value}} <END_OF_OUTPUT_OF_FUNCTION>"""
+###  Loss/Score Information  ###
+CONVERSATION_TEMPLATE_STRING = r"""
+The variable is passed to the eval function and compared with a target/ground truth value.
+
+Eval Function Description: {{eval_fn_desc}}
+Inputs: {{input_str}}
+Eval output/score: {{response_value}}
+
+{% if metadata %}
+Note: {{metadata}}
+{% endif %}
+"""
 
 
 # Does not have gradient on the output, the loss function of the backpropagation chain
-CONVERSATION_START_INSTRUCTION_STRING_FN_BASE = r"""You will give feedback to a variable with the following role:
-<ROLE> {{variable_desc}} </ROLE>.
-Here is an evaluation of the variable using the eval function:
-{{conversation}}"""
+# CONVERSATION_START_INSTRUCTION_STRING_FN_BASE = r"""You will give feedback to a variable with the following role:
+# <ROLE> {{variable_desc}} </ROLE>.
+# Here is an evaluation of the variable using the eval function:
+# {{conversation}}"""
 
 # Has the gradient on the output, the layer in the backpropagation chain
 # Conversation will be provided differently.
-CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN = r"""You will give feedback to a variable with the following role:
-<ROLE> {{variable_desc}} </ROLE>.
-Here is the evaluation of the eval function with inputs and outputs:
-{{conversation}}"""
+
+### Variable Information ###
+CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
+TARGET VARIABLE for feedback:
+
+Name: {{variable_name}}
+<ROLE> {{variable_desc}} </ROLE>
+Value: {{variable_value}}
+
+
+{{conversation_str}}
+"""
 
 # Third part of the user prompt
-OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>Your goal is to give feedback and criticism to the variable given the above evaluation output.
-Our only goal is to improve the above metric, and nothing else. </OBJECTIVE_FUNCTION>"""
+OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
+Your only goal is to clearly states how it obtained the "Eval output/score".
+Especially when the score is low.
+Be CONCISE.
+If you have enough context, add a more specific feedback on how it failed.
+</OBJECTIVE_FUNCTION>"""
 
 
-OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <OUTPUT_OF_FUNCTION> was later used as {{response_desc}}.
+OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The "Eval output/score" was later used as "{{response_name}}: {{response_desc}}".
 
-<OBJECTIVE_FUNCTION>Your goal is to give feedback to the variable to address the following feedback on the OUTPUT_OF_FUNCTION: {{response_gradient}} </OBJECTIVE_FUNCTION>"""
+<OBJECTIVE_FUNCTION>
+Your only goal is to clearly states how it obtained the "Eval output/score": {{response_gradient}}.
+Especially when the score is low.
+Be CONCISE.
+If you have enough context, add a more specific feedback on how it failed.
+</OBJECTIVE_FUNCTION>
+"""
 
 
 class EvalFnToTextLoss(LossComponent):
     __doc__ = """Convert an evaluation function to a text loss.
 
-    We make it a component for better visualization and serialization.
+    LossComponent will take an eval function and output a score
+    (usually a float in range [0, 1], and the higher the better, unlike the loss function in model training).
 
-    Can be used for tasks that have y_gt (ground truth).
-    The fn will be fn(y, y_gt) -> metric, and the loss will be a Parameter with
-    the evaluation result and can be used to compute gradients.
+    In math:
+
+    score/loss = eval_fn(y_pred, y_gt)
+
+    The gradident/feedback = d(score)/d(y_pred) will be computed using a backward engine.
+    Gradient_context =
 
     Args:
         eval_fn: The evaluation function that takes a pair of y and y_gt and returns a score.
@@ -106,11 +137,10 @@ class EvalFnToTextLoss(LossComponent):
         self,
         kwargs: Dict[str, Parameter],
         response_desc: str = None,
+        metadata: Dict[str, str] = None,  # additional notes on the input kwargs
     ) -> Parameter:
         if response_desc is None:
-            response_desc = (
-                f"Output of EvalFnToTextLoss with eval_fn_desc: {self.eval_fn_desc}"
-            )
+            response_desc = "Output of EvalFnToTextLoss."
 
         # validate the type of kwargs
         predesessors = []
@@ -145,6 +175,7 @@ class EvalFnToTextLoss(LossComponent):
                 response=eval_param,
                 eval_fn_desc=self.eval_fn_desc,
                 kwargs=kwargs,
+                metadata=metadata,
             )
         )
         return eval_param
@@ -177,6 +208,7 @@ class EvalFnToTextLoss(LossComponent):
         eval_fn_desc: str,
         backward_engine: "BackwardEngine",
         is_chain: bool = False,
+        metadata: Dict[str, str] = None,
     ):
         if not pred.requires_opt:
             log.debug(
@@ -195,33 +227,37 @@ class EvalFnToTextLoss(LossComponent):
 
         instruction_str, objective_str = None, None
 
-        # construct the prompt, including three sections
+        # response information
         conversation_str = Prompt(
             CONVERSATION_TEMPLATE_STRING,
             prompt_kwargs={
                 "input_str": inputs_string,
                 "eval_fn_desc": eval_fn_desc,
                 "response_value": response.data,
+                "metadata": json.dumps(metadata) if metadata else None,
             },
         )()
 
-        conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_BASE
+        conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
 
         if is_chain:
-            conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
+            # conv_ins_template = CONVERSATION_START_INSTRUCTION_STRING_FN_CHAIN
             obj_ins_template = OBJECTIVE_INSTRUCTION_CHAIN
 
         instruction_str = Prompt(
             conv_ins_template,
             prompt_kwargs={
                 "variable_desc": pred.role_desc,
-                "conversation": conversation_str,
+                "variable_name": pred.name,
+                "variable_value": pred.data,
+                "conversation_str": conversation_str,
             },
         )()
         objective_str = Prompt(
             obj_ins_template,
             prompt_kwargs={
+                "response_name": response.name,
                 "response_desc": response.role_desc,
                 "response_gradient": response.data,
             },
@@ -240,20 +276,21 @@ class EvalFnToTextLoss(LossComponent):
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs
         )
-        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        # gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
+        # gradient_value_data = response.data.to_yaml()
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
         gradient_param = Parameter(
             name=f"{response.name}_to_{pred.name}_grad",
             data=gradient_value_data,
             requires_opt=True,
-            gradient_prompt=gradient_prompt,
+            # gradient_prompt=gradient_prompt,
             role_desc=f"Feedback for {pred.role_desc}",
         )
         pred.gradients.add(gradient_param)
@@ -277,6 +314,7 @@ class EvalFnToTextLoss(LossComponent):
         backward_engine: Optional[
             "BackwardEngine"
         ] = None,  # only needed for text prompt optimization
+        metadata: Dict[str, str] = None,
     ):
         r"""Ensure to set backward_engine for the text prompt optimization. It can be None if you
         are only doing demo optimization and it will not have gradients but simply backpropagate the score.
@@ -284,11 +322,11 @@ class EvalFnToTextLoss(LossComponent):
         log.info(f"EvalFnToTextLoss: Backward: {response}")
         children_params = response.predecessors
         is_chain = True
-        if response.get_gradient_and_context_text().strip() == "":
+        response_gradient_context = response.get_gradient_and_context_text().strip()
+        if response_gradient_context == "":
             log.info(f"EvalFnToTextLoss: Backward: No gradient found for {response}.")
             is_chain = False
-
-        log.info(f"backward_engine: {backward_engine}")
+        log.info(f"response_gradient_context: {response_gradient_context}")
 
         if not backward_engine:
             raise ValueError(
@@ -299,7 +337,10 @@ class EvalFnToTextLoss(LossComponent):
         if backward_engine:
             # Convert all input arguments to string
             inputs_string = "\n\n".join(
-                [f"{k}(role: {v.role_desc}): {v.data}" for k, v in kwargs.items()]
+                [
+                    f"Argument {k}(role: {v.role_desc}), data: {v.data}, input_to_eval_fn: {v.eval_input}, type: {type(v.eval_input)}"
+                    for k, v in kwargs.items()
+                ]
             )
             for pred in children_params:
                 if not pred.requires_opt:
@@ -314,6 +355,7 @@ class EvalFnToTextLoss(LossComponent):
                     eval_fn_desc,
                     backward_engine,
                     is_chain,
+                    metadata,
                 )
         # backward for the score for the demo
         for pred in children_params:

@@ -144,13 +144,15 @@ def get_logger(
     """
     # save_dir = save_dir or "./logs"
     save_dir = save_dir or get_adalflow_default_root_path() + "/logs"
-    print(f"save_dir: {save_dir}")
+
     os.makedirs(save_dir, exist_ok=True)
     if name is None:
         filename = filename or "lib.log"
     else:
         filename = filename or f"{name}.log"
     filepath = os.path.join(save_dir, filename)
+
+    print(f"Log file path: {filepath}")
 
     config = _get_log_config(
         level=level,

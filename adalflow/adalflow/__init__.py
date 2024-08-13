@@ -1,6 +1,8 @@
 __version__ = "0.1.0-beta.6"
 
 from adalflow.core.component import Component, fun_to_component
+
+# from adalflow.core.container import Sequential
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
 from adalflow.core.types import GeneratorOutput, EmbedderOutput, RetrieverOutput

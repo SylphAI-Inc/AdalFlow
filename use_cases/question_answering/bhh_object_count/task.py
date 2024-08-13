@@ -74,6 +74,44 @@ Here are some examples:
 {{input_str}}
 <END_OF_USER>
 """
+from typing import Dict, Union
+import adalflow as adal
+
+
+class ObjectCountTaskPipeline(adal.Component):
+    def __init__(self, model_client: adal.ModelClient, model_kwargs: Dict):
+        super().__init__()
+
+        system_prompt = adal.Parameter(
+            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            role_desc="To give task instruction to the language model in the system prompt",
+            requires_opt=True,
+            param_type=ParameterType.PROMPT,
+        )
+        few_shot_demos = adal.Parameter(
+            data=None,
+            role_desc="To provide few shot demos to the language model",
+            requires_opt=True,
+            param_type=ParameterType.DEMOS,
+        )
+
+        self.llm_counter = adal.Generator(
+            model_client=model_client,
+            model_kwargs=model_kwargs,
+            template=few_shot_template,
+            prompt_kwargs={
+                "system_prompt": system_prompt,
+                "few_shot_demos": few_shot_demos,
+            },
+            output_processors=parse_integer_answer,
+            use_cache=True,
+        )
+
+    def call(
+        self, question: str, id: str = None
+    ) -> Union[adal.GeneratorOutput, adal.Parameter]:
+        output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
+        return output
 
 
 class ObjectCountTaskFewShot(Component):
@@ -115,11 +153,7 @@ class ObjectCountTaskFewShot(Component):
             demo_data_class_input_mapping={"question": "input_str"},
             demo_data_class_output_mapping={"answer": lambda x: x.raw_response},
         )
-        # TODO: make this data map function more robust (this is the final answer and the input to eval_fn)
-        # self.llm_counter.set_data_map_func(lambda x: x.data.answer)
-        print(f"llm_counter set_data_map_func, {self.llm_counter.data_map_func}")
 
-    # TODO: the error will be a context
     def call(self, question: str, id: str = None) -> Any:  # Add id for tracing
         output = self.llm_counter(
             prompt_kwargs={
@@ -201,19 +235,31 @@ class ObjectCountTask(Component):
         return output
 
 
-if __name__ == "__main__":
+def test_object_count_task():
     from use_cases.question_answering.bhh_object_count.config import gpt_3_model
 
-    task = ObjectCountTask(**gpt_3_model)
-    task_original = ObjectCountTaskOriginal(**gpt_3_model)
-
     question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
+    task_pipeline = ObjectCountTaskPipeline(**gpt_3_model)
+    print(task_pipeline)
 
-    print(task(question))
-    print(task_original(question))
+    answer = task_pipeline(question)
+    print(answer)
 
-    task_few_shot = ObjectCountTaskFewShot(**gpt_3_model)
-    prompt = task_few_shot.llm_counter.get_prompt(
-        input_str=question,
-    )
-    print(prompt)
+    # set it to train mode
+    task_pipeline.train()
+    answer = task_pipeline(question, id="1")
+    print(answer)
+    print(f"full_response: {answer.full_response}")
+
+
+if __name__ == "__main__":
+
+    # task = ObjectCountTask(**gpt_3_model)
+    # task_original = ObjectCountTaskOriginal(**gpt_3_model)
+
+    # question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
+
+    # print(task(question))
+    # print(task_original(question))
+
+    test_object_count_task()

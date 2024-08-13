@@ -10,6 +10,7 @@ Overview
 .. autosummary::
 
    datasets.big_bench_hard
+   datasets.trec
    datasets.hotpot_qa
    datasets.types
 
@@ -19,6 +20,7 @@ Overview
    :hidden:
 
    datasets.big_bench_hard
+   datasets.trec
    datasets.hotpot_qa
    datasets.types
 

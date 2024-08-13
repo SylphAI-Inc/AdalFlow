@@ -78,12 +78,15 @@ class DataLoader:
         self.dataset = dataset
         self.batch_size = batch_size
         self.shuffle = shuffle
+
         self.indices = np.arange(len(dataset))
+        if self.shuffle:
+            np.random.shuffle(self.indices)
         self.current_index = 0
 
     def __iter__(self):
-        if self.shuffle:
-            np.random.shuffle(self.indices)
+        # if self.shuffle:
+        #     np.random.shuffle(self.indices)
         self.current_index = 0
         return self
 

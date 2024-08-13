@@ -14,6 +14,7 @@ from dataclasses import field, dataclass
 
 
 from adalflow.optim.optimizer import TextOptimizer, ParamsT
+from adalflow.optim.text_grad.backend_engine_prompt import VARIABLE_AND_PEERS_INFO
 from adalflow.optim.parameter import Parameter
 
 from adalflow.core.base_data_class import DataClass
@@ -37,11 +38,10 @@ GLOSSARY_TEXT = r"""
 # customize the system prompt
 # prompts, solutions to problems, code, or any other text-based variable. -> to the variable type.
 # The optimizer will have an understanding of different variable types.
-OPTIMIZER_SYSTEM_PROMPT = r"""You are part of an optimization system that improves variable to achieve better performance.
+OPTIMIZER_SYSTEM_PROMPT = r"""You are part of an optimization system that improves the exsiting variable value according to feedback.
 
-You will be asked to creatively and critically improve value of type: {{param_type}}.
-You will receive some feedback, and use the feedback to improve the variable.
-The feedback may be noisy, identify what is important and what is correct.
+You will be asked to creatively and critically improve the variable value.
+The feedback may be noisy, focus on what is important.
 
 {# output format #}
 You will ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
@@ -49,9 +49,24 @@ You will ONLY output the new variable value in the response between {{new_variab
 
 Remember:
 - Pay attention to the role description of the variable, and the context in which it is used.
-- Be concise and only modify the variable value in <VARIABLE> tags.
-- Be creative at generating the new variable value.
+- Must provide a different value that addresses the feedback.
+- The new value should not overlap with the scope of peer variables.
+{#Tips:
+- DO NOT address concerns on the peer variables. The peer variables will be optimized separately.
+- The instruction needs to be on point, clear, and accurate.
+You can take the following actions:
+- You can delete words or phrases that you think are not necessary or you find misleading.
+- You can add new words or phrases that you think can address the feedback.
+- You can add sections like "Tips" or "Remember" to fix the issue.
+- You can be creative and write the variable in a different way.#}
+
+
+{% if instruction_to_optimizer %}
+Note: {{instruction_to_optimizer}}
+{% endif %}
 """
+
+# TODO: use thought process to get the new variable.
 
 
 # TGD update instruction # 1. delete ({{variable_desc}})
@@ -107,14 +122,7 @@ TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 <START_OF_USER>
 {#Variable and feedback#}
 
-<START_OF_VARIABLE_DESC>
-Variable type: <TYPE>{{param_type}}</TYPE>
-Variable value:  {{variable_value}}
-Role Description: <ROLE>{{variable_desc}}</ROLE>.
-{% if instruction_to_optimizer %}
-Note: {{instruction_to_optimizer}}
-{% endif %}
-<END_OF_VARIABLE_DESC>
+{{variable_and_peers_info}}
 
 Here are the context and feedback for the variable:
 <CONTEXT_FEEDBACK>{{variable_grad}}</CONTEXT_FEEDBACK>
@@ -165,11 +173,11 @@ class Instruction(DataClass):
 from adalflow.tracing.decorators import trace_generator_states
 
 
-new_variable_tags = ["<NEW_VARIABLE>", "</NEW_VARIABLE>"]
+new_variable_tags = ["<VARIABLE>", "<VARIABLE>"]
 
 
 def extract_new_variable(text: str) -> str:
-    pattern = re.compile(r"<NEW_VARIABLE>(.*?)</NEW_VARIABLE>", re.DOTALL)
+    pattern = re.compile(r"<VARIABLE>(.*?)</VARIABLE>", re.DOTALL)
 
     # Find all matches
     matches = pattern.findall(text)
@@ -212,6 +220,9 @@ class TGDOptimizer(TextOptimizer):
                 "new_variable_end_tag": new_variable_tags[1],
             },
         )
+        self.variable_and_peers_info = Prompt(
+            template=VARIABLE_AND_PEERS_INFO,
+        )
         self.do_constrained = len(self.constraints) > 0
         # self.new_variable_tags = new_variable_tags
         self.in_context_examples = in_context_examples or []
@@ -250,15 +261,14 @@ class TGDOptimizer(TextOptimizer):
         return grad_memory
 
     def _get_user_prompt_kwargs(self, param: Parameter) -> Dict[str, str]:
+
+        variable_and_peer_info = self.variable_and_peers_info.call(
+            variable=param.get_param_info(), peers=param.peers  # param.peers
+        )
+
         user_prompt_kwargs = {
-            "variable_desc": param.role_desc,
-            "variable_value": param.data,
+            "variable_and_peers_info": variable_and_peer_info,
             "variable_grad": param.get_gradient_and_context_text(),
-            "param_type": str(param.param_type),
-            "instruction_to_optimizer": param.instruction_to_optimizer,
-            # output format
-            # "new_variable_start_tag": self.new_variable_tags[0],
-            # "new_variable_end_tag": self.new_variable_tags[1],
             # constraints
             "constraint_text": self.constraint_text if self.do_constrained else None,
             # in-context examples
@@ -304,7 +314,8 @@ class TGDOptimizer(TextOptimizer):
                 continue
             # print(f"Proposing a new value for {param.name}.")
             system_prompt = self.optimizer_system_prompt(
-                param_type=str(param.param_type)
+                param_type=str(param.param_type),
+                instruction_to_optimizer=param.instruction_to_optimizer,
             )
             # user_prompt = self._update_prompt(param)
             user_prompt_kwargs = self._get_user_prompt_kwargs(param)

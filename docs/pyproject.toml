@@ -8,7 +8,7 @@ packages = [{ from = "_dummy", include = "dummy" }]    # empty packages
 
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
-lightrag = { path = "../lightrag", develop = true } # document always follow the latest version of the library
+adalflow = { path = "../adalflow", develop = true } # document always follow the latest version of the library
 
 [tool.poetry.group.doc.dependencies]
 pydata-sphinx-theme = "^0.15.3"

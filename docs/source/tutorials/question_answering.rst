@@ -1,2 +1,0 @@
-Question Answering optimization
-===============================

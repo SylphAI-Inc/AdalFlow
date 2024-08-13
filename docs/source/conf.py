@@ -2,9 +2,9 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath("../../"))
-sys.path.insert(0, os.path.abspath("../../lightrag/lightrag"))
+sys.path.insert(0, os.path.abspath("../../adalflow/adalflow"))
 
-project = "LightRAG"
+project = "AdalFlow"
 copyright = "2024, SylphAI, Inc"
 author = "SylphAI, Inc"
 
@@ -30,7 +30,7 @@ html_show_sphinx = False
 
 templates_path = ["_templates"]
 
-exclude_patterns = ["lightrag/tests", "test_*", "../li_test"]
+exclude_patterns = ["adalflow/tests"]
 
 html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False

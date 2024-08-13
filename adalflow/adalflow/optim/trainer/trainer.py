@@ -13,7 +13,12 @@ from adalflow.optim.optimizer import Optimizer, DemoOptimizer, TextOptimizer
 
 if TYPE_CHECKING:
     from adalflow.optim.parameter import Parameter
-from adalflow.optim.types import PromptData, TrainerResult, ParameterType
+from adalflow.optim.types import (
+    PromptData,
+    TrainerResult,
+    ParameterType,
+    TrainerStepResult,
+)
 from adalflow.eval.base import EvaluationResult
 from adalflow.optim.trainer.adal import AdalComponent
 from adalflow.optim.text_grad.ops import sum
@@ -133,7 +138,7 @@ class Trainer(Component):
         self.weighted_sampling = weighted_sampling
         self.debug = debug
 
-    def diagnose(self, train_dataset: Any):
+    def diagnose(self, dataset: Any, split: Literal["train", "val", "test"] = "train"):
         """Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent's default configure_callbacks
 
         Example:
@@ -148,18 +153,80 @@ class Trainer(Component):
             )
 
             trainer = Trainer(adaltask=adaltask)
-            diagnose = trainer.diagnose(train_dataset=trainset)
+            diagnose = trainer.diagnose(dataset=trainset)
             print(diagnose)
         """
         # 1. track all intermediate outputs
         if not self.ckpt_path:
             trainer_state = self.gather_trainer_states()
             self.prep_ckpt_file_path(trainer_state)
-        log_paths = self.adaltask.configure_callbacks(save_dir=self.ckpt_path)
+        save_path = os.path.join(self.ckpt_path, f"diagnose_{split}")
+        log_paths = self.adaltask.configure_callbacks(save_dir=save_path)
         # 2. evaluate
-        acc = self.adaltask.validation_step(train_dataset, 0, self.num_workers)
+        acc = self.adaltask.validation_step(dataset, 0, self.num_workers)
         acc_score = acc.avg_score
         acc_per_item_scores = acc.per_item_scores
+        # 3. load all completion from the log paths
+        from adalflow.utils.file_io import load_jsonl, write_list_to_jsonl, save_json
+
+        sorted_indices = sorted(
+            range(len(acc_per_item_scores)), key=lambda i: acc_per_item_scores[i]
+        )
+        try:
+            sorted_ids = [dataset[i].id for i in sorted_indices]
+        except AttributeError:
+            raise ValueError(
+                "dataset should have an attribute id for tracking the samples"
+            )
+        print(f"sorted_indices: {sorted_indices}")
+        sorted_scores = [acc_per_item_scores[i] for i in sorted_indices]
+        print(f"sorted_scores: {sorted_scores}")
+        sorted_dataset = [dataset[i] for i in sorted_indices]
+
+        # reorder the samples based on the score
+        for log_path in log_paths:
+            file_name = os.path.basename(log_path)
+            print(f"Loading log file: {file_name}")
+            logs = load_jsonl(log_path)
+            try:
+                logs_dict = {log["output"]["id"]: log for log in logs}
+            except KeyError:
+                raise ValueError(
+                    "Log file should have an output key with an id for tracking the samples. Ensure you have passed the data id to the Generator."
+                )
+            sorted_logs = [logs_dict[id] for id in sorted_ids]
+            for log, score in zip(sorted_logs, sorted_scores):
+                log["score"] = score
+            write_list_to_jsonl(log_path, sorted_logs)
+
+            log_dir = os.path.dirname(log_path)
+            diagnose_filename = file_name.replace(".jsonl", "_diagnose.json")
+
+            diagnose_file = os.path.join(log_dir, diagnose_filename)
+            diagnose_items = []
+            for i, log in enumerate(sorted_logs):
+                if log["score"] < 0.5:
+                    diagnose_item = {
+                        "id": log["output"]["id"] if "id" in log["output"] else None,
+                        "score": log["score"],
+                        "prompt_kwargs": log["prompt_kwargs"],
+                        "raw_response": log["output"]["raw_response"],
+                        "answer": log["output"]["data"],
+                        "dataset_item": sorted_dataset[i],
+                        "error": log["output"]["error"],
+                        "time_stamp": log["time_stamp"],
+                    }
+                    diagnose_items.append(diagnose_item)
+            save_json(diagnose_items, diagnose_file)
+            # save the stats
+            stats = {
+                "total_samples": len(sorted_logs),
+                "total_error_samples": len(diagnose_items),
+                "avg_score": acc_score,
+            }
+            save_json(stats, os.path.join(log_dir, "stats.json"))
+            print(f"Total error samples: {len(diagnose_items)}")
+
         return acc_score, acc_per_item_scores, log_paths
 
     def fit(
@@ -296,7 +363,9 @@ class Trainer(Component):
         val_score = val_output.avg_score
         test_output = self.adaltask.validation_step(test_dataset, 0, self.num_workers)
         test_score = test_output.avg_score
-        trainer_results = TrainerResult([], [], [], [])
+        trainer_results = TrainerResult(
+            steps=[], val_scores=[], test_scores=[], step_results=[], prompts=[]
+        )
         trainer_results.val_scores.append(val_score)
         trainer_results.test_scores.append(test_score)
         prompts = self.adaltask._get_param_values()
@@ -547,11 +616,22 @@ class Trainer(Component):
 
         get_logger(level="DEBUG", enable_console=False)
         train_loader.batch_size = 2
-        batch = next(iter(train_loader))
+        train_loader.shuffle = True
         self.adaltask.train()  # this will turn everything to train mode
-        y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
-        losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
-        total_loss = sum(losses)
+        correct_loss = None
+        failed_loss = None
+        print("Finding one successful and one failed loss")
+        for batch in train_loader:
+            y_preds = self.adaltask.train_step(batch, 0, self.num_workers)
+            losses = self.adaltask.loss_step(batch, y_preds, 0, self.num_workers)
+            for loss in losses:
+                if loss.data > 0.5:
+                    correct_loss = loss
+                else:
+                    failed_loss = loss
+            if correct_loss and failed_loss:
+                break
+        total_loss = sum([correct_loss, failed_loss])
         total_loss.backward()
         # test optimizer
         self._propose_text_optimizers()
@@ -687,7 +767,7 @@ class Trainer(Component):
                             val_score,
                             test_score=test_score,
                             prompts=new_prompts,
-                            steps=total_steps,
+                            step=total_steps,
                         )
                     else:
                         print(
@@ -703,7 +783,7 @@ class Trainer(Component):
                             trainer_results.val_scores[-1],
                             test_score=trainer_results.test_scores[-1],
                             prompts=trainer_results.prompts[-1],
-                            steps=total_steps,
+                            step=total_steps,
                         )
                     save_json(trainer_results.to_dict(), self.ckpt_file)
         save_json(trainer_results.to_dict(), self.ckpt_file)
@@ -798,8 +878,6 @@ class Trainer(Component):
                     # self.optimizer.revert()
                     self._revert_text_optimizers()
                     # save the score, no change
-                    trainer_results.val_scores.append(trainer_results.val_scores[-1])
-                    trainer_results.test_scores.append(trainer_results.test_scores[-1])
                     self._add_one_step_in_trainer_results(
                         trainer_results,
                         trainer_results.val_scores[-1],
@@ -816,13 +894,19 @@ class Trainer(Component):
         trainer_results: TrainerResult,
         val_score: float,
         test_score: float,
-        prompts: List[PromptData],
-        steps: int,
+        prompts: List[PromptData],  # target prompts
+        step: int,
     ):
+
+        step_results = TrainerStepResult(
+            step=step, val_score=val_score, test_score=test_score, prompt=prompts
+        )
+        trainer_results.step_results.append(step_results)
+
         trainer_results.val_scores.append(val_score)
         trainer_results.test_scores.append(test_score)
         trainer_results.prompts.append(prompts)
-        trainer_results.steps.append(steps)
+        trainer_results.steps.append(step)
 
     def _downsample_move_batch(
         self, all_samples, all_losses, all_y_preds, acc_score_list
@@ -830,7 +914,7 @@ class Trainer(Component):
         """Downsample the moving batch to a more balanced error and correct samples"""
         if not all([score in [0, 1] for score in acc_score_list]):
             raise ValueError("acc_score_list should only contain 0 and 1")
-        max_moving_batch_size = 10
+        max_moving_batch_size = 4
 
         correct_indices = [i for i, score in enumerate(acc_score_list) if score == 1]
         error_indices = [i for i, score in enumerate(acc_score_list) if score == 0]
@@ -929,6 +1013,7 @@ class Trainer(Component):
         all_y_preds,
     ):
         # comptute moving batch acc
+        self.adaltask.eval()
         move_batch_eval = self.adaltask.evaluate_samples(all_samples, all_y_preds)
         move_batch_score = move_batch_eval.avg_score
         move_batch_acc_score_list = move_batch_eval.per_item_scores
@@ -978,6 +1063,7 @@ class Trainer(Component):
             if val_score > subset_score:
                 print(f"Pass subset check: {val_score} > {subset_score}")
                 self._track_effectiveness("subset", True)
+                # break
                 # self.optimizer.step()
             else:
                 print(
@@ -1006,6 +1092,7 @@ class Trainer(Component):
                 continue
 
         print("Done with proposals")
+        self.adaltask.train()
         return all_samples, all_losses, all_y_preds
 
     # def _fit_bootstrap_few_shot_random(
@@ -1061,6 +1148,8 @@ class Trainer(Component):
     def _fit_text_grad_constraint(
         self, train_loader: Any, val_dataset: Any, test_dataset: Any
     ):
+        from adalflow.optim.parameter import Parameter
+
         log.info("Fitting using Textual Gradient Descent with constraints")
         trainer_results = self._pre_fit(val_dataset, test_dataset)
 
@@ -1088,7 +1177,9 @@ class Trainer(Component):
 
                 all_samples.extend(batch)
                 all_losses.extend(losses)
-                all_y_preds.extend(y_preds)
+                all_y_preds.extend(
+                    [y.full_response for y in y_preds if isinstance(y, Parameter)]
+                )
 
                 all_samples, all_losses, all_y_preds = (
                     self._text_grad_constraint_propose_step(
@@ -1146,7 +1237,7 @@ class Trainer(Component):
                         )
                         step_result["test_score"] = test_output.avg_score
                         step_result["prompts"] = self.adaltask._get_param_values()
-                        step_result["steps"] = total_steps
+                        step_result["step"] = total_steps
                         self._add_one_step_in_trainer_results(
                             trainer_results,
                             **step_result,

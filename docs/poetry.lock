@@ -19,6 +19,43 @@ dev = ["pillow", "pkginfo (>=1.10)", "playwright", "pre-commit", "setuptools", "
 tests = ["hypothesis", "pytest"]
 
 [[package]]
+name = "adalflow"
+version = "0.2.0.beta.1"
+description = "The Library for LLM Applications."
+optional = false
+python-versions = ">=3.9, <4.0"
+files = []
+develop = true
+
+[package.dependencies]
+backoff = "^2.2.1"
+botocore = "^1.34.149"
+jinja2 = "^3.1.3"
+jsonlines = "^4.0.0"
+nest-asyncio = "^1.6.0"
+numpy = "^1.26.4"
+python-dotenv = "^1.0.1"
+pyyaml = "^6.0.1"
+tiktoken = "^0.7.0"
+tqdm = "^4.66.4"
+
+[package.extras]
+anthropic = ["anthropic (>=0.31.1,<0.32.0)"]
+cohere = ["cohere (>=5.5.8,<6.0.0)"]
+faiss-cpu = ["faiss-cpu (>=1.8.0,<2.0.0)"]
+google-generativeai = ["google-generativeai (>=0.7.2,<0.8.0)"]
+groq = ["groq (>=0.9.0,<0.10.0)"]
+ollama = ["ollama (>=0.2.1,<0.3.0)"]
+openai = ["openai (>=1.12.0,<2.0.0)"]
+pgvector = ["pgvector (>=0.3.1,<0.4.0)"]
+sqlalchemy = ["sqlalchemy (>=2.0.30,<3.0.0)"]
+torch = ["torch (>=2.3.1,<3.0.0)"]
+
+[package.source]
+type = "directory"
+url = "../adalflow"
+
+[[package]]
 name = "aiohappyeyeballs"
 version = "2.3.5"
 description = "Happy Eyeballs for asyncio"
@@ -1586,43 +1623,6 @@ files = [
     {file = "jupyterlab_pygments-0.3.0-py3-none-any.whl", hash = "sha256:841a89020971da1d8693f1a99997aefc5dc424bb1b251fd6322462a1b8842780"},
     {file = "jupyterlab_pygments-0.3.0.tar.gz", hash = "sha256:721aca4d9029252b11cfa9d185e5b5af4d54772bb8072f9b7036f4170054d35d"},
 ]
-
-[[package]]
-name = "lightrag"
-version = "0.1.0-beta.6"
-description = "The Lightning Library for LLM Applications."
-optional = false
-python-versions = ">=3.9, <4.0"
-files = []
-develop = true
-
-[package.dependencies]
-backoff = "^2.2.1"
-botocore = "^1.34.149"
-jinja2 = "^3.1.3"
-jsonlines = "^4.0.0"
-nest-asyncio = "^1.6.0"
-numpy = "^1.26.4"
-python-dotenv = "^1.0.1"
-pyyaml = "^6.0.1"
-tiktoken = "^0.7.0"
-tqdm = "^4.66.4"
-
-[package.extras]
-anthropic = ["anthropic (>=0.31.1,<0.32.0)"]
-cohere = ["cohere (>=5.5.8,<6.0.0)"]
-faiss-cpu = ["faiss-cpu (>=1.8.0,<2.0.0)"]
-google-generativeai = ["google-generativeai (>=0.7.2,<0.8.0)"]
-groq = ["groq (>=0.9.0,<0.10.0)"]
-ollama = ["ollama (>=0.2.1,<0.3.0)"]
-openai = ["openai (>=1.12.0,<2.0.0)"]
-pgvector = ["pgvector (>=0.3.1,<0.4.0)"]
-sqlalchemy = ["sqlalchemy (>=2.0.30,<3.0.0)"]
-torch = ["torch (>=2.3.1,<3.0.0)"]
-
-[package.source]
-type = "directory"
-url = "../lightrag"
 
 [[package]]
 name = "markupsafe"
@@ -4388,4 +4388,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9, <4.0"
-content-hash = "89e29b4dd3cdfed679c56215a22e755af69c8f6d961f658cd1960da8e5653b7c"
+content-hash = "78290e949d2c7d1bba577cbbc2e9e6e7533b40f9debec474b01749fba1e7f222"

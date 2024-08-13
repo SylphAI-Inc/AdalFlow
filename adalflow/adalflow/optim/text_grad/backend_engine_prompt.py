@@ -10,27 +10,24 @@ GLOSSARY_TEXT_BACKWARD = """
 # - <VARIABLE>: Specifies the span of the variable.
 # - <ROLE>: The role description of the variable."""
 
-### Backward engine: system prompt
 
-# TODO: maybe it can propose new values.
-
-# The full backward engine prompt template
+# NOTE: not receive feedback is important for performance
+# NOTE: having peers is important to keep the scope of the prompt consistent and not cross-reference with other variables
+### System prompt and the template is shared by all GradComponent ###
 FEEDBACK_ENGINE_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
-You are the feedback(gradient) engine in a larger optimization system.
+You are the feedback engine in a larger optimization system.
 
-Your goal is to give feedback to a variable in <VARIABLE> tags in order to improve the objective specified in <OBJECTIVE_FUNCTION> tags.
+Your only responsibility is to give to a variable enclosed by <VARIABLE></VARIBLE> tags intelligent and creative feedback
+with regarding to an objective specified in <OBJECTIVE_FUNCTION> </OBJECTIVE_FUNCTION> tags.
+
 The variable may be solution to problems, prompt/instruction to langage model, code, or any other text-based variable.
 {#Task specifics#}
 Remember:
-- Pay attention to the role description of the variable, and the context in which it is used.
-- You should assume that the variable will be used in a similar context in the future.
-{#- Only provide strategies, explanations, and methods to change in the variable.#}
 - DO NOT propose a new version of the variable, that will be the job of the optimizer.
-- Your only job is to send feedback and criticism (compute 'gradients').
-    For instance, feedback can be in the form of 'Since language models have the X failure mode...', 'Adding X can fix this error because...', 'Removing X can improve the objective function because...', 'Changing X to Y would fix the mistake ...', that gets at the downstream objective.
-- If a variable is already working well (e.g. the objective function is perfect, an evaluation shows the response is accurate),
-    you can speculate on in what way did the variable achieve the correct response so that the optimizer can propose variable that keep this behavior.
-- BE CONCISE, CRITICAL, and CREATIVE.
+  For instance, feedback can be in the form of 'Since language models have the X failure mode...', 'Adding X can fix this error because...', 'Removing X can improve the objective function because...', 'Changing X to Y would fix the mistake ...', that gets at the downstream objective.
+- If a variable is already working well (e.g. the objective function is perfect, an evaluation shows the response is accurate), you should respond with "It works well in this case, no critical feedback.
+- BE CONCISE (DONOT repeat the variable value), CRITICAL, and CREATIVE.
+
 <END_OF_SYSTEM_PROMPT>
 
 <START_OF_USER_PROMPT>
@@ -42,20 +39,47 @@ Remember:
 
 ###  Backward engine: user prompt
 # First part to provide context of LLM as gradComponent
-CONVERSATION_TEMPLATE = r"""<LM_PROMPT> {{llm_prompt}} </LM_PROMPT>
-<LM_OUTPUT> {{response_value}} </LM_OUTPUT>"""
+LLM_CONVERSATION_TEMPLATE = r"""
+Target variable:
+Name: {{variable_name}}
+Role Description: {{variable_desc}}
+Type: {{param_type}}
 
+The target variable is used as either input or a task instruction to a language model (LM):
+Input to the LM: {{input_value}}
+LLM output: {{llm_output}}"""
+
+
+# only passing variable (dict) and peers as parameters
+# shared between the
+VARIABLE_AND_PEERS_INFO = r"""
+<START_OF_VARIABLE_DESC>
+Variable information:
+Name: {{variable.name}}
+Type: {{variable.param_type}}
+Role Description: {{variable.role_desc}}.
+Variable value: <VARIABLE> {{variable.data}} </VARIABLE>
+
+<END_OF_VARIABLE_DESC>
+{% if peers %}
+<VARIBLE_PEERS>
+The variable is used together with the following peer variables:
+{% for peer in peers %}
+{{loop.index}}.
+Name: {{peer.name}},
+Type: {{peer.param_type}},
+Role Description: {{peer.role_desc}}
+{% if peer.data %}
+Value: {{peer.data}}
+{% endif %}
+{% endfor %}
+</VARIBLE_PEERS>
+{% endif %}
+"""
 
 # When the parameter has no gradient, it is the start of the backpropagation chain, used as a loss function
 CONVERSATION_START_INSTRUCTION_BASE = r"""
-<START_OF_VARIABLE_DESC>
-Variable type: <TYPE>{{param_type}}</TYPE>
-Variable value: <VARIABLE> {{variable_value}} </VARIABLE>
-Role Description: <ROLE>{{variable_desc}}</ROLE>.
-{% if instruction_to_backward_engine %}
-Note: {{instruction_to_backward_engine}}
-{% endif %}
-<END_OF_VARIABLE_DESC>
+{{variable_and_peers_info}}
 
 Here is an evaluation of the variable using a language model:
 {{conversation_str}}
@@ -63,26 +87,30 @@ Here is an evaluation of the variable using a language model:
 
 # When the parameter has a gradient, it is the continuation of the backpropagation chain, a layer in the models
 CONVERSATION_START_INSTRUCTION_CHAIN = r"""
-<START_OF_VARIABLE_DESC>
-Variable type: <TYPE>{{param_type}}</TYPE>
-Variable value: <VARIABLE> {{variable_value}} </VARIABLE>
-Role Description: <ROLE>{{variable_desc}}</ROLE>.
-{% if instruction_to_backward_engine %}
-Note: {{instruction_to_backward_engine}}
-{% endif %}
-<END_OF_VARIABLE_DESC>
+{{variable_and_peers_info}}
 
 Here is a conversation with a language model (LM):
 {{conversation_str}}
 """
 
-# Second part of the user prompt
-OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>Your goal is to give feedback and criticism to the variable given the above evaluation output.
-Our only goal is to improve the above metric, and nothing else. </OBJECTIVE_FUNCTION>"""
+# Objective instruction for LLM as gradComponent with user custom instruction
+OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
+Your goal is to give feedback and criticism to the variable given the above evaluation output.
+Our only goal is to improve the above metric, and nothing else.
+{% if instruction_to_backward_engine %}
+Note: {{instruction_to_backward_engine}}
+{% endif %}
+</OBJECTIVE_FUNCTION>"""
 
 
-OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
-<OBJECTIVE_FUNCTION>Your goal is to give feedback to the variable to address the following feedback on the LM_OUTPUT: {{response_gradient}} </OBJECTIVE_FUNCTION>"""
+OBJECTIVE_INSTRUCTION_CHAIN = r"""
+This conversation is part of a larger system. The <LM_OUTPUT> was later used as {{response_desc}}.
+<OBJECTIVE_FUNCTION>
+Your goal is to give feedback to the variable to address the following feedback on the LLM output: {{response_gradient}}
+{% if instruction_to_backward_engine %}
+Note: {{instruction_to_backward_engine}}
+{% endif %}
+</OBJECTIVE_FUNCTION>"""
 
 
 # Third part pf the user prompt

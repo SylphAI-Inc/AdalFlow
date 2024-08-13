@@ -16,47 +16,38 @@ log = logging.getLogger(__name__)
 
 @dataclass
 class GradientContext:
-    context: str = field(
-        metadata={
-            "desc": "The context of the gradient in form of a conversation from the current parameter to compute gradient with to the response parameter"
-        }
+    variable_desc: str = field(
+        metadata={"desc": "The description of the target parameter"}
     )
     response_desc: str = field(
         metadata={"desc": "The description of the response parameter"}
     )
-    variable_desc: str = field(
-        metadata={"desc": "The description of the current parameter"}
+    context: str = field(
+        metadata={
+            "desc": "The context of the gradient in form of a conversation indicating \
+                the relation of the current parameter to the response parameter (gradient)"
+        }
     )
-
-
-# TODO: context does not need to repeat many times based on the number of losses.
-
-
-@dataclass
-class Context:
-    prompt_kwargs: Dict[str, Any] = field(
-        metadata={"desc": "The prompt kwargs to be used in the context"}
-    )
-    template: str = field(metadata={"desc": "The template to be used in the context"})
-    raw_response: str = field(metadata={"desc": "The raw response of the generator"})
-    ground_truth: str = field(metadata={"desc": "The ground truth of the generator"})
-    # either ground truth or correct reponse from a teacher model
 
 
 COMBINED_GRADIENTS_TEMPLATE = r"""
 {% for g in combined_gradients %}
-{{loop.index}}.
 {% set gradient = g[0] %}
 {% set gradient_context = g[1] %}
-{% if gradient_context %}
 
+{% if gradient_context %}
+{{loop.index}}.
 <CONTEXT>{{gradient_context.context}}</CONTEXT>
+{% endif %}
+
+{% if gradient.data %}
+  {% if gradient_context %}
 This conversation is potentially part of a larger system. The output is used as <{{gradient_context.response_desc}}>
     <FEEDBACK>{{gradient.data}}</FEEDBACK>
 {% else %}
     <FEEDBACK>{{gradient.data}}</FEEDBACK>
+    {% endif %}
 {% endif %}
-__________
 {% endfor %}"""
 
 
@@ -77,6 +68,8 @@ class Parameter(Generic[T]):
         - role_desc.
         - param_type, incuding ParameterType.PROMPT for instruction optimization, ParameterType.DEMOS
         for few-shot optimization.
+        - instruction_to_optimizer (str, optional): instruction to the optimizer. Default: `None`
+        - instruction_to_backward_engine (str, optional): instruction to the backward engine. Default: `None`
 
     The parameter users created will be automatically assigned to the variable_name/key in the prompt_kwargs
     for easy reading and debugging in the trace_graph.
@@ -164,6 +157,14 @@ class Parameter(Generic[T]):
 
     def set_grad_fn(self, grad_fn):
         self.grad_fn = grad_fn
+
+    def get_param_info(self):
+        return {
+            "name": self.name,
+            "role_desc": self.role_desc,
+            "data": self.data,
+            "param_type": self.param_type,
+        }
 
     def set_peers(self, peers: List["Parameter"] = None):
         if peers is None:
@@ -287,7 +288,7 @@ class Parameter(Generic[T]):
 
     def get_gradient_text(self) -> str:
         """Aggregates and returns the gradients."""
-        return "\n".join([g.data for g in self.gradients])
+        return "\n".join([str(g.data) for g in self.gradients])
 
     def get_gradient_and_context_text(self) -> str:
         """Aggregates and returns:
@@ -453,6 +454,9 @@ class Parameter(Generic[T]):
                 f"<tr><td><b><font color='{label_color}'>Role: </font></b></td><td>{wrap_and_escape(n.role_desc.capitalize())}</td></tr>"
                 f"<tr><td><b><font color='{label_color}'>Value: </font></b></td><td>{wrap_and_escape(n.data)}</td></tr>"
             )
+            if n.proposing:
+                node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
+                node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
             if n.requires_opt:
                 node_label += f"<tr><td><b><font color='{label_color}'>Requires Optimization: </font ></b></td><td>{{'Yes'}}</td></tr>"
             if add_grads:
@@ -472,9 +476,7 @@ class Parameter(Generic[T]):
             if len(n._traces.values()) > 0:
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: keys: </font></b></td><td>{wrap_and_escape(str(n._traces.keys()))}</td></tr>"
                 node_label += f"<tr><td><b><font color='{label_color}'>Traces: values: </font></b></td><td>{wrap_and_escape(str(n._traces.values()))}</td></tr>"
-            if n.proposing:
-                node_label += f"<tr><td><b><font color='{label_color}'>Proposing</font></b></td><td>{{'Yes'}}</td></tr>"
-                node_label += f"<tr><td><b><font color='{label_color}'>Previous Value: </font></b></td><td>{wrap_and_escape(n.previous_data)}</td></tr>"
+
             node_label += "</table>"
             # check if the name exists in dot
             if n.name in node_names:
@@ -591,7 +593,7 @@ class Parameter(Generic[T]):
 
     # TODO: very hard to read directly, need to simplify and let users use to_dict for better readability
     def __repr__(self):
-        return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
+        return f"Parameter(name={self.name}, requires_opt={self.requires_opt}, param_type={self.param_type}, role_desc={self.role_desc}, data={self.data}, predecessors={self.predecessors}, gradients={self.gradients},\
             raw_response={self.raw_response}, input_args={self.input_args}, traces={self._traces})"
 
 

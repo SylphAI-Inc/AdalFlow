@@ -17,7 +17,6 @@ All base/abstract classes, core components like generator, embedder, and basic f
 
 .. autosummary::
    core.component
-   core.grad_component
    core.container
    core.base_data_class
    core.default_prompt_template
@@ -75,6 +74,7 @@ Datasets
 .. autosummary::
 
    datasets.big_bench_hard
+   datasets.trec
    datasets.hotpot_qa
    datasets.types
 
@@ -92,13 +92,14 @@ Evaluation
    eval.llm_as_judge
 
 
-Optimizing
-----------
+Optimization
+--------------
 .. autosummary::
 
 
    optim.parameter
    optim.optimizer
+   optim.grad_component
 
    optim.types
    optim.function

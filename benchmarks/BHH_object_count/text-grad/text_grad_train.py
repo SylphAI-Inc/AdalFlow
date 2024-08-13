@@ -128,7 +128,7 @@ if __name__ == "__main__":
         np.mean(eval_dataset(val_set, eval_fn, model))
     )  # 0.72
     results["prompt"].append(system_prompt.get_value())
-    from lightrag.utils import save_json
+    from adalflow.utils import save_json
 
     file_path = os.path.join(text_grad_save_path, "results_text_grad.json")
 

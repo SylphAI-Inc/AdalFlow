@@ -3,12 +3,12 @@
 .. _developer_notes:
 
 
-Tutorials
+Developer Notes
 =============================
 
 .. *Why and How Each Part works*
 
-Learn the `why` and `how-to` (customize and integrate) behind each core part within the `LightRAG` library.
+Learn the `why` and `how-to` (customize and integrate) behind each core part within the `AdalFlow` library.
 These are our most important tutorials before you move ahead to build your use cases end to end.
 
 
@@ -31,7 +31,7 @@ These are our most important tutorials before you move ahead to build your use c
    .. :width: 200px
 
 
-The `LightRAG` library focuses on providing building blocks for developers to **build** and **optimize** the task pipeline.
+The `AdalFlow` library focuses on providing building blocks for developers to **build** and **optimize** the task pipeline.
 We have a clear :doc:`lightrag_design_philosophy`, which results in this :doc:`class_hierarchy`.
 
 .. toctree::
@@ -48,14 +48,14 @@ Introduction
 
 
 :ref:`Component<core-component>` is to LLM task pipelines what `nn.Module` is to PyTorch models.
-An LLM task pipeline in LightRAG mainly consists of components, such as a `Prompt`, `ModelClient`, `Generator`, `Retriever`, `Agent`, or any other custom components.
+An LLM task pipeline in AdalFlow mainly consists of components, such as a `Prompt`, `ModelClient`, `Generator`, `Retriever`, `Agent`, or any other custom components.
 This pipeline can be `Sequential` or a Directed Acyclic Graph (DAG) of components.
 A `Prompt` will work with `DataClass` to ease data interaction with the LLM model.
 A `Retriever` will work with databases to retrieve context and overcome the hallucination and knowledge limitations of LLM, following the paradigm of Retrieval-Augmented Generation (RAG).
 An `Agent` will work with tools and an LLM planner for enhanced ability to reason, plan, and act on real-world tasks.
 
 
-Additionally, what shines in LightRAG is that all orchestrator components, like `Retriever`, `Embedder`, `Generator`, and `Agent`, are model-agnostic.
+Additionally, what shines in AdalFlow is that all orchestrator components, like `Retriever`, `Embedder`, `Generator`, and `Agent`, are model-agnostic.
 You can easily make each component work with different models from different providers by switching out the `ModelClient` and its `model_kwargs`.
 
 
@@ -297,33 +297,6 @@ Classes
    trainer
 
 
-Use Cases
-^^^^^^^^^^^^^^^^^^
-Then, we will build use cases end to end, from classification (classicial NLP tasks), to question answering, to RAG, to multiple generators pipeline.
-
-
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
-
-   * - Part
-     - Description
-   * - :doc:`classification`
-     - Classification with llama3.1-8b model and dataset .
-   * - :doc:`question_answering`
-     - Question Answering with `bhh_hard_object_count` dataset, including zero-shot and few-shot learning.
-   * - :doc:`rag_opt`
-     - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning.
-
-
-.. toctree::
-   :maxdepth: 1
-   :caption: Training - Use Cases
-   :hidden:
-
-    classification
-    question_answering
-    rag_opt
 
 
 
@@ -339,7 +312,7 @@ Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-
    * - Part
      - Description
    * - :doc:`logging`
-     - LightRAG uses native ``logging`` module as the first line of debugging tooling. We made the effort to help you set it up easily.
+     - AdalFlow uses native ``logging`` module as the first line of debugging tooling. We made the effort to help you set it up easily.
    * - :doc:`logging_tracing`
      - We provide two tracing methods to help you develop and improve the Generator:
        1. Trace the history change(states) on prompt during your development process.

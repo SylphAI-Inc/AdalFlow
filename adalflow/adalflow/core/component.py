@@ -538,7 +538,7 @@ class Component:
 
         if not isinstance(component, Component) and component is not None:
             raise TypeError(
-                f"component should be an instance of Component, but got {type(component)}"
+                f"component should be an instance of Component, but got {type(component)} with {component}"
             )
         if not isinstance(name, str):
             raise TypeError(f"name should be a string, but got {type(name)}")

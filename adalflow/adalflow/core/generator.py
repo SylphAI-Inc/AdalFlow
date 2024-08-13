@@ -34,11 +34,10 @@ from adalflow.utils.global_config import get_adalflow_default_root_path
 
 from adalflow.optim.text_grad.backend_engine_prompt import (
     FEEDBACK_ENGINE_TEMPLATE,
-    BACKWARD_SYSTEM_PROMPT,
-    CONVERSATION_TEMPLATE,
+    LLM_CONVERSATION_TEMPLATE,
+    VARIABLE_AND_PEERS_INFO,
     CONVERSATION_START_INSTRUCTION_BASE,
     CONVERSATION_START_INSTRUCTION_CHAIN,
-    # EVALUATE_VARIABLE_INSTRUCTION,
     OBJECTIVE_INSTRUCTION_BASE,
     OBJECTIVE_INSTRUCTION_CHAIN,
 )
@@ -314,7 +313,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # call the model client
         try:
             # check the cache
-            index_content = json.dumps(api_kwargs)  # all messages
+            index_content = json.dumps(api_kwargs)  # + f"training: {self.training}"
             if use_cache:
                 # print(f"check cache first: {no_cache}")
 
@@ -452,7 +451,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         response: Parameter = Parameter(
             data=param_data,
             name=self.name + "_output",
-            role_desc=f"response from generator(llm) {self.name}",
+            role_desc=f"Output from (llm) {self.name}",
             param_type=ParameterType.GENERATOR_OUTPUT,
         )
         response.set_predecessors(predecessors)
@@ -479,12 +478,10 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             )
             demo_param.add_to_trace(demo, is_teacher=self.teacher_mode)
         else:
-            log.warning(
+            log.debug(
                 "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
             )
-            # raise ValueError(
-            #     "No demo parameter found in the prompt_kwargs. You can not trace the demo data."
-            # )
+
         if not self.backward_engine:
             # self.set_backward_engine()
             log.debug(f"Backward engine: {self.backward_engine}")
@@ -495,7 +492,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 backward_fn=self.backward,
                 backward_engine=self.backward_engine,
                 response=response,
-                prompt_kwargs=combined_prompt_kwargs,
+                prompt_kwargs={
+                    k: v.data
+                    for k, v in prompt_kwargs.items()
+                    if isinstance(v, Parameter)
+                },
+                template=self.template,
                 prompt_str=self.get_prompt(**combined_prompt_kwargs),
                 id=id,
             )
@@ -508,6 +510,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self,
         response: Parameter,  # the output of the forward pass
         prompt_kwargs: Dict,
+        template: str,
         prompt_str: str,
         backward_engine: Optional["Generator"] = None,
         id: Optional[str] = None,  # the id of the input
@@ -527,18 +530,19 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 f"Generator: Backward engine is set for the generator. {backward_engine}"
             )
             for pred in children_params:
-                if not pred.requires_opt:
+                if not pred.requires_opt or pred.param_type == ParameterType.DEMOS:
                     log.debug(
                         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
                     )
                     continue
                 self._backward_through_one_predecessor(
-                    pred,
-                    response,
-                    prompt_kwargs,
-                    backward_engine,
-                    prompt_str,
-                    is_chain,
+                    pred=pred,
+                    response=response,
+                    prompt_kwargs=prompt_kwargs,
+                    template=template,
+                    backward_engine=backward_engine,
+                    prompt_str=prompt_str,
+                    is_chain=is_chain,
                 )
         else:
             log.debug("Backward engine is not set for the generator. No text gradient.")
@@ -562,6 +566,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         pred: Parameter,
         response: Parameter,
         prompt_kwargs: Dict[str, str],
+        template: str,
         backward_engine: "BackwardEngine",
         prompt_str: str,
         is_chain: bool = False,
@@ -578,14 +583,25 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         # 1. Generate the conversation string
 
         conversation_prompt_kwargs = {
-            "llm_prompt": prompt_str,
-            "response_value": response.raw_response or response.data,
+            "variable_name": pred.name,
+            "variable_desc": pred.role_desc,
+            "param_type": pred.param_type,
+            "input_value": json.dumps(prompt_kwargs),
+            "llm_output": response.data,
         }
 
         conversation_str = Prompt(  # takes prompt_kwargs and response_value
-            template=CONVERSATION_TEMPLATE, prompt_kwargs=conversation_prompt_kwargs
+            prompt_kwargs=conversation_prompt_kwargs,
+            template=LLM_CONVERSATION_TEMPLATE,
         )()
         log.info(f"Conversation str: {conversation_str}")
+
+        variable_dict = pred.get_param_info()
+
+        variable_and_peers_info = Prompt(
+            prompt_kwargs={"variable": variable_dict, "peers": pred.peers},
+            template=VARIABLE_AND_PEERS_INFO,
+        )()
 
         conv_ins_template = CONVERSATION_START_INSTRUCTION_BASE
         obj_ins_template = OBJECTIVE_INSTRUCTION_BASE
@@ -596,10 +612,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         instruction_str = Prompt(
             template=conv_ins_template,
             prompt_kwargs={
-                "variable_desc": pred.role_desc,
-                "variable_value": pred.raw_response or pred.data,
-                "param_type": pred.param_type,
-                "instruction_to_backward_engine": pred.instruction_to_backward_engine,
+                "variable_and_peers_info": variable_and_peers_info,
                 "conversation_str": conversation_str,
             },
         )()
@@ -609,6 +622,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             prompt_kwargs={
                 "response_desc": response.role_desc,
                 "response_gradient": response.get_gradient_text(),
+                "instruction_to_backward_engine": pred.instruction_to_backward_engine,
             },
         )()
         # evaluation_variable_instruction_str = Prompt(
@@ -623,7 +637,7 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         #     f"Evaluation variable instruction str: {evaluation_variable_instruction_str}"
         # )
         backward_engine_prompt_kwargs = {
-            "BACKWARD_SYSTEM_PROMPT": Prompt(BACKWARD_SYSTEM_PROMPT)(),
+            # "BACKWARD_SYSTEM_PROMPT": Prompt(BACKWARD_SYSTEM_PROMPT)(),
             "conversation_sec": instruction_str,
             "objective_instruction_sec": objective_str,
             # "evaluate_variable_instruction_sec": evaluation_variable_instruction_str,
@@ -665,23 +679,36 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             variable_desc=pred.role_desc,
         )
 
-    def _run_callbacks(self, output: GeneratorOutput, input: Dict):
+    def _run_callbacks(
+        self,
+        output: GeneratorOutput,
+        input: Dict,
+        prompt_kwargs: Dict,
+        model_kwargs: Dict,
+    ):
         self.trigger_callbacks(
             "on_complete",
             output=output,
             input=input,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
         )
         if output.error:
+            print(f"call back on failure: {output}")
             self.trigger_callbacks(
                 "on_failure",
                 output=output,
                 input=input,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
             )
         else:
             self.trigger_callbacks(
                 "on_success",
                 output=output,
                 input=input,
+                prompt_kwargs=prompt_kwargs,
+                model_kwargs=model_kwargs,
             )
 
     def call(
@@ -726,8 +753,13 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 )
 
         # User only need to use one of them, no need to use them all.
-        self._run_callbacks(output, input=api_kwargs)
         output.id = id
+        self._run_callbacks(
+            output,
+            input=api_kwargs,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+        )
 
         log.info(f"output: {output}")
         return output

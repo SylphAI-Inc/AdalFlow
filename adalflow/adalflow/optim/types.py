@@ -1,6 +1,8 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from enum import Enum, auto
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
+
 
 from adalflow.core import DataClass
 
@@ -10,7 +12,7 @@ class ParameterType(Enum):
 
     PROMPT = (
         "prompt",
-        "Need to be generic and you can not modify it based on a single example.",
+        "Instruction to the language model on task, data, and format.",
     )
     DEMOS = ("demos", "A few examples to guide the language model.")
     # INSTANCE = ("instance", "Focus on fixing issues of this specific example.")
@@ -35,10 +37,43 @@ class ParameterType(Enum):
 
 
 @dataclass
+class EvaluationResult(DataClass):
+    """A single evaluation of task pipeline response to a score in range [0, 1]."""
+
+    score: float = field(
+        default=0.0, metadata={"desc": "The score of the evaluation in range [0, 1]."}
+    )
+    feedback: str = field(
+        default="",
+        metadata={
+            "desc": "Feedback on the evaluation, including reasons for the score."
+        },
+    )
+
+
+@dataclass
 class PromptData:
     id: str  # each parameter's id
     name: str  # each parameter's name
     data: str  # each parameter's data
+    requires_opt: bool = field(
+        default=True, metadata={"desc": "Whether this parameter requires optimization"}
+    )
+
+
+@dataclass
+class TrainerStepResult(DataClass):
+    step: int = field(default=0, metadata={"desc": "Step number"})
+    val_score: Optional[float] = field(
+        default=None,
+        metadata={
+            "desc": "Validation score. Usually a smaller set than test set to chose the best parameter value."
+        },
+    )
+    test_score: Optional[float] = field(default=None, metadata={"desc": "Test score"})
+    prompt: Optional[List[PromptData]] = field(
+        default=None, metadata={"desc": "Optimized prompts for this step"}
+    )
 
 
 @dataclass
@@ -47,8 +82,12 @@ class TrainerResult(DataClass):
     val_scores: List[float]
     test_scores: List[float]
     prompts: List[List[PromptData]]
+    step_results: List[TrainerStepResult]
     trainer_state: Dict[str, Any] = None
     effective_measure: Dict[str, Dict] = None  # stage
+    time_stamp: str = field(
+        default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    )
 
 
 @dataclass
