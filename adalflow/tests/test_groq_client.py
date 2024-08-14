@@ -93,7 +93,7 @@ class TestGroqClient(unittest.IsolatedAsyncioTestCase):
         # test parse_chat_completion
         output = self.client.parse_chat_completion(completion=self.mock_response)
         self.assertTrue(isinstance(output, GeneratorOutput))
-        self.assertEqual(output.data, "Hello, world!")
+        self.assertEqual(output.raw_response, "Hello, world!")
         self.assertEqual(output.usage.completion_tokens, 10)
         self.assertEqual(output.usage.prompt_tokens, 20)
         self.assertEqual(output.usage.total_tokens, 30)

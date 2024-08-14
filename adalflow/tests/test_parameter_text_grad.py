@@ -19,9 +19,9 @@ class TestGradientContext(unittest.TestCase):
 
 class TestParameter(unittest.TestCase):
     def setUp(self):
-        self.param1 = Parameter(data="Gradient 1", alias="param1")
-        self.param2 = Parameter(data="Gradient 2", alias="param2")
-        self.param1.gradients.add(self.param2)
+        self.param1 = Parameter(data="Gradient 1", name="param1")
+        self.param2 = Parameter(data="Gradient 2", name="param2")
+        self.param1.gradients.append(self.param2)
         self.param1.gradients_context[self.param2] = GradientContext(
             context="Conversation context",
             response_desc="Response description",
@@ -29,8 +29,11 @@ class TestParameter(unittest.TestCase):
         )
 
     def test_get_gradient_text(self):
-        expected_output = "Gradient 2"
-        self.assertEqual(self.param1.get_gradient_text(), expected_output)
+        expected_output = """1.
+<CONTEXT>Conversation context</CONTEXT>
+
+<FEEDBACK>Gradient 2</FEEDBACK>"""
+        self.assertEqual(self.param1.get_gradient_and_context_text(), expected_output)
 
 
 #     def test_get_gradient_and_context_text(self):

@@ -345,6 +345,8 @@ class DataClass:
             if field_name not in ordered_dict:
                 ordered_dict[field_name] = value
 
+        return dict(ordered_dict)
+
         return ordered_dict
 
     @classmethod

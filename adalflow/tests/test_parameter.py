@@ -42,7 +42,7 @@ class TestParameter:
     )
     def test_update_value(self, data, new_data):
         """Test updating the parameter's data."""
-        param = Parameter(data)
+        param = Parameter(data=data)
         param.update_value(new_data)
         assert param.data == new_data, "Parameter data should be updated correctly"
 

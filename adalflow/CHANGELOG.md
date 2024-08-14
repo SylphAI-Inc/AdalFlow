@@ -1,6 +1,14 @@
-## [0.2.0] - 2024-08-02
+## [0.2.0.beta.1] - 2024-08-14
 ### Added
 - Optimizer: `paramter`, `GradComponent`, `Optimizer`, `AdalComponent`, and `Trainer`.
+
+### Added features
+1.  ``DataClass``
+* support ``__input_fields__``, ``get_input_fields``, ``set_input_fields__``, along with the output version.
+* Support ``Parameter`` field which will be converted to `p.data``.
+* Support ``include`` besides of ``exclude``, they cant coexist.
+* ``to_dict`` made sure the ordering of fields is rearranged according to the ``input_fields`` and ``output_fields``.
+
 ## [0.1.0-beta.6] - 2024-07-23
 
 Rename the `lightrag` package to `adalflow`.
