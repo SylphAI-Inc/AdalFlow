@@ -284,17 +284,16 @@ Classes
      - The ``Trainer`` will take the ``AdalComponent`` and run the training and validation steps on either data loaders or datasets.
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Training - Classes
-   :hidden:
+..    :maxdepth: 1
+..    :caption: Training - Classes
+..    :hidden:
 
-   parameter
-   optimizer
-   few_shot_optimizer
-   auto_text_grad
-   adalcomponent
-   trainer
+..    parameter
+..    optimizer
+..    few_shot_optimizer
+..    auto_text_grad
+..    adalcomponent
+..    trainer
 
 
 
