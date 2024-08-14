@@ -119,6 +119,7 @@ class Retriever(GradComponent, Generic[RetrieverDocumentType, RetrieverQueryType
             name=self.name + "_output",
             role_desc="Retriever response",
             input_args=input_args,
+            full_response=retriever_reponse,
         )
         response.set_predecessors(predecessors)
         response.trace_forward_pass(

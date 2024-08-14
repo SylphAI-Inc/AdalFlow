@@ -1,5 +1,8 @@
-Question Answering optimization
+Introduction to AdalFlow library
 ===============================
+    End-to-end building and optimization on question answering task pipeline.
+
+AdalFlow provides token efficient and highly-performing prompt optimization with a unified framework.
 
 In this tutorial, we will implement and optimize a question answering task pipeline using both string output
 and structued output. In particular, it is to count the total objects.
@@ -10,7 +13,79 @@ Here is the one example:
 
     question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
 
+
 For optimization, we will demonstrate both few-shot In-context Learning(ICL) and the instruction/prompt optimization.
+
+We especially want to know how the auto-training pipeline perform on both good and bad starting prompt.
+
+On a low performing starting prompt, our zero-shot optimizer stats:
+
+.. list-table:: Scores by Method and Split On Low-performing Starting Prompt
+   :header-rows: 1
+   :widths: 20 20 20 20
+
+   * - Method
+     - Train
+     - Val
+     - Test
+   * - Start (manual prompt)
+     - N/A (50 samples)
+     - 0.54 (50 samples)
+     - 0.65 (100 samples)
+   * - Optimized Zero-shot
+     - N/A
+     - 0.9 (**+36%**)
+     - 0.9 (**+25%**)
+
+It converged within 5 steps where each batch has a size of only 4 samples.
+
+
+.. list-table:: Manual Prompt vs Optimized Prompt
+   :header-rows: 1
+   :widths: 20 20
+
+   * - Method
+     - Prompt
+   * - Manual
+     - You will answer a reasoning question. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
+   * - Optimized (zero-shot) (90% on val, 90% on test)
+     - You will answer a reasoning question by performing detailed and careful counting of each item. Ensure no items, particularly those in plural form, are miscounted. The last line of your response should be formatted as follows: 'Answer: $VALUE' where VALUE is a numerical value.
+
+
+And we will see how we optimize an already high-performing task pipeline (~90% accuracy) to even higher which would have been really difficult if we try to manually optimize the promot.
+
+.. list-table:: Scores by Method and Split On High-performing Starting Prompt
+   :header-rows: 1
+   :widths: 20 20 20 20
+
+   * - Method
+     - Train
+     - Val
+     - Test
+   * - Start (manual prompt)
+     - 0.88 (50 samples)
+     - 0.90 (50 samples)
+     - 0.87 (100 samples)
+   * - Optimized Zero-shot
+     - N/A
+     - 0.98 (**+8%**)
+     - 0.91 (**+4%**)
+
+
+.. list-table:: Manual Prompt vs Optimized Prompt
+   :header-rows: 1
+   :widths: 20 20
+
+   * - Method
+     - Prompt
+   * - Manual
+     - You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
+   * - Optimized (zero-shot) (92% on val, 91% on test)
+     - You will answer a reasoning question. Think step by step, and make sure to convert any numbers written in words into numerals. Double-check your calculations. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.
+   * - Optimized (plus generated examples by itself) (98% on val, 91% on test)
+     - You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value. Here are some examples: 1. I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have? Answer: 8
+
+Now, let's get started on how to implement and to achieve the above results.
 
 Build the task pipeline
 --------------------------
@@ -268,7 +343,7 @@ This minimum code will get us started on evaluating the task pipeline.
             y_label = -1
             if y_pred and y_pred.data:
                 y_label = y_pred.data
-            return self.eval_fn(y_label, sample.answer)
+            return self.eval_fn(y=y_label, y_gt=sample.answer)
 
 Now, lets use the trainer.
 
@@ -347,8 +422,142 @@ The model already performs quite well on the dataset.
 Let's see if we can optimize it further with either few-shot or zero-shot prompt optimization or even both.
 
 
-Train-Debug mode
+Train
 ------------------------------
+
+Prepare AdalComponent for training
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To be able to train, we will add a few attributes and define a few methods in our ``ObjectCountAdalComponent`` class.
+
+First, ``loss_fn`` where we use ``ada.EvalFnToTextLoss`` to compute the loss(``Parameter``) where it takes the ``eval_fn`` and the ``eval_fn_desc`` at the initialization.
+This loss function will pass whatever user set at ``kwargs`` to the ``eval_fn`` and compute the loss and handle the ``textual gradient`` for the loss function.
+
+.. code-block:: python
+
+    class ObjectCountAdalComponent(adal.AdalComponent):
+        def __init__(
+            self,
+            model_client: adal.ModelClient,
+            model_kwargs: Dict,
+            backward_engine_model_config: Dict,
+            teacher_model_config: Dict,
+            text_optimizer_model_config: Dict,
+        ):
+            task = ObjectCountTaskPipeline(model_client, model_kwargs)
+            eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
+            loss_fn = adal.EvalFnToTextLoss(
+                eval_fn=eval_fn,
+                eval_fn_desc="exact_match: 1 if str(y) == str(y_gt) else 0",
+            )
+            super().__init__(task=task, eval_fn=eval_fn, loss_fn=loss_fn)
+
+            self.backward_engine_model_config = backward_engine_model_config
+            self.teacher_model_config = teacher_model_config
+            self.text_optimizer_model_config = text_optimizer_model_config
+
+
+
+Second, :meth:`handle_one_loss_sample` where we will return the loss function and the ``kwargs`` to the loss function.
+We need to convert the the ground truth into a ``Parameter`` and set the ``eval_input`` that will be used as value to the ``eval_fn``
+when we evaluate the model.
+
+.. code-block:: python
+
+    def handle_one_loss_sample(self, sample: Example, pred: adal.Parameter):
+        # prepare gt parameter
+        y_gt = adal.Parameter(
+            name="y_gt",
+            data=sample.answer,
+            eval_input=sample.answer,
+            requires_opt=False,
+        )
+
+        # pred's full_response is the output of the task pipeline which is GeneratorOutput
+        pred.eval_input = pred.full_response.data
+        return self.loss_fn, {"kwargs": {"y": pred, "y_gt": y_gt}}
+
+Third, if you intent to train ``ParameterType.PROMPT``, we will need to set the ``backward_engine`` which is a subclass of ``Generator`` with its own ``template``.
+We provided a ``configure_backward_engine_helper`` method to smooth this setup; it requires only the ``model_client`` and the ``model_kwargs``.
+
+.. code-block:: python
+
+    def configure_backward_engine(self):
+        return super().configure_backward_engine_helper(
+            **self.backward_engine_model_config
+        )
+
+If we also need to train the ``ParameterType.DEMOS``, we will need to set the ``teacher_generator`` which is exactly the same setup as your ``llm_counter`` but
+with your configured ``model_client`` and ``model_kwargs``.
+
+.. code-block:: python
+
+    def configure_teacher_generator(self):
+        super().configure_teacher_generator_helper(
+            **self.teacher_generator_model_config
+        )
+
+
+Finally, we need to configure the optimizer. We will use both the ``DemoOptimizer`` (in default configured with ``adal.optim.few_shot.few_shot_optimizer.BootstrapFewShot``) and the ``PromptOptimizer`` (in default configured with ``adal.optim.text_grad.tgd_optimizer.TGDOptimizer``).
+
+.. code-block:: python
+
+    def configure_optimizers(self):
+        to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
+        do = super().configure_demo_optimizer_helper()
+        return to  + do
+
+Use the trainer
+~~~~~~~~~~~~~~~~~~~~
+
+Now, we can use the trainer to train the model.
+
+.. code-block:: python
+
+    def train(
+        train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
+        raw_shots: int = 1,
+        bootstrap_shots: int = 1,
+        max_steps=1,
+        num_workers=4,
+        strategy="random",
+        debug=False,
+    ):
+        adal_component = ObjectCountAdalComponent(
+            **gpt_3_model,
+            teacher_model_config=gpt_3_model,
+            text_optimizer_model_config=gpt_4o_model,
+            backward_engine_model_config=gpt_4o_model
+        )
+        print(adal_component)
+        trainer = Trainer(
+            train_batch_size=train_batch_size,
+            strategy=strategy,
+            max_steps=max_steps,
+            num_workers=num_workers,
+            adaltask=adal_component,
+            raw_shots=raw_shots,
+            bootstrap_shots=bootstrap_shots,
+            debug=debug,
+            weighted_sampling=True,
+        )
+        print(trainer)
+
+        train_dataset, val_dataset, test_dataset = load_datasets()
+        trainer.fit(
+            train_dataset=train_dataset,
+            val_dataset=val_dataset,
+            test_dataset=test_dataset,
+            debug=debug,
+        )
+
+
+
+Train in Debug mode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    train(debug=True, max_steps=12, strategy="constrained")
 
 Using the ``debug`` will show us two samples: one successful and one failed sample.
 And it will not only check all necessary steps/methods to try its best to ensure you
@@ -356,5 +565,66 @@ have implemented all parts correctly before the training on the whole dataset wh
 Also, it is important to make sure the ``backward_engine`` is giving the right feedback and the ``optimizer`` is
 following the instruction to make correct proposal.
 
+Debug mode will turn on the log and set it to ``DEBUG`` level.
+
+.. code-block:: bash
+
+    .adalflow/
+    ├── ckpt/
+    │   └── ObjectCountAdalComponent/
+    │       ├── diagnose_{train, val, test}/  # Directory for training data diagnostics
+    │       │   ├── llm_counter_call.jsonl    # Sorted by score from lowest to highest
+    │       │   ├── logger_metadata.jsonl
+    │       │   ├── llm_counter_diagnose.json # Contains samples with score < 0.5, sorted by score
+    │       │   └── stats.json
+    │       ├── debug_text_grads                          # Directory for debug mode with text optimizer
+    │       │   ├── lib.log                    # Log file
+    │       │   ├── trace_graph_sum.png       # Trace graph with textual feedback and new proposed value
+    │       │   ├── trace_graph_sum_root.json # Json representation of the root loss node (sum of the success and fail loss)
+
+Here is how our trace_graph looks like: :doc:`trace_graph <../tutorials/trace_graph>`.
+
+
 Train
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To train, we simply set the ``debug`` to ``False``.
+
+For the text optimizer, we have two training strategy: ``random`` and ``constrained``.
+The ``random`` strategy runs a batch of loss and backward propagation and then validate it on the ``validation`` and ``test`` dataset at each step.
+This is a standard training strategy, and it is used by libraries like ``Dspy`` and ``Text-grad``.
+You can refer :meth:`optim.trainer.Trainer.fit` for more details.
+
+The ``constrained`` strategy is unique to AdalFlow library where it runs a moving batch capped at maximum 20 samples, and it subsample the correct and failed samples (each maximum at 4).
+Before it runs the validations on the full ``validation`` and ``test`` dataset, it will run a validation on the moving sampled subset and the moving batch. It will try 5 proposals on the moving batch and only let a proposal that can beat the current subset and moving batch performance before it can be validated on the full dataset.
+We find it often more effective than the ``random`` strategy.
+
+Additionally, we estimate the maximum validataion score each validation can get. Once we know the maximum score is below our minimum requirement (the last highest validation score), we stop the evaluation to save time and cost.
+
+After the training, we will all information saved in ``.adalflow/ckpt/ObjectCountAdalComponent/``.
+With file names like:
+
+.. code-block:: bash
+
+    .adalflow/
+    ├── ckpt/
+    │   └── ObjectCountAdalComponent/
+    │       random_max_steps_8_bb908_run_1.json # The last training run for random strategy
+    │       constrained_max_steps_8_a1754_run_1.json # The last training run for constrained strategy
+
+
+Here is an example of how our ckpt file looks like: :doc:`ckpt_file <../tutorials/ckpt_file>`.
+This file is a direct `to_dict`  (json) representation of :class:`TrainerResult<optim.types.TrainerResult>`.
+
+
+Few-shot Bootstrap
 ------------------------------
+
+
+
+Benchmarking
+------------------------------
+We compared our performance with text-grad. Here are our stats:
+The same prompt, text-grad gets 0.72 on the validation set. and it optimized it to 0.89.
+But text-grad use more lengthy prompt, where it takes more than 80s to run a backpropagation on a batch size of 4.
+Yet, we only take 12s.
+Also AdalFlow has better converage rate.

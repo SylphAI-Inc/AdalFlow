@@ -17,7 +17,6 @@ def prepare_dataset_path(root: str, task_name: str):
 
     save_path = os.path.join(root, task_name)
     os.makedirs(save_path, exist_ok=True)
-    print(f"Saving dataset to {save_path}")
     return save_path
 
 
@@ -108,6 +107,7 @@ class BigBenchHard(Dataset):
             ["train", "val", "test"], [train_examples, val_examples, test_examples]
         ):
             target_path = os.path.join(data_path, f"{split}.csv")
+            print(f"Saving {split} split to {target_path}")
             save_csv(examples, f=target_path, fieldnames=["x", "y", "id"])
 
     def __getitem__(self, index) -> Example:

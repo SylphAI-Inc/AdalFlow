@@ -25,8 +25,10 @@ gpt_4o_model = {
     "model_client": OpenAIClient(),
     "model_kwargs": {
         "model": "gpt-4o",
-        "temperature": 0.9,
+        "temperature": 1,
         "top_p": 0.99,
+        "max_tokens": 1000,
+        # "frequency_penalty": 1,  # high for nto repeating prompt
     },
 }
 

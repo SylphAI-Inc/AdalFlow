@@ -1,3 +1,5 @@
+"""All data types used by Parameter, Optimizer, AdalComponent, and Trainer."""
+
 from typing import List, Dict, Any, Optional
 from enum import Enum, auto
 from dataclasses import dataclass, field
@@ -8,7 +10,7 @@ from adalflow.core import DataClass
 
 
 class ParameterType(Enum):
-    """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
+    __doc__ = """Enum for the type of parameter to compute the loss with, and to inform the optimizer."""
 
     PROMPT = (
         "prompt",
@@ -21,6 +23,9 @@ class ParameterType(Enum):
         "The output of the generator.",
     )  # use raw response or error message as data, full response in full_response
     RETRIEVER_OUTPUT = ("retriever_output", "The output of the retriever.")
+    LOSS_OUTPUT = ("loss", "The loss value.")
+    SUM_OUTPUT = ("sum", "The sum of the losses.")
+    GRADIENT = ("gradient", "A gradient parameter.")
     NONE = ("none", "")
 
     def __init__(self, value, description):
@@ -71,6 +76,9 @@ class TrainerStepResult(DataClass):
         },
     )
     test_score: Optional[float] = field(default=None, metadata={"desc": "Test score"})
+    attempted_val_score: Optional[float] = field(
+        default=None, metadata={"desc": "Attempted validation score"}
+    )
     prompt: Optional[List[PromptData]] = field(
         default=None, metadata={"desc": "Optimized prompts for this step"}
     )
@@ -78,22 +86,30 @@ class TrainerStepResult(DataClass):
 
 @dataclass
 class TrainerResult(DataClass):
-    steps: List[int]
-    val_scores: List[float]
-    test_scores: List[float]
-    prompts: List[List[PromptData]]
-    step_results: List[TrainerStepResult]
-    trainer_state: Dict[str, Any] = None
-    effective_measure: Dict[str, Dict] = None  # stage
+    steps: List[int] = field(default_factory=list, metadata={"desc": "List of steps"})
+    val_scores: List[float] = field(
+        default_factory=list, metadata={"desc": "List of validation scores"}
+    )
+    test_scores: List[float] = field(
+        default_factory=list, metadata={"desc": "List of test scores"}
+    )
+    prompts: List[List[PromptData]] = field(
+        default_factory=list, metadata={"desc": "List of optimized prompts"}
+    )
+    step_results: List[TrainerStepResult] = field(
+        default_factory=list,
+        metadata={"desc": "List of step results, in an aggregated form"},
+    )
+    effective_measure: Dict[str, Dict] = field(
+        default_factory=dict,
+        metadata={"desc": "Effective measures of the constrained training strategy"},
+    )
     time_stamp: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
-
-
-@dataclass
-class FewShotConfig:
-    raw_shots: int  # raw shots
-    bootstrap_shots: int  # bootstrap shots
+    trainer_state: Dict[str, Any] = field(
+        default=None, metadata={"desc": "Save the most detailed state of the trainer"}
+    )
 
 
 class OptimizeGoal(Enum):

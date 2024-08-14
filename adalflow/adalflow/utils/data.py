@@ -91,7 +91,7 @@ class DataLoader:
         return self
 
     def __len__(self):
-        return len(self.dataset) // self.batch_size + 1
+        return (len(self.dataset) + self.batch_size - 1) // self.batch_size
 
     def __next__(self) -> Union[np.ndarray, Tuple]:
         if self.current_index >= len(self.dataset):

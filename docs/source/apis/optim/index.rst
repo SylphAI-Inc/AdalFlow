@@ -1,17 +1,23 @@
 .. _apis-optim:
 
-Optimizing
+Optimization
 ==============
 
 
 
-Base Classes
-----------------------------
+Base Classes and Data Structures
+----------------------------------
+The ``GradComponent`` and ``LossComponent`` are a subclass from ``Component`` to serve the purpose to differentiate the gradient and loss components in the optimization process.
+And it will be used if users want to implement their own with more customization.
+
 .. autosummary::
 
 
    optim.parameter
    optim.optimizer
+   optim.grad_component
+   optim.loss_component
+   optim.types
 
 
    .. optim.sampler
@@ -25,6 +31,9 @@ Base Classes
 
    optim.parameter
    optim.optimizer
+   optim.grad_component
+   optim.loss_component
+   optim.types
 
    .. optim.sampler
 

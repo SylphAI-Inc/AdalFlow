@@ -88,11 +88,14 @@ if __name__ == "__main__":
 
     from benchmarks.config import text_grad_save_path
     import os
+    import time
 
     set_seed(12)
     llm_api_eval = tg.get_engine(engine_name="gpt-4o")
     llm_api_test = tg.get_engine(engine_name="gpt-3.5-turbo")
     tg.set_backward_engine(llm_api_eval, override=True)
+
+    first_start_time = time.time()
 
     # Load the data and the evaluation function
     train_set, val_set, test_set, eval_fn = load_task(
@@ -167,12 +170,18 @@ if __name__ == "__main__":
                 print(f" y_gt: {y.value}")
 
                 losses.append(eval_output_variable)
+            start_time = time.time()
             total_loss = tg.sum(losses)  # operator aggregrate the feedbacks,
             total_loss.backward()  # it is still like separete other than the gradients now have a list from the batch.
+            end_time = time.time()
+            print("Time taken for backward: ", end_time - start_time)
             # loss_to_dict = total_loss.to_dict()
 
             # print("loss_to_dict: ", loss_to_dict)
+            start_time = time.time()
             optimizer.step()
+            end_time = time.time()
+            print("Time taken for step: ", end_time - start_time)
             # save_json(loss_to_dict, "loss_to_dict.json")
 
             run_validation_revert(system_prompt, results, model, eval_fn, val_set)
@@ -186,3 +195,5 @@ if __name__ == "__main__":
 
             if steps >= max_steps:
                 break
+    end_time = time.time()
+    print("Time taken: ", end_time - first_start_time)  # 6 steps.

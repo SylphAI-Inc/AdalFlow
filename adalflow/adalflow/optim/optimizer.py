@@ -58,9 +58,20 @@ class DemoOptimizer(Optimizer):
 
     _traces: Dict[str, Any]  # key: parameter_id (demo)
     dataset: Sequence[DataClass]
+    _weighted: bool
 
-    def __init__(self, *args, **kwargs):
-        pass
+    def __init__(
+        self,
+        weighted: bool = True,
+        dataset: Sequence[DataClass] = None,
+        *args,
+        **kwargs
+    ):
+        self._weighted = weighted
+        self.dataset = dataset
+
+    def use_weighted_sampling(self, weighted: bool):
+        self._weighted = weighted
 
     def config_shots(self, *args, **kwargs):
         r"""Initialize the samples for each parameter."""

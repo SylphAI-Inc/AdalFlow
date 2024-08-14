@@ -1,6 +1,6 @@
 """Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations"""
 
-from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple, Optional
+from typing import Generic, TypeVar, Any, List, Set, Dict, Tuple, Optional, Literal
 from collections import defaultdict
 import logging
 from dataclasses import dataclass, field
@@ -42,11 +42,11 @@ COMBINED_GRADIENTS_TEMPLATE = r"""
 
 {% if gradient.data %}
   {% if gradient_context %}
-This conversation is potentially part of a larger system. The output is used as <{{gradient_context.response_desc}}>
-    <FEEDBACK>{{gradient.data}}</FEEDBACK>
+{#The output is used as <{{gradient_context.response_desc}}>#}
+<FEEDBACK>{{gradient.data}}</FEEDBACK>
 {% else %}
-    <FEEDBACK>{{gradient.data}}</FEEDBACK>
-    {% endif %}
+<FEEDBACK>{{gradient.data}}</FEEDBACK>
+{% endif %}
 {% endif %}
 {% endfor %}"""
 
@@ -85,11 +85,14 @@ class Parameter(Generic[T]):
     input_args: Dict[str, Any] = None  # Input arguments of the GradComponent forward
     full_response: object = None  # Full response of the GradComponent output
     eval_input: object = None  # Eval input passing to the eval_fn or evaluator you use
+    from_response_id: str = (
+        None  # for parameterType GRADIENT, the id of the response parameter
+    )
 
     def __init__(
         self,
         *,
-        id: str = str(uuid.uuid4()),
+        id: Optional[str] = None,
         data: T = None,  # for generator output, the data will be set up as raw_response
         requires_opt: bool = True,
         role_desc: str = "",
@@ -100,8 +103,11 @@ class Parameter(Generic[T]):
         instruction_to_optimizer: str = None,
         instruction_to_backward_engine: str = None,
         score: Optional[float] = None,
+        eval_input: object = None,
+        from_response_id: Optional[str] = None,
     ):
-        self.id = id
+        self.id = id or str(uuid.uuid4())
+
         self.name = name
         self.role_desc = role_desc
 
@@ -117,7 +123,7 @@ class Parameter(Generic[T]):
         self.data_type = type(data)
 
         self.set_eval_fn_input(eval_input=data)
-        self.gradients: Set[Parameter] = set()  # <FEEDBACK>gradient.data</FEEDBACK>
+        self.gradients: List[Parameter] = []  # <FEEDBACK>gradient.data</FEEDBACK>
         self.gradient_prompt: str = (
             gradient_prompt  # the whole llm prompt to compute the gradient
         )
@@ -143,6 +149,22 @@ class Parameter(Generic[T]):
             []
         )  # used for the optimizer to save the proposed demos
         self._previous_demos: List[DataClass] = []
+        self.eval_input = eval_input
+
+        self.from_response_id = from_response_id  # for gradient parameter
+
+    def check_if_already_computed_gradient_respect_to(self, response_id: str) -> bool:
+        from_response_ids = [g.from_response_id for g in self.gradients]
+        return response_id in from_response_ids
+
+    def add_gradient(self, gradient: "Parameter"):
+        if gradient.param_type != ParameterType.GRADIENT:
+            raise ValueError("Cannot add non-gradient parameter to gradients list.")
+
+        if gradient.from_response_id is None:
+            raise ValueError("Gradient must have a from_response_id.")
+
+        self.gradients.append(gradient)
 
     def set_predecessors(self, predecessors: List["Parameter"] = None):
         if predecessors is None:
@@ -238,8 +260,10 @@ class Parameter(Generic[T]):
         self.proposing = False
 
         # reset the gradients and context
-        self.reset_gradients()
-        self.reset_gradients_context()
+        # self.reset_gradients()
+        # self.reset_gradients_context()
+
+        # cant reset gradients yet for the loss
         if include_demos:
             self._demos = self._previous_demos
             self._previous_demos = []
@@ -253,8 +277,8 @@ class Parameter(Generic[T]):
         self.proposing = False
 
         # reset the gradients and context
-        self.reset_gradients()
-        self.reset_gradients_context()
+        # self.reset_gradients()
+        # self.reset_gradients_context()
         if include_demos:
             self._previous_demos = []
 
@@ -276,7 +300,7 @@ class Parameter(Generic[T]):
         self.data = data
 
     def reset_gradients(self):
-        self.gradients = set()
+        self.gradients = []
 
     def reset_gradients_context(self):
         self.gradients_context = defaultdict(lambda: None)
@@ -286,10 +310,6 @@ class Parameter(Generic[T]):
         names = ", ".join(names)
         return names
 
-    def get_gradient_text(self) -> str:
-        """Aggregates and returns the gradients."""
-        return "\n".join([str(g.data) for g in self.gradients])
-
     def get_gradient_and_context_text(self) -> str:
         """Aggregates and returns:
         1. the gradients
@@ -297,15 +317,24 @@ class Parameter(Generic[T]):
         """
         from adalflow.core.prompt_builder import Prompt
 
+        # print(
+        #     f"len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}"
+        # )
+
+        # sore gradients by the _score from low to high
+        self.gradients = sorted(
+            self.gradients, key=lambda x: x._score if x._score else 1
+        )
+
         gradient_context_combined = zip(
-            list(self.gradients),
-            [self.gradients_context[g] for g in list(self.gradients)],
+            self.gradients,
+            [self.gradients_context[g] for g in self.gradients],
         )
 
         gradient_context_combined_str = Prompt(
             template=COMBINED_GRADIENTS_TEMPLATE,
             prompt_kwargs={"combined_gradients": gradient_context_combined},
-        )()
+        )().strip()
 
         return gradient_context_combined_str
 
@@ -380,14 +409,21 @@ class Parameter(Generic[T]):
     def draw_graph(
         self,
         add_grads: bool = True,
-        format="png",
-        rankdir="TB",
-        filepath: str = "gout",
+        format: Literal["png", "svg"] = "png",
+        rankdir: Literal["LR", "TB"] = "TB",
+        filepath: Optional[str] = None,
     ):
+        """Draw the graph of the parameter and its gradients.
+
+        Args:
+            add_grads (bool, optional): Whether to add gradients to the graph. Defaults to True.
+            format (str, optional): The format of the output file. Defaults to "png".
+            rankdir (str, optional): The direction of the graph. Defaults to "TB".
+            filepath (str, optional): The path to save the graph. Defaults to None.
         """
-        format: png | svg | ...
-        rankdir: TB (top to bottom graph) | LR (left to right)
-        """
+        from adalflow.utils import save_json
+        from adalflow.utils.global_config import get_adalflow_default_root_path
+        import os
 
         try:
             from graphviz import Digraph
@@ -397,25 +433,34 @@ class Parameter(Generic[T]):
                 "Please install graphviz using 'pip install graphviz' to use this feature"
             ) from e
 
+        # try:
+        #     from tensorboardX import SummaryWriter
+        # except ImportError as e:
+        #     raise ImportError(
+        #         "Please install tensorboardX using 'pip install tensorboardX' to use this feature"
+        #     ) from e
+        assert rankdir in ["LR", "TB"]
         try:
-            from tensorboardX import SummaryWriter
+            import textwrap
         except ImportError as e:
             raise ImportError(
-                "Please install tensorboardX using 'pip install tensorboardX' to use this feature"
+                "Please install textwrap using 'pip install textwrap' to use this feature"
             ) from e
-        assert rankdir in ["LR", "TB"]
-        import textwrap
-        from adalflow.utils.global_config import get_adalflow_default_root_path
-        import os
 
         root_path = get_adalflow_default_root_path()
-        # prepare the log directory
-        log_dir = os.path.join(root_path, "logs")
+        # # prepare the log directory
+        # log_dir = os.path.join(root_path, "logs")
 
-        # Set up TensorBoard logging
-        writer = SummaryWriter(log_dir)
+        # # Set up TensorBoard logging
+        # writer = SummaryWriter(log_dir)
 
-        filepath = filepath + "." + format
+        filename = f"trace_graph_{self.name}"
+        filepath = (
+            os.path.join(filepath, filename)
+            if filepath
+            else os.path.join(root_path, "graphs", filename)
+        )
+        print(f"Saving graph to {filepath}")
 
         def wrap_text(text, width):
             """Wrap text to the specified width, considering HTML breaks."""
@@ -441,9 +486,7 @@ class Parameter(Generic[T]):
             return wrap_text(text, width)
 
         nodes, edges = self.trace_graph(self)
-        dot = Digraph(
-            format=format, graph_attr={"rankdir": rankdir}
-        )  # , node_attr={'rankdir': 'TB'})
+        dot = Digraph(format=format, graph_attr={"rankdir": rankdir})
         node_names = set()
         for n in nodes:
             label_color = "darkblue"
@@ -487,13 +530,13 @@ class Parameter(Generic[T]):
                 label=f"<{node_label}>",
                 shape="plaintext",
             )
-            writer.add_text(n.name, str(n.to_dict()))
+            # writer.add_text(n.name, str(n.to_dict()))
             log.info(f"Node: {n.name}, {n.to_dict()}")
             # track gradients
             for g in n.gradients:
-                writer.add_text(g.name, str(g.to_dict()))
-                if g.gradient_prompt:
-                    writer.add_text(f"{g.name}_prompt", g.gradient_prompt)
+                # writer.add_text(g.name, str(g.to_dict()))
+                # if g.gradient_prompt:
+                #     writer.add_text(f"{g.name}_prompt", g.gradient_prompt)
                 log.info(f"Gradient: {g.name}, {g.to_dict()}")
                 log.info(f"Gradient prompt: {g.gradient_prompt}")
         for n1, n2 in edges:
@@ -501,43 +544,42 @@ class Parameter(Generic[T]):
 
         dot.render(filepath, format=format, cleanup=True)
         # from PIL import Image
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError as e:
-            raise ImportError(
-                "Please install matplotlib using 'pip install matplotlib' to use this feature"
-            ) from e
-        from io import BytesIO
-        import numpy as np
+        # try:
+        #     import matplotlib.pyplot as plt
+        # except ImportError as e:
+        #     raise ImportError(
+        #         "Please install matplotlib using 'pip install matplotlib' to use this feature"
+        #     ) from e
+        # from io import BytesIO
+        # import numpy as np
 
-        # Read the rendered image file into memory using matplotlib
-        with open(f"{filepath}.{format}", "rb") as f:
-            image_bytes = f.read()
+        # # Read the rendered image file into memory using matplotlib
+        # with open(f"{filepath}.{format}", "rb") as f:
+        #     image_bytes = f.read()
 
-        # Use matplotlib to read the image from bytes
-        image = plt.imread(BytesIO(image_bytes), format=format)
+        # # Use matplotlib to read the image from bytes
+        # image = plt.imread(BytesIO(image_bytes), format=format)
 
-        # Ensure the image is in the format [H, W, C]
-        if image.ndim == 2:  # Grayscale image
-            image = np.expand_dims(image, axis=2)
+        # # Ensure the image is in the format [H, W, C]
+        # if image.ndim == 2:  # Grayscale image
+        #     image = np.expand_dims(image, axis=2)
 
         # Read the rendered image file
-        writer.add_image("graph", image, dataformats="HWC", global_step=1)
-        writer.close()
+        # writer.add_image("graph", image, dataformats="HWC", global_step=1)
+        # writer.close()
 
-        filename = f"{filepath}_prompts.json"
-        prompts = {}
-        for n in nodes:
-            prompts[n.name] = {
-                "raw_response": n.raw_response,
-            }
-            for g in n.gradients:
-                prompts[g.name] = {
-                    "gradient_prompt": g.gradient_prompt,
-                }
-        from adalflow.utils import save_json
+        # filename = f"{filepath}_prompts.json"
+        # prompts = {}
+        # for n in nodes:
+        #     prompts[n.name] = {
+        #         "raw_response": n.raw_response,
+        #     }
+        #     for g in n.gradients:
+        #         prompts[g.name] = {
+        #             "gradient_prompt": g.gradient_prompt,
+        #         }
 
-        save_json(prompts, filename)
+        # save_json(prompts, filename)
         # save root node to_dict to json
         save_json(self.to_dict(), f"{filepath}_root.json")
         return dot
@@ -599,7 +641,7 @@ class Parameter(Generic[T]):
 
 def _check_and_reduce_gradients(variable: Parameter) -> Set[Parameter]:
 
-    if variable.get_gradient_text() == "":
+    if variable.get_gradient_and_context_text() == "":
         log.debug(f"No gradients detected for {variable.data}")
         return variable.gradients
     if len(variable.gradients) == 1:

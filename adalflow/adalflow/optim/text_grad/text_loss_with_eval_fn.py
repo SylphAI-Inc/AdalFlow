@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from adalflow.core.generator import BackwardEngine
 from adalflow.core.types import GeneratorOutput
 from adalflow.optim.parameter import Parameter, GradientContext
+from adalflow.optim.types import ParameterType
 
 from adalflow.core.prompt_builder import Prompt
 from adalflow.eval.base import BaseEvaluator
@@ -23,14 +24,12 @@ log = logging.getLogger(__name__)
 CONVERSATION_TEMPLATE_STRING = r"""
 The variable is passed to the eval function and compared with a target/ground truth value.
 
-Eval Function Description: {{eval_fn_desc}}
-Inputs: {{input_str}}
-Eval output/score: {{response_value}}
-
+<EVAL_FUNC_DESCRIPTION>: {{eval_fn_desc}}
+<INPUTS>: {{input_str}}
+<OUTPUTS/SCORE>: {{response_value}}
 {% if metadata %}
 Note: {{metadata}}
-{% endif %}
-"""
+{% endif %}"""
 
 
 # Does not have gradient on the output, the loss function of the backpropagation chain
@@ -44,34 +43,29 @@ Note: {{metadata}}
 
 ### Variable Information ###
 CONVERSATION_START_INSTRUCTION_STRING_FN = r"""
-TARGET VARIABLE for feedback:
-
-Name: {{variable_name}}
+TARGET VARIABLE:
+<NAME>: {{variable_name}}
 <ROLE> {{variable_desc}} </ROLE>
-Value: {{variable_value}}
-
-
+<VARIABLE> {{variable_value}} </VARIABLE>
 {{conversation_str}}
 """
 
 # Third part of the user prompt
 OBJECTIVE_INSTRUCTION_BASE = r"""<OBJECTIVE_FUNCTION>
-Your only goal is to clearly states how it obtained the "Eval output/score".
+Your only goal is to clearly states how it obtained the "<OUTPUTS/SCORE>".
 Especially when the score is low.
 Be CONCISE.
 If you have enough context, add a more specific feedback on how it failed.
 </OBJECTIVE_FUNCTION>"""
 
 
-OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The "Eval output/score" was later used as "{{response_name}}: {{response_desc}}".
-
+OBJECTIVE_INSTRUCTION_CHAIN = r"""This conversation is part of a larger system. The <INPUTS/SCORE> was later used as "{{response_name}}: {{response_desc}}".
 <OBJECTIVE_FUNCTION>
 Your only goal is to clearly states how it obtained the "Eval output/score": {{response_gradient}}.
 Especially when the score is low.
 Be CONCISE.
 If you have enough context, add a more specific feedback on how it failed.
-</OBJECTIVE_FUNCTION>
-"""
+</OBJECTIVE_FUNCTION>"""
 
 
 class EvalFnToTextLoss(LossComponent):
@@ -85,7 +79,11 @@ class EvalFnToTextLoss(LossComponent):
     score/loss = eval_fn(y_pred, y_gt)
 
     The gradident/feedback = d(score)/d(y_pred) will be computed using a backward engine.
-    Gradient_context =
+    Gradient_context = GradientContext(
+        context=conversation_str,
+        response_desc=response.role_desc,
+        variable_desc=role_desc,
+    )
 
     Args:
         eval_fn: The evaluation function that takes a pair of y and y_gt and returns a score.
@@ -164,6 +162,7 @@ class EvalFnToTextLoss(LossComponent):
             data=score,
             requires_opt=True,
             role_desc=response_desc,
+            score=score,
         )
         eval_param.set_predecessors(predesessors)
 
@@ -216,6 +215,15 @@ class EvalFnToTextLoss(LossComponent):
             )
             return
         log.debug(f"EvalFnToTextLoss: Backward through {pred}, is_chain: {is_chain}")
+
+        if pred.check_if_already_computed_gradient_respect_to(response.id):
+            log.info(
+                f"EvalFnToTextLoss: Gradient already computed for {pred.role_desc} with respect to {response.role_desc}"
+            )
+            # print(
+            #     f"Gradient already computed for {pred.role_desc} with respect to {response.role_desc}"
+            # )
+            return
 
         if backward_engine is None:
             log.error(
@@ -276,24 +284,30 @@ class EvalFnToTextLoss(LossComponent):
         gradient_value: GeneratorOutput = backward_engine(
             prompt_kwargs=backward_engine_prompt_kwargs
         )
-        # gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
+        gradient_prompt = backward_engine.get_prompt(**backward_engine_prompt_kwargs)
         gradient_value_data = (
             gradient_value.data
             or backward_engine.failure_message_to_optimizer(
                 gradient_response=gradient_value
             )
         )
+        print(f"gradient_prompt: {gradient_prompt}")
         # gradient_value_data = response.data.to_yaml()
 
         log.debug(f"EvalFnToTextLoss: Gradient for {pred}: {gradient_value_data}")
+
+        # score should be passed to grad
         gradient_param = Parameter(
             name=f"{response.name}_to_{pred.name}_grad",
             data=gradient_value_data,
             requires_opt=True,
             # gradient_prompt=gradient_prompt,
             role_desc=f"Feedback for {pred.role_desc}",
+            score=response.data,
+            from_response_id=response.id,
+            param_type=ParameterType.GRADIENT,
         )
-        pred.gradients.add(gradient_param)
+        pred.add_gradient(gradient_param)
         pred.gradients_context[gradient_param] = GradientContext(
             context=conversation_str,
             response_desc=response.role_desc,
@@ -301,7 +315,7 @@ class EvalFnToTextLoss(LossComponent):
         )
 
         # backward the end to end score
-        pred._score = response.data
+        pred.set_score(response.data)
         print(f"setting pred name {pred.name} score to {response.data}")
 
         # TODO: reduce meta
@@ -328,17 +342,12 @@ class EvalFnToTextLoss(LossComponent):
             is_chain = False
         log.info(f"response_gradient_context: {response_gradient_context}")
 
-        if not backward_engine:
-            raise ValueError(
-                "EvalFnToTextLoss: backward_engine is required for text prompt optimization."
-            )
-
         # go through all child parameters
         if backward_engine:
             # Convert all input arguments to string
             inputs_string = "\n\n".join(
                 [
-                    f"Argument {k}(role: {v.role_desc}), data: {v.data}, input_to_eval_fn: {v.eval_input}, type: {type(v.eval_input)}"
+                    f"({k}) (role: {v.role_desc}), data: {v.data}, input_to_eval_fn: {v.eval_input}, data_type: {type(v.eval_input)}"
                     for k, v in kwargs.items()
                 ]
             )

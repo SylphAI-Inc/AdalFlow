@@ -152,8 +152,6 @@ def get_logger(
         filename = filename or f"{name}.log"
     filepath = os.path.join(save_dir, filename)
 
-    print(f"Log file path: {filepath}")
-
     config = _get_log_config(
         level=level,
         filepath=filepath,

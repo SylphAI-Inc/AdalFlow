@@ -38,121 +38,122 @@ GLOSSARY_TEXT = r"""
 # customize the system prompt
 # prompts, solutions to problems, code, or any other text-based variable. -> to the variable type.
 # The optimizer will have an understanding of different variable types.
-OPTIMIZER_SYSTEM_PROMPT = r"""You are part of an optimization system that improves the exsiting variable value according to feedback.
 
-You will be asked to creatively and critically improve the variable value.
-The feedback may be noisy, focus on what is important.
+# Tips:
+# - DO NOT address concerns on the peer variables. The peer variables will be optimized separately.
+# - The instruction needs to be on point, clear, and accurate.
+# You can take the following actions:
+# - You can delete words or phrases that you think are not necessary or you find misleading.
+# - You can add new words or phrases that you think can address the feedback.
+# - You can add sections like "Tips" or "Remember" to fix the issue.
+# - You can be creative and write the variable in a different way.#}
 
-{# output format #}
-You will ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
-{# You MUST give your response by sending the improved variable between {{new_variable_start_tag}} $improved_variable {{new_variable_end_tag}} tags.#}
+# Think step by step. But keep the reasoning concise!!!
+# Start response with "because" and "since" to provide reasoning.
+# The last line of your response will be the new variable value put in between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
 
-Remember:
-- Pay attention to the role description of the variable, and the context in which it is used.
-- Must provide a different value that addresses the feedback.
-- The new value should not overlap with the scope of peer variables.
-{#Tips:
-- DO NOT address concerns on the peer variables. The peer variables will be optimized separately.
-- The instruction needs to be on point, clear, and accurate.
-You can take the following actions:
-- You can delete words or phrases that you think are not necessary or you find misleading.
-- You can add new words or phrases that you think can address the feedback.
-- You can add sections like "Tips" or "Remember" to fix the issue.
-- You can be creative and write the variable in a different way.#}
+# {#You are part of an optimization system that improves the exsiting variable value according to feedback.
 
+# You will be asked to creatively and critically at proposing new variable value.
+# The feedback may be noisy, focus on what is important.
+# {# output format #}
+# You MUST ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
+# {% if instruction_to_optimizer %}
+# USER INSTRUCTION: {{instruction_to_optimizer}}
+# {% endif %}
+# Remember:
+# - Pay attention to role description, and most importantly, the feedback.
+# - Must provide a different value that addresses the feedback.
+# - If <HISTORY_PERFORMANCE> is provided, observe the patterns of the past iterations, pay close attention to high-performing value and aim to improve the variable value.
+# - The new value better not overlap with the scope of peer variables.
+# - Make your best judgment and be creative.
+# TIPS:
+# - Delete words or phrases that you think are not necessary or you find misleading.
+# - Add new words or phrases that you think can address the feedback.
+# - Add sections like "Tips" or "Remember" to fix the issue.
+# - Be eative and write the variable in a different way.#}
 
+# Your task: Propose a new variable value in response to the feedback.
+# 1. Focus on what is essential, even if feedback is noisy.
+# 2. Observe past performance patterns when provided and aim to improve upon high-performing values.
+# 3. Avoid overlap with peer variables' scope.
+
+# Tips:
+# 1. Eliminate unnecessary words or phrases.
+# 2. Add new elements to address specific feedback.
+# 3. Be creative and present the variable differently.
+OPTIMIZER_SYSTEM_PROMPT = r"""
+You are part of an optimization system that refines existing variable values based on feedback.
+
+Your task: Propose a new variable value in response to the feedback.
+1. Address the concerns raised in the feedback while preserving positive aspects.
+2. Observe past performance patterns when provided and to keep the good quality.
+3. Consider the variable in the context of its peers if provided.
+   FYI:
+   - If a peer will be optimized itself, do not overlap with its scope.
+   - Otherwise, you can overlap if it is necessary to address the feedback.
+
+Output:
+Provide only the new variable value between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.
+
+Tips:
+1. Eliminate unnecessary words or phrases.
+2. Add new elements to address specific feedback.
+3. Be creative and present the variable differently.
 {% if instruction_to_optimizer %}
-Note: {{instruction_to_optimizer}}
+4. {{instruction_to_optimizer}}
 {% endif %}
 """
 
-# TODO: use thought process to get the new variable.
 
-
-# TGD update instruction # 1. delete ({{variable_desc}})
-# TGD_PROMPT_TARGET_PARAM = """
-# <START_OF_VARIABLE_DESC>
-# Variable type: <TYPE>{{param_type}}</TYPE>
-# Variable value: <VARIABLE> {{variable_value}} </VARIABLE>
-# Role Description: <ROLE>{{variable_desc}}</ROLE>.
-# {% if instruction_to_optimizer %}
-# Note: {{instruction_to_optimizer}}
-# {% endif %}
-# <END_OF_VARIABLE_DESC>
-
-# Here are the feedback and context for the variable:
-# <CONTEXT_FEEDBACK>{{variable_grad}}</CONTEXT_FEEDBACK>
-# """
-
-
-# TGD_PROMPT_OUTPUT_FORMAT = """Send the improved variable in the following format:
-
-# {{new_variable_start_tag}}the_improved_variable{{new_variable_end_tag}}
-
-# Send ONLY the improved variable between the {{new_variable_start_tag}} and {{new_variable_end_tag}} tags, and nothing else.
-# """
-
-
-# MOMENTUM_PROMPT_ADDITION = """Here are the past iterations of this variable:
-
-# <PAST_ITERATIONS>{{past_values}}</PAST_ITERATIONS>
-# Similar feedbacks across different steps suggests that the modifications to the variable are insufficient.
-# If this is the case, please make more significant changes to the variable.
-# """
-
-# # TODO: add scire fir the previous iterations
-
-
-# CONSTRAINT_PROMPT_ADDITION = """You must follow the following constraints:
-# <CONSTRAINTS>{{constraint_text}}</CONSTRAINTS>
-# """
-
-
-# IN_CONTEXT_EXAMPLE_PROMPT_ADDITION = """You must base on the following examples when modifying the {{variable_desc}}:
-
-# <EXAMPLES>{{in_context_examples}}</EXAMPLES>
-# """
+@dataclass
+class HistoryPrompt(DataClass):
+    id: str
+    value: str
+    eval_score: float
 
 
 TEXT_GRAD_DESC_TEMPLATE = r"""<START_OF_SYSTEM_PROMPT>
 {{optimizer_system_prompt}}
-
 <END_OF_SYSTEM_PROMPT>
-
-<START_OF_USER>
+<START_OF_USER_MESSAGE>
 {#Variable and feedback#}
-
 {{variable_and_peers_info}}
-
+{# ORPO past history #}
+{% if past_history %}
+<START_OF_HISTORY_PERFORMANCE>
+Here are the past iterations of this variable along with the validation score.
+{% for history in past_history %}
+{{loop.index}}. {{history}}
+{% endfor %}
+IMPORTANT: Your goal is to generate new variable values that score higher than all previous iterations.
+<END_OF_HISTORY_PERFORMANCE>
+{% endif %}
 Here are the context and feedback for the variable:
-<CONTEXT_FEEDBACK>{{variable_grad}}</CONTEXT_FEEDBACK>
-
-
+<START_OF_CONTEXT_FEEDBACK>
+{{variable_grad}}
+<END_OF_CONTEXT_FEEDBACK>
 {# Momentum #}
 {% if past_values %}
 Here are the past iterations of this variable:
-
-<PAST_ITERATIONS>{{past_values}}</PAST_ITERATIONS>
-
+<PAST_ITERATIONS>
+{{past_values}}
+</PAST_ITERATIONS>
 Similar feedbacks across different steps suggests that the modifications to the variable are insufficient.
 If this is the case, please make more significant changes to the variable.
 {% endif %}
-
 {# Constraints #}
-
 {% if constraint_text %}
 You must follow the following constraints:
 <CONSTRAINTS>{{constraint_text}}</CONSTRAINTS>
 {% endif %}
-
 {# In-context examples #}
-
 {% if in_context_examples %}
 You must base on the following examples when modifying the {{variable_desc}}:
-
 <EXAMPLES>{{in_context_examples}}</EXAMPLES>
 {% endif %}
-<END_OF_USER>"""
+<END_OF_USER_MESSAGE>
+"""
 
 
 @dataclass
@@ -170,10 +171,7 @@ class Instruction(DataClass):
     )
 
 
-from adalflow.tracing.decorators import trace_generator_states
-
-
-new_variable_tags = ["<VARIABLE>", "<VARIABLE>"]
+new_variable_tags = ["<VARIABLE>", "</VARIABLE>"]
 
 
 def extract_new_variable(text: str) -> str:
@@ -188,13 +186,13 @@ def extract_new_variable(text: str) -> str:
     return matches[0].strip()
 
 
-@trace_generator_states()
 class TGDOptimizer(TextOptimizer):
     __doc__ = """Textual Gradient Descent(LLM) optimizer for text-based variables."""
 
     proposing: bool = False
     params: ParamsT
     constraints: List[str]
+    params_history: Dict[str, List[HistoryPrompt]] = {}  # id to history
 
     def __init__(
         self,
@@ -205,7 +203,8 @@ class TGDOptimizer(TextOptimizer):
         # new_variable_tags: List[str] = ["<IMPROVED_VARIABLE>", "</IMPROVED_VARIABLE>"],
         optimizer_system_prompt: str = OPTIMIZER_SYSTEM_PROMPT,
         in_context_examples: List[str] = None,  # TODO: in-context examples
-        num_gradient_memory: int = 0,  # TODO: gradient memory and momentum
+        num_gradient_memory: int = 0,  # TODO: gradient memory and momentum, for now it is not useful
+        max_past_history: int = 3,
     ):
         from adalflow.core.generator import Generator
         from adalflow.core import Prompt
@@ -236,6 +235,12 @@ class TGDOptimizer(TextOptimizer):
             template=TEXT_GRAD_DESC_TEMPLATE,
         )
 
+        self.max_past_history = max_past_history
+
+        # initate the past history for each parameter
+        for param in self.params:
+            self.params_history[param.id] = []
+
     @property
     def constraint_text(self):
         """
@@ -249,6 +254,45 @@ class TGDOptimizer(TextOptimizer):
             for i, constraint in enumerate(self.constraints)
         ]
         return "\n".join(constraints_ordered)
+
+    def add_score_to_params(self, val_score: float):
+        for param in self.params:
+            self.add_score_to_current_param(param.id, param, val_score)
+
+    def add_score_to_current_param(self, param_id: str, param: Parameter, score: float):
+        if param_id not in self.params_history:
+            raise ValueError(f"Parameter {param_id} not found in the history.")
+        if param.id != param_id:
+            raise ValueError(
+                f"Parameter {param_id} does not match the target parameter."
+            )
+
+        history = HistoryPrompt(
+            id=param_id,
+            value=str(param.data),
+            eval_score=score,
+        )
+        self.add_history(param_id, history)
+
+    def add_history(self, param_id: str, history: HistoryPrompt):
+        if param_id not in self.params_history:
+            self.params_history[param_id] = []
+        self.params_history[param_id].append(history)
+        # sort score from the highest to the lowest
+        self.params_history[param_id] = sorted(
+            self.params_history[param_id], key=lambda x: x.eval_score, reverse=True
+        )
+        # delete the lowest score if it exceeds the max_past
+        if len(self.params_history[param_id]) > self.max_past_history:
+            for _ in range(len(self.params_history[param_id]) - self.max_past_history):
+                self.params_history[param_id].pop()
+
+    def render_history(self, param_id: str) -> List[str]:
+        if param_id not in self.params_history:
+            return []
+        return [
+            history.to_yaml(exclude=["id"]) for history in self.params_history[param_id]
+        ]
 
     # TODO: optimize with adalflow template for better readability
     def get_gradient_memory_text(self, param: Parameter) -> str:
@@ -283,14 +327,19 @@ class TGDOptimizer(TextOptimizer):
                 if self.do_gradient_memory
                 else None
             ),
+            # past history
+            "past_history": (
+                self.render_history(param.id) if self.max_past_history else None
+            ),
         }
-        # prompt_str = self.llm_optimizer.get_prompt(**user_prompt_kwargs)
-        # print(f"Constructed TGD user prompt for {param.role_desc}: {prompt_str}")
+
         return user_prompt_kwargs
 
     # TODO: better way to update the gradient memory
     def update_gradient_memory(self, param: Parameter):
-        self.gradient_memory_dict[param.id].append({"value": param.get_gradient_text()})
+        self.gradient_memory_dict[param.id].append(
+            {"value": param.get_gradient_and_context_text()}
+        )
 
     def zero_grad(self):
         for p in self.params:
@@ -312,6 +361,7 @@ class TGDOptimizer(TextOptimizer):
                     f"Skipping {param.role_desc} as it does not require optimization."
                 )
                 continue
+
             # print(f"Proposing a new value for {param.name}.")
             system_prompt = self.optimizer_system_prompt(
                 param_type=str(param.param_type),
@@ -328,15 +378,16 @@ class TGDOptimizer(TextOptimizer):
                 prompt_kwargs=prompt_kwargs, use_cache=not no_cache
             )
             prompt_str = self.llm_optimizer.get_prompt(**prompt_kwargs)
-            # print(f"TGD LLM optimizer prompt: {prompt_str}")
+            print(f"TGD LLM optimizer prompt: {prompt_str}")
             log.debug(f"TGD LLM optimizer prompt: {prompt_str}")
             proposed_data = response.data
             log.info(f"Response from the optimizer: {response}")
-            # print(f"Response from the optimizer: {response}")
             # extract the improved variable from the response
             # TODO: make it more robust
             improved_variable = extract_new_variable(proposed_data)
             param.propose_data(improved_variable)
+            if self.do_gradient_memory:
+                self.update_gradient_memory(param)
         self.proposing = True
 
     def revert(self):
@@ -357,6 +408,39 @@ class TGDOptimizer(TextOptimizer):
             if not param.requires_opt:
                 continue
             param.step_data()
-            if self.do_gradient_memory:
-                self.update_gradient_memory(param)
+
         self.proposing = False
+
+
+if __name__ == "__main__":
+    # test the prompt history
+    data = {
+        "id": "1",
+        "value": "test",
+        "eval_score": 0.5,
+    }
+    history = HistoryPrompt.from_dict(data)
+
+    print(history)
+    history_yaml = history.to_yaml()
+    print(history_yaml)
+
+    template = r"""<START_OF_SYSTEM_PROMPT>
+    {% if past_history %}
+    Here are the past iterations of this variable along with the validation score.
+    {% for history in past_history %}
+    {{loop.index}}. {{history}}
+    {% endfor %}
+    {% endif %}
+    <END_OF_SYSTEM_PROMPT>"""
+
+    import adalflow as adal
+
+    prompt = adal.Prompt(template=template)
+
+    histories = [history_yaml]
+    prompt_kwargs = {
+        "past_history": histories,
+    }
+    response = prompt(**prompt_kwargs)
+    print(response)

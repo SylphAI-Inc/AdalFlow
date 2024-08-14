@@ -232,10 +232,13 @@ class OpenAIClient(ModelClient):
         elif model_type == ModelType.LLM:
             # convert input to messages
             messages: List[Dict[str, str]] = []
-            # if input is not None and input != "":
-            #     messages.append({"role": "system", "content": input})
+
             if self._input_type == "messages":
-                pattern = r"<SYS>(.*?)</SYS><USER>(.*?)</USER>"
+                system_start_tag = "<START_OF_SYSTEM_PROMPT>"
+                system_end_tag = "<END_OF_SYSTEM_PROMPT>"
+                user_start_tag = "<START_OF_USER_PROMPT>"
+                user_end_tag = "<END_OF_USER_PROMPT>"
+                pattern = f"{system_start_tag}(.*?){system_end_tag}{user_start_tag}(.*?){user_end_tag}"
                 # Compile the regular expression
                 regex = re.compile(pattern)
                 # Match the pattern

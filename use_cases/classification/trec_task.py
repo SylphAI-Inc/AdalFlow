@@ -472,7 +472,7 @@ class TRECClassifierV2Trainable(adal.AdalComponent):
         return self.eval_fn(label, int(sample.class_index))
 
     def configure_teacher_generator(self):
-        return super().configure_teacher_generator_helper(**self.teacher_model_config)
+        super().configure_teacher_generator_helper(**self.teacher_model_config)
 
     def configure_backward_engine(self):
         return super().configure_backward_engine_helper(

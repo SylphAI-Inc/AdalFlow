@@ -34,13 +34,12 @@ class BootstrapFewShot(DemoOptimizer):
     def __init__(
         self,
         params: List[Parameter],
-        # few_shot_config: Optional[FewShotConfig] = None,
         raw_shots: Optional[int] = None,
         bootstrap_shots: Optional[int] = None,
         dataset: Optional[List[DataClass]] = None,
         weighted: bool = True,
     ):
-        super().__init__()
+        super().__init__(weighted=weighted, dataset=dataset)
         self.params = [
             param
             for param in params
@@ -50,10 +49,8 @@ class BootstrapFewShot(DemoOptimizer):
 
         self._raw_shots = raw_shots
         self._bootstrap_shots = bootstrap_shots
-        self._weighted = weighted
 
         self.proposing = False
-        self.dataset = dataset
         self._teacher_scores: Dict[str, float] = {}  # data id to score
         self._student_scores: Dict[str, float] = {}  # data id to score
 
@@ -81,9 +78,6 @@ class BootstrapFewShot(DemoOptimizer):
     def config_dataset(self, dataset: List[DataClass]):
         self.dataset = dataset
 
-    def use_weighted_sampling(self, weighted: bool):
-        self._weighted = weighted
-
     def _pre_check(self):
         if not self.dataset:
             raise ValueError("dataset must be provided")
@@ -98,7 +92,6 @@ class BootstrapFewShot(DemoOptimizer):
             else 0
         )
 
-    # TODO: ensure all demo data structure must have id and score.
     def sample(
         self,
         augmented_demos: Dict[str, DataClass],
