@@ -263,6 +263,7 @@ We will first introduce these classes, from their design to important features e
 
 Classes
 ^^^^^^^^^^^^^^^^^^
+Note: Documentation is work in progress for this section.
 
 .. list-table::
    :widths: 20 80
@@ -270,17 +271,17 @@ Classes
 
    * - Part
      - Description
-   * - :doc:`parameter`
+   * - :doc:`parameter_`
      - The `Parameter` class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.
-   * - :doc:`optimizer`
+   * - :doc:`optimizer_`
      - The  `Optimizer` to define a structure and to manage `propose`, `revert`, and `step` methods. We defined two variants: `DemoOptimizer` and `TextOptimizer` to cover the prompt optimization and the few-shot optimization.
-   * - :doc:`few_shot_optimizer`
+   * - :doc:`few_shot_optimizer_`
      - Subclassed from ``DemoOptimizer``, the few-shot optimizer to optimize the few-shot in-context learning.
-   * - :doc:`auto_text_grad`
+   * - :doc:`auto_text_grad_`
      - Subclassed from ``TextOptimizer``, Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library to optimize instructions or generator output.
-   * - :doc:`adalcomponent`
+   * - :doc:`adalcomponent_`
      - The ``intepreter`` between task pipeline and the trainer, defining train, validate steps, optimizers, evaluator, loss function, and backward engine.
-   * - :doc:`trainer`
+   * - :doc:`trainer_`
      - The ``Trainer`` will take the ``AdalComponent`` and run the training and validation steps on either data loaders or datasets.
 
 

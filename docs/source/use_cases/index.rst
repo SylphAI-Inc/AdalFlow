@@ -15,10 +15,10 @@ We will build use cases end to end, from classification (classicial NLP tasks), 
 
    * - Part
      - Description
-   * - :doc:`classification`
-     - Classification with llama3.1-8b model and dataset .
    * - :doc:`question_answering`
      - Question Answering with `bhh_hard_object_count` dataset, including zero-shot and few-shot learning.
+   * - :doc:`classification`
+     - Classification with llama3.1-8b model and dataset .
    * - :doc:`rag_opt`
      - RAG and multi-hop question answering with hotpotqa dataset, two generators, and one retriever, optimizing zero-shot and few-shot learning.
 
