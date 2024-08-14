@@ -444,7 +444,7 @@ The ReAct agent is particularly helpful for answering queries that require capab
 However, using it on general queries might be an overkill, as it might take more steps than necessary to answer the query.
 
 Customization
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+------------------
 **Template**
 
 

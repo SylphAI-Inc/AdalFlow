@@ -1,7 +1,7 @@
-from lightrag.core.generator import Generator
-from lightrag.core.component import Component
+from adalflow.core.generator import Generator
+from adalflow.core.component import Component
 
-from lightrag.components.model_client import GroqAPIClient
+from adalflow.components.model_client import GroqAPIClient
 
 
 class SimpleQA(Component):
