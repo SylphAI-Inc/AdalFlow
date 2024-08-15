@@ -17,9 +17,9 @@
    </p>
 
    <div style="text-align: center; margin-bottom: 20px;">
-      <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG" style="display: inline-block; margin-left: 10px;">
-         <img src="https://img.shields.io/badge/GitHub-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">

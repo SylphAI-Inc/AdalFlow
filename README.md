@@ -24,8 +24,8 @@
 </h4>
 
 <p align="center">
-    <a href="https://pypi.org/project/lightRAG">
-        <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
     </a>
     <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
@@ -53,21 +53,21 @@
 
 
 
-<!-- <h1>
+<h1>
     <p align="center">
         AdalFlow: The Library for LLM Applications
     </p>
-</h1> -->
+</h1>
 
-AdalFlow is an LLM application library that not only helps developers build but also optimizes LLM task pipelines. Embracing a design pattern similar to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
+AdalFlow helps developers build and optimize LLM task pipelines.
+Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
 
-*Note: We are in the process of renaming to adalflow from lightrag.*
 
-## AdalFlow: In honor of Ada Lovelace
+# AdalFlow: A Tribute to Ada Lovelace
 
-[Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace) was a pioneering female mathematician who first recognized that machines could do more than just calculations. As a team led by female founder, we named our library AdalFlow to inspire more women to enter the AI field.
+AdalFlow is named in honor of [Ada Lovelace](https://en.wikipedia.org/wiki/Ada_Lovelace), the pioneering female mathematician who first recognized that machines could do more than just calculations. As a female-led team, we aim to inspire more women to enter the AI field.
 
-## Why AdalFlow?
+# Why AdalFlow?
 
 LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
 
@@ -106,11 +106,11 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-## AdalFlow Task Pipeline
+# AdalFlow Task Pipeline
 
 We will ask the model to respond with ``explanation`` and ``example`` of a concept. To achieve this, we will build a simple pipeline to get the structured output as ``QAOutput``.
 
-### Well-designed Base Classes
+## Well-designed Base Classes
 
 This leverages our two and only powerful base classes: `Component` as building blocks for the pipeline and `DataClass` to ease the data interaction with LLMs.
 
@@ -118,9 +118,9 @@ This leverages our two and only powerful base classes: `Component` as building b
 
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator, DataClass
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.components.output_parsers import JsonOutputParser
+from adalflow.core import Component, Generator, DataClass
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.components.output_parsers import JsonOutputParser
 
 @dataclass
 class QAOutput(DataClass):
@@ -173,7 +173,7 @@ output = qa("What is LLM?")
 print(output)
 ```
 
-### Clear Pipeline Structure
+## Clear Pipeline Structure
 
 Simply by using `print(qa)`, you can see the pipeline structure, which helps users understand any LLM workflow quickly.
 
@@ -258,7 +258,7 @@ User: What is LLM?
 You:
 ````
 
-### Model-agnostic
+## Model-agnostic
 
 
 You can switch to any model simply by using a different `model_client` (provider) and `model_kwargs`.
@@ -277,12 +277,12 @@ self.generator = Generator(
 ```
 
 
-## Quick Install
+# Quick Install
 
 Install AdalFlow with pip:
 
 ```bash
-pip install lightrag
+pip install adalflow
 ```
 
 Please refer to the [full installation guide](https://lightrag.sylph.ai/get_started/installation.html) for more details.
@@ -290,7 +290,7 @@ Please refer to the [full installation guide](https://lightrag.sylph.ai/get_star
 
 
 
-## Documentation
+# Documentation
 
 AdalFlow full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
 - [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
@@ -306,11 +306,11 @@ AdalFlow full documentation available at [lightrag.sylph.ai](https://lightrag.sy
 
 
 
-## Contributors
+# Contributors
 
 [![contributors](https://contrib.rocks/image?repo=SylphAI-Inc/LightRAG&max=2000)](https://github.com/SylphAI-Inc/LightRAG/graphs/contributors)
 
-## Citation
+# Citation
 
 ```bibtex
 @software{Yin2024AdalFlow,
