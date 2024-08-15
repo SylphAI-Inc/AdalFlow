@@ -25,7 +25,7 @@ We will build use cases end-to-end, ranging from classification (classical NLP t
 
 .. toctree::
    :maxdepth: 1
-   :caption:
+   :caption: Use Cases
    :hidden:
 
    question_answering
