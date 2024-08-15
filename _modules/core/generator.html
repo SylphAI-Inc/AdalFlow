@@ -436,7 +436,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
@@ -601,7 +601,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_teacher</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Generator&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_default_mapping</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="s2">&quot;GeneratorOutput&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">_get_default_mapping</span><span class="p">(</span>
+        <span class="n">output</span><span class="p">:</span> <span class="s2">&quot;GeneratorOutput&quot;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">output</span><span class="o">.</span><span class="n">data</span>
@@ -613,15 +615,20 @@
             <span class="n">output_mapping</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">output_fields</span>
             <span class="p">}</span>
-        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
-            <span class="n">output_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">raw_response</span><span class="p">:</span>
+            <span class="n">output_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">]</span>
             <span class="n">output_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="n">f</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">output_fields</span><span class="p">}</span>
-        <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
-            <span class="n">output_mapping</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
-                <span class="s2">&quot;raw_response&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">raw_response</span><span class="p">,</span>
-            <span class="p">}</span>
-        <span class="k">return</span> <span class="n">output_mapping</span>
+            <span class="n">output_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Answer&quot;</span><span class="p">]</span>
+            <span class="n">output_mapping</span><span class="p">[</span><span class="s2">&quot;Example&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_mapping</span><span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">output_mapping</span><span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">]</span>
+        <span class="c1"># elif output.error:</span>
+        <span class="c1">#     output_fields = [&quot;raw_response&quot;, &quot;error&quot;]</span>
+        <span class="c1">#     output_mapping = {</span>
+        <span class="c1">#         &quot;error&quot;: lambda x: x.error,</span>
+        <span class="c1">#         &quot;raw_response&quot;: lambda x: x.raw_response,</span>
+        <span class="c1">#     }</span>
+        <span class="c1">#     output_fields = [&quot;Answer&quot;]</span>
+        <span class="k">return</span> <span class="n">output_mapping</span><span class="p">,</span> <span class="n">output_fields</span>
 
 <div class="viewcode-block" id="Generator.set_mock_output">
 <a class="viewcode-back" href="../../apis/core/core.generator.html#core.generator.Generator.set_mock_output">[docs]</a>
@@ -799,7 +806,9 @@
 
         <span class="c1"># map the input fields</span>
         <span class="n">demo_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="nb">id</span><span class="p">}</span>
-        <span class="n">demo_data_class_output_mapping</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_default_mapping</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="n">demo_data_class_output_mapping</span><span class="p">,</span> <span class="n">output_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_default_mapping</span><span class="p">(</span>
+            <span class="n">output</span>
+        <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">input_prompt_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">demo_data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
@@ -808,8 +817,9 @@
             <span class="n">demo_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
 
         <span class="n">obj</span> <span class="o">=</span> <span class="n">DynamicDataClassFactory</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">demo_data</span><span class="p">)</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_input_fields</span><span class="p">([</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">input_prompt_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+        <span class="n">obj</span><span class="o">.</span><span class="n">set_output_fields</span><span class="p">(</span><span class="n">output_fields</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error creating the demo data instance:</span><span class="si">{</span><span class="n">demo_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error creating the demo data instance:</span><span class="si">{</span><span class="n">demo_data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">obj</span></div>
 

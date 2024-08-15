@@ -459,6 +459,8 @@
 <span class="kn">from</span> <span class="nn">adalflow.utils.cache</span> <span class="kn">import</span> <span class="n">hash_text_sha1</span>
 <span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
 
+<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">TrainerValidateStats</span>
+
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -574,9 +576,11 @@
 
 <div class="viewcode-block" id="Trainer.diagnose">
 <a class="viewcode-back" href="../../../apis/optim/optim.trainer.trainer.html#optim.Trainer.diagnose">[docs]</a>
-    <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">split</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run an evaluation on the trainset to track all error response, and its raw response using AdaplComponent&#39;s default configure_callbacks</span>
-
+<span class="sd">        Args:</span>
+<span class="sd">            dataset: Any: Dataset to evaluate</span>
+<span class="sd">            split: str: Split name, default to train and it is also used as set the directory name for saving the logs</span>
 <span class="sd">        Example:</span>
 
 <span class="sd">        .. code-block:: python</span>
@@ -597,6 +601,7 @@
             <span class="n">trainer_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gather_trainer_states</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prep_ckpt_file_path</span><span class="p">(</span><span class="n">trainer_state</span><span class="p">)</span>
         <span class="n">save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;diagnose_</span><span class="si">{</span><span class="n">split</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Save diagnose to </span><span class="si">{</span><span class="n">save_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">log_paths</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_callbacks</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_path</span><span class="p">)</span>
         <span class="c1"># 2. evaluate</span>
         <span class="n">acc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
@@ -782,7 +787,8 @@
             <span class="k">return</span>
 
         <span class="c1">########Run text_optimizers and demo optimizers in sequential order ########</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># TODO: tests</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_text_params</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fit_text_grad_random</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;constrained&quot;</span><span class="p">:</span>
@@ -791,13 +797,19 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Strategy </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="si">}</span><span class="s2"> not supported&quot;</span><span class="p">)</span>
 
         <span class="c1"># Run the demo optimizers</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_demo_params</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitting using Demo Optimizer&quot;</span><span class="p">)</span>
+            <span class="c1"># set teacher generator for the pipeline</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">configure_teacher_generator</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;random&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fit_demos_random</span><span class="p">(</span>
                     <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span>
                 <span class="p">)</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="s2">&quot;constrained&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Constrained strategy not implemented&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Constrained strategy not implemented, using random strategy&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fit_demos_random</span><span class="p">(</span>
+                    <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span>
+                <span class="p">)</span>
         <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training time: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span></div>
 
@@ -833,6 +845,8 @@
     <span class="k">def</span> <span class="nf">gather_trainer_states</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">trainer_state</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;strategy&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span>
+        <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;demo_optimizers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_demo_params</span><span class="p">()</span>
+        <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;text_optimizers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_trainable_text_params</span><span class="p">()</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;max_steps&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;num_workers&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
         <span class="n">trainer_state</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
@@ -1133,6 +1147,49 @@
         <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
             <span class="n">opt</span><span class="o">.</span><span class="n">init_shots</span><span class="p">()</span>
 
+    <span class="k">def</span> <span class="nf">_get_trainable_demo_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span> <span class="nf">_zero_grad_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_propose_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">propose</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_get_trainable_text_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">params</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">opt</span><span class="o">.</span><span class="n">params</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">params</span>
+
+    <span class="k">def</span> <span class="nf">_step_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_add_history_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;val_score should be a float, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">add_score_to_params</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_revert_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">revert</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_check_optimizer_proposal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if all optimizers have proposed a new prompt&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
     <span class="k">def</span> <span class="nf">_fit_demos_random</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">):</span>
@@ -1145,114 +1202,122 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_demo_optimizers_dataset</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">)</span>
 
-        <span class="n">num_epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_num_epochs</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span>
-        <span class="n">total_steps</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># total_steps = 0</span>
+        <span class="n">train_loader</span><span class="o">.</span><span class="n">set_max_steps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">)</span>
         <span class="n">teacher_losses_cache</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">num_epochs</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Epoch&quot;</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">steps</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="n">pbar</span> <span class="o">:=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">train_loader</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">))):</span>
-                <span class="n">total_steps</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">total_steps</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reached max steps&quot;</span><span class="p">)</span>
-                    <span class="k">break</span>
-                <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training Step: </span><span class="si">{</span><span class="n">total_steps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="c1"># Trace the run in the demos</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">use_teacher</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-                <span class="n">y_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
-                <span class="n">losses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">loss_step</span><span class="p">(</span>
-                    <span class="n">batch</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_add_scores</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">],</span>
-                    <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses</span><span class="p">],</span>
-                    <span class="n">is_teacher</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses</span><span class="p">:</span>
-                    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-                <span class="c1"># Trace the teacher run</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">use_teacher</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
-                <span class="c1"># filter by id</span>
-                <span class="n">batch_for_teacher</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">teacher_losses_cache</span><span class="p">:</span>
-                        <span class="n">batch_for_teacher</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+        <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">),</span> <span class="n">train_loader</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Step&quot;</span>
+        <span class="p">)</span>
 
-                <span class="n">y_preds_teacher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span>
-                    <span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
-                <span class="p">)</span>
-                <span class="n">losses_teacher</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">loss_step</span><span class="p">(</span>
-                    <span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">y_preds_teacher</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
-                <span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_add_scores</span><span class="p">(</span>
-                    <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch_for_teacher</span><span class="p">],</span>
-                    <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses_teacher</span><span class="p">],</span>
-                    <span class="n">is_teacher</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses_teacher</span><span class="p">:</span>
-                    <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-                <span class="c1"># save the teacher predictions, if Generator is in cache mode, it will also avoid re-running the teacher</span>
-                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
-                    <span class="nb">zip</span><span class="p">(</span><span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">losses_teacher</span><span class="p">)</span>
-                <span class="p">):</span>
-                    <span class="n">teacher_losses_cache</span><span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
-                <span class="c1"># propose</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_propose</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">step</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">pbar</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training Step: </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">pbar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training Step: </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Trace the run in the demos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">use_teacher</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">y_preds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">)</span>
+            <span class="n">losses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">loss_step</span><span class="p">(</span>
+                <span class="n">batch</span><span class="p">,</span> <span class="n">y_preds</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_add_scores</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">],</span>
+                <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses</span><span class="p">],</span>
+                <span class="n">is_teacher</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
 
-                <span class="n">new_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">()</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New prompts: </span><span class="si">{</span><span class="n">new_prompts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses</span><span class="p">:</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward_engine_disabled</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">True</span>  <span class="c1"># temporary disable the backward engine</span>
+                <span class="p">)</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>  <span class="c1"># TODO: ensure no gradients in the backward, disable backward engine</span>
+            <span class="c1"># Trace the teacher run</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">use_teacher</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">trace</span><span class="p">()</span>
+            <span class="c1"># filter by id</span>
+            <span class="n">batch_for_teacher</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">teacher_losses_cache</span><span class="p">:</span>
+                    <span class="n">batch_for_teacher</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
 
-                <span class="c1"># validate</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validate_condition</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="n">total_steps</span><span class="p">):</span>
-                    <span class="n">last_val_score</span> <span class="o">=</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
-                        <span class="n">val_dataset</span><span class="p">,</span>
-                        <span class="n">total_steps</span><span class="p">,</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
-                        <span class="n">minimum_score</span><span class="o">=</span><span class="n">last_val_score</span><span class="p">,</span>
+            <span class="n">y_preds_teacher</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span>
+                <span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+            <span class="p">)</span>
+            <span class="n">losses_teacher</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">loss_step</span><span class="p">(</span>
+                <span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">y_preds_teacher</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_add_scores</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">batch_for_teacher</span><span class="p">],</span>
+                <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses_teacher</span><span class="p">],</span>
+                <span class="n">is_teacher</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">loss</span> <span class="ow">in</span> <span class="n">losses_teacher</span><span class="p">:</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward_engine_disabled</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="kc">True</span>  <span class="c1"># temporary disable the backward engine</span>
+                <span class="p">)</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="c1"># save the teacher predictions, if Generator is in cache mode, it will also avoid re-running the teacher</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                <span class="nb">zip</span><span class="p">(</span><span class="n">batch_for_teacher</span><span class="p">,</span> <span class="n">losses_teacher</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="n">teacher_losses_cache</span><span class="p">[</span><span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss</span>
+            <span class="c1"># propose</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_propose</span><span class="p">()</span>
+
+            <span class="n">new_prompts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">_get_param_values</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New prompts: </span><span class="si">{</span><span class="n">new_prompts</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># validate</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validate_condition</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="n">total_steps</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">):</span>
+                <span class="n">last_val_score</span> <span class="o">=</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">val_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                    <span class="n">val_dataset</span><span class="p">,</span>
+                    <span class="n">step</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span><span class="p">,</span>
+                    <span class="n">minimum_score</span><span class="o">=</span><span class="n">last_val_score</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
+                <span class="k">if</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Pass validation: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
-                    <span class="n">val_score</span> <span class="o">=</span> <span class="n">val_output</span><span class="o">.</span><span class="n">avg_score</span>
-                    <span class="k">if</span> <span class="n">val_score</span> <span class="o">&gt;</span> <span class="n">last_val_score</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Pass validation: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &gt; </span><span class="si">{</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">val_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                        <span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_step</span><span class="p">()</span>
-                        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Optimizer is still proposing&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_step</span><span class="p">()</span>
+                    <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Optimizer is still proposing&quot;</span><span class="p">)</span>
 
-                        <span class="c1"># test the new prompts</span>
-                        <span class="n">test_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
-                            <span class="n">test_dataset</span><span class="p">,</span> <span class="n">steps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
-                        <span class="p">)</span>
-                        <span class="n">test_score</span> <span class="o">=</span> <span class="n">test_output</span><span class="o">.</span><span class="n">avg_score</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
-                            <span class="n">trainer_results</span><span class="p">,</span>
-                            <span class="n">val_score</span><span class="p">,</span>
-                            <span class="n">test_score</span><span class="o">=</span><span class="n">test_score</span><span class="p">,</span>
-                            <span class="n">prompts</span><span class="o">=</span><span class="n">new_prompts</span><span class="p">,</span>
-                            <span class="n">step</span><span class="o">=</span><span class="n">total_steps</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;Fail validation: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">}</span><span class="s2">, revert&quot;</span>
-                        <span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_revert</span><span class="p">()</span>
-                        <span class="c1"># ensure all demo optimizer are not proposing</span>
-                        <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
-                                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Optimizer is still proposing&quot;</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
-                            <span class="n">trainer_results</span><span class="p">,</span>
-                            <span class="n">last_val_score</span><span class="p">,</span>
-                            <span class="n">test_score</span><span class="o">=</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">test_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                            <span class="n">prompts</span><span class="o">=</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">prompts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                            <span class="n">step</span><span class="o">=</span><span class="n">total_steps</span><span class="p">,</span>
-                            <span class="n">attempted_val_score</span><span class="o">=</span><span class="n">val_score</span><span class="p">,</span>
-                        <span class="p">)</span>
-                    <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
+                    <span class="c1"># test the new prompts</span>
+                    <span class="n">test_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">adaltask</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span>
+                        <span class="n">test_dataset</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_workers</span>
+                    <span class="p">)</span>
+                    <span class="n">test_score</span> <span class="o">=</span> <span class="n">test_output</span><span class="o">.</span><span class="n">avg_score</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
+                        <span class="n">trainer_results</span><span class="p">,</span>
+                        <span class="n">val_score</span><span class="p">,</span>
+                        <span class="n">test_score</span><span class="o">=</span><span class="n">test_score</span><span class="p">,</span>
+                        <span class="n">prompts</span><span class="o">=</span><span class="n">new_prompts</span><span class="p">,</span>
+                        <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+                        <span class="n">attempted_val_score</span><span class="o">=</span><span class="n">val_score</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fail validation: </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2"> &lt;= </span><span class="si">{</span><span class="n">last_val_score</span><span class="si">}</span><span class="s2">, revert&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_demo_optimizers_revert</span><span class="p">()</span>
+                    <span class="c1"># ensure all demo optimizer are not proposing</span>
+                    <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Optimizer is still proposing&quot;</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_add_one_step_in_trainer_results</span><span class="p">(</span>
+                        <span class="n">trainer_results</span><span class="p">,</span>
+                        <span class="n">last_val_score</span><span class="p">,</span>
+                        <span class="n">test_score</span><span class="o">=</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">test_scores</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">prompts</span><span class="o">=</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">prompts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                        <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+                        <span class="n">attempted_val_score</span><span class="o">=</span><span class="n">val_score</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compute_validate_stats</span><span class="p">(</span><span class="n">trainer_results</span><span class="p">)</span>
         <span class="n">save_json</span><span class="p">(</span><span class="n">trainer_results</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_traces</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo_opt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">demo_optimizers</span><span class="p">):</span>
@@ -1276,6 +1341,30 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">ckpt_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;opt_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_param_</span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_demos.json&quot;</span>
                     <span class="p">)</span>
                     <span class="n">save_json</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">_demos</span><span class="p">,</span> <span class="n">demo_file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved ckpt to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ckpt_file</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_compute_validate_stats</span><span class="p">(</span><span class="n">trainer_results</span><span class="p">:</span> <span class="n">TrainerResult</span><span class="p">):</span>
+        <span class="n">attempted_val_scores</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span>
+                <span class="n">step_result</span><span class="o">.</span><span class="n">attempted_val_score</span>
+                <span class="k">if</span> <span class="n">step_result</span><span class="o">.</span><span class="n">attempted_val_score</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">step_result</span><span class="o">.</span><span class="n">val_score</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">step_result</span> <span class="ow">in</span> <span class="n">trainer_results</span><span class="o">.</span><span class="n">step_results</span>
+        <span class="p">]</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">attempted_val_scores</span><span class="p">)</span>
+        <span class="n">mean</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">array</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">std</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">array</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">max_score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">array</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">min_score</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">array</span><span class="p">)),</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="n">trainer_results</span><span class="o">.</span><span class="n">validate_stats</span> <span class="o">=</span> <span class="n">TrainerValidateStats</span><span class="p">(</span>
+            <span class="n">max_score</span><span class="o">=</span><span class="n">max_score</span><span class="p">,</span>
+            <span class="n">min_score</span><span class="o">=</span><span class="n">min_score</span><span class="p">,</span>
+            <span class="n">mean_of_score</span><span class="o">=</span><span class="n">mean</span><span class="p">,</span>
+            <span class="n">std_of_score</span><span class="o">=</span><span class="n">std</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_fit_text_grad_random</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">train_loader</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">test_dataset</span><span class="p">:</span> <span class="n">Any</span>
@@ -1625,37 +1714,6 @@
     <span class="c1">#                 break</span>
     <span class="c1">#             pbar.set_description(f&quot;Training Step: {total_steps}&quot;)</span>
     <span class="c1">#             self.adaltask.train()</span>
-
-    <span class="k">def</span> <span class="nf">_zero_grad_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_propose_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">propose</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_step_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_add_history_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;val_score should be a float, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">val_score</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">val_score</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">add_score_to_params</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">val_score</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_revert_text_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="n">text_optimizer</span><span class="o">.</span><span class="n">revert</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_check_optimizer_proposal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return True if all optimizers have proposed a new prompt&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">text_optimizer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">text_optimizer</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="c1"># TODO: miss one step somehow</span>
     <span class="k">def</span> <span class="nf">_fit_text_grad_constraint</span><span class="p">(</span>

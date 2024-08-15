@@ -455,14 +455,20 @@
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;BootstrapFewShot performs few-shot sampling used in few-shot ICL.</span>
 
 <span class="s2">    It will be used to optimize paramters of demos.</span>
+<span class="s2">    Based on research from AdalFlow team and DsPy library.</span>
 
-<span class="s2">    Compared with Dspy&#39;s version, we added weighted sampling for both the raw and augmented demos</span>
-<span class="s2">    to prioritize failed demos but successful in augmented demos based on the evaluation score</span>
-<span class="s2">    while we backpropagate the demo samples.</span>
+<span class="s2">    Compared with Dspy&#39;s version:</span>
+<span class="s2">     1. we added weighted sampling for both the raw and augmented demos</span>
+<span class="s2">        to prioritize failed demos but successful in augmented demos based on the evaluation score</span>
+<span class="s2">        while we backpropagate the demo samples.</span>
+<span class="s2">     2. In default, we exclude the input fields from the augmented demos. Our reserch finds that</span>
+<span class="s2">        using the reasoning demostrations from teacher model can be more effective to just take inputs and output</span>
+<span class="s2">        samples and be more token efficient.</span>
 
 <span class="s2">    Reference:</span>
 <span class="s2">    - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -471,6 +477,7 @@
         <span class="n">bootstrap_shots</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dataset</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">weighted</span><span class="o">=</span><span class="n">weighted</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">[</span>
@@ -486,6 +493,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_teacher_scores</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># data id to score</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_student_scores</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># data id to score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exclude_input_fields_from_bootstrap_demos</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">exclude_input_fields_from_bootstrap_demos</span>
+        <span class="p">)</span>
 
 <div class="viewcode-block" id="BootstrapFewShot.add_scores">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.add_scores">[docs]</a>
@@ -607,11 +617,23 @@
 <div class="viewcode-block" id="BootstrapFewShot.samples_to_str">
 <a class="viewcode-back" href="../../../apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.BootstrapFewShot.samples_to_str">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">samples_to_str</span><span class="p">(</span><span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">samples_to_str</span><span class="p">(</span>
+        <span class="n">samples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">],</span> <span class="n">augmented</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">exclude_inputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">sample_strs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">sample_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]))</span>
+
+                <span class="c1"># process the input fields</span>
+                <span class="k">if</span> <span class="n">augmented</span><span class="p">:</span>
+                    <span class="n">exclude_fields</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">exclude_inputs</span><span class="p">:</span>
+                        <span class="n">exclude_fields</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">get_input_fields</span><span class="p">())</span>
+                    <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude_fields</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">yaml_str</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;score&quot;</span><span class="p">])</span>
+                <span class="n">sample_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">yaml_str</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> to yaml for </span><span class="si">{</span><span class="n">sample</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">sample_strs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
@@ -638,12 +660,24 @@
                         <span class="n">bootstrap_shots</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bootstrap_shots</span><span class="p">,</span>
                         <span class="n">weighted</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span><span class="p">,</span>
                     <span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;sampled_augmented_demos: </span><span class="si">{</span><span class="p">[</span><span class="n">demo</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">demo</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">sampled_augmented_demos</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
                     <span class="n">samples</span> <span class="o">=</span> <span class="n">sampled_augmented_demos</span> <span class="o">+</span> <span class="n">sampled_raw_demos</span>
+
                     <span class="n">demo_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_augmented_demos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
 
-                        <span class="n">demo_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_to_str</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">samples</span><span class="p">)</span>
-
+                        <span class="n">demo_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_to_str</span><span class="p">(</span>
+                            <span class="n">samples</span><span class="o">=</span><span class="n">sampled_augmented_demos</span><span class="p">,</span>
+                            <span class="n">augmented</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">exclude_inputs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exclude_input_fields_from_bootstrap_demos</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_raw_demos</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">demo_str</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples_to_str</span><span class="p">(</span>
+                            <span class="n">samples</span><span class="o">=</span><span class="n">sampled_raw_demos</span><span class="p">,</span> <span class="n">augmented</span><span class="o">=</span><span class="kc">False</span>
+                        <span class="p">)</span>
+                    <span class="n">demo_str</span> <span class="o">=</span> <span class="n">demo_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="n">demo_param</span><span class="o">.</span><span class="n">propose_data</span><span class="p">(</span><span class="n">demo_str</span><span class="p">,</span> <span class="n">samples</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">demo_param</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

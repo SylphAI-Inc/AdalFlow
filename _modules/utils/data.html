@@ -519,13 +519,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="n">shuffle</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># if self.shuffle:</span>
         <span class="c1">#     np.random.shuffle(self.indices)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="DataLoader.set_max_steps">
+<a class="viewcode-back" href="../../apis/utils/utils.data.html#utils.data.DataLoader.set_max_steps">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_max_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span> <span class="o">=</span> <span class="n">max_steps</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span>
 
@@ -533,8 +541,18 @@
         <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
 
     <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">]:</span>
+        <span class="c1"># if self.current_index &gt;= len(self.dataset):</span>
+        <span class="c1">#     raise StopIteration</span>
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">StopIteration</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>  <span class="c1"># Reshuffle for the new epoch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">step_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_steps</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">StopIteration</span>
+            <span class="c1"># raise StopIteration</span>
 
         <span class="n">batch_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
@@ -547,6 +565,7 @@
             <span class="n">batch_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">batch_data</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">current_index</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step_index</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">return</span> <span class="n">batch_data</span></div>
 

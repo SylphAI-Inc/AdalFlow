@@ -524,6 +524,9 @@
     <span class="n">from_response_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
         <span class="kc">None</span>  <span class="c1"># for parameterType GRADIENT, the id of the response parameter</span>
     <span class="p">)</span>
+    <span class="n">backward_engine_disabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">False</span>  <span class="c1"># Disable the backward engine for the parameter</span>
+    <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

@@ -503,6 +503,12 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">save_meta_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata_filepath</span><span class="p">)</span>
 
+<div class="viewcode-block" id="GeneratorCallLogger.reset">
+<a class="viewcode-back" href="../../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.reset">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">generator_names_to_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generator_names_to_files</span>

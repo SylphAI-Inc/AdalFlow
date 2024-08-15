@@ -52,8 +52,6 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RAG optimization" href="rag_opt.html" />
-    <link rel="prev" title="Classification Optimization" href="classification.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,7 +161,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
     Use Cases
   </a>
@@ -279,7 +277,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -308,7 +308,7 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
     Use Cases
   </a>
@@ -381,21 +381,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Training - Use Cases</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="classification.html">Classification Optimization</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to AdalFlow library</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rag_opt.html">RAG optimization</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -428,9 +413,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Use Cases</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">Introduction...</li>
   </ul>
 </nav>
@@ -450,21 +432,20 @@
                   
   <section id="introduction-to-adalflow-library">
 <h1>Introduction to AdalFlow library<a class="headerlink" href="#introduction-to-adalflow-library" title="Link to this heading">#</a></h1>
-<blockquote>
-<div><p>End-to-end building and optimization on question answering task pipeline.</p>
-</div></blockquote>
-<p>AdalFlow provides token efficient and highly-performing prompt optimization with a unified framework.</p>
-<p>In this tutorial, we will implement and optimize a question answering task pipeline using both string output
-and structued output. In particular, it is to count the total objects.</p>
-<p>Here is the one example:</p>
+<p>AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>In this tutorial, we will implement and optimize a question-answering task pipeline. Specifically, the task is to count the total number of objects.
+Here is an example from the dataset:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&quot;</span>
 </pre></div>
 </div>
-<p>For optimization, we will demonstrate both few-shot In-context Learning(ICL) and the instruction/prompt optimization.</p>
-<p>We especially want to know how the auto-training pipeline perform on both good and bad starting prompt.</p>
-<p>On a low performing starting prompt, our zero-shot optimizer stats:</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id2">
-<caption><span class="caption-text">Scores by Method and Split On Low-performing Starting Prompt</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<p>For optimization, we will demonstrate both the instruction/prompt optimization and few-shot In-context Learning(ICL).</p>
+<p><strong>Instruction/prompt Optimization</strong></p>
+<p>We especially want to see how the auto-training pipeline performs with both good and bad starting prompts.</p>
+<p>With a low-performing starting prompt, our zero-shot optimizer states:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Scores by Method and Split On Low-performing Starting Prompt (gpt-3.5-turbo)</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 25.0%" />
@@ -492,9 +473,9 @@ and structued output. In particular, it is to count the total objects.</p>
 </tbody>
 </table>
 </div>
-<p>It converged within 5 steps where each batch has a size of only 4 samples.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id3">
-<caption><span class="caption-text">Manual Prompt vs Optimized Prompt</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<p>It converged within 5 steps, with each batch containing only 4 samples.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Manual Prompt vs Optimized Prompt (gpt-3.5-turbo)</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 50.0%" />
 <col style="width: 50.0%" />
@@ -514,9 +495,9 @@ and structued output. In particular, it is to count the total objects.</p>
 </tbody>
 </table>
 </div>
-<p>And we will see how we optimize an already high-performing task pipeline (~90% accuracy) to even higher which would have been really difficult if we try to manually optimize the promot.</p>
-<div class="pst-scrollable-table-container"><table class="table" id="id4">
-<caption><span class="caption-text">Scores by Method and Split On High-performing Starting Prompt</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<p>We will also demonstrate how to optimize an already high-performing task pipeline (~90% accuracy) to achieve even better results—a process that would be very challenging with manual prompt optimization.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text">Scores by Method and Split On High-performing Starting Prompt (gpt-3.5-turbo)</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 25.0%" />
 <col style="width: 25.0%" />
@@ -544,8 +525,8 @@ and structued output. In particular, it is to count the total objects.</p>
 </tbody>
 </table>
 </div>
-<div class="pst-scrollable-table-container"><table class="table" id="id5">
-<caption><span class="caption-text">Manual Prompt vs Optimized Prompt</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-text">Manual Prompt vs Optimized Prompt</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
 <colgroup>
 <col style="width: 50.0%" />
 <col style="width: 50.0%" />
@@ -568,12 +549,44 @@ and structued output. In particular, it is to count the total objects.</p>
 </tbody>
 </table>
 </div>
-<p>Now, let’s get started on how to implement and to achieve the above results.</p>
+<p><strong>Bootstrap Few-shot</strong></p>
+<p>We achieved 94% accuracy on the test split with just one bootstrap shot, using only the demonstration of the teacher model’s response, surpassing the performance of all existing libraries.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Optimized Scores comparison on the same prompt on test set (gpt-3.5-turbo)</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Text-grad (start)</p></td>
+<td><p>0.72</p></td>
+</tr>
+<tr class="row-odd"><td><p>Text-grad (optimized)</p></td>
+<td><p>0.89</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (start)</p></td>
+<td><p>0.87</p></td>
+</tr>
+<tr class="row-odd"><td><p>AdalFlow(text-grad optimized)</p></td>
+<td><p>0.91</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (“Learn-to-reason” one-shot)</p></td>
+<td><p><strong>0.94</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Now, let’s get started on how to implement and achieve the results mentioned above together.</p>
+</section>
 <section id="build-the-task-pipeline">
 <h2>Build the task pipeline<a class="headerlink" href="#build-the-task-pipeline" title="Link to this heading">#</a></h2>
-<p>As we can leverage the optimizer to auto-optimize our task pipeline, we provide a quick way to build the task pipeline.</p>
-<p>We will instruct the LLM to response with chain_of_thought and end the response with format ‘Answer: $VALUE’.
-We will use the following code to process it:</p>
+<p>As we can leverage the optimizer to automatically optimize our task pipeline, we offer a quick way to build it.
+We’ll instruct the LLM to respond with a chain of thought and end the response with the format Answer: $VALUE. We will use the following code to process it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
@@ -611,10 +624,10 @@ We will use the following code to process it:</p>
 </pre></div>
 </div>
 <p>We will create two parameters for training the model: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>.
-We will init the <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> with a <code class="docutils literal notranslate"><span class="pre">role_desc</span></code> and <code class="docutils literal notranslate"><span class="pre">requires_opt</span></code> to let the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> (for feedback/textual gradients) and the optimizer know what the parameter is for.
-Also, we have to set the <code class="docutils literal notranslate"><span class="pre">param_type</span></code> to <code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code> so that the our <code class="docutils literal notranslate"><span class="pre">trainer</span></code>
-can configure the right optimizer to optimize the parameters.
-Here is our task pipeline:</p>
+We will initialize the <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> with a <code class="docutils literal notranslate"><span class="pre">role_desc</span></code> and <code class="docutils literal notranslate"><span class="pre">requires_opt</span></code> to inform the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> (for feedback/textual gradients) and
+the optimizer about the purpose of the parameter.
+Additionally, we need to set the <code class="docutils literal notranslate"><span class="pre">param_type</span></code> to <code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code> so that our trainer can configure the appropriate optimizer to optimize these parameters.</p>
+<p>Here is our task pipeline:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
 
@@ -657,14 +670,13 @@ Here is our task pipeline:</p>
 </div>
 <p>Here are a few points to keep in mind:</p>
 <ol class="arabic simple">
-<li><p>Our task pipeline has eval and train mode. In default, it will be in eval mode, and it will output a <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object.
-When in train mode, it will output a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object where the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute will be the raw output from <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code>
-and it will save the whole <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object in the <code class="docutils literal notranslate"><span class="pre">full_response</span></code> attribute in case to be used for evaluation.
-To indicate the specific input to the evaluation function, we will pass it to <code class="docutils literal notranslate"><span class="pre">eval_input</span></code> attribute.</p></li>
-<li><p>If we want to train few-shot in-context learning, we will have assign an <code class="docutils literal notranslate"><span class="pre">id</span></code> to our LLM call.
-The <code class="docutils literal notranslate"><span class="pre">id</span></code> will be used to trace the few-shot examples.</p></li>
+<li><p>Our task pipeline operates in both evaluation and training modes. By default, it will be in evaluation mode and will output a <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object.
+When in training mode, it will output a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object where the data attribute contains the raw output from <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code>.
+The entire GeneratorOutput object will be saved in the <code class="docutils literal notranslate"><span class="pre">full_response</span></code> attribute, allowing it to be used later for evaluation.
+To specify which input should be passed to the evaluation function, we will assign it to the <code class="docutils literal notranslate"><span class="pre">eval_input</span></code> attribute.</p></li>
+<li><p>If we want to train using few-shot in-context learning, we need to assign an <code class="docutils literal notranslate"><span class="pre">id</span></code> to our LLM call. This <code class="docutils literal notranslate"><span class="pre">id</span></code> will be used to trace the few-shot examples automatically.</p></li>
 </ol>
-<p>Now, lets pass a <code class="docutils literal notranslate"><span class="pre">gpt-3.5-turbo</span></code> model to our task pipeline and test both training and evaluation mode.</p>
+<p>Now, let’s pass a <code class="docutils literal notranslate"><span class="pre">gpt-3.5-turbo</span></code> model to our task pipeline and test both training and evaluation modes.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
 
 <span class="n">adal</span><span class="o">.</span><span class="n">setup_env</span><span class="p">()</span>
@@ -699,7 +711,7 @@ The <code class="docutils literal notranslate"><span class="pre">id</span></code
 </pre></div>
 </div>
 <p>The answer for the eval mode:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GeneratorOutput</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">CompletionUsage</span><span class="p">(</span><span class="n">completion_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">total_tokens</span><span class="o">=</span><span class="mi">226</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="s1">&#39;To find the total number of musical instruments you have, you simply need to count the individual instruments you listed. </span><span class="se">\n\n</span><span class="s1">Counting the instruments:</span><span class="se">\n</span><span class="s1">1 flute</span><span class="se">\n</span><span class="s1">1 piano</span><span class="se">\n</span><span class="s1">1 trombone</span><span class="se">\n</span><span class="s1">1 violin</span><span class="se">\n</span><span class="s1">1 accordion</span><span class="se">\n</span><span class="s1">1 clarinet</span><span class="se">\n</span><span class="s1">1 drum</span><span class="se">\n</span><span class="s1">1 trumpet</span><span class="se">\n\n</span><span class="s1">Adding the number of stoves and lamps, which are not musical instruments:</span><span class="se">\n</span><span class="s1">4 stoves</span><span class="se">\n</span><span class="s1">2 lamps</span><span class="se">\n\n</span><span class="s1">Total number of musical instruments = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8</span><span class="se">\n\n</span><span class="s1">Answer: 8&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GeneratorOutput</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">CompletionUsage</span><span class="p">(</span><span class="n">completion_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">total_tokens</span><span class="o">=</span><span class="mi">226</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="s1">&#39;To find the total number of musical instruments you have, you simply need to count the individual instruments you listed. </span><span class="se">\n\n</span><span class="s1">Counting the instruments:</span><span class="se">\n</span><span class="s1">1 flute</span><span class="se">\n</span><span class="s1">1 piano</span><span class="se">\n</span><span class="s1">1 trombone</span><span class="se">\n</span><span class="s1">1 violin</span><span class="se">\n</span><span class="s1">1 accordion</span><span class="se">\n</span><span class="s1">1 clarinet</span><span class="se">\n</span><span class="s1">1 drum</span><span class="se">\n</span><span class="s1">1 trumpet</span><span class="se">\n\n</span><span class="s1">Adding the number of stoves and lamps, which are not musical instruments:</span><span class="se">\n</span><span class="s1">4 stoves</span><span class="se">\n</span><span class="s1">2 lamps</span><span class="se">\n\n</span><span class="s1">Total number of musical instruments = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8</span><span class="se">\n\n</span><span class="s1">Answer: 8&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The answer for the train mode:</p>
@@ -724,23 +736,20 @@ The <code class="docutils literal notranslate"><span class="pre">id</span></code
 <span class="n">Answer</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="p">{</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_give_ta</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">prompt</span> <span class="p">(</span><span class="n">Instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="n">on</span> <span class="n">task</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="ow">and</span> <span class="nb">format</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">give</span> <span class="n">task</span> <span class="n">instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">system</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">You</span> <span class="n">will</span> <span class="n">answer</span> <span class="n">a</span> <span class="n">reasoning</span> <span class="n">question</span><span class="o">.</span> <span class="n">Think</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span> <span class="n">The</span> <span class="n">last</span> <span class="n">line</span> <span class="n">of</span> <span class="n">your</span> <span class="n">response</span> <span class="n">should</span> <span class="n">be</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="nb">format</span><span class="p">:</span> <span class="s1">&#39;Answer: $VALUE&#39;</span> <span class="n">where</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">numerical</span> <span class="n">value</span><span class="o">.</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_provide</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">demos</span> <span class="p">(</span><span class="n">A</span> <span class="n">few</span> <span class="n">examples</span> <span class="n">to</span> <span class="n">guide</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">provide</span> <span class="n">few</span> <span class="n">shot</span> <span class="n">demos</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{})},</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;prompt_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;system_prompt&#39;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_give_ta</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">prompt</span> <span class="p">(</span><span class="n">Instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="n">on</span> <span class="n">task</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="ow">and</span> <span class="nb">format</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">give</span> <span class="n">task</span> <span class="n">instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">system</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">You</span> <span class="n">will</span> <span class="n">answer</span> <span class="n">a</span> <span class="n">reasoning</span> <span class="n">question</span><span class="o">.</span> <span class="n">Think</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span> <span class="n">The</span> <span class="n">last</span> <span class="n">line</span> <span class="n">of</span> <span class="n">your</span> <span class="n">response</span> <span class="n">should</span> <span class="n">be</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="nb">format</span><span class="p">:</span> <span class="s1">&#39;Answer: $VALUE&#39;</span> <span class="n">where</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">numerical</span> <span class="n">value</span><span class="o">.</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="s1">&#39;few_shot_demos&#39;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_provide</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">demos</span> <span class="p">(</span><span class="n">A</span> <span class="n">few</span> <span class="n">examples</span> <span class="n">to</span> <span class="n">guide</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">provide</span> <span class="n">few</span> <span class="n">shot</span> <span class="n">demos</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="s1">&#39;input_str&#39;</span><span class="p">:</span> <span class="s1">&#39;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&#39;</span><span class="p">},</span> <span class="s1">&#39;model_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;gpt-3.5-turbo&#39;</span><span class="p">,</span> <span class="s1">&#39;max_tokens&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;top_p&#39;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span> <span class="s1">&#39;frequency_penalty&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;presence_penalty&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span> <span class="n">traces</span><span class="o">=</span><span class="p">{})</span>
 </pre></div>
 </div>
-<p>So far, we have completed the task pipeline and made sure it is working in both eval and train mode.
-Of course, if the performance is perfect here, there is no need to train. But we need to evaluate it.
-Our train pipeline can help you with both training and evaluation.</p>
-<p># TODO: rerun the example as the id is just added to the call.</p>
+<p>So far, we have completed the task pipeline and ensured it works in both evaluation and training modes. Of course, if the performance is already perfect, there may be no need for further training, but evaluation is still essential.</p>
+<p>Our training pipeline can assist with both training and evaluation.</p>
 </section>
 <section id="evaluate-the-task-pipeline">
 <h2>Evaluate the task pipeline<a class="headerlink" href="#evaluate-the-task-pipeline" title="Link to this heading">#</a></h2>
-<p>Before we start the training, we should prepare three datasets: train, validation, and test datasets.
-We need to do intitial evaluation to check two things:</p>
+<p>Before we start the training, we should prepare three datasets: train, validation, and test datasets. An initial evaluation is necessary to check two things:</p>
 <ol class="arabic simple">
-<li><p>The overall performance, maybe an average accross the datasets. If it does not meet the accuracy requirements, we need to plan on evaluation.</p></li>
-<li><p>The performance on each dataset: we need to ensure that each split has a comparable performance so that the train and validation set can be a good indicator to the test performance.</p></li>
+<li><p><strong>Overall Performance on Each Data Split:</strong> We need to assess the performance on each data split. If the accuracy does not meet the required standards, we must plan for further evaluation and adjustments.</p></li>
+<li><p><strong>Performance Consistency Across Datasets:</strong> We need to ensure that each split (train, validation, and test) performs comparably. This consistency is crucial so that the train and validation sets can serve as reliable indicators of test performance.</p></li>
 </ol>
 <section id="datasets">
 <h3>Datasets<a class="headerlink" href="#datasets" title="Link to this heading">#</a></h3>
 <p>We have prepared the dataset at <code class="docutils literal notranslate"><span class="pre">adalflow.datasets.big_bench_hard</span></code>.
-We can load it:</p>
+We can load it with the following code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.big_bench_hard</span> <span class="kn">import</span> <span class="n">BigBenchHard</span>
 <span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">subset_dataset</span>
 
@@ -768,13 +777,10 @@ To note that the answer is in <cite>str</cite> format.</p>
 </section>
 <section id="diagnose-the-task-pipeline">
 <h3>Diagnose the task pipeline<a class="headerlink" href="#diagnose-the-task-pipeline" title="Link to this heading">#</a></h3>
-<p>We have a <cite>diagnose</cite> method in our <code class="docutils literal notranslate"><span class="pre">trainer</span></code> to help users run evaluation on a dataset split using callbacks and call logger automatically setup by our trainer.
-In this case, we will find the following datastructure.</p>
-<p>Starting from here, we will use <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> which is an interface class that we should subclass from.
-The <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> provides parallel processing to run the pipeline, handles call back config, optimizer config, or even teacher/backward engine out of box.
-It opens up a few attributes and methods for users to complete by subclass <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code>.
-This is similar to how <code class="docutils literal notranslate"><span class="pre">PyTorch</span> <span class="pre">Lightning</span></code>’s <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code> works with its <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.</p>
-<p>This minimum code will get us started on evaluating the task pipeline.</p>
+<p>To evaluate the task pipeline using the <a class="reference internal" href="../apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer" title="optim.trainer.trainer.Trainer"><code class="xref py py-meth docutils literal notranslate"><span class="pre">diagnose</span></code></a> method provided by our trainer,
+we can take advantage of the <a class="reference internal" href="../apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent" title="optim.trainer.adal.AdalComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">AdalComponent</span></code></a> interface.
+This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine. The AdalComponent works similarly to how PyTorch Lightning’s LightningModule interacts with its Trainer.</p>
+<p>Here’s the minimum code required to get started on evaluating the task pipeline:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.types</span> <span class="kn">import</span> <span class="n">Example</span>
 <span class="kn">from</span> <span class="nn">adalflow.eval.answer_match_acc</span> <span class="kn">import</span> <span class="n">AnswerMatchAcc</span>
 
@@ -824,11 +830,11 @@ This is similar to how <code class="docutils literal notranslate"><span class="p
 │<span class="w">       </span>│<span class="w">   </span>└──<span class="w"> </span>stats.json
 </pre></div>
 </div>
-<dl class="simple">
-<dt>Tips:</dt><dd><p>As we save all data in default at ~/.adalflow, you can create a soft link to the current directory to access the data easily
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As we save all data in default at <cite>~/.adalflow</cite>, you can create a soft link to the current directory to access the data easily
 in your code editor.</p>
-</dd>
-</dl>
+</div>
 <p>The <cite>llm_counter_call.jsonl</cite> file will contain 6 keys:</p>
 <ol class="arabic simple">
 <li><p>“prompt_kwargs”: the prompt_kwargs used in the call of <code class="docutils literal notranslate"><span class="pre">llm_counter</span></code>.</p></li>
@@ -870,8 +876,8 @@ If you have passed the <code class="docutils literal notranslate"><span class="p
 Let’s see if we can optimize it further with either few-shot or zero-shot prompt optimization or even both.</p>
 </section>
 </section>
-<section id="train">
-<h2>Train<a class="headerlink" href="#train" title="Link to this heading">#</a></h2>
+<section id="train-setup">
+<h2>Train Setup<a class="headerlink" href="#train-setup" title="Link to this heading">#</a></h2>
 <section id="prepare-adalcomponent-for-training">
 <h3>Prepare AdalComponent for training<a class="headerlink" href="#prepare-adalcomponent-for-training" title="Link to this heading">#</a></h3>
 <p>To be able to train, we will add a few attributes and define a few methods in our <code class="docutils literal notranslate"><span class="pre">ObjectCountAdalComponent</span></code> class.</p>
@@ -919,7 +925,7 @@ when we evaluate the model.</p>
 <p>Third, if you intent to train <code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code>, we will need to set the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> which is a subclass of <code class="docutils literal notranslate"><span class="pre">Generator</span></code> with its own <code class="docutils literal notranslate"><span class="pre">template</span></code>.
 We provided a <code class="docutils literal notranslate"><span class="pre">configure_backward_engine_helper</span></code> method to smooth this setup; it requires only the <code class="docutils literal notranslate"><span class="pre">model_client</span></code> and the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span>
         <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span>
     <span class="p">)</span>
 </pre></div>
@@ -1009,9 +1015,26 @@ following the instruction to make correct proposal.</p>
 </div>
 <p>Here is how our trace_graph looks like: <a class="reference internal" href="../tutorials/trace_graph.html"><span class="doc">trace_graph</span></a>.</p>
 </section>
-<section id="id1">
-<h3>Train<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+</section>
+<section id="train-with-text-gradient-descent">
+<h2>Train with Text-Gradient Descent<a class="headerlink" href="#train-with-text-gradient-descent" title="Link to this heading">#</a></h2>
 <p>To train, we simply set the <code class="docutils literal notranslate"><span class="pre">debug</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>To do textual-gradient descent training for our task pipeline, we will go back to the task pipeline to set the <cite>requires_opt</cite> to <cite>False</cite> for the <cite>few_shot_demos</cite> parameter and
+<cite>requires_opt=True</cite> for the <cite>system_prompt</cite> parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To give task instruction to the language model in the system prompt&quot;</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="n">few_shot_demos</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To provide few shot demos to the language model&quot;</span><span class="p">,</span>
+    <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <p>For the text optimizer, we have two training strategy: <code class="docutils literal notranslate"><span class="pre">random</span></code> and <code class="docutils literal notranslate"><span class="pre">constrained</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy runs a batch of loss and backward propagation and then validate it on the <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset at each step.
 This is a standard training strategy, and it is used by libraries like <code class="docutils literal notranslate"><span class="pre">Dspy</span></code> and <code class="docutils literal notranslate"><span class="pre">Text-grad</span></code>.
@@ -1032,9 +1055,87 @@ With file names like:</p>
 <p>Here is an example of how our ckpt file looks like: <a class="reference internal" href="../tutorials/ckpt_file.html"><span class="doc">ckpt_file</span></a>.
 This file is a direct <cite>to_dict</cite>  (json) representation of <a class="reference internal" href="../apis/optim/optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>.</p>
 </section>
-</section>
-<section id="few-shot-bootstrap">
-<h2>Few-shot Bootstrap<a class="headerlink" href="#few-shot-bootstrap" title="Link to this heading">#</a></h2>
+<section id="train-with-few-shot-bootstrap">
+<h2>Train with Few-shot Bootstrap<a class="headerlink" href="#train-with-few-shot-bootstrap" title="Link to this heading">#</a></h2>
+<p>As we have defined a <code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code> in our <code class="docutils literal notranslate"><span class="pre">ObjectCountAdalComponent</span></code>, we can train the model with few-shot bootstrap.
+We will set <code class="docutils literal notranslate"><span class="pre">raw_shots=0</span></code> and <code class="docutils literal notranslate"><span class="pre">bootstrap_shots=1</span></code> in the <code class="docutils literal notranslate"><span class="pre">train</span></code> method.
+In default, our demonstrations use the teacher’s direct raw response, with the purpose to teach the weaker model how to reason the answer.
+We call this “Learn to reason” few-shot bootstrap.</p>
+<p>Note: before we start the training, it will be worth to check if the teacher model is performing better so that the student can learn from the teacher.
+We can achieve this using the diagnose method while setting the <cite>model_client</cite> and <cite>model_kwargs</cite> to the teacher model.
+Additionally, ensure you set the <cite>split</cite> to <cite>train_teacher</cite> etc to ensure the previous diagnose on the student model is not overwritten.
+Here is the teach model performance on the zero-shot prompt:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id7">
+<caption><span class="caption-text">Scores by teacher mode (gpt-4o) on the same high-performing starting prompt</span><a class="headerlink" href="#id7" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Train</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Start (manual prompt)</p></td>
+<td><p>0.98 (50 samples)</p></td>
+<td><p>1.0 (50 samples)</p></td>
+<td><p>0.98 (100 samples)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>We will show how a single demonstration can help push the model performance to 92% on validation and 97% on test.</p>
+<p>To do few-shot for our task pipeline, we will go back to the task pipeline to set the <cite>requires_opt</cite> to <cite>True</cite> for the <cite>few_shot_demos</cite> parameter and
+turn off the <cite>requires_opt</cite> for the <cite>system_prompt</cite> parameter.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To give task instruction to the language model in the system prompt&quot;</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="n">few_shot_demos</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To provide few shot demos to the language model&quot;</span><span class="p">,</span>
+    <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is our top performing few-shot example:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id8">
+<caption><span class="caption-text">Scores for One-shot Bootstrap</span><a class="headerlink" href="#id8" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 10.0%" />
+<col style="width: 40.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Prompt</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Start</p></td>
+<td><p>None</p></td>
+<td><p>0.90</p></td>
+<td><p>0.87</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimized One-shot</p></td>
+<td><p>Example: ‘To find the total number of objects you have, you need to count each individualn  item. In this case, you have:nn  1 microwavenn  1 lampnn  4 carsnn  1 stovenn  1 toasternn  1 bednnn  Adding these together:nn  1 + 1 + 4 + 1 + 1 + 1 = 9nnn  Therefore, you have 9 objects in total.nn  Answer: 9’</p></td>
+<td><p>0.96 (<strong>+6%</strong>, 4% &lt; teacher)</p></td>
+<td><p>0.94 (<strong>+7%</strong>, 4% &lt; teacher)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="benchmarking">
 <h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Link to this heading">#</a></h2>
@@ -1042,7 +1143,42 @@ This file is a direct <cite>to_dict</cite>  (json) representation of <a class="r
 The same prompt, text-grad gets 0.72 on the validation set. and it optimized it to 0.89.
 But text-grad use more lengthy prompt, where it takes more than 80s to run a backpropagation on a batch size of 4.
 Yet, we only take 12s.
-Also AdalFlow has better converage rate.</p>
+Also AdalFlow has better converage rate in general.
+We also leverage single message prompt, sending the whole template to the model’s system message, making this whole development process easy.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id9">
+<caption><span class="caption-text">Optimized Scores comparison on the same prompt on test set (gpt-3.5-turbo)</span><a class="headerlink" href="#id9" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Text-grad (start)</p></td>
+<td><p>0.72</p></td>
+</tr>
+<tr class="row-odd"><td><p>Text-grad (optimized)</p></td>
+<td><p>0.89</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (start)</p></td>
+<td><p>0.87</p></td>
+</tr>
+<tr class="row-odd"><td><p>AdalFlow(text-grad optimized)</p></td>
+<td><p>0.91</p></td>
+</tr>
+<tr class="row-even"><td><p>AdalFlow (“Learn-to-reason” one-shot)</p></td>
+<td><p><strong>0.94</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the start we use same prompt but we use a single template which achieves much better zero-shot performance than text-grad which sends the system prompt to system message and the input to user message.</p>
+</div>
 </section>
 </section>
 
@@ -1056,24 +1192,6 @@ Also AdalFlow has better converage rate.</p>
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="classification.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Classification Optimization</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="rag_opt.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">RAG optimization</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
@@ -1092,20 +1210,21 @@ Also AdalFlow has better converage rate.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-task-pipeline">Build the task pipeline</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-the-task-pipeline">Evaluate the task pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets">Datasets</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnose-the-task-pipeline">Diagnose the task pipeline</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train">Train</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-setup">Train Setup</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-adalcomponent-for-training">Prepare AdalComponent for training</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-trainer">Use the trainer</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-in-debug-mode">Train in Debug mode</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Train</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#few-shot-bootstrap">Few-shot Bootstrap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-with-text-gradient-descent">Train with Text-Gradient Descent</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train-with-few-shot-bootstrap">Train with Few-shot Bootstrap</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
 </ul>
   </nav></div>

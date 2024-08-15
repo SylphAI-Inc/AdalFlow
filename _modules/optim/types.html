@@ -432,7 +432,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;All data types used by Parameter, Optimizer, AdalComponent, and Trainer.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">auto</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
@@ -527,6 +527,27 @@
 
 
 
+<div class="viewcode-block" id="TrainerValidateStats">
+<a class="viewcode-back" href="../../apis/optim/optim.types.html#optim.types.TrainerValidateStats">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">TrainerValidateStats</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A single evaluation of task pipeline response to a score in range [0, 1].&quot;&quot;&quot;</span>
+
+    <span class="n">max_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the evaluation in range [0, 1].&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">min_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the evaluation in range [0, 1].&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">mean_of_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the evaluation in range [0, 1].&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">std_of_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the evaluation in range [0, 1].&quot;</span><span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="TrainerResult">
 <a class="viewcode-back" href="../../apis/optim/optim.types.html#optim.types.TrainerResult">[docs]</a>
 <span class="nd">@dataclass</span>
@@ -549,6 +570,10 @@
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Effective measures of the constrained training strategy&quot;</span><span class="p">},</span>
     <span class="p">)</span>
+    <span class="n">validate_stats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TrainerValidateStats</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Attempted Validation score statistics&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
     <span class="n">time_stamp</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
     <span class="p">)</span>
@@ -556,34 +581,6 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Save the most detailed state of the trainer&quot;</span><span class="p">}</span>
     <span class="p">)</span></div>
 
-
-
-<div class="viewcode-block" id="OptimizeGoal">
-<a class="viewcode-back" href="../../apis/optim/optim.types.html#optim.types.OptimizeGoal">[docs]</a>
-<span class="k">class</span> <span class="nc">OptimizeGoal</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="c1"># 1. Similar to normal model auto-grad</span>
-    <span class="n">LLM_SYS_INSTRUCTION</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># fixed system prompt instruction across all calls</span>
-    <span class="n">LLM_PROMP_TEMPLATE</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">auto</span><span class="p">()</span>
-    <span class="p">)</span>  <span class="c1"># fixed prompt template , the tags and format can have a big impact on the performance</span>
-    <span class="n">LLM_SYS_EXAMPLE</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">auto</span><span class="p">()</span>
-    <span class="p">)</span>  <span class="c1"># few-shot examples (fixed across all calls) =&gt; vs dynamic examples</span>
-    <span class="n">DYNAMIC_FEW_SHOT_EXAMPLES</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># dynamic examples leverage retrieval</span>
-    <span class="n">LLM_RESPONSE</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">auto</span><span class="p">()</span>
-    <span class="p">)</span>  <span class="c1"># similar to reflection, to optimize the response with optimizer</span>
-    <span class="n">HYPERPARAMETER_TUNING</span> <span class="o">=</span> <span class="n">auto</span><span class="p">()</span>  <span class="c1"># optimize hyperparameters</span></div>
-
-
-
-<span class="c1"># Goal: The optimization method can be potentially used for hyperparameter tuning too</span>
-
-<span class="n">LightRAG_optimizer_notes</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;tags like &lt;SYS&gt;&lt;/SYS&gt; or &lt;SYSTEM&gt;&lt;/SYSTEM&gt;  or &lt;START_OF_SYSTEM_PROMPT&gt; &lt;END_OF_SYSTEM_PROMPT&gt;can lead to different performance&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;System prompt&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;output format, the description of field&quot;</span><span class="p">,</span>
-<span class="p">]</span>
 </pre></div>
 
                 </article>

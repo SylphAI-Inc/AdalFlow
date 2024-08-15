@@ -1,7 +1,7 @@
 Community
 ============
 
-*Learn, share and collaborate with the LightRAG AI community*
+*Learn, share and collaborate with the AdalFlow AI community*
 
 .. You can join our community on various platforms:
 
@@ -11,11 +11,11 @@ Community
 .. raw:: html
 
    <div style="text-align: center; margin-bottom: 20px;">
-      <a href="https://github.com/SylphAI-Inc/LightRAG/discussions" style="display: inline-block; margin-left: 10px;">
-         <img src="https://img.shields.io/badge/GitHub Discussions-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/discussions" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub Discussions-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
-        <a href="https://github.com/SylphAI-Inc/LightRAG/issues" style="display: inline-block; margin-left: 10px;">
-         <img src="https://img.shields.io/badge/Bugs/Feature Requests-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+        <a href="https://github.com/SylphAI-Inc/AdalFlow/issues" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/Bugs/Feature Requests-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
       <a href="https://discord.gg/ezzszrRZvT" style="display: inline-block; margin-left: 10px;">
         <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">

@@ -700,7 +700,7 @@
             <span class="n">tqdm_loader</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
                 <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">futures</span><span class="p">),</span>
                 <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Evaluating&quot;</span><span class="p">,</span>
+                <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Evaluating step: </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">future</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="n">futures</span><span class="p">:</span>
                 <span class="n">y_pred</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
@@ -740,10 +740,10 @@
                         <span class="k">break</span>
 
                     <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Evaluating: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">eval_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples, Max potential: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">max_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;Evaluating step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">eval_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2"> across </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">completed_indices</span><span class="p">)</span><span class="si">}</span><span class="s2"> samples, Max potential: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">max_score</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="s2">&quot;Evaluating&quot;</span><span class="p">)</span>
+                    <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Evaluating step(</span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
 
                 <span class="n">tqdm_loader</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Update the progress bar</span>
 
@@ -984,9 +984,11 @@
             <span class="p">)</span>
 
         <span class="c1"># Register the callback for each generator</span>
-        <span class="n">call_logger</span> <span class="o">=</span> <span class="n">GeneratorCallLogger</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
+
         <span class="n">file_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">generator</span> <span class="ow">in</span> <span class="n">all_generators</span><span class="p">:</span>
+            <span class="n">call_logger</span> <span class="o">=</span> <span class="n">GeneratorCallLogger</span><span class="p">(</span><span class="n">save_dir</span><span class="o">=</span><span class="n">save_dir</span><span class="p">)</span>
+            <span class="n">call_logger</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
             <span class="n">call_logger</span><span class="o">.</span><span class="n">register_generator</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="n">logger_call</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">call_logger</span><span class="o">.</span><span class="n">log_call</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
             <span class="n">generator</span><span class="o">.</span><span class="n">register_callback</span><span class="p">(</span>
