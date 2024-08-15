@@ -183,8 +183,7 @@ class BootstrapFewShot(DemoOptimizer):
                     if exclude_inputs:
                         exclude_fields.extend(sample.get_input_fields())
                     yaml_str = sample.to_yaml(exclude=exclude_fields)
-                    # for f in input_fields:
-                    #     yaml_str = yaml_str.replace(f"{f}: ", "").strip()
+
                 else:
                     yaml_str = sample.to_yaml(exclude=["id", "score"])
                 sample_strs.append(yaml_str + "\n")
