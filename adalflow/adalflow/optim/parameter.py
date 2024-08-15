@@ -88,6 +88,9 @@ class Parameter(Generic[T]):
     from_response_id: str = (
         None  # for parameterType GRADIENT, the id of the response parameter
     )
+    backward_engine_disabled: bool = (
+        False  # Disable the backward engine for the parameter
+    )
 
     def __init__(
         self,

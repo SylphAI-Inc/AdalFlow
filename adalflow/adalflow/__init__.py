@@ -1,4 +1,4 @@
-__version__ = "0.1.0-beta.6"
+__version__ = "0.2.0-beta.2"
 
 from adalflow.core.component import Component, fun_to_component
 

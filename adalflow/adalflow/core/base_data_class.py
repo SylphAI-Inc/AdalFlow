@@ -485,7 +485,18 @@ class DataClass:
             self.to_dict(exclude=exclude, include=include),
             default_flow_style=False,
             sort_keys=False,
-        )
+        ).strip()
+
+    def dict_to_yaml(self, data: Dict[str, Any]) -> str:
+        """Convert a dictionary to a YAML string.
+
+        Args:
+            data (Dict[str, Any]): The dictionary to convert to a YAML string.
+
+        Returns:
+            str: The YAML string representation of the dictionary.
+        """
+        return yaml.dump(data, default_flow_style=False, sort_keys=False).strip()
 
     @classmethod
     def to_schema(
@@ -553,7 +564,7 @@ class DataClass:
     ) -> str:
         """Generate a Json schema which is more detailed than the signature."""
         schema = cls.to_schema(exclude=exclude, include=include)
-        return json.dumps(schema, indent=4)
+        return json.dumps(schema, indent=4).strip()
 
     @classmethod
     def to_yaml_signature(

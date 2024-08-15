@@ -9,7 +9,7 @@ from use_cases.question_answering.bhh_object_count.config import (
     gpt_4o_model,
 )
 
-from typing import Dict
+from typing import Dict, Optional
 import adalflow as adal
 
 from adalflow.datasets.types import Example
@@ -21,9 +21,9 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self,
         model_client: adal.ModelClient,
         model_kwargs: Dict,
-        backward_engine_model_config: Dict,
-        teacher_model_config: Dict,
-        text_optimizer_model_config: Dict,
+        backward_engine_model_config: Optional[Dict] = None,
+        teacher_model_config: Optional[Dict] = None,
+        text_optimizer_model_config: Optional[Dict] = None,
     ):
         task = ObjectCountTaskPipeline(model_client, model_kwargs)
         eval_fn = AnswerMatchAcc(type="exact_match").compute_single_item
@@ -72,10 +72,12 @@ class ObjectCountAdalComponent(adal.AdalComponent):
         self,
     ):  # TODO: train the text optimizer and the demo optimizer at the same time
         to = super().configure_text_optimizer_helper(**self.text_optimizer_model_config)
-        # do = super().configure_demo_optimizer_helper()
-        return to
+        do = super().configure_demo_optimizer_helper()
+        return to + do
 
 
+# TODO: make the train diagnose on the student model and the teacher model automatcally
+# in the trainer
 def train_diagnose(
     model_client: adal.ModelClient,
     model_kwargs: Dict,
@@ -91,6 +93,21 @@ def train_diagnose(
     trainer.diagnose(dataset=testset, split="test")
 
 
+def train_diagnose_teacher(
+    model_client: adal.ModelClient,
+    model_kwargs: Dict,
+) -> Dict:
+    from use_cases.question_answering.bhh_object_count.data import load_datasets
+
+    trainset, valset, testset = load_datasets()
+
+    adal_component = ObjectCountAdalComponent(model_client, model_kwargs)
+    trainer = adal.Trainer(adaltask=adal_component)
+    trainer.diagnose(dataset=trainset, split="train_teacher")
+    trainer.diagnose(dataset=valset, split="val_teacher")
+    trainer.diagnose(dataset=testset, split="test_teacher")
+
+
 from use_cases.question_answering.bhh_object_count.data import load_datasets
 
 
@@ -98,7 +115,7 @@ from use_cases.question_answering.bhh_object_count.data import load_datasets
 # 0.98 val, 0.91 test
 def train(
     train_batch_size=4,  # larger batch size is not that effective, probably because of llm's lost in the middle
-    raw_shots: int = 1,
+    raw_shots: int = 0,
     bootstrap_shots: int = 1,
     max_steps=1,
     num_workers=4,
@@ -137,5 +154,8 @@ def train(
 if __name__ == "__main__":
 
     train(
-        debug=False, max_steps=12, strategy="constrained"
+        debug=False, max_steps=24, strategy="constrained"
     )  # TODO: few-shot constraint
+
+    # train_diagnose(**gpt_3_model)
+    # train_diagnose_teacher(**gpt_4o_model)

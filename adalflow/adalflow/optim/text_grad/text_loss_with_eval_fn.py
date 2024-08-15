@@ -343,7 +343,7 @@ class EvalFnToTextLoss(LossComponent):
         log.info(f"response_gradient_context: {response_gradient_context}")
 
         # go through all child parameters
-        if backward_engine:
+        if backward_engine and not response.backward_engine_disabled:
             # Convert all input arguments to string
             inputs_string = "\n\n".join(
                 [
@@ -357,6 +357,7 @@ class EvalFnToTextLoss(LossComponent):
                         f"EvalFnToTextLoss: Skipping {pred} as it does not require optimization."
                     )
                     continue
+
                 self._backward_through_one_predecessor(
                     pred,
                     inputs_string,

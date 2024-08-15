@@ -80,13 +80,18 @@ class DataLoader:
         self.shuffle = shuffle
 
         self.indices = np.arange(len(dataset))
-        if self.shuffle:
-            np.random.shuffle(self.indices)
-        self.current_index = 0
-
-    def __iter__(self):
         # if self.shuffle:
         #     np.random.shuffle(self.indices)
+        self.current_index = 0
+        self.max_steps = self.__len__()
+        self.step_index = 0
+
+    def set_max_steps(self, max_steps: int):
+        self.max_steps = max_steps
+
+    def __iter__(self):
+        if self.shuffle:
+            np.random.shuffle(self.indices)
         self.current_index = 0
         return self
 
@@ -94,8 +99,18 @@ class DataLoader:
         return (len(self.dataset) + self.batch_size - 1) // self.batch_size
 
     def __next__(self) -> Union[np.ndarray, Tuple]:
+        # if self.current_index >= len(self.dataset):
+        #     raise StopIteration
+
         if self.current_index >= len(self.dataset):
-            raise StopIteration
+            if self.shuffle:
+                np.random.shuffle(self.indices)  # Reshuffle for the new epoch
+            self.current_index = 0
+            if self.step_index < self.max_steps:
+                pass
+            else:
+                raise StopIteration
+            # raise StopIteration
 
         batch_indices = self.indices[
             self.current_index : self.current_index + self.batch_size
@@ -108,6 +123,7 @@ class DataLoader:
             batch_data = np.array(batch_data)
 
         self.current_index += self.batch_size
+        self.step_index += 1
 
         return batch_data
 
