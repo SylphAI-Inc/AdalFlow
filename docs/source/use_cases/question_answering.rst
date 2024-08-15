@@ -1,25 +1,28 @@
 Introduction to AdalFlow library
 ===============================
-    End-to-end building and optimization on question answering task pipeline.
 
-AdalFlow provides token efficient and highly-performing prompt optimization with a unified framework.
 
-In this tutorial, we will implement and optimize a question answering task pipeline. In particular, it is to count the total objects.
+AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
 
-Here is the one example:
+Overview
+----------------
+In this tutorial, we will implement and optimize a question-answering task pipeline. Specifically, the task is to count the total number of objects.
+Here is an example from the dataset:
 
 .. code-block:: python
 
     question = "I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?"
 
 
-For optimization, we will demonstrate both few-shot In-context Learning(ICL) and the instruction/prompt optimization.
+For optimization, we will demonstrate both the instruction/prompt optimization and few-shot In-context Learning(ICL).
 
-We especially want to know how the auto-training pipeline perform on both good and bad starting prompt.
+**Instruction/prompt Optimization**
 
-On a low performing starting prompt, our zero-shot optimizer stats:
+We especially want to see how the auto-training pipeline performs with both good and bad starting prompts.
 
-.. list-table:: Scores by Method and Split On Low-performing Starting Prompt
+With a low-performing starting prompt, our zero-shot optimizer states:
+
+.. list-table:: Scores by Method and Split On Low-performing Starting Prompt (gpt-3.5-turbo)
    :header-rows: 1
    :widths: 20 20 20 20
 
@@ -36,10 +39,10 @@ On a low performing starting prompt, our zero-shot optimizer stats:
      - 0.9 (**+36%**)
      - 0.9 (**+25%**)
 
-It converged within 5 steps where each batch has a size of only 4 samples.
+It converged within 5 steps, with each batch containing only 4 samples.
 
 
-.. list-table:: Manual Prompt vs Optimized Prompt
+.. list-table:: Manual Prompt vs Optimized Prompt (gpt-3.5-turbo)
    :header-rows: 1
    :widths: 20 20
 
@@ -51,9 +54,9 @@ It converged within 5 steps where each batch has a size of only 4 samples.
      - You will answer a reasoning question by performing detailed and careful counting of each item. Ensure no items, particularly those in plural form, are miscounted. The last line of your response should be formatted as follows: 'Answer: $VALUE' where VALUE is a numerical value.
 
 
-And we will see how we optimize an already high-performing task pipeline (~90% accuracy) to even higher which would have been really difficult if we try to manually optimize the promot.
+We will also demonstrate how to optimize an already high-performing task pipeline (~90% accuracy) to achieve even better results—a process that would be very challenging with manual prompt optimization.
 
-.. list-table:: Scores by Method and Split On High-performing Starting Prompt
+.. list-table:: Scores by Method and Split On High-performing Starting Prompt (gpt-3.5-turbo)
    :header-rows: 1
    :widths: 20 20 20 20
 
@@ -84,14 +87,34 @@ And we will see how we optimize an already high-performing task pipeline (~90% a
    * - Optimized (plus generated examples by itself) (98% on val, 91% on test)
      - You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value. Here are some examples: 1. I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have? Answer: 8
 
-Now, let's get started on how to implement and to achieve the above results.
+**Bootstrap Few-shot**
+
+We achieved 94% accuracy on the test split with just one bootstrap shot, using only the demonstration of the teacher model's response, surpassing the performance of all existing libraries.
+
+.. list-table:: Optimized Scores comparison on the same prompt on test set (gpt-3.5-turbo)
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Test
+   * - Text-grad (start)
+     - 0.72
+   * - Text-grad (optimized)
+     - 0.89
+   * - AdalFlow (start)
+     - 0.87
+   * - AdalFlow(text-grad optimized)
+     - 0.91
+   * - AdalFlow ("Learn-to-reason" one-shot)
+     - **0.94**
+
+Now, let's get started on how to implement and achieve the results mentioned above together.
+
 
 Build the task pipeline
 --------------------------
-As we can leverage the optimizer to auto-optimize our task pipeline, we provide a quick way to build the task pipeline.
-
-We will instruct the LLM to response with chain_of_thought and end the response with format 'Answer: $VALUE'.
-We will use the following code to process it:
+As we can leverage the optimizer to automatically optimize our task pipeline, we offer a quick way to build it.
+We'll instruct the LLM to respond with a chain of thought and end the response with the format Answer: $VALUE. We will use the following code to process it:
 
 .. code-block:: python
 
@@ -133,12 +156,13 @@ For the task, we will use a simple template taking three arguments: ``system_pro
     <END_OF_USER>
     """
 
-We will create two parameters for training the model: ``system_prompt`` and ``few_shot_demos``.
-We will init the ``Parameter`` with a ``role_desc`` and ``requires_opt`` to let the ``backward_engine`` (for feedback/textual gradients) and the optimizer know what the parameter is for.
-Also, we have to set the ``param_type`` to ``ParameterType.PROMPT`` and ``ParameterType.DEMOS`` so that the our ``trainer``
-can configure the right optimizer to optimize the parameters.
-Here is our task pipeline:
 
+We will create two parameters for training the model: ``system_prompt`` and ``few_shot_demos``.
+We will initialize the ``Parameter`` with a ``role_desc`` and ``requires_opt`` to inform the ``backward_engine`` (for feedback/textual gradients) and
+the optimizer about the purpose of the parameter.
+Additionally, we need to set the ``param_type`` to ``ParameterType.PROMPT`` and ``ParameterType.DEMOS`` so that our trainer can configure the appropriate optimizer to optimize these parameters.
+
+Here is our task pipeline:
 
 .. code-block:: python
 
@@ -181,17 +205,18 @@ Here is our task pipeline:
             output = self.llm_counter(prompt_kwargs={"input_str": question}, id=id)
             return output
 
+
+
 Here are a few points to keep in mind:
 
-1. Our task pipeline has eval and train mode. In default, it will be in eval mode, and it will output a ``GeneratorOutput`` object.
-   When in train mode, it will output a ``Parameter`` object where the ``data`` attribute will be the raw output from ``GeneratorOutput``
-   and it will save the whole ``GeneratorOutput`` object in the ``full_response`` attribute in case to be used for evaluation.
-   To indicate the specific input to the evaluation function, we will pass it to ``eval_input`` attribute.
+1. Our task pipeline operates in both evaluation and training modes. By default, it will be in evaluation mode and will output a ``GeneratorOutput`` object.
+   When in training mode, it will output a ``Parameter`` object where the data attribute contains the raw output from ``GeneratorOutput``.
+   The entire GeneratorOutput object will be saved in the ``full_response`` attribute, allowing it to be used later for evaluation.
+   To specify which input should be passed to the evaluation function, we will assign it to the ``eval_input`` attribute.
 
-2. If we want to train few-shot in-context learning, we will have assign an ``id`` to our LLM call.
-   The ``id`` will be used to trace the few-shot examples.
+2. If we want to train using few-shot in-context learning, we need to assign an ``id`` to our LLM call. This ``id`` will be used to trace the few-shot examples automatically.
 
-Now, lets pass a ``gpt-3.5-turbo`` model to our task pipeline and test both training and evaluation mode.
+Now, let's pass a ``gpt-3.5-turbo`` model to our task pipeline and test both training and evaluation modes.
 
 .. code-block:: python
 
@@ -233,7 +258,7 @@ The answer for the eval mode:
 
 .. code-block:: python
 
-    GeneratorOutput(id=None, data=8, error=None, usage=CompletionUsage(completion_tokens=113, prompt_tokens=113, total_tokens=226), raw_response='To find the total number of musical instruments you have, you simply need to count the individual instruments you listed. \n\nCounting the instruments:\n1 flute\n1 piano\n1 trombone\n1 violin\n1 accordion\n1 clarinet\n1 drum\n1 trumpet\n\nAdding the number of stoves and lamps, which are not musical instruments:\n4 stoves\n2 lamps\n\nTotal number of musical instruments = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8\n\nAnswer: 8', metadata=None)
+    GeneratorOutput(id="1", data=8, error=None, usage=CompletionUsage(completion_tokens=113, prompt_tokens=113, total_tokens=226), raw_response='To find the total number of musical instruments you have, you simply need to count the individual instruments you listed. \n\nCounting the instruments:\n1 flute\n1 piano\n1 trombone\n1 violin\n1 accordion\n1 clarinet\n1 drum\n1 trumpet\n\nAdding the number of stoves and lamps, which are not musical instruments:\n4 stoves\n2 lamps\n\nTotal number of musical instruments = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8\n\nAnswer: 8', metadata=None)
 
 The answer for the train mode:
 
@@ -259,26 +284,26 @@ The answer for the train mode:
 
     Answer: 8, predecessors={Parameter(name=To_give_ta, requires_opt=True, param_type=prompt (Instruction to the language model on task, data, and format.), role_desc=To give task instruction to the language model in the system prompt, data=You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value., predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), Parameter(name=To_provide, requires_opt=True, param_type=demos (A few examples to guide the language model.), role_desc=To provide few shot demos to the language model, data=None, predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={})}, gradients=set(),            raw_response=None, input_args={'prompt_kwargs': {'system_prompt': Parameter(name=To_give_ta, requires_opt=True, param_type=prompt (Instruction to the language model on task, data, and format.), role_desc=To give task instruction to the language model in the system prompt, data=You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value., predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), 'few_shot_demos': Parameter(name=To_provide, requires_opt=True, param_type=demos (A few examples to guide the language model.), role_desc=To provide few shot demos to the language model, data=None, predecessors=set(), gradients=set(),            raw_response=None, input_args=None, traces={}), 'input_str': 'I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?'}, 'model_kwargs': {'model': 'gpt-3.5-turbo', 'max_tokens': 2000, 'temperature': 0.0, 'top_p': 0.99, 'frequency_penalty': 0, 'presence_penalty': 0, 'stop': None}}, traces={})
 
-So far, we have completed the task pipeline and made sure it is working in both eval and train mode.
-Of course, if the performance is perfect here, there is no need to train. But we need to evaluate it.
-Our train pipeline can help you with both training and evaluation.
 
-# TODO: rerun the example as the id is just added to the call.
+So far, we have completed the task pipeline and ensured it works in both evaluation and training modes. Of course, if the performance is already perfect, there may be no need for further training, but evaluation is still essential.
+
+Our training pipeline can assist with both training and evaluation.
+
 
 Evaluate the task pipeline
 ----------------------------
-Before we start the training, we should prepare three datasets: train, validation, and test datasets.
-We need to do intitial evaluation to check two things:
 
-1. The overall performance, maybe an average accross the datasets. If it does not meet the accuracy requirements, we need to plan on evaluation.
+Before we start the training, we should prepare three datasets: train, validation, and test datasets. An initial evaluation is necessary to check two things:
 
-2. The performance on each dataset: we need to ensure that each split has a comparable performance so that the train and validation set can be a good indicator to the test performance.
+1. **Overall Performance on Each Data Split:** We need to assess the performance on each data split. If the accuracy does not meet the required standards, we must plan for further evaluation and adjustments.
+
+2. **Performance Consistency Across Datasets:** We need to ensure that each split (train, validation, and test) performs comparably. This consistency is crucial so that the train and validation sets can serve as reliable indicators of test performance.
 
 Datasets
 ~~~~~~~~~~~~
 
 We have prepared the dataset at ``adalflow.datasets.big_bench_hard``.
-We can load it:
+We can load it with the following code:
 
 .. code-block:: python
 
@@ -311,15 +336,12 @@ To note that the answer is in `str` format.
 
 Diagnose the task pipeline
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-We have a `diagnose` method in our ``trainer`` to help users run evaluation on a dataset split using callbacks and call logger automatically setup by our trainer.
-In this case, we will find the following datastructure.
 
-Starting from here, we will use ``AdalComponent`` which is an interface class that we should subclass from.
-The ``AdalComponent`` provides parallel processing to run the pipeline, handles call back config, optimizer config, or even teacher/backward engine out of box.
-It opens up a few attributes and methods for users to complete by subclass ``AdalComponent``.
-This is similar to how ``PyTorch Lightning``'s ``LightningModule`` works with its ``Trainer``.
+To evaluate the task pipeline using the :meth:`diagnose<optim.trainer.trainer.Trainer>` method provided by our trainer,
+we can take advantage of the :class:`AdalComponent<optim.trainer.adal.AdalComponent>` interface.
+This interface class should be subclassed, allowing us to leverage its parallel processing capabilities, callback configuration, optimizer configuration, and built-in support for the teacher/backward engine. The AdalComponent works similarly to how PyTorch Lightning's LightningModule interacts with its Trainer.
 
-This minimum code will get us started on evaluating the task pipeline.
+Here’s the minimum code required to get started on evaluating the task pipeline:
 
 .. code-block:: python
 
@@ -378,8 +400,9 @@ File structure:
 
 
 
-Tips:
-   As we save all data in default at ~/.adalflow, you can create a soft link to the current directory to access the data easily
+.. note::
+
+   As we save all data in default at `~/.adalflow`, you can create a soft link to the current directory to access the data easily
    in your code editor.
 
 The `llm_counter_call.jsonl` file will contain 6 keys:
@@ -421,7 +444,7 @@ The model already performs quite well on the dataset.
 Let's see if we can optimize it further with either few-shot or zero-shot prompt optimization or even both.
 
 
-Train
+Train Setup
 ------------------------------
 
 Prepare AdalComponent for training
@@ -481,7 +504,7 @@ We provided a ``configure_backward_engine_helper`` method to smooth this setup; 
 .. code-block:: python
 
     def configure_backward_engine(self):
-        return super().configure_backward_engine_helper(
+        super().configure_backward_engine_helper(
             **self.backward_engine_model_config
         )
 
@@ -584,9 +607,27 @@ Debug mode will turn on the log and set it to ``DEBUG`` level.
 Here is how our trace_graph looks like: :doc:`trace_graph <../tutorials/trace_graph>`.
 
 
-Train
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Train with Text-Gradient Descent
+-----------------------------------
 To train, we simply set the ``debug`` to ``False``.
+
+To do textual-gradient descent training for our task pipeline, we will go back to the task pipeline to set the `requires_opt` to `False` for the `few_shot_demos` parameter and
+`requires_opt=True` for the `system_prompt` parameter.
+
+.. code-block:: python
+
+    system_prompt = adal.Parameter(
+                data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+                role_desc="To give task instruction to the language model in the system prompt",
+                requires_opt=True,
+                param_type=ParameterType.PROMPT,
+            )
+    few_shot_demos = adal.Parameter(
+        data=None,
+        role_desc="To provide few shot demos to the language model",
+        requires_opt=False,
+        param_type=ParameterType.DEMOS,
+    )
 
 For the text optimizer, we have two training strategy: ``random`` and ``constrained``.
 The ``random`` strategy runs a batch of loss and backward propagation and then validate it on the ``validation`` and ``test`` dataset at each step.
@@ -615,7 +656,7 @@ Here is an example of how our ckpt file looks like: :doc:`ckpt_file <../tutorial
 This file is a direct `to_dict`  (json) representation of :class:`TrainerResult<optim.types.TrainerResult>`.
 
 
-Few-shot Bootstrap
+Train with Few-shot Bootstrap
 ------------------------------
 As we have defined a ``ParameterType.DEMOS`` in our ``ObjectCountAdalComponent``, we can train the model with few-shot bootstrap.
 We will set ``raw_shots=0`` and ``bootstrap_shots=1`` in the ``train`` method.
@@ -627,7 +668,7 @@ We can achieve this using the diagnose method while setting the `model_client` a
 Additionally, ensure you set the `split` to `train_teacher` etc to ensure the previous diagnose on the student model is not overwritten.
 Here is the teach model performance on the zero-shot prompt:
 
-.. list-table:: Scores by Method and Split On High-performing Starting Prompt
+.. list-table:: Scores by teacher mode (gpt-4o) on the same high-performing starting prompt
    :header-rows: 1
    :widths: 20 20 20 20
 
@@ -666,21 +707,18 @@ Here is our top performing few-shot example:
 
 .. list-table:: Scores for One-shot Bootstrap
    :header-rows: 1
-   :widths: 10 60 10 10 10
+   :widths: 10 40 25 25
 
    * - Method
      - Prompt
-     - Train
      - Val
      - Test
    * - Start
      - None
-     - N/A (50 samples)
-     - 0.90 (50 samples)
-     - 0.87 (100 samples)
+     - 0.90
+     - 0.87
    * - Optimized One-shot
      - Example: 'To find the total number of objects you have, you need to count each individual\n  item. In this case, you have:\n\n  1 microwave\n\n  1 lamp\n\n  4 cars\n\n  1 stove\n\n  1 toaster\n\n  1 bed\n\n\n  Adding these together:\n\n  1 + 1 + 4 + 1 + 1 + 1 = 9\n\n\n  Therefore, you have 9 objects in total.\n\n  Answer: 9'
-     - N/A
      - 0.96 (**+6%**, 4% < teacher)
      - 0.94 (**+7%**, 4% < teacher)
 
@@ -694,4 +732,25 @@ We compared our performance with text-grad. Here are our stats:
 The same prompt, text-grad gets 0.72 on the validation set. and it optimized it to 0.89.
 But text-grad use more lengthy prompt, where it takes more than 80s to run a backpropagation on a batch size of 4.
 Yet, we only take 12s.
-Also AdalFlow has better converage rate.
+Also AdalFlow has better converage rate in general.
+We also leverage single message prompt, sending the whole template to the model's system message, making this whole development process easy.
+
+.. list-table:: Optimized Scores comparison on the same prompt on test set (gpt-3.5-turbo)
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Test
+   * - Text-grad (start)
+     - 0.72
+   * - Text-grad (optimized)
+     - 0.89
+   * - AdalFlow (start)
+     - 0.87
+   * - AdalFlow(text-grad optimized)
+     - 0.91
+   * - AdalFlow ("Learn-to-reason" one-shot)
+     - **0.94**
+
+.. note::
+    In the start we use same prompt but we use a single template which achieves much better zero-shot performance than text-grad which sends the system prompt to system message and the input to user message.

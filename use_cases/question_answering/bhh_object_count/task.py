@@ -93,7 +93,6 @@ class ObjectCountTaskPipeline(adal.Component):
         )
         few_shot_demos = adal.Parameter(
             data=None,
-            # data="Question: I have three oranges, a pig, a frog, a cow, three bananas, a nectarine,\n  and a snail. How many animals do I have?\nassistant: 'You have a pig, a frog, a cow, and a snail, so you have 4 animals in\n  total.\n\n  Answer: 4'\nquestion: I have a microwave, a table, a fridge, a stove, an oven, a toaster, a couch,\n  and four cars. How many objects do I have?\nanswer: '11'\ninput_str: I have three oranges, a pig, a frog, a cow, three bananas, a nectarine,\n  and a snail. How many animals do I have?\nraw_response: 'You have a pig, a frog, a cow, and a snail, so you have 4 animals in\n  total.\n\n  Answer: 4'\nquestion: I have a microwave, a table, a fridge, a stove, an oven, a toaster, a couch,\n  and four cars. How many objects do I have?\nanswer: '11'",
             role_desc="To provide few shot demos to the language model",
             requires_opt=True,
             param_type=ParameterType.DEMOS,
