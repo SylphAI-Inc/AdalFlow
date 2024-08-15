@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -587,6 +579,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.init_async_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.track_completion_usage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.call()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">AnthropicAPIClient.acall()</span></code></a></li>
@@ -610,6 +603,7 @@
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.track_completion_usage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.call"><code class="docutils literal notranslate"><span class="pre">GoogleGenAIClient.call()</span></code></a></li>
 </ul>
@@ -621,9 +615,12 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.init_async_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.track_completion_usage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.call"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.call()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.acall"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.acall()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.from_dict"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.to_dict"><code class="docutils literal notranslate"><span class="pre">GroqAPIClient.to_dict()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -655,6 +652,7 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_async_client"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.init_async_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_chat_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.track_completion_usage()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.parse_embedding_response()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.call"><code class="docutils literal notranslate"><span class="pre">OpenAIClient.call()</span></code></a></li>
@@ -673,6 +671,8 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding"><code class="docutils literal notranslate"><span class="pre">TransformerEmbedder.infer_gte_base_embedding()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.get_device"><code class="docutils literal notranslate"><span class="pre">get_device()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.clean_device_cache"><code class="docutils literal notranslate"><span class="pre">clean_device_cache()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker"><code class="docutils literal notranslate"><span class="pre">TransformerReranker</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.models"><code class="docutils literal notranslate"><span class="pre">TransformerReranker.models</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.init_model"><code class="docutils literal notranslate"><span class="pre">TransformerReranker.init_model()</span></code></a></li>
@@ -681,9 +681,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM"><code class="docutils literal notranslate"><span class="pre">TransformerLLM</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.models"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.models</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.tokenizer"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.tokenizer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.model_to_init_func"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.model_to_init_func</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.init_model"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.init_model()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.parse_chat_completion()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.call()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.infer_llm"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.infer_llm()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient"><code class="docutils literal notranslate"><span class="pre">TransformersClient</span></code></a><ul>
@@ -691,7 +693,9 @@
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_sync_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_reranker_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_reranker_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.init_llm_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_llm_client()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.set_llm_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.set_llm_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">TransformersClient.parse_embedding_response()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">TransformersClient.parse_chat_completion()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call"><code class="docutils literal notranslate"><span class="pre">TransformersClient.call()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">TransformersClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 </ul>

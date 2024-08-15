@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -579,24 +571,9 @@
   <section id="module-core.prompt_builder">
 <span id="prompt-builder"></span><span id="core-prompt-builder"></span><h1>prompt_builder<a class="headerlink" href="#module-core.prompt_builder" title="Link to this heading">#</a></h1>
 <p>Class prompt builder for LightRAG system prompt.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Prompt</span></code></a>([template, prompt_kwargs])</p></td>
-<td><p>Renders a text string(prompt) from a Jinja2 template string.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="core.prompt_builder.get_jinja2_environment">
-<span class="sig-name descname"><span class="pre">get_jinja2_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#get_jinja2_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.get_jinja2_environment" title="Link to this definition">#</a></dt>
-<dd><p>Helper function for Prompt component to get the Jinja2 environment with the default settings.</p>
-</dd></dl>
-
 <dl class="py class">
 <dt class="sig sig-object py" id="core.prompt_builder.Prompt">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
 <p>Renders a text string(prompt) from a Jinja2 template string.</p>
 <p>In default, we use the <a class="reference internal" href="core.default_prompt_template.html#core-default-prompt-template"><span class="std std-ref">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></a>  as the template.</p>
@@ -610,7 +587,7 @@
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">preset_prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;task_desc_str&quot;</span><span class="p">:</span> <span class="s2">&quot;You are a helpful assistant.&quot;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt_template</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prompt</span><span class="o">.</span><span class="n">print_prompt</span><span class="p">(</span><span class="n">context_str</span><span class="o">=</span><span class="s2">&quot;This is a context string.&quot;</span><span class="p">)</span>
@@ -663,14 +640,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.prompt_builder.Prompt.print_prompt">
-<span class="sig-name descname"><span class="pre">print_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.print_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.print_prompt" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">print_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.print_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.print_prompt" title="Link to this definition">#</a></dt>
 <dd><p>Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.prompt_builder.Prompt.call">
 <span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/core/prompt_builder.html#Prompt.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.Prompt.call" title="Link to this definition">#</a></dt>
-<dd><p>Renders the prompt template with keyword arguments.</p>
+<dd><p>Renders the prompt template with keyword arguments. Allow None values.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -687,6 +664,12 @@ using <a class="reference internal" href="#core.prompt_builder.Prompt.to_dict" t
 dictionary keys and list elements to ensure consistent ordering.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="core.prompt_builder.get_jinja2_environment">
+<span class="sig-name descname"><span class="pre">get_jinja2_environment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/prompt_builder.html#get_jinja2_environment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.prompt_builder.get_jinja2_environment" title="Link to this definition">#</a></dt>
+<dd><p>Helper function for Prompt component to get the Jinja2 environment with the default settings.</p>
 </dd></dl>
 
 </section>
@@ -737,7 +720,6 @@ dictionary keys and list elements to ensure consistent ordering.</p>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.get_jinja2_environment"><code class="docutils literal notranslate"><span class="pre">get_jinja2_environment()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt"><code class="docutils literal notranslate"><span class="pre">Prompt</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.update_prompt_kwargs"><code class="docutils literal notranslate"><span class="pre">Prompt.update_prompt_kwargs()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.get_prompt_variables"><code class="docutils literal notranslate"><span class="pre">Prompt.get_prompt_variables()</span></code></a></li>
@@ -750,6 +732,7 @@ dictionary keys and list elements to ensure consistent ordering.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.Prompt.to_dict"><code class="docutils literal notranslate"><span class="pre">Prompt.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.prompt_builder.get_jinja2_environment"><code class="docutils literal notranslate"><span class="pre">get_jinja2_environment()</span></code></a></li>
 </ul>
   </nav></div>
 

@@ -52,8 +52,8 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="logger" href="utils.logger.html" />
-    <link rel="prev" title="file_io" href="utils.file_io.html" />
+    <link rel="next" title="registry" href="utils.registry.html" />
+    <link rel="prev" title="config" href="utils.config.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Utils</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.file_io.html">file_io</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.config.html">config</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -579,27 +571,6 @@
   <section id="module-utils.lazy_import">
 <span id="lazy-import"></span><span id="utils-lazy-import"></span><h1>lazy_import<a class="headerlink" href="#module-utils.lazy_import" title="Link to this heading">#</a></h1>
 <p>Lazy import a module and class.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.safe_import" title="utils.lazy_import.safe_import"><code class="xref py py-obj docutils literal notranslate"><span class="pre">safe_import</span></code></a>(module_name, install_message)</p></td>
-<td><p>Safely import a module and raise an ImportError with the install message if the module is not found.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.lazy_import.LazyImport" title="utils.lazy_import.LazyImport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LazyImport</span></code></a>(import_path, optional_package, ...)</p></td>
-<td><p>Lazy import a module and class.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptionalPackages</span></code></a>(value[, names, module, ...])</p></td>
-<td><p>Enum for optional packages that can be used in the library.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptionalPackages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/utils/lazy_import.html#OptionalPackages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.lazy_import.OptionalPackages" title="Link to this definition">#</a></dt>
@@ -661,6 +632,11 @@
 <span class="sig-name descname"><span class="pre">PGVECTOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('pgvector',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">pgvector</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pgvector')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.PGVECTOR" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="utils.lazy_import.OptionalPackages.DATASETS">
+<span class="sig-name descname"><span class="pre">DATASETS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('datasets',</span> <span class="pre">'Please</span> <span class="pre">install</span> <span class="pre">datasets</span> <span class="pre">with:</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">datasets')</span></em><a class="headerlink" href="#utils.lazy_import.OptionalPackages.DATASETS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -677,7 +653,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>import_path</strong> (<em>str</em>) – The import path of the module and class, eg. “lightrag.components.model_client.openai_client.OpenAIClient”.</p></li>
+<li><p><strong>import_path</strong> (<em>str</em>) – The import path of the module and class, eg. “adalflow.components.model_client.openai_client.OpenAIClient”.</p></li>
 <li><p><strong>optional_package</strong> (<a class="reference internal" href="#utils.lazy_import.OptionalPackages" title="utils.lazy_import.OptionalPackages"><em>OptionalPackages</em></a>) – The optional package to import, it helps define the package name and error message.</p></li>
 </ul>
 </dd>
@@ -710,7 +686,7 @@ When numpy is installed, it will print the numpy version.</p>
 <ol class="arabic simple" start="2">
 <li><p>Use it to delay the import of optional packages in the library.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 <span class="n">numpy</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">NUMPY</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">NUMPY</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
@@ -730,20 +706,20 @@ When numpy is installed, it will print the numpy version.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="utils.file_io.html"
+       href="utils.config.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">file_io</p>
+        <p class="prev-next-title">config</p>
       </div>
     </a>
     <a class="right-next"
-       href="utils.logger.html"
+       href="utils.registry.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">logger</p>
+        <p class="prev-next-title">registry</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -777,6 +753,7 @@ When numpy is installed, it will print the numpy version.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.FAISS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.FAISS</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.SQLALCHEMY"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.SQLALCHEMY</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.PGVECTOR"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.PGVECTOR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.OptionalPackages.DATASETS"><code class="docutils literal notranslate"><span class="pre">OptionalPackages.DATASETS</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utils.lazy_import.LazyImport"><code class="docutils literal notranslate"><span class="pre">LazyImport</span></code></a><ul class="nav section-nav flex-column">

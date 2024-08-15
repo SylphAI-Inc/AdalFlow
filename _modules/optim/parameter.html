@@ -1,0 +1,1236 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>optim.parameter &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/optim/parameter';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">optim.parameter</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for optim.parameter</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.types</span> <span class="kn">import</span> <span class="n">ParameterType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># covariant set to False to allow for in-place updates</span>
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GradientContext">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.GradientContext">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">GradientContext</span><span class="p">:</span>
+    <span class="n">variable_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The description of the target parameter&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">response_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The description of the response parameter&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The context of the gradient in form of a conversation indicating </span><span class="se">\</span>
+<span class="s2">                the relation of the current parameter to the response parameter (gradient)&quot;</span>
+        <span class="p">}</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">COMBINED_GRADIENTS_TEMPLATE</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or g in combined_gradients %}</span>
+<span class="s2">{</span><span class="si">% s</span><span class="s2">et gradient = g[0] %}</span>
+<span class="s2">{</span><span class="si">% s</span><span class="s2">et gradient_context = g[1] %}</span>
+
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f gradient_context %}</span>
+<span class="s2">{{loop.index}}.</span>
+<span class="s2">&lt;CONTEXT&gt;{{gradient_context.context}}&lt;/CONTEXT&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f gradient.data %}</span>
+<span class="s2">  {</span><span class="si">% i</span><span class="s2">f gradient_context %}</span>
+<span class="s2">{#The output is used as &lt;{{gradient_context.response_desc}}&gt;#}</span>
+<span class="s2">&lt;FEEDBACK&gt;{{gradient.data}}&lt;/FEEDBACK&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">lse %}</span>
+<span class="s2">&lt;FEEDBACK&gt;{{gradient.data}}&lt;/FEEDBACK&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Parameter">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter">[docs]</a>
+<span class="k">class</span> <span class="nc">Parameter</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A data container to represent a parameter used for optimization.</span>
+
+<span class="sd">    A parameter enforce a specific data type and can be updated in-place.</span>
+<span class="sd">    When parameters are used in a component - when they are assigned as Component attributes</span>
+<span class="sd">    they are automatically added to the list of its parameters, and  will</span>
+<span class="sd">    appear in the :meth:`~Component.parameters` or :meth:`~Component.named_parameters` method.</span>
+
+<span class="sd">    Args:</span>
+
+<span class="sd">    End users only need to create the Parameter with four arguments and pass it to the</span>
+<span class="sd">    prompt_kwargs in the Generator.</span>
+<span class="sd">        - data (str): the data of the parameter</span>
+<span class="sd">        - requires_opt (bool, optional): if the parameter requires optimization. Default: `True`</span>
+<span class="sd">        - role_desc.</span>
+<span class="sd">        - param_type, incuding ParameterType.PROMPT for instruction optimization, ParameterType.DEMOS</span>
+<span class="sd">        for few-shot optimization.</span>
+<span class="sd">        - instruction_to_optimizer (str, optional): instruction to the optimizer. Default: `None`</span>
+<span class="sd">        - instruction_to_backward_engine (str, optional): instruction to the backward engine. Default: `None`</span>
+
+<span class="sd">    The parameter users created will be automatically assigned to the variable_name/key in the prompt_kwargs</span>
+<span class="sd">    for easy reading and debugging in the trace_graph.</span>
+
+<span class="sd">    References:</span>
+
+<span class="sd">    1. https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proposing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># State of the parameter</span>
+    <span class="n">predecessors</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Predecessors of the parameter</span>
+    <span class="n">peers</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># Peers of the parameter</span>
+    <span class="n">input_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Input arguments of the GradComponent forward</span>
+    <span class="n">full_response</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Full response of the GradComponent output</span>
+    <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Eval input passing to the eval_fn or evaluator you use</span>
+    <span class="n">from_response_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="kc">None</span>  <span class="c1"># for parameterType GRADIENT, the id of the response parameter</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for generator output, the data will be set up as raw_response</span>
+        <span class="n">requires_opt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">param_type</span><span class="p">:</span> <span class="n">ParameterType</span> <span class="o">=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># name is used to refer to the parameter in the prompt, easier to read for humans</span>
+        <span class="n">gradient_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">raw_response</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># use this to track the raw response of generator instead of the data (can be parsed)</span>
+        <span class="n">instruction_to_optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">instruction_to_backward_engine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">score</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_response_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span> <span class="o">=</span> <span class="n">role_desc</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span>
+                <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;param_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span> <span class="o">=</span> <span class="n">param_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>  <span class="c1"># often string and will be used in the prompts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requires_opt</span> <span class="o">=</span> <span class="n">requires_opt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_eval_fn_input</span><span class="p">(</span><span class="n">eval_input</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># &lt;FEEDBACK&gt;gradient.data&lt;/FEEDBACK&gt;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">gradient_prompt</span>  <span class="c1"># the whole llm prompt to compute the gradient</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients_context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Parameter</span><span class="p">,</span> <span class="n">GradientContext</span><span class="p">]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+        <span class="p">)</span>  <span class="c1"># input and output from an operator, each operator should have a template</span>
+        <span class="c1"># &lt;CONVERSATION&gt;...&lt;/CONVERSATION&gt;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># used to store the previous data</span>
+        <span class="c1"># context of the forward pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_response</span> <span class="o">=</span> <span class="n">raw_response</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">instruction_to_optimizer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">instruction_to_optimizer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instruction_to_backward_engine</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">instruction_to_backward_engine</span>
+
+        <span class="c1"># here are used for demo parameter, filled by generator.forward</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># id of the data points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">score</span>  <span class="c1"># end to end evaluation score</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_student_traces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_demos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[]</span>
+        <span class="p">)</span>  <span class="c1"># used for the optimizer to save the proposed demos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_previous_demos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">eval_input</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_response_id</span> <span class="o">=</span> <span class="n">from_response_id</span>  <span class="c1"># for gradient parameter</span>
+
+<div class="viewcode-block" id="Parameter.check_if_already_computed_gradient_respect_to">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.check_if_already_computed_gradient_respect_to">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_if_already_computed_gradient_respect_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">from_response_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">from_response_id</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">response_id</span> <span class="ow">in</span> <span class="n">from_response_ids</span></div>
+
+
+<div class="viewcode-block" id="Parameter.add_gradient">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_gradient">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gradient</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">param_type</span> <span class="o">!=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">GRADIENT</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot add non-gradient parameter to gradients list.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">gradient</span><span class="o">.</span><span class="n">from_response_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Gradient must have a from_response_id.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gradient</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Parameter.set_predecessors">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_predecessors">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_predecessors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predecessors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">predecessors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Expected a list of Parameter instances, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">pred</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">predecessors</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Parameter.set_grad_fn">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_grad_fn">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grad_fn</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span> <span class="o">=</span> <span class="n">grad_fn</span></div>
+
+
+<div class="viewcode-block" id="Parameter.get_param_info">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_param_info">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_param_info</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;role_desc&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+            <span class="s2">&quot;param_type&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Parameter.set_peers">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_peers">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_peers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">peers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">peers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">peer</span> <span class="ow">in</span> <span class="n">peers</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Expected a list of Parameter instances, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">peer</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">peers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">peers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Parameter.trace_forward_pass">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.trace_forward_pass">[docs]</a>
+    <span class="k">def</span> <span class="nf">trace_forward_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_args</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">full_response</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Trace the forward pass of the parameter.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_args</span> <span class="o">=</span> <span class="n">input_args</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_response</span> <span class="o">=</span> <span class="n">full_response</span></div>
+
+
+<div class="viewcode-block" id="Parameter.set_eval_fn_input">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_eval_fn_input">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_eval_fn_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eval_input</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the input for the eval_fn.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">eval_input</span></div>
+
+
+<div class="viewcode-block" id="Parameter.set_score">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.set_score">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_score</span> <span class="o">=</span> <span class="n">score</span></div>
+
+
+<div class="viewcode-block" id="Parameter.add_to_trace">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_to_trace">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Called by the generator.forward to add a trace to the parameter.</span>
+
+<span class="sd">        It is important to allow updating to the trace, as this will give different sampling weight.</span>
+<span class="sd">        If the score increases as the training going on, it will become less likely to be sampled,</span>
+<span class="sd">        allowing the samples to be more diverse. Or else, it will keep sampling failed examples.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span> <span class="k">if</span> <span class="n">is_teacher</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_student_traces</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Trace must have an id attribute.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Trace with id </span><span class="si">{</span><span class="n">trace</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> already exists. Updating the trace.&quot;</span><span class="p">)</span>
+        <span class="n">target</span><span class="p">[</span><span class="n">trace</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">trace</span></div>
+
+
+<div class="viewcode-block" id="Parameter.add_score_to_trace">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.add_score_to_trace">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_score_to_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trace_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">is_teacher</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Called by the generator.backward to add the eval score to the trace.&quot;&quot;&quot;</span>
+
+        <span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span> <span class="k">if</span> <span class="n">is_teacher</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_student_traces</span>
+
+        <span class="k">if</span> <span class="n">trace_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">target</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Trace with id </span><span class="si">{</span><span class="n">trace_id</span><span class="si">}</span><span class="s2"> does not exist. Current traces: </span><span class="si">{</span><span class="n">target</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">target</span><span class="p">[</span><span class="n">trace_id</span><span class="p">]</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span></div>
+
+
+    <span class="c1">############################################################################################################</span>
+    <span class="c1">#   Used for optimizer to propose new data</span>
+    <span class="c1">############################################################################################################</span>
+<div class="viewcode-block" id="Parameter.propose_data">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.propose_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">propose_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">demos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Used by optimizer to put the new data, and save the previous data in case of revert.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot propose a new data when it is already proposing.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">demos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_previous_demos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_demos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demos</span> <span class="o">=</span> <span class="n">demos</span></div>
+
+
+<div class="viewcode-block" id="Parameter.revert_data">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.revert_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Revert the data to the previous data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot revert data without proposing first.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># reset the gradients and context</span>
+        <span class="c1"># self.reset_gradients()</span>
+        <span class="c1"># self.reset_gradients_context()</span>
+
+        <span class="c1"># cant reset gradients yet for the loss</span>
+        <span class="k">if</span> <span class="n">include_demos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_demos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_previous_demos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_previous_demos</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Parameter.step_data">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.step_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">step_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_demos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Use PyTorch&#39;s optimizer syntax to finalize the update of the data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot set data without proposing first.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># reset the gradients and context</span>
+        <span class="c1"># self.reset_gradients()</span>
+        <span class="c1"># self.reset_gradients_context()</span>
+        <span class="k">if</span> <span class="n">include_demos</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_previous_demos</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Parameter.get_grad_fn">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_grad_fn">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_grad_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_check_data_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_data</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the type of new_data against the expected data type.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected data type </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Parameter.update_value">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.update_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">T</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the parameter&#39;s value in-place, checking for type correctness.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="Parameter.reset_gradients">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.reset_gradients">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset_gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="p">[]</span></div>
+
+
+<div class="viewcode-block" id="Parameter.reset_gradients_context">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.reset_gradients_context">[docs]</a>
+    <span class="k">def</span> <span class="nf">reset_gradients_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients_context</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Parameter.get_gradients_names">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradients_names">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_gradients_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">names</span></div>
+
+
+<div class="viewcode-block" id="Parameter.get_gradient_and_context_text">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_gradient_and_context_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_gradient_and_context_text</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregates and returns:</span>
+<span class="sd">        1. the gradients</span>
+<span class="sd">        2. the context text for which the gradients are computed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+
+        <span class="c1"># print(</span>
+        <span class="c1">#     f&quot;len of gradients: {len(self.gradients)}, scores: {[g._score for g in self.gradients]} for {self.name}&quot;</span>
+        <span class="c1"># )</span>
+
+        <span class="c1"># sore gradients by the _score from low to high</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">_score</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">_score</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="n">gradient_context_combined</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients_context</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">gradient_context_combined_str</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">COMBINED_GRADIENTS_TEMPLATE</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;combined_gradients&quot;</span><span class="p">:</span> <span class="n">gradient_context_combined</span><span class="p">},</span>
+        <span class="p">)()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">gradient_context_combined_str</span></div>
+
+
+    <span class="c1"># TODO: dont use short value</span>
+<div class="viewcode-block" id="Parameter.get_short_value">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.get_short_value">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_short_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_words_offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don&#39;t want to see the entire value.</span>
+<span class="sd">        This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.</span>
+<span class="sd">        :param n_words_offset: The number of words to show from the beginning and the end of the value.</span>
+<span class="sd">        :type n_words_offset: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. ensure the data is a string</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_words_offset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">data</span>
+        <span class="n">short_value</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">[:</span><span class="n">n_words_offset</span><span class="p">])</span>
+            <span class="o">+</span> <span class="s2">&quot; (...) &quot;</span>
+            <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="o">-</span><span class="n">n_words_offset</span><span class="p">:])</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">short_value</span></div>
+
+
+<div class="viewcode-block" id="Parameter.trace_graph">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.trace_graph">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">trace_graph</span><span class="p">(</span>
+        <span class="n">root</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Set</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">],</span> <span class="n">Set</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">]]]:</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">build_graph</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="s2">&quot;Parameter&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">nodes</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
+                <span class="n">edges</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">pred</span><span class="p">,</span> <span class="n">node</span><span class="p">))</span>
+                <span class="n">build_graph</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+
+        <span class="n">build_graph</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span></div>
+
+
+<div class="viewcode-block" id="Parameter.backward">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.backward">[docs]</a>
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># engine should be the llm</span>
+
+        <span class="c1"># topological sort of all the predecessors of the current parameter in the graph</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Backward pass for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, backward function: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">topo</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">build_topo</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">predecessors</span><span class="p">:</span>
+                <span class="n">build_topo</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span>
+            <span class="n">topo</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="n">build_topo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># backpropagation</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">topo</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">node</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> as it does not require optimization&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">gradients</span> <span class="o">=</span> <span class="n">_check_and_reduce_gradients</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;v: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, grad_fn: </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">grad_fn</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">get_grad_fn</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">get_grad_fn</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># gradient function takes in the engine</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling gradient function for </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">grad_fn</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Parameter.draw_graph">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.draw_graph">[docs]</a>
+    <span class="k">def</span> <span class="nf">draw_graph</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">add_grads</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;png&quot;</span><span class="p">,</span> <span class="s2">&quot;svg&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+        <span class="n">rankdir</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;TB&quot;</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Draw the graph of the parameter and its gradients.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            add_grads (bool, optional): Whether to add gradients to the graph. Defaults to True.</span>
+<span class="sd">            format (str, optional): The format of the output file. Defaults to &quot;png&quot;.</span>
+<span class="sd">            rankdir (str, optional): The direction of the graph. Defaults to &quot;TB&quot;.</span>
+<span class="sd">            filepath (str, optional): The path to save the graph. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">save_json</span>
+        <span class="kn">from</span> <span class="nn">adalflow.utils.global_config</span> <span class="kn">import</span> <span class="n">get_adalflow_default_root_path</span>
+        <span class="kn">import</span> <span class="nn">os</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">graphviz</span> <span class="kn">import</span> <span class="n">Digraph</span>
+
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Please install graphviz using &#39;pip install graphviz&#39; to use this feature&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="c1"># try:</span>
+        <span class="c1">#     from tensorboardX import SummaryWriter</span>
+        <span class="c1"># except ImportError as e:</span>
+        <span class="c1">#     raise ImportError(</span>
+        <span class="c1">#         &quot;Please install tensorboardX using &#39;pip install tensorboardX&#39; to use this feature&quot;</span>
+        <span class="c1">#     ) from e</span>
+        <span class="k">assert</span> <span class="n">rankdir</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;LR&quot;</span><span class="p">,</span> <span class="s2">&quot;TB&quot;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">textwrap</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+                <span class="s2">&quot;Please install textwrap using &#39;pip install textwrap&#39; to use this feature&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+
+        <span class="n">root_path</span> <span class="o">=</span> <span class="n">get_adalflow_default_root_path</span><span class="p">()</span>
+        <span class="c1"># # prepare the log directory</span>
+        <span class="c1"># log_dir = os.path.join(root_path, &quot;logs&quot;)</span>
+
+        <span class="c1"># # Set up TensorBoard logging</span>
+        <span class="c1"># writer = SummaryWriter(log_dir)</span>
+
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;trace_graph_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">filepath</span>
+            <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_path</span><span class="p">,</span> <span class="s2">&quot;graphs&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving graph to </span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">wrap_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">):</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Wrap text to the specified width, considering HTML breaks.&quot;&quot;&quot;</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span>
+                <span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">break_long_words</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">replace_whitespace</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">wrap_and_escape</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
+<span class="w">            </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Wrap text to the specified width, considering HTML breaks, and escape special characters.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;amp;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;lt;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;gt;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s2">&quot;&amp;quot;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;&#39;&quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;apos;&quot;</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;br/&gt;&quot;</span>
+                <span class="p">)</span>  <span class="c1"># Convert newlines to HTML line breaks if using HTML labels</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">wrap_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span>
+
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trace_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">dot</span> <span class="o">=</span> <span class="n">Digraph</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">graph_attr</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;rankdir&quot;</span><span class="p">:</span> <span class="n">rankdir</span><span class="p">})</span>
+        <span class="n">node_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+            <span class="n">label_color</span> <span class="o">=</span> <span class="s2">&quot;darkblue&quot;</span>
+
+            <span class="n">node_label</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;table border=&#39;0&#39; cellborder=&#39;1&#39; cellspacing=&#39;0&#39;&gt;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Name: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Role: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">role_desc</span><span class="o">.</span><span class="n">capitalize</span><span class="p">())</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Value: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Proposing&lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="se">{{</span><span class="s2">&#39;Yes&#39;</span><span class="se">}}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Previous Value: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">previous_data</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Requires Optimization: &lt;/font &gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="se">{{</span><span class="s2">&#39;Yes&#39;</span><span class="se">}}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="k">if</span> <span class="n">add_grads</span><span class="p">:</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Gradients: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">get_gradients_names</span><span class="p">())</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                <span class="c1"># add a list of each gradient with short value</span>
+                <span class="c1"># combine the gradients and context</span>
+                <span class="n">combined_gradients_contexts</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">n</span><span class="o">.</span><span class="n">gradients</span><span class="p">,</span> <span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">gradients_context</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">gradients</span><span class="p">]</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">context</span> <span class="ow">in</span> <span class="n">combined_gradients_contexts</span><span class="p">:</span>
+                    <span class="n">gradient_context</span> <span class="o">=</span> <span class="n">context</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient context display: </span><span class="si">{</span><span class="n">gradient_context</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;data: </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Gradient </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> Feedback: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                    <span class="k">if</span> <span class="n">gradient_context</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                        <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Gradient </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> Context: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="n">gradient_context</span><span class="p">)</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">_traces</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Traces: keys: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">_traces</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+                <span class="n">node_label</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;&lt;tr&gt;&lt;td&gt;&lt;b&gt;&lt;font color=&#39;</span><span class="si">{</span><span class="n">label_color</span><span class="si">}</span><span class="s2">&#39;&gt;Traces: values: &lt;/font&gt;&lt;/b&gt;&lt;/td&gt;&lt;td&gt;</span><span class="si">{</span><span class="n">wrap_and_escape</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">_traces</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span><span class="si">}</span><span class="s2">&lt;/td&gt;&lt;/tr&gt;&quot;</span>
+
+            <span class="n">node_label</span> <span class="o">+=</span> <span class="s2">&quot;&lt;/table&gt;&quot;</span>
+            <span class="c1"># check if the name exists in dot</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">node_names</span><span class="p">:</span>
+                <span class="n">n</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">node_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">dot</span><span class="o">.</span><span class="n">node</span><span class="p">(</span>
+                <span class="n">name</span><span class="o">=</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="n">node_label</span><span class="si">}</span><span class="s2">&gt;&quot;</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;plaintext&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># writer.add_text(n.name, str(n.to_dict()))</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node: </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># track gradients</span>
+            <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">gradients</span><span class="p">:</span>
+                <span class="c1"># writer.add_text(g.name, str(g.to_dict()))</span>
+                <span class="c1"># if g.gradient_prompt:</span>
+                <span class="c1">#     writer.add_text(f&quot;{g.name}_prompt&quot;, g.gradient_prompt)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient: </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Gradient prompt: </span><span class="si">{</span><span class="n">g</span><span class="o">.</span><span class="n">gradient_prompt</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="n">dot</span><span class="o">.</span><span class="n">edge</span><span class="p">(</span><span class="n">n1</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">n2</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">dot</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># from PIL import Image</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     import matplotlib.pyplot as plt</span>
+        <span class="c1"># except ImportError as e:</span>
+        <span class="c1">#     raise ImportError(</span>
+        <span class="c1">#         &quot;Please install matplotlib using &#39;pip install matplotlib&#39; to use this feature&quot;</span>
+        <span class="c1">#     ) from e</span>
+        <span class="c1"># from io import BytesIO</span>
+        <span class="c1"># import numpy as np</span>
+
+        <span class="c1"># # Read the rendered image file into memory using matplotlib</span>
+        <span class="c1"># with open(f&quot;{filepath}.{format}&quot;, &quot;rb&quot;) as f:</span>
+        <span class="c1">#     image_bytes = f.read()</span>
+
+        <span class="c1"># # Use matplotlib to read the image from bytes</span>
+        <span class="c1"># image = plt.imread(BytesIO(image_bytes), format=format)</span>
+
+        <span class="c1"># # Ensure the image is in the format [H, W, C]</span>
+        <span class="c1"># if image.ndim == 2:  # Grayscale image</span>
+        <span class="c1">#     image = np.expand_dims(image, axis=2)</span>
+
+        <span class="c1"># Read the rendered image file</span>
+        <span class="c1"># writer.add_image(&quot;graph&quot;, image, dataformats=&quot;HWC&quot;, global_step=1)</span>
+        <span class="c1"># writer.close()</span>
+
+        <span class="c1"># filename = f&quot;{filepath}_prompts.json&quot;</span>
+        <span class="c1"># prompts = {}</span>
+        <span class="c1"># for n in nodes:</span>
+        <span class="c1">#     prompts[n.name] = {</span>
+        <span class="c1">#         &quot;raw_response&quot;: n.raw_response,</span>
+        <span class="c1">#     }</span>
+        <span class="c1">#     for g in n.gradients:</span>
+        <span class="c1">#         prompts[g.name] = {</span>
+        <span class="c1">#             &quot;gradient_prompt&quot;: g.gradient_prompt,</span>
+        <span class="c1">#         }</span>
+
+        <span class="c1"># save_json(prompts, filename)</span>
+        <span class="c1"># save root node to_dict to json</span>
+        <span class="n">save_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filepath</span><span class="si">}</span><span class="s2">_root.json&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dot</span></div>
+
+
+<div class="viewcode-block" id="Parameter.to_dict">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.to_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;role_desc&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="p">,</span>
+            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="s2">&quot;requires_opt&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">,</span>
+            <span class="s2">&quot;param_type&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="p">),</span>
+            <span class="c1"># others</span>
+            <span class="s2">&quot;predecessors&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">pred</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span><span class="p">],</span>
+            <span class="s2">&quot;gradients&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">grad</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">grad</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="p">],</span>
+            <span class="s2">&quot;previous_data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_data</span><span class="p">,</span>
+            <span class="s2">&quot;gradients_context&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradients_context</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;grad_fn&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grad_fn</span>
+            <span class="p">),</span>  <span class="c1"># Simplify for serialization, modify as needed</span>
+            <span class="s2">&quot;gradient_prompt&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gradient_prompt</span><span class="p">),</span>
+            <span class="s2">&quot;raw_response&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_response</span><span class="p">,</span>
+            <span class="s2">&quot;score&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_score</span><span class="p">,</span>
+            <span class="s2">&quot;traces&quot;</span><span class="p">:</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_traces</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
+            <span class="s2">&quot;input_args&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_args</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Parameter.from_dict">
+<a class="viewcode-back" href="../../apis/optim/optim.parameter.html#optim.Parameter.from_dict">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">predecessors</span> <span class="o">=</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">pred</span><span class="p">)</span> <span class="k">for</span> <span class="n">pred</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;predecessors&quot;</span><span class="p">]]</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;role_desc&quot;</span><span class="p">],</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;requires_opt&quot;</span><span class="p">],</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;param_type&quot;</span><span class="p">]),</span>
+            <span class="c1"># others</span>
+            <span class="n">predecessors</span><span class="o">=</span><span class="n">predecessors</span><span class="p">,</span>
+            <span class="n">gradients</span><span class="o">=</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">grad</span><span class="p">)</span> <span class="k">for</span> <span class="n">grad</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gradients&quot;</span><span class="p">]],</span>
+            <span class="n">previous_data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;previous_data&quot;</span><span class="p">],</span>
+            <span class="n">gradient_prompt</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;gradient_prompt&quot;</span><span class="p">],</span>
+            <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;raw_response&quot;</span><span class="p">],</span>
+            <span class="n">input_args</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;input_args&quot;</span><span class="p">],</span>
+            <span class="n">score</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;score&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="c1"># Reconstruct gradients_context from the list of tuples</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">gradients_context</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
+            <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">k</span><span class="p">):</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gradients_context&quot;</span><span class="p">]}</span>
+        <span class="p">)</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">_traces</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">DataClass</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;traces&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="k">return</span> <span class="n">param</span></div>
+
+
+    <span class="c1"># TODO: very hard to read directly, need to simplify and let users use to_dict for better readability</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Parameter(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, requires_opt=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">requires_opt</span><span class="si">}</span><span class="s2">, param_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">param_type</span><span class="si">}</span><span class="s2">, role_desc=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">role_desc</span><span class="si">}</span><span class="s2">, data=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">, predecessors=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">predecessors</span><span class="si">}</span><span class="s2">, gradients=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gradients</span><span class="si">}</span><span class="s2">,</span><span class="se">\</span>
+<span class="s2">            raw_response=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_response</span><span class="si">}</span><span class="s2">, input_args=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_args</span><span class="si">}</span><span class="s2">, traces=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_traces</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_check_and_reduce_gradients</span><span class="p">(</span><span class="n">variable</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]:</span>
+
+    <span class="k">if</span> <span class="n">variable</span><span class="o">.</span><span class="n">get_gradient_and_context_text</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No gradients detected for </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">variable</span><span class="o">.</span><span class="n">gradients</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">variable</span><span class="o">.</span><span class="n">gradients</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Only one gradient, no need to reduce: </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">gradients</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">variable</span><span class="o">.</span><span class="n">gradients</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Multiple gradients detected for </span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">data</span><span class="si">}</span><span class="s2">. But we are not reducting them.&quot;</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">variable</span><span class="o">.</span><span class="n">gradients</span>
+
+    <span class="c1"># TODO: Implement the reduction logic later</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

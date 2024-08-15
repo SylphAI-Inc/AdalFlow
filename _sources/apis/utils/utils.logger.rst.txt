@@ -7,13 +7,3 @@ logger
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      get_current_script_and_line
-      get_logger
-      printc
-

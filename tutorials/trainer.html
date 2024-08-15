@@ -52,8 +52,6 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Logging" href="logging.html" />
-    <link rel="prev" title="Optimizer" href="optimizer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -105,55 +103,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +131,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -205,9 +154,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -317,7 +273,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,9 +297,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -412,61 +377,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
-<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
-<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Trainer</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -499,9 +409,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">Trainer</li>
   </ul>
 </nav>
@@ -534,24 +441,6 @@
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="optimizer.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Optimizer</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="logging.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Logging</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               

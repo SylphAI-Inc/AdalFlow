@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -471,17 +436,35 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">import</span> <span class="nn">lightrag.core.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">import</span> <span class="nn">adalflow.core.functional</span> <span class="k">as</span> <span class="nn">F</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">BOOLEAN_PARSER_OUTPUT_TYPE</span> <span class="o">=</span> <span class="nb">bool</span>
 
 
+<div class="viewcode-block" id="Parser">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.Parser">[docs]</a>
+<span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Base class for all string parsers.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Parser.call">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.Parser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;Parser subclasses must implement the __call__ method&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
 <div class="viewcode-block" id="BooleanParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.BooleanParser">[docs]</a>
-<span class="k">class</span> <span class="nc">BooleanParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BooleanParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts boolean values from text.</span>
 
 <span class="s2">    Examples:</span>
@@ -493,15 +476,18 @@
 <span class="s2">        print(boolean_parser(test_input_1))  # Expected to extract True</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BOOLEAN_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+<div class="viewcode-block" id="BooleanParser.call">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.BooleanParser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BOOLEAN_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_boolean</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -510,7 +496,7 @@
 
 <div class="viewcode-block" id="IntParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.IntParser">[docs]</a>
-<span class="k">class</span> <span class="nc">IntParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">IntParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts integer values from text.</span>
 
 <span class="s2">    Returns:</span>
@@ -531,12 +517,15 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">INT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+<div class="viewcode-block" id="IntParser.call">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.IntParser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">INT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_int</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -545,7 +534,7 @@
 
 <div class="viewcode-block" id="FloatParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.FloatParser">[docs]</a>
-<span class="k">class</span> <span class="nc">FloatParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FloatParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts float values from text.</span>
 
 <span class="s2">    Returns:</span>
@@ -566,12 +555,15 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FLOAT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+<div class="viewcode-block" id="FloatParser.call">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.FloatParser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FLOAT_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">F</span><span class="o">.</span><span class="n">extract_first_float</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -580,7 +572,7 @@
 
 <div class="viewcode-block" id="ListParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.ListParser">[docs]</a>
-<span class="k">class</span> <span class="nc">ListParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ListParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts list `[...]` strings from text and parses them into a list object.</span>
 
 <span class="s2">    Args:</span>
@@ -605,7 +597,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">add_missing_right_bracket</span> <span class="o">=</span> <span class="n">add_missing_right_bracket</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LIST_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
+<div class="viewcode-block" id="ListParser.call">
+<a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.ListParser.call">[docs]</a>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">LIST_PARSER_OUTPUT_TYPE</span><span class="p">:</span>
         <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="n">list_str</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Extract list string</span>
@@ -622,6 +616,7 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error at parsing list string with json.loads: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -630,7 +625,7 @@
 
 <div class="viewcode-block" id="JsonParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.JsonParser">[docs]</a>
-<span class="k">class</span> <span class="nc">JsonParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">JsonParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Extracts JSON strings `{...}` or `[...]` from text and parses them into a JSON object.</span>
 
 <span class="s2">    It can output either a dictionary or a list as they are both valid JSON objects.</span>
@@ -688,7 +683,7 @@
 
 <div class="viewcode-block" id="YamlParser">
 <a class="viewcode-back" href="../../apis/core/core.string_parser.html#core.string_parser.YamlParser">[docs]</a>
-<span class="k">class</span> <span class="nc">YamlParser</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">YamlParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;To extract YAML strings from text and parse them into a YAML object.</span>
 
 <span class="s2">    Returns:</span>

@@ -1,0 +1,9 @@
+.. _datasets-types:
+
+types
+=====================
+
+.. automodule:: datasets.types
+   :members:
+   :undoc-members:
+   :show-inheritance:

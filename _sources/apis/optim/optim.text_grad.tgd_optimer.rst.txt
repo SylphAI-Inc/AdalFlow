@@ -1,0 +1,9 @@
+.. _optim-text_grad-tgd_optimer:
+
+tgd_optimer
+====================================
+
+.. automodule:: optim.text_grad.tgd_optimer
+   :members:
+   :undoc-members:
+   :show-inheritance:

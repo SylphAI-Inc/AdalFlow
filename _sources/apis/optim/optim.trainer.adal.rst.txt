@@ -1,0 +1,9 @@
+.. _optim-trainer-adal:
+
+adal
+=========================
+
+.. automodule:: optim.trainer.adal
+   :members:
+   :undoc-members:
+   :show-inheritance:

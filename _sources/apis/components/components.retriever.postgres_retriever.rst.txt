@@ -7,12 +7,3 @@ postgres_retriever
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      DistanceToOperator
-      PostgresRetriever
-

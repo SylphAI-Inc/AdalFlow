@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -579,78 +571,6 @@
   <section id="module-core.types">
 <span id="types"></span><span id="core-types"></span><h1>types<a class="headerlink" href="#module-core.types" title="Link to this heading">#</a></h1>
 <p>Functional data classes to support functional components like Generator, Retriever, and Assistant.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.get_model_args" title="core.types.get_model_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_args</span></code></a>(model_type)</p></td>
-<td><p>Get the required keys in model_kwargs for a specific model type.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.AssistantResponse" title="core.types.AssistantResponse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AssistantResponse</span></code></a>(response_str[, metadata])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Conversation" title="core.types.Conversation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Conversation</span></code></a>(id, name, user_id, ...)</p></td>
-<td><p>A conversation manages the dialog turns in a whole conversation as a session.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.DialogTurn" title="core.types.DialogTurn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DialogTurn</span></code></a>(id, user_id, conversation_id, ...)</p></td>
-<td><p>A turn consists of a user query and the assistant response.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Document" title="core.types.Document"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Document</span></code></a>(text, meta_data, ...)</p></td>
-<td><p>A text container with optional metadata and vector representation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmbedderOutput</span></code></a>(data, model, usage, error, ...)</p></td>
-<td><p>Container to hold the response from an Embedder model.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.EmbedderOutputType" title="core.types.EmbedderOutputType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EmbedderOutputType</span></code></a></p></td>
-<td><p>alias of <a class="reference internal" href="#core.types.EmbedderOutput" title="core.types.EmbedderOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmbedderOutput</span></code></a></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.Embedding" title="core.types.Embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Embedding</span></code></a>(embedding, index)</p></td>
-<td><p>Container for a single embedding.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Function" title="core.types.Function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Function</span></code></a>(thought, name, args, kwargs, ...)</p></td>
-<td><p>The data modeling of a function call, including the name and keyword arguments.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.FunctionDefinition" title="core.types.FunctionDefinition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionDefinition</span></code></a>(func_name, func_desc, ...)</p></td>
-<td><p>The data modeling of a function definition, including the name, description, and parameters.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.FunctionExpression" title="core.types.FunctionExpression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionExpression</span></code></a>(thought, action)</p></td>
-<td><p>The data modeling of a function expression for a call, including the name and arguments.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.FunctionOutput" title="core.types.FunctionOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunctionOutput</span></code></a>([name, input, parsed_input, ...])</p></td>
-<td><p>The output of a tool, which could be a function, a class, or a module.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a>([data, error, usage, ...])</p></td>
-<td><p>The output data class for the Generator component.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelClientType</span></code></a>()</p></td>
-<td><p>A quick way to access all model clients in the ModelClient module.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ModelType</span></code></a>(value[, names, module, qualname, ...])</p></td>
-<td><p>The type of the model, including Embedder, LLM, Reranker.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.RetrieverOutput" title="core.types.RetrieverOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RetrieverOutput</span></code></a>(doc_indices[, doc_scores, ...])</p></td>
-<td><p>Save the output of a single query in retrievers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StepOutput</span></code></a>([step, action, function, observation])</p></td>
-<td><p>The output of a single step in the agent.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.TokenLogProb" title="core.types.TokenLogProb"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TokenLogProb</span></code></a>(token, logprob)</p></td>
-<td><p>similar to openai.ChatCompletionTokenLogprob</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Usage</span></code></a>(prompt_tokens, total_tokens)</p></td>
-<td><p>In sync with api spec, same as openai/types/create_embedding_response.py</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.types.UserQuery" title="core.types.UserQuery"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UserQuery</span></code></a>(query_str[, metadata])</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.types.ModelType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ModelType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qualname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#ModelType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.ModelType" title="Link to this definition">#</a></dt>
@@ -685,45 +605,45 @@ It helps ModelClient identify the model type required to correctly call the mode
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A quick way to access all model clients in the ModelClient module.</p>
 <p>From this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">CohereAPIClient</span><span class="p">,</span> <span class="n">TransformersClient</span><span class="p">,</span> <span class="n">AnthropicAPIClient</span><span class="p">,</span> <span class="n">GroqAPIClient</span><span class="p">,</span> <span class="n">OpenAIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">CohereAPIClient</span><span class="p">,</span> <span class="n">TransformersClient</span><span class="p">,</span> <span class="n">AnthropicAPIClient</span><span class="p">,</span> <span class="n">GroqAPIClient</span><span class="p">,</span> <span class="n">OpenAIClient</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">OpenAIClient</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>To this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
 </pre></div>
 </div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.COHERE">
-<span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">COHERE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.COHERE" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.TRANSFORMERS">
-<span class="sig-name descname"><span class="pre">TRANSFORMERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.TRANSFORMERS" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">TRANSFORMERS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.TRANSFORMERS" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.ANTHROPIC">
-<span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.ANTHROPIC" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">ANTHROPIC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.ANTHROPIC" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.GROQ">
-<span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GROQ" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">GROQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GROQ" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.OPENAI">
-<span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">OPENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.OPENAI" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.ModelClientType.GOOGLE_GENAI">
-<span class="sig-name descname"><span class="pre">GOOGLE_GENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;lightrag.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GOOGLE_GENAI" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">GOOGLE_GENAI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;adalflow.utils.lazy_import.LazyImport</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#core.types.ModelClientType.GOOGLE_GENAI" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -769,7 +689,7 @@ If your model inference sdk uses different keys, you need to convert them to the
 <dt class="sig sig-object py" id="core.types.Usage">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Usage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#Usage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.Usage" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>In sync with api spec, same as openai/types/create_embedding_response.py</p>
+<p>In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.Usage.prompt_tokens">
 <span class="sig-name descname"><span class="pre">prompt_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#core.types.Usage.prompt_tokens" title="Link to this definition">#</a></dt>
@@ -878,8 +798,30 @@ Batch processing is often available, thus we need a list of Embedding objects.</
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="core.types.CompletionUsage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">CompletionUsage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompt_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#CompletionUsage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.CompletionUsage" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>In sync with OpenAI completion usage api spec at openai/types/completion_usage.py</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.CompletionUsage.completion_tokens">
+<span class="sig-name descname"><span class="pre">completion_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.CompletionUsage.completion_tokens" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.CompletionUsage.prompt_tokens">
+<span class="sig-name descname"><span class="pre">prompt_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.CompletionUsage.prompt_tokens" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.CompletionUsage.total_tokens">
+<span class="sig-name descname"><span class="pre">total_tokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.CompletionUsage.total_tokens" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="core.types.GeneratorOutput">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><span class="pre">Usage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GeneratorOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T_co</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usage</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/types.html#GeneratorOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.types.GeneratorOutput" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">DataClass</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T_co</span></code>]</p>
 <p>The output data class for the Generator component.
 We can not control its output 100%, so we use this to track the error_message and
@@ -889,6 +831,11 @@ we have data as the final output, error as None.
 (2) When either model predict or output processors have error,
 we have data as None, error as the error message.</p>
 <p>Raw_response will depends on the model predict.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.types.GeneratorOutput.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.id" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.GeneratorOutput.data">
 <span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">T_co</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.data" title="Link to this definition">#</a></dt>
@@ -901,7 +848,7 @@ we have data as None, error as the error message.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.types.GeneratorOutput.usage">
-<span class="sig-name descname"><span class="pre">usage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.Usage" title="core.types.Usage"><span class="pre">Usage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.usage" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">usage</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#core.types.CompletionUsage" title="core.types.CompletionUsage"><span class="pre">CompletionUsage</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#core.types.GeneratorOutput.usage" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1084,7 +1031,7 @@ we have data as None, error as the error message.</p>
 2. use <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_json()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">to_yaml()</span></code> to get the schema in JSON or YAML format.
 3. This will be used as an example in prompt showing LLM how to call the function.</p>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
 
 <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
@@ -1177,7 +1124,7 @@ we have data as None, error as the error message.</p>
 </dd>
 </dl>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">StepOutput</span><span class="p">,</span> <span class="n">FunctionExpression</span>
 
 <span class="n">StepOutputWithFunctionExpression</span> <span class="o">=</span> <span class="n">StepOutput</span><span class="o">.</span><span class="n">with_action_type</span><span class="p">(</span><span class="n">FunctionExpression</span><span class="p">)</span>
 </pre></div>
@@ -1539,7 +1486,14 @@ record or history.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.TokenLogProb.logprob"><code class="docutils literal notranslate"><span class="pre">TokenLogProb.logprob</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.CompletionUsage"><code class="docutils literal notranslate"><span class="pre">CompletionUsage</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.CompletionUsage.completion_tokens"><code class="docutils literal notranslate"><span class="pre">CompletionUsage.completion_tokens</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.CompletionUsage.prompt_tokens"><code class="docutils literal notranslate"><span class="pre">CompletionUsage.prompt_tokens</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.CompletionUsage.total_tokens"><code class="docutils literal notranslate"><span class="pre">CompletionUsage.total_tokens</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.GeneratorOutput"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.GeneratorOutput.id"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.id</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.GeneratorOutput.data"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.data</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.GeneratorOutput.error"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.error</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.types.GeneratorOutput.usage"><code class="docutils literal notranslate"><span class="pre">GeneratorOutput.usage</span></code></a></li>

@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -580,34 +572,22 @@
 <span id="string-parser"></span><span id="core-string-parser"></span><h1>string_parser<a class="headerlink" href="#module-core.string_parser" title="Link to this heading">#</a></h1>
 <p>Extract and convert common string to Python objects.</p>
 <p>From simple data types like boolean, integer, and float to more complex data types like JSON, YAML, and list strings.</p>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.BooleanParser" title="core.string_parser.BooleanParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BooleanParser</span></code></a>()</p></td>
-<td><p>Extracts boolean values from text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.FloatParser" title="core.string_parser.FloatParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FloatParser</span></code></a>()</p></td>
-<td><p>Extracts float values from text.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.IntParser" title="core.string_parser.IntParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">IntParser</span></code></a>()</p></td>
-<td><p>Extracts integer values from text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">JsonParser</span></code></a>([add_missing_right_brace])</p></td>
-<td><p>Extracts JSON strings <cite>{...}</cite> or <cite>[...]</cite> from text and parses them into a JSON object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.string_parser.ListParser" title="core.string_parser.ListParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ListParser</span></code></a>([add_missing_right_bracket])</p></td>
-<td><p>Extracts list <cite>[...]</cite> strings from text and parses them into a list object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.string_parser.YamlParser" title="core.string_parser.YamlParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">YamlParser</span></code></a>()</p></td>
-<td><p>To extract YAML strings from text and parse them into a YAML object.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="core.string_parser.Parser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#Parser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.Parser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Base class for all string parsers.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.Parser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">object</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#Parser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.Parser.call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.BooleanParser">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BooleanParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BooleanParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>Extracts boolean values from text.</p>
 <p>Examples:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boolean_parser</span> <span class="o">=</span> <span class="n">BooleanParser</span><span class="p">()</span>
@@ -615,12 +595,17 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">boolean_parser</span><span class="p">(</span><span class="n">test_input_1</span><span class="p">))</span>  <span class="c1"># Expected to extract True</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.BooleanParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#BooleanParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.BooleanParser.call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.IntParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">IntParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#IntParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.IntParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>Extracts integer values from text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -639,12 +624,17 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">int_parser</span><span class="p">(</span><span class="n">test_input_2</span><span class="p">))</span>  <span class="c1"># Expected to extract 123</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.IntParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#IntParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.IntParser.call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.FloatParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">FloatParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#FloatParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.FloatParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>Extracts float values from text.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -663,12 +653,17 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">float_parser</span><span class="p">(</span><span class="n">test_input_3</span><span class="p">))</span>  <span class="c1"># Expected to extract 123.45</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.FloatParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#FloatParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.FloatParser.call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.ListParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ListParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_missing_right_bracket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#ListParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.ListParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>Extracts list <cite>[…]</cite> strings from text and parses them into a list object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -690,12 +685,17 @@
 <span class="nb">print</span><span class="p">(</span><span class="n">list_parser</span><span class="p">(</span><span class="n">test_input_4</span><span class="p">))</span>  <span class="c1"># Expected to extract [&quot;item1&quot;, &quot;item2&quot;]</span>
 </pre></div>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="core.string_parser.ListParser.call">
+<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/string_parser.html#ListParser.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.ListParser.call" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.JsonParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">JsonParser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_missing_right_brace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/string_parser.html#JsonParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.JsonParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>Extracts JSON strings <cite>{…}</cite> or <cite>[…]</cite> from text and parses them into a JSON object.</p>
 <p>It can output either a dictionary or a list as they are both valid JSON objects.</p>
 <dl class="field-list simple">
@@ -729,7 +729,7 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="core.string_parser.YamlParser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">YamlParser</span></span><a class="reference internal" href="../../_modules/core/string_parser.html#YamlParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.string_parser.YamlParser" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#core.string_parser.Parser" title="core.string_parser.Parser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parser</span></code></a></p>
 <p>To extract YAML strings from text and parse them into a YAML object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -804,10 +804,26 @@
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.BooleanParser"><code class="docutils literal notranslate"><span class="pre">BooleanParser</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.IntParser"><code class="docutils literal notranslate"><span class="pre">IntParser</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.FloatParser"><code class="docutils literal notranslate"><span class="pre">FloatParser</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.ListParser"><code class="docutils literal notranslate"><span class="pre">ListParser</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.Parser"><code class="docutils literal notranslate"><span class="pre">Parser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.Parser.call"><code class="docutils literal notranslate"><span class="pre">Parser.call()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.BooleanParser"><code class="docutils literal notranslate"><span class="pre">BooleanParser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.BooleanParser.call"><code class="docutils literal notranslate"><span class="pre">BooleanParser.call()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.IntParser"><code class="docutils literal notranslate"><span class="pre">IntParser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.IntParser.call"><code class="docutils literal notranslate"><span class="pre">IntParser.call()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.FloatParser"><code class="docutils literal notranslate"><span class="pre">FloatParser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.FloatParser.call"><code class="docutils literal notranslate"><span class="pre">FloatParser.call()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.ListParser"><code class="docutils literal notranslate"><span class="pre">ListParser</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.ListParser.call"><code class="docutils literal notranslate"><span class="pre">ListParser.call()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.JsonParser"><code class="docutils literal notranslate"><span class="pre">JsonParser</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.string_parser.JsonParser.call"><code class="docutils literal notranslate"><span class="pre">JsonParser.call()</span></code></a></li>
 </ul>

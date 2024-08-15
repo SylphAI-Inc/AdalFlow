@@ -1,0 +1,9 @@
+.. _datasets-big_bench_hard:
+
+big_bench_hard
+================================
+
+.. automodule:: datasets.big_bench_hard
+   :members:
+   :undoc-members:
+   :show-inheritance:

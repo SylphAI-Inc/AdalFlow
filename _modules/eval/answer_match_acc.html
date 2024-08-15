@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -466,12 +431,14 @@
   <h1>Source code for eval.answer_match_acc</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;This is the metric for answer matching. It compares the predicted answer with the ground truth answer.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span> <span class="nn">adalflow.eval.base</span> <span class="kn">import</span> <span class="n">BaseEvaluator</span><span class="p">,</span> <span class="n">EvaluationResult</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 
 <div class="viewcode-block" id="AnswerMatchAcc">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc">[docs]</a>
-<span class="k">class</span> <span class="nc">AnswerMatchAcc</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">AnswerMatchAcc</span><span class="p">(</span><span class="n">BaseEvaluator</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Metric for answer matching. It compares the predicted answer with the ground truth answer.</span>
 
@@ -495,32 +462,85 @@
 <span class="sd">        [1.0, 1.0, 1.0]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;exact_match&quot;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;exact_match&quot;</span><span class="p">,</span> <span class="s2">&quot;fuzzy_match&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;exact_match&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
 
-    <span class="k">def</span> <span class="nf">_compute_single_item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pred_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="AnswerMatchAcc.compute_single_item">
+<a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc.compute_single_item">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_single_item</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+        <span class="n">y_gt</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the match accuracy of the predicted answer for a single query.</span>
 
+<span class="sd">        Allow any type of input for pred_answer and gt_answer.</span>
+<span class="sd">        When evaluating, the input will be converted to string.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            pred_answer (str): Predicted answer string.</span>
-<span class="sd">            gt_answer (str): Ground truth answer string.</span>
+<span class="sd">            pred_answer (object): Predicted answer.</span>
+<span class="sd">            gt_answer (object): Ground truth answer.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: Match accuracy.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">y_gt</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+            <span class="n">y_gt</span> <span class="o">=</span> <span class="n">y_gt</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">y_gt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y_gt</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Error converting pred_answer and gt_answer to string: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;exact_match&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">pred_answer</span> <span class="o">==</span> <span class="n">gt_answer</span> <span class="k">else</span> <span class="mf">0.0</span>
+            <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">y_gt</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;fuzzy_match&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">gt_answer</span> <span class="ow">in</span> <span class="n">pred_answer</span> <span class="k">else</span> <span class="mf">0.0</span>
+            <span class="k">return</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="n">y_gt</span> <span class="ow">in</span> <span class="n">y</span> <span class="k">else</span> <span class="mf">0.0</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+    <span class="c1"># def compute_single_item(self, pred_answer: object, gt_answer: object) -&gt; float:</span>
+    <span class="c1">#     r&quot;&quot;&quot;</span>
+    <span class="c1">#     Compute the match accuracy of the predicted answer for a single query.</span>
+
+    <span class="c1">#     Allow any type of input for pred_answer and gt_answer.</span>
+    <span class="c1">#     When evaluating, the input will be converted to string.</span>
+
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         pred_answer (object): Predicted answer.</span>
+    <span class="c1">#         gt_answer (object): Ground truth answer.</span>
+
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         float: Match accuracy.</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     if isinstance(pred_answer, Parameter):</span>
+    <span class="c1">#         pred_answer = pred_answer.data</span>
+    <span class="c1">#     if isinstance(gt_answer, Parameter):</span>
+    <span class="c1">#         gt_answer = gt_answer.data</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         pred_answer = str(pred_answer).split(&quot; &quot;)</span>
+    <span class="c1">#         gt_answer = str(gt_answer).split(&quot; &quot;)</span>
+    <span class="c1">#     except Exception as e:</span>
+    <span class="c1">#         raise ValueError(</span>
+    <span class="c1">#             f&quot;Error converting pred_answer and gt_answer to string: {e}&quot;</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     if self.type == &quot;exact_match&quot;:</span>
+    <span class="c1">#         return 1.0 if pred_answer == gt_answer else 0.0</span>
+    <span class="c1">#     elif self.type == &quot;fuzzy_match&quot;:</span>
+    <span class="c1">#         return 1.0 if gt_answer in pred_answer else 0.0</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         raise NotImplementedError</span>
 
 <div class="viewcode-block" id="AnswerMatchAcc.compute">
 <a class="viewcode-back" href="../../apis/eval/index.html#eval.answer_match_acc.AnswerMatchAcc.compute">[docs]</a>
     <span class="k">def</span> <span class="nf">compute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">pred_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">gt_answers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EvaluationResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the match accuracy of the predicted answer for a list of queries.</span>
 
@@ -535,10 +555,13 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">match_acc_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">pred_answer</span><span class="p">,</span> <span class="n">gt_answer</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pred_answers</span><span class="p">,</span> <span class="n">gt_answers</span><span class="p">):</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_single_item</span><span class="p">(</span><span class="n">pred_answer</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">)</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_single_item</span><span class="p">(</span><span class="n">pred_answer</span><span class="p">,</span> <span class="n">gt_answer</span><span class="p">)</span>
             <span class="n">match_acc_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">match_acc_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">match_acc_list</span><span class="p">),</span> <span class="n">match_acc_list</span></div>
+        <span class="k">return</span> <span class="n">EvaluationResult</span><span class="p">(</span>
+            <span class="n">avg_score</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">match_acc_list</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">match_acc_list</span><span class="p">),</span>
+            <span class="n">per_item_scores</span><span class="o">=</span><span class="n">match_acc_list</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </div>
 
 </pre></div>

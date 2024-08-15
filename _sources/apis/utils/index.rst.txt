@@ -7,22 +7,28 @@ Overview
 ----------
 .. autosummary::
 
-   utils.config
-   utils.file_io
-   utils.lazy_import
+   utils.data
+   utils.setup_env
    utils.logger
+   utils.file_io
+   utils.config
+   utils.lazy_import
    utils.registry
    utils.serialization
-   utils.setup_env
+   utils.cache
+
+
 
 .. toctree::
    :maxdepth: 1
    :hidden:
 
-   utils.config
-   utils.file_io
-   utils.lazy_import
+   utils.data
+   utils.setup_env
    utils.logger
+   utils.file_io
+   utils.config
+   utils.lazy_import
    utils.registry
    utils.serialization
-   utils.setup_env
+   utils.cache

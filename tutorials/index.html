@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Tutorials &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+    <title>Developer Notes &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -452,12 +417,6 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
-</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
@@ -503,7 +462,7 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Tutorials</li>
+    <li class="breadcrumb-item active" aria-current="page">Developer Notes</li>
   </ul>
 </nav>
 </div>
@@ -520,32 +479,32 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="tutorials">
-<span id="developer-notes"></span><span id="source-tutorials"></span><h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
-<p>Learn the <cite>why</cite> and <cite>how-to</cite> (customize and integrate) behind each core part within the <cite>LightRAG</cite> library.
+  <section id="developer-notes">
+<span id="source-tutorials"></span><span id="id1"></span><h1>Developer Notes<a class="headerlink" href="#developer-notes" title="Link to this heading">#</a></h1>
+<p>Learn the <cite>why</cite> and <cite>how-to</cite> (customize and integrate) behind each core part within the <cite>AdalFlow</cite> library.
 These are our most important tutorials before you move ahead to build your use cases end to end.</p>
-<figure class="align-center" id="id1">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="../_images/LLM_arch.png"><img alt="LLM application is no different from a mode training/eval workflow" src="../_images/LLM_arch.png" style="width: 600px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">LLM application is no different from a mode training/evaluation workflow</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">LLM application is no different from a mode training/evaluation workflow</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
 <div class="legend">
 </div>
 </figcaption>
 </figure>
-<p>The <cite>LightRAG</cite> library focuses on providing building blocks for developers to <strong>build</strong> and <strong>optimize</strong> the task pipeline.
+<p>The <cite>AdalFlow</cite> library focuses on providing building blocks for developers to <strong>build</strong> and <strong>optimize</strong> the task pipeline.
 We have a clear <a class="reference internal" href="lightrag_design_philosophy.html"><span class="doc">Design Philosophy</span></a>, which results in this <a class="reference internal" href="class_hierarchy.html"><span class="doc">Class Hierarchy</span></a>.</p>
 <div class="toctree-wrapper compound">
 </div>
 <section id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">#</a></h2>
 <p><a class="reference internal" href="../apis/core/core.component.html#core-component"><span class="std std-ref">Component</span></a> is to LLM task pipelines what <cite>nn.Module</cite> is to PyTorch models.
-An LLM task pipeline in LightRAG mainly consists of components, such as a <cite>Prompt</cite>, <cite>ModelClient</cite>, <cite>Generator</cite>, <cite>Retriever</cite>, <cite>Agent</cite>, or any other custom components.
+An LLM task pipeline in AdalFlow mainly consists of components, such as a <cite>Prompt</cite>, <cite>ModelClient</cite>, <cite>Generator</cite>, <cite>Retriever</cite>, <cite>Agent</cite>, or any other custom components.
 This pipeline can be <cite>Sequential</cite> or a Directed Acyclic Graph (DAG) of components.
 A <cite>Prompt</cite> will work with <cite>DataClass</cite> to ease data interaction with the LLM model.
 A <cite>Retriever</cite> will work with databases to retrieve context and overcome the hallucination and knowledge limitations of LLM, following the paradigm of Retrieval-Augmented Generation (RAG).
 An <cite>Agent</cite> will work with tools and an LLM planner for enhanced ability to reason, plan, and act on real-world tasks.</p>
-<p>Additionally, what shines in LightRAG is that all orchestrator components, like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite>, are model-agnostic.
+<p>Additionally, what shines in AdalFlow is that all orchestrator components, like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite>, are model-agnostic.
 You can easily make each component work with different models from different providers by switching out the <cite>ModelClient</cite> and its <cite>model_kwargs</cite>.</p>
 <p>We will introduce the library starting from the core base classes, then move to the RAG essentials, and finally to the agent essentials.
 With these building blocks, we will further introduce optimizing, where the optimizer uses building blocks such as Generator for auto-prompting and retriever for dynamic few-shot in-context learning (ICL).</p>
@@ -677,6 +636,10 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </section>
 <section id="optimizing">
 <h2>Optimizing<a class="headerlink" href="#optimizing" title="Link to this heading">#</a></h2>
+<p>AdalFlow auto-optimization provides a powerful and unified framework to optimize every single part of the prompt: (1) instruction, (2) few-shot examples, and (3) the prompt template,
+for any task pipeline you have just built. We leverage all SOTA prompt optimization from Dspy, Text-grad, ORPO, to our own research in the library.</p>
+<p>The optimization requires users to have at least one dataset, an evaluator, and define optimizor to use.
+This section we will briefly cover the datasets and evaluation metrics supported in the library.</p>
 <section id="evaluating">
 <h3>Evaluating<a class="headerlink" href="#evaluating" title="Link to this heading">#</a></h3>
 <div class="pst-scrollable-table-container"><table class="table">
@@ -704,7 +667,13 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </section>
 <section id="training">
 <h3>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h3>
-<p><strong>Tutorials in this section are coming soon!</strong></p>
+<p>Code path: <code class="docutils literal notranslate"><span class="pre">lightrag.optim</span></code>.</p>
+<p>Adalflow defines four important classes for auto-optimization: (1) <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>, similar to role of <code class="docutils literal notranslate"><span class="pre">nn.Tensor</span></code> in PyTorch,
+(2) <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> wh, (3) <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> to define the training and validation steps, and (4) <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> to run the training and validation steps on either data loaders or datasets.</p>
+<p>We will first introduce these classes, from their design to important features each class provides.</p>
+<section id="classes">
+<h4>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h4>
+<p>Note: Documentation is work in progress for this section.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
 <col style="width: 20.0%" />
@@ -716,20 +685,28 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="parameter.html"><span class="doc">Parameter</span></a></p></td>
-<td><p>The parameter class to optimize.</p></td>
+<tr class="row-even"><td><p><span class="xref std std-doc">parameter_</span></p></td>
+<td><p>The <cite>Parameter</cite> class stores the text, textual gradidents(feedback), and manage the states and applies the backpropagation in auto-diff.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="optimizer.html"><span class="doc">Optimizer</span></a></p></td>
-<td><p>The optimizer to optimize the parameters.</p></td>
+<tr class="row-odd"><td><p><span class="xref std std-doc">optimizer_</span></p></td>
+<td><p>The  <cite>Optimizer</cite> to define a structure and to manage <cite>propose</cite>, <cite>revert</cite>, and <cite>step</cite> methods. We defined two variants: <cite>DemoOptimizer</cite> and <cite>TextOptimizer</cite> to cover the prompt optimization and the few-shot optimization.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="trainer.html"><span class="doc">Trainer</span></a></p></td>
-<td><p>The trainer to train the model.</p></td>
+<tr class="row-even"><td><p><span class="xref std std-doc">few_shot_optimizer_</span></p></td>
+<td><p>Subclassed from <code class="docutils literal notranslate"><span class="pre">DemoOptimizer</span></code>, the few-shot optimizer to optimize the few-shot in-context learning.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="xref std std-doc">auto_text_grad_</span></p></td>
+<td><p>Subclassed from <code class="docutils literal notranslate"><span class="pre">TextOptimizer</span></code>, Auto textual gradient for prompt optimization. It is the most capable and general optimizer in the library to optimize instructions or generator output.</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="xref std std-doc">adalcomponent_</span></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">intepreter</span></code> between task pipeline and the trainer, defining train, validate steps, optimizers, evaluator, loss function, and backward engine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="xref std std-doc">trainer_</span></p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> will take the <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> and run the training and validation steps on either data loaders or datasets.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="toctree-wrapper compound">
-</div>
+</section>
 </section>
 </section>
 <section id="logging-tracing">
@@ -747,7 +724,7 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </thead>
 <tbody>
 <tr class="row-even"><td><p><a class="reference internal" href="logging.html"><span class="doc">Logging</span></a></p></td>
-<td><p>LightRAG uses native <code class="docutils literal notranslate"><span class="pre">logging</span></code> module as the first line of debugging tooling. We made the effort to help you set it up easily.</p></td>
+<td><p>AdalFlow uses native <code class="docutils literal notranslate"><span class="pre">logging</span></code> module as the first line of debugging tooling. We made the effort to help you set it up easily.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="logging_tracing.html"><span class="doc">Tracing</span></a></p></td>
 <td><p>We provide two tracing methods to help you develop and improve the Generator:
@@ -844,7 +821,10 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizing">Optimizing</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluating">Evaluating</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#training">Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-tracing">Logging &amp; Tracing</a></li>

@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -464,17 +429,16 @@
                 <article class="bd-article">
                   
   <h1>Source code for core.base_data_class</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">The role of the base data class in LightRAG for LLM applications is like `Tensor` for `PyTorch`.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;A base class that provides an easy way for data to interact with LLMs.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
 
 <span class="kn">import</span> <span class="nn">enum</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dataclass</span><span class="p">,</span>
     <span class="n">field</span><span class="p">,</span>
     <span class="n">fields</span><span class="p">,</span>
     <span class="n">make_dataclass</span><span class="p">,</span>
@@ -483,10 +447,9 @@
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="c1"># dataclass_obj_to_dict,</span>
     <span class="n">custom_asdict</span><span class="p">,</span>
     <span class="n">dataclass_obj_from_dict</span><span class="p">,</span>
@@ -536,7 +499,7 @@
 <span class="sd">    .. code-block:: python</span>
 
 <span class="sd">        from dataclasses import dataclass</span>
-<span class="sd">        from lightrag.core.base_data_class import required_field, DataClass</span>
+<span class="sd">        from adalflow.core.base_data_class import required_field, DataClass</span>
 
 <span class="sd">        @dataclass</span>
 <span class="sd">        class Person(DataClass):</span>
@@ -557,6 +520,7 @@
 
 <span class="c1"># Dict is for the nested dataclasses, e.g. {&quot;Person&quot;: [&quot;name&quot;, &quot;age&quot;], &quot;Address&quot;: [&quot;city&quot;]}</span>
 <span class="n">ExcludeType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]</span>
+<span class="n">IncludeType</span> <span class="o">=</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]]</span>
 
 
 <div class="viewcode-block" id="DataClass">
@@ -614,7 +578,7 @@
 <span class="s2">    .. code-block:: python</span>
 
 <span class="s2">        # Define a dataclass</span>
-<span class="s2">        from lightrag.core import DataClass</span>
+<span class="s2">        from adalflow.core import DataClass</span>
 <span class="s2">        from dataclasses import dataclass, field</span>
 
 <span class="s2">        @dataclass</span>
@@ -651,19 +615,92 @@
 <span class="s2">        # name: John Doe</span>
 
 <span class="s2">    &quot;&quot;&quot;</span>
+    <span class="n">__input_fields__</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">__output_fields__</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;desc&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="s2">&quot;description&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
-                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="w">  </span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> Field </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is missing &#39;desc&#39; in metadata&quot;</span><span class="p">,</span>
-                    <span class="ne">UserWarning</span><span class="p">,</span>
+
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Class </span><span class="si">{</span><span class="w">  </span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> Field </span><span class="si">{</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is missing &#39;desc&#39; in metadata&quot;</span>
                 <span class="p">)</span>
+
+<div class="viewcode-block" id="DataClass.get_task_desc">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_task_desc">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the task description for the dataclass.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The task description for the dataclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span></div>
+
+
+<div class="viewcode-block" id="DataClass.set_task_desc">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_task_desc">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_task_desc</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task_desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the task description for the dataclass.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            task_desc (str): The task description to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">task_desc</span></div>
+
+
+<div class="viewcode-block" id="DataClass.get_input_fields">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_input_fields">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all input fields.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__input_fields__</span></div>
+
+
+<div class="viewcode-block" id="DataClass.set_input_fields">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_input_fields">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_input_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">input_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the input fields for the dataclass.</span>
+<span class="sd">          When creating schema or instance, it will follow the input field and output field order</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_fields (List[str]): The input fields to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__input_fields__</span> <span class="o">=</span> <span class="n">input_fields</span></div>
+
+
+<div class="viewcode-block" id="DataClass.get_output_fields">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_output_fields">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of all output fields.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__output_fields__</span></div>
+
+
+<div class="viewcode-block" id="DataClass.set_output_fields">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_output_fields">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">set_output_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">output_fields</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the output fields for the dataclass.</span>
+<span class="sd">          When creating schema or instance, it will follow the input field and output field order</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            output_fields (List[str]): The output fields to set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__output_fields__</span> <span class="o">=</span> <span class="n">output_fields</span></div>
+
 
 <div class="viewcode-block" id="DataClass.to_dict">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a dataclass object to a dictionary.</span>
 
 <span class="sd">        Supports nested dataclasses, lists, and dictionaries.</span>
@@ -706,14 +743,70 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;to_dict() called on a class type, not an instance.&quot;</span><span class="p">)</span>
+        <span class="c1"># convert all fields to its data if its parameter</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span>
+        <span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
+        <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="c1"># print(f&quot;field: {f}&quot;)</span>
+            <span class="n">field_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># if its a parameter, convert to its data</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">field_value</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">field_value</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;adapted self: {self}&quot;)</span>
+
+        <span class="c1"># ensure only either include or exclude is used not both</span>
+        <span class="k">if</span> <span class="n">include</span> <span class="ow">and</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either include or exclude can be used, not both.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># convert include to excluded</span>
+
         <span class="n">excluded</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">exclude</span><span class="p">}</span>
-        <span class="k">elif</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">custom_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">excluded</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">include</span><span class="p">:</span>  <span class="c1"># only support unnested fields</span>
+            <span class="c1"># fild all fields of the class</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dataclass_fields__</span>
+            <span class="c1"># generate the excluded dict</span>
+            <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include</span>
+                <span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">exclude</span><span class="p">}</span>
+            <span class="k">elif</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># return custom_asdict(self, exclude=excluded)</span>
+        <span class="c1"># Convert the dataclass to a dictionary</span>
+
+        <span class="n">raw_dict</span> <span class="o">=</span> <span class="n">custom_asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="n">excluded</span><span class="p">)</span>
+
+        <span class="c1"># Reorder the dictionary based on input_field and output_field</span>
+        <span class="n">input_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_input_fields</span><span class="p">()</span>
+        <span class="n">output_fields</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_output_fields</span><span class="p">()</span>
+
+        <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="c1"># First, add input fields in order</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">input_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">raw_dict</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+        <span class="c1"># Then, add output fields in order</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">output_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">raw_dict</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">raw_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+        <span class="c1"># Finally, add any remaining fields (if there are any)</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">raw_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">ordered_dict</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
 
 <div class="viewcode-block" id="DataClass.from_dict">
@@ -774,7 +867,11 @@
 
 <div class="viewcode-block" id="DataClass.to_json_obj">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_json_obj</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a JSON object.</span>
 
 <span class="sd">        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.</span>
@@ -784,12 +881,16 @@
 
 <span class="sd">        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_json">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a JSON string.</span>
 
 <span class="sd">        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.</span>
@@ -799,7 +900,9 @@
 
 <span class="sd">        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.from_yaml">
@@ -827,7 +930,11 @@
 
 <div class="viewcode-block" id="DataClass.to_yaml_obj">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_obj">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_yaml_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_yaml_obj</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a YAML object.</span>
 
 <span class="sd">        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.</span>
@@ -836,12 +943,16 @@
 
 <span class="sd">        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_yaml">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_yaml</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the dataclass instance to a YAML string.</span>
 
 <span class="sd">        :meth:`to_dict` along with the use of sort_keys=False to ensure the order of the fields is maintained.</span>
@@ -851,48 +962,101 @@
 <span class="sd">        exclude (Optional[Dict[str, List[str]]], optional): A dictionary of fields to exclude for each dataclass object. Defaults to None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="p">),</span> <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">),</span>
+            <span class="n">default_flow_style</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_schema">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">to_schema</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a Json schema which is more detailed than the signature.&quot;&quot;&quot;</span>
         <span class="c1"># convert exclude to dict if it is a list</span>
+        <span class="k">if</span> <span class="n">include</span> <span class="ow">and</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either include or exclude can be used, not both.&quot;</span><span class="p">)</span>
         <span class="n">excluded</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">exclude</span><span class="p">}</span>
-        <span class="k">elif</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">excluded</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="n">get_dataclass_schema</span><span class="p">(</span>
+        <span class="k">if</span> <span class="n">include</span><span class="p">:</span>  <span class="c1"># only support unnested fields</span>
+            <span class="c1"># fild all fields of the class</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__dataclass_fields__</span>
+            <span class="c1"># generate the excluded dict</span>
+            <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fields</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">include</span><span class="p">]</span>
+            <span class="p">}</span>
+        <span class="k">elif</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">List</span><span class="p">):</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">exclude</span><span class="p">}</span>
+            <span class="k">elif</span> <span class="n">exclude</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="n">Dict</span><span class="p">):</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">excluded</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">raw_dict</span> <span class="o">=</span> <span class="n">get_dataclass_schema</span><span class="p">(</span>
             <span class="bp">cls</span><span class="p">,</span> <span class="n">excluded</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s2">&quot;__type_var_map__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="c1"># Reorder the dictionary based on input_field and output_field</span>
+
+        <span class="n">properties</span> <span class="o">=</span> <span class="n">raw_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;properties&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="c1"># reorder the properties fields</span>
+        <span class="n">input_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_input_fields</span><span class="p">()</span>
+        <span class="n">output_fields</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get_output_fields</span><span class="p">()</span>
+
+        <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+        <span class="c1"># First, add input fields in order</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">input_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+        <span class="c1"># Then, add output fields in order</span>
+        <span class="k">for</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">output_fields</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">properties</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span>
+
+        <span class="c1"># Finally, add any remaining fields (if there are any)</span>
+        <span class="k">for</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">field_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ordered_dict</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># Update the properties field</span>
+        <span class="n">raw_dict</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ordered_dict</span>
+
+        <span class="k">return</span> <span class="n">raw_dict</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_schema_str">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_schema_str">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_schema_str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_schema_str</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a Json schema which is more detailed than the signature.&quot;&quot;&quot;</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.to_yaml_signature">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_yaml_signature">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_yaml_signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_yaml_signature</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Generate a YAML signature for the class from desc in metadata.</span>
 
 <span class="sd">        Used mostly as LLM prompt to describe the output data format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># NOTE: we manually format the yaml string as the yaml.dump will always sort the keys</span>
         <span class="c1"># Which can impact the final model output</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="n">signature_dict</span> <span class="o">=</span> <span class="n">convert_schema_to_signature</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
         <span class="n">yaml_content</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">signature_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -905,7 +1069,11 @@
 <div class="viewcode-block" id="DataClass.to_json_signature">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_json_signature">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_json_signature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">to_json_signature</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a JSON `signature`(json string) for the class from desc in metadata.</span>
 
 <span class="sd">        Used mostly as LLM prompt to describe the output data format.</span>
@@ -924,7 +1092,7 @@
 <span class="sd">        &gt;&gt;&gt; #    &quot;name&quot;: &quot;The name of the person (str) (required)&quot;</span>
 <span class="sd">        &gt;&gt;&gt; #}&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="n">signature_dict</span> <span class="o">=</span> <span class="n">convert_schema_to_signature</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">signature_dict</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span></div>
@@ -933,13 +1101,17 @@
 <div class="viewcode-block" id="DataClass.to_dict_class">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict_class">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">to_dict_class</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">to_dict_class</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;More of an internal used class method for serialization.</span>
 
 <span class="sd">        Converts the dataclass to a dictionary, optionally excluding specified fields.</span>
 <span class="sd">        Use this to save states of the class in serialization, not advised to use in LLM prompt.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="DataClass.format_class_str">
@@ -949,6 +1121,7 @@
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span>
         <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate formatted output based on the type of operation and class/instance context.</span>
 
@@ -963,17 +1136,17 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">            # Define a dataclass</span>
-<span class="sd">            from lightrag.core import DataClass</span>
+<span class="sd">            from adalflow.core import DataClass</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">format_type</span> <span class="o">==</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">format_type</span> <span class="o">==</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_YAML</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_yaml_signature</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_yaml_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="n">format_type</span> <span class="o">==</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SCHEMA</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema_str</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">to_schema_str</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported format type: </span><span class="si">{</span><span class="n">format_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -981,7 +1154,10 @@
 <div class="viewcode-block" id="DataClass.format_example_str">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DataClass.format_example_str">[docs]</a>
     <span class="k">def</span> <span class="nf">format_example_str</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span> <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">format_type</span><span class="p">:</span> <span class="n">DataClassFormatType</span><span class="p">,</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate formatted output based on the type of operation and class/instance context.</span>
 
@@ -995,9 +1171,9 @@
 
         <span class="c1"># Check the type of format required and whether it&#39;s called on an instance or class</span>
         <span class="k">if</span> <span class="n">format_type</span> <span class="o">==</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_JSON</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">format_type</span> <span class="o">==</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_YAML</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">,</span> <span class="n">include</span><span class="o">=</span><span class="n">include</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported format type: </span><span class="si">{</span><span class="n">format_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
@@ -1007,59 +1183,70 @@
     <span class="c1"># it will automatically use __type_var_map__ attribute</span>
 
 
-<span class="sd">&quot;&quot;&quot;Reserved for Agent to automatically create a dataclass and to manipulate the code&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="check_adal_dataclass">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.check_adal_dataclass">[docs]</a>
+<span class="k">def</span> <span class="nf">check_adal_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the provided class is a valid dataclass for the AdalFlow framework.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data_class (Type): The class to check.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_dataclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a dataclass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">data_class</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Provided class is not a subclass of DataClass: </span><span class="si">{</span><span class="n">data_class</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="DynamicDataClassFactory">
 <a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory">[docs]</a>
-<span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">DynamicDataClassFactory</span><span class="p">:</span>
-    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    This class is used to create a dynamic dataclass called `DynamicOutputs` from a dictionary.</span>
-<span class="s2">    The dictionary should have the following structure:</span>
-<span class="s2">    {</span>
-<span class="s2">        &quot;field_name&quot;: {</span>
-<span class="s2">            &quot;value&quot;: field_value,</span>
-<span class="s2">            &quot;desc&quot;: &quot;Field description&quot;,</span>
-<span class="s2">        },</span>
-
-<span class="s2">    }</span>
-
-<span class="s2">    Examples:</span>
-
-<span class="s2">    .. code-block:: python</span>
-
-<span class="s2">        data = {</span>
-<span class="s2">            &quot;age&quot;: {&quot;value&quot;: 30, &quot;desc&quot;: &quot;The age of the person&quot;},</span>
-<span class="s2">            &quot;name&quot;: {&quot;value&quot;: &quot;John Doe&quot;, &quot;desc&quot;: &quot;The name of the person&quot;},</span>
-<span class="s2">        }</span>
-
-<span class="s2">        DynamicOutputs = DynamicDataClassFactory.create_from_dict(data)</span>
-<span class="s2">        class_instance = DynamicOutputs()</span>
-<span class="s2">        print(class_instance)</span>
-
-<span class="s2">        # Output:</span>
-<span class="s2">        # DataClass(age=30, name=&#39;John Doe&#39;)</span>
-<span class="s2">    &quot;&quot;&quot;</span>
-
-<div class="viewcode-block" id="DynamicDataClassFactory.create_from_dict">
-<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.create_from_dict">[docs]</a>
+<div class="viewcode-block" id="DynamicDataClassFactory.from_dict">
+<a class="viewcode-back" href="../../apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.from_dict">[docs]</a>
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">base_class</span><span class="o">=</span><span class="n">DataClass</span><span class="p">,</span> <span class="n">class_name</span><span class="o">=</span><span class="s2">&quot;DynamicOutputs&quot;</span><span class="p">):</span>
-        <span class="n">fields_spec</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value_dict</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">field_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
-            <span class="n">default_value</span> <span class="o">=</span> <span class="n">value_dict</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="n">value_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;desc&quot;</span><span class="p">,</span> <span class="s2">&quot;No description provided&quot;</span><span class="p">),</span>
-            <span class="p">}</span>
-            <span class="n">fields_spec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">field_type</span><span class="p">,</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">default_value</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">))</span>
-            <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+        <span class="n">base_class</span><span class="p">:</span> <span class="n">Type</span> <span class="o">=</span> <span class="n">DataClass</span><span class="p">,</span>
+        <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DynamicDataClass&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataClass</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an instance of a dataclass from a dictionary. The dictionary should have the following structure:</span>
+<span class="sd">        {</span>
+<span class="sd">            &quot;field_name&quot;: field_value,</span>
+<span class="sd">            ...</span>
+<span class="sd">        }</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            data (dict): The dictionary with field names and values.</span>
+<span class="sd">            base_class (type): The base class to inherit from (default: BaseDataClass).</span>
+<span class="sd">            class_name (str): The name of the generated dataclass (default: DynamicDataClass).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            BaseDataClass: An instance of the generated dataclass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create field specifications for the dataclass</span>
+        <span class="c1"># fields_spec = [</span>
+        <span class="c1">#     (key, type(value), field(default=value)) for key, value in data.items()</span>
+        <span class="c1"># ]</span>
+        <span class="n">fields_spec</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">field_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">dict</span><span class="p">,</span> <span class="nb">set</span><span class="p">)):</span>
+                <span class="n">fields_spec</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">field_type</span><span class="p">,</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span> <span class="n">v</span><span class="o">=</span><span class="n">value</span><span class="p">:</span> <span class="n">v</span><span class="p">))</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fields_spec</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">key</span><span class="p">,</span> <span class="n">field_type</span><span class="p">,</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">value</span><span class="p">)))</span>
+
+        <span class="c1"># Create the dataclass</span>
         <span class="n">dynamic_class</span> <span class="o">=</span> <span class="n">make_dataclass</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">fields_spec</span><span class="p">,</span> <span class="n">bases</span><span class="o">=</span><span class="p">(</span><span class="n">base_class</span><span class="p">,))</span>
 
-        <span class="k">return</span> <span class="n">dynamic_class</span></div>
+        <span class="c1"># Create an instance of the dataclass with the provided values</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">dynamic_class</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">instance</span></div>
 </div>
 
 </pre></div>

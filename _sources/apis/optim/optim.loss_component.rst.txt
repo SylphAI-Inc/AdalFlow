@@ -1,0 +1,9 @@
+.. _optim-loss_component:
+
+loss_component
+============================
+
+.. automodule:: optim.loss_component
+   :members:
+   :undoc-members:
+   :show-inheritance:

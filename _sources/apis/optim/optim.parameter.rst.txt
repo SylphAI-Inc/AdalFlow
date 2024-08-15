@@ -1,0 +1,9 @@
+.. _optim-parameter:
+
+parameter
+======================
+
+.. automodule:: optim.parameter
+   :members:
+   :undoc-members:
+   :show-inheritance:

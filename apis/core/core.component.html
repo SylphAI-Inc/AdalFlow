@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -578,28 +570,8 @@
                   
   <section id="module-core.component">
 <span id="component"></span><span id="core-component"></span><h1>component<a class="headerlink" href="#module-core.component" title="Link to this heading">#</a></h1>
-<p>Component is to LLM task pipelines what nn.Module is to PyTorch models.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fun_to_component</span></code></a>(fun)</p></td>
-<td><p>Helper function to convert a function into a Component with its own class name.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.component.Component" title="core.component.Component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Component</span></code></a>(*args, **kwargs)</p></td>
-<td><p>Base class for all LLM task pipeline components.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FunComponent</span></code></a>([fun, afun])</p></td>
-<td><p>Component that wraps a function.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
+<p>Base building block for building LLM task pipelines.
+It handles states recursively, such as training, components, parameters recursively along with serialization and deserialization.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="core.component.Component">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component" title="Link to this definition">#</a></dt>
@@ -609,23 +581,32 @@
 Your task pipeline should subclass this.</p>
 <p>Components can also contain other Components, allowing to nest them in
 a tree structure. You can assign the subcomponents as regular attributes:</p>
+<p>Component supports three modes:
+- Training mode: <code class="docutils literal notranslate"><span class="pre">train()</span></code> When turned on, any component __call__ will use forward and backward for in-context training.</p>
+<blockquote>
+<div><p>When turned off, the __call__ should only use <cite>call</cite> and <cite>acall</cite> for inference.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Tracing mode: <code class="docutils literal notranslate"><span class="pre">trace()</span></code> When turned on, the component will accumulate input, output, and backpropagate the eval score to Parameter of Demo type.</p></li>
+<li><p>Teacher mode: <code class="docutils literal notranslate"><span class="pre">use_teacher()</span></code> When turned on, the component will accumulates the demos to the <cite>_trace`s, otherwise, it will be saved in `_student_traces</cite>.</p></li>
+</ul>
 <p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
 
 <span class="n">template_doc</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&lt;SYS&gt; You are a doctor &lt;/SYS&gt; User: {{input_str}}&quot;</span>
 
 <span class="k">class</span> <span class="nc">DocQA</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
-<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">(</span><span class="n">DocQA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
-        <span class="n">template</span><span class="o">=</span><span class="n">template_doc</span><span class="p">,</span>
-        <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
-        <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
-    <span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DocQA</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">template_doc</span><span class="p">,</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
+        <span class="p">)</span>
 
-<span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">doc</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 
 <span class="c1"># instantiate the component</span>
 <span class="n">doc_qa</span> <span class="o">=</span> <span class="n">DocQA</span><span class="p">()</span>
@@ -647,13 +628,40 @@ Instead of working with <code class="docutils literal notranslate"><span class="
 our component works with any data, <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> that can be any data type for LLM in-context learning, from manual to auto prompt engineering.
 Besides, (1) instead of <cite>forward</cite> and <cite>backward</cite> functions, we have <cite>call</cite> and <cite>acall</cite> functions for sync and async calls.
 (2) we provide <cite>to_dict</cite> to handle serialization of the whole component states on top of <cite>state_dict</cite>.</p>
-<p>We purposly avoid using the name “Module” to avoid confusion with PyTorch’s nn.Module.
-As we consider ‘Component’ to be an extension to ‘Moduble’ as if you use a local llm model
+<p>We purposely avoid using the name “Module” to avoid confusion with PyTorch’s nn.Module.
+As we consider ‘Component’ to be an extension to ‘Module’ as if you use a local llm model
 for the Generator, you might need the ‘Module’ within the ‘Component’.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="core.component.Component.training">
 <span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#core.component.Component.training" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.component.Component.teacher_mode">
+<span class="sig-name descname"><span class="pre">teacher_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#core.component.Component.teacher_mode" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.component.Component.tracing">
+<span class="sig-name descname"><span class="pre">tracing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#core.component.Component.tracing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="core.component.Component.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Component'</span></em><a class="headerlink" href="#core.component.Component.name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.component.Component.use_teacher">
+<span class="sig-name descname"><span class="pre">use_teacher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.use_teacher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.use_teacher" title="Link to this definition">#</a></dt>
+<dd><p>Sets the component in teacher mode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="core.component.Component.trace">
+<span class="sig-name descname"><span class="pre">trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.trace" title="Link to this definition">#</a></dt>
+<dd><p>Sets the component in tracing mode.This signal will be used in forward and backward to accumulate input and output.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.train">
@@ -724,22 +732,12 @@ using <a class="reference internal" href="#core.component.Component.to_dict" tit
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.register_parameter">
-<span class="sig-name descname"><span class="pre">register_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Parameter</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.register_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.register_parameter" title="Link to this definition">#</a></dt>
-<dd><p>Add a parameter to the component.</p>
-<p>The parameter can be accessed as an attribute using given name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em>) – name of the parameter. The parameter can be accessed using this name.</p></li>
-<li><p><strong>param</strong> (<a class="reference internal" href="core.parameter.html#core.parameter.Parameter" title="core.parameter.Parameter"><em>Parameter</em></a>) – parameter to be added.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">register_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.register_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.register_parameter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.parameters">
-<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.parameters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.parameters" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over module parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -759,7 +757,7 @@ Otherwise, yields only parameters that are direct members of this component.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.named_parameters">
-<span class="sig-name descname"><span class="pre">named_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Parameter</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_parameters" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">named_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../optim/index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_parameters" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over componenet parameters, yielding both the name of the parameter as well as the parameter itself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -812,26 +810,26 @@ are direct members of this component.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.named_children">
-<span class="sig-name descname"><span class="pre">named_children</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_children" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">named_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_component_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.named_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_children" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over immediate children components.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.children">
-<span class="sig-name descname"><span class="pre">children</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.children" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_component_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.children" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over immediate children components.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.components">
-<span class="sig-name descname"><span class="pre">components</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.components" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_component_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/component.html#Component.components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.components" title="Link to this definition">#</a></dt>
 <dd><p>Returns an iterator over all components in the Module.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="core.component.Component.named_components">
-<span class="sig-name descname"><span class="pre">named_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.named_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_components" title="Link to this definition">#</a></dt>
-<dd><p>Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself.</p>
+<span class="sig-name descname"><span class="pre">named_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">memo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#core.component.Component" title="core.component.Component"><span class="pre">Component</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_duplicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_component_only</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/core/component.html#Component.named_components"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.component.Component.named_components" title="Link to this definition">#</a></dt>
+<dd><p>Return an iterator over all components in the pipeline, yielding both the name of the component as well as the component itself as a tuple.</p>
 <p>This can be used to represent the state of the component in a dictionary format.
 :param memo: a memo to store the set of components already added to the result
 :type memo: Optional[Set[“Component”]]
@@ -1009,6 +1007,11 @@ its own class name.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component"><code class="docutils literal notranslate"><span class="pre">Component</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.training"><code class="docutils literal notranslate"><span class="pre">Component.training</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.teacher_mode"><code class="docutils literal notranslate"><span class="pre">Component.teacher_mode</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.tracing"><code class="docutils literal notranslate"><span class="pre">Component.tracing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.name"><code class="docutils literal notranslate"><span class="pre">Component.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.use_teacher"><code class="docutils literal notranslate"><span class="pre">Component.use_teacher()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.trace"><code class="docutils literal notranslate"><span class="pre">Component.trace()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.train"><code class="docutils literal notranslate"><span class="pre">Component.train()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.eval"><code class="docutils literal notranslate"><span class="pre">Component.eval()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core.component.Component.is_picklable"><code class="docutils literal notranslate"><span class="pre">Component.is_picklable()</span></code></a></li>

@@ -1,0 +1,9 @@
+.. _optim-trainer-trainer:
+
+trainer
+============================
+
+.. automodule:: optim.trainer.trainer
+   :members:
+   :undoc-members:
+   :show-inheritance:

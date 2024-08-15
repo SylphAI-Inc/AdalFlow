@@ -1,0 +1,21 @@
+.. _optim-trainer:
+
+trainer
+=====================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   optim.trainer.adal
+   optim.trainer.trainer
+
+
+---------------
+
+.. automodule:: optim.trainer
+   :members:
+   :undoc-members:
+   :show-inheritance:

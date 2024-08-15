@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -462,6 +427,7 @@
  | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  | <a href="#Y"><strong>Y</strong></a>
+ | <a href="#Z"><strong>Z</strong></a>
  
 </div>
 <h2 id="A">A</h2>
@@ -499,11 +465,39 @@
         <li><a href="apis/core/core.types.html#core.types.StepOutput.action">(StepOutput attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent">AdalComponent (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent">(class in optim.trainer)</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent">(class in optim.trainer.adal)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Trainer.adaltask">adaltask (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.adaltask">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.adaltask">[2]</a>
+</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.add">add() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.add_component">add_component() (Component method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.add_gradient">add_gradient() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_gradient">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_history">add_history() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.add_history">[2]</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.component.html#core.component.Component.add_component">add_component() (Component method)</a>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_current_param">add_score_to_current_param() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_current_param">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.add_score_to_current_param">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.add_score_to_params">add_score_to_params() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.add_score_to_params">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.add_score_to_params">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.add_score_to_trace">add_score_to_trace() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_score_to_trace">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.add_scores">add_scores() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.add_scores">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.add_to_trace">add_to_trace() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.add_to_trace">[1]</a>
+</li>
+      <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.additional_info">additional_info (EvaluationResult attribute)</a>
+</li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.Example.answer">answer (Example attribute)</a>, <a href="apis/datasets/index.html#datasets.Example.answer">[1]</a>
 </li>
       <li><a href="apis/eval/index.html#eval.AnswerMatchAcc">AnswerMatchAcc (class in eval)</a>
 
@@ -533,9 +527,11 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.AssistantResponse">AssistantResponse (class in core.types)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.augment_samples">augment_samples() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.augment_samples">[1]</a>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.attempted_val_score">attempted_val_score (TrainerStepResult attribute)</a>
 </li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.average_pool">average_pool() (in module components.model_client.transformers_client)</a>
+</li>
+      <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.avg_score">avg_score (EvaluationResult attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -543,8 +539,56 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.EvalFnToTextLoss.backward">backward() (EvalFnToTextLoss method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.EvalFnToTextLoss.backward">[1]</a>, <a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.backward">[2]</a>
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.backward">(Generator method)</a>
+</li>
+        <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.backward">(GradComponent method)</a>
+</li>
+        <li><a href="apis/optim/optim.loss_component.html#optim.loss_component.LossComponent.backward">(LossComponent method)</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.Parameter.backward">(Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.backward">[1]</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.backward">(Retriever method)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.Sum.backward">(Sum method)</a>, <a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum.backward">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.backward_engine">backward_engine (AdalComponent attribute)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.backward_engine">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.backward_engine">[2]</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.backward_engine">(GradComponent attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.loss_component.html#optim.loss_component.LossComponent.backward_engine">(LossComponent attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum.backward_engine">(Sum attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.BackwardContext">BackwardContext (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.function.html#optim.function.BackwardContext">(class in optim.function)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.generator.html#core.generator.BackwardEngine">BackwardEngine (class in core.generator)</a>
+</li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.BaseData">BaseData (class in datasets.types)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/eval/eval.base.html#eval.base.BaseEvaluator">BaseEvaluator (class in eval.base)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.batch_val_score_threshold">batch_val_score_threshold (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.batch_val_score_threshold">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.batch_val_score_threshold">[2]</a>
+</li>
       <li><a href="apis/core/core.embedder.html#core.embedder.BatchEmbedder">BatchEmbedder (class in core.embedder)</a>
 </li>
+      <li><a href="apis/datasets/index.html#datasets.BigBenchHard">BigBenchHard (class in datasets)</a>
+
+      <ul>
+        <li><a href="apis/datasets/datasets.big_bench_hard.html#datasets.big_bench_hard.BigBenchHard">(class in datasets.big_bench_hard)</a>
+</li>
+      </ul></li>
       <li><a href="apis/components/components.retriever.html#components.retriever.BM25Retriever">BM25Retriever (class in components.retriever)</a>
 
       <ul>
@@ -558,11 +602,9 @@
       <li><a href="apis/optim/index.html#optim.BootstrapFewShot">BootstrapFewShot (class in optim)</a>
 
       <ul>
-        <li><a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot">(class in optim.few_shot_optimizer)</a>
+        <li><a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot">(class in optim.few_shot.bootstrap_optimizer)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.build_index_from_documents">build_index_from_documents() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.build_index_from_documents">[1]</a>
 
       <ul>
@@ -581,6 +623,8 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/utils/utils.cache.html#utils.cache.CachedEngine">CachedEngine (class in utils.cache)</a>
+</li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.call">call() (AnthropicAPIClient method)</a>
 
       <ul>
@@ -590,17 +634,23 @@
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.BooleanOutputParser.call">(BooleanOutputParser method)</a>
 </li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.BooleanParser.call">(BooleanParser method)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.ClassSampler.call">(ClassSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.call">[1]</a>
 </li>
         <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient.call">(CohereAPIClient method)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.Component.call">(Component method)</a>
 </li>
+        <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.call">(DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.call">[1]</a>
+</li>
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge.call">(DefaultLLMJudge method)</a>
 </li>
         <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.call">(Embedder method)</a>
 </li>
         <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.call">(FAISSRetriever method)</a>
+</li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.FloatParser.call">(FloatParser method)</a>
 </li>
         <li><a href="apis/core/core.component.html#core.component.FunComponent.call">(FunComponent method)</a>
 </li>
@@ -610,7 +660,11 @@
 </li>
         <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.call">(GoogleGenAIClient method)</a>
 </li>
+        <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.call">(GradComponent method)</a>
+</li>
         <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.call">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.IntParser.call">(IntParser method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.JsonOutputParser.call">(JsonOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser.call">[1]</a>
 </li>
@@ -618,7 +672,7 @@
 </li>
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser.call">(ListOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.ListOutputParser.call">[1]</a>
 </li>
-        <li><a href="apis/optim/optim.llm_augment.html#optim.llm_augment.LLMAugmenter.call">(LLMAugmenter method)</a>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.ListParser.call">(ListParser method)</a>
 </li>
         <li><a href="apis/components/components.retriever.html#components.retriever.LLMRetriever.call">(LLMRetriever method)</a>, <a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever.call">[1]</a>
 </li>
@@ -630,13 +684,13 @@
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.OutputParser.call">(OutputParser method)</a>
 </li>
+        <li><a href="apis/core/core.string_parser.html#core.string_parser.Parser.call">(Parser method)</a>
+</li>
         <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.call">(PostgresRetriever method)</a>
 </li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">(Prompt method)</a>
 </li>
         <li><a href="apis/optim/index.html#optim.RandomSampler.call">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.call">[1]</a>
-</li>
-        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.call">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.call">[1]</a>
 </li>
         <li><a href="apis/components/components.retriever.html#components.retriever.RerankerRetriever.call">(RerankerRetriever method)</a>, <a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever.call">[1]</a>
 </li>
@@ -648,8 +702,6 @@
 </li>
         <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter.call">(TextSplitter method)</a>, <a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.call">[1]</a>
 </li>
-        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.call">(TransformerLLM method)</a>
-</li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.call">(TransformersClient method)</a>
 </li>
         <li><a href="apis/components/components.output_parsers.html#components.output_parsers.YamlOutputParser.call">(YamlOutputParser method)</a>, <a href="apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.YamlOutputParser.call">[1]</a>
@@ -657,15 +709,29 @@
         <li><a href="apis/core/core.string_parser.html#core.string_parser.YamlParser.call">(YamlParser method)</a>
 </li>
       </ul></li>
+      <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager">CallbackManager (class in tracing.callback_manager)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.check_adal_dataclass">check_adal_dataclass() (in module core.base_data_class)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.check_data_class_field_args_one">check_data_class_field_args_one() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.check_data_class_field_args_zero">check_data_class_field_args_zero() (in module core.functional)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.check_if_already_computed_gradient_respect_to">check_if_already_computed_gradient_respect_to() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.check_if_already_computed_gradient_respect_to">[1]</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.check_object">check_object() (in module utils.serialization)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.children">children() (Component method)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Trainer.ckpt_file">ckpt_file (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.ckpt_file">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.ckpt_file">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.ckpt_path">ckpt_path (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.ckpt_path">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.ckpt_path">[2]</a>
+</li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.CLASS">CLASS (ObjectTypes attribute)</a>
+</li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData.class_index">class_index (TrecData attribute)</a>
+</li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData.class_name">class_name (TrecData attribute)</a>
 </li>
       <li><a href="apis/optim/index.html#optim.ClassSampler">ClassSampler (class in optim)</a>
 
@@ -673,6 +739,8 @@
         <li><a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler">(class in optim.sampler)</a>
 </li>
       </ul></li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.clean_device_cache">clean_device_cache() (in module components.model_client.transformers_client)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.ModelClientType.COHERE">COHERE (ModelClientType attribute)</a>
 
       <ul>
@@ -681,24 +749,14 @@
       </ul></li>
       <li><a href="apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient">CohereAPIClient (class in components.model_client.cohere_client)</a>
 </li>
+      <li><a href="apis/core/core.types.html#core.types.CompletionUsage.completion_tokens">completion_tokens (CompletionUsage attribute)</a>
+</li>
+      <li><a href="apis/core/core.types.html#core.types.CompletionUsage">CompletionUsage (class in core.types)</a>
+</li>
       <li><a href="apis/core/core.component.html#core.component.Component">Component (class in core.component)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.components">components() (Component method)</a>
 </li>
-      <li>
-    components.agent
-
-      <ul>
-        <li><a href="apis/components/components.agent.html#module-components.agent">module</a>
-</li>
-      </ul></li>
-      <li>
-    components.agent.react
-
-      <ul>
-        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">module</a>
-</li>
-      </ul></li>
       <li>
     components.data_process
 
@@ -790,8 +848,6 @@
         <li><a href="apis/components/components.model_client.transformers_client.html#module-components.model_client.transformers_client">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     components.model_client.utils
 
@@ -804,6 +860,15 @@
 
       <ul>
         <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    components.output_parsers.dataclass_parser
+
+      <ul>
+        <li><a href="apis/components/components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser">module</a>
 </li>
       </ul></li>
       <li>
@@ -876,6 +941,8 @@
       <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc.compute">compute() (AnswerMatchAcc method)</a>, <a href="apis/eval/index.html#eval.AnswerMatchAcc.compute">[1]</a>
 
       <ul>
+        <li><a href="apis/eval/eval.base.html#eval.base.BaseEvaluator.compute">(BaseEvaluator method)</a>
+</li>
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge.compute">(LLMasJudge method)</a>, <a href="apis/eval/index.html#eval.LLMasJudge.compute">[1]</a>
 </li>
         <li><a href="apis/eval/eval.retriever_recall.html#eval.retriever_recall.RetrieverRecall.compute">(RetrieverRecall method)</a>, <a href="apis/eval/index.html#eval.RetrieverRecall.compute">[1]</a>
@@ -883,6 +950,42 @@
         <li><a href="apis/eval/eval.retriever_relevance.html#eval.retriever_relevance.RetrieverRelevance.compute">(RetrieverRelevance method)</a>, <a href="apis/eval/index.html#eval.RetrieverRelevance.compute">[1]</a>
 </li>
       </ul></li>
+      <li><a href="apis/eval/eval.answer_match_acc.html#eval.answer_match_acc.AnswerMatchAcc.compute_single_item">compute_single_item() (AnswerMatchAcc method)</a>, <a href="apis/eval/index.html#eval.AnswerMatchAcc.compute_single_item">[1]</a>
+
+      <ul>
+        <li><a href="apis/eval/eval.base.html#eval.base.BaseEvaluator.compute_single_item">(BaseEvaluator method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.config_dataset">config_dataset() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_dataset">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.config_shots">config_shots() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.config_shots">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.DemoOptimizer.config_shots">(DemoOptimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.config_shots">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_backward_engine">configure_backward_engine() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_backward_engine">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_backward_engine">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_backward_engine_helper">configure_backward_engine_helper() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_backward_engine_helper">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_backward_engine_helper">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_callbacks">configure_callbacks() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_callbacks">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_callbacks">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_demo_optimizer_helper">configure_demo_optimizer_helper() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_demo_optimizer_helper">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_demo_optimizer_helper">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_optimizers">configure_optimizers() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_optimizers">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_optimizers">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_teacher_generator">configure_teacher_generator() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_teacher_generator">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_teacher_generator">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_teacher_generator_helper">configure_teacher_generator_helper() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_teacher_generator_helper">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_teacher_generator_helper">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.configure_text_optimizer_helper">configure_text_optimizer_helper() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.configure_text_optimizer_helper">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.configure_text_optimizer_helper">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.constraint_text">constraint_text (TGDOptimizer property)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.constraint_text">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.constraint_text">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.constraints">constraints (TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.constraints">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.constraints">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.GradientContext.context">context (GradientContext attribute)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.Conversation">Conversation (class in core.types)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.conversation_id">conversation_id (DialogTurn attribute)</a>
@@ -978,13 +1081,6 @@
 </li>
       </ul></li>
       <li>
-    core.parameter
-
-      <ul>
-        <li><a href="apis/core/core.parameter.html#module-core.parameter">module</a>
-</li>
-      </ul></li>
-      <li>
     core.prompt_builder
 
       <ul>
@@ -1030,7 +1126,9 @@
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.count_tokens">count_tokens() (Tokenizer method)</a>
 </li>
-      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.create_from_dict">create_from_dict() (DynamicDataClassFactory static method)</a>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.create_demo_data_instance">create_demo_data_instance() (Generator method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.create_teacher_generator">create_teacher_generator() (in module core.generator)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.created_at">created_at (Conversation attribute)</a>
 </li>
@@ -1047,6 +1145,8 @@
       <ul>
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.data">(GeneratorOutput attribute)</a>
 </li>
+        <li><a href="apis/optim/optim.types.html#optim.types.PromptData.data">(PromptData attribute)</a>
+</li>
         <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample.data">(Sample attribute)</a>
 </li>
       </ul></li>
@@ -1056,31 +1156,91 @@
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType">DataClassFormatType (class in core.base_data_class)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.RandomSampler.dataset">dataset (RandomSampler attribute)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.dataset">[1]</a>
+      <li><a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser">DataClassParser (class in components.output_parsers)</a>
+
+      <ul>
+        <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser">(class in components.output_parsers.dataclass_parser)</a>
 </li>
+      </ul></li>
+      <li><a href="apis/utils/utils.data.html#utils.data.DataLoader">DataLoader (class in utils.data)</a>
+</li>
+      <li><a href="apis/utils/utils.data.html#utils.data.Dataset">Dataset (class in utils.data)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.DemoOptimizer.dataset">dataset (DemoOptimizer attribute)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.dataset">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Sampler.dataset">(Sampler attribute)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.dataset">[1]</a>
+</li>
+        <li><a href="apis/utils/utils.data.html#utils.data.Subset.dataset">(Subset attribute)</a>
+</li>
+      </ul></li>
+      <li>
+    datasets
+
+      <ul>
+        <li><a href="apis/datasets/index.html#module-datasets">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.DATASETS">DATASETS (OptionalPackages attribute)</a>
+</li>
+      <li>
+    datasets.big_bench_hard
+
+      <ul>
+        <li><a href="apis/datasets/datasets.big_bench_hard.html#module-datasets.big_bench_hard">module</a>
+</li>
+      </ul></li>
+      <li>
+    datasets.hotpot_qa
+
+      <ul>
+        <li><a href="apis/datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa">module</a>
+</li>
+      </ul></li>
+      <li>
+    datasets.types
+
+      <ul>
+        <li><a href="apis/datasets/datasets.types.html#module-datasets.types">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Trainer.debug">debug (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.debug">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.debug">[2]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.decode">decode() (Tokenizer method)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.default">default() (in module utils.serialization)</a>
 </li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>, <a href="apis/core/core.default_prompt_template.html#id0">[1]</a>
-</li>
-      <li><a href="apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT">DEFAULT_REACT_AGENT_SYSTEM_PROMPT (in module components.agent.react)</a>
+      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT">DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
 </li>
       <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge">DefaultLLMJudge (class in eval.llm_as_judge)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.delete">delete() (LocalDB method)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.delete_dialog_turn">delete_dialog_turn() (Conversation method)</a>
 </li>
+      <li><a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.demo_optimizers">demo_optimizers (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.demo_optimizers">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.DemoOptimizer">DemoOptimizer (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer">(class in optim.optimizer)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.DEMOS">DEMOS (ParameterType attribute)</a>
+</li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.deserialize">deserialize() (in module utils.serialization)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.diagnose">diagnose() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.diagnose">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.diagnose">[2]</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.dialog_turns">dialog_turns (Conversation attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.dialog_turns_input">dialog_turns_input (Conversation attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn">DialogTurn (class in core.types)</a>
+</li>
+      <li><a href="apis/utils/utils.cache.html#utils.cache.direct">direct() (in module utils.cache)</a>
 </li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator">DistanceToOperator (class in components.retriever.postgres_retriever)</a>
 </li>
@@ -1092,6 +1252,10 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.documents">documents (RetrieverOutput attribute)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Parameter.draw_graph">draw_graph() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.draw_graph">[1]</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.DYNAMIC_FEW_SHOT_EXAMPLES">DYNAMIC_FEW_SHOT_EXAMPLES (OptimizeGoal attribute)</a>
+</li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory">DynamicDataClassFactory (class in core.base_data_class)</a>
 </li>
   </ul></td>
@@ -1100,6 +1264,8 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.effective_measure">effective_measure (TrainerResult attribute)</a>
+</li>
       <li><a href="apis/core/core.embedder.html#core.embedder.Embedder">Embedder (class in core.embedder)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelType.EMBEDDER">EMBEDDER (ModelType attribute)</a>
@@ -1145,6 +1311,13 @@
 </li>
       </ul></li>
       <li>
+    eval.base
+
+      <ul>
+        <li><a href="apis/eval/eval.base.html#module-eval.base">module</a>
+</li>
+      </ul></li>
+      <li>
     eval.llm_as_judge
 
       <ul>
@@ -1158,8 +1331,6 @@
         <li><a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     eval.retriever_relevance
 
@@ -1167,8 +1338,40 @@
         <li><a href="apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance">module</a>
 </li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.eval_fn">eval_fn (AdalComponent attribute)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.eval_fn">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.eval_fn">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.eval_input">eval_input (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.eval_input">[1]</a>
+</li>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.HistoryPrompt.eval_score">eval_score (HistoryPrompt attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.EvalFnToTextLoss">EvalFnToTextLoss (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.EvalFnToTextLoss">(class in optim.text_grad)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss">(class in optim.text_grad.text_loss_with_eval_fn)</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.functional.html#core.functional.evaluate_ast_node">evaluate_ast_node() (in module core.functional)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_one_sample">evaluate_one_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_one_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_one_sample">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.evaluate_samples">evaluate_samples() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.evaluate_samples">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.evaluate_samples">[2]</a>
+</li>
+      <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult">EvaluationResult (class in eval.base)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.types.html#optim.types.EvaluationResult">(class in optim.types)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/datasets/index.html#datasets.Example">Example (class in datasets)</a>
+
+      <ul>
+        <li><a href="apis/datasets/datasets.types.html#datasets.types.Example">(class in datasets.types)</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_JSON">EXAMPLE_JSON (DataClassFormatType attribute)</a>
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.EXAMPLE_YAML">EXAMPLE_YAML (DataClassFormatType attribute)</a>
@@ -1207,6 +1410,8 @@
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_list_str">extract_list_str() (in module core.functional)</a>
 </li>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.extract_new_variable">extract_new_variable() (in module optim.text_grad.tgd_optimer)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.extract_yaml_str">extract_yaml_str() (in module core.functional)</a>
 </li>
   </ul></td>
@@ -1215,13 +1420,23 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.failure_message_to_backward_engine">failure_message_to_backward_engine() (Generator static method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.BackwardEngine.failure_message_to_optimizer">failure_message_to_optimizer() (BackwardEngine static method)</a>
+</li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.FAISS">FAISS (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever">FAISSRetriever (class in components.retriever.faiss_retriever)</a>
 </li>
+      <li><a href="apis/optim/optim.types.html#optim.types.EvaluationResult.feedback">feedback (EvaluationResult attribute)</a>
+</li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.fetch_items">fetch_items() (LocalDB method)</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.fetch_transformed_items">fetch_transformed_items() (LocalDB method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.find_demo_parameter">find_demo_parameter() (Generator static method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.fit">fit() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.fit">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.fit">[2]</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.fix_json_escaped_single_quotes">fix_json_escaped_single_quotes() (in module core.functional)</a>
 </li>
@@ -1249,6 +1464,22 @@
       </ul></li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.format_vector_search_query">format_vector_search_query() (PostgresRetriever class method)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.EvalFnToTextLoss.forward">forward() (EvalFnToTextLoss method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.EvalFnToTextLoss.forward">[1]</a>, <a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.forward">[2]</a>
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.forward">(Generator method)</a>
+</li>
+        <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.forward">(GradComponent method)</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.LLMAsTextLoss.forward">(LLMAsTextLoss method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.LLMAsTextLoss.forward">[1]</a>, <a href="apis/optim/optim.text_grad.llm_text_loss.html#optim.text_grad.llm_text_loss.LLMAsTextLoss.forward">[2]</a>
+</li>
+        <li><a href="apis/optim/optim.loss_component.html#optim.loss_component.LossComponent.forward">(LossComponent method)</a>
+</li>
+        <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.forward">(Retriever method)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.Sum.forward">(Sum method)</a>, <a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum.forward">[1]</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.component.html#core.component.Component.from_config">from_config() (Component class method)</a>
 
       <ul>
@@ -1257,6 +1488,8 @@
         <li><a href="apis/core/core.generator.html#core.generator.Generator.from_config">(Generator class method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.component.html#core.component.Component.from_dict">from_dict() (Component class method)</a>
 
       <ul>
@@ -1264,15 +1497,19 @@
 </li>
         <li><a href="apis/core/core.types.html#core.types.Document.from_dict">(Document class method)</a>
 </li>
+        <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DynamicDataClassFactory.from_dict">(DynamicDataClassFactory static method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.from_dict">(GroqAPIClient class method)</a>
+</li>
         <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.OllamaClient.from_dict">(OllamaClient class method)</a>
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.from_dict">(OpenAIClient class method)</a>
 </li>
+        <li><a href="apis/optim/index.html#optim.Parameter.from_dict">(Parameter class method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.from_dict">[1]</a>
+</li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.from_dict">(Prompt class method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.functional.html#core.functional.from_dict_to_json">from_dict_to_json() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.from_dict_to_yaml">from_dict_to_yaml() (in module core.functional)</a>
@@ -1283,9 +1520,13 @@
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.from_json_to_dict">from_json_to_dict() (in module core.functional)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Parameter.from_response_id">from_response_id (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.from_response_id">[1]</a>
+</li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.from_yaml">from_yaml() (DataClass class method)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.from_yaml_to_dict">from_yaml_to_dict() (in module core.functional)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.full_response">full_response (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.full_response">[1]</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.fun_to_component">fun_to_component() (in module core.component)</a>
 </li>
@@ -1317,6 +1558,8 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.Trainer.gather_trainer_states">gather_trainer_states() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.gather_trainer_states">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.gather_trainer_states">[2]</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.generate_function_call_expression_from_callable">generate_function_call_expression_from_callable() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.generate_readable_key_for_function">generate_readable_key_for_function() (in module core.functional)</a>
@@ -1326,6 +1569,8 @@
       <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.generator_names">generator_names (GeneratorStateLogger property)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.generator_names_to_files">generator_names_to_files (GeneratorCallLogger property)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.GENERATOR_OUTPUT">GENERATOR_OUTPUT (ParameterType attribute)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger">GeneratorCallLogger (class in tracing.generator_call_logger)</a>
 </li>
@@ -1339,6 +1584,8 @@
 </li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get">get() (EntityMapping class method)</a>
 </li>
+      <li><a href="apis/utils/utils.global_config.html#utils.global_config.get_adalflow_default_root_path">get_adalflow_default_root_path() (in module utils.global_config)</a>
+</li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.get_all">get_all() (EntityMapping class method)</a>
 </li>
       <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_all_messages_content">get_all_messages_content() (in module components.model_client.openai_client)</a>
@@ -1351,9 +1598,15 @@
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.get_dataclass_schema">get_dataclass_schema() (in module core.functional)</a>
 </li>
+      <li><a href="apis/datasets/datasets.big_bench_hard.html#datasets.big_bench_hard.BigBenchHard.get_default_task_instruction">get_default_task_instruction() (BigBenchHard method)</a>, <a href="apis/datasets/index.html#datasets.BigBenchHard.get_default_task_instruction">[1]</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.get_device">get_device() (in module components.model_client.transformers_client)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.get_dialog_turns">get_dialog_turns() (Conversation method)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.get_enum_schema">get_enum_schema() (in module core.functional)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_examples_str">get_examples_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_examples_str">[1]</a>
 </li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.get_first_message_content">get_first_message_content() (in module components.model_client.anthropic_client)</a>
 
@@ -1361,10 +1614,24 @@
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_first_message_content">(in module components.model_client.openai_client)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.functional.html#core.functional.get_fun_schema">get_fun_schema() (in module core.functional)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Parameter.get_grad_fn">get_grad_fn() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_grad_fn">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.get_gradient_and_context_text">get_gradient_and_context_text() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gradient_and_context_text">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.get_gradient_memory_text">get_gradient_memory_text() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.get_gradient_memory_text">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.get_gradient_memory_text">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.get_gradients_names">get_gradients_names() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_gradients_names">[1]</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_input_fields">get_input_fields() (DataClass class method)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_input_format_str">get_input_format_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_input_format_str">[1]</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_input_str">get_input_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_input_str">[1]</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">get_jinja2_environment() (in module core.prompt_builder)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.get_log_location">get_log_location() (GeneratorCallLogger method)</a>
@@ -1379,13 +1646,27 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.get_next_order">get_next_order() (Conversation method)</a>
 </li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_output_fields">get_output_fields() (DataClass class method)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_output_format_str">get_output_format_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_output_format_str">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.get_param_info">get_param_info() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_param_info">[1]</a>
+</li>
       <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.get_probabilities">get_probabilities() (in module components.model_client.openai_client)</a>
 </li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.get_prompt">get_prompt() (Generator method)</a>
+</li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.get_prompt_variables">get_prompt_variables() (Prompt method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.get_short_value">get_short_value() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.get_short_value">[1]</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.get_string_tokens">get_string_tokens() (Tokenizer method)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.get_subcomponent">get_subcomponent() (Component method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.get_task_desc">get_task_desc() (DataClass class method)</a>
+</li>
+      <li><a href="apis/components/components.output_parsers.dataclass_parser.html#components.output_parsers.dataclass_parser.DataClassParser.get_task_desc_str">get_task_desc_str() (DataClassParser method)</a>, <a href="apis/components/components.output_parsers.html#components.output_parsers.DataClassParser.get_task_desc_str">[1]</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.get_top_k_indices_scores">get_top_k_indices_scores() (in module core.functional)</a>
 </li>
@@ -1395,11 +1676,25 @@
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.get_type_schema">get_type_schema() (in module core.functional)</a>
 </li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.HotPotQAData.gold_titles">gold_titles (HotPotQAData attribute)</a>, <a href="apis/datasets/index.html#datasets.HotPotQAData.gold_titles">[1]</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.ModelClientType.GOOGLE_GENAI">GOOGLE_GENAI (ModelClientType attribute)</a>
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.GOOGLE_GENERATIVEAI">GOOGLE_GENERATIVEAI (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient">GoogleGenAIClient (class in components.model_client.google_client)</a>
+</li>
+      <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent">GradComponent (class in optim.grad_component)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.GRADIENT">GRADIENT (ParameterType attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.gradient_prompt">gradient_prompt (Parameter attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.GradientContext">GradientContext (class in optim.parameter)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.gradients">gradients (Parameter attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.gradients_context">gradients_context (Parameter attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelClientType.GROQ">GROQ (ModelClientType attribute)</a>
 
@@ -1409,7 +1704,7 @@
       </ul></li>
       <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient">GroqAPIClient (class in components.model_client.groq_client)</a>
 </li>
-      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.gts">gts (Instruction attribute)</a>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.Instruction.gts">gts (Instruction attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1417,7 +1712,33 @@
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.handle_one_loss_sample">handle_one_loss_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.handle_one_loss_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.handle_one_loss_sample">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.handle_one_task_sample">handle_one_task_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.handle_one_task_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.handle_one_task_sample">[2]</a>
+</li>
       <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.handle_streaming_response">handle_streaming_response() (in module components.model_client.openai_client)</a>
+</li>
+      <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text">hash_text() (in module utils.cache)</a>
+</li>
+      <li><a href="apis/utils/utils.cache.html#utils.cache.hash_text_sha1">hash_text_sha1() (in module utils.cache)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.HistoryPrompt">HistoryPrompt (class in optim.text_grad.tgd_optimer)</a>
+</li>
+      <li><a href="apis/datasets/index.html#datasets.HotPotQA">HotPotQA (class in datasets)</a>
+
+      <ul>
+        <li><a href="apis/datasets/datasets.hotpot_qa.html#datasets.hotpot_qa.HotPotQA">(class in datasets.hotpot_qa)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/datasets/index.html#datasets.HotPotQAData">HotPotQAData (class in datasets)</a>
+
+      <ul>
+        <li><a href="apis/datasets/datasets.types.html#datasets.types.HotPotQAData">(class in datasets.types)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.HYPERPARAMETER_TUNING">HYPERPARAMETER_TUNING (OptimizeGoal attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1425,12 +1746,22 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.types.html#core.types.Conversation.id">id (Conversation attribute)</a>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.BaseData.id">id (BaseData attribute)</a>
 
       <ul>
+        <li><a href="apis/core/core.types.html#core.types.Conversation.id">(Conversation attribute)</a>
+</li>
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.id">(DialogTurn attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.Document.id">(Document attribute)</a>
+</li>
+        <li><a href="apis/datasets/datasets.types.html#datasets.types.Example.id">(Example attribute)</a>, <a href="apis/datasets/index.html#datasets.Example.id">[1]</a>
+</li>
+        <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.id">(GeneratorOutput attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.HistoryPrompt.id">(HistoryPrompt attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.types.html#optim.types.PromptData.id">(PromptData attribute)</a>
 </li>
       </ul></li>
       <li><a href="apis/core/core.types.html#core.types.Embedding.index">index (Embedding attribute)</a>
@@ -1443,11 +1774,13 @@
 </li>
       <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.indexed">indexed (Retriever attribute)</a>
 </li>
+      <li><a href="apis/utils/utils.data.html#utils.data.Subset.indices">indices (Subset attribute)</a>
+</li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerReranker.infer_bge_reranker_base">infer_bge_reranker_base() (TransformerReranker method)</a>
 </li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding">infer_gte_base_embedding() (TransformerEmbedder method)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.init">init() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.init">[1]</a>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.infer_llm">infer_llm() (TransformerLLM method)</a>
 </li>
       <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.init_async_client">init_async_client() (AnthropicAPIClient method)</a>
 
@@ -1495,6 +1828,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.Trainer.initial_validation">initial_validation() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.initial_validation">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.initial_validation">[2]</a>
+</li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.DistanceToOperator.INNER_PRODUCT">INNER_PRODUCT (DistanceToOperator attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.EmbedderOutput.input">input (EmbedderOutput attribute)</a>
@@ -1502,12 +1837,20 @@
       <ul>
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput.input">(FunctionOutput attribute)</a>
 </li>
+        <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.input">(GeneratorCallRecord attribute)</a>
+</li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.Parameter.input_args">input_args (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.input_args">[1]</a>
+</li>
       <li><a href="apis/core/core.container.html#core.container.Sequential.insert">insert() (Sequential method)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.INSTANCE">INSTANCE (ObjectTypes attribute)</a>
 </li>
-      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction">Instruction (class in optim.llm_optimizer)</a>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.Instruction">Instruction (class in optim.text_grad.tgd_optimer)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.instruction_to_backward_engine">instruction_to_backward_engine (Parameter attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.instruction_to_optimizer">instruction_to_optimizer (Parameter attribute)</a>
 </li>
       <li><a href="apis/core/core.string_parser.html#core.string_parser.IntParser">IntParser (class in core.string_parser)</a>
 </li>
@@ -1573,10 +1916,6 @@
         <li><a href="apis/core/core.db.html#core.db.LocalDB.length">(LocalDB property)</a>
 </li>
       </ul></li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_ARGS">LIGHTRAG_DEFAULT_PROMPT_ARGS (in module core.default_prompt_template)</a>
-</li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS">LIGHTRAG_DEFAULT_PROMPT_TRAINABLE_PARAMS (in module core.default_prompt_template)</a>
-</li>
       <li><a href="apis/components/components.output_parsers.html#components.output_parsers.ListOutputParser">ListOutputParser (class in components.output_parsers)</a>
 
       <ul>
@@ -1587,18 +1926,26 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelType.LLM">LLM (ModelType attribute)</a>
 </li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.LLM_PROMP_TEMPLATE">LLM_PROMP_TEMPLATE (OptimizeGoal attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.LLM_RESPONSE">LLM_RESPONSE (OptimizeGoal attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.LLM_SYS_EXAMPLE">LLM_SYS_EXAMPLE (OptimizeGoal attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal.LLM_SYS_INSTRUCTION">LLM_SYS_INSTRUCTION (OptimizeGoal attribute)</a>
+</li>
       <li><a href="apis/eval/index.html#eval.LLMasJudge">LLMasJudge (class in eval)</a>
 
       <ul>
         <li><a href="apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.LLMasJudge">(class in eval.llm_as_judge)</a>
 </li>
       </ul></li>
-      <li><a href="apis/optim/optim.llm_augment.html#optim.llm_augment.LLMAugmenter">LLMAugmenter (class in optim.llm_augment)</a>
-</li>
-      <li><a href="apis/optim/index.html#optim.LLMOptimizer">LLMOptimizer (class in optim)</a>
+      <li><a href="apis/optim/index.html#optim.LLMAsTextLoss">LLMAsTextLoss (class in optim)</a>
 
       <ul>
-        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer">(class in optim.llm_optimizer)</a>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.LLMAsTextLoss">(class in optim.text_grad)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.llm_text_loss.html#optim.text_grad.llm_text_loss.LLMAsTextLoss">(class in optim.text_grad.llm_text_loss)</a>
 </li>
       </ul></li>
       <li><a href="apis/components/components.retriever.html#components.retriever.LLMRetriever">LLMRetriever (class in components.retriever)</a>
@@ -1607,8 +1954,6 @@
         <li><a href="apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever">(class in components.retriever.llm_retriever)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.load">load() (GeneratorCallLogger method)</a>
 
       <ul>
@@ -1619,6 +1964,8 @@
         <li><a href="apis/core/core.db.html#core.db.LocalDB.load">(LocalDB method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.LazyImport.load_class">load_class() (LazyImport method)</a>
 </li>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.load_from_file">load_from_file() (BM25Retriever class method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.load_from_file">[1]</a>
@@ -1651,6 +1998,14 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb.logprob">logprob (TokenLogProb attribute)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.loss_fn">loss_fn (AdalComponent attribute)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.loss_fn">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.loss_fn">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.LOSS_OUTPUT">LOSS_OUTPUT (ParameterType attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.loss_step">loss_step() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.loss_step">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.loss_step">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.loss_component.html#optim.loss_component.LossComponent">LossComponent (class in optim.loss_component)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1658,6 +2013,14 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.mapper_setups">mapper_setups (LocalDB attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.max_correct_samples">max_correct_samples (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_correct_samples">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_correct_samples">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.max_error_samples">max_error_samples (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_error_samples">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_error_samples">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.max_proposals_per_step">max_proposals_per_step (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_proposals_per_step">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_proposals_per_step">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.max_steps">max_steps (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.max_steps">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.max_steps">[2]</a>
 </li>
       <li><a href="apis/components/components.memory.memory.html#components.memory.memory.Memory">Memory (class in components.memory.memory)</a>
 </li>
@@ -1669,6 +2032,8 @@
         <li><a href="apis/core/core.types.html#core.types.Conversation.metadata">(Conversation attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.DialogTurn.metadata">(DialogTurn attribute)</a>
+</li>
+        <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.metadata">(GeneratorCallRecord attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.metadata">(GeneratorOutput attribute)</a>
 </li>
@@ -1684,6 +2049,8 @@
 </li>
       </ul></li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.model_kwargs">model_kwargs (GeneratorCallRecord attribute)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.model_to_init_func">model_to_init_func (TransformerLLM attribute)</a>
 </li>
       <li><a href="apis/core/core.embedder.html#core.embedder.Embedder.model_type">model_type (Embedder attribute)</a>
 
@@ -1709,10 +2076,6 @@
     module
 
       <ul>
-        <li><a href="apis/components/components.agent.html#module-components.agent">components.agent</a>
-</li>
-        <li><a href="apis/components/components.agent.react.html#module-components.agent.react">components.agent.react</a>
-</li>
         <li><a href="apis/components/components.data_process.html#module-components.data_process">components.data_process</a>
 </li>
         <li><a href="apis/components/components.data_process.data_components.html#module-components.data_process.data_components">components.data_process.data_components</a>
@@ -1742,6 +2105,8 @@
         <li><a href="apis/components/components.model_client.utils.html#module-components.model_client.utils">components.model_client.utils</a>
 </li>
         <li><a href="apis/components/components.output_parsers.html#module-components.output_parsers">components.output_parsers</a>
+</li>
+        <li><a href="apis/components/components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser">components.output_parsers.dataclass_parser</a>
 </li>
         <li><a href="apis/components/components.output_parsers.outputs.html#module-components.output_parsers.outputs">components.output_parsers.outputs</a>
 </li>
@@ -1781,8 +2146,6 @@
 </li>
         <li><a href="apis/core/core.model_client.html#module-core.model_client">core.model_client</a>
 </li>
-        <li><a href="apis/core/core.parameter.html#module-core.parameter">core.parameter</a>
-</li>
         <li><a href="apis/core/core.prompt_builder.html#module-core.prompt_builder">core.prompt_builder</a>
 </li>
         <li><a href="apis/core/core.retriever.html#module-core.retriever">core.retriever</a>
@@ -1795,9 +2158,19 @@
 </li>
         <li><a href="apis/core/core.types.html#module-core.types">core.types</a>
 </li>
+        <li><a href="apis/datasets/index.html#module-datasets">datasets</a>
+</li>
+        <li><a href="apis/datasets/datasets.big_bench_hard.html#module-datasets.big_bench_hard">datasets.big_bench_hard</a>
+</li>
+        <li><a href="apis/datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa">datasets.hotpot_qa</a>
+</li>
+        <li><a href="apis/datasets/datasets.types.html#module-datasets.types">datasets.types</a>
+</li>
         <li><a href="apis/eval/index.html#module-eval">eval</a>
 </li>
         <li><a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc">eval.answer_match_acc</a>
+</li>
+        <li><a href="apis/eval/eval.base.html#module-eval.base">eval.base</a>
 </li>
         <li><a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge">eval.llm_as_judge</a>
 </li>
@@ -1807,15 +2180,43 @@
 </li>
         <li><a href="apis/optim/index.html#module-optim">optim</a>
 </li>
-        <li><a href="apis/optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer">optim.few_shot_optimizer</a>
+        <li><a href="apis/optim/optim.few_shot.html#module-optim.few_shot">optim.few_shot</a>
 </li>
-        <li><a href="apis/optim/optim.llm_augment.html#module-optim.llm_augment">optim.llm_augment</a>
+        <li><a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#module-optim.few_shot.bootstrap_optimizer">optim.few_shot.bootstrap_optimizer</a>
 </li>
-        <li><a href="apis/optim/optim.llm_optimizer.html#module-optim.llm_optimizer">optim.llm_optimizer</a>
+        <li><a href="apis/optim/optim.function.html#module-optim.function">optim.function</a>
+</li>
+        <li><a href="apis/optim/optim.grad_component.html#module-optim.grad_component">optim.grad_component</a>
+</li>
+        <li><a href="apis/optim/optim.loss_component.html#module-optim.loss_component">optim.loss_component</a>
 </li>
         <li><a href="apis/optim/optim.optimizer.html#module-optim.optimizer">optim.optimizer</a>
 </li>
+        <li><a href="apis/optim/optim.parameter.html#module-optim.parameter">optim.parameter</a>
+</li>
         <li><a href="apis/optim/optim.sampler.html#module-optim.sampler">optim.sampler</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.html#module-optim.text_grad">optim.text_grad</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.backend_engine_prompt.html#module-optim.text_grad.backend_engine_prompt">optim.text_grad.backend_engine_prompt</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss">optim.text_grad.llm_text_loss</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.ops.html#module-optim.text_grad.ops">optim.text_grad.ops</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#module-optim.text_grad.text_loss_with_eval_fn">optim.text_grad.text_loss_with_eval_fn</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#module-optim.text_grad.tgd_optimer">optim.text_grad.tgd_optimer</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.html#module-optim.trainer">optim.trainer</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.adal.html#module-optim.trainer.adal">optim.trainer.adal</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.trainer.html#module-optim.trainer.trainer">optim.trainer.trainer</a>
+</li>
+        <li><a href="apis/optim/optim.types.html#module-optim.types">optim.types</a>
+</li>
+        <li><a href="apis/tracing/tracing.callback_manager.html#module-tracing.callback_manager">tracing.callback_manager</a>
 </li>
         <li><a href="apis/tracing/tracing.decorators.html#module-tracing.decorators">tracing.decorators</a>
 </li>
@@ -1823,9 +2224,15 @@
 </li>
         <li><a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger">tracing.generator_state_logger</a>
 </li>
+        <li><a href="apis/utils/utils.cache.html#module-utils.cache">utils.cache</a>
+</li>
         <li><a href="apis/utils/utils.config.html#module-utils.config">utils.config</a>
 </li>
+        <li><a href="apis/utils/utils.data.html#module-utils.data">utils.data</a>
+</li>
         <li><a href="apis/utils/utils.file_io.html#module-utils.file_io">utils.file_io</a>
+</li>
+        <li><a href="apis/utils/utils.global_config.html#module-utils.global_config">utils.global_config</a>
 </li>
         <li><a href="apis/utils/utils.lazy_import.html#module-utils.lazy_import">utils.lazy_import</a>
 </li>
@@ -1844,14 +2251,20 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.types.html#core.types.Conversation.name">name (Conversation attribute)</a>
+      <li><a href="apis/core/core.component.html#core.component.Component.name">name (Component attribute)</a>
 
       <ul>
+        <li><a href="apis/core/core.types.html#core.types.Conversation.name">(Conversation attribute)</a>
+</li>
         <li><a href="apis/core/core.types.html#core.types.Function.name">(Function attribute)</a>
 </li>
         <li><a href="apis/core/core.types.html#core.types.FunctionOutput.name">(FunctionOutput attribute)</a>
 </li>
         <li><a href="apis/core/core.db.html#core.db.LocalDB.name">(LocalDB attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.types.html#optim.types.PromptData.name">(PromptData attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.Sum.name">(Sum attribute)</a>, <a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum.name">[1]</a>
 </li>
       </ul></li>
       <li><a href="apis/core/core.component.html#core.component.Component.named_children">named_children() (Component method)</a>
@@ -1866,9 +2279,15 @@
 </li>
       <li><a href="apis/utils/utils.config.html#utils.config.new_components_from_config">new_components_from_config() (in module utils.config)</a>
 </li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.NONE">NONE (ParameterType attribute)</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.normalize_np_array">normalize_np_array() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.functional.html#core.functional.normalize_vector">normalize_vector() (in module core.functional)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.num_shots">num_shots (BootstrapFewShot property)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.num_shots">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.num_workers">num_workers (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.num_workers">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.num_workers">[2]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1900,33 +2319,52 @@
 </li>
       </ul></li>
       <li>
-    optim.few_shot_optimizer
+    optim.few_shot
 
       <ul>
-        <li><a href="apis/optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer">module</a>
+        <li><a href="apis/optim/optim.few_shot.html#module-optim.few_shot">module</a>
 </li>
       </ul></li>
       <li>
-    optim.llm_augment
+    optim.few_shot.bootstrap_optimizer
 
       <ul>
-        <li><a href="apis/optim/optim.llm_augment.html#module-optim.llm_augment">module</a>
+        <li><a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#module-optim.few_shot.bootstrap_optimizer">module</a>
 </li>
       </ul></li>
       <li>
-    optim.llm_optimizer
+    optim.function
 
       <ul>
-        <li><a href="apis/optim/optim.llm_optimizer.html#module-optim.llm_optimizer">module</a>
+        <li><a href="apis/optim/optim.function.html#module-optim.function">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    optim.grad_component
+
+      <ul>
+        <li><a href="apis/optim/optim.grad_component.html#module-optim.grad_component">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.loss_component
+
+      <ul>
+        <li><a href="apis/optim/optim.loss_component.html#module-optim.loss_component">module</a>
+</li>
+      </ul></li>
       <li>
     optim.optimizer
 
       <ul>
         <li><a href="apis/optim/optim.optimizer.html#module-optim.optimizer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.parameter
+
+      <ul>
+        <li><a href="apis/optim/optim.parameter.html#module-optim.parameter">module</a>
 </li>
       </ul></li>
       <li>
@@ -1936,12 +2374,88 @@
         <li><a href="apis/optim/optim.sampler.html#module-optim.sampler">module</a>
 </li>
       </ul></li>
+      <li>
+    optim.text_grad
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.html#module-optim.text_grad">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.text_grad.backend_engine_prompt
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.backend_engine_prompt.html#module-optim.text_grad.backend_engine_prompt">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    optim.text_grad.llm_text_loss
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.text_grad.ops
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.ops.html#module-optim.text_grad.ops">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.text_grad.text_loss_with_eval_fn
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#module-optim.text_grad.text_loss_with_eval_fn">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.text_grad.tgd_optimer
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#module-optim.text_grad.tgd_optimer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.trainer
+
+      <ul>
+        <li><a href="apis/optim/optim.trainer.html#module-optim.trainer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.trainer.adal
+
+      <ul>
+        <li><a href="apis/optim/optim.trainer.adal.html#module-optim.trainer.adal">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.trainer.trainer
+
+      <ul>
+        <li><a href="apis/optim/optim.trainer.trainer.html#module-optim.trainer.trainer">module</a>
+</li>
+      </ul></li>
+      <li>
+    optim.types
+
+      <ul>
+        <li><a href="apis/optim/optim.types.html#module-optim.types">module</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.OptimizeGoal">OptimizeGoal (class in optim.types)</a>
+</li>
       <li><a href="apis/optim/index.html#optim.Optimizer">Optimizer (class in optim)</a>
 
       <ul>
         <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer">(class in optim.optimizer)</a>
 </li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.Trainer.optimizer">optimizer (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.optimizer">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.optimizer">[2]</a>
+</li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages">OptionalPackages (class in utils.lazy_import)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.order">order (DialogTurn attribute)</a>
@@ -1966,9 +2480,25 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.parameter.html#core.parameter.Parameter">Parameter (class in core.parameter)</a>
+      <li><a href="apis/optim/index.html#optim.Parameter">Parameter (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.parameter.html#optim.parameter.Parameter">(class in optim.parameter)</a>
 </li>
+      </ul></li>
       <li><a href="apis/core/core.component.html#core.component.Component.parameters">parameters() (Component method)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType">ParameterType (class in optim.types)</a>
+</li>
+      <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.params">params (DemoOptimizer attribute)</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Optimizer.params">(Optimizer attribute)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.params">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.params">(TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.params">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.params">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.params_history">params_history (TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.params_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.params_history">[2]</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Document.parent_doc_id">parent_doc_id (Document attribute)</a>
 </li>
@@ -1986,6 +2516,8 @@
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">(OpenAIClient method)</a>
 </li>
         <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.parse_chat_completion">(TransformerLLM method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.parse_chat_completion">(TransformersClient method)</a>
 </li>
       </ul></li>
       <li><a href="apis/components/components.model_client.utils.html#components.model_client.utils.parse_embedding_response">parse_embedding_response() (in module components.model_client.utils)</a>
@@ -2006,8 +2538,6 @@
 </li>
       <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_generate_response">parse_generate_response() (in module components.model_client.ollama_client)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.functional.html#core.functional.parse_json_str_to_obj">parse_json_str_to_obj() (in module core.functional)</a>
 </li>
       <li><a href="apis/components/components.model_client.ollama_client.html#components.model_client.ollama_client.parse_stream_response">parse_stream_response() (in module components.model_client.ollama_client)</a>
@@ -2020,11 +2550,27 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.FunctionOutput.parsed_input">parsed_input (FunctionOutput attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.string_parser.html#core.string_parser.Parser">Parser (class in core.string_parser)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.peers">peers (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.peers">[1]</a>
+</li>
+      <li><a href="apis/eval/eval.base.html#eval.base.EvaluationResult.per_item_scores">per_item_scores (EvaluationResult attribute)</a>
+</li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.PGVECTOR">PGVECTOR (OptionalPackages attribute)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.pickle_to_file">pickle_to_file() (Component method)</a>
 </li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever">PostgresRetriever (class in components.retriever.postgres_retriever)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.pred_step">pred_step() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.pred_step">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.pred_step">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.predecessors">predecessors (Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.predecessors">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.prep_ckpt_file_path">prep_ckpt_file_path() (Trainer method)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.prep_ckpt_file_path">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.prep_ckpt_file_path">[2]</a>
+</li>
+      <li><a href="apis/datasets/datasets.big_bench_hard.html#datasets.big_bench_hard.prepare_dataset_path">prepare_dataset_path() (in module datasets.big_bench_hard)</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer.preprocess">preprocess() (Tokenizer method)</a>
 </li>
@@ -2040,16 +2586,40 @@
 </li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt">Prompt (class in core.prompt_builder)</a>
 </li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.PROMPT">PROMPT (ParameterType attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.prompt">prompt (TrainerStepResult attribute)</a>
+</li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallRecord.prompt_kwargs">prompt_kwargs (GeneratorCallRecord attribute)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord.prompt_states">prompt_states (GeneratorStatesRecord attribute)</a>
 </li>
-      <li><a href="apis/core/core.types.html#core.types.Usage.prompt_tokens">prompt_tokens (Usage attribute)</a>
-</li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.propose">propose() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.propose">[1]</a>
+      <li><a href="apis/core/core.types.html#core.types.CompletionUsage.prompt_tokens">prompt_tokens (CompletionUsage attribute)</a>
 
       <ul>
-        <li><a href="apis/optim/index.html#optim.LLMOptimizer.propose">(LLMOptimizer method)</a>, <a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.propose">[1]</a>
+        <li><a href="apis/core/core.types.html#core.types.Usage.prompt_tokens">(Usage attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.PromptData">PromptData (class in optim.types)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.prompts">prompts (TrainerResult attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.propose">propose() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.propose">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Optimizer.propose">(Optimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.propose">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.propose">(TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.propose">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.propose">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Parameter.propose_data">propose_data() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.propose_data">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Optimizer.proposing">proposing (Optimizer attribute)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.proposing">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Parameter.proposing">(Parameter attribute)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.proposing">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.proposing">(TGDOptimizer attribute)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.proposing">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.proposing">[2]</a>
 </li>
       </ul></li>
   </ul></td>
@@ -2060,21 +2630,25 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.RetrieverOutput.query">query (RetrieverOutput attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.UserQuery.query_str">query_str (UserQuery attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.Example.question">question (Example attribute)</a>, <a href="apis/datasets/index.html#datasets.Example.question">[1]</a>
+
+      <ul>
+        <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData.question">(TrecData attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.random_replace">random_replace() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.random_replace">[1]</a>
+      <li><a href="apis/optim/index.html#optim.ClassSampler.random_replace">random_replace() (ClassSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_replace">[1]</a>
 
       <ul>
-        <li><a href="apis/optim/index.html#optim.ClassSampler.random_replace">(ClassSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_replace">[1]</a>
-</li>
         <li><a href="apis/optim/index.html#optim.RandomSampler.random_replace">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_replace">[1]</a>
 </li>
         <li><a href="apis/optim/index.html#optim.Sampler.random_replace">(Sampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.random_replace">[1]</a>
@@ -2083,6 +2657,8 @@
       <li><a href="apis/optim/index.html#optim.ClassSampler.random_sample">random_sample() (ClassSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.ClassSampler.random_sample">[1]</a>
 
       <ul>
+        <li><a href="apis/core/core.functional.html#core.functional.random_sample">(in module core.functional)</a>
+</li>
         <li><a href="apis/optim/index.html#optim.RandomSampler.random_sample">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.random_sample">[1]</a>
 </li>
       </ul></li>
@@ -2098,13 +2674,9 @@
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.raw_response">(GeneratorOutput attribute)</a>
 </li>
       </ul></li>
-      <li><a href="apis/components/components.agent.html#components.agent.ReActAgent">ReActAgent (class in components.agent)</a>
-
-      <ul>
-        <li><a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent">(class in components.agent.react)</a>
-</li>
-      </ul></li>
       <li><a href="apis/utils/utils.registry.html#utils.registry.EntityMapping.register">register() (EntityMapping class method)</a>
+</li>
+      <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.register_callback">register_callback() (CallbackManager method)</a>
 </li>
       <li><a href="apis/core/core.component.html#core.component.Component.register_component">register_component() (Component method)</a>
 </li>
@@ -2114,9 +2686,13 @@
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.register_transformer">register_transformer() (LocalDB method)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.render_history">render_history() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.render_history">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.render_history">[2]</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.represent_ordereddict">represent_ordereddict() (in module core.functional)</a>
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.required_field">required_field() (in module core.base_data_class)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.PromptData.requires_opt">requires_opt (PromptData attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.ModelType.RERANKER">RERANKER (ModelType attribute)</a>
 </li>
@@ -2126,18 +2702,12 @@
         <li><a href="apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever">(class in components.retriever.reranker_retriever)</a>
 </li>
       </ul></li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.reset">reset() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset">[1]</a>
-
-      <ul>
-        <li><a href="apis/optim/index.html#optim.LLMOptimizer.reset">(LLMOptimizer method)</a>, <a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset">[1]</a>
+      <li><a href="apis/core/core.db.html#core.db.LocalDB.reset">reset() (LocalDB method)</a>
 </li>
-        <li><a href="apis/core/core.db.html#core.db.LocalDB.reset">(LocalDB method)</a>
+      <li><a href="apis/optim/index.html#optim.Parameter.reset_gradients">reset_gradients() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.reset_gradients">[1]</a>
 </li>
-        <li><a href="apis/components/components.agent.html#components.agent.ReActAgent.reset">(ReActAgent method)</a>, <a href="apis/components/components.agent.react.html#components.agent.react.ReActAgent.reset">[1]</a>
+      <li><a href="apis/optim/index.html#optim.Parameter.reset_gradients_context">reset_gradients_context() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.reset_gradients_context">[1]</a>
 </li>
-      </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever.reset_index">reset_index() (BM25Retriever method)</a>, <a href="apis/components/components.retriever.html#components.retriever.BM25Retriever.reset_index">[1]</a>
 
       <ul>
@@ -2150,15 +2720,15 @@
         <li><a href="apis/core/core.retriever.html#core.retriever.Retriever.reset_index">(Retriever method)</a>
 </li>
       </ul></li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.reset_parameter">reset_parameter() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.reset_parameter">[1]</a>
-
-      <ul>
-        <li><a href="apis/optim/index.html#optim.LLMOptimizer.reset_parameter">(LLMOptimizer method)</a>, <a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.reset_parameter">[1]</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.reset_mock_output">reset_mock_output() (Generator method)</a>
 </li>
-      </ul></li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.GradientContext.response_desc">response_desc (GradientContext attribute)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.AssistantResponse.response_str">response_str (AssistantResponse attribute)</a>
 </li>
-      <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.responses">responses (Instruction attribute)</a>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.Instruction.responses">responses (Instruction attribute)</a>
 </li>
       <li><a href="apis/components/components.retriever.postgres_retriever.html#components.retriever.postgres_retriever.PostgresRetriever.retrieve_by_sql">retrieve_by_sql() (PostgresRetriever method)</a>
 </li>
@@ -2167,6 +2737,8 @@
       <li><a href="apis/components/components.retriever.faiss_retriever.html#components.retriever.faiss_retriever.FAISSRetriever.retrieve_string_queries">retrieve_string_queries() (FAISSRetriever method)</a>
 </li>
       <li><a href="apis/core/core.retriever.html#core.retriever.Retriever">Retriever (class in core.retriever)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.RETRIEVER_OUTPUT">RETRIEVER_OUTPUT (ParameterType attribute)</a>
 </li>
       <li><a href="apis/components/components.data_process.data_components.html#components.data_process.data_components.retriever_output_to_context_str">retriever_output_to_context_str() (in module components.data_process.data_components)</a>
 </li>
@@ -2190,7 +2762,21 @@
         <li><a href="apis/eval/eval.retriever_relevance.html#eval.retriever_relevance.RetrieverRelevance">(class in eval.retriever_relevance)</a>
 </li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.revert">revert() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.revert">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Optimizer.revert">(Optimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.revert">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.revert">(TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.revert">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.revert">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Parameter.revert_data">revert_data() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.revert_data">[1]</a>
+</li>
       <li><a href="apis/core/core.tool_manager.html#core.tool_manager.run_async_in_new_loop">run_async_in_new_loop() (in module core.tool_manager)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.run_one_loss_sample">run_one_loss_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.run_one_loss_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.run_one_loss_sample">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.run_one_task_sample">run_one_task_sample() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.run_one_task_sample">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.run_one_task_sample">[2]</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2202,12 +2788,16 @@
 </li>
       <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sample">Sample (class in optim.sampler)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.sample">sample() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.sample">[1]</a>
+</li>
       <li><a href="apis/optim/index.html#optim.Sampler">Sampler (class in optim)</a>
 
       <ul>
         <li><a href="apis/optim/optim.sampler.html#optim.sampler.Sampler">(class in optim.sampler)</a>
 </li>
       </ul></li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.samples_to_str">samples_to_str() (BootstrapFewShot static method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.samples_to_str">[1]</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.sandbox_exec">sandbox_exec() (in module core.functional)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger.save">save() (GeneratorStateLogger method)</a>
@@ -2216,6 +2806,8 @@
         <li><a href="apis/utils/utils.file_io.html#utils.file_io.save">(in module utils.file_io)</a>
 </li>
       </ul></li>
+      <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_csv">save_csv() (in module utils.file_io)</a>
+</li>
       <li><a href="apis/utils/utils.file_io.html#utils.file_io.save_json">save_json() (in module utils.file_io)</a>
 </li>
       <li><a href="apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger.save_meta_data">save_meta_data() (GeneratorCallLogger method)</a>
@@ -2235,16 +2827,62 @@
       <li><a href="apis/core/core.types.html#core.types.Document.score">score (Document attribute)</a>
 
       <ul>
-        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.score">(Instruction attribute)</a>
+        <li><a href="apis/optim/optim.types.html#optim.types.EvaluationResult.score">(EvaluationResult attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.Instruction.score">(Instruction attribute)</a>
 </li>
       </ul></li>
       <li><a href="apis/core/core.container.html#core.container.Sequential">Sequential (class in core.container)</a>
 </li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.serialize">serialize() (in module utils.serialization)</a>
 </li>
+      <li><a href="apis/core/core.types.html#core.types.DialogTurn.set_assistant_response">set_assistant_response() (DialogTurn method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.EvalFnToTextLoss.set_backward_engine">set_backward_engine() (EvalFnToTextLoss method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.EvalFnToTextLoss.set_backward_engine">[1]</a>, <a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#optim.text_grad.text_loss_with_eval_fn.EvalFnToTextLoss.set_backward_engine">[2]</a>
+
+      <ul>
+        <li><a href="apis/core/core.generator.html#core.generator.Generator.set_backward_engine">(Generator method)</a>
+</li>
+        <li><a href="apis/optim/optim.grad_component.html#optim.grad_component.GradComponent.set_backward_engine">(GradComponent method)</a>
+</li>
+        <li><a href="apis/optim/optim.loss_component.html#optim.loss_component.LossComponent.set_backward_engine">(LossComponent method)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.set_data_map_func">set_data_map_func() (Generator method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.DemoOptimizer.set_dataset">set_dataset() (DemoOptimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.set_dataset">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.RandomSampler.set_dataset">(RandomSampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.RandomSampler.set_dataset">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.Sampler.set_dataset">(Sampler method)</a>, <a href="apis/optim/optim.sampler.html#optim.sampler.Sampler.set_dataset">[1]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Parameter.set_eval_fn_input">set_eval_fn_input() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_eval_fn_input">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.set_grad_fn">set_grad_fn() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_grad_fn">[1]</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_input_fields">set_input_fields() (DataClass class method)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.set_llm_client">set_llm_client() (TransformersClient method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.set_mock_output">set_mock_output() (Generator method)</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_output_fields">set_output_fields() (DataClass class method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="apis/core/core.types.html#core.types.DialogTurn.set_assistant_response">set_assistant_response() (DialogTurn method)</a>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.set_parameters">set_parameters() (Generator method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.set_peers">set_peers() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_peers">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.set_predecessors">set_predecessors() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_predecessors">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.set_score">set_score() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.set_score">[1]</a>
+</li>
+      <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.set_task_desc">set_task_desc() (DataClass class method)</a>
+</li>
+      <li><a href="apis/core/core.generator.html#core.generator.Generator.set_teacher_generator">set_teacher_generator() (Generator method)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.set_user_query">set_user_query() (DialogTurn method)</a>
 </li>
@@ -2253,8 +2891,6 @@
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_JSON">SIGNATURE_JSON (DataClassFormatType attribute)</a>
 </li>
       <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType.SIGNATURE_YAML">SIGNATURE_YAML (DataClassFormatType attribute)</a>
-</li>
-      <li><a href="apis/core/core.default_prompt_template.html#core.default_prompt_template.SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT">SIMPLE_DEFAULT_LIGHTRAG_SYSTEM_PROMPT (in module core.default_prompt_template)</a>
 </li>
       <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter.split_text">split_text() (TextSplitter method)</a>, <a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter.split_text">[1]</a>
 </li>
@@ -2281,10 +2917,46 @@
 </li>
       </ul></li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput.step">step (StepOutput attribute)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.step">(TrainerStepResult attribute)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.Optimizer.step">step() (Optimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.step">[1]</a>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.step">step() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#optim.few_shot.bootstrap_optimizer.BootstrapFewShot.step">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.Optimizer.step">(Optimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.Optimizer.step">[1]</a>
+</li>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.step">(TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.step">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.step">[2]</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.Parameter.step_data">step_data() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.step_data">[1]</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.step_results">step_results (TrainerResult attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.StepOutput">StepOutput (class in core.types)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.steps">steps (TrainerResult attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.strategy">strategy (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.strategy">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.strategy">[2]</a>
+</li>
+      <li><a href="apis/utils/utils.data.html#utils.data.Subset">Subset (class in utils.data)</a>
+</li>
+      <li><a href="apis/utils/utils.data.html#utils.data.subset_dataset">subset_dataset() (in module utils.data)</a>
+</li>
+      <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.Sum">Sum (class in optim.text_grad)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum">(class in optim.text_grad.ops)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.sum_ops">sum_ops() (in module optim.text_grad)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.sum_ops">(in module optim.text_grad.ops)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.ParameterType.SUM_OUTPUT">SUM_OUTPUT (ParameterType attribute)</a>
 </li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient.support_models">support_models (TransformersClient attribute)</a>
 </li>
@@ -2294,16 +2966,42 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.task">task (AdalComponent attribute)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.task">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.task">[2]</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.teacher_mode">teacher_mode (Component attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer.test_dataset">test_dataset (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.test_dataset">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.test_dataset">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.test_score">test_score (TrainerStepResult attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.test_scores">test_scores (TrainerResult attribute)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.Document.text">text (Document attribute)</a>
 
       <ul>
-        <li><a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.Instruction.text">(Instruction attribute)</a>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.Instruction.text">(Instruction attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.text_optimizers">text_optimizers (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.text_optimizers">[1]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.TextOptimizer">TextOptimizer (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.optimizer.html#optim.optimizer.TextOptimizer">(class in optim.optimizer)</a>
 </li>
       </ul></li>
       <li><a href="apis/components/components.data_process.html#components.data_process.TextSplitter">TextSplitter (class in components.data_process)</a>
 
       <ul>
         <li><a href="apis/components/components.data_process.text_splitter.html#components.data_process.text_splitter.TextSplitter">(class in components.data_process.text_splitter)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer">TGDOptimizer (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer">(class in optim.text_grad)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer">(class in optim.text_grad.tgd_optimer)</a>
 </li>
       </ul></li>
       <li><a href="apis/core/core.types.html#core.types.Function.thought">thought (Function attribute)</a>
@@ -2317,11 +3015,15 @@
       <ul>
         <li><a href="apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStatesRecord.time_stamp">(GeneratorStatesRecord attribute)</a>
 </li>
+        <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.time_stamp">(TrainerResult attribute)</a>
+</li>
       </ul></li>
       <li><a href="apis/core/core.component.html#core.component.Component.to_dict">to_dict() (Component method)</a>
 
       <ul>
         <li><a href="apis/core/core.base_data_class.html#core.base_data_class.DataClass.to_dict">(DataClass method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.to_dict">(GroqAPIClient method)</a>
 </li>
         <li><a href="apis/utils/utils.serialization.html#utils.serialization.to_dict">(in module utils.serialization)</a>
 </li>
@@ -2329,7 +3031,7 @@
 </li>
         <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.to_dict">(OpenAIClient method)</a>
 </li>
-        <li><a href="apis/core/core.parameter.html#core.parameter.Parameter.to_dict">(Parameter method)</a>
+        <li><a href="apis/optim/index.html#optim.Parameter.to_dict">(Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.to_dict">[1]</a>
 </li>
         <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.to_dict">(Prompt method)</a>
 </li>
@@ -2360,11 +3062,11 @@
         <li><a href="apis/components/components.data_process.data_components.html#components.data_process.data_components.ToEmbeddings">(class in components.data_process.data_components)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb.token">token (TokenLogProb attribute)</a>
 </li>
       <li><a href="apis/core/core.tokenizer.html#core.tokenizer.Tokenizer">Tokenizer (class in core.tokenizer)</a>
+</li>
+      <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformerLLM.tokenizer">tokenizer (TransformerLLM attribute)</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.TokenLogProb">TokenLogProb (class in core.types)</a>
 </li>
@@ -2372,12 +3074,33 @@
 </li>
       <li><a href="apis/utils/utils.lazy_import.html#utils.lazy_import.OptionalPackages.TORCH">TORCH (OptionalPackages attribute)</a>
 </li>
-      <li><a href="apis/core/core.types.html#core.types.Usage.total_tokens">total_tokens (Usage attribute)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/core/core.types.html#core.types.CompletionUsage.total_tokens">total_tokens (CompletionUsage attribute)</a>
+
+      <ul>
+        <li><a href="apis/core/core.types.html#core.types.Usage.total_tokens">(Usage attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.trace">trace() (Component method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Parameter.trace_forward_pass">trace_forward_pass() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.trace_forward_pass">[1]</a>
 </li>
       <li><a href="apis/tracing/tracing.decorators.html#tracing.decorators.trace_generator_call">trace_generator_call() (in module tracing.decorators)</a>
 </li>
       <li><a href="apis/tracing/tracing.decorators.html#tracing.decorators.trace_generator_states">trace_generator_states() (in module tracing.decorators)</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Parameter.trace_graph">trace_graph() (Parameter static method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.trace_graph">[1]</a>
+</li>
+      <li><a href="apis/core/core.component.html#core.component.Component.tracing">tracing (Component attribute)</a>
+</li>
+      <li>
+    tracing.callback_manager
+
+      <ul>
+        <li><a href="apis/tracing/tracing.callback_manager.html#module-tracing.callback_manager">module</a>
+</li>
+      </ul></li>
       <li>
     tracing.decorators
 
@@ -2399,10 +3122,50 @@
         <li><a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger">module</a>
 </li>
       </ul></li>
+      <li><a href="apis/components/components.model_client.anthropic_client.html#components.model_client.anthropic_client.AnthropicAPIClient.track_completion_usage">track_completion_usage() (AnthropicAPIClient method)</a>
+
+      <ul>
+        <li><a href="apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.track_completion_usage">(GoogleGenAIClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.groq_client.html#components.model_client.groq_client.GroqAPIClient.track_completion_usage">(GroqAPIClient method)</a>
+</li>
+        <li><a href="apis/core/core.model_client.html#core.model_client.ModelClient.track_completion_usage">(ModelClient method)</a>
+</li>
+        <li><a href="apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage">(OpenAIClient method)</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.component.html#core.component.Component.train">train() (Component method)</a>
 </li>
-      <li><a href="apis/core/core.component.html#core.component.Component.training">training (Component attribute)</a>
+      <li><a href="apis/optim/index.html#optim.Trainer.train_batch_size">train_batch_size (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.train_batch_size">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.train_batch_size">[2]</a>
 </li>
+      <li><a href="apis/optim/index.html#optim.Trainer.train_loader">train_loader (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.train_loader">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.train_loader">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.train_step">train_step() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.train_step">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.train_step">[2]</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.Trainer">Trainer (class in optim)</a>
+
+      <ul>
+        <li><a href="apis/optim/optim.trainer.html#optim.trainer.Trainer">(class in optim.trainer)</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer">(class in optim.trainer.trainer)</a>
+</li>
+      </ul></li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.trainer_state">trainer_state (TrainerResult attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult">TrainerResult (class in optim.types)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult">TrainerStepResult (class in optim.types)</a>
+</li>
+      <li><a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.training">training (AdalComponent attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.training">[1]</a>
+
+      <ul>
+        <li><a href="apis/core/core.component.html#core.component.Component.training">(Component attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.text_grad.ops.html#optim.text_grad.ops.Sum.training">(Sum attribute)</a>
+</li>
+        <li><a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.training">(Trainer attribute)</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.training">[1]</a>
+</li>
+      </ul></li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.transform">transform() (LocalDB method)</a>
 </li>
       <li><a href="apis/core/core.db.html#core.db.LocalDB.transformed_items">transformed_items (LocalDB attribute)</a>
@@ -2423,6 +3186,10 @@
       </ul></li>
       <li><a href="apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient">TransformersClient (class in components.model_client.transformers_client)</a>
 </li>
+      <li><a href="apis/datasets/datasets.types.html#datasets.types.TrecData">TrecData (class in datasets.types)</a>
+</li>
+      <li><a href="apis/tracing/tracing.callback_manager.html#tracing.callback_manager.CallbackManager.trigger_callbacks">trigger_callbacks() (CallbackManager method)</a>
+</li>
       <li><a href="apis/utils/utils.serialization.html#utils.serialization.ObjectTypes.TYPE">TYPE (ObjectTypes attribute)</a>
 </li>
   </ul></td>
@@ -2435,15 +3202,11 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.update_dialog_turn">update_dialog_turn() (Conversation method)</a>
 </li>
-      <li><a href="apis/optim/index.html#optim.BootstrapFewShot.update_parameter">update_parameter() (BootstrapFewShot method)</a>, <a href="apis/optim/optim.few_shot_optimizer.html#optim.few_shot_optimizer.BootstrapFewShot.update_parameter">[1]</a>
-
-      <ul>
-        <li><a href="apis/optim/index.html#optim.LLMOptimizer.update_parameter">(LLMOptimizer method)</a>, <a href="apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer.update_parameter">[1]</a>
+      <li><a href="apis/optim/index.html#optim.TGDOptimizer.update_gradient_memory">update_gradient_memory() (TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.update_gradient_memory">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.update_gradient_memory">[2]</a>
 </li>
-      </ul></li>
       <li><a href="apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.update_prompt_kwargs">update_prompt_kwargs() (Prompt method)</a>
 </li>
-      <li><a href="apis/core/core.parameter.html#core.parameter.Parameter.update_value">update_value() (Parameter method)</a>
+      <li><a href="apis/optim/index.html#optim.Parameter.update_value">update_value() (Parameter method)</a>, <a href="apis/optim/optim.parameter.html#optim.parameter.Parameter.update_value">[1]</a>
 </li>
       <li><a href="apis/core/core.types.html#core.types.Usage">Usage (class in core.types)</a>
 </li>
@@ -2453,6 +3216,10 @@
         <li><a href="apis/core/core.types.html#core.types.GeneratorOutput.usage">(GeneratorOutput attribute)</a>
 </li>
       </ul></li>
+      <li><a href="apis/core/core.component.html#core.component.Component.use_teacher">use_teacher() (Component method)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.DemoOptimizer.use_weighted_sampling">use_weighted_sampling() (DemoOptimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.DemoOptimizer.use_weighted_sampling">[1]</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.Conversation.user_id">user_id (Conversation attribute)</a>
 
       <ul>
@@ -2465,6 +3232,13 @@
 </li>
       <li><a href="apis/core/core.types.html#core.types.UserQuery">UserQuery (class in core.types)</a>
 </li>
+      <li>
+    utils.cache
+
+      <ul>
+        <li><a href="apis/utils/utils.cache.html#module-utils.cache">module</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
@@ -2475,10 +3249,24 @@
 </li>
       </ul></li>
       <li>
+    utils.data
+
+      <ul>
+        <li><a href="apis/utils/utils.data.html#module-utils.data">module</a>
+</li>
+      </ul></li>
+      <li>
     utils.file_io
 
       <ul>
         <li><a href="apis/utils/utils.file_io.html#module-utils.file_io">module</a>
+</li>
+      </ul></li>
+      <li>
+    utils.global_config
+
+      <ul>
+        <li><a href="apis/utils/utils.global_config.html#module-utils.global_config">module</a>
 </li>
       </ul></li>
       <li>
@@ -2522,10 +3310,24 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.Trainer.val_dataset">val_dataset (Trainer attribute)</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.Trainer.val_dataset">[1]</a>, <a href="apis/optim/optim.trainer.trainer.html#optim.trainer.trainer.Trainer.val_dataset">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerStepResult.val_score">val_score (TrainerStepResult attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.types.html#optim.types.TrainerResult.val_scores">val_scores (TrainerResult attribute)</a>
+</li>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.validate_condition">validate_condition() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.validate_condition">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.validate_condition">[2]</a>
+</li>
       <li><a href="apis/core/core.functional.html#core.functional.validate_data">validate_data() (in module core.functional)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.AdalComponent.validation_step">validation_step() (AdalComponent method)</a>, <a href="apis/optim/optim.trainer.adal.html#optim.trainer.adal.AdalComponent.validation_step">[1]</a>, <a href="apis/optim/optim.trainer.html#optim.trainer.AdalComponent.validation_step">[2]</a>
+</li>
+      <li><a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.HistoryPrompt.value">value (HistoryPrompt attribute)</a>
+</li>
+      <li><a href="apis/optim/optim.parameter.html#optim.parameter.GradientContext.variable_desc">variable_desc (GradientContext attribute)</a>
+</li>
       <li><a href="apis/core/core.types.html#core.types.DialogTurn.vector">vector (DialogTurn attribute)</a>
 
       <ul>
@@ -2562,6 +3364,18 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="apis/core/core.string_parser.html#core.string_parser.YamlParser">YamlParser (class in core.string_parser)</a>
 </li>
+  </ul></td>
+</tr></table>
+
+<h2 id="Z">Z</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="apis/optim/index.html#optim.TextOptimizer.zero_grad">zero_grad() (TextOptimizer method)</a>, <a href="apis/optim/optim.optimizer.html#optim.optimizer.TextOptimizer.zero_grad">[1]</a>
+
+      <ul>
+        <li><a href="apis/optim/index.html#optim.TGDOptimizer.zero_grad">(TGDOptimizer method)</a>, <a href="apis/optim/optim.text_grad.html#optim.text_grad.TGDOptimizer.zero_grad">[1]</a>, <a href="apis/optim/optim.text_grad.tgd_optimer.html#optim.text_grad.tgd_optimer.TGDOptimizer.zero_grad">[2]</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 

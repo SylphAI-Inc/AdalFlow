@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -452,12 +417,6 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
-</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
@@ -504,7 +463,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Notes</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">Agent</li>
   </ul>
@@ -550,7 +509,7 @@ When it comes to implementation, LightRAG has simplified it down to a generator 
 </ul>
 <section id="prompt-and-data-models">
 <h3>Prompt and Data Models<a class="headerlink" href="#prompt-and-data-models" title="Link to this heading">#</a></h3>
-<p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a> is the default prompt for React agent’s LLM planner.
+<p><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code> is the default prompt for React agent’s LLM planner.
 We can categorize the prompt template into four parts:</p>
 <ol class="arabic simple">
 <li><p>Task description</p></li>
@@ -666,7 +625,7 @@ This LLM will use the same model client and model arguments as the agent’s pla
 </section>
 <section id="react-agent">
 <h3>React Agent<a class="headerlink" href="#react-agent" title="Link to this heading">#</a></h3>
-<p>We define the class <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> to put everything together.
+<p>We define the class <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> to put everything together.
 It will orchestrate two components:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">planner</span></code>: A <code class="docutils literal notranslate"><span class="pre">Generator</span></code> that works with a <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> to parse the output format and examples of the function calls using <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
@@ -916,12 +875,13 @@ Answer without agent: GeneratorOutput(data=&quot;I&#39;d be happy to help you wi
 </div>
 <p>The ReAct agent is particularly helpful for answering queries that require capabilities like computation or more complicated reasoning and planning.
 However, using it on general queries might be an overkill, as it might take more steps than necessary to answer the query.</p>
+</section>
 <section id="customization">
-<h3>Customization<a class="headerlink" href="#customization" title="Link to this heading">#</a></h3>
+<h2>Customization<a class="headerlink" href="#customization" title="Link to this heading">#</a></h2>
 <p><strong>Template</strong></p>
 <p>The first thing you want to customize is the template itself.
 You can do this by passing your own template to the agent’s constructor.
-We suggest you to modify our default template: <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a>.</p>
+We suggest you to modify our default template: <code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code>.</p>
 <p><strong>Examples for Better Output Format</strong></p>
 <p>Secondly, the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the constructor allow you to provide more examples to enforce the correct output format.
 For instance, if we want it to learn how to correctly call <cite>multiply</cite>, we can pass in a list of <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instances with the correct format.
@@ -974,7 +934,7 @@ ________
 </pre></div>
 </div>
 <p><strong>Subclass ReActAgent</strong></p>
-<p>If you want to customize the agent further, you can subclass the <a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code></a> and override the methods you want to change.</p>
+<p>If you want to customize the agent further, you can subclass the <code class="xref py py-class docutils literal notranslate"><span class="pre">ReActAgent</span></code> and override the methods you want to change.</p>
 <div class="highlight admonition">
 <p class="admonition-title">References</p>
 <aside class="footnote-list brackets">
@@ -991,12 +951,11 @@ ________
 <div class="highlight admonition">
 <p class="admonition-title">API References</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.StepOutput" title="core.types.StepOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.StepOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT" title="components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></a></p></li>
+<li><p><code class="xref py py-const docutils literal notranslate"><span class="pre">components.agent.react.DEFAULT_REACT_AGENT_SYSTEM_PROMPT</span></code></p></li>
 </ul>
 </div>
-</section>
 </section>
 </section>
 
@@ -1052,10 +1011,8 @@ ________
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#react-agent">React Agent</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-in-action">Agent In Action</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customization">Customization</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-in-action">Agent In Action</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customization">Customization</a></li>
 </ul>
   </nav></div>
 

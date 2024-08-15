@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -470,11 +435,11 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span><span class="p">,</span> <span class="n">ListParser</span><span class="p">,</span> <span class="n">JsonParser</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.base_data_class</span> <span class="kn">import</span> <span class="n">ExcludeType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span><span class="p">,</span> <span class="n">ListParser</span><span class="p">,</span> <span class="n">JsonParser</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">DataClassFormatType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">ExcludeType</span><span class="p">,</span> <span class="n">IncludeType</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -487,6 +452,7 @@
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># TODO: delete examples here</span>
 <span class="n">JSON_OUTPUT_FORMAT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard JSON instance with the following schema:</span>
 <span class="s2">```</span>
 <span class="s2">{{schema}}</span>
@@ -610,6 +576,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_fields</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exclude_fields</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_data_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
@@ -630,6 +597,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span> <span class="o">=</span> <span class="n">return_data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span> <span class="o">=</span> <span class="n">include_fields</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">YAML_OUTPUT_FORMAT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span> <span class="o">=</span> <span class="n">YamlParser</span><span class="p">()</span>
@@ -651,7 +619,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">format_type</span> <span class="o">=</span> <span class="n">format_type</span> <span class="ow">or</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_YAML</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
-            <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span>
+            <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">,</span>
+            <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="c1"># convert example to string, convert data class to yaml string</span>
         <span class="n">example_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -661,6 +631,7 @@
                     <span class="n">per_example_str</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">format_example_str</span><span class="p">(</span>
                         <span class="n">format_type</span><span class="o">=</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_YAML</span><span class="p">,</span>
                         <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">,</span>
+                        <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">example_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">per_example_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">________</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="c1"># remove the last new line</span>
@@ -689,7 +660,8 @@
 
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, return_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
+<span class="s2">        include_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="si">}</span><span class="s2">,</span><span class="se">\r</span><span class="s2">eturn_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 
@@ -701,6 +673,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span><span class="p">,</span>
         <span class="n">examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">include_fields</span><span class="p">:</span> <span class="n">IncludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">exclude_fields</span><span class="p">:</span> <span class="n">ExcludeType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">return_data_class</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
@@ -719,6 +692,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span> <span class="o">=</span> <span class="n">return_data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span> <span class="o">=</span> <span class="n">exclude_fields</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span> <span class="o">=</span> <span class="n">include_fields</span>
         <span class="n">template</span> <span class="o">=</span> <span class="n">JSON_OUTPUT_FORMAT</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="p">:</span> <span class="n">DataClass</span> <span class="o">=</span> <span class="n">data_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_format_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
@@ -740,7 +714,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">format_type</span> <span class="o">=</span> <span class="n">format_type</span> <span class="ow">or</span> <span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span>
-            <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span>
+            <span class="n">format_type</span><span class="o">=</span><span class="n">format_type</span><span class="p">,</span>
+            <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">,</span>
+            <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">example_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
@@ -749,6 +725,7 @@
                     <span class="n">per_example_str</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">format_example_str</span><span class="p">(</span>
                         <span class="n">format_type</span><span class="o">=</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_JSON</span><span class="p">,</span>
                         <span class="n">exclude</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="p">,</span>
+                        <span class="n">include</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">example_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">per_example_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">________</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="c1"># remove the last new line</span>
@@ -781,7 +758,8 @@
 
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, return_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">data_class</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, examples=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">examples</span><span class="si">}</span><span class="s2">, exclude_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_exclude_fields</span><span class="si">}</span><span class="s2">, </span><span class="se">\</span>
+<span class="s2">            include_fields=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_fields</span><span class="si">}</span><span class="s2">, return_data_class=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_return_data_class</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
 
 

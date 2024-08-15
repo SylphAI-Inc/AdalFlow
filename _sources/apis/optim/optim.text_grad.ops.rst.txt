@@ -1,0 +1,9 @@
+.. _optim-text_grad-ops:
+
+ops
+===========================
+
+.. automodule:: optim.text_grad.ops
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,9 @@
+.. _tracing-callback_manager:
+
+callback_manager
+================================
+
+.. automodule:: tracing.callback_manager
+   :members:
+   :undoc-members:
+   :show-inheritance:

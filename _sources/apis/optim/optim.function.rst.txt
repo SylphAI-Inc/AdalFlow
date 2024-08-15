@@ -1,0 +1,9 @@
+.. _optim-function:
+
+function
+=====================
+
+.. automodule:: optim.function
+   :members:
+   :undoc-members:
+   :show-inheritance:

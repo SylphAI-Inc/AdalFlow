@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -470,16 +435,16 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">EmbedderOutputType</span><span class="p">,</span>
     <span class="n">EmbedderInputType</span><span class="p">,</span>
     <span class="n">BatchEmbedderInputType</span><span class="p">,</span>
     <span class="n">BatchEmbedderOutputType</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">import</span> <span class="nn">lightrag.core.functional</span> <span class="k">as</span> <span class="nn">F</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">import</span> <span class="nn">adalflow.core.functional</span> <span class="k">as</span> <span class="nn">F</span>
 
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
@@ -578,20 +543,27 @@
         <span class="k">return</span> <span class="n">api_kwargs</span>
 
     <span class="k">def</span> <span class="nf">_post_call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutputType</span><span class="p">:</span>
-        <span class="n">embedding_output</span><span class="p">:</span> <span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="p">)</span>
-
-        <span class="n">data</span> <span class="o">=</span> <span class="n">embedding_output</span><span class="o">.</span><span class="n">data</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Get float list response and process it with output_processor&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">embedding_output</span><span class="p">:</span> <span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">parse_embedding_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the embedding </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="n">EmbedderOutputType</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="n">embedding_output</span><span class="p">)</span>
+        <span class="c1"># data = embedding_output.data</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">embedding_output</span><span class="o">.</span><span class="n">error</span> <span class="ow">and</span> <span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">embedding_output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Skipping output processors due to error: </span><span class="si">{</span><span class="n">embedding_output</span><span class="o">.</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">embedding_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_processors</span><span class="p">(</span><span class="n">embedding_output</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">embedding_output</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing the output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">output</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">embedding_output</span><span class="o">.</span><span class="n">data</span>
 
-        <span class="k">return</span> <span class="n">embedding_output</span>
+        <span class="k">return</span> <span class="n">output</span>
 
 <div class="viewcode-block" id="Embedder.call">
 <a class="viewcode-back" href="../../apis/core/core.embedder.html#core.embedder.Embedder.call">[docs]</a>
@@ -602,11 +574,23 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutputType</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with input: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_call</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
-            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span>
-        <span class="p">)</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+                <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calling the model: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_call</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_call</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
         <span class="c1"># add back the input</span>
         <span class="n">output</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">input</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -622,10 +606,22 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutputType</span><span class="p">:</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Calling </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> with input: </span><span class="si">{</span><span class="nb">input</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">api_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pre_call</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="nb">input</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
-            <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span>
-        <span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_call</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="n">output</span><span class="p">:</span> <span class="n">EmbedderOutputType</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_client</span><span class="o">.</span><span class="n">acall</span><span class="p">(</span>
+                <span class="n">api_kwargs</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span> <span class="n">model_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_type</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error calling the model: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_post_call</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing output: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">EmbedderOutput</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
         <span class="c1"># add back the input</span>
         <span class="n">output</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="p">[</span><span class="nb">input</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="nb">input</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>

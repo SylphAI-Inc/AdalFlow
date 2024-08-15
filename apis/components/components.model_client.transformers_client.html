@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../core/core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -584,33 +576,6 @@
   <section id="module-components.model_client.transformers_client">
 <span id="transformers-client"></span><span id="components-model-client-transformers-client"></span><h1>transformers_client<a class="headerlink" href="#module-components.model_client.transformers_client" title="Link to this heading">#</a></h1>
 <p>Huggingface transformers ModelClient integration.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.transformers_client.average_pool" title="components.model_client.transformers_client.average_pool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average_pool</span></code></a>(last_hidden_states, attention_mask)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Classes</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.transformers_client.TransformerEmbedder" title="components.model_client.transformers_client.TransformerEmbedder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerEmbedder</span></code></a>([model_name])</p></td>
-<td><p>Local model SDK for transformers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.transformers_client.TransformerLLM" title="components.model_client.transformers_client.TransformerLLM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerLLM</span></code></a>([model_name])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#components.model_client.transformers_client.TransformerReranker" title="components.model_client.transformers_client.TransformerReranker"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformerReranker</span></code></a>([model_name])</p></td>
-<td><p>Local model SDK for a reranker model using transformers.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformersClient</span></code></a>([model_name])</p></td>
-<td><p>LightRAG API client for transformers.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.average_pool">
 <span class="sig-name descname"><span class="pre">average_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">last_hidden_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attention_mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#average_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.average_pool" title="Link to this definition">#</a></dt>
@@ -649,6 +614,16 @@ It is not tested on all transformer models yet. It might be necessary to write o
 
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.get_device">
+<span class="sig-name descname"><span class="pre">get_device</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#get_device"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.get_device" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.clean_device_cache">
+<span class="sig-name descname"><span class="pre">clean_device_cache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#clean_device_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.clean_device_cache" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerReranker">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransformerReranker</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'BAAI/bge-reranker-base'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerReranker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerReranker" title="Link to this definition">#</a></dt>
@@ -678,11 +653,37 @@ If you are using Macbook M1 series chips, you need to ensure <code class="docuti
 
 <dl class="py class">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransformerLLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'HuggingFaceH4/zephyr-7b-beta'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TransformerLLM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Local model SDK for transformers LLM.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This inference component is only specific to the HuggingFaceH4/zephyr-7b-beta model.</p>
+</div>
+<p>The example raw output:
+# &lt;<a href="#id3"><span class="problematic" id="id4">|system|</span></a>&gt;
+# You are a friendly chatbot who always responds in the style of a pirate.&lt;/s&gt;
+# &lt;<a href="#id5"><span class="problematic" id="id6">|user|</span></a>&gt;
+# How many helicopters can a human eat in one sitting?&lt;/s&gt;
+# &lt;<a href="#id7"><span class="problematic" id="id8">|assistant|</span></a>&gt;
+# Ah, me hearty matey! But yer question be a puzzler! A human cannot eat a helicopter in one sitting, as helicopters are not edible. They be made of metal, plastic, and other materials, not food!</p>
+<p>References:
+- model: <a class="reference external" href="https://huggingface.co/HuggingFaceH4/zephyr-7b-beta">https://huggingface.co/HuggingFaceH4/zephyr-7b-beta</a>
+- <a class="reference external" href="https://huggingface.co/google/gemma-2b">https://huggingface.co/google/gemma-2b</a>
+- <a class="reference external" href="https://huggingface.co/google/gemma-2-2b">https://huggingface.co/google/gemma-2-2b</a></p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.models">
 <span class="sig-name descname"><span class="pre">models</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.models" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.tokenizer">
+<span class="sig-name descname"><span class="pre">tokenizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.tokenizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.model_to_init_func">
+<span class="sig-name descname"><span class="pre">model_to_init_func</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'HuggingFaceH4/zephyr-7b-beta':</span> <span class="pre">'use_pipeline',</span> <span class="pre">'google/gemma-2-2b':</span> <span class="pre">'use_pipeline'}</span></em><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.model_to_init_func" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -692,12 +693,12 @@ If you are using Macbook M1 series chips, you need to ensure <code class="docuti
 
 <dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.parse_chat_completion">
-<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.parse_chat_completion" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.parse_chat_completion" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.call">
-<span class="sig-name descname"><span class="pre">call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_special_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clean_up_tokenization_spaces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">150</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM.call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.call" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformerLLM.infer_llm">
+<span class="sig-name descname"><span class="pre">infer_llm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">messages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tokens</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformerLLM.infer_llm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformerLLM.infer_llm" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -708,9 +709,12 @@ If you are using Macbook M1 series chips, you need to ensure <code class="docuti
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClient</span></code></p>
 <p>LightRAG API client for transformers.</p>
 <p>Use: <a href="#id1"><span class="problematic" id="id2">``</span></a>ls ~/.cache/huggingface/hub `` to see the cached models.</p>
+<p>Some modeles are gated, you will need to their page to get the access token.
+Find how to apply tokens here: <a class="reference external" href="https://huggingface.co/docs/hub/security-tokens">https://huggingface.co/docs/hub/security-tokens</a>
+Once you have a token and have access, put the token in the environment variable HF_TOKEN.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient.support_models">
-<span class="sig-name descname"><span class="pre">support_models</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'BAAI/bge-reranker-base':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.RERANKER},</span> <span class="pre">'HuggingFaceH4/zephyr-7b-beta':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.LLM},</span> <span class="pre">'thenlper/gte-base':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.EMBEDDER}}</span></em><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.support_models" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">support_models</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'BAAI/bge-reranker-base':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.RERANKER},</span> <span class="pre">'HuggingFaceH4/zephyr-7b-beta':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.LLM},</span> <span class="pre">'google/gemma-2-2b':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.LLM},</span> <span class="pre">'thenlper/gte-base':</span> <span class="pre">{'type':</span> <span class="pre">ModelType.EMBEDDER}}</span></em><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.support_models" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -729,9 +733,77 @@ If you are using Macbook M1 series chips, you need to ensure <code class="docuti
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient.set_llm_client">
+<span class="sig-name descname"><span class="pre">set_llm_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">llm_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformersClient.set_llm_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.set_llm_client" title="Link to this definition">#</a></dt>
+<dd><p>Allow user to pass a custom llm client. Here is an example of a custom llm client:</p>
+<p>Ensure you have parse_chat_completion and __call__ methods which will be applied to api_kwargs specified in transform_client.call().</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">CustomizeLLM</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">completion</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">transformers</span> <span class="kn">import</span> <span class="n">AutoTokenizer</span><span class="p">,</span> <span class="n">AutoModelForCausalLM</span>
+
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="s2">&quot;deepseek-ai/deepseek-coder-1.3b-instruct&quot;</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span>
+            <span class="s2">&quot;deepseek-ai/deepseek-coder-1.3b-instruct&quot;</span><span class="p">,</span>
+            <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">torch_dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">bfloat16</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">get_device</span><span class="p">())</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;write a quick sort algorithm in python.&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">apply_chat_template</span><span class="p">(</span>
+            <span class="n">messages</span><span class="p">,</span> <span class="n">add_generation_prompt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s2">&quot;pt&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="c1"># tokenizer.eos_token_id is the id of &lt;|EOT|&gt; token</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+            <span class="n">inputs</span><span class="p">,</span>
+            <span class="n">max_new_tokens</span><span class="o">=</span><span class="mi">512</span><span class="p">,</span>
+            <span class="n">do_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">top_k</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+            <span class="n">top_p</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+            <span class="n">num_return_sequences</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">eos_token_id</span><span class="o">=</span><span class="n">tokenizer</span><span class="o">.</span><span class="n">eos_token_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">decoded_outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="n">decoded_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">tokenizer</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="p">:],</span> <span class="n">skip_special_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">decoded_outputs</span>
+
+<span class="n">llm_client</span> <span class="o">=</span> <span class="n">CustomizeLLM</span><span class="p">()</span>
+<span class="n">transformer_client</span><span class="o">.</span><span class="n">set_llm_client</span><span class="p">(</span><span class="n">llm_client</span><span class="p">)</span>
+<span class="c1"># use in the generator</span>
+<span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">transformer_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+    <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient.parse_embedding_response">
 <span class="sig-name descname"><span class="pre">parse_embedding_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EmbedderOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformersClient.parse_embedding_response"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.parse_embedding_response" title="Link to this definition">#</a></dt>
 <dd><p>Parse the embedding response to a structure LightRAG components can understand.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient.parse_chat_completion">
+<span class="sig-name descname"><span class="pre">parse_chat_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">GeneratorOutput</span></span></span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformersClient.parse_chat_completion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.parse_chat_completion" title="Link to this definition">#</a></dt>
+<dd><p>Parse the chat completion to str.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -747,15 +819,13 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
 <dt class="sig sig-object py" id="components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs">
 <span class="sig-name descname"><span class="pre">convert_inputs_to_api_kwargs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ModelType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ModelType.UNDEFINED</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/components/model_client/transformers_client.html#TransformersClient.convert_inputs_to_api_kwargs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs" title="Link to this definition">#</a></dt>
 <dd><p>Bridge the Component’s standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input</strong> (<em>Optional</em><em>[</em><em>Any</em><em>]</em><em>, </em><em>optional</em>) – input to the model. Defaults to None.</p></li>
-<li><p><strong>model_kwargs</strong> (<em>Dict</em>) – model kwargs</p></li>
-<li><p><strong>model_type</strong> (<a class="reference internal" href="../core/core.types.html#core.types.ModelType" title="core.types.ModelType"><em>ModelType</em></a>) – model type</p></li>
-</ul>
-</dd>
-</dl>
+<p>All types of models supported by this particular provider should be handled here.
+:param input: input to the model. Defaults to None.
+:type input: Optional[Any], optional
+:param model_kwargs: model kwargs
+:type model_kwargs: Dict
+:param model_type: model type
+:type model_type: ModelType</p>
 </dd></dl>
 
 </dd></dl>
@@ -815,6 +885,8 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerEmbedder.infer_gte_base_embedding"><code class="docutils literal notranslate"><span class="pre">TransformerEmbedder.infer_gte_base_embedding()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.get_device"><code class="docutils literal notranslate"><span class="pre">get_device()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.clean_device_cache"><code class="docutils literal notranslate"><span class="pre">clean_device_cache()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerReranker"><code class="docutils literal notranslate"><span class="pre">TransformerReranker</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerReranker.models"><code class="docutils literal notranslate"><span class="pre">TransformerReranker.models</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerReranker.init_model"><code class="docutils literal notranslate"><span class="pre">TransformerReranker.init_model()</span></code></a></li>
@@ -823,9 +895,11 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM"><code class="docutils literal notranslate"><span class="pre">TransformerLLM</span></code></a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.models"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.models</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.tokenizer"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.tokenizer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.model_to_init_func"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.model_to_init_func</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.init_model"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.init_model()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.parse_chat_completion()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.call"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.call()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformerLLM.infer_llm"><code class="docutils literal notranslate"><span class="pre">TransformerLLM.infer_llm()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient"><code class="docutils literal notranslate"><span class="pre">TransformersClient</span></code></a><ul class="nav section-nav flex-column">
@@ -833,7 +907,9 @@ api_kwargs: all the arguments that the API call needs, subclass should implement
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.init_sync_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_sync_client()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.init_reranker_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_reranker_client()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.init_llm_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.init_llm_client()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.set_llm_client"><code class="docutils literal notranslate"><span class="pre">TransformersClient.set_llm_client()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.parse_embedding_response"><code class="docutils literal notranslate"><span class="pre">TransformersClient.parse_embedding_response()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.parse_chat_completion"><code class="docutils literal notranslate"><span class="pre">TransformersClient.parse_chat_completion()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.call"><code class="docutils literal notranslate"><span class="pre">TransformersClient.call()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#components.model_client.transformers_client.TransformersClient.convert_inputs_to_api_kwargs"><code class="docutils literal notranslate"><span class="pre">TransformersClient.convert_inputs_to_api_kwargs()</span></code></a></li>
 </ul>

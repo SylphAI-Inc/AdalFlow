@@ -1,7 +1,7 @@
 
-.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg
+.. image:: https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png
    :width: 100%
-   :alt: LightRAG Logo
+   :alt: Adalflow Logo
 
 
 
@@ -17,9 +17,9 @@
    </p>
 
    <div style="text-align: center; margin-bottom: 20px;">
-      <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG" style="display: inline-block; margin-left: 10px;">
-         <img src="https://img.shields.io/badge/GitHub-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+      <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
+      <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
+         <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
       </a>
       <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
       <a href="https://discord.gg/ezzszrRZvT">
@@ -35,16 +35,15 @@
 
 .. raw:: html
 
-    <h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
+    <h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">⚡ The Library to Build and to Auto-optimize Large Language Model Applications ⚡</h3>
 
-    <div style="text-align: center;">
-        <p>
-            <em>LightRAG</em> helps developers build and optimize <em>Retriever-Agent-Generator</em> pipelines.<br>
-            Embracing a design philosophy similar to PyTorch, it is light, modular, and robust, with a 100% readable codebase.
-        </p>
-    </div>
+..  <div style="text-align: center;">
+..      <p>
+..          <em>AdalFlow</em> helps developers build and optimize <em>Retriever-Agent-Generator</em> pipelines.<br>
+..          Embracing a design philosophy similar to PyTorch, it is light, modular, and robust, with a 100% readable codebase.
+..      </p>
+..  </div>
 
-    <h2 style="text-align: center; font-size: 1.5em; margin-top: 10px;"> We are in the progress of renaming to AdalFlow from LightRAG.</h2>
 
 
 
@@ -58,7 +57,7 @@
 
 Light
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-LightRAG shares similar design pattern as `PyTorch` for deep learning modeling.
+AdalFlow shares similar design pattern as `PyTorch` for deep learning modeling.
 We provide developers with fundamental building blocks of *100% clarity and simplicity*.
 
 - Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
@@ -95,7 +94,7 @@ We provide developers with fundamental building blocks of *100% clarity and simp
                   x = self.fc1(x)
                   return self.fc2(x)
 
-   .. grid-item-card::  LightRAG
+   .. grid-item-card::  AdalFlow
 
       .. code-block:: python
 
@@ -134,10 +133,10 @@ We provide developers with fundamental building blocks of *100% clarity and simp
 Modular
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-LightRAG resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.
+AdalFlow resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.
 
-- `Component` and `DataClass` are to LightRAG for LLM Applications what  `module` and `Tensor` are to PyTorch for deep learning modeling.
-- `ModelClient` to bridge the gap between the LLM API and the LightRAG pipeline.
+- `Component` and `DataClass` are to AdalFlow for LLM Applications what  `module` and `Tensor` are to PyTorch for deep learning modeling.
+- `ModelClient` to bridge the gap between the LLM API and the AdalFlow pipeline.
 - `Orchestrator` components like `Retriever`, `Embedder`, `Generator`, and `Agent` are all model-agnostic (you can use the component on different models from different providers).
 
 
@@ -189,9 +188,9 @@ On the contrary, we have to do more and go deeper and wider on any topic to offe
 
 .. Coming from a deep AI research background, we understand that the more control and transparency developers have over their prompts, the better. In default:
 
-.. - LightRAG simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
+.. - AdalFlow simplifies what developers need to send to LLM proprietary APIs to just two messages each time: a `system message` and a `user message`. This minimizes reliance on and manipulation by API providers.
 
-.. - LightRAG provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
+.. - AdalFlow provides advanced tooling for developers to build `agents`, `tools/function calls`, etc., without relying on any proprietary API provider's 'advanced' features such as `OpenAI` assistant, tools, and JSON format
 
 .. It is the future of LLM applications
 
@@ -201,7 +200,7 @@ Our team has experience in both AI research and production.
 We are building a library that unites the two worlds, forming a healthy LLM application ecosystem.
 
 - To resemble the PyTorch library makes it easier for LLM researchers to use the library.
-- Researchers building on LightRAG enable production engineers to easily adopt, test, and iterate on their production data.
+- Researchers building on AdalFlow enable production engineers to easily adopt, test, and iterate on their production data.
 - Our 100% control and clarity of the source code further make it easy for product teams to build on and for researchers to extend their new methods.
 
 
@@ -225,13 +224,13 @@ We are building a library that unites the two worlds, forming a healthy LLM appl
    .. :hidden:
 
 
-.. Hide the use cases for now
-   toctree::
-   .. :maxdepth: 1
-   .. :caption: Use Cases - How different parts are used to build various LLM applications
-   .. :hidden:
+.. .. Hide the use cases for now
+.. toctree::
+   :maxdepth: 1
+   :caption: Use Cases - How different parts are used to build various LLM applications
+   :hidden:
 
-   .. tutorials/index
+   use_cases/index
 
 
 .. toctree::

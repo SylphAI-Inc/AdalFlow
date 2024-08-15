@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -469,13 +434,13 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.retriever</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.retriever</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Retriever</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">GeneratorOutput</span><span class="p">,</span>
     <span class="n">RetrieverOutput</span><span class="p">,</span>
     <span class="n">RetrieverDocumentsType</span><span class="p">,</span>
@@ -585,7 +550,7 @@
 <span class="sd">             You can switch to another model provided by the same model client without reinitializing the retriever. Defaults to {}.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            RetrieverOutputType: the developers should be aware that the returned ``LLMRetrieverOutputType`` is actually a list of GeneratorOutput(:class:`GeneratorOutput &lt;lightrag.core.types.GeneratorOutput&gt;`), post processing is required depends on how you instruct the model to output in the prompt and what ``output_processors`` you set up.</span>
+<span class="sd">            RetrieverOutputType: the developers should be aware that the returned ``LLMRetrieverOutputType`` is actually a list of GeneratorOutput(:class:`GeneratorOutput &lt;adalflow.core.types.GeneratorOutput&gt;`), post processing is required depends on how you instruct the model to output in the prompt and what ``output_processors`` you set up.</span>
 <span class="sd">            E.g. If the prompt is to output a list of indices and the ``output_processors`` is ``ListParser()``, then it return: GeneratorOutput(data=[indices], error=None, raw_response=&#39;[indices]&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexed</span><span class="p">,</span> <span class="s2">&quot;The retriever is not indexed yet.&quot;</span>

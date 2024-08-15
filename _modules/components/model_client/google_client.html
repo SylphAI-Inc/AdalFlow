@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -469,12 +434,13 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 
 
-<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">CompletionUsage</span><span class="p">,</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">GeneratorOutput</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 <span class="c1"># optional import</span>
 <span class="n">google</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span>
@@ -489,6 +455,8 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">google.generativeai.types</span> <span class="kn">import</span> <span class="n">GenerateContentResponse</span>
 
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="GoogleGenAIClient">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient">[docs]</a>
@@ -496,6 +464,27 @@
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;A component wrapper for the Google GenAI API client.</span>
 
 <span class="s2">    Visit https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/inference for more api details.</span>
+
+<span class="s2">    Info: 8/1/2024</span>
+<span class="s2">    Tested: gemini-1.0-pro, gemini-1.5-pro-latest</span>
+<span class="s2">    class UsageMetadata(proto.Message):</span>
+
+<span class="s2">        prompt_token_count: int = proto.Field(</span>
+<span class="s2">            proto.INT32,</span>
+<span class="s2">            number=1,</span>
+<span class="s2">        )</span>
+<span class="s2">        cached_content_token_count: int = proto.Field(</span>
+<span class="s2">            proto.INT32,</span>
+<span class="s2">            number=4,</span>
+<span class="s2">        )</span>
+<span class="s2">        candidates_token_count: int = proto.Field(</span>
+<span class="s2">            proto.INT32,</span>
+<span class="s2">            number=2,</span>
+<span class="s2">        )</span>
+<span class="s2">        total_token_count: int = proto.Field(</span>
+<span class="s2">            proto.INT32,</span>
+<span class="s2">            number=3,</span>
+<span class="s2">        )</span>
 <span class="s2">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -518,11 +507,34 @@
 
 <div class="viewcode-block" id="GoogleGenAIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateContentResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateContentResponse</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parse the completion to a structure your sytem standarizes. (here is str)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">text</span></div>
+        <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">completion</span><span class="o">.</span><span class="n">text</span>
+            <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing completion: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GoogleGenAIClient.track_completion_usage">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.google_client.html#components.model_client.google_client.GoogleGenAIClient.track_completion_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">GenerateContentResponse</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">CompletionUsage</span><span class="p">(</span>
+            <span class="n">completion_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage_metadata</span><span class="o">.</span><span class="n">candidates_token_count</span><span class="p">,</span>
+            <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage_metadata</span><span class="o">.</span><span class="n">prompt_token_count</span><span class="p">,</span>
+            <span class="n">total_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage_metadata</span><span class="o">.</span><span class="n">total_token_count</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="GoogleGenAIClient.convert_inputs_to_api_kwargs">
@@ -584,6 +596,13 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span></div>
 </div>
 
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+
+    <span class="n">setup_env</span><span class="p">()</span>
+    <span class="n">google_client</span> <span class="o">=</span> <span class="n">GoogleGenAIClient</span><span class="p">()</span>
 </pre></div>
 
                 </article>

@@ -106,55 +106,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -183,8 +134,8 @@
       
     
     
-    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -208,7 +159,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -348,7 +306,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -442,7 +407,7 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <a class="reference internal image-reference" href="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg"><img alt="LightRAG Logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/LightRAG-logo-doc.jpeg" style="width: 100%;" />
+  <a class="reference internal image-reference" href="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png"><img alt="Adalflow Logo" src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/adalflow-logo.png" style="width: 100%;" />
 </a>
 <p align="center">
 
@@ -453,27 +418,18 @@
 </p>
 
 <div style="text-align: center; margin-bottom: 20px;">
-   <a href="https://pypi.org/project/lightRAG/"><img src="https://img.shields.io/pypi/v/lightRAG?style=flat-square" alt="PyPI Version"></a>
-   <a href="https://github.com/SylphAI-Inc/LightRAG" style="display: inline-block; margin-left: 10px;">
-      <img src="https://img.shields.io/badge/GitHub-LightRAG-blue?logo=github&style=flat-square" alt="GitHub Repo">
+   <a href="https://pypi.org/project/adalflow/"><img src="https://img.shields.io/pypi/v/adalflow?style=flat-square" alt="PyPI Version"></a>
+   <a href="https://github.com/SylphAI-Inc/AdalFlow" style="display: inline-block; margin-left: 10px;">
+      <img src="https://img.shields.io/badge/GitHub-AdalFlow-blue?logo=github&style=flat-square" alt="GitHub Repo">
    </a>
    <a href="https://star-history.com/#SylphAI-Inc/LightRAG"><img src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square" alt="GitHub Stars"></a>
    <a href="https://discord.gg/ezzszrRZvT">
      <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
    </a>
    <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-</div><h1 style="text-align: center; font-size: 2em; margin-top: 10px;">⚡ The PyTorch Library for Large Language Model Applications ⚡</h1>
-
-<div style="text-align: center;">
-    <p>
-        <em>LightRAG</em> helps developers build and optimize <em>Retriever-Agent-Generator</em> pipelines.<br>
-        Embracing a design philosophy similar to PyTorch, it is light, modular, and robust, with a 100% readable codebase.
-    </p>
-</div>
-
-<h2 style="text-align: center; font-size: 1.5em; margin-top: 10px;"> We are in the progress of renaming to AdalFlow from LightRAG.</h2><section id="light">
+</div><h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">⚡ The Library to Build and to Auto-optimize Large Language Model Applications ⚡</h3><section id="light">
 <h1>Light<a class="headerlink" href="#light" title="Link to this heading">#</a></h1>
-<p>LightRAG shares similar design pattern as <cite>PyTorch</cite> for deep learning modeling.
+<p>AdalFlow shares similar design pattern as <cite>PyTorch</cite> for deep learning modeling.
 We provide developers with fundamental building blocks of <em>100% clarity and simplicity</em>.</p>
 <ul class="simple">
 <li><p>Only two fundamental but powerful base classes: <cite>Component</cite> for the pipeline and <cite>DataClass</cite> for data interaction with LLMs.</p></li>
@@ -517,7 +473,7 @@ PyTorch</div>
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-LightRAG</div>
+AdalFlow</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
 <span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
 
@@ -552,10 +508,10 @@ LightRAG</div>
 </section>
 <section id="modular">
 <h1>Modular<a class="headerlink" href="#modular" title="Link to this heading">#</a></h1>
-<p>LightRAG resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.</p>
+<p>AdalFlow resembles PyTorch in the way that we provide a modular and composable structure for developers to build and to optimize their LLM applications.</p>
 <ul class="simple">
-<li><p><cite>Component</cite> and <cite>DataClass</cite> are to LightRAG for LLM Applications what  <cite>module</cite> and <cite>Tensor</cite> are to PyTorch for deep learning modeling.</p></li>
-<li><p><cite>ModelClient</cite> to bridge the gap between the LLM API and the LightRAG pipeline.</p></li>
+<li><p><cite>Component</cite> and <cite>DataClass</cite> are to AdalFlow for LLM Applications what  <cite>module</cite> and <cite>Tensor</cite> are to PyTorch for deep learning modeling.</p></li>
+<li><p><cite>ModelClient</cite> to bridge the gap between the LLM API and the AdalFlow pipeline.</p></li>
 <li><p><cite>Orchestrator</cite> components like <cite>Retriever</cite>, <cite>Embedder</cite>, <cite>Generator</cite>, and <cite>Agent</cite> are all model-agnostic (you can use the component on different models from different providers).</p></li>
 </ul>
 <p>Similar to the PyTorch <cite>module</cite>, our <cite>Component</cite> provides excellent visualization of the pipeline structure.</p>
@@ -602,9 +558,11 @@ On the contrary, we have to do more and go deeper and wider on any topic to offe
 We are building a library that unites the two worlds, forming a healthy LLM application ecosystem.</p>
 <ul class="simple">
 <li><p>To resemble the PyTorch library makes it easier for LLM researchers to use the library.</p></li>
-<li><p>Researchers building on LightRAG enable production engineers to easily adopt, test, and iterate on their production data.</p></li>
+<li><p>Researchers building on AdalFlow enable production engineers to easily adopt, test, and iterate on their production data.</p></li>
 <li><p>Our 100% control and clarity of the source code further make it easy for product teams to build on and for researchers to extend their new methods.</p></li>
 </ul>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">

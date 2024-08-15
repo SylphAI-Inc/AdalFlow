@@ -1,0 +1,9 @@
+.. _datasets-trec:
+
+trec
+====================
+
+.. automodule:: datasets.trec
+   :members:
+   :undoc-members:
+   :show-inheritance:

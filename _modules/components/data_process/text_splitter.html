@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -485,9 +450,9 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
 
 <span class="c1"># TODO:</span>
 <span class="c1"># More splitters such as PDF/JSON/HTML Splitter can be built on TextSplitter.</span>
@@ -532,7 +497,7 @@
 
 <span class="sd">        &quot;Hello, world!&quot; -&gt; [&quot;Hello, &quot; ,&quot;world!&quot;]</span>
 
-<span class="sd">    * **Type 2:** Use :class:`tokenizer &lt;lightrag.core.tokenizer.Tokenizer&gt;`. It works as:</span>
+<span class="sd">    * **Type 2:** Use :class:`tokenizer &lt;adalflow.core.tokenizer.Tokenizer&gt;`. It works as:</span>
 
 <span class="sd">    ::</span>
 
@@ -585,7 +550,7 @@
 
 <span class="sd">    * **Customization**</span>
 <span class="sd">    You can also customize the ``SEPARATORS``. For example, by defining ``SEPARATORS`` = {&quot;question&quot;: &quot;?&quot;} and setting ``split_by`` = &quot;question&quot;, the document will be split at each ``?``, ideal for processing text structured</span>
-<span class="sd">    as a series of questions. If you need to customize :class:`tokenizer &lt;lightrag.core.tokenizer.Tokenizer&gt;`, please check `Reference &lt;https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb&gt;`_.</span>
+<span class="sd">    as a series of questions. If you need to customize :class:`tokenizer &lt;adalflow.core.tokenizer.Tokenizer&gt;`, please check `Reference &lt;https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb&gt;`_.</span>
 
 <span class="sd">    * **Integration with Other Document Types**</span>
 <span class="sd">    This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.</span>
@@ -596,8 +561,8 @@
 
 <span class="sd">    .. code-block:: python</span>
 
-<span class="sd">        from lightrag.components.data_process.text_splitter import TextSplitter</span>
-<span class="sd">        from lightrag.core.types import Document</span>
+<span class="sd">        from adalflow.components.data_process.text_splitter import TextSplitter</span>
+<span class="sd">        from adalflow.core.types import Document</span>
 
 <span class="sd">        # Configure the splitter settings</span>
 <span class="sd">        text_splitter = TextSplitter(</span>
@@ -650,17 +615,25 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">split_by</span> <span class="o">=</span> <span class="n">split_by</span>
         <span class="k">if</span> <span class="n">split_by</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">SEPARATORS</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid options for split_by. You must select from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">SEPARATORS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid options for split_by. You must select from </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">SEPARATORS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">chunk_overlap</span> <span class="o">&gt;=</span> <span class="n">chunk_size</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;chunk_overlap can&#39;t be larger than or equal to chunk_size. Received chunk_size: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;chunk_overlap can&#39;t be larger than or equal to chunk_size. Received chunk_size: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;chunk_size must be greater than 0. Received value: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;chunk_size must be greater than 0. Received value: </span><span class="si">{</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
 
         <span class="k">if</span> <span class="n">chunk_overlap</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;chunk_overlap must be non-negative. Received value: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;chunk_overlap must be non-negative. Received value: </span><span class="si">{</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span> <span class="o">=</span> <span class="n">chunk_overlap</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
@@ -818,8 +791,6 @@
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;split_by=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">split_by</span><span class="si">}</span><span class="s2">, chunk_size=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_size</span><span class="si">}</span><span class="s2">, chunk_overlap=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chunk_overlap</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span></div>
-
-
 
 </pre></div>
 

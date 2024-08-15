@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -473,32 +438,14 @@
 <span class="kn">from</span> <span class="nn">jinja2</span> <span class="kn">import</span> <span class="n">Template</span><span class="p">,</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">StrictUndefined</span><span class="p">,</span> <span class="n">meta</span>
 
 
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.default_prompt_template</span> <span class="kn">import</span> <span class="n">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="get_jinja2_environment">
-<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">[docs]</a>
-<span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_jinja2_environment</span><span class="p">():</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function for Prompt component to get the Jinja2 environment with the default settings.&quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">default_environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
-            <span class="n">undefined</span><span class="o">=</span><span class="n">StrictUndefined</span><span class="p">,</span>
-            <span class="n">trim_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">keep_trailing_newline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">lstrip_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">default_environment</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Jinja2 environment: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="Prompt">
@@ -514,7 +461,7 @@
 
 <span class="s2">    Examples:</span>
 <span class="s2">        &gt;&gt;&gt; from core.prompt_builder import Prompt</span>
-<span class="s2">        &gt;&gt;&gt; prompt = Prompt(preset_prompt_kwargs={&quot;task_desc_str&quot;: &quot;You are a helpful assistant.&quot;})</span>
+<span class="s2">        &gt;&gt;&gt; prompt = Prompt(prompt_kwargs={&quot;task_desc_str&quot;: &quot;You are a helpful assistant.&quot;})</span>
 <span class="s2">        &gt;&gt;&gt; print(prompt)</span>
 <span class="s2">        &gt;&gt;&gt; prompt.print_prompt_template()</span>
 <span class="s2">        &gt;&gt;&gt; prompt.print_prompt(context_str=&quot;This is a context string.&quot;)</span>
@@ -538,7 +485,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{},</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
@@ -550,7 +497,7 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> has variables: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="n">prompt_kwargs</span>
 
     <span class="k">def</span> <span class="nf">__create_jinja2_template</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Create the Jinja2 template object.&quot;&quot;&quot;</span>
@@ -597,7 +544,7 @@
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">composed_kwargs</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> does not exist in the prompt_kwargs.&quot;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> does not exist in the prompt_kwargs.&quot;</span><span class="p">)</span>
             <span class="n">composed_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">composed_kwargs</span></div>
 
@@ -614,15 +561,17 @@
 
 <div class="viewcode-block" id="Prompt.print_prompt">
 <a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.print_prompt">[docs]</a>
-    <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">print_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Print the rendered prompt string using the preset_prompt_kwargs and the provided kwargs.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pass_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose_prompt_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">pass_kwargs</span> <span class="o">=</span> <span class="n">_convert_prompt_kwargs_to_str</span><span class="p">(</span><span class="n">pass_kwargs</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prompt kwargs: </span><span class="si">{</span><span class="n">pass_kwargs</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja2_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">pass_kwargs</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Prompt:</span><span class="se">\n</span><span class="s2">______________________&quot;</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">prompt_str</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">prompt_str</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error rendering Jinja2 template: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -631,11 +580,11 @@
 <a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt.call">[docs]</a>
     <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Renders the prompt template with keyword arguments.</span>
+<span class="sd">        Renders the prompt template with keyword arguments. Allow None values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pass_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compose_prompt_kwargs</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
+            <span class="n">pass_kwargs</span> <span class="o">=</span> <span class="n">_convert_prompt_kwargs_to_str</span><span class="p">(</span><span class="n">pass_kwargs</span><span class="p">)</span>
             <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">jinja2_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="o">**</span><span class="n">pass_kwargs</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">prompt_str</span>
 
@@ -645,8 +594,9 @@
 
     <span class="k">def</span> <span class="nf">_extra_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;template: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, prompt_kwargs: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">prompt_kwargs_str</span> <span class="o">=</span> <span class="n">_convert_prompt_kwargs_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prompt_kwargs_str</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, prompt_kwargs: </span><span class="si">{</span><span class="n">prompt_kwargs_str</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span><span class="p">:</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;, prompt_variables: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prompt_variables</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
@@ -672,6 +622,39 @@
         <span class="n">output</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="n">exclude</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
 </div>
+
+
+
+<span class="k">def</span> <span class="nf">_convert_prompt_kwargs_to_str</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Convert the prompt_kwargs to a dictionary with string values.&quot;&quot;&quot;</span>
+    <span class="n">prompt_kwargs_str</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prompt_kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">):</span>
+
+            <span class="n">prompt_kwargs_str</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">prompt_kwargs_str</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+    <span class="k">return</span> <span class="n">prompt_kwargs_str</span>
+
+
+<div class="viewcode-block" id="get_jinja2_environment">
+<a class="viewcode-back" href="../../apis/core/core.prompt_builder.html#core.prompt_builder.get_jinja2_environment">[docs]</a>
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_jinja2_environment</span><span class="p">():</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Helper function for Prompt component to get the Jinja2 environment with the default settings.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">default_environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span>
+            <span class="n">undefined</span><span class="o">=</span><span class="n">StrictUndefined</span><span class="p">,</span>
+            <span class="n">trim_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">keep_trailing_newline</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">lstrip_blocks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">default_environment</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Jinja2 environment: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 

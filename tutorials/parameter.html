@@ -52,8 +52,6 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Optimizer" href="optimizer.html" />
-    <link rel="prev" title="LLM Evaluation" href="evaluation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -105,55 +103,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +131,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -205,9 +154,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -307,6 +263,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -317,7 +277,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,9 +301,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -412,61 +381,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
-<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
-<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -499,9 +413,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">Parameter</li>
   </ul>
 </nav>
@@ -521,7 +432,61 @@
                   
   <section id="parameter">
 <span id="id1"></span><h1>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">#</a></h1>
-<p>Coming soon!</p>
+<p>There are two types of parameters:</p>
+<ul class="simple">
+<li><p>once-off, such as loss, y_pred, intermedia response where each run it will create a new one, and they are temporary and will be released after the run.</p></li>
+<li><dl class="simple">
+<dt>persistent, the parameters that we are optimizing, such as those with an actual type assigned <cite>param_type</cite> in the <cite>Parameter</cite> class.</dt><dd><p>For the persistent parameters, the data type will be string.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<section id="intermediate-parameters">
+<h2>Intermediate parameters<a class="headerlink" href="#intermediate-parameters" title="Link to this heading">#</a></h2>
+<p>intermediate parameters data = Componnet.call output.</p>
+<p>TODO: a DAG to show this.</p>
+<p>All our targing parameter to train will end up being a leaf node in the auto-diff DAG.</p>
+<p>In each run, the persistent parameters can be used by multiple successors if batch_size &gt; 1. This results it to accumulate all traces.</p>
+</section>
+<section id="auto-diff">
+<h2>auto-diff<a class="headerlink" href="#auto-diff" title="Link to this heading">#</a></h2>
+<p>To support auto-diff, we added <cite>predecessors</cite> , and adalflow created <cite>peers</cite> concept to ensure training parameters are aware of each other to not conflicting while optimizing.</p>
+<p>For instance, if no peers context, the system instruction can generate examples or enforce output format while users want to train each of them separately.</p>
+<p>These characteristics are important. this means for passing the score</p>
+</section>
+<section id="teacher">
+<h2>teacher<a class="headerlink" href="#teacher" title="Link to this heading">#</a></h2>
+<p>Teacher generator should not use any parameter as it will only be used in call.</p>
+</section>
+<section id="generator-prediction-parameters">
+<h2>Generator Prediction parameters<a class="headerlink" href="#generator-prediction-parameters" title="Link to this heading">#</a></h2>
+<p>We will track:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">input_args</span> <span class="p">{</span><span class="s2">&quot;Prompt_kwargs&quot;</span><span class="p">,</span> <span class="s2">&quot;model_kwargs&quot;</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="n">raw_response</span>
+<span class="n">data</span> <span class="p">(</span><span class="n">processed</span> <span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Potentially we can make the data generator output</p>
+<p>Or any component output parameter, it should have a forward</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">retriever_reponse</span><span class="p">,</span>
+        <span class="n">alias</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;_output&quot;</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;Retriever response&quot;</span><span class="p">,</span>
+        <span class="n">predecessors</span><span class="o">=</span><span class="n">predecessors</span><span class="p">,</span>
+        <span class="n">input_args</span><span class="o">=</span><span class="n">input_args</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="demo-parameter">
+<h2>Demo Parameter<a class="headerlink" href="#demo-parameter" title="Link to this heading">#</a></h2>
+<p>Demo parameter and demo optimizers does not require loss backpropagatin.</p>
+<p>It needs a loss function to compute the eval score. but we dont need to run
+<cite>loss.backward()</cite> if we are only doing few-shot optimization.</p>
+<p>loss.backward will do two things:
+* backpropagate score to prececessors as a context
+* backpropagate the gradients to text prompts.</p>
+</section>
 </section>
 
 
@@ -534,30 +499,33 @@
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="evaluation.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">LLM Evaluation</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="optimizer.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Optimizer</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#intermediate-parameters">Intermediate parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#auto-diff">auto-diff</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#teacher">teacher</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generator-prediction-parameters">Generator Prediction parameters</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo-parameter">Demo Parameter</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

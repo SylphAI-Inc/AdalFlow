@@ -1,0 +1,9 @@
+.. _utils-global_config:
+
+global_config
+===========================
+
+.. automodule:: utils.global_config
+   :members:
+   :undoc-members:
+   :show-inheritance:

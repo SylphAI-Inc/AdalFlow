@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -469,8 +434,13 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 
 
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModelType</span><span class="p">,</span>
+    <span class="n">EmbedderOutput</span><span class="p">,</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+    <span class="n">CompletionUsage</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="c1"># TODO: global model registry for all available models in users&#39; project.</span>
@@ -479,14 +449,14 @@
 <span class="k">class</span> <span class="nc">ModelClient</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
     <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;The protocol and abstract class for all models(either via APIs or local models) to communicate with components.</span>
 
-<span class="s2">    We designed the abstract APIClient class to separate the model API calls from the rest of the system,</span>
+<span class="s2">ModelClient is to separate the model API calls from the rest of the system,</span>
 <span class="s2">making it a plug-and-play component that can be used in functional components like Generator and Embedder.</span>
 
 
-<span class="s2">For a particular API provider, such as OpenAI, we will have a class that inherits from APIClient.</span>
+<span class="s2">For a particular API provider, such as OpenAI, we will have a class that inherits from ModelClient.</span>
 <span class="s2">It does four things:</span>
 
-<span class="s2">(1) Initialize the client, sync and async.</span>
+<span class="s2">(1) Initialize the client, including both sync and async.</span>
 
 <span class="s2">(2) Convert the standard LightRAG components inputs to the API-specific format.</span>
 
@@ -556,6 +526,7 @@
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Bridge the Component&#39;s standard input and model_kwargs into API-specific format, the api_kwargs that will be used in _call and _acall methods.</span>
 
+<span class="sd">        All types of models supported by this particular provider should be handled here.</span>
 <span class="sd">        Args:</span>
 <span class="sd">            input (Optional[Any], optional): input to the model. Defaults to None.</span>
 <span class="sd">            model_kwargs (Dict): model kwargs</span>
@@ -569,16 +540,25 @@
 
 <div class="viewcode-block" id="ModelClient.parse_chat_completion">
 <a class="viewcode-back" href="../../apis/core/core.model_client.html#core.model_client.ModelClient.parse_chat_completion">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">completion</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the chat completion to str.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement parse_chat_completion method&quot;</span>
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ModelClient.track_completion_usage">
+<a class="viewcode-back" href="../../apis/core/core.model_client.html#core.model_client.ModelClient.track_completion_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;CompletionUsage&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Track the chat completion usage. Use OpenAI standard API for tracking.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement track_usage method&quot;</span>
+        <span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="ModelClient.parse_embedding_response">
 <a class="viewcode-back" href="../../apis/core/core.model_client.html#core.model_client.ModelClient.parse_embedding_response">[docs]</a>
-    <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EmbedderOutput</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">parse_embedding_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;EmbedderOutput&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Parse the embedding response to a structure LightRAG components can understand.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement parse_embedding_response method&quot;</span>
@@ -587,9 +567,7 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_process_text</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This is specific to OpenAI API, as removing new lines could have better performance in the embedder</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This is specific to OpenAI API, as removing new lines could have better performance in the embedder&quot;&quot;&quot;</span>
         <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">text</span>
 

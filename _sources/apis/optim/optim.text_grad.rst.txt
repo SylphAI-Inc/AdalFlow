@@ -1,0 +1,24 @@
+.. _optim-text_grad:
+
+text_grad
+========================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   optim.text_grad.backend_engine_prompt
+   optim.text_grad.llm_text_loss
+   optim.text_grad.ops
+   optim.text_grad.text_loss_with_eval_fn
+   optim.text_grad.tgd_optimer
+
+
+---------------
+
+.. automodule:: optim.text_grad
+   :members:
+   :undoc-members:
+   :show-inheritance:

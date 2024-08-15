@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -477,18 +442,15 @@
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Generator</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">backoff</span>
 
-
-<span class="kn">from</span> <span class="nn">lightrag.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span><span class="p">,</span> <span class="n">EmbedderOutput</span><span class="p">,</span> <span class="n">TokenLogProb</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client.utils</span> <span class="kn">import</span> <span class="n">parse_embedding_response</span>
-
 <span class="c1"># optional import</span>
-<span class="kn">from</span> <span class="nn">lightrag.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.lazy_import</span> <span class="kn">import</span> <span class="n">safe_import</span><span class="p">,</span> <span class="n">OptionalPackages</span>
 
 
 <span class="n">openai</span> <span class="o">=</span> <span class="n">safe_import</span><span class="p">(</span><span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OptionalPackages</span><span class="o">.</span><span class="n">OPENAI</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -501,9 +463,21 @@
     <span class="n">UnprocessableEntityError</span><span class="p">,</span>
     <span class="n">BadRequestError</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="n">Completion</span><span class="p">,</span> <span class="n">CreateEmbeddingResponse</span>
+<span class="kn">from</span> <span class="nn">openai.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Completion</span><span class="p">,</span>
+    <span class="n">CreateEmbeddingResponse</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">openai.types.chat</span> <span class="kn">import</span> <span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="n">ChatCompletion</span>
 
+<span class="kn">from</span> <span class="nn">adalflow.core.model_client</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModelType</span><span class="p">,</span>
+    <span class="n">EmbedderOutput</span><span class="p">,</span>
+    <span class="n">TokenLogProb</span><span class="p">,</span>
+    <span class="n">CompletionUsage</span><span class="p">,</span>
+    <span class="n">GeneratorOutput</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client.utils</span> <span class="kn">import</span> <span class="n">parse_embedding_response</span>
 
 <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
@@ -517,6 +491,10 @@
 <span class="sd">    It is the default parser for chat completion.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">completion</span><span class="o">.</span><span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">content</span></div>
 
+
+
+<span class="c1"># def _get_chat_completion_usage(completion: ChatCompletion) -&gt; OpenAICompletionUsage:</span>
+<span class="c1">#     return completion.usage</span>
 
 
 <div class="viewcode-block" id="parse_stream_response">
@@ -595,6 +573,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chat_completion_parser</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Completion</span><span class="p">],</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">input_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;It is recommended to set the OPENAI_API_KEY environment variable instead of passing it as an argument.</span>
 
@@ -608,6 +587,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">chat_completion_parser</span> <span class="ow">or</span> <span class="n">get_first_message_content</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">=</span> <span class="n">input_type</span>
 
 <div class="viewcode-block" id="OpenAIClient.init_sync_client">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.init_sync_client">[docs]</a>
@@ -627,15 +607,54 @@
         <span class="k">return</span> <span class="n">AsyncOpenAI</span><span class="p">(</span><span class="n">api_key</span><span class="o">=</span><span class="n">api_key</span><span class="p">)</span></div>
 
 
+    <span class="c1"># def _parse_chat_completion(self, completion: ChatCompletion) -&gt; &quot;GeneratorOutput&quot;:</span>
+    <span class="c1">#     # TODO: raw output it is better to save the whole completion as a source of truth instead of just the message</span>
+    <span class="c1">#     try:</span>
+    <span class="c1">#         data = self.chat_completion_parser(completion)</span>
+    <span class="c1">#         usage = self.track_completion_usage(completion)</span>
+    <span class="c1">#         return GeneratorOutput(</span>
+    <span class="c1">#             data=data, error=None, raw_response=str(data), usage=usage</span>
+    <span class="c1">#         )</span>
+    <span class="c1">#     except Exception as e:</span>
+    <span class="c1">#         log.error(f&quot;Error parsing the completion: {e}&quot;)</span>
+    <span class="c1">#         return GeneratorOutput(data=None, error=str(e), raw_response=completion)</span>
+
 <div class="viewcode-block" id="OpenAIClient.parse_chat_completion">
 <a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.parse_chat_completion">[docs]</a>
     <span class="k">def</span> <span class="nf">parse_chat_completion</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion to a str.&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GeneratorOutput&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the completion, and put it into the raw_response.&quot;&quot;&quot;</span>
         <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;completion: </span><span class="si">{</span><span class="n">completion</span><span class="si">}</span><span class="s2">, parser: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat_completion_parser</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="n">usage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">track_completion_usage</span><span class="p">(</span><span class="n">completion</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span>
+                <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">usage</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error parsing the completion: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="n">completion</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OpenAIClient.track_completion_usage">
+<a class="viewcode-back" href="../../../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient.track_completion_usage">[docs]</a>
+    <span class="k">def</span> <span class="nf">track_completion_usage</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">completion</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ChatCompletion</span><span class="p">,</span> <span class="n">Generator</span><span class="p">[</span><span class="n">ChatCompletionChunk</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CompletionUsage</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">ChatCompletion</span><span class="p">):</span>
+            <span class="n">usage</span><span class="p">:</span> <span class="n">CompletionUsage</span> <span class="o">=</span> <span class="n">CompletionUsage</span><span class="p">(</span>
+                <span class="n">completion_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">completion_tokens</span><span class="p">,</span>
+                <span class="n">prompt_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">prompt_tokens</span><span class="p">,</span>
+                <span class="n">total_tokens</span><span class="o">=</span><span class="n">completion</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">total_tokens</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">usage</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;streaming completion usage tracking is not implemented&quot;</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="OpenAIClient.parse_embedding_response">
@@ -666,6 +685,7 @@
 <span class="sd">        Specify the API input type and output api_kwargs that will be used in _call and _acall methods.</span>
 <span class="sd">        Convert the Component&#39;s standard input, and system_input(chat model) and model_kwargs into API-specific format</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">final_model_kwargs</span> <span class="o">=</span> <span class="n">model_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">EMBEDDER</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -677,7 +697,29 @@
         <span class="k">elif</span> <span class="n">model_type</span> <span class="o">==</span> <span class="n">ModelType</span><span class="o">.</span><span class="n">LLM</span><span class="p">:</span>
             <span class="c1"># convert input to messages</span>
             <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">if</span> <span class="nb">input</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">input</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_type</span> <span class="o">==</span> <span class="s2">&quot;messages&quot;</span><span class="p">:</span>
+                <span class="n">system_start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;START_OF_SYSTEM_PROMPT&gt;&quot;</span>
+                <span class="n">system_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_SYSTEM_PROMPT&gt;&quot;</span>
+                <span class="n">user_start_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;START_OF_USER_PROMPT&gt;&quot;</span>
+                <span class="n">user_end_tag</span> <span class="o">=</span> <span class="s2">&quot;&lt;END_OF_USER_PROMPT&gt;&quot;</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">system_end_tag</span><span class="si">}{</span><span class="n">user_start_tag</span><span class="si">}</span><span class="s2">(.*?)</span><span class="si">{</span><span class="n">user_end_tag</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="c1"># Compile the regular expression</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+                <span class="c1"># Match the pattern</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+                <span class="n">system_prompt</span><span class="p">,</span> <span class="n">input_str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">system_prompt</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">input_str</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No match found.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">system_prompt</span> <span class="ow">and</span> <span class="n">input_str</span><span class="p">:</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">})</span>
+                    <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">input_str</span><span class="p">})</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="nb">input</span><span class="p">})</span>
             <span class="n">final_model_kwargs</span><span class="p">[</span><span class="s2">&quot;messages&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">messages</span>
         <span class="k">else</span><span class="p">:</span>
@@ -771,8 +813,8 @@
 
 
 <span class="c1"># if __name__ == &quot;__main__&quot;:</span>
-<span class="c1">#     from lightrag.core import Generator</span>
-<span class="c1">#     from lightrag.utils import setup_env, get_logger</span>
+<span class="c1">#     from adalflow.core import Generator</span>
+<span class="c1">#     from adalflow.utils import setup_env, get_logger</span>
 
 <span class="c1">#     log = get_logger(level=&quot;DEBUG&quot;)</span>
 

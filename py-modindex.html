@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -343,7 +301,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -442,6 +407,7 @@
 
    <div class="modindex-jumpbox">
    <a href="#cap-c"><strong>c</strong></a> | 
+   <a href="#cap-d"><strong>d</strong></a> | 
    <a href="#cap-e"><strong>e</strong></a> | 
    <a href="#cap-o"><strong>o</strong></a> | 
    <a href="#cap-t"><strong>t</strong></a> | 
@@ -457,16 +423,6 @@
               id="toggle-1" style="display: none" alt="-" /></td>
        <td>
        <code class="xref">components</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apis/components/components.agent.html#module-components.agent"><code class="xref">components.agent</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="apis/components/components.agent.react.html#module-components.agent.react"><code class="xref">components.agent.react</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -542,6 +498,11 @@
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/components/components.output_parsers.html#module-components.output_parsers"><code class="xref">components.output_parsers</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-1">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/components/components.output_parsers.dataclass_parser.html#module-components.output_parsers.dataclass_parser"><code class="xref">components.output_parsers.dataclass_parser</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-1">
        <td></td>
@@ -647,11 +608,6 @@
      <tr class="cg-2">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="apis/core/core.parameter.html#module-core.parameter"><code class="xref">core.parameter</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-2">
-       <td></td>
-       <td>&#160;&#160;&#160;
        <a href="apis/core/core.prompt_builder.html#module-core.prompt_builder"><code class="xref">core.prompt_builder</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-2">
@@ -680,30 +636,59 @@
        <a href="apis/core/core.types.html#module-core.types"><code class="xref">core.types</code></a></td><td>
        <em></em></td></tr>
      <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-e"><td></td><td>
-       <strong>e</strong></td><td></td></tr>
+     <tr class="cap" id="cap-d"><td></td><td>
+       <strong>d</strong></td><td></td></tr>
      <tr>
        <td><img src="_static/minus.png" class="toggler"
               id="toggle-3" style="display: none" alt="-" /></td>
        <td>
-       <a href="apis/eval/index.html#module-eval"><code class="xref">eval</code></a></td><td>
+       <a href="apis/datasets/index.html#module-datasets"><code class="xref">datasets</code></a></td><td>
        <em></em></td></tr>
      <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/datasets/datasets.big_bench_hard.html#module-datasets.big_bench_hard"><code class="xref">datasets.big_bench_hard</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/datasets/datasets.hotpot_qa.html#module-datasets.hotpot_qa"><code class="xref">datasets.hotpot_qa</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-3">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/datasets/datasets.types.html#module-datasets.types"><code class="xref">datasets.types</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
+     <tr class="cap" id="cap-e"><td></td><td>
+       <strong>e</strong></td><td></td></tr>
+     <tr>
+       <td><img src="_static/minus.png" class="toggler"
+              id="toggle-4" style="display: none" alt="-" /></td>
+       <td>
+       <a href="apis/eval/index.html#module-eval"><code class="xref">eval</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/eval/eval.answer_match_acc.html#module-eval.answer_match_acc"><code class="xref">eval.answer_match_acc</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-3">
+     <tr class="cg-4">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/eval/eval.base.html#module-eval.base"><code class="xref">eval.base</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-4">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge"><code class="xref">eval.llm_as_judge</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-3">
+     <tr class="cg-4">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/eval/eval.retriever_recall.html#module-eval.retriever_recall"><code class="xref">eval.retriever_recall</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-3">
+     <tr class="cg-4">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance"><code class="xref">eval.retriever_relevance</code></a></td><td>
@@ -713,55 +698,125 @@
        <strong>o</strong></td><td></td></tr>
      <tr>
        <td><img src="_static/minus.png" class="toggler"
-              id="toggle-4" style="display: none" alt="-" /></td>
+              id="toggle-5" style="display: none" alt="-" /></td>
        <td>
        <a href="apis/optim/index.html#module-optim"><code class="xref">optim</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-4">
+     <tr class="cg-5">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="apis/optim/optim.few_shot_optimizer.html#module-optim.few_shot_optimizer"><code class="xref">optim.few_shot_optimizer</code></a></td><td>
+       <a href="apis/optim/optim.few_shot.html#module-optim.few_shot"><code class="xref">optim.few_shot</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-4">
+     <tr class="cg-5">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="apis/optim/optim.llm_augment.html#module-optim.llm_augment"><code class="xref">optim.llm_augment</code></a></td><td>
+       <a href="apis/optim/optim.few_shot.bootstrap_optimizer.html#module-optim.few_shot.bootstrap_optimizer"><code class="xref">optim.few_shot.bootstrap_optimizer</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-4">
+     <tr class="cg-5">
        <td></td>
        <td>&#160;&#160;&#160;
-       <a href="apis/optim/optim.llm_optimizer.html#module-optim.llm_optimizer"><code class="xref">optim.llm_optimizer</code></a></td><td>
+       <a href="apis/optim/optim.function.html#module-optim.function"><code class="xref">optim.function</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-4">
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.grad_component.html#module-optim.grad_component"><code class="xref">optim.grad_component</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.loss_component.html#module-optim.loss_component"><code class="xref">optim.loss_component</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/optim/optim.optimizer.html#module-optim.optimizer"><code class="xref">optim.optimizer</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-4">
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.parameter.html#module-optim.parameter"><code class="xref">optim.parameter</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/optim/optim.sampler.html#module-optim.sampler"><code class="xref">optim.sampler</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.html#module-optim.text_grad"><code class="xref">optim.text_grad</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.backend_engine_prompt.html#module-optim.text_grad.backend_engine_prompt"><code class="xref">optim.text_grad.backend_engine_prompt</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.llm_text_loss.html#module-optim.text_grad.llm_text_loss"><code class="xref">optim.text_grad.llm_text_loss</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.ops.html#module-optim.text_grad.ops"><code class="xref">optim.text_grad.ops</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.text_loss_with_eval_fn.html#module-optim.text_grad.text_loss_with_eval_fn"><code class="xref">optim.text_grad.text_loss_with_eval_fn</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.text_grad.tgd_optimer.html#module-optim.text_grad.tgd_optimer"><code class="xref">optim.text_grad.tgd_optimer</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.trainer.html#module-optim.trainer"><code class="xref">optim.trainer</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.trainer.adal.html#module-optim.trainer.adal"><code class="xref">optim.trainer.adal</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.trainer.trainer.html#module-optim.trainer.trainer"><code class="xref">optim.trainer.trainer</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-5">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/optim/optim.types.html#module-optim.types"><code class="xref">optim.types</code></a></td><td>
        <em></em></td></tr>
      <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
      <tr class="cap" id="cap-t"><td></td><td>
        <strong>t</strong></td><td></td></tr>
      <tr>
        <td><img src="_static/minus.png" class="toggler"
-              id="toggle-5" style="display: none" alt="-" /></td>
+              id="toggle-6" style="display: none" alt="-" /></td>
        <td>
        <code class="xref">tracing</code></td><td>
        <em></em></td></tr>
-     <tr class="cg-5">
+     <tr class="cg-6">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/tracing/tracing.callback_manager.html#module-tracing.callback_manager"><code class="xref">tracing.callback_manager</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-6">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/tracing/tracing.decorators.html#module-tracing.decorators"><code class="xref">tracing.decorators</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-5">
+     <tr class="cg-6">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/tracing/tracing.generator_call_logger.html#module-tracing.generator_call_logger"><code class="xref">tracing.generator_call_logger</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-5">
+     <tr class="cg-6">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/tracing/tracing.generator_state_logger.html#module-tracing.generator_state_logger"><code class="xref">tracing.generator_state_logger</code></a></td><td>
@@ -771,41 +826,56 @@
        <strong>u</strong></td><td></td></tr>
      <tr>
        <td><img src="_static/minus.png" class="toggler"
-              id="toggle-6" style="display: none" alt="-" /></td>
+              id="toggle-7" style="display: none" alt="-" /></td>
        <td>
        <code class="xref">utils</code></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/utils/utils.cache.html#module-utils.cache"><code class="xref">utils.cache</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.config.html#module-utils.config"><code class="xref">utils.config</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/utils/utils.data.html#module-utils.data"><code class="xref">utils.data</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.file_io.html#module-utils.file_io"><code class="xref">utils.file_io</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
+       <td></td>
+       <td>&#160;&#160;&#160;
+       <a href="apis/utils/utils.global_config.html#module-utils.global_config"><code class="xref">utils.global_config</code></a></td><td>
+       <em></em></td></tr>
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.lazy_import.html#module-utils.lazy_import"><code class="xref">utils.lazy_import</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.logger.html#module-utils.logger"><code class="xref">utils.logger</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.registry.html#module-utils.registry"><code class="xref">utils.registry</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.serialization.html#module-utils.serialization"><code class="xref">utils.serialization</code></a></td><td>
        <em></em></td></tr>
-     <tr class="cg-6">
+     <tr class="cg-7">
        <td></td>
        <td>&#160;&#160;&#160;
        <a href="apis/utils/utils.setup_env.html#module-utils.setup_env"><code class="xref">utils.setup_env</code></a></td><td>

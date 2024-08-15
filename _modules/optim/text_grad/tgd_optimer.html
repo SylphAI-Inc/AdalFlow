@@ -1,0 +1,984 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>optim.text_grad.tgd_optimer &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/rtd_search_config.js"></script>
+    <script src="../../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/optim/text_grad/tgd_optimer';</script>
+    <link rel="icon" href="../../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">optim.text_g...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for optim.text_grad.tgd_optimer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Text-grad optimizer and prompts. Also combined methods from ORPO llm optimizer.</span>
+
+<span class="sd">With the auto-diff gradients, it made it possible to optimize any prompt parameter in a task pipeline.</span>
+
+<span class="sd">https://arxiv.org/abs/2309.03409</span>
+<span class="sd">Source code: https://github.com/google-deepmind/opro</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+
+
+<span class="kn">from</span> <span class="nn">adalflow.optim.optimizer</span> <span class="kn">import</span> <span class="n">TextOptimizer</span><span class="p">,</span> <span class="n">ParamsT</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.text_grad.backend_engine_prompt</span> <span class="kn">import</span> <span class="n">VARIABLE_AND_PEERS_INFO</span>
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">ModelClient</span>
+
+
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">GLOSSARY_TEXT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">### Glossary of tags that will be sent to you:</span>
+<span class="s2">{# # - &lt;LM_SYSTEM_PROMPT&gt;: The system prompt for the language model.</span>
+<span class="s2"># - &lt;LM_INPUT&gt;: The input to the language model.</span>
+<span class="s2"># - &lt;LM_OUTPUT&gt;: The output of the language model. #}</span>
+<span class="s2"># - &lt;FEEDBACK&gt;: The feedback to the variable.</span>
+<span class="s2"># - &lt;CONVERSATION&gt;: The conversation history.</span>
+<span class="s2"># - &lt;FOCUS&gt;: The focus of the optimization.</span>
+<span class="s2"># - &lt;ROLE&gt;: The role description of the variable.&quot;&quot;&quot;</span>
+
+<span class="c1"># customize the system prompt</span>
+<span class="c1"># prompts, solutions to problems, code, or any other text-based variable. -&gt; to the variable type.</span>
+<span class="c1"># The optimizer will have an understanding of different variable types.</span>
+
+<span class="c1"># Tips:</span>
+<span class="c1"># - DO NOT address concerns on the peer variables. The peer variables will be optimized separately.</span>
+<span class="c1"># - The instruction needs to be on point, clear, and accurate.</span>
+<span class="c1"># You can take the following actions:</span>
+<span class="c1"># - You can delete words or phrases that you think are not necessary or you find misleading.</span>
+<span class="c1"># - You can add new words or phrases that you think can address the feedback.</span>
+<span class="c1"># - You can add sections like &quot;Tips&quot; or &quot;Remember&quot; to fix the issue.</span>
+<span class="c1"># - You can be creative and write the variable in a different way.#}</span>
+
+<span class="c1"># Think step by step. But keep the reasoning concise!!!</span>
+<span class="c1"># Start response with &quot;because&quot; and &quot;since&quot; to provide reasoning.</span>
+<span class="c1"># The last line of your response will be the new variable value put in between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.</span>
+
+<span class="c1"># {#You are part of an optimization system that improves the exsiting variable value according to feedback.</span>
+
+<span class="c1"># You will be asked to creatively and critically at proposing new variable value.</span>
+<span class="c1"># The feedback may be noisy, focus on what is important.</span>
+<span class="c1"># {# output format #}</span>
+<span class="c1"># You MUST ONLY output the new variable value in the response between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.</span>
+<span class="c1"># {% if instruction_to_optimizer %}</span>
+<span class="c1"># USER INSTRUCTION: {{instruction_to_optimizer}}</span>
+<span class="c1"># {% endif %}</span>
+<span class="c1"># Remember:</span>
+<span class="c1"># - Pay attention to role description, and most importantly, the feedback.</span>
+<span class="c1"># - Must provide a different value that addresses the feedback.</span>
+<span class="c1"># - If &lt;HISTORY_PERFORMANCE&gt; is provided, observe the patterns of the past iterations, pay close attention to high-performing value and aim to improve the variable value.</span>
+<span class="c1"># - The new value better not overlap with the scope of peer variables.</span>
+<span class="c1"># - Make your best judgment and be creative.</span>
+<span class="c1"># TIPS:</span>
+<span class="c1"># - Delete words or phrases that you think are not necessary or you find misleading.</span>
+<span class="c1"># - Add new words or phrases that you think can address the feedback.</span>
+<span class="c1"># - Add sections like &quot;Tips&quot; or &quot;Remember&quot; to fix the issue.</span>
+<span class="c1"># - Be eative and write the variable in a different way.#}</span>
+
+<span class="c1"># Your task: Propose a new variable value in response to the feedback.</span>
+<span class="c1"># 1. Focus on what is essential, even if feedback is noisy.</span>
+<span class="c1"># 2. Observe past performance patterns when provided and aim to improve upon high-performing values.</span>
+<span class="c1"># 3. Avoid overlap with peer variables&#39; scope.</span>
+
+<span class="c1"># Tips:</span>
+<span class="c1"># 1. Eliminate unnecessary words or phrases.</span>
+<span class="c1"># 2. Add new elements to address specific feedback.</span>
+<span class="c1"># 3. Be creative and present the variable differently.</span>
+<span class="n">OPTIMIZER_SYSTEM_PROMPT</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">You are part of an optimization system that refines existing variable values based on feedback.</span>
+
+<span class="s2">Your task: Propose a new variable value in response to the feedback.</span>
+<span class="s2">1. Address the concerns raised in the feedback while preserving positive aspects.</span>
+<span class="s2">2. Observe past performance patterns when provided and to keep the good quality.</span>
+<span class="s2">3. Consider the variable in the context of its peers if provided.</span>
+<span class="s2">   FYI:</span>
+<span class="s2">   - If a peer will be optimized itself, do not overlap with its scope.</span>
+<span class="s2">   - Otherwise, you can overlap if it is necessary to address the feedback.</span>
+
+<span class="s2">Output:</span>
+<span class="s2">Provide only the new variable value between {{new_variable_start_tag}} and {{new_variable_end_tag}} tags.</span>
+
+<span class="s2">Tips:</span>
+<span class="s2">1. Eliminate unnecessary words or phrases.</span>
+<span class="s2">2. Add new elements to address specific feedback.</span>
+<span class="s2">3. Be creative and present the variable differently.</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f instruction_to_optimizer %}</span>
+<span class="s2">4. {{instruction_to_optimizer}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="HistoryPrompt">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.HistoryPrompt">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">HistoryPrompt</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">eval_score</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+<span class="n">TEXT_GRAD_DESC_TEMPLATE</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">{{optimizer_system_prompt}}</span>
+<span class="s2">&lt;END_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">&lt;START_OF_USER_MESSAGE&gt;</span>
+<span class="s2">{#Variable and feedback#}</span>
+<span class="s2">{{variable_and_peers_info}}</span>
+<span class="s2">{# ORPO past history #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f past_history %}</span>
+<span class="s2">&lt;START_OF_HISTORY_PERFORMANCE&gt;</span>
+<span class="s2">Here are the past iterations of this variable along with the validation score.</span>
+<span class="s2">{</span><span class="si">% f</span><span class="s2">or history in past_history %}</span>
+<span class="s2">{{loop.index}}. {{history}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">IMPORTANT: Your goal is to generate new variable values that score higher than all previous iterations.</span>
+<span class="s2">&lt;END_OF_HISTORY_PERFORMANCE&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">Here are the context and feedback for the variable:</span>
+<span class="s2">&lt;START_OF_CONTEXT_FEEDBACK&gt;</span>
+<span class="s2">{{variable_grad}}</span>
+<span class="s2">&lt;END_OF_CONTEXT_FEEDBACK&gt;</span>
+<span class="s2">{# Momentum #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f past_values %}</span>
+<span class="s2">Here are the past iterations of this variable:</span>
+<span class="s2">&lt;PAST_ITERATIONS&gt;</span>
+<span class="s2">{{past_values}}</span>
+<span class="s2">&lt;/PAST_ITERATIONS&gt;</span>
+<span class="s2">Similar feedbacks across different steps suggests that the modifications to the variable are insufficient.</span>
+<span class="s2">If this is the case, please make more significant changes to the variable.</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{# Constraints #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f constraint_text %}</span>
+<span class="s2">You must follow the following constraints:</span>
+<span class="s2">&lt;CONSTRAINTS&gt;{{constraint_text}}&lt;/CONSTRAINTS&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">{# In-context examples #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f in_context_examples %}</span>
+<span class="s2">You must base on the following examples when modifying the {{variable_desc}}:</span>
+<span class="s2">&lt;EXAMPLES&gt;{{in_context_examples}}&lt;/EXAMPLES&gt;</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;END_OF_USER_MESSAGE&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="Instruction">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.Instruction">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Instruction</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Structure variable values for instructions. Can be used in the history of instructions.&quot;</span>
+    <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The instruction text&quot;</span><span class="p">})</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the instruction, range from 0 to 1&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">responses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The responses of using the instruction&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">gts</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The ground truth of the task&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">new_variable_tags</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&lt;VARIABLE&gt;&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;/VARIABLE&gt;&quot;</span><span class="p">]</span>
+
+
+<div class="viewcode-block" id="extract_new_variable">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.extract_new_variable">[docs]</a>
+<span class="k">def</span> <span class="nf">extract_new_variable</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;&lt;VARIABLE&gt;(.*?)&lt;/VARIABLE&gt;&quot;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+
+    <span class="c1"># Find all matches</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Extracted new variable: </span><span class="si">{</span><span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="TGDOptimizer">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer">[docs]</a>
+<span class="k">class</span> <span class="nc">TGDOptimizer</span><span class="p">(</span><span class="n">TextOptimizer</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Textual Gradient Descent(LLM) optimizer for text-based variables.&quot;&quot;&quot;</span>
+
+    <span class="n">proposing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span>
+    <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">params_history</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">HistoryPrompt</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># id to history</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="s2">&quot;ModelClient&quot;</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">constraints</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="c1"># new_variable_tags: List[str] = [&quot;&lt;IMPROVED_VARIABLE&gt;&quot;, &quot;&lt;/IMPROVED_VARIABLE&gt;&quot;],</span>
+        <span class="n">optimizer_system_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">OPTIMIZER_SYSTEM_PROMPT</span><span class="p">,</span>
+        <span class="n">in_context_examples</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># TODO: in-context examples</span>
+        <span class="n">num_gradient_memory</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># TODO: gradient memory and momentum, for now it is not useful</span>
+        <span class="n">max_past_history</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+        <span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Prompt</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraints</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_system_prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">optimizer_system_prompt</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;new_variable_start_tag&quot;</span><span class="p">:</span> <span class="n">new_variable_tags</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="s2">&quot;new_variable_end_tag&quot;</span><span class="p">:</span> <span class="n">new_variable_tags</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">variable_and_peers_info</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">VARIABLE_AND_PEERS_INFO</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_constrained</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="c1"># self.new_variable_tags = new_variable_tags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_context_examples</span> <span class="o">=</span> <span class="n">in_context_examples</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_in_context_examples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_context_examples</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_gradient_memory</span> <span class="o">=</span> <span class="n">num_gradient_memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_memory_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># id to num_gradient_memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">do_gradient_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_gradient_memory</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">TEXT_GRAD_DESC_TEMPLATE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span> <span class="o">=</span> <span class="n">max_past_history</span>
+
+        <span class="c1"># initate the past history for each parameter</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">constraint_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a formatted string representation of the constraints.</span>
+
+<span class="sd">        :return: A string containing the constraints in the format &quot;Constraint {index}: {constraint}&quot;.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">constraints_ordered</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">&quot;Constraint </span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">constraint</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">constraint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">constraints_ordered</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TGDOptimizer.add_score_to_params">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_score_to_params">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_score_to_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val_score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_score_to_current_param</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">val_score</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.add_score_to_current_param">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_score_to_current_param">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_score_to_current_param</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">param_id</span><span class="si">}</span><span class="s2"> not found in the history.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">param</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">param_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Parameter </span><span class="si">{</span><span class="n">param_id</span><span class="si">}</span><span class="s2"> does not match the target parameter.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">history</span> <span class="o">=</span> <span class="n">HistoryPrompt</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">param_id</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">data</span><span class="p">),</span>
+            <span class="n">eval_score</span><span class="o">=</span><span class="n">score</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_history</span><span class="p">(</span><span class="n">param_id</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.add_history">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.add_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="n">HistoryPrompt</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+        <span class="c1"># sort score from the highest to the lowest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">],</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">eval_score</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="c1"># delete the lowest score if it exceeds the max_past</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">])</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.render_history">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.render_history">[docs]</a>
+    <span class="k">def</span> <span class="nf">render_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">param_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">history</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">history</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_history</span><span class="p">[</span><span class="n">param_id</span><span class="p">]</span>
+        <span class="p">]</span></div>
+
+
+    <span class="c1"># TODO: optimize with adalflow template for better readability</span>
+<div class="viewcode-block" id="TGDOptimizer.get_gradient_memory_text">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.get_gradient_memory_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_gradient_memory_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">grad_memory</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">variable_grad_memory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gradient_memory_dict</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">][</span>
+            <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">num_gradient_memory</span> <span class="p">:</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">grad_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">variable_grad_memory</span><span class="p">):</span>
+            <span class="n">grad_memory</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&lt;FEEDBACK-</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&gt; </span><span class="si">{</span><span class="n">grad_info</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&lt;/FEEDBACK-</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&gt;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">grad_memory</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_get_user_prompt_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+
+        <span class="n">variable_and_peer_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">variable_and_peers_info</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+            <span class="n">variable</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">get_param_info</span><span class="p">(),</span> <span class="n">peers</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">peers</span>  <span class="c1"># param.peers</span>
+        <span class="p">)</span>
+
+        <span class="n">user_prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;variable_and_peers_info&quot;</span><span class="p">:</span> <span class="n">variable_and_peer_info</span><span class="p">,</span>
+            <span class="s2">&quot;variable_grad&quot;</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">get_gradient_and_context_text</span><span class="p">(),</span>
+            <span class="c1"># constraints</span>
+            <span class="s2">&quot;constraint_text&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraint_text</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_constrained</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="c1"># in-context examples</span>
+            <span class="s2">&quot;in_context_examples&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">in_context_examples</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_in_context_examples</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="c1"># gradient memory</span>
+            <span class="s2">&quot;past_values&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_gradient_memory_text</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_gradient_memory</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="c1"># past history</span>
+            <span class="s2">&quot;past_history&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">render_history</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_past_history</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">user_prompt_kwargs</span>
+
+    <span class="c1"># TODO: better way to update the gradient memory</span>
+<div class="viewcode-block" id="TGDOptimizer.update_gradient_memory">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.update_gradient_memory">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_gradient_memory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient_memory_dict</span><span class="p">[</span><span class="n">param</span><span class="o">.</span><span class="n">id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span><span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">param</span><span class="o">.</span><span class="n">get_gradient_and_context_text</span><span class="p">()}</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.zero_grad">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.zero_grad">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">reset_gradients</span><span class="p">()</span></div>
+
+
+    <span class="c1"># TODO: in the future can propose multiple values at once</span>
+<div class="viewcode-block" id="TGDOptimizer.propose">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.propose">[docs]</a>
+    <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Proposing a value while keeping previous value saved on parameter.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Already proposing a value.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># no cache so that new proposal can be made</span>
+        <span class="n">no_cache</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># print(&quot;Proposing a new value.&quot;)</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Skipping </span><span class="si">{</span><span class="n">param</span><span class="o">.</span><span class="n">role_desc</span><span class="si">}</span><span class="s2"> as it does not require optimization.&quot;</span>
+                <span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># print(f&quot;Proposing a new value for {param.name}.&quot;)</span>
+            <span class="n">system_prompt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimizer_system_prompt</span><span class="p">(</span>
+                <span class="n">param_type</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">param</span><span class="o">.</span><span class="n">param_type</span><span class="p">),</span>
+                <span class="n">instruction_to_optimizer</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">instruction_to_optimizer</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># user_prompt = self._update_prompt(param)</span>
+            <span class="n">user_prompt_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_user_prompt_kwargs</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;optimizer_system_prompt&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">user_prompt_kwargs</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="c1"># turn off cache</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span><span class="o">.</span><span class="n">call</span><span class="p">(</span>
+                <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="ow">not</span> <span class="n">no_cache</span>
+            <span class="p">)</span>
+            <span class="n">prompt_str</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_optimizer</span><span class="o">.</span><span class="n">get_prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;TGD LLM optimizer prompt: </span><span class="si">{</span><span class="n">prompt_str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">proposed_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response from the optimizer: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># extract the improved variable from the response</span>
+            <span class="c1"># TODO: make it more robust</span>
+            <span class="n">improved_variable</span> <span class="o">=</span> <span class="n">extract_new_variable</span><span class="p">(</span><span class="n">proposed_data</span><span class="p">)</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">propose_data</span><span class="p">(</span><span class="n">improved_variable</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">do_gradient_memory</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_gradient_memory</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.revert">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Revert to the previous value when the evaluation is worse.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not proposing a value.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">revert_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="TGDOptimizer.step">
+<a class="viewcode-back" href="../../../apis/optim/optim.text_grad.tgd_optimer.html#optim.TGDOptimizer.step">[docs]</a>
+    <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Discard the previous value and keep the proposed value.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not proposing a value.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">param</span><span class="o">.</span><span class="n">requires_opt</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">step_data</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">proposing</span> <span class="o">=</span> <span class="kc">False</span></div>
+</div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># test the prompt history</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;eval_score&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">history</span> <span class="o">=</span> <span class="n">HistoryPrompt</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+    <span class="n">history_yaml</span> <span class="o">=</span> <span class="n">history</span><span class="o">.</span><span class="n">to_yaml</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">history_yaml</span><span class="p">)</span>
+
+    <span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">    {</span><span class="si">% i</span><span class="s2">f past_history %}</span>
+<span class="s2">    Here are the past iterations of this variable along with the validation score.</span>
+<span class="s2">    {</span><span class="si">% f</span><span class="s2">or history in past_history %}</span>
+<span class="s2">    {{loop.index}}. {{history}}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndfor %}</span>
+<span class="s2">    {</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">    &lt;END_OF_SYSTEM_PROMPT&gt;&quot;&quot;&quot;</span>
+
+    <span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
+
+    <span class="n">histories</span> <span class="o">=</span> <span class="p">[</span><span class="n">history_yaml</span><span class="p">]</span>
+    <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;past_history&quot;</span><span class="p">:</span> <span class="n">histories</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="o">**</span><span class="n">prompt_kwargs</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+.. _optim-few_shot:
+
+few_shot
+=======================
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   optim.few_shot.bootstrap_optimizer
+
+
+---------------
+
+.. automodule:: optim.few_shot
+   :members:
+   :undoc-members:
+   :show-inheritance:

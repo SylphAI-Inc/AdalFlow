@@ -1,0 +1,9 @@
+.. _optim-text_grad-text_loss_with_eval_fn:
+
+text_loss_with_eval_fn
+==================================================
+
+.. automodule:: optim.text_grad.text_loss_with_eval_fn
+   :members:
+   :undoc-members:
+   :show-inheritance:

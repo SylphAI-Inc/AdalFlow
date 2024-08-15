@@ -1,0 +1,1161 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Introduction to AdalFlow library &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../_static/js/rtd_search_config.js"></script>
+    <script src="../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'use_cases/question_answering';</script>
+    <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RAG optimization" href="rag_opt.html" />
+    <link rel="prev" title="Classification Optimization" href="classification.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../apis/index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Training - Use Cases</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="classification.html">Classification Optimization</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to AdalFlow library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rag_opt.html">RAG optimization</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Use Cases</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">Introduction...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="introduction-to-adalflow-library">
+<h1>Introduction to AdalFlow library<a class="headerlink" href="#introduction-to-adalflow-library" title="Link to this heading">#</a></h1>
+<blockquote>
+<div><p>End-to-end building and optimization on question answering task pipeline.</p>
+</div></blockquote>
+<p>AdalFlow provides token efficient and highly-performing prompt optimization with a unified framework.</p>
+<p>In this tutorial, we will implement and optimize a question answering task pipeline using both string output
+and structued output. In particular, it is to count the total objects.</p>
+<p>Here is the one example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&quot;</span>
+</pre></div>
+</div>
+<p>For optimization, we will demonstrate both few-shot In-context Learning(ICL) and the instruction/prompt optimization.</p>
+<p>We especially want to know how the auto-training pipeline perform on both good and bad starting prompt.</p>
+<p>On a low performing starting prompt, our zero-shot optimizer stats:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Scores by Method and Split On Low-performing Starting Prompt</span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Train</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Start (manual prompt)</p></td>
+<td><p>N/A (50 samples)</p></td>
+<td><p>0.54 (50 samples)</p></td>
+<td><p>0.65 (100 samples)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimized Zero-shot</p></td>
+<td><p>N/A</p></td>
+<td><p>0.9 (<strong>+36%</strong>)</p></td>
+<td><p>0.9 (<strong>+25%</strong>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>It converged within 5 steps where each batch has a size of only 4 samples.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text">Manual Prompt vs Optimized Prompt</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Prompt</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Manual</p></td>
+<td><p>You will answer a reasoning question. The last line of your response should be of the following format: ‘Answer: $VALUE’ where VALUE is a numerical value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimized (zero-shot) (90% on val, 90% on test)</p></td>
+<td><p>You will answer a reasoning question by performing detailed and careful counting of each item. Ensure no items, particularly those in plural form, are miscounted. The last line of your response should be formatted as follows: ‘Answer: $VALUE’ where VALUE is a numerical value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>And we will see how we optimize an already high-performing task pipeline (~90% accuracy) to even higher which would have been really difficult if we try to manually optimize the promot.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-text">Scores by Method and Split On High-performing Starting Prompt</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Train</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Start (manual prompt)</p></td>
+<td><p>0.88 (50 samples)</p></td>
+<td><p>0.90 (50 samples)</p></td>
+<td><p>0.87 (100 samples)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimized Zero-shot</p></td>
+<td><p>N/A</p></td>
+<td><p>0.98 (<strong>+8%</strong>)</p></td>
+<td><p>0.91 (<strong>+4%</strong>)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Manual Prompt vs Optimized Prompt</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Prompt</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Manual</p></td>
+<td><p>You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: ‘Answer: $VALUE’ where VALUE is a numerical value.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Optimized (zero-shot) (92% on val, 91% on test)</p></td>
+<td><p>You will answer a reasoning question. Think step by step, and make sure to convert any numbers written in words into numerals. Double-check your calculations. The last line of your response should be of the following format: ‘Answer: $VALUE’ where VALUE is a numerical value.</p></td>
+</tr>
+<tr class="row-even"><td><p>Optimized (plus generated examples by itself) (98% on val, 91% on test)</p></td>
+<td><p>You will answer a reasoning question. Think step by step and double-check each calculation you make. Pay close attention to any numerical quantities in the text, converting written numbers into their numerical equivalents. Additionally, re-verify your final answer before concluding. The last line of your response should be of the following format: ‘Answer: $VALUE’ where VALUE is a numerical value. Here are some examples: 1. I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have? Answer: 8</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Now, let’s get started on how to implement and to achieve the above results.</p>
+<section id="build-the-task-pipeline">
+<h2>Build the task pipeline<a class="headerlink" href="#build-the-task-pipeline" title="Link to this heading">#</a></h2>
+<p>As we can leverage the optimizer to auto-optimize our task pipeline, we provide a quick way to build the task pipeline.</p>
+<p>We will instruct the LLM to response with chain_of_thought and end the response with format ‘Answer: $VALUE’.
+We will use the following code to process it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="nd">@adal</span><span class="o">.</span><span class="n">fun_to_component</span>
+<span class="k">def</span> <span class="nf">parse_integer_answer</span><span class="p">(</span><span class="n">answer</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that parses the last integer from a string using regular expressions.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Use regular expression to find all sequences of digits</span>
+        <span class="n">numbers</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">answer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">numbers</span><span class="p">:</span>
+            <span class="c1"># Get the last number found</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numbers</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">answer</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">answer</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">adal.fun_to_component</span></code> is a decorator that converts a function to a component so that we can pass it to the generator as a output processor.</p>
+<p>For the task, we will use a simple template taking three arguments: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code>, <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>, and <code class="docutils literal notranslate"><span class="pre">input_str</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">few_shot_template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;START_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">{{system_prompt}}</span>
+<span class="s2">{# Few shot demos #}</span>
+<span class="s2">{</span><span class="si">% i</span><span class="s2">f few_shot_demos is not none %}</span>
+<span class="s2">Here are some examples:</span>
+<span class="s2">{{few_shot_demos}}</span>
+<span class="s2">{</span><span class="si">% e</span><span class="s2">ndif %}</span>
+<span class="s2">&lt;END_OF_SYSTEM_PROMPT&gt;</span>
+<span class="s2">&lt;START_OF_USER&gt;</span>
+<span class="s2">{{input_str}}</span>
+<span class="s2">&lt;END_OF_USER&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>We will create two parameters for training the model: <code class="docutils literal notranslate"><span class="pre">system_prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">few_shot_demos</span></code>.
+We will init the <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> with a <code class="docutils literal notranslate"><span class="pre">role_desc</span></code> and <code class="docutils literal notranslate"><span class="pre">requires_opt</span></code> to let the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> (for feedback/textual gradients) and the optimizer know what the parameter is for.
+Also, we have to set the <code class="docutils literal notranslate"><span class="pre">param_type</span></code> to <code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code> and <code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code> so that the our <code class="docutils literal notranslate"><span class="pre">trainer</span></code>
+can configure the right optimizer to optimize the parameters.
+Here is our task pipeline:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+
+
+<span class="k">class</span> <span class="nc">ObjectCountTaskPipeline</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="n">system_prompt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To give task instruction to the language model in the system prompt&quot;</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">PROMPT</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">few_shot_demos</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To provide few shot demos to the language model&quot;</span><span class="p">,</span>
+            <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">llm_counter</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
+            <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+            <span class="n">template</span><span class="o">=</span><span class="n">few_shot_template</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;system_prompt&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">,</span>
+                <span class="s2">&quot;few_shot_demos&quot;</span><span class="p">:</span> <span class="n">few_shot_demos</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">output_processors</span><span class="o">=</span><span class="n">parse_integer_answer</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span><span class="p">,</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">llm_counter</span><span class="p">(</span><span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;input_str&quot;</span><span class="p">:</span> <span class="n">question</span><span class="p">},</span> <span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">output</span>
+</pre></div>
+</div>
+<p>Here are a few points to keep in mind:</p>
+<ol class="arabic simple">
+<li><p>Our task pipeline has eval and train mode. In default, it will be in eval mode, and it will output a <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object.
+When in train mode, it will output a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> object where the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute will be the raw output from <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code>
+and it will save the whole <code class="docutils literal notranslate"><span class="pre">GeneratorOutput</span></code> object in the <code class="docutils literal notranslate"><span class="pre">full_response</span></code> attribute in case to be used for evaluation.
+To indicate the specific input to the evaluation function, we will pass it to <code class="docutils literal notranslate"><span class="pre">eval_input</span></code> attribute.</p></li>
+<li><p>If we want to train few-shot in-context learning, we will have assign an <code class="docutils literal notranslate"><span class="pre">id</span></code> to our LLM call.
+The <code class="docutils literal notranslate"><span class="pre">id</span></code> will be used to trace the few-shot examples.</p></li>
+</ol>
+<p>Now, lets pass a <code class="docutils literal notranslate"><span class="pre">gpt-3.5-turbo</span></code> model to our task pipeline and test both training and evaluation mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client.openai_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+
+<span class="n">adal</span><span class="o">.</span><span class="n">setup_env</span><span class="p">()</span>
+
+<span class="n">gpt_3_model</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="n">OpenAIClient</span><span class="p">(),</span>
+    <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;max_tokens&quot;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="s2">&quot;top_p&quot;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span>
+        <span class="s2">&quot;frequency_penalty&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;presence_penalty&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">&quot;stop&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here is the code to test the task pipeline:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&quot;</span>
+<span class="n">task_pipeline</span> <span class="o">=</span> <span class="n">ObjectCountTaskPipeline</span><span class="p">(</span><span class="o">**</span><span class="n">gpt_3_model</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">task_pipeline</span><span class="p">)</span>
+
+<span class="n">answer</span> <span class="o">=</span> <span class="n">task_pipeline</span><span class="p">(</span><span class="n">question</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+<span class="c1"># set it to train mode</span>
+<span class="n">task_pipeline</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<span class="n">answer</span> <span class="o">=</span> <span class="n">task_pipeline</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;full_response: </span><span class="si">{</span><span class="n">answer</span><span class="o">.</span><span class="n">full_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The answer for the eval mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">GeneratorOutput</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usage</span><span class="o">=</span><span class="n">CompletionUsage</span><span class="p">(</span><span class="n">completion_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">prompt_tokens</span><span class="o">=</span><span class="mi">113</span><span class="p">,</span> <span class="n">total_tokens</span><span class="o">=</span><span class="mi">226</span><span class="p">),</span> <span class="n">raw_response</span><span class="o">=</span><span class="s1">&#39;To find the total number of musical instruments you have, you simply need to count the individual instruments you listed. </span><span class="se">\n\n</span><span class="s1">Counting the instruments:</span><span class="se">\n</span><span class="s1">1 flute</span><span class="se">\n</span><span class="s1">1 piano</span><span class="se">\n</span><span class="s1">1 trombone</span><span class="se">\n</span><span class="s1">1 violin</span><span class="se">\n</span><span class="s1">1 accordion</span><span class="se">\n</span><span class="s1">1 clarinet</span><span class="se">\n</span><span class="s1">1 drum</span><span class="se">\n</span><span class="s1">1 trumpet</span><span class="se">\n\n</span><span class="s1">Adding the number of stoves and lamps, which are not musical instruments:</span><span class="se">\n</span><span class="s1">4 stoves</span><span class="se">\n</span><span class="s1">2 lamps</span><span class="se">\n\n</span><span class="s1">Total number of musical instruments = 1 + 1 + 1 + 1 + 1 + 1 + 1 + 1 = 8</span><span class="se">\n\n</span><span class="s1">Answer: 8&#39;</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The answer for the train mode:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">Generator_output</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">generator_output</span> <span class="p">(</span><span class="n">The</span> <span class="n">output</span> <span class="n">of</span> <span class="n">the</span> <span class="n">generator</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">Output</span> <span class="kn">from</span> <span class="p">(</span><span class="n">llm</span><span class="p">)</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">To</span> <span class="n">find</span> <span class="n">the</span> <span class="n">total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">musical</span> <span class="n">instruments</span> <span class="n">you</span> <span class="n">have</span><span class="p">,</span> <span class="n">you</span> <span class="n">simply</span> <span class="n">need</span> <span class="n">to</span> <span class="n">count</span> <span class="n">the</span> <span class="n">individual</span> <span class="n">instruments</span> <span class="n">you</span> <span class="n">listed</span><span class="o">.</span>
+
+<span class="n">Counting</span> <span class="n">the</span> <span class="n">instruments</span><span class="p">:</span>
+<span class="mi">1</span> <span class="n">flute</span>
+<span class="mi">1</span> <span class="n">piano</span>
+<span class="mi">1</span> <span class="n">trombone</span>
+<span class="mi">1</span> <span class="n">violin</span>
+<span class="mi">1</span> <span class="n">accordion</span>
+<span class="mi">1</span> <span class="n">clarinet</span>
+<span class="mi">1</span> <span class="n">drum</span>
+<span class="mi">1</span> <span class="n">trumpet</span>
+
+<span class="n">Adding</span> <span class="n">the</span> <span class="n">number</span> <span class="n">of</span> <span class="n">stoves</span> <span class="ow">and</span> <span class="n">lamps</span><span class="p">,</span> <span class="n">which</span> <span class="n">are</span> <span class="ow">not</span> <span class="n">musical</span> <span class="n">instruments</span><span class="p">:</span>
+<span class="mi">4</span> <span class="n">stoves</span>
+<span class="mi">2</span> <span class="n">lamps</span>
+
+<span class="n">Total</span> <span class="n">number</span> <span class="n">of</span> <span class="n">musical</span> <span class="n">instruments</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="n">Answer</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="p">{</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_give_ta</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">prompt</span> <span class="p">(</span><span class="n">Instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="n">on</span> <span class="n">task</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="ow">and</span> <span class="nb">format</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">give</span> <span class="n">task</span> <span class="n">instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">system</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">You</span> <span class="n">will</span> <span class="n">answer</span> <span class="n">a</span> <span class="n">reasoning</span> <span class="n">question</span><span class="o">.</span> <span class="n">Think</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span> <span class="n">The</span> <span class="n">last</span> <span class="n">line</span> <span class="n">of</span> <span class="n">your</span> <span class="n">response</span> <span class="n">should</span> <span class="n">be</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="nb">format</span><span class="p">:</span> <span class="s1">&#39;Answer: $VALUE&#39;</span> <span class="n">where</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">numerical</span> <span class="n">value</span><span class="o">.</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_provide</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">demos</span> <span class="p">(</span><span class="n">A</span> <span class="n">few</span> <span class="n">examples</span> <span class="n">to</span> <span class="n">guide</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">provide</span> <span class="n">few</span> <span class="n">shot</span> <span class="n">demos</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{})},</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;prompt_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;system_prompt&#39;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_give_ta</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">prompt</span> <span class="p">(</span><span class="n">Instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="n">on</span> <span class="n">task</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="ow">and</span> <span class="nb">format</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">give</span> <span class="n">task</span> <span class="n">instruction</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">system</span> <span class="n">prompt</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">You</span> <span class="n">will</span> <span class="n">answer</span> <span class="n">a</span> <span class="n">reasoning</span> <span class="n">question</span><span class="o">.</span> <span class="n">Think</span> <span class="n">step</span> <span class="n">by</span> <span class="n">step</span><span class="o">.</span> <span class="n">The</span> <span class="n">last</span> <span class="n">line</span> <span class="n">of</span> <span class="n">your</span> <span class="n">response</span> <span class="n">should</span> <span class="n">be</span> <span class="n">of</span> <span class="n">the</span> <span class="n">following</span> <span class="nb">format</span><span class="p">:</span> <span class="s1">&#39;Answer: $VALUE&#39;</span> <span class="n">where</span> <span class="n">VALUE</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">numerical</span> <span class="n">value</span><span class="o">.</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="s1">&#39;few_shot_demos&#39;</span><span class="p">:</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">To_provide</span><span class="p">,</span> <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">param_type</span><span class="o">=</span><span class="n">demos</span> <span class="p">(</span><span class="n">A</span> <span class="n">few</span> <span class="n">examples</span> <span class="n">to</span> <span class="n">guide</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="o">.</span><span class="p">),</span> <span class="n">role_desc</span><span class="o">=</span><span class="n">To</span> <span class="n">provide</span> <span class="n">few</span> <span class="n">shot</span> <span class="n">demos</span> <span class="n">to</span> <span class="n">the</span> <span class="n">language</span> <span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">predecessors</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span> <span class="n">gradients</span><span class="o">=</span><span class="nb">set</span><span class="p">(),</span>            <span class="n">raw_response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">traces</span><span class="o">=</span><span class="p">{}),</span> <span class="s1">&#39;input_str&#39;</span><span class="p">:</span> <span class="s1">&#39;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&#39;</span><span class="p">},</span> <span class="s1">&#39;model_kwargs&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;model&#39;</span><span class="p">:</span> <span class="s1">&#39;gpt-3.5-turbo&#39;</span><span class="p">,</span> <span class="s1">&#39;max_tokens&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s1">&#39;top_p&#39;</span><span class="p">:</span> <span class="mf">0.99</span><span class="p">,</span> <span class="s1">&#39;frequency_penalty&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;presence_penalty&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;stop&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}},</span> <span class="n">traces</span><span class="o">=</span><span class="p">{})</span>
+</pre></div>
+</div>
+<p>So far, we have completed the task pipeline and made sure it is working in both eval and train mode.
+Of course, if the performance is perfect here, there is no need to train. But we need to evaluate it.
+Our train pipeline can help you with both training and evaluation.</p>
+<p># TODO: rerun the example as the id is just added to the call.</p>
+</section>
+<section id="evaluate-the-task-pipeline">
+<h2>Evaluate the task pipeline<a class="headerlink" href="#evaluate-the-task-pipeline" title="Link to this heading">#</a></h2>
+<p>Before we start the training, we should prepare three datasets: train, validation, and test datasets.
+We need to do intitial evaluation to check two things:</p>
+<ol class="arabic simple">
+<li><p>The overall performance, maybe an average accross the datasets. If it does not meet the accuracy requirements, we need to plan on evaluation.</p></li>
+<li><p>The performance on each dataset: we need to ensure that each split has a comparable performance so that the train and validation set can be a good indicator to the test performance.</p></li>
+</ol>
+<section id="datasets">
+<h3>Datasets<a class="headerlink" href="#datasets" title="Link to this heading">#</a></h3>
+<p>We have prepared the dataset at <code class="docutils literal notranslate"><span class="pre">adalflow.datasets.big_bench_hard</span></code>.
+We can load it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.big_bench_hard</span> <span class="kn">import</span> <span class="n">BigBenchHard</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils.data</span> <span class="kn">import</span> <span class="n">subset_dataset</span>
+
+<span class="k">def</span> <span class="nf">load_datasets</span><span class="p">(</span><span class="n">max_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the dataset&quot;&quot;&quot;</span>
+    <span class="n">train_data</span> <span class="o">=</span> <span class="n">BigBenchHard</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="n">val_data</span> <span class="o">=</span> <span class="n">BigBenchHard</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>
+    <span class="n">test_data</span> <span class="o">=</span> <span class="n">BigBenchHard</span><span class="p">(</span><span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Limit the number of samples</span>
+    <span class="k">if</span> <span class="n">max_samples</span><span class="p">:</span>
+        <span class="n">train_data</span> <span class="o">=</span> <span class="n">subset_dataset</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">)</span>
+        <span class="n">val_data</span> <span class="o">=</span> <span class="n">subset_dataset</span><span class="p">(</span><span class="n">val_data</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">)</span>
+        <span class="n">test_data</span> <span class="o">=</span> <span class="n">subset_dataset</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">val_data</span><span class="p">,</span> <span class="n">test_data</span>
+</pre></div>
+</div>
+<p>We have 50, 50, 100 samples in the train, val, and test datasets, respectively. Here is one example of the loaded data sample:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Example</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="s1">&#39;b0cffa3e-9dc8-4d8e-82e6-9dd7d34128df&#39;</span><span class="p">,</span> <span class="n">question</span><span class="o">=</span><span class="s1">&#39;I have a flute, a piano, a trombone, four stoves, a violin, an accordion, a clarinet, a drum, two lamps, and a trumpet. How many musical instruments do I have?&#39;</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="s1">&#39;8&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The data sample is already of type <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> and each sample is assigned with an <code class="docutils literal notranslate"><span class="pre">id</span></code>, a <code class="docutils literal notranslate"><span class="pre">question</span></code>, and an <code class="docutils literal notranslate"><span class="pre">answer</span></code>.
+To note that the answer is in <cite>str</cite> format.</p>
+</section>
+<section id="diagnose-the-task-pipeline">
+<h3>Diagnose the task pipeline<a class="headerlink" href="#diagnose-the-task-pipeline" title="Link to this heading">#</a></h3>
+<p>We have a <cite>diagnose</cite> method in our <code class="docutils literal notranslate"><span class="pre">trainer</span></code> to help users run evaluation on a dataset split using callbacks and call logger automatically setup by our trainer.
+In this case, we will find the following datastructure.</p>
+<p>Starting from here, we will use <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> which is an interface class that we should subclass from.
+The <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> provides parallel processing to run the pipeline, handles call back config, optimizer config, or even teacher/backward engine out of box.
+It opens up a few attributes and methods for users to complete by subclass <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code>.
+This is similar to how <code class="docutils literal notranslate"><span class="pre">PyTorch</span> <span class="pre">Lightning</span></code>’s <code class="docutils literal notranslate"><span class="pre">LightningModule</span></code> works with its <code class="docutils literal notranslate"><span class="pre">Trainer</span></code>.</p>
+<p>This minimum code will get us started on evaluating the task pipeline.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.datasets.types</span> <span class="kn">import</span> <span class="n">Example</span>
+<span class="kn">from</span> <span class="nn">adalflow.eval.answer_match_acc</span> <span class="kn">import</span> <span class="n">AnswerMatchAcc</span>
+
+
+<span class="k">class</span> <span class="nc">ObjectCountAdalComponent</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">ObjectCountTaskPipeline</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="n">eval_fn</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute_single_item</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Example</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">call</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">question</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">evaluate_one_sample</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Example</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">GeneratorOutput</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="n">y_label</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">y_pred</span> <span class="ow">and</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_fn</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">y_label</span><span class="p">,</span> <span class="n">y_gt</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, lets use the trainer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">diagnose</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">use_cases.question_answering.bhh_object_count.data</span> <span class="kn">import</span> <span class="n">load_datasets</span>
+
+    <span class="n">trainset</span><span class="p">,</span> <span class="n">valset</span><span class="p">,</span> <span class="n">testset</span> <span class="o">=</span> <span class="n">load_datasets</span><span class="p">()</span>
+
+    <span class="n">adal_component</span> <span class="o">=</span> <span class="n">ObjectCountAdalComponent</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Trainer</span><span class="p">(</span><span class="n">adaltask</span><span class="o">=</span><span class="n">adal_component</span><span class="p">)</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">diagnose</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">trainset</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">)</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">diagnose</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">valset</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;val&quot;</span><span class="p">)</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">diagnose</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">testset</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="s2">&quot;test&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>File structure:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.adalflow/
+├──<span class="w"> </span>ckpt/
+│<span class="w">   </span>└──<span class="w"> </span>ObjectCountAdalComponent/
+│<span class="w">       </span>├──<span class="w"> </span>diagnose_<span class="o">{</span>train,<span class="w"> </span>val,<span class="w"> </span>test<span class="o">}</span>/<span class="w">  </span><span class="c1"># Directory for training data diagnostics</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>llm_counter_call.jsonl<span class="w">    </span><span class="c1"># Sorted by score from lowest to highest</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>logger_metadata.jsonl
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>llm_counter_diagnose.json<span class="w"> </span><span class="c1"># Contains samples with score &lt; 0.5, sorted by score</span>
+│<span class="w">       </span>│<span class="w">   </span>└──<span class="w"> </span>stats.json
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Tips:</dt><dd><p>As we save all data in default at ~/.adalflow, you can create a soft link to the current directory to access the data easily
+in your code editor.</p>
+</dd>
+</dl>
+<p>The <cite>llm_counter_call.jsonl</cite> file will contain 6 keys:</p>
+<ol class="arabic simple">
+<li><p>“prompt_kwargs”: the prompt_kwargs used in the call of <code class="docutils literal notranslate"><span class="pre">llm_counter</span></code>.</p></li>
+<li><p>“model_kwargs”: the model_kwargs used in the call of <code class="docutils literal notranslate"><span class="pre">llm_counter</span></code>.</p></li>
+<li><p>“input”: Everything that passed to the model_client (LLM).</p></li>
+<li><p>“output”: GeneratorOutput object.</p></li>
+<li><p>“score”: the performance score of the model on the dataset split.</p></li>
+<li><p>“time_stamp”: the time stamp of the call.</p></li>
+</ol>
+<p>The items are ranked from the lowest to the highest score. The score is the performance score of the model on the dataset split.
+If you have passed the <code class="docutils literal notranslate"><span class="pre">id</span></code> to the call, you will find it in the <code class="docutils literal notranslate"><span class="pre">output</span></code>.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">{}_diagnose.json</span></code> file, we save what can be used to manually diagnose the errors:
+- “id”: the id of the sample.
+- “score”: the performance score of the model on the dataset split.
+- “prompt_kwargs”: the prompt_kwargs used in the call of <code class="docutils literal notranslate"><span class="pre">llm_counter</span></code>.
+- “raw_response”: the raw_response of the model.
+- “answer”: the answer of the sample.
+- “dataset_item”: the dataset item where you can find sample to compare with.</p>
+<p>Here is the stats:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id6">
+<caption><span class="caption-text">Scores by Split</span><a class="headerlink" href="#id6" title="Link to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Split</p></th>
+<th class="head"><p>Train</p></th>
+<th class="head"><p>Val</p></th>
+<th class="head"><p>Test</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Score</p></td>
+<td><p>0.88 (50)</p></td>
+<td><p>0.90 (50)</p></td>
+<td><p>0.87 (100)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The model already performs quite well on the dataset.
+Let’s see if we can optimize it further with either few-shot or zero-shot prompt optimization or even both.</p>
+</section>
+</section>
+<section id="train">
+<h2>Train<a class="headerlink" href="#train" title="Link to this heading">#</a></h2>
+<section id="prepare-adalcomponent-for-training">
+<h3>Prepare AdalComponent for training<a class="headerlink" href="#prepare-adalcomponent-for-training" title="Link to this heading">#</a></h3>
+<p>To be able to train, we will add a few attributes and define a few methods in our <code class="docutils literal notranslate"><span class="pre">ObjectCountAdalComponent</span></code> class.</p>
+<p>First, <code class="docutils literal notranslate"><span class="pre">loss_fn</span></code> where we use <code class="docutils literal notranslate"><span class="pre">ada.EvalFnToTextLoss</span></code> to compute the loss(<code class="docutils literal notranslate"><span class="pre">Parameter</span></code>) where it takes the <code class="docutils literal notranslate"><span class="pre">eval_fn</span></code> and the <code class="docutils literal notranslate"><span class="pre">eval_fn_desc</span></code> at the initialization.
+This loss function will pass whatever user set at <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to the <code class="docutils literal notranslate"><span class="pre">eval_fn</span></code> and compute the loss and handle the <code class="docutils literal notranslate"><span class="pre">textual</span> <span class="pre">gradient</span></code> for the loss function.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ObjectCountAdalComponent</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">AdalComponent</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">model_client</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">ModelClient</span><span class="p">,</span>
+        <span class="n">model_kwargs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">ObjectCountTaskPipeline</span><span class="p">(</span><span class="n">model_client</span><span class="p">,</span> <span class="n">model_kwargs</span><span class="p">)</span>
+        <span class="n">eval_fn</span> <span class="o">=</span> <span class="n">AnswerMatchAcc</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;exact_match&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">compute_single_item</span>
+        <span class="n">loss_fn</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">EvalFnToTextLoss</span><span class="p">(</span>
+            <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span>
+            <span class="n">eval_fn_desc</span><span class="o">=</span><span class="s2">&quot;exact_match: 1 if str(y) == str(y_gt) else 0&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">eval_fn</span><span class="o">=</span><span class="n">eval_fn</span><span class="p">,</span> <span class="n">loss_fn</span><span class="o">=</span><span class="n">loss_fn</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span> <span class="o">=</span> <span class="n">backward_engine_model_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">teacher_model_config</span> <span class="o">=</span> <span class="n">teacher_model_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span> <span class="o">=</span> <span class="n">text_optimizer_model_config</span>
+</pre></div>
+</div>
+<p>Second, <code class="xref py py-meth docutils literal notranslate"><span class="pre">handle_one_loss_sample()</span></code> where we will return the loss function and the <code class="docutils literal notranslate"><span class="pre">kwargs</span></code> to the loss function.
+We need to convert the the ground truth into a <code class="docutils literal notranslate"><span class="pre">Parameter</span></code> and set the <code class="docutils literal notranslate"><span class="pre">eval_input</span></code> that will be used as value to the <code class="docutils literal notranslate"><span class="pre">eval_fn</span></code>
+when we evaluate the model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Example</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">):</span>
+    <span class="c1"># prepare gt parameter</span>
+    <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">eval_input</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># pred&#39;s full_response is the output of the task pipeline which is GeneratorOutput</span>
+    <span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">,</span> <span class="s2">&quot;y_gt&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>Third, if you intent to train <code class="docutils literal notranslate"><span class="pre">ParameterType.PROMPT</span></code>, we will need to set the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> which is a subclass of <code class="docutils literal notranslate"><span class="pre">Generator</span></code> with its own <code class="docutils literal notranslate"><span class="pre">template</span></code>.
+We provided a <code class="docutils literal notranslate"><span class="pre">configure_backward_engine_helper</span></code> method to smooth this setup; it requires only the <code class="docutils literal notranslate"><span class="pre">model_client</span></code> and the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">configure_backward_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_backward_engine_helper</span><span class="p">(</span>
+        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">backward_engine_model_config</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>If we also need to train the <code class="docutils literal notranslate"><span class="pre">ParameterType.DEMOS</span></code>, we will need to set the <code class="docutils literal notranslate"><span class="pre">teacher_generator</span></code> which is exactly the same setup as your <code class="docutils literal notranslate"><span class="pre">llm_counter</span></code> but
+with your configured <code class="docutils literal notranslate"><span class="pre">model_client</span></code> and <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">configure_teacher_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_teacher_generator_helper</span><span class="p">(</span>
+        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">teacher_generator_model_config</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we need to configure the optimizer. We will use both the <code class="docutils literal notranslate"><span class="pre">DemoOptimizer</span></code> (in default configured with <code class="docutils literal notranslate"><span class="pre">adal.optim.few_shot.few_shot_optimizer.BootstrapFewShot</span></code>) and the <code class="docutils literal notranslate"><span class="pre">PromptOptimizer</span></code> (in default configured with <code class="docutils literal notranslate"><span class="pre">adal.optim.text_grad.tgd_optimizer.TGDOptimizer</span></code>).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">configure_optimizers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">to</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_text_optimizer_helper</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">text_optimizer_model_config</span><span class="p">)</span>
+    <span class="n">do</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">configure_demo_optimizer_helper</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">to</span>  <span class="o">+</span> <span class="n">do</span>
+</pre></div>
+</div>
+</section>
+<section id="use-the-trainer">
+<h3>Use the trainer<a class="headerlink" href="#use-the-trainer" title="Link to this heading">#</a></h3>
+<p>Now, we can use the trainer to train the model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train</span><span class="p">(</span>
+    <span class="n">train_batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>  <span class="c1"># larger batch size is not that effective, probably because of llm&#39;s lost in the middle</span>
+    <span class="n">raw_shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">bootstrap_shots</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_steps</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;random&quot;</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">adal_component</span> <span class="o">=</span> <span class="n">ObjectCountAdalComponent</span><span class="p">(</span>
+        <span class="o">**</span><span class="n">gpt_3_model</span><span class="p">,</span>
+        <span class="n">teacher_model_config</span><span class="o">=</span><span class="n">gpt_3_model</span><span class="p">,</span>
+        <span class="n">text_optimizer_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span><span class="p">,</span>
+        <span class="n">backward_engine_model_config</span><span class="o">=</span><span class="n">gpt_4o_model</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">adal_component</span><span class="p">)</span>
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">Trainer</span><span class="p">(</span>
+        <span class="n">train_batch_size</span><span class="o">=</span><span class="n">train_batch_size</span><span class="p">,</span>
+        <span class="n">strategy</span><span class="o">=</span><span class="n">strategy</span><span class="p">,</span>
+        <span class="n">max_steps</span><span class="o">=</span><span class="n">max_steps</span><span class="p">,</span>
+        <span class="n">num_workers</span><span class="o">=</span><span class="n">num_workers</span><span class="p">,</span>
+        <span class="n">adaltask</span><span class="o">=</span><span class="n">adal_component</span><span class="p">,</span>
+        <span class="n">raw_shots</span><span class="o">=</span><span class="n">raw_shots</span><span class="p">,</span>
+        <span class="n">bootstrap_shots</span><span class="o">=</span><span class="n">bootstrap_shots</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+        <span class="n">weighted_sampling</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="n">train_dataset</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">load_datasets</span><span class="p">()</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+        <span class="n">train_dataset</span><span class="o">=</span><span class="n">train_dataset</span><span class="p">,</span>
+        <span class="n">val_dataset</span><span class="o">=</span><span class="n">val_dataset</span><span class="p">,</span>
+        <span class="n">test_dataset</span><span class="o">=</span><span class="n">test_dataset</span><span class="p">,</span>
+        <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="train-in-debug-mode">
+<h3>Train in Debug mode<a class="headerlink" href="#train-in-debug-mode" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">train</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;constrained&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">debug</span></code> will show us two samples: one successful and one failed sample.
+And it will not only check all necessary steps/methods to try its best to ensure you
+have implemented all parts correctly before the training on the whole dataset which can be expensive.
+Also, it is important to make sure the <code class="docutils literal notranslate"><span class="pre">backward_engine</span></code> is giving the right feedback and the <code class="docutils literal notranslate"><span class="pre">optimizer</span></code> is
+following the instruction to make correct proposal.</p>
+<p>Debug mode will turn on the log and set it to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> level.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.adalflow/
+├──<span class="w"> </span>ckpt/
+│<span class="w">   </span>└──<span class="w"> </span>ObjectCountAdalComponent/
+│<span class="w">       </span>├──<span class="w"> </span>diagnose_<span class="o">{</span>train,<span class="w"> </span>val,<span class="w"> </span>test<span class="o">}</span>/<span class="w">  </span><span class="c1"># Directory for training data diagnostics</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>llm_counter_call.jsonl<span class="w">    </span><span class="c1"># Sorted by score from lowest to highest</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>logger_metadata.jsonl
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>llm_counter_diagnose.json<span class="w"> </span><span class="c1"># Contains samples with score &lt; 0.5, sorted by score</span>
+│<span class="w">       </span>│<span class="w">   </span>└──<span class="w"> </span>stats.json
+│<span class="w">       </span>├──<span class="w"> </span>debug_text_grads<span class="w">                          </span><span class="c1"># Directory for debug mode with text optimizer</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>lib.log<span class="w">                    </span><span class="c1"># Log file</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>trace_graph_sum.png<span class="w">       </span><span class="c1"># Trace graph with textual feedback and new proposed value</span>
+│<span class="w">       </span>│<span class="w">   </span>├──<span class="w"> </span>trace_graph_sum_root.json<span class="w"> </span><span class="c1"># Json representation of the root loss node (sum of the success and fail loss)</span>
+</pre></div>
+</div>
+<p>Here is how our trace_graph looks like: <a class="reference internal" href="../tutorials/trace_graph.html"><span class="doc">trace_graph</span></a>.</p>
+</section>
+<section id="id1">
+<h3>Train<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>To train, we simply set the <code class="docutils literal notranslate"><span class="pre">debug</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>For the text optimizer, we have two training strategy: <code class="docutils literal notranslate"><span class="pre">random</span></code> and <code class="docutils literal notranslate"><span class="pre">constrained</span></code>.
+The <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy runs a batch of loss and backward propagation and then validate it on the <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset at each step.
+This is a standard training strategy, and it is used by libraries like <code class="docutils literal notranslate"><span class="pre">Dspy</span></code> and <code class="docutils literal notranslate"><span class="pre">Text-grad</span></code>.
+You can refer <a class="reference internal" href="../apis/optim/optim.trainer.html#optim.trainer.Trainer.fit" title="optim.trainer.Trainer.fit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">optim.trainer.Trainer.fit()</span></code></a> for more details.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">constrained</span></code> strategy is unique to AdalFlow library where it runs a moving batch capped at maximum 20 samples, and it subsample the correct and failed samples (each maximum at 4).
+Before it runs the validations on the full <code class="docutils literal notranslate"><span class="pre">validation</span></code> and <code class="docutils literal notranslate"><span class="pre">test</span></code> dataset, it will run a validation on the moving sampled subset and the moving batch. It will try 5 proposals on the moving batch and only let a proposal that can beat the current subset and moving batch performance before it can be validated on the full dataset.
+We find it often more effective than the <code class="docutils literal notranslate"><span class="pre">random</span></code> strategy.</p>
+<p>Additionally, we estimate the maximum validataion score each validation can get. Once we know the maximum score is below our minimum requirement (the last highest validation score), we stop the evaluation to save time and cost.</p>
+<p>After the training, we will all information saved in <code class="docutils literal notranslate"><span class="pre">.adalflow/ckpt/ObjectCountAdalComponent/</span></code>.
+With file names like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.adalflow/
+├──<span class="w"> </span>ckpt/
+│<span class="w">   </span>└──<span class="w"> </span>ObjectCountAdalComponent/
+│<span class="w">       </span>random_max_steps_8_bb908_run_1.json<span class="w"> </span><span class="c1"># The last training run for random strategy</span>
+│<span class="w">       </span>constrained_max_steps_8_a1754_run_1.json<span class="w"> </span><span class="c1"># The last training run for constrained strategy</span>
+</pre></div>
+</div>
+<p>Here is an example of how our ckpt file looks like: <a class="reference internal" href="../tutorials/ckpt_file.html"><span class="doc">ckpt_file</span></a>.
+This file is a direct <cite>to_dict</cite>  (json) representation of <a class="reference internal" href="../apis/optim/optim.types.html#optim.types.TrainerResult" title="optim.types.TrainerResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainerResult</span></code></a>.</p>
+</section>
+</section>
+<section id="few-shot-bootstrap">
+<h2>Few-shot Bootstrap<a class="headerlink" href="#few-shot-bootstrap" title="Link to this heading">#</a></h2>
+</section>
+<section id="benchmarking">
+<h2>Benchmarking<a class="headerlink" href="#benchmarking" title="Link to this heading">#</a></h2>
+<p>We compared our performance with text-grad. Here are our stats:
+The same prompt, text-grad gets 0.72 on the validation set. and it optimized it to 0.89.
+But text-grad use more lengthy prompt, where it takes more than 80s to run a backpropagation on a batch size of 4.
+Yet, we only take 12s.
+Also AdalFlow has better converage rate.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="classification.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Classification Optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="rag_opt.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">RAG optimization</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#build-the-task-pipeline">Build the task pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#evaluate-the-task-pipeline">Evaluate the task pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datasets">Datasets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#diagnose-the-task-pipeline">Diagnose the task pipeline</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#train">Train</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-adalcomponent-for-training">Prepare AdalComponent for training</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-trainer">Use the trainer</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#train-in-debug-mode">Train in Debug mode</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Train</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#few-shot-bootstrap">Few-shot Bootstrap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#benchmarking">Benchmarking</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -492,13 +457,13 @@
 <span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">lightrag.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.tokenizer</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">is_normalized</span><span class="p">,</span>
     <span class="n">generate_function_call_expression_from_callable</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CohereAPIClient</span><span class="p">,</span>
     <span class="n">TransformersClient</span><span class="p">,</span>
     <span class="n">AnthropicAPIClient</span><span class="p">,</span>
@@ -539,7 +504,7 @@
 
 <span class="s2">    .. code-block:: python</span>
 
-<span class="s2">        from lightrag.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
+<span class="s2">        from adalflow.components.model_client import CohereAPIClient, TransformersClient, AnthropicAPIClient, GroqAPIClient, OpenAIClient</span>
 
 <span class="s2">        model_client = OpenAIClient()</span>
 
@@ -547,7 +512,7 @@
 
 <span class="s2">    .. code-block:: python</span>
 
-<span class="s2">        from lightrag.core.types import ModelClientType</span>
+<span class="s2">        from adalflow.core.types import ModelClientType</span>
 
 <span class="s2">        model_client = ModelClientType.OPENAI()</span>
 <span class="s2">    &quot;&quot;&quot;</span>
@@ -609,7 +574,7 @@
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">Usage</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    In sync with api spec, same as openai/types/create_embedding_response.py</span>
+<span class="sd">    In sync with OpenAI embedding api spec, same as openai/types/create_embedding_response.py</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">prompt_tokens</span><span class="p">:</span> <span class="nb">int</span>
@@ -689,6 +654,26 @@
 
 
 
+<div class="viewcode-block" id="CompletionUsage">
+<a class="viewcode-back" href="../../apis/core/core.types.html#core.types.CompletionUsage">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CompletionUsage</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;In sync with OpenAI completion usage api spec at openai/types/completion_usage.py&quot;</span>
+    <span class="n">completion_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens in the generated completion&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">prompt_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Number of tokens in the prompt&quot;</span><span class="p">},</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">total_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Total number of tokens used in the request (prompt + completion)&quot;</span>
+        <span class="p">},</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="GeneratorOutput">
 <a class="viewcode-back" href="../../apis/core/core.types.html#core.types.GeneratorOutput">[docs]</a>
 <span class="nd">@dataclass</span>
@@ -705,6 +690,9 @@
 
 <span class="s2">    Raw_response will depends on the model predict.</span>
 <span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique id of the output&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
 
     <span class="n">data</span><span class="p">:</span> <span class="n">T_co</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -714,7 +702,9 @@
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Error message if any&quot;</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Usage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">})</span>
+    <span class="n">usage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CompletionUsage</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Usage tracking&quot;</span><span class="p">}</span>
+    <span class="p">)</span>
     <span class="n">raw_response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;Raw string response from the model&quot;</span><span class="p">}</span>
     <span class="p">)</span>  <span class="c1"># parsed from model client response</span>
@@ -921,7 +911,7 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            from lightrag.core.types import FunctionExpression</span>
+<span class="sd">            from adalflow.core.types import FunctionExpression</span>
 
 <span class="sd">            def add(a, b):</span>
 <span class="sd">                return a + b</span>
@@ -1021,7 +1011,7 @@
 
 <span class="sd">        .. code-block:: python</span>
 
-<span class="sd">            from lightrag.core.types import StepOutput, FunctionExpression</span>
+<span class="sd">            from adalflow.core.types import StepOutput, FunctionExpression</span>
 
 <span class="sd">            StepOutputWithFunctionExpression = StepOutput.with_action_type(FunctionExpression)</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -52,7 +52,7 @@
     <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="parameter" href="core.parameter.html" />
+    <link rel="next" title="tokenizer" href="core.tokenizer.html" />
     <link rel="prev" title="db" href="core.db.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -438,7 +403,6 @@
 <li class="toctree-l2"><a class="reference internal" href="core.types.html">types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.db.html">db</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">functional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="core.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="core.tokenizer.html">tokenizer</a></li>
 </ul>
 </details></li>
@@ -463,6 +427,7 @@
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
 </ul>
 </details></li>
@@ -485,19 +450,44 @@
 </details></li>
 </ul>
 </details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimizer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.few_shot_optimizer.html">few_shot_optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_augment.html">llm_augment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.llm_optimizer.html">llm_optimizer</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../optim/index.html">Optimization</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.parameter.html">parameter</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../optim/optim.optimizer.html">optimizer</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../optim/optim.sampler.html">sampler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../optim/optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../optim/optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../optim/optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -507,13 +497,15 @@
 </ul>
 </details></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
 </ul>
 </details></li>
 </ul>
@@ -581,129 +573,6 @@
 <p>Functional interface.
 Core functions we use to build across the components.
 Users can leverage these functions to customize their own components.</p>
-<p class="rubric">Functions</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_one" title="core.functional.check_data_class_field_args_one"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_one</span></code></a>(cls)</p></td>
-<td><p>Check if the field is a dataclass.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.check_data_class_field_args_zero" title="core.functional.check_data_class_field_args_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_data_class_field_args_zero</span></code></a>(cls)</p></td>
-<td><p>Check if the field is a dataclass.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.compose_model_kwargs" title="core.functional.compose_model_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_model_kwargs</span></code></a>(default_model_kwargs, ...)</p></td>
-<td><p>Add new arguments or overwrite the default arguments with the new arguments.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.convert_schema_to_signature" title="core.functional.convert_schema_to_signature"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_schema_to_signature</span></code></a>(schema)</p></td>
-<td><p>Convert the value from get_data_class_schema to a string description.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.custom_asdict" title="core.functional.custom_asdict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">custom_asdict</span></code></a>(obj, *[, dict_factory, exclude])</p></td>
-<td><p>Equivalent to asdict() from dataclasses module but with exclude fields.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.dataclass_obj_from_dict" title="core.functional.dataclass_obj_from_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataclass_obj_from_dict</span></code></a>(cls, data)</p></td>
-<td><p>Convert a dictionary to a dataclass object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.evaluate_ast_node" title="core.functional.evaluate_ast_node"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ast_node</span></code></a>(node[, context_map])</p></td>
-<td><p>Recursively evaluates an AST node and returns the corresponding Python object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_dataclass_type" title="core.functional.extract_dataclass_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_dataclass_type</span></code></a>(type_hint)</p></td>
-<td><p>Extract the actual dataclass type from a type hint that could be Optional or other generic.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_boolean" title="core.functional.extract_first_boolean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_boolean</span></code></a>(text)</p></td>
-<td><p>Extract the first boolean from the provided text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_first_float" title="core.functional.extract_first_float"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_float</span></code></a>(text)</p></td>
-<td><p>Extract the first float from the provided text.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_first_int" title="core.functional.extract_first_int"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_first_int</span></code></a>(text)</p></td>
-<td><p>Extract the first integer from the provided text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_function_expression" title="core.functional.extract_function_expression"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_function_expression</span></code></a>(text[, ...])</p></td>
-<td><p>Extract function expression from text.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_json_str" title="core.functional.extract_json_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_json_str</span></code></a>(text[, add_missing_right_brace])</p></td>
-<td><p>Extract JSON string from text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.extract_list_str" title="core.functional.extract_list_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_list_str</span></code></a>(text[, ...])</p></td>
-<td><p>Extract the first complete list string from the provided text.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.extract_yaml_str" title="core.functional.extract_yaml_str"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_yaml_str</span></code></a>(text)</p></td>
-<td><p>Extract YAML string from text.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.fix_json_escaped_single_quotes" title="core.functional.fix_json_escaped_single_quotes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes</span></code></a>(json_str)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.fix_json_missing_commas" title="core.functional.fix_json_missing_commas"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_json_missing_commas</span></code></a>(json_str)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_dict_to_json" title="core.functional.from_dict_to_json"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_json</span></code></a>(data[, sort_keys])</p></td>
-<td><p>Convert a dictionary to a JSON string.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_dict_to_yaml" title="core.functional.from_dict_to_yaml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_dict_to_yaml</span></code></a>(data[, sort_keys])</p></td>
-<td><p>Convert a dictionary to a YAML string.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.from_json_to_dict" title="core.functional.from_json_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_json_to_dict</span></code></a>(json_str)</p></td>
-<td><p>Convert a JSON string to a dictionary.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.from_yaml_to_dict" title="core.functional.from_yaml_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_yaml_to_dict</span></code></a>(yaml_str)</p></td>
-<td><p>Convert a YAML string to a dictionary.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.generate_function_call_expression_from_callable" title="core.functional.generate_function_call_expression_from_callable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_function_call_expression_from_callable</span></code></a>(...)</p></td>
-<td><p>Generate a function call expression string from a callable function and its arguments.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.generate_readable_key_for_function" title="core.functional.generate_readable_key_for_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_readable_key_for_function</span></code></a>(fn)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_dataclass_schema" title="core.functional.get_dataclass_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_dataclass_schema</span></code></a>(cls[, exclude, ...])</p></td>
-<td><p>Generate a schema dictionary for a dataclass including nested structures.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_enum_schema" title="core.functional.get_enum_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_enum_schema</span></code></a>(enum_cls)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_fun_schema" title="core.functional.get_fun_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_fun_schema</span></code></a>(name, func)</p></td>
-<td><p>Get the schema of a function.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.get_top_k_indices_scores" title="core.functional.get_top_k_indices_scores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_top_k_indices_scores</span></code></a>(scores, top_k)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.get_type_schema" title="core.functional.get_type_schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_type_schema</span></code></a>(type_obj[, exclude, ...])</p></td>
-<td><p>Retrieve the type name, handling complex and nested types.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_dataclass_instance" title="core.functional.is_dataclass_instance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_dataclass_instance</span></code></a>(obj)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.is_normalized" title="core.functional.is_normalized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_normalized</span></code></a>(v[, tol])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.is_potential_dataclass" title="core.functional.is_potential_dataclass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_potential_dataclass</span></code></a>(t)</p></td>
-<td><p>Check if the type is directly a dataclass or potentially a wrapped dataclass like Optional.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.normalize_np_array" title="core.functional.normalize_np_array"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_np_array</span></code></a>(v)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.normalize_vector" title="core.functional.normalize_vector"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalize_vector</span></code></a>(v)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_function_call_expr" title="core.functional.parse_function_call_expr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_function_call_expr</span></code></a>(function_expr[, ...])</p></td>
-<td><p>Parse a string representing a function call into its components and ensure safe execution by only allowing function calls from a predefined context map. :param function_expr: The string representing the function :type function_expr: str :param context_map: A dictionary that maps variable names to their respective values and functions. This context is used to resolve names and execute functions. :type context_map: Dict[str, Any].</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.parse_json_str_to_obj" title="core.functional.parse_json_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_json_str_to_obj</span></code></a>(json_str)</p></td>
-<td><p>Parse a varietry of json format string to Python object.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.parse_yaml_str_to_obj" title="core.functional.parse_yaml_str_to_obj"><code class="xref py py-obj docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj</span></code></a>(yaml_str)</p></td>
-<td><p>Parse a YAML string to a Python object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.represent_ordereddict" title="core.functional.represent_ordereddict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">represent_ordereddict</span></code></a>(dumper, data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#core.functional.sandbox_exec" title="core.functional.sandbox_exec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sandbox_exec</span></code></a>(code[, context, timeout])</p></td>
-<td><p>Execute code in a sandboxed environment with a timeout.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#core.functional.validate_data" title="core.functional.validate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_data</span></code></a>(data, fieldtypes)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</div>
 <dl class="py function">
 <dt class="sig sig-object py" id="core.functional.custom_asdict">
 <span class="sig-name descname"><span class="pre">custom_asdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dict_factory=&lt;class</span> <span class="pre">'dict'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude:</span> <span class="pre">~typing.Dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.List[str]]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#custom_asdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.custom_asdict" title="Link to this definition">#</a></dt>
@@ -1193,6 +1062,12 @@ it is crucial to have a format such as <code class="docutils literal notranslate
 <p>json_str: has to be a valid JSON string. Either {} or [].</p>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="core.functional.random_sample">
+<span class="sig-name descname"><span class="pre">random_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_shots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-05</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T_co</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/core/functional.html#random_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#core.functional.random_sample" title="Link to this definition">#</a></dt>
+<dd><p>Randomly sample num_shots from the dataset. If replace is True, sample with replacement.</p>
+</dd></dl>
+
 </section>
 
 
@@ -1215,11 +1090,11 @@ it is crucial to have a format such as <code class="docutils literal notranslate
       </div>
     </a>
     <a class="right-next"
-       href="core.parameter.html"
+       href="core.tokenizer.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">parameter</p>
+        <p class="prev-next-title">tokenizer</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1280,6 +1155,7 @@ it is crucial to have a format such as <code class="docutils literal notranslate
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.fix_json_escaped_single_quotes"><code class="docutils literal notranslate"><span class="pre">fix_json_escaped_single_quotes()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.parse_yaml_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_yaml_str_to_obj()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.parse_json_str_to_obj"><code class="docutils literal notranslate"><span class="pre">parse_json_str_to_obj()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#core.functional.random_sample"><code class="docutils literal notranslate"><span class="pre">random_sample()</span></code></a></li>
 </ul>
   </nav></div>
 

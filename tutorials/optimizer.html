@@ -52,8 +52,6 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Trainer" href="trainer.html" />
-    <link rel="prev" title="Parameter" href="parameter.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -105,55 +103,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +131,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -205,9 +154,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -307,6 +263,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -317,7 +277,9 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -339,9 +301,16 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -412,61 +381,6 @@
     
   </div>
   
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="lightrag_design_philosophy.html">Design Philosophy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="class_hierarchy.html">Class Hierarchy</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Base Classes</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="component.html">Component</a></li>
-<li class="toctree-l1"><a class="reference internal" href="base_data_class.html">DataClass</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">RAG Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="prompt.html">Prompt</a></li>
-<li class="toctree-l1"><a class="reference internal" href="model_client.html">ModelClient</a></li>
-<li class="toctree-l1"><a class="reference internal" href="generator.html">Generator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="output_parsers.html">Parser</a></li>
-<li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
-<li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
-<li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="tool_helper.html">Function calls</a></li>
-<li class="toctree-l1"><a class="reference internal" href="agent.html">Agent</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluating</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
-<li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
-</ul>
-</div>
-</nav></div>
-    </div>
-  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
   </div>
@@ -499,9 +413,6 @@
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
-    
     <li class="breadcrumb-item active" aria-current="page">Optimizer</li>
   </ul>
 </nav>
@@ -521,7 +432,180 @@
                   
   <section id="optimizer">
 <span id="id1"></span><h1>Optimizer<a class="headerlink" href="#optimizer" title="Link to this heading">#</a></h1>
-<p>Coming soon!</p>
+<section id="optimizing-strategy">
+<h2>Optimizing strategy<a class="headerlink" href="#optimizing-strategy" title="Link to this heading">#</a></h2>
+<p>In general, its good to start with multi-stage training. First, find a good zer-shot prompt, and then do few-shot training.</p>
+<p>You can start with zero-shot ICL, training only prompts arguments/templates. With the option to
+use <code class="docutils literal notranslate"><span class="pre">instruction_to_optimizer</span></code> to create synthetic examples.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">system_prompt</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;task_instruction&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="s2">&quot;You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: &#39;Answer: $VALUE&#39; where VALUE is a numerical value.&quot;</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To give task instruction to the language model in the system prompt&quot;</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">NONE</span><span class="p">,</span>
+        <span class="n">instruction_to_optimizer</span><span class="o">=</span><span class="s2">&quot;You can show some examples if you think that will help.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>Optionally, you can do both prompt and few-shot training together.</p>
+</section>
+<section id="how-we-implemented-the-boostrap-few-shot-training">
+<h2>How we implemented the boostrap few-shot training<a class="headerlink" href="#how-we-implemented-the-boostrap-few-shot-training" title="Link to this heading">#</a></h2>
+<p>Demo parameter:
+Import fields</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">param_type</span> <span class="o">=</span> <span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span>
+<span class="n">requires_opt</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">alias</span> <span class="o">=</span> <span class="s2">&quot;few_shot_demos&quot;</span>
+<span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">role_desc</span> <span class="o">=</span> <span class="s2">&quot;To provide few shot demos to the language model&quot;</span>
+<span class="n">_traces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># teacher mode traces</span>
+<span class="n">_score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>  <span class="c1"># end to end score, used for once-off parameter such as y_pred, or any intermedia component output to have the score</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>we add <cite>use_teacher</cite> method and <cite>teacher_mode`(bool) attribute to `Component</cite> which works recursively similar to <cite>.train()</cite> method.</p></li>
+<li><p>We add <cite>set_teacher_generatpr</cite> method to <cite>Generator</cite> class which whenever the <cite>teacher_mode</cite> is True, it will do the forward pass with teacher’s <cite>call</cite> method.
+Additionally, it works with <cite>demo_class</cite>, <cite>input_mapping</cite>, and <cite>output_mapping</cite> to create a demo instance, along with <cite>id</cite> we passed optionally to the generator.
+It will add the demo instance to its parameters that are of <cite>ParameterType.DEMOS</cite> types via the <cite>_traces</cite> attributes in the <cite>Parameter</cite> class.
+So far, we can find the input, output and via being <code class="docutils literal notranslate"><span class="pre">DataClass</span></code>, we can easily convert it to string. However, we still miss the <cite>score</cite> that will be used to sample bootstrap samples.
+This means if we pass the <cite>demo_class</cite>, <cite>input_mapping</cite>, and <cite>output_mapping</cite> to the <cite>Generator</cite> class, we can trace all inputs and outputs while it is in <cite>teacher_mode</cite> to the
+parameter you defined as <cite>ParameterType.DEMOS</cite> type.</p></li>
+</ol>
+<p>Here is an example for passing <cite>DEMOs</cite>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ObjectCountSimple</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass for string output&quot;&quot;&quot;</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The unique identifier of the example&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">question</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The question to be answered&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">answer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The raw answer to the question&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;desc&quot;</span><span class="p">:</span> <span class="s2">&quot;The score of the answer, in range [0, 1]. The higher the better&quot;</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+
+<span class="n">_few_shot_demos</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">alias</span><span class="o">=</span><span class="s2">&quot;few_shot_demos&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">role_desc</span><span class="o">=</span><span class="s2">&quot;To provide few shot demos to the language model&quot;</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">param_type</span><span class="o">=</span><span class="n">ParameterType</span><span class="o">.</span><span class="n">DEMOS</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">llm_counter</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+    <span class="n">model_client</span><span class="o">=</span><span class="n">model_client</span><span class="p">,</span>
+    <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+    <span class="n">template</span><span class="o">=</span><span class="n">few_shot_template</span><span class="p">,</span>
+    <span class="n">prompt_kwargs</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;system_prompt&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">,</span>
+        <span class="s2">&quot;few_shot_demos&quot;</span><span class="p">:</span> <span class="n">_few_shot_demos</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">output_processors</span><span class="o">=</span><span class="n">parse_integer_answer</span><span class="p">,</span>  <span class="c1"># transform data field</span>
+    <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">demo_data_class</span><span class="o">=</span><span class="n">ObjectCountSimple</span><span class="p">,</span>  <span class="c1"># for output format</span>
+    <span class="n">demo_data_class_input_mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;input_str&quot;</span><span class="p">},</span>
+    <span class="n">demo_data_class_output_mapping</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">raw_response</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>We need to pass eval score to those traces. We leverage the loss function in text-grad, in the backpropogation, on the loss parameter, we will pass back the score to
+its predecessors such as <cite>y_pred</cite>. So in <code class="docutils literal notranslate"><span class="pre">EvalFnToTextLoss</span></code>, we have</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pred</span><span class="o">.</span><span class="n">_score</span> <span class="o">=</span> <span class="n">respose</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>When in teacher mode, we should only have the demo backpropagation and without text-gradient backpropogation (so this will not end up consuming llm calls).
+It becomes a way to trace runs.</p>
+</section>
+<section id="weigted-sampling-test-negative-case">
+<h2>Weigted sampling [test negative case]<a class="headerlink" href="#weigted-sampling-test-negative-case" title="Link to this heading">#</a></h2>
+<p>Assume an example input x with y_pred.
+WE will have the teacher with y_pred_t.
+When we sample from [(x_i, y_pred_t)], we assign weight w_i = (score_i_t - score_i)
+Then we can sample from the weighted samples.
+When <cite>score_i_t</cite> is 1, and <cite>score_i</cite> is 0, it has a high chance to be sampled.
+When <cite>score_i_t</cite> is 1, and <cite>score_i</cite> is 1, it has a low chance to be sampled.
+When <cite>score_i_t</cite> is 0, and <cite>score_i</cite> is 1, and there is another case (1), -1 + 1 = 0+delta, -1/delta = -inf, 1/delta = inf, so we will still sample 1.
+When <cite>score_i_t</cite> is 0, and <cite>score_i</cite> is 0, it has a low chance to be sampled.</p>
+<p>For samples T-A, all of them will have weights 0, if they are in the traces, their weights will be 1-score_i,
+still give higher chance to sample the negative cases.</p>
+<p>Here shows a subset of students traces:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;2d72e6e7-71a2-428d-90ff-6986ba52a0d3&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2d72e6e7-71a2-428d-90ff-6986ba52a0d3&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have a yam, a cauliflower, a bed, two cabbages, a garlic, an oven, a carrot, a head of broccoli, a potato, a stalk of celery, a lettuce head, and a toaster. How many vegetables do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;To determine the total number of vegetables, we need to count each type of vegetable and add them together.\n\n1. Yam: 1\n2. Cauliflower: 1\n3. Cabbages: 2\n4. Garlic: 1\n5. Carrot: 1\n6. Broccoli: 1\n7. Potato: 1\n8. Celery: 1\n9. Lettuce: 1\n\nNow, we sum these values:\n\n\\[ 1 + 1 + 2 + 1 + 1 + 1 + 1 + 1 + 1 = 10 \\]\n\nSo, the total number of vegetables is:\n\nAnswer: 10&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;37da1fbf-402c-44fc-a8b8-a45ad4690a47&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;37da1fbf-402c-44fc-a8b8-a45ad4690a47&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have an apple, three bananas, a strawberry, a peach, three oranges, a plum, a raspberry, two grapes, a nectarine, and a blackberry. How many fruits do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;First, list each fruit mentioned:\n\n1. Apple\n2. Three bananas\n3. Strawberry\n4. Peach\n5. Three oranges\n6. Plum\n7. Raspberry\n8. Two grapes\n9. Nectarine\n10. Blackberry\n\nNow, count each item:\n\n1. Apple\n2. Three bananas\n3. Strawberry\n4. Peach\n5. Three oranges\n6. Plum\n7. Raspberry\n8. Two grapes\n9. Nectarine\n10. Blackberry\n\nAdd these numbers:\n\n1 + 3 + 1 + 1 + 3 + 1 + 1 + 2 + 1 + 1 = 14\n\nAnswer: 14&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;38404a09-0191-4f6f-8a12-4a392e464fe7&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;38404a09-0191-4f6f-8a12-4a392e464fe7&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have a cauliflower, a stalk of celery, a cabbage, and a garlic. How many vegetables do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;First, list each vegetable mentioned:\n\n1. Cauliflower\n2. Stalk of celery\n3. Cabbage\n4. Garlic\n\nNow, count each item:\n\n1. Cauliflower\n2. Stalk of celery\n3. Cabbage\n4. Garlic\n\nAdd these numbers:\n\n1 + 1 + 1 + 1 = 4\n\nAnswer: 4&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="nt">&quot;5869e6cd-bd3a-4682-bf52-417ab8b4e3cc&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5869e6cd-bd3a-4682-bf52-417ab8b4e3cc&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have an orange, three strawberries, an apple, three bananas, three raspberries, a peach, a blackberry, a grape, a plum, and two nectarines. How many fruits do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;First, list each fruit mentioned:\n\n1. Orange\n2. Three strawberries\n3. Apple\n4. Three bananas\n5. Three raspberries\n6. Peach\n7. Blackberry\n8. Grape\n9. Plum\n10. Two nectarines\n\nNow, count each item:\n\n1. Orange\n2. Three strawberries\n3. Apple\n4. Three bananas\n5. Three raspberries\n6. Peach\n7. Blackberry\n8. Grape\n9. Plum\n10. Two nectarines\n\nAdd these numbers:\n\n1 + 3 + 1 + 3 + 3 + 1 + 1 + 1 + 1 + 2 = 16\n\nAnswer: 16&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Here is the teacher traces:</p>
+<p>When we allow 2 augmented samples, here is what it has sampled:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;37da1fbf-402c-44fc-a8b8-a45ad4690a47&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have an apple, three bananas, a strawberry, a peach, three oranges, a plum, a raspberry, two grapes, a nectarine, and a blackberry. How many fruits do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;To solve this problem, we need to count the total number of fruits listed.\n\n1. One apple: 1\n2. Three bananas: 3\n3. One strawberry: 1\n4. One peach: 1\n5. Three oranges: 3\n6. One plum: 1\n7. One raspberry: 1\n8. Two grapes: 2\n9. One nectarine: 1\n10. One blackberry: 1\n\nNext, we add these quantities together:\n\n1 + 3 + 1 + 1 + 3 + 1 + 1 + 2 + 1 + 1 = 15\n\nThus, the total number of fruits is 15.\n\nAnswer: 15&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;5869e6cd-bd3a-4682-bf52-417ab8b4e3cc&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;question&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;I have an orange, three strawberries, an apple, three bananas, three raspberries, a peach, a blackberry, a grape, a plum, and two nectarines. How many fruits do I have?&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;answer&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;To determine the total number of fruits, we need to count each type of fruit and add them together.\n\n1. Orange: 1\n2. Strawberries: 3\n3. Apple: 1\n4. Bananas: 3\n5. Raspberries: 3\n6. Peach: 1\n7. Blackberry: 1\n8. Grape: 1\n9. Plum: 1\n10. Nectarines: 2\n\nNow, we sum these values:\n\\[ 1 + 3 + 1 + 3 + 3 + 1 + 1 + 1 + 1 + 2 = 17 \\]\n\nSo, the total number of fruits is:\n\nAnswer: 17&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="tracing">
+<h2>Tracing<a class="headerlink" href="#tracing" title="Link to this heading">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> additionally will provide a one round trace for each generator in the task pipeline
+if we set up an empty demo parameter. and run one round of forward, eval, and backward.
+This will be useful to gather training data or even bootstrap a training dataset.</p>
+<p><a href="#id2"><span class="problematic" id="id3">**</span></a>Backpropagate in student mode. **</p>
+<p>generator will have
+This will backpropagate the eval response</p>
+<p>Bootstrap samples</p>
+</section>
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">train</span><span class="p">()</span> <span class="c1"># ensure we use forward that will return a parameter and then we can attach the backward engine for gradients, and if it has a teacher, we will attach a demo propose function.</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -534,30 +618,33 @@
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
-    <a class="left-prev"
-       href="parameter.html"
-       title="previous page">
-      <i class="fa-solid fa-angle-left"></i>
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Parameter</p>
-      </div>
-    </a>
-    <a class="right-next"
-       href="trainer.html"
-       title="next page">
-      <div class="prev-next-info">
-        <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Trainer</p>
-      </div>
-      <i class="fa-solid fa-angle-right"></i>
-    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optimizing-strategy">Optimizing strategy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-we-implemented-the-boostrap-few-shot-training">How we implemented the boostrap few-shot training</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#weigted-sampling-test-negative-case">Weigted sampling [test negative case]</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tracing">Tracing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

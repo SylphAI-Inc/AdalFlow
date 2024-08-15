@@ -1,0 +1,9 @@
+.. _datasets-hotpot_qa:
+
+hotpot_qa
+==========================
+
+.. automodule:: datasets.hotpot_qa
+   :members:
+   :undoc-members:
+   :show-inheritance:

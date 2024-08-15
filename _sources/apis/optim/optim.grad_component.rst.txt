@@ -1,0 +1,9 @@
+.. _optim-grad_component:
+
+grad_component
+============================
+
+.. automodule:: optim.grad_component
+   :members:
+   :undoc-members:
+   :show-inheritance:

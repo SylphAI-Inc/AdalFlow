@@ -1,0 +1,9 @@
+.. _components-output_parsers-dataclass_parser:
+
+dataclass_parser
+===================================================
+
+.. automodule:: components.output_parsers.dataclass_parser
+   :members:
+   :undoc-members:
+   :show-inheritance:

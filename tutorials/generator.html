@@ -105,55 +105,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -182,8 +133,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -207,7 +158,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -345,7 +303,14 @@
 
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -452,12 +417,6 @@
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation.html">LLM Evaluation</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="parameter.html">Parameter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="trainer.html">Trainer</a></li>
-</ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Logging &amp; Tracing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
@@ -504,7 +463,7 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Tutorials</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Notes</a></li>
     
     <li class="breadcrumb-item active" aria-current="page">Generator</li>
   </ul>
@@ -557,7 +516,7 @@ It is a pipeline consisting of three subcomponents. By switching the prompt temp
 <p>It orchestrates three components:</p>
 <ul class="simple">
 <li><p><cite>Prompt</cite>: by taking in <code class="docutils literal notranslate"><span class="pre">template</span></code> (string) and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code> (dict) to format the prompt at initialization.
-When the <code class="docutils literal notranslate"><span class="pre">template</span></code> is not provided, it defaults to <a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a>.</p></li>
+When the <code class="docutils literal notranslate"><span class="pre">template</span></code> is not provided, it defaults to <a class="reference internal" href="../apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-const docutils literal notranslate"><span class="pre">DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a>.</p></li>
 <li><p><cite>ModelClient</cite>: by taking in an already instantiated <code class="docutils literal notranslate"><span class="pre">model_client</span></code> and <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code> to call the model.
 Switching out the model client allows you to call any LLM model using the same prompt and output parsing.</p></li>
 <li><p><cite>output_processors</cite>: A single component or chained components via <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> to process the raw response to desired format.
@@ -888,8 +847,8 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMRetriever</span></code></a> is a retriever that uses Generator to call LLM to retrieve the most relevant documents.</p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefaultLLMJudge</span></code></a> is a judge that uses Generator to call LLM to evaluate the quality of the response.</p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMOptimizer</span></code></a> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code></a> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMOptimizer</span></code> is an optimizer that uses Generator to call LLM to optimize the prompt.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ReAct</span> <span class="pre">Agent</span> <span class="pre">Planner</span></code> is an LLM planner that uses Generator to plan and to call functions in ReAct Agent.</p></li>
 </ul>
 </section>
 </section>
@@ -910,7 +869,7 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/core/core.generator.html#core.generator.Generator" title="core.generator.Generator"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.generator.Generator</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.GeneratorOutput" title="core.types.GeneratorOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.GeneratorOutput</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#id0" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></p></li>
+<li><p><a class="reference internal" href="../apis/core/core.default_prompt_template.html#core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT" title="core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.default_prompt_template.DEFAULT_LIGHTRAG_SYSTEM_PROMPT</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelClientType</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.types.html#core.types.ModelType" title="core.types.ModelType"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.types.ModelType</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/core/core.string_parser.html#core.string_parser.JsonParser" title="core.string_parser.JsonParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.string_parser.JsonParser</span></code></a></p></li>
@@ -918,9 +877,9 @@ We imported <code class="docutils literal notranslate"><span class="pre">Generat
 <li><p><a class="reference internal" href="../apis/tracing/tracing.generator_call_logger.html#tracing.generator_call_logger.GeneratorCallLogger" title="tracing.generator_call_logger.GeneratorCallLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_call_logger.GeneratorCallLogger</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/tracing/tracing.generator_state_logger.html#tracing.generator_state_logger.GeneratorStateLogger" title="tracing.generator_state_logger.GeneratorStateLogger"><code class="xref py py-class docutils literal notranslate"><span class="pre">tracing.generator_state_logger.GeneratorStateLogger</span></code></a></p></li>
 <li><p><a class="reference internal" href="../apis/components/components.retriever.llm_retriever.html#components.retriever.llm_retriever.LLMRetriever" title="components.retriever.llm_retriever.LLMRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.retriever.llm_retriever.LLMRetriever</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/components/components.agent.react.html#components.agent.react.ReActAgent" title="components.agent.react.ReActAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">components.agent.react.ReActAgent</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#eval.llm_as_judge.DefaultLLMJudge" title="eval.llm_as_judge.DefaultLLMJudge"><code class="xref py py-class docutils literal notranslate"><span class="pre">eval.llm_as_judge.DefaultLLMJudge</span></code></a></p></li>
-<li><p><a class="reference internal" href="../apis/optim/optim.llm_optimizer.html#optim.llm_optimizer.LLMOptimizer" title="optim.llm_optimizer.LLMOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.llm_optimizer.LLMOptimizer</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">optim.llm_optimizer.LLMOptimizer</span></code></p></li>
 <li><p><a class="reference internal" href="../apis/utils/utils.config.html#utils.config.new_component" title="utils.config.new_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">utils.config.new_component()</span></code></a></p></li>
 </ul>
 </div>

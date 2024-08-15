@@ -7,17 +7,3 @@ anthropic_client
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-   .. rubric:: Functions
-
-   .. autosummary::
-
-      get_first_message_content
-
-   .. rubric:: Classes
-
-   .. autosummary::
-
-      AnthropicAPIClient
-

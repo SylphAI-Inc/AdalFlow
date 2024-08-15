@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -461,8 +426,7 @@
                 <article class="bd-article">
                   
   <h1>All modules for which code is available</h1>
-<ul><li><a href="components/agent/react.html">components.agent.react</a></li>
-<li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
+<ul><li><a href="components/data_process/data_components.html">components.data_process.data_components</a></li>
 <li><a href="components/data_process/text_splitter.html">components.data_process.text_splitter</a></li>
 <li><a href="components/memory/memory.html">components.memory.memory</a></li>
 <li><a href="components/model_client/anthropic_client.html">components.model_client.anthropic_client</a></li>
@@ -473,6 +437,7 @@
 <li><a href="components/model_client/openai_client.html">components.model_client.openai_client</a></li>
 <li><a href="components/model_client/transformers_client.html">components.model_client.transformers_client</a></li>
 <li><a href="components/model_client/utils.html">components.model_client.utils</a></li>
+<li><a href="components/output_parsers/dataclass_parser.html">components.output_parsers.dataclass_parser</a></li>
 <li><a href="components/output_parsers/outputs.html">components.output_parsers.outputs</a></li>
 <li><a href="components/retriever/bm25_retriever.html">components.retriever.bm25_retriever</a></li>
 <li><a href="components/retriever/faiss_retriever.html">components.retriever.faiss_retriever</a></li>
@@ -488,27 +453,43 @@
 <li><a href="core/functional.html">core.functional</a></li>
 <li><a href="core/generator.html">core.generator</a></li>
 <li><a href="core/model_client.html">core.model_client</a></li>
-<li><a href="core/parameter.html">core.parameter</a></li>
 <li><a href="core/prompt_builder.html">core.prompt_builder</a></li>
 <li><a href="core/retriever.html">core.retriever</a></li>
 <li><a href="core/string_parser.html">core.string_parser</a></li>
 <li><a href="core/tokenizer.html">core.tokenizer</a></li>
 <li><a href="core/tool_manager.html">core.tool_manager</a></li>
 <li><a href="core/types.html">core.types</a></li>
+<li><a href="datasets/big_bench_hard.html">datasets.big_bench_hard</a></li>
+<li><a href="datasets/hotpot_qa.html">datasets.hotpot_qa</a></li>
+<li><a href="datasets/types.html">datasets.types</a></li>
 <li><a href="eval/answer_match_acc.html">eval.answer_match_acc</a></li>
+<li><a href="eval/base.html">eval.base</a></li>
 <li><a href="eval/llm_as_judge.html">eval.llm_as_judge</a></li>
 <li><a href="eval/retriever_recall.html">eval.retriever_recall</a></li>
 <li><a href="eval/retriever_relevance.html">eval.retriever_relevance</a></li>
-<li><a href="optim/few_shot_optimizer.html">optim.few_shot_optimizer</a></li>
-<li><a href="optim/llm_augment.html">optim.llm_augment</a></li>
-<li><a href="optim/llm_optimizer.html">optim.llm_optimizer</a></li>
+<li><a href="optim/few_shot/bootstrap_optimizer.html">optim.few_shot.bootstrap_optimizer</a></li>
+<li><a href="optim/function.html">optim.function</a></li>
+<li><a href="optim/grad_component.html">optim.grad_component</a></li>
+<li><a href="optim/loss_component.html">optim.loss_component</a></li>
 <li><a href="optim/optimizer.html">optim.optimizer</a></li>
+<li><a href="optim/parameter.html">optim.parameter</a></li>
 <li><a href="optim/sampler.html">optim.sampler</a></li>
+<li><a href="optim/text_grad/llm_text_loss.html">optim.text_grad.llm_text_loss</a></li>
+<li><a href="optim/text_grad/ops.html">optim.text_grad.ops</a></li>
+<li><a href="optim/text_grad/text_loss_with_eval_fn.html">optim.text_grad.text_loss_with_eval_fn</a></li>
+<li><a href="optim/text_grad/tgd_optimer.html">optim.text_grad.tgd_optimer</a></li>
+<li><a href="optim/trainer/adal.html">optim.trainer.adal</a></li>
+<li><a href="optim/trainer/trainer.html">optim.trainer.trainer</a></li>
+<li><a href="optim/types.html">optim.types</a></li>
+<li><a href="tracing/callback_manager.html">tracing.callback_manager</a></li>
 <li><a href="tracing/decorators.html">tracing.decorators</a></li>
 <li><a href="tracing/generator_call_logger.html">tracing.generator_call_logger</a></li>
 <li><a href="tracing/generator_state_logger.html">tracing.generator_state_logger</a></li>
+<li><a href="utils/cache.html">utils.cache</a></li>
 <li><a href="utils/config.html">utils.config</a></li>
+<li><a href="utils/data.html">utils.data</a></li>
 <li><a href="utils/file_io.html">utils.file_io</a></li>
+<li><a href="utils/global_config.html">utils.global_config</a></li>
 <li><a href="utils/lazy_import.html">utils.lazy_import</a></li>
 <li><a href="utils/logger.html">utils.logger</a></li>
 <li><a href="utils/registry.html">utils.registry</a></li>

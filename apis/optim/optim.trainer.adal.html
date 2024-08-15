@@ -1,0 +1,899 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>adal &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'apis/optim/optim.trainer.adal';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="trainer" href="optim.trainer.trainer.html" />
+    <link rel="prev" title="trainer" href="optim.trainer.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.container.html">container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tool_manager.html">tool_manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.utils.html">utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.memory.memory.html">memory</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Optimization</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="optim.parameter.html">parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="optim.trainer.html">trainer</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
+    
+    
+    <li class="breadcrumb-item"><a href="optim.trainer.html" class="nav-link">trainer</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">adal</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-optim.trainer.adal">
+<span id="adal"></span><span id="optim-trainer-adal"></span><h1>adal<a class="headerlink" href="#module-optim.trainer.adal" title="Link to this heading">#</a></h1>
+<p>AdalComponent provides an interface to compose different parts, from eval_fn, train_step, loss_step, optimizers, backward engine, teacher generator, etc to work with Trainer.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AdalComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Component</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LossComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_engine_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">teacher_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_optimizer_model_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></p>
+<p>Define a train, eval, and test step for a task pipeline.</p>
+<p>This serves the following purposes:
+1. Organize all parts for training a task pipeline organized in one place.
+2. Help with debugging and testing before the actual training.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.task">
+<span class="sig-name descname"><span class="pre">task</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Component</span></em><a class="headerlink" href="#optim.trainer.adal.AdalComponent.task" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.eval_fn">
+<span class="sig-name descname"><span class="pre">eval_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Callable</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.adal.AdalComponent.eval_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.loss_fn">
+<span class="sig-name descname"><span class="pre">loss_fn</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LossComponent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.adal.AdalComponent.loss_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.backward_engine">
+<span class="sig-name descname"><span class="pre">backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../core/core.generator.html#core.generator.BackwardEngine" title="core.generator.BackwardEngine"><span class="pre">BackwardEngine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.trainer.adal.AdalComponent.backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.handle_one_task_sample">
+<span class="sig-name descname"><span class="pre">handle_one_task_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.handle_one_task_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.handle_one_task_sample" title="Link to this definition">#</a></dt>
+<dd><p>Return a task call and kwargs for one training sample.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">handle_one_task_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">sample</span><span class="o">.</span><span class="n">x</span><span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.handle_one_loss_sample">
+<span class="sig-name descname"><span class="pre">handle_one_loss_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.handle_one_loss_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.handle_one_loss_sample" title="Link to this definition">#</a></dt>
+<dd><p>Return a loss call and kwargs for one loss sample.</p>
+<p>Need to ensure y_pred is a Parameter, and the real input to use
+for y_gt and y_pred is <cite>eval_input</cite>.
+Make sure it is setup.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># &quot;y&quot; and &quot;y_gt&quot; are arguments needed</span>
+<span class="c1">#by the eval_fn inside of the loss_fn if it is a EvalFnToTextLoss</span>
+
+<span class="k">def</span> <span class="nf">handle_one_loss_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">Example</span><span class="p">,</span> <span class="n">pred</span><span class="p">:</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="c1"># prepare gt parameter</span>
+    <span class="n">y_gt</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y_gt&quot;</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">eval_input</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">answer</span><span class="p">,</span>
+        <span class="n">requires_opt</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># pred&#39;s full_response is the output of the task pipeline which is GeneratorOutput</span>
+    <span class="n">pred</span><span class="o">.</span><span class="n">eval_input</span> <span class="o">=</span> <span class="n">pred</span><span class="o">.</span><span class="n">full_response</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loss_fn</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;kwargs&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y_gt</span><span class="p">,</span> <span class="s2">&quot;y_pred&quot;</span><span class="p">:</span> <span class="n">pred</span><span class="p">}}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.evaluate_one_sample">
+<span class="sig-name descname"><span class="pre">evaluate_one_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.evaluate_one_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.evaluate_one_sample" title="Link to this definition">#</a></dt>
+<dd><p>Used to evaluate a single sample. Return a score in range [0, 1].
+The higher the score the better the prediction.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optimizer</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_optimizers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_optimizers" title="Link to this definition">#</a></dt>
+<dd><p>Note: When you use text optimizor, ensure you call <cite>configure_backward_engine_engine</cite> too.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_backward_engine">
+<span class="sig-name descname"><span class="pre">configure_backward_engine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_backward_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.evaluate_samples">
+<span class="sig-name descname"><span class="pre">evaluate_samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.evaluate_samples"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.evaluate_samples" title="Link to this definition">#</a></dt>
+<dd><p>Run evaluation on samples. Use <code class="docutils literal notranslate"><span class="pre">evaluate_one_sample</span></code> defined by the user.</p>
+<p>Metadata is used for storing context that you can find from generator input.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ensure it supports both Tuple(batch) and a list of any type (fits for datasets).</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.pred_step">
+<span class="sig-name descname"><span class="pre">pred_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">running_eval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.pred_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.pred_step" title="Link to this definition">#</a></dt>
+<dd><p>Applies to both train and eval mode.</p>
+<p>If you require self.task.train() to be called before training, you can override this method as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">train_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.train_step">
+<span class="sig-name descname"><span class="pre">train_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.train_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.train_step" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.validate_condition">
+<span class="sig-name descname"><span class="pre">validate_condition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.validate_condition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.validate_condition" title="Link to this definition">#</a></dt>
+<dd><p>In default, trainer will validate at every step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.validation_step">
+<span class="sig-name descname"><span class="pre">validation_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minimum_score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">EvaluationResult</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.validation_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.validation_step" title="Link to this definition">#</a></dt>
+<dd><p>If you require self.task.eval() to be called before validation, you can override this method as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">validation_step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validation_step</span><span class="p">(</span><span class="n">batch</span><span class="p">,</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="n">num_workers</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.loss_step">
+<span class="sig-name descname"><span class="pre">loss_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_preds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_workers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="index.html#optim.Parameter" title="optim.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.loss_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.loss_step" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the loss for the batch.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_teacher_generator">
+<span class="sig-name descname"><span class="pre">configure_teacher_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_teacher_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_teacher_generator" title="Link to this definition">#</a></dt>
+<dd><p>Configure a teach generator for all generators in the task for bootstrapping examples.</p>
+<p>You can call <cite>configure_teacher_generator_helper</cite> to easily configure it by passing the model_client and model_kwargs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_teacher_generator_helper">
+<span class="sig-name descname"><span class="pre">configure_teacher_generator_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_teacher_generator_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_teacher_generator_helper" title="Link to this definition">#</a></dt>
+<dd><p>Configure a teach generator for all generators in the task for bootstrapping examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_backward_engine_helper">
+<span class="sig-name descname"><span class="pre">configure_backward_engine_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_backward_engine_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_backward_engine_helper" title="Link to this definition">#</a></dt>
+<dd><p>Configure a backward engine for all generators in the task for bootstrapping examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_callbacks">
+<span class="sig-name descname"><span class="pre">configure_callbacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'traces'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_callbacks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_callbacks" title="Link to this definition">#</a></dt>
+<dd><p>In default we config the failure generator callback. User can overwrite this method to add more callbacks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.run_one_task_sample">
+<span class="sig-name descname"><span class="pre">run_one_task_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.run_one_task_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.run_one_task_sample" title="Link to this definition">#</a></dt>
+<dd><p>Run one training sample. Used for debugging and testing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.run_one_loss_sample">
+<span class="sig-name descname"><span class="pre">run_one_loss_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.run_one_loss_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.run_one_loss_sample" title="Link to this definition">#</a></dt>
+<dd><p>Run one loss sample. Used for debugging and testing.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#optim.trainer.adal.AdalComponent.training" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_demo_optimizer_helper">
+<span class="sig-name descname"><span class="pre">configure_demo_optimizer_helper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DemoOptimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_demo_optimizer_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_demo_optimizer_helper" title="Link to this definition">#</a></dt>
+<dd><p>One demo optimizer can handle multiple demo parameters.
+But the demo optimizer will only have one dataset (trainset) configured by the Trainer.</p>
+<p>If users want to use different trainset for different demo optimizer,
+they can configure it by themselves.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.trainer.adal.AdalComponent.configure_text_optimizer_helper">
+<span class="sig-name descname"><span class="pre">configure_text_optimizer_helper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_client</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/core.model_client.html#core.model_client.ModelClient" title="core.model_client.ModelClient"><span class="pre">ModelClient</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">TextOptimizer</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/trainer/adal.html#AdalComponent.configure_text_optimizer_helper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.trainer.adal.AdalComponent.configure_text_optimizer_helper" title="Link to this definition">#</a></dt>
+<dd><p>One text optimizer can handle multiple text parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="optim.trainer.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">trainer</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="optim.trainer.trainer.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">trainer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent"><code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.task"><code class="docutils literal notranslate"><span class="pre">AdalComponent.task</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.eval_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.eval_fn</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.loss_fn"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_fn</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.backward_engine</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.handle_one_task_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.handle_one_task_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.handle_one_loss_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.handle_one_loss_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.evaluate_one_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.evaluate_one_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_optimizers()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_backward_engine"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.evaluate_samples"><code class="docutils literal notranslate"><span class="pre">AdalComponent.evaluate_samples()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.pred_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.pred_step()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.train_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.train_step()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.validate_condition"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validate_condition()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.validation_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.validation_step()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.loss_step"><code class="docutils literal notranslate"><span class="pre">AdalComponent.loss_step()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_teacher_generator"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_teacher_generator_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_teacher_generator_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_backward_engine_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_backward_engine_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_callbacks"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_callbacks()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.run_one_task_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_task_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.run_one_loss_sample"><code class="docutils literal notranslate"><span class="pre">AdalComponent.run_one_loss_sample()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.training"><code class="docutils literal notranslate"><span class="pre">AdalComponent.training</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_demo_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_demo_optimizer_helper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.trainer.adal.AdalComponent.configure_text_optimizer_helper"><code class="docutils literal notranslate"><span class="pre">AdalComponent.configure_text_optimizer_helper()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

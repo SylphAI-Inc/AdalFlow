@@ -1,0 +1,9 @@
+.. _optim-few_shot-bootstrap_optimizer:
+
+bootstrap_optimizer
+===========================================
+
+.. automodule:: optim.few_shot.bootstrap_optimizer
+   :members:
+   :undoc-members:
+   :show-inheritance:

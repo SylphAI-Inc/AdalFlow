@@ -9,6 +9,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   components.output_parsers.dataclass_parser
    components.output_parsers.outputs
 
 

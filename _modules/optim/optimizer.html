@@ -102,55 +102,6 @@
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-<aside class="bd-header-announcement" aria-label="Announcement">
-  <div class="bd-header-announcement__content">
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var bannerClosed = localStorage.getItem("bannerClosed");
-            var bannerHeader = document.querySelector('.bd-header-announcement');
-
-            if (bannerClosed !== "true") {
-                // Create the announcement banner div dynamically
-                var banner = document.createElement('div');
-                banner.id = 'announcement-banner';
-                banner.className = 'announcement-banner';
-
-                // Create the content for the announcement
-                banner.innerHTML = `
-                    <p>⭐️ If you find LightRAG helpful, give it a star on <a href='https://github.com/SylphAI-Inc/LightRAG'>GitHub!</a> ⭐️</p>
-                    <button onclick="closeBanner()">×</button>
-                `;
-
-                // Append the banner to the banner header
-                if (bannerHeader) {
-                    bannerHeader.querySelector('.bd-header-announcement__content').appendChild(banner);
-                }
-
-                // Function to close the banner and remove it from the DOM
-                window.closeBanner = function() {
-                    if (bannerHeader) {
-                        bannerHeader.parentNode.removeChild(bannerHeader);
-                    }
-                    localStorage.setItem('bannerClosed', 'true');
-                };
-
-                // Scroll listener to hide banner on scroll
-                window.addEventListener('scroll', function() {
-                    if (document.documentElement.scrollTop > 0) {
-                        banner.style.display = 'none';
-                    } else {
-                        banner.style.display = 'flex'; // Ensure it remains flex
-                    }
-                });
-            } else {
-                if (bannerHeader) {
-                    bannerHeader.parentNode.removeChild(bannerHeader);
-                }
-            }
-        });
-    </script>
-    </div>
-</aside>
 
   
     <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
@@ -179,8 +130,8 @@
       
     
     
-    <img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
-    <script>document.write(`<img src="../../_static/LightRAG-logo-doc.jpeg" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
   
   
 </a></div>
@@ -204,7 +155,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -340,7 +298,14 @@
 
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="../../tutorials/index.html">
-    Tutorials
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
   </a>
 </li>
 
@@ -464,19 +429,119 @@
                 <article class="bd-article">
                   
   <h1>Source code for optim.optimizer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Base Classes for AdalFlow Optimizers, including Optimizer, TextOptimizer, and DemoOptimizer.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">TypeAlias</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">from</span> <span class="nn">adalflow.optim.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.base_data_class</span> <span class="kn">import</span> <span class="n">DataClass</span>
+
+<span class="n">ParamsT</span><span class="p">:</span> <span class="n">TypeAlias</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]]</span>
+
+
 <div class="viewcode-block" id="Optimizer">
 <a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.Optimizer">[docs]</a>
-<span></span><span class="k">class</span> <span class="nc">Optimizer</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Optimizer</span><span class="p">:</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Base class for all optimizers.&quot;&quot;&quot;</span>
+
+    <span class="n">proposing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ParamsT</span>
+
 <div class="viewcode-block" id="Optimizer.state_dict">
 <a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.Optimizer.state_dict">[docs]</a>
     <span class="k">def</span> <span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span></div>
 
 
+<div class="viewcode-block" id="Optimizer.propose">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.Optimizer.propose">[docs]</a>
+    <span class="k">def</span> <span class="nf">propose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;propose method is not implemented&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="Optimizer.step">
 <a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.Optimizer.step">[docs]</a>
     <span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;step method is not implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Optimizer.revert">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.Optimizer.revert">[docs]</a>
+    <span class="k">def</span> <span class="nf">revert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;revert method is not implemented&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TextOptimizer">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.TextOptimizer">[docs]</a>
+<span class="k">class</span> <span class="nc">TextOptimizer</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Base class for all text optimizers.</span>
+
+<span class="s2">    Text optimizer is via textual gradient descent, which is a variant of gradient descent that optimizes the text directly.</span>
+<span class="s2">    It will generate new values for a given text prompt.This includes:</span>
+<span class="s2">    - System prompt</span>
+<span class="s2">    - output format</span>
+<span class="s2">    - prompt template</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="TextOptimizer.zero_grad">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.TextOptimizer.zero_grad">[docs]</a>
+    <span class="k">def</span> <span class="nf">zero_grad</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all the gradients of the parameters.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;zero_grad method is not implemented&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DemoOptimizer">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.DemoOptimizer">[docs]</a>
+<span class="k">class</span> <span class="nc">DemoOptimizer</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
+
+    <span class="vm">__doc__</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Base class for all demo optimizers.</span>
+
+<span class="s2">    Demo optimizer are few-shot optimization, where it will sample raw examples from train dataset or bootstrap examples from the model&#39;s output.</span>
+<span class="s2">    It will work with a sampler to generate new values for a given text prompt.</span>
+
+<span class="s2">    If bootstrap is used, it will require a teacher genearator to generate the examples.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+
+    <span class="n">_traces</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>  <span class="c1"># key: parameter_id (demo)</span>
+    <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span>
+    <span class="n">_weighted</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="n">weighted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+
+<div class="viewcode-block" id="DemoOptimizer.use_weighted_sampling">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.DemoOptimizer.use_weighted_sampling">[docs]</a>
+    <span class="k">def</span> <span class="nf">use_weighted_sampling</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weighted</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_weighted</span> <span class="o">=</span> <span class="n">weighted</span></div>
+
+
+<div class="viewcode-block" id="DemoOptimizer.config_shots">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.DemoOptimizer.config_shots">[docs]</a>
+    <span class="k">def</span> <span class="nf">config_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Initialize the samples for each parameter.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;init method is not implemented&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DemoOptimizer.set_dataset">
+<a class="viewcode-back" href="../../apis/optim/optim.optimizer.html#optim.DemoOptimizer.set_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">DataClass</span><span class="p">]):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Set the dataset for the optimizer.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span></div>
 </div>
 
 </pre></div>

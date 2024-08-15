@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>parameter &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=5422b685" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/rtd_sphinx_search.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../_static/js/rtd_search_config.js"></script>
+    <script src="../../_static/js/rtd_sphinx_search.min.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'apis/optim/optim.parameter';</script>
+    <link rel="icon" href="../../_static/LightRAG-logo-circle.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="optimizer" href="optim.optimizer.html" />
+    <link rel="prev" title="Optimization" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/adalflow-logo.png" class="logo__image only-light" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>
+    <script>document.write(`<img src="../../_static/adalflow-logo.png" class="logo__image only-dark" alt="LightRAG: The Lightning Library for LLM Applications - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../get_started/index.html">
+    Get Started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../tutorials/index.html">
+    Developer Notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../use_cases/index.html">
+    Use Cases
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/SylphAI-Inc/LightRAG" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://discord.gg/ezzszrRZvT" title="Discord" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Discord</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../core/index.html">Core</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.base_data_class.html">base_data_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.component.html">component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.container.html">container</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.default_prompt_template.html">default_prompt_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.embedder.html">embedder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.generator.html">generator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.model_client.html">model_client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.prompt_builder.html">prompt_builder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.retriever.html">retriever</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.string_parser.html">string_parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.func_tool.html">func_tool</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tool_manager.html">tool_manager</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.db.html">db</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.functional.html">functional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../core/core.tokenizer.html">tokenizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../components/index.html">Components</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.model_client.html">model_client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.anthropic_client.html">anthropic_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.cohere_client.html">cohere_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.google_client.html">google_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.groq_client.html">groq_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.ollama_client.html">ollama_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.openai_client.html">openai_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.transformers_client.html">transformers_client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.model_client.utils.html">utils</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.retriever.html">retriever</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.bm25_retriever.html">bm25_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.faiss_retriever.html">faiss_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.llm_retriever.html">llm_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.postgres_retriever.html">postgres_retriever</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.retriever.reranker_retriever.html">reranker_retriever</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.output_parsers.html">output_parsers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.dataclass_parser.html">dataclass_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.output_parsers.outputs.html">outputs</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.agent.html">agent</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.agent.react.html">react</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.data_process.html">data_process</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.data_components.html">data_components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.data_process.text_splitter.html">text_splitter</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.reasoning.html">reasoning</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.reasoning.chain_of_thought.html">chain_of_thought</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../components/components.memory.html">memory</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../components/components.memory.memory.html">memory</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../datasets/index.html">Datasets</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.big_bench_hard.html">big_bench_hard</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.trec.html">trec</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.hotpot_qa.html">hotpot_qa</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../datasets/datasets.types.html">types</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../eval/index.html">Evaluation</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.base.html">base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.answer_match_acc.html">answer_match_acc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_recall.html">retriever_recall</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.retriever_relevance.html">retriever_relevance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eval/eval.llm_as_judge.html">llm_as_judge</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Optimization</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">parameter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.optimizer.html">optimizer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.grad_component.html">grad_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.loss_component.html">loss_component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optim.types.html">types</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="optim.few_shot.html">few_shot</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.few_shot.bootstrap_optimizer.html">bootstrap_optimizer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="optim.text_grad.html">text_grad</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.backend_engine_prompt.html">backend_engine_prompt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.llm_text_loss.html">llm_text_loss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.ops.html">ops</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.text_loss_with_eval_fn.html">text_loss_with_eval_fn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.text_grad.tgd_optimer.html">tgd_optimer</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="optim.trainer.html">trainer</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.adal.html">adal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optim.trainer.trainer.html">trainer</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tracing/index.html">Tracing</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.decorators.html">decorators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_state_logger.html">generator_state_logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tracing/tracing.generator_call_logger.html">generator_call_logger</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../utils/index.html">Utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.data.html">data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.setup_env.html">setup_env</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.logger.html">logger</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.file_io.html">file_io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.lazy_import.html">lazy_import</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.registry.html">registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utils/utils.cache.html">cache</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API Reference</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">Optimization</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">parameter</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-optim.parameter">
+<span id="parameter"></span><span id="optim-parameter"></span><h1>parameter<a class="headerlink" href="#module-optim.parameter" title="Link to this heading">#</a></h1>
+<p>Parameter is used by Optimizer, Trainers, AdalComponent to auto-optimizations</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.GradientContext">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GradientContext</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">response_desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#GradientContext"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.GradientContext" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.GradientContext.variable_desc">
+<span class="sig-name descname"><span class="pre">variable_desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.GradientContext.variable_desc" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.GradientContext.response_desc">
+<span class="sig-name descname"><span class="pre">response_desc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.GradientContext.response_desc" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.GradientContext.context">
+<span class="sig-name descname"><span class="pre">context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.GradientContext.context" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="optim.parameter.Parameter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data:</span> <span class="pre">~optim.parameter.T</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_opt:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">role_desc:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_type:</span> <span class="pre">~adalflow.optim.types.ParameterType</span> <span class="pre">=</span> <span class="pre">&lt;ParameterType.PROMPT:</span> <span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'Instruction</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">language</span> <span class="pre">model</span> <span class="pre">on</span> <span class="pre">task</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">and</span> <span class="pre">format.'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gradient_prompt:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw_response:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_to_optimizer:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instruction_to_backward_engine:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_input:</span> <span class="pre">object</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_response_id:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>A data container to represent a parameter used for optimization.</p>
+<p>A parameter enforce a specific data type and can be updated in-place.
+When parameters are used in a component - when they are assigned as Component attributes
+they are automatically added to the list of its parameters, and  will
+appear in the <code class="xref py py-meth docutils literal notranslate"><span class="pre">parameters()</span></code> or <code class="xref py py-meth docutils literal notranslate"><span class="pre">named_parameters()</span></code> method.</p>
+<p>Args:</p>
+<p>End users only need to create the Parameter with four arguments and pass it to the
+prompt_kwargs in the Generator.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>data (str): the data of the parameter</p></li>
+<li><p>requires_opt (bool, optional): if the parameter requires optimization. Default: <cite>True</cite></p></li>
+<li><p>role_desc.</p></li>
+<li><p>param_type, incuding ParameterType.PROMPT for instruction optimization, ParameterType.DEMOS</p></li>
+</ul>
+<p>for few-shot optimization.
+- instruction_to_optimizer (str, optional): instruction to the optimizer. Default: <cite>None</cite>
+- instruction_to_backward_engine (str, optional): instruction to the backward engine. Default: <cite>None</cite></p>
+</div></blockquote>
+<p>The parameter users created will be automatically assigned to the variable_name/key in the prompt_kwargs
+for easy reading and debugging in the trace_graph.</p>
+<p>References:</p>
+<ol class="arabic simple">
+<li><p><a class="github reference external" href="https://github.com/karpathy/micrograd/blob/master/micrograd/engine.py">karpathy/micrograd</a></p></li>
+</ol>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.proposing">
+<span class="sig-name descname"><span class="pre">proposing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#optim.parameter.Parameter.proposing" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.predecessors">
+<span class="sig-name descname"><span class="pre">predecessors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.parameter.Parameter.predecessors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.peers">
+<span class="sig-name descname"><span class="pre">peers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#optim.parameter.Parameter.peers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.input_args">
+<span class="sig-name descname"><span class="pre">input_args</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.input_args" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.full_response">
+<span class="sig-name descname"><span class="pre">full_response</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.full_response" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.gradients">
+<span class="sig-name descname"><span class="pre">gradients</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.parameter.Parameter.gradients" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.gradient_prompt">
+<span class="sig-name descname"><span class="pre">gradient_prompt</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.Parameter.gradient_prompt" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.gradients_context">
+<span class="sig-name descname"><span class="pre">gradients_context</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optim.parameter.GradientContext" title="optim.parameter.GradientContext"><span class="pre">GradientContext</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#optim.parameter.Parameter.gradients_context" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.instruction_to_optimizer">
+<span class="sig-name descname"><span class="pre">instruction_to_optimizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.Parameter.instruction_to_optimizer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.instruction_to_backward_engine">
+<span class="sig-name descname"><span class="pre">instruction_to_backward_engine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#optim.parameter.Parameter.instruction_to_backward_engine" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.eval_input">
+<span class="sig-name descname"><span class="pre">eval_input</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">object</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.eval_input" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.from_response_id">
+<span class="sig-name descname"><span class="pre">from_response_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#optim.parameter.Parameter.from_response_id" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.check_if_already_computed_gradient_respect_to">
+<span class="sig-name descname"><span class="pre">check_if_already_computed_gradient_respect_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">response_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.check_if_already_computed_gradient_respect_to"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.check_if_already_computed_gradient_respect_to" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_gradient">
+<span class="sig-name descname"><span class="pre">add_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_gradient" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_predecessors">
+<span class="sig-name descname"><span class="pre">set_predecessors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predecessors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_predecessors"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_predecessors" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_grad_fn">
+<span class="sig-name descname"><span class="pre">set_grad_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_grad_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_grad_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_param_info">
+<span class="sig-name descname"><span class="pre">get_param_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_param_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_param_info" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_peers">
+<span class="sig-name descname"><span class="pre">set_peers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">peers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_peers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_peers" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.trace_forward_pass">
+<span class="sig-name descname"><span class="pre">trace_forward_pass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_response</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.trace_forward_pass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.trace_forward_pass" title="Link to this definition">#</a></dt>
+<dd><p>Trace the forward pass of the parameter.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_eval_fn_input">
+<span class="sig-name descname"><span class="pre">set_eval_fn_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eval_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_eval_fn_input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_eval_fn_input" title="Link to this definition">#</a></dt>
+<dd><p>Set the input for the eval_fn.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.set_score">
+<span class="sig-name descname"><span class="pre">set_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.set_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.set_score" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_to_trace">
+<span class="sig-name descname"><span class="pre">add_to_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataClass</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_to_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_to_trace" title="Link to this definition">#</a></dt>
+<dd><p>Called by the generator.forward to add a trace to the parameter.</p>
+<p>It is important to allow updating to the trace, as this will give different sampling weight.
+If the score increases as the training going on, it will become less likely to be sampled,
+allowing the samples to be more diverse. Or else, it will keep sampling failed examples.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.add_score_to_trace">
+<span class="sig-name descname"><span class="pre">add_score_to_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_teacher</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.add_score_to_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.add_score_to_trace" title="Link to this definition">#</a></dt>
+<dd><p>Called by the generator.backward to add the eval score to the trace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.propose_data">
+<span class="sig-name descname"><span class="pre">propose_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">DataClass</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.propose_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.propose_data" title="Link to this definition">#</a></dt>
+<dd><p>Used by optimizer to put the new data, and save the previous data in case of revert.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.revert_data">
+<span class="sig-name descname"><span class="pre">revert_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.revert_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.revert_data" title="Link to this definition">#</a></dt>
+<dd><p>Revert the data to the previous data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.step_data">
+<span class="sig-name descname"><span class="pre">step_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">include_demos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.step_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.step_data" title="Link to this definition">#</a></dt>
+<dd><p>Use PyTorch’s optimizer syntax to finalize the update of the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_grad_fn">
+<span class="sig-name descname"><span class="pre">get_grad_fn</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_grad_fn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_grad_fn" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.update_value">
+<span class="sig-name descname"><span class="pre">update_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.update_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.update_value" title="Link to this definition">#</a></dt>
+<dd><p>Update the parameter’s value in-place, checking for type correctness.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.reset_gradients">
+<span class="sig-name descname"><span class="pre">reset_gradients</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.reset_gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.reset_gradients" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.reset_gradients_context">
+<span class="sig-name descname"><span class="pre">reset_gradients_context</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.reset_gradients_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.reset_gradients_context" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradients_names">
+<span class="sig-name descname"><span class="pre">get_gradients_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradients_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradients_names" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_gradient_and_context_text">
+<span class="sig-name descname"><span class="pre">get_gradient_and_context_text</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_gradient_and_context_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_gradient_and_context_text" title="Link to this definition">#</a></dt>
+<dd><p>Aggregates and returns:
+1. the gradients
+2. the context text for which the gradients are computed</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.get_short_value">
+<span class="sig-name descname"><span class="pre">get_short_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_words_offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.get_short_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.get_short_value" title="Link to this definition">#</a></dt>
+<dd><p>Returns a short version of the value of the variable. We sometimes use it during optimization, when we want to see the value of the variable, but don’t want to see the entire value.
+This is sometimes to save tokens, sometimes to reduce repeating very long variables, such as code or solutions to hard problems.
+:param n_words_offset: The number of words to show from the beginning and the end of the value.
+:type n_words_offset: int</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.trace_graph">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trace_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#optim.parameter.Parameter" title="optim.parameter.Parameter"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.trace_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.trace_graph" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.backward" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.draw_graph">
+<span class="sig-name descname"><span class="pre">draw_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_grads</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'png'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'svg'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rankdir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'LR'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'TB'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'TB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.draw_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.draw_graph" title="Link to this definition">#</a></dt>
+<dd><p>Draw the graph of the parameter and its gradients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>add_grads</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to add gradients to the graph. Defaults to True.</p></li>
+<li><p><strong>format</strong> (<em>str</em><em>, </em><em>optional</em>) – The format of the output file. Defaults to “png”.</p></li>
+<li><p><strong>rankdir</strong> (<em>str</em><em>, </em><em>optional</em>) – The direction of the graph. Defaults to “TB”.</p></li>
+<li><p><strong>filepath</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to save the graph. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.to_dict" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="optim.parameter.Parameter.from_dict">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/optim/parameter.html#Parameter.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#optim.parameter.Parameter.from_dict" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Optimization</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="optim.optimizer.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">optimizer</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.GradientContext"><code class="docutils literal notranslate"><span class="pre">GradientContext</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.GradientContext.variable_desc"><code class="docutils literal notranslate"><span class="pre">GradientContext.variable_desc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.GradientContext.response_desc"><code class="docutils literal notranslate"><span class="pre">GradientContext.response_desc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.GradientContext.context"><code class="docutils literal notranslate"><span class="pre">GradientContext.context</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter"><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.proposing"><code class="docutils literal notranslate"><span class="pre">Parameter.proposing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.predecessors"><code class="docutils literal notranslate"><span class="pre">Parameter.predecessors</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.peers"><code class="docutils literal notranslate"><span class="pre">Parameter.peers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.input_args"><code class="docutils literal notranslate"><span class="pre">Parameter.input_args</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.full_response"><code class="docutils literal notranslate"><span class="pre">Parameter.full_response</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.gradients</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.gradient_prompt"><code class="docutils literal notranslate"><span class="pre">Parameter.gradient_prompt</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.gradients_context"><code class="docutils literal notranslate"><span class="pre">Parameter.gradients_context</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.instruction_to_optimizer"><code class="docutils literal notranslate"><span class="pre">Parameter.instruction_to_optimizer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.instruction_to_backward_engine"><code class="docutils literal notranslate"><span class="pre">Parameter.instruction_to_backward_engine</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.eval_input"><code class="docutils literal notranslate"><span class="pre">Parameter.eval_input</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.from_response_id"><code class="docutils literal notranslate"><span class="pre">Parameter.from_response_id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.check_if_already_computed_gradient_respect_to"><code class="docutils literal notranslate"><span class="pre">Parameter.check_if_already_computed_gradient_respect_to()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.add_gradient"><code class="docutils literal notranslate"><span class="pre">Parameter.add_gradient()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.set_predecessors"><code class="docutils literal notranslate"><span class="pre">Parameter.set_predecessors()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.set_grad_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.set_grad_fn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.get_param_info"><code class="docutils literal notranslate"><span class="pre">Parameter.get_param_info()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.set_peers"><code class="docutils literal notranslate"><span class="pre">Parameter.set_peers()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.trace_forward_pass"><code class="docutils literal notranslate"><span class="pre">Parameter.trace_forward_pass()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.set_eval_fn_input"><code class="docutils literal notranslate"><span class="pre">Parameter.set_eval_fn_input()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.set_score"><code class="docutils literal notranslate"><span class="pre">Parameter.set_score()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.add_to_trace"><code class="docutils literal notranslate"><span class="pre">Parameter.add_to_trace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.add_score_to_trace"><code class="docutils literal notranslate"><span class="pre">Parameter.add_score_to_trace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.propose_data"><code class="docutils literal notranslate"><span class="pre">Parameter.propose_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.revert_data"><code class="docutils literal notranslate"><span class="pre">Parameter.revert_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.step_data"><code class="docutils literal notranslate"><span class="pre">Parameter.step_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.get_grad_fn"><code class="docutils literal notranslate"><span class="pre">Parameter.get_grad_fn()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.update_value"><code class="docutils literal notranslate"><span class="pre">Parameter.update_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.reset_gradients"><code class="docutils literal notranslate"><span class="pre">Parameter.reset_gradients()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.reset_gradients_context"><code class="docutils literal notranslate"><span class="pre">Parameter.reset_gradients_context()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.get_gradients_names"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradients_names()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.get_gradient_and_context_text"><code class="docutils literal notranslate"><span class="pre">Parameter.get_gradient_and_context_text()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.get_short_value"><code class="docutils literal notranslate"><span class="pre">Parameter.get_short_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.trace_graph"><code class="docutils literal notranslate"><span class="pre">Parameter.trace_graph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.backward"><code class="docutils literal notranslate"><span class="pre">Parameter.backward()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.draw_graph"><code class="docutils literal notranslate"><span class="pre">Parameter.draw_graph()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.to_dict"><code class="docutils literal notranslate"><span class="pre">Parameter.to_dict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optim.parameter.Parameter.from_dict"><code class="docutils literal notranslate"><span class="pre">Parameter.from_dict()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, SylphAI, Inc.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

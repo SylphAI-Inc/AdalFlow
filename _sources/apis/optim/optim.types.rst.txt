@@ -1,0 +1,9 @@
+.. _optim-types:
+
+types
+==================
+
+.. automodule:: optim.types
+   :members:
+   :undoc-members:
+   :show-inheritance:
