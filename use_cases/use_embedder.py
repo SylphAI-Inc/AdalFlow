@@ -1,9 +1,9 @@
 import asyncio
 from typing import List, Any
 
-from lightrag.core.embedder import Embedder
-from lightrag.core.component import Component
-from lightrag.components.model_client import OpenAIClient
+from adalflow.core.embedder import Embedder
+from adalflow.core.component import Component
+from adalflow.components.model_client import OpenAIClient
 
 
 class SimpleEmbedder(Component):

@@ -1,9 +1,9 @@
-from lightrag.components.model_client import OpenAIClient
-from lightrag.core.types import Document
-from lightrag.components.retriever import LLMRetriever
-from lightrag.core.string_parser import ListParser
-from lightrag.components.data_process import (
-    DocumentSplitter,
+from adalflow.components.model_client import OpenAIClient
+from adalflow.core.types import Document
+from adalflow.components.retriever import LLMRetriever
+from adalflow.core.string_parser import ListParser
+from adalflow.components.data_process import (
+    TextSplitter,
 )
 
 import dotenv
@@ -12,7 +12,7 @@ dotenv.load_dotenv(dotenv_path=".env", override=True)
 
 # Document preparation and splitting
 splitter_settings = {"split_by": "word", "split_length": 200, "split_overlap": 100}
-text_splitter = DocumentSplitter(**splitter_settings)
+text_splitter = TextSplitter(**splitter_settings)
 documents = [
     Document(
         id="doc1",

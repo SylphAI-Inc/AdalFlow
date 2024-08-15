@@ -20,13 +20,14 @@ help:
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 apidoc:
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../lightrag/lightrag/core --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../lightrag/lightrag/components --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/core ../adalflow/adalflow/core --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/components ../adalflow/adalflow/components --separate --force
 #--templatedir=$(SOURCEDIR)/_templates
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../lightrag/lightrag/eval --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../lightrag/lightrag/optim --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../lightrag/lightrag/utils --separate --force
-	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../lightrag/lightrag/tracing --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/eval ../adalflow/adalflow/eval --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/optim ../adalflow/adalflow/optim --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/datasets ../adalflow/adalflow/datasets --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/utils ../adalflow/adalflow/utils --separate --force
+	@sphinx-apidoc -o $(APIDOCOUTDIR)/tracing ../adalflow/adalflow/tracing --separate --force
 
 
 

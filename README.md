@@ -24,8 +24,8 @@
 </h4>
 
 <p align="center">
-    <a href="https://pypi.org/project/lightRAG">
-        <img alt="PyPI Version" src="https://img.shields.io/pypi/v/lightRAG?style=flat-square">
+    <a href="https://pypi.org/project/adalflow/">
+        <img alt="PyPI Version" src="https://img.shields.io/pypi/v/adalflow?style=flat-square">
     </a>
     <a href="https://star-history.com/#SylphAI-Inc/LightRAG">
         <img alt="GitHub stars" src="https://img.shields.io/github/stars/SylphAI-Inc/LightRAG?style=flat-square">
@@ -55,14 +55,13 @@
 
 <h1>
     <p align="center">
-        AdalFlow: The Library for Large Language Model Applications
+        AdalFlow: The Library for LLM Applications
     </p>
 </h1>
 
 AdalFlow helps developers build and optimize LLM task pipelines.
 Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
 
-Note: We are in the progress of renaming to adalflow from lightrag.
 
 # AdalFlow: A Tribute to Ada Lovelace
 
@@ -119,9 +118,9 @@ This leverages our two and only powerful base classes: `Component` as building b
 
 from dataclasses import dataclass, field
 
-from lightrag.core import Component, Generator, DataClass
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.components.output_parsers import JsonOutputParser
+from adalflow.core import Component, Generator, DataClass
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.components.output_parsers import JsonOutputParser
 
 @dataclass
 class QAOutput(DataClass):
@@ -283,7 +282,7 @@ self.generator = Generator(
 Install AdalFlow with pip:
 
 ```bash
-pip install lightrag
+pip install adalflow
 ```
 
 Please refer to the [full installation guide](https://lightrag.sylph.ai/get_started/installation.html) for more details.

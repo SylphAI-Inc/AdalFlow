@@ -1,7 +1,7 @@
-from lightrag.core.types import Document
+from adalflow.core.types import Document
 
-from lightrag.components.retriever import LLMRetriever
-from lightrag.components.model_client import OpenAIClient
+from adalflow.components.retriever import LLMRetriever
+from adalflow.components.model_client import OpenAIClient
 
 
 def test_llm_retriever():

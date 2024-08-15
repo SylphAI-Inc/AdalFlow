@@ -2,16 +2,16 @@ from typing import Any, List, Optional
 import dotenv
 import yaml
 
-from lightrag.core.generator import Generator
-from lightrag.core.embedder import Embedder
+from adalflow.core.generator import Generator
+from adalflow.core.embedder import Embedder
 
-from lightrag.core.types import Document
+from adalflow.core.types import Document
 
-from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Component, Sequential
-from lightrag.core.db import LocalDB
+from adalflow.core.string_parser import JsonParser
+from adalflow.core.component import Component, Sequential
+from adalflow.core.db import LocalDB
 
-from lightrag.components.data_process import (
+from adalflow.components.data_process import (
     RetrieverOutputToContextStr,
     ToEmbeddings,
     DocumentSplitter,
@@ -23,8 +23,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 
 # from core.functional import generate_component_key
 
-from lightrag.components.model_client import OpenAIClient
-from lightrag.components.retriever import FAISSRetriever
+from adalflow.components.model_client import OpenAIClient
+from adalflow.components.retriever import FAISSRetriever
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     with open("./configs/rag.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)
-    # NOTE: for the ouput of this following code, check text_lightrag.txt
+    # NOTE: for the ouput of this following code, check text_adalflow.txt
     doc1 = Document(
         meta_data={"title": "Li Yin's profile"},
         text="My name is Li Yin, I love rock climbing" + "lots of nonsense text" * 500,

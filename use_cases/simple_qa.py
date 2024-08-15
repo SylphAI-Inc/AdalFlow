@@ -1,11 +1,11 @@
 import asyncio
 import time
 
-from lightrag.core.generator import Generator
-from lightrag.core.component import Component
-from lightrag.components.model_client import OpenAIClient
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.components.model_client import AnthropicAPIClient
+from adalflow.core.generator import Generator
+from adalflow.core.component import Component
+from adalflow.components.model_client import OpenAIClient
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.components.model_client import AnthropicAPIClient
 
 
 class SimpleQA(Component):

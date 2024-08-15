@@ -4,12 +4,12 @@ import yaml
 
 from datasets import load_dataset
 
-from lightrag.core.generator import Generator, GeneratorOutput
-from lightrag.core.types import Document
+from adalflow.core.generator import Generator, GeneratorOutput
+from adalflow.core.types import Document
 
-from lightrag.core.string_parser import JsonParser
-from lightrag.core.component import Component
-from lightrag.eval import (
+from adalflow.core.string_parser import JsonParser
+from adalflow.core.component import Component
+from adalflow.eval import (
     RetrieverRecall,
     RetrieverRelevance,
     AnswerMatchAcc,
@@ -18,7 +18,7 @@ from lightrag.eval import (
 
 from use_cases.rag import RAG
 
-from lightrag.components.model_client import OpenAIClient
+from adalflow.components.model_client import OpenAIClient
 
 
 dotenv.load_dotenv(dotenv_path=".env", override=True)
@@ -89,7 +89,7 @@ class CustomizedLLMJudge(Component):
 
 
 if __name__ == "__main__":
-    # NOTE: for the ouput of this following code, check text_lightrag.txt
+    # NOTE: for the ouput of this following code, check text_adalflow.txt
     with open("./use_cases/configs/rag_hotpotqa.yaml", "r") as file:
         settings = yaml.safe_load(file)
     print(settings)

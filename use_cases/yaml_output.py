@@ -1,13 +1,13 @@
-from lightrag.core.component import Component
-from lightrag.core.generator import Generator
-from lightrag.components.model_client import GroqAPIClient
-from lightrag.components.output_parsers import YamlOutputParser
+from adalflow.core.component import Component
+from adalflow.core.generator import Generator
+from adalflow.components.model_client import GroqAPIClient
+from adalflow.components.output_parsers import YamlOutputParser
 from dataclasses import dataclass
-from lightrag.utils import setup_env
+from adalflow.utils import setup_env
 
 
-from lightrag.core.base_data_class import DataClass, field
-from lightrag.core.types import GeneratorOutput
+from adalflow.core.base_data_class import DataClass, field
+from adalflow.core.types import GeneratorOutput
 
 
 @dataclass

@@ -5,36 +5,25 @@
 test_llamaindex.py
 outputs.txt
 core/__pycache__
-lightrag/__pycache__
+adalflow/__pycache__
 components/*/__pycache__
 components/__pycache__
 use_cases/__pycache__
 */__pycache__
-tests/__pycache__
-test_li.py
-test_li*
 dist/
-li_test/
 lib/
-logs/
 __pycache__/
 # docs/source/
-llama3/
 docs/build/
 docs/_build/
 # docs/source/_templates
 docs/source/documents/
 # docs/source/apis/*
-tests/log_test/*.log
-lib/
-li_test/
 .mypy_cache/
 .pytest_cache/
 local_cache/
 /*.txt
 *.pth
-data/
-traces/
 *.log
 storage/
 *.pkl
@@ -43,3 +32,7 @@ storage/
 /*.svg
 /*.csv
 index.faiss
+*.json
+*.svg
+# ignore the softlink to adalflow cache
+*.adalflow
