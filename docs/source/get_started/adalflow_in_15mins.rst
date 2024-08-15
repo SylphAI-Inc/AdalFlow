@@ -1,8 +1,9 @@
-Introduction to AdalFlow library
-===============================
+Learn AdalFlow in 15 minutes
+=============================
 
 
-AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
+AdalFlow provides easy way to build and to auto-optimize LLM task pipelines.
+We provide token-efficient and high-performing prompt optimization within a unified framework.
 
 Overview
 ----------------
