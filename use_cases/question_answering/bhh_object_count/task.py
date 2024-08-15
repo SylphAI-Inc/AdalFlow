@@ -67,7 +67,7 @@ few_shot_template = r"""<START_OF_SYSTEM_PROMPT>
 {{system_prompt}}
 {# Few shot demos #}
 {% if few_shot_demos is not none %}
-Learn from these examples:
+Here are some examples:
 {{few_shot_demos}}
 {% endif %}
 <END_OF_SYSTEM_PROMPT>
@@ -85,16 +85,16 @@ class ObjectCountTaskPipeline(adal.Component):
 
         system_prompt = adal.Parameter(
             # data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
-            data="You will answer a reasoning question. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+            data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
             role_desc="To give task instruction to the language model in the system prompt",
-            requires_opt=True,
+            requires_opt=False,
             param_type=ParameterType.PROMPT,
             instruction_to_optimizer="You can try to show examples to see if it helps.",
         )
         few_shot_demos = adal.Parameter(
             data=None,
             role_desc="To provide few shot demos to the language model",
-            requires_opt=False,
+            requires_opt=True,
             param_type=ParameterType.DEMOS,
         )
 

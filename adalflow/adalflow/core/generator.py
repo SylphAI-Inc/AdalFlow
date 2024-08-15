@@ -5,7 +5,7 @@ It is a pipeline that consists of three subcomponents."""
 import os
 import json
 
-from typing import Any, Dict, Optional, Union, Callable
+from typing import Any, Dict, Optional, Union, Callable, Tuple, List
 from copy import deepcopy
 import logging
 
@@ -168,7 +168,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
         self._teacher: Optional["Generator"] = None
 
     @staticmethod
-    def _get_default_mapping(output: "GeneratorOutput" = None) -> Dict[str, Callable]:
+    def _get_default_mapping(
+        output: "GeneratorOutput" = None,
+    ) -> Tuple[Dict[str, Callable], List[str]]:
 
         if (
             output.data
@@ -180,15 +182,20 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             output_mapping = {
                 f: lambda x, f=f: getattr(x.data, f) for f in output_fields
             }
-        elif output.data:
-            output_fields = ["raw_response", "data"]
+        elif output.raw_response:
+            output_fields = ["raw_response"]
             output_mapping = {f: lambda x, f=f: getattr(x, f) for f in output_fields}
-        elif output.error:
-            output_mapping = {
-                "error": lambda x: x.error,
-                "raw_response": lambda x: x.raw_response,
-            }
-        return output_mapping
+            output_fields = ["Answer"]
+            output_mapping["Example"] = output_mapping["raw_response"]
+            del output_mapping["raw_response"]
+        # elif output.error:
+        #     output_fields = ["raw_response", "error"]
+        #     output_mapping = {
+        #         "error": lambda x: x.error,
+        #         "raw_response": lambda x: x.raw_response,
+        #     }
+        #     output_fields = ["Answer"]
+        return output_mapping, output_fields
 
     def set_mock_output(
         self, mock_output: bool = True, mock_output_data: str = "mock data"
@@ -346,7 +353,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
 
         # map the input fields
         demo_data = {"id": id}
-        demo_data_class_output_mapping = self._get_default_mapping(output)
+        demo_data_class_output_mapping, output_fields = self._get_default_mapping(
+            output
+        )
 
         for k, v in input_prompt_kwargs.items():
             demo_data[k] = v
@@ -355,8 +364,9 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
             demo_data[key] = value(output)
 
         obj = DynamicDataClassFactory.from_dict(demo_data)
+        obj.set_input_fields([k for k in input_prompt_kwargs.keys()])
+        obj.set_output_fields(output_fields)
         if obj is None:
-            print(f"Error creating the demo data instance:{demo_data}")
             raise ValueError(f"Error creating the demo data instance:{demo_data}")
         return obj
 
