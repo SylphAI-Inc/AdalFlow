@@ -22,14 +22,20 @@ class BootstrapFewShot(DemoOptimizer):
     __doc__ = r"""BootstrapFewShot performs few-shot sampling used in few-shot ICL.
 
     It will be used to optimize paramters of demos.
+    Based on research from AdalFlow team and DsPy library.
 
-    Compared with Dspy's version, we added weighted sampling for both the raw and augmented demos
-    to prioritize failed demos but successful in augmented demos based on the evaluation score
-    while we backpropagate the demo samples.
+    Compared with Dspy's version:
+     1. we added weighted sampling for both the raw and augmented demos
+        to prioritize failed demos but successful in augmented demos based on the evaluation score
+        while we backpropagate the demo samples.
+     2. In default, we exclude the input fields from the augmented demos. Our reserch finds that
+        using the reasoning demostrations from teacher model can be more effective to just take inputs and output
+        samples and be more token efficient.
 
     Reference:
     - DsPy: Com-piling declarative language model calls into state-of-the-art pipelines.
     """
+    exclude_input_fields_from_bootstrap_demos: bool = True
 
     def __init__(
         self,
@@ -38,6 +44,7 @@ class BootstrapFewShot(DemoOptimizer):
         bootstrap_shots: Optional[int] = None,
         dataset: Optional[List[DataClass]] = None,
         weighted: bool = True,
+        exclude_input_fields_from_bootstrap_demos: bool = True,
     ):
         super().__init__(weighted=weighted, dataset=dataset)
         self.params = [
@@ -53,6 +60,9 @@ class BootstrapFewShot(DemoOptimizer):
         self.proposing = False
         self._teacher_scores: Dict[str, float] = {}  # data id to score
         self._student_scores: Dict[str, float] = {}  # data id to score
+        self.exclude_input_fields_from_bootstrap_demos = (
+            exclude_input_fields_from_bootstrap_demos
+        )
 
     def add_scores(self, ids: List[str], scores: List[float], is_teacher: bool = True):
         if len(ids) != len(scores):
@@ -160,11 +170,24 @@ class BootstrapFewShot(DemoOptimizer):
         return sampled_augmented_demos, sampled_raw_demos
 
     @staticmethod
-    def samples_to_str(samples: List[DataClass]) -> str:
+    def samples_to_str(
+        samples: List[DataClass], augmented: bool = False, exclude_inputs: bool = False
+    ) -> str:
         sample_strs = []
         for sample in samples:
             try:
-                sample_strs.append(sample.to_yaml(exclude=["id", "score"]))
+
+                # process the input fields
+                if augmented:
+                    exclude_fields = ["id", "score"]
+                    if exclude_inputs:
+                        exclude_fields.extend(sample.get_input_fields())
+                    yaml_str = sample.to_yaml(exclude=exclude_fields)
+                    # for f in input_fields:
+                    #     yaml_str = yaml_str.replace(f"{f}: ", "").strip()
+                else:
+                    yaml_str = sample.to_yaml(exclude=["id", "score"])
+                sample_strs.append(yaml_str + "\n")
             except Exception as e:
                 print(f"Error: {e} to yaml for {sample}")
                 sample_strs.append(str(sample))
@@ -188,12 +211,24 @@ class BootstrapFewShot(DemoOptimizer):
                         bootstrap_shots=self._bootstrap_shots,
                         weighted=self._weighted,
                     )
+                    print(
+                        f"sampled_augmented_demos: {[demo.id for demo in sampled_augmented_demos]}"
+                    )
                     samples = sampled_augmented_demos + sampled_raw_demos
+
                     demo_str = ""
-                    if len(samples) > 0:
+                    if len(sampled_augmented_demos) > 0:
 
-                        demo_str = self.samples_to_str(samples=samples)
-
+                        demo_str = self.samples_to_str(
+                            samples=sampled_augmented_demos,
+                            augmented=True,
+                            exclude_inputs=self.exclude_input_fields_from_bootstrap_demos,
+                        )
+                    if len(sampled_raw_demos) > 0:
+                        demo_str += "\n" + self.samples_to_str(
+                            samples=sampled_raw_demos, augmented=False
+                        )
+                    demo_str = demo_str.strip()
                     demo_param.propose_data(demo_str, samples)
                 except Exception as e:
                     print(f"Error: {e} for {demo_param.name}")

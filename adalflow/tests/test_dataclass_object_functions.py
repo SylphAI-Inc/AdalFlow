@@ -347,7 +347,7 @@ class TestDataClassYamlJsonConversion(unittest.TestCase):
         self.assertEqual(simple_json, expected_json)
 
         simple_yaml = simple.to_yaml()
-        expected_yaml = "name: John\nage: 30\nscore: 95.5\n"
+        expected_yaml = "name: John\nage: 30\nscore: 95.5"
         self.assertEqual(simple_yaml, expected_yaml)
 
         reconstructed_simple = SimpleData.from_dict(simple_dict)
@@ -385,8 +385,7 @@ class TestDataClassYamlJsonConversion(unittest.TestCase):
   name: John
   age: 30
   score: 95.5
-description: Test description
-"""
+description: Test description"""
 
         self.assertEqual(nested_yaml, expected_yaml)
 
@@ -439,8 +438,7 @@ description: Test description
 - name: Jane
   age: 25
   score: 88.0
-total: 2
-"""
+total: 2"""
         self.assertEqual(list_data_yaml, expected_yaml)
 
         reconstructed_list_data = ListData.from_dict(list_data_dict)
@@ -494,8 +492,7 @@ total: 2
     name: Jane
     age: 25
     score: 88.0
-count: 2
-"""
+count: 2"""
         self.assertEqual(dict_data_yaml, expected_yaml)
 
         reconstructed_dict_data = DictData.from_dict(dict_data_dict)
@@ -554,8 +551,7 @@ count: 2
     name: Jane
     age: 25
     score: 88.0
-count: 2
-"""
+count: 2"""
         print(ordered_dict_data_yaml)
         self.assertEqual(ordered_dict_data_yaml, expected_yaml)
 
@@ -729,8 +725,7 @@ ordered_dict_data:
       name: Jane
       age: 25
       score: 88.0
-  count: 2
-"""
+  count: 2"""
         self.assertEqual(complex_data_yaml, expected_yaml)
 
         reconstructed_complex_data = ComplexData2.from_dict(complex_data_dict)

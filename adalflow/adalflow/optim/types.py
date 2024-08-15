@@ -1,7 +1,7 @@
 """All data types used by Parameter, Optimizer, AdalComponent, and Trainer."""
 
 from typing import List, Dict, Any, Optional
-from enum import Enum, auto
+from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime
 
@@ -85,6 +85,24 @@ class TrainerStepResult(DataClass):
 
 
 @dataclass
+class TrainerValidateStats:
+    """A single evaluation of task pipeline response to a score in range [0, 1]."""
+
+    max_score: float = field(
+        default=0.0, metadata={"desc": "The score of the evaluation in range [0, 1]."}
+    )
+    min_score: float = field(
+        default=0.0, metadata={"desc": "The score of the evaluation in range [0, 1]."}
+    )
+    mean_of_score: float = field(
+        default=0.0, metadata={"desc": "The score of the evaluation in range [0, 1]."}
+    )
+    std_of_score: float = field(
+        default=0.0, metadata={"desc": "The score of the evaluation in range [0, 1]."}
+    )
+
+
+@dataclass
 class TrainerResult(DataClass):
     steps: List[int] = field(default_factory=list, metadata={"desc": "List of steps"})
     val_scores: List[float] = field(
@@ -104,34 +122,13 @@ class TrainerResult(DataClass):
         default_factory=dict,
         metadata={"desc": "Effective measures of the constrained training strategy"},
     )
+    validate_stats: Optional[TrainerValidateStats] = field(
+        default=None,
+        metadata={"desc": "Attempted Validation score statistics"},
+    )
     time_stamp: str = field(
         default_factory=lambda: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     )
     trainer_state: Dict[str, Any] = field(
         default=None, metadata={"desc": "Save the most detailed state of the trainer"}
     )
-
-
-class OptimizeGoal(Enum):
-    # 1. Similar to normal model auto-grad
-    LLM_SYS_INSTRUCTION = auto()  # fixed system prompt instruction across all calls
-    LLM_PROMP_TEMPLATE = (
-        auto()
-    )  # fixed prompt template , the tags and format can have a big impact on the performance
-    LLM_SYS_EXAMPLE = (
-        auto()
-    )  # few-shot examples (fixed across all calls) => vs dynamic examples
-    DYNAMIC_FEW_SHOT_EXAMPLES = auto()  # dynamic examples leverage retrieval
-    LLM_RESPONSE = (
-        auto()
-    )  # similar to reflection, to optimize the response with optimizer
-    HYPERPARAMETER_TUNING = auto()  # optimize hyperparameters
-
-
-# Goal: The optimization method can be potentially used for hyperparameter tuning too
-
-LightRAG_optimizer_notes = [
-    "tags like <SYS></SYS> or <SYSTEM></SYSTEM>  or <START_OF_SYSTEM_PROMPT> <END_OF_SYSTEM_PROMPT>can lead to different performance",
-    "System prompt",
-    "output format, the description of field",
-]

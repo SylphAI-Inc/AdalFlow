@@ -67,6 +67,9 @@ class GeneratorCallLogger:
         else:
             self.save_meta_data(self._metadata_filepath)
 
+    def reset(self):
+        self._generator_names_to_files = {}
+
     @property
     def generator_names_to_files(self) -> Dict[str, str]:
         return self._generator_names_to_files

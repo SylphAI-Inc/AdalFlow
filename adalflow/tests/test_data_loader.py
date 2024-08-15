@@ -83,6 +83,14 @@ class TestDataLoader(unittest.TestCase):
         for batch, expected in zip(batches, expected_batches):
             np.testing.assert_array_equal(batch, expected)
 
+    def test_dataloader_steps_larger_than_length(self):
+        # Test if DataLoader handles steps larger than the total length of dataloader
+        dataloader = DataLoader(self.dataset, batch_size=4, shuffle=False)
+        length = len(dataloader)
+        dataloader.set_max_steps(length + 1)
+        for _ in range(length + 1):
+            next(dataloader)
+
 
 if __name__ == "__main__":
     unittest.main()

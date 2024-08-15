@@ -247,7 +247,7 @@ class AdalComponent(Component):
             tqdm_loader = tqdm(
                 total=len(futures),
                 position=0,
-                desc="Evaluating",
+                desc=f"Evaluating step: {batch_idx}",
             )
             for future, i, sample in futures:
                 y_pred = future.result()
@@ -287,10 +287,10 @@ class AdalComponent(Component):
                         break
 
                     tqdm_loader.set_description(
-                        f"Evaluating: {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
+                        f"Evaluating step({batch_idx}): {round(eval_score,4)} across {len(completed_indices)} samples, Max potential: {round(max_score,4)}"
                     )
                 else:
-                    tqdm_loader.set_description("Evaluating")
+                    tqdm_loader.set_description(f"Evaluating step({batch_idx})")
 
                 tqdm_loader.update(1)  # Update the progress bar
 
@@ -500,9 +500,11 @@ class AdalComponent(Component):
             )
 
         # Register the callback for each generator
-        call_logger = GeneratorCallLogger(save_dir=save_dir)
+
         file_paths = []
         for name, generator in all_generators:
+            call_logger = GeneratorCallLogger(save_dir=save_dir)
+            call_logger.reset()
             call_logger.register_generator(name)
             logger_call = partial(call_logger.log_call, name)
             generator.register_callback(

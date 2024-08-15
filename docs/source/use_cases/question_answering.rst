@@ -4,8 +4,7 @@ Introduction to AdalFlow library
 
 AdalFlow provides token efficient and highly-performing prompt optimization with a unified framework.
 
-In this tutorial, we will implement and optimize a question answering task pipeline using both string output
-and structued output. In particular, it is to count the total objects.
+In this tutorial, we will implement and optimize a question answering task pipeline. In particular, it is to count the total objects.
 
 Here is the one example:
 
@@ -618,6 +617,74 @@ This file is a direct `to_dict`  (json) representation of :class:`TrainerResult<
 
 Few-shot Bootstrap
 ------------------------------
+As we have defined a ``ParameterType.DEMOS`` in our ``ObjectCountAdalComponent``, we can train the model with few-shot bootstrap.
+We will set ``raw_shots=0`` and ``bootstrap_shots=1`` in the ``train`` method.
+In default, our demonstrations use the teacher's direct raw response, with the purpose to teach the weaker model how to reason the answer.
+We call this "Learn to reason" few-shot bootstrap.
+
+Note: before we start the training, it will be worth to check if the teacher model is performing better so that the student can learn from the teacher.
+We can achieve this using the diagnose method while setting the `model_client` and `model_kwargs` to the teacher model.
+Additionally, ensure you set the `split` to `train_teacher` etc to ensure the previous diagnose on the student model is not overwritten.
+Here is the teach model performance on the zero-shot prompt:
+
+.. list-table:: Scores by Method and Split On High-performing Starting Prompt
+   :header-rows: 1
+   :widths: 20 20 20 20
+
+   * - Method
+     - Train
+     - Val
+     - Test
+   * - Start (manual prompt)
+     - 0.98 (50 samples)
+     - 1.0 (50 samples)
+     - 0.98 (100 samples)
+
+
+We will show how a single demonstration can help push the model performance to 92% on validation and 97% on test.
+
+To do few-shot for our task pipeline, we will go back to the task pipeline to set the `requires_opt` to `True` for the `few_shot_demos` parameter and
+turn off the `requires_opt` for the `system_prompt` parameter.
+
+.. code-block:: python
+
+    system_prompt = adal.Parameter(
+                data="You will answer a reasoning question. Think step by step. The last line of your response should be of the following format: 'Answer: $VALUE' where VALUE is a numerical value.",
+                role_desc="To give task instruction to the language model in the system prompt",
+                requires_opt=False,
+                param_type=ParameterType.PROMPT,
+            )
+    few_shot_demos = adal.Parameter(
+        data=None,
+        role_desc="To provide few shot demos to the language model",
+        requires_opt=True,
+        param_type=ParameterType.DEMOS,
+    )
+
+
+Here is our top performing few-shot example:
+
+.. list-table:: Scores for One-shot Bootstrap
+   :header-rows: 1
+   :widths: 10 60 10 10 10
+
+   * - Method
+     - Prompt
+     - Train
+     - Val
+     - Test
+   * - Start
+     - None
+     - N/A (50 samples)
+     - 0.90 (50 samples)
+     - 0.87 (100 samples)
+   * - Optimized One-shot
+     - Example: 'To find the total number of objects you have, you need to count each individual\n  item. In this case, you have:\n\n  1 microwave\n\n  1 lamp\n\n  4 cars\n\n  1 stove\n\n  1 toaster\n\n  1 bed\n\n\n  Adding these together:\n\n  1 + 1 + 4 + 1 + 1 + 1 = 9\n\n\n  Therefore, you have 9 objects in total.\n\n  Answer: 9'
+     - N/A
+     - 0.96 (**+6%**, 4% < teacher)
+     - 0.94 (**+7%**, 4% < teacher)
+
+
 
 
 
