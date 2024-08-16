@@ -405,7 +405,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -519,9 +515,9 @@ We will use these two to demonstrate how to use <code class="docutils literal no
 <section id="use-openai-api">
 <h3>Use OpenAI API<a class="headerlink" href="#use-openai-api" title="Link to this heading">#</a></h3>
 <p>Before you start ensure you config the API key either in the environment variable or <cite>.env</cite> file, or directly pass it to the <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span> <span class="c1"># ensure you setup OPENAI_API_KEY in your project .env file</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span> <span class="c1"># ensure you setup OPENAI_API_KEY in your project .env file</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;text-embedding-3-small&quot;</span><span class="p">,</span>
@@ -562,8 +558,8 @@ Run the embedder and print the length and embedding dimension of the output.</p>
 <section id="use-local-model">
 <h3>Use Local Model<a class="headerlink" href="#use-local-model" title="Link to this heading">#</a></h3>
 <p>Set up the embedder with the local model.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">TransformersClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">TransformersClient</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;thenlper/gte-base&quot;</span><span class="p">}</span>
 <span class="n">local_embedder</span> <span class="o">=</span> <span class="n">Embedder</span><span class="p">(</span><span class="n">model_client</span><span class="o">=</span><span class="n">TransformersClient</span><span class="p">(),</span> <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">)</span>
@@ -583,10 +579,10 @@ Run the embedder and print the length and embedding dimension of the output.</p>
 <section id="use-output-processors">
 <h3>Use Output Processors<a class="headerlink" href="#use-output-processors" title="Link to this heading">#</a></h3>
 <p>If we want to decreate the embedding dimension to only 256 to save memory, we can customize an additional output processing step and pass it to embedder via the <code class="docutils literal notranslate"><span class="pre">output_processors</span></code> argument.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Embedding</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.functional</span> <span class="kn">import</span> <span class="n">normalize_vector</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Embedding</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.functional</span> <span class="kn">import</span> <span class="n">normalize_vector</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Component</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
 <span class="k">class</span> <span class="nc">DecreaseEmbeddingDim</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
@@ -645,9 +641,9 @@ Putting it all together, we can create a new embedder with the output processor.
 <section id="batchembedder">
 <h2>BatchEmbedder<a class="headerlink" href="#batchembedder" title="Link to this heading">#</a></h2>
 <p>Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
-<a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use LightRAG in production data pipeline.</p>
+<a class="reference internal" href="../apis/core/core.embedder.html#core.embedder.BatchEmbedder" title="core.embedder.BatchEmbedder"><code class="xref py py-class docutils literal notranslate"><span class="pre">core.embedder.BatchEmbedder</span></code></a> is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.</p>
 <p>The BatchEmbedder orchestrates the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and handles the batching process. To use it, you need to pass the <code class="docutils literal notranslate"><span class="pre">Embedder</span></code> and the batch size to the constructor.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">BatchEmbedder</span>
 
 <span class="n">batch_embedder</span> <span class="o">=</span> <span class="n">BatchEmbedder</span><span class="p">(</span><span class="n">embedder</span><span class="o">=</span><span class="n">local_embedder</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 

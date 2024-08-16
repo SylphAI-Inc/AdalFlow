@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -500,7 +496,7 @@ Ideally, developers should format this prompt with special tokens specific to th
 However, many proprietary APIs did not disclose their special tokens, and requires users to send them in the forms of messages of different roles.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
-<p><cite>LightRAG</cite> seeks to maximize developers’ control over the prompt.
+<p><cite>AdalFlow</cite> seeks to maximize developers’ control over the prompt.
 Thus, in most cases, we help developers gather different sections and form them into one prompt.
 This prompt will then be sent to the LLM as a single message.
 The default role of the message we use is <cite>system</cite>.
@@ -604,7 +600,7 @@ User: What is the capital of France?
 <p>We created our <a class="reference internal" href="../apis/core/core.prompt_builder.html#core.prompt_builder.Prompt" title="core.prompt_builder.Prompt"><code class="xref py py-class docutils literal notranslate"><span class="pre">Prompt</span> <span class="pre">Component</span></code></a> to render the prompt with the string <code class="docutils literal notranslate"><span class="pre">template</span></code> and <code class="docutils literal notranslate"><span class="pre">prompt_kwargs</span></code>.
 It is a simple component, but it is quite handy.
 Let’s use the same template as above:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
 
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span>
    <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>

@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -513,7 +509,7 @@ With these building blocks, we will further introduce optimizing, where the opti
 <h2>Building<a class="headerlink" href="#building" title="Link to this heading">#</a></h2>
 <section id="base-classes">
 <h3>Base classes<a class="headerlink" href="#base-classes" title="Link to this heading">#</a></h3>
-<p>Code path: <a class="reference internal" href="../apis/core/index.html#apis-core"><span class="std std-ref">lightrag.core</span></a>.</p>
+<p>Code path: <a class="reference internal" href="../apis/core/index.html#apis-core"><span class="std std-ref">adalflow.core</span></a>.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
 <col style="width: 20.0%" />
@@ -541,10 +537,10 @@ With these building blocks, we will further introduce optimizing, where the opti
 <h3>RAG Essentials<a class="headerlink" href="#rag-essentials" title="Link to this heading">#</a></h3>
 <section id="rag-components">
 <h4>RAG components<a class="headerlink" href="#rag-components" title="Link to this heading">#</a></h4>
-<p>Code path: <a class="reference internal" href="../apis/core/index.html#apis-core"><span class="std std-ref">lightrag.core</span></a>. For abstract classes:</p>
+<p>Code path: <a class="reference internal" href="../apis/core/index.html#apis-core"><span class="std std-ref">adalflow.core</span></a>. For abstract classes:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>: the functional subclass is in <a class="reference internal" href="../apis/components/components.model_client.html#components-model-client"><span class="std std-ref">lightrag.components.model_client</span></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Retriever</span></code>: the functional subclass is in <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">lightrag.components.retriever</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ModelClient</span></code>: the functional subclass is in <a class="reference internal" href="../apis/components/components.model_client.html#components-model-client"><span class="std std-ref">adalflow.components.model_client</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Retriever</span></code>: the functional subclass is in <a class="reference internal" href="../apis/components/components.retriever.html#components-retriever"><span class="std std-ref">adalflow.components.retriever</span></a>.</p></li>
 </ul>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -581,7 +577,7 @@ With these building blocks, we will further introduce optimizing, where the opti
 </section>
 <section id="data-pipeline-and-storage">
 <h4>Data Pipeline and Storage<a class="headerlink" href="#data-pipeline-and-storage" title="Link to this heading">#</a></h4>
-<p>Data Processing: including transformer, pipeline, and storage. Code path: <code class="docutils literal notranslate"><span class="pre">lightrag.components.data_process</span></code>, <code class="docutils literal notranslate"><span class="pre">lightrag.core.db</span></code>, and <code class="docutils literal notranslate"><span class="pre">lightrag.database</span></code>.
+<p>Data Processing: including transformer, pipeline, and storage. Code path: <code class="docutils literal notranslate"><span class="pre">adalflow.components.data_process</span></code>, <code class="docutils literal notranslate"><span class="pre">adalflow.core.db</span></code>, and <code class="docutils literal notranslate"><span class="pre">adalflow.database</span></code>.
 Components work on a sequence of <code class="docutils literal notranslate"><span class="pre">Document</span></code> and return a sequence of <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
@@ -597,7 +593,7 @@ Components work on a sequence of <code class="docutils literal notranslate"><spa
 <tr class="row-even"><td><p><a class="reference internal" href="text_splitter.html"><span class="doc">Text Splitter</span></a></p></td>
 <td><p>To split long text into smaller chunks to fit into the token limits of embedder and generator or to ensure more relevant context while being used in RAG.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="db.html"><span class="doc">Data &amp; RAG</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="db.html"><span class="doc">Data (Database/Pipeline) &amp; RAG</span></a></p></td>
 <td><p>Understanding the <strong>data modeling, processing, and storage</strong> as a whole. We will build a chatbot with enhanced memory and memoy retrieval in this note (RAG).</p></td>
 </tr>
 </tbody>
@@ -667,7 +663,7 @@ This section we will briefly cover the datasets and evaluation metrics supported
 </section>
 <section id="training">
 <h3>Training<a class="headerlink" href="#training" title="Link to this heading">#</a></h3>
-<p>Code path: <code class="docutils literal notranslate"><span class="pre">lightrag.optim</span></code>.</p>
+<p>Code path: <code class="docutils literal notranslate"><span class="pre">adalflow.optim</span></code>.</p>
 <p>Adalflow defines four important classes for auto-optimization: (1) <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>, similar to role of <code class="docutils literal notranslate"><span class="pre">nn.Tensor</span></code> in PyTorch,
 (2) <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> wh, (3) <code class="docutils literal notranslate"><span class="pre">AdalComponent</span></code> to define the training and validation steps, and (4) <code class="docutils literal notranslate"><span class="pre">Trainer</span></code> to run the training and validation steps on either data loaders or datasets.</p>
 <p>We will first introduce these classes, from their design to important features each class provides.</p>
@@ -706,12 +702,14 @@ This section we will briefly cover the datasets and evaluation metrics supported
 </tbody>
 </table>
 </div>
+<div class="toctree-wrapper compound">
+</div>
 </section>
 </section>
 </section>
 <section id="logging-tracing">
 <h2>Logging &amp; Tracing<a class="headerlink" href="#logging-tracing" title="Link to this heading">#</a></h2>
-<p>Code path:  <a class="reference internal" href="../apis/utils/index.html#apis-utils"><span class="std std-ref">lightrag.utils</span></a> and <a class="reference internal" href="../apis/tracing/index.html#apis-tracing"><span class="std std-ref">lightrag.tracing</span></a>.</p>
+<p>Code path:  <a class="reference internal" href="../apis/utils/index.html#apis-utils"><span class="std std-ref">adalflow.utils</span></a> and <a class="reference internal" href="../apis/tracing/index.html#apis-tracing"><span class="std std-ref">adalflow.tracing</span></a>.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <colgroup>
 <col style="width: 20.0%" />
@@ -730,29 +728,6 @@ This section we will briefly cover the datasets and evaluation metrics supported
 <td><p>We provide two tracing methods to help you develop and improve the Generator:
 1. Trace the history change(states) on prompt during your development process.
 2. Trace all failed LLM predictions in a unified file for further improvement.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="toctree-wrapper compound">
-</div>
-</section>
-<section id="configurations">
-<h2>Configurations<a class="headerlink" href="#configurations" title="Link to this heading">#</a></h2>
-<p>Code path:  <a class="reference internal" href="../apis/utils/index.html#apis-utils"><span class="std std-ref">lightrag.utils</span></a>.</p>
-<div class="pst-scrollable-table-container"><table class="table">
-<colgroup>
-<col style="width: 20.0%" />
-<col style="width: 80.0%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>Part</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="configs.html"><span class="doc">Configurations</span></a></p></td>
-<td><p>The configurations for the components.</p></td>
 </tr>
 </tbody>
 </table>
@@ -828,7 +803,6 @@ This section we will briefly cover the datasets and evaluation metrics supported
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging-tracing">Logging &amp; Tracing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configurations">Configurations</a></li>
 </ul>
   </nav></div>
 

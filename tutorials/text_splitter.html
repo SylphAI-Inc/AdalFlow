@@ -52,7 +52,7 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data &amp; RAG" href="db.html" />
+    <link rel="next" title="Data (Database/Pipeline) &amp; RAG" href="db.html" />
     <link rel="prev" title="Retriever" href="retriever.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -547,7 +543,7 @@ Consider using tokenization when your embedding model works better for tokens or
 </ul>
 <p>Here are examples of how <code class="docutils literal notranslate"><span class="pre">split_by</span></code>, <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code> works with <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.</p>
 <p>Input Document Text:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hello</span><span class="p">,</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">lightrag</span><span class="o">.</span> <span class="n">Please</span> <span class="n">implement</span> <span class="n">your</span> <span class="n">splitter</span> <span class="n">here</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Hello</span><span class="p">,</span> <span class="n">this</span> <span class="ow">is</span> <span class="n">adalflow</span><span class="o">.</span> <span class="n">Please</span> <span class="n">implement</span> <span class="n">your</span> <span class="n">splitter</span> <span class="n">here</span><span class="o">.</span>
 </pre></div>
 </div>
 <div class="pst-scrollable-table-container"><table class="table" id="id2">
@@ -569,17 +565,17 @@ Consider using tokenization when your embedding model works better for tokens or
 <tr class="row-even"><td><p>word</p></td>
 <td><p>5</p></td>
 <td><p>2</p></td>
-<td><p>“Hello, this is lightrag. Please”, “lightrag. Please implement your splitter”, “your splitter here.”</p></td>
+<td><p>“Hello, this is adalflow. Please”, “adalflow. Please implement your splitter”, “your splitter here.”</p></td>
 </tr>
 <tr class="row-odd"><td><p>sentence</p></td>
 <td><p>1</p></td>
 <td><p>0</p></td>
-<td><p>“Hello, this is lightrag.”, “Please implement your splitter here.”</p></td>
+<td><p>“Hello, this is adalflow.”, “Please implement your splitter here.”</p></td>
 </tr>
 <tr class="row-even"><td><p>token</p></td>
 <td><p>5</p></td>
 <td><p>2</p></td>
-<td><p>“Hello, this is l”, “is lightrag.”, “trag. Please implement your”, “implement your splitter here.”</p></td>
+<td><p>“Hello, this is l”, “is adalflow.”, “trag. Please implement your”, “implement your splitter here.”</p></td>
 </tr>
 </tbody>
 </table>
@@ -588,7 +584,7 @@ Consider using tokenization when your embedding model works better for tokens or
 each chunk will repeat 2 words from the previous chunk. These 2 words are set by <code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code>.
 This means each chunk has <code class="docutils literal notranslate"><span class="pre">5-2=3</span></code> word(split unit) difference compared with its previous.</p>
 <p>When splitting using tokenizer, each chunk still keeps 5 tokens.
-For example, the tokenizer transforms <code class="docutils literal notranslate"><span class="pre">lightrag</span></code> to [‘l’, ‘igh’, ‘trag’]. So the second chunk is actually <code class="docutils literal notranslate"><span class="pre">is</span></code> + <code class="docutils literal notranslate"><span class="pre">l</span></code> + <code class="docutils literal notranslate"><span class="pre">igh</span></code> + <code class="docutils literal notranslate"><span class="pre">trag</span></code> + <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p>
+For example, the tokenizer transforms <code class="docutils literal notranslate"><span class="pre">adalflow</span></code> to [‘l’, ‘igh’, ‘trag’]. So the second chunk is actually <code class="docutils literal notranslate"><span class="pre">is</span></code> + <code class="docutils literal notranslate"><span class="pre">l</span></code> + <code class="docutils literal notranslate"><span class="pre">igh</span></code> + <code class="docutils literal notranslate"><span class="pre">trag</span></code> + <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code class="docutils literal notranslate"><span class="pre">chunk_overlap</span></code> should always be smaller than <code class="docutils literal notranslate"><span class="pre">chunk_size</span></code>, otherwise the window won’t move and the splitting stucks.
@@ -601,8 +597,8 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 <p>What you need is to specify the arguments and input your documents this way:</p>
 <section id="split-by-word">
 <h3>Split by word<a class="headerlink" href="#split-by-word" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="c1"># Configure the splitter settings</span>
 <span class="n">text_splitter</span> <span class="o">=</span> <span class="n">TextSplitter</span><span class="p">(</span>
@@ -632,8 +628,8 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 </section>
 <section id="split-by-token">
 <h3>Split by token<a class="headerlink" href="#split-by-token" title="Link to this heading">#</a></h3>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.data_process.text_splitter</span> <span class="kn">import</span> <span class="n">TextSplitter</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
 <span class="kn">import</span> <span class="nn">tiktoken</span>
 
 <span class="c1"># Configure the splitter settings</span>
@@ -706,7 +702,7 @@ Our default tokenization model is <code class="docutils literal notranslate"><sp
 <h2>Integration with Other Document Types<a class="headerlink" href="#integration-with-other-document-types" title="Link to this heading">#</a></h2>
 <p>This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
 For <cite>PDFs</cite>, developers will need to extract the text before using the splitter. Libraries like <code class="docutils literal notranslate"><span class="pre">PyPDF2</span></code> or <code class="docutils literal notranslate"><span class="pre">PDFMiner</span></code> can be utilized for this purpose.
-<code class="docutils literal notranslate"><span class="pre">LightRAG</span></code>’s future implementations will introduce splitters for <code class="docutils literal notranslate"><span class="pre">JSON</span></code>, <code class="docutils literal notranslate"><span class="pre">HTML</span></code>, <code class="docutils literal notranslate"><span class="pre">markdown</span></code>, and <code class="docutils literal notranslate"><span class="pre">code</span></code>.</p>
+AdalFlow’s future implementations will introduce splitters for <code class="docutils literal notranslate"><span class="pre">JSON</span></code>, <code class="docutils literal notranslate"><span class="pre">HTML</span></code>, <code class="docutils literal notranslate"><span class="pre">markdown</span></code>, and <code class="docutils literal notranslate"><span class="pre">code</span></code>.</p>
 </section>
 <section id="customization-tips">
 <h2>Customization Tips<a class="headerlink" href="#customization-tips" title="Link to this heading">#</a></h2>
@@ -739,7 +735,7 @@ as a series of questions. If you need to customize <a class="reference internal"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Data &amp; RAG</p>
+        <p class="prev-next-title">Data (Database/Pipeline) &amp; RAG</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

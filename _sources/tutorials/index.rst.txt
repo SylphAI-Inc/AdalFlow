@@ -69,7 +69,7 @@ Building
 
 Base classes
 ~~~~~~~~~~~~~~~~~~~~~~
-Code path: :ref:`lightrag.core <apis-core>`.
+Code path: :ref:`adalflow.core <apis-core>`.
 
 
 .. list-table::
@@ -103,10 +103,10 @@ RAG components
 ^^^^^^^^^^^^^^^^^^^
 
 
-Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
+Code path: :ref:`adalflow.core<apis-core>`. For abstract classes:
 
-- ``ModelClient``: the functional subclass is in :ref:`lightrag.components.model_client<components-model_client>`.
-- ``Retriever``: the functional subclass is in :ref:`lightrag.components.retriever<components-retriever>`.
+- ``ModelClient``: the functional subclass is in :ref:`adalflow.components.model_client<components-model_client>`.
+- ``Retriever``: the functional subclass is in :ref:`adalflow.components.retriever<components-retriever>`.
 
 
 .. list-table::
@@ -131,7 +131,7 @@ Code path: :ref:`lightrag.core<apis-core>`. For abstract classes:
 Data Pipeline and Storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Data Processing: including transformer, pipeline, and storage. Code path: ``lightrag.components.data_process``, ``lightrag.core.db``, and ``lightrag.database``.
+Data Processing: including transformer, pipeline, and storage. Code path: ``adalflow.components.data_process``, ``adalflow.core.db``, and ``adalflow.database``.
 Components work on a sequence of ``Document`` and return a sequence of ``Document``.
 
 .. list-table::
@@ -192,7 +192,7 @@ Agent in ``components.agent`` is LLM great with reasoning, planning, and using t
 
 .. Core functionals
 .. -------------------
-.. Code path: ``lightrag.core``
+.. Code path: ``adalflow.core``
 
 ..    :widths: 20 80
 ..    :header-rows: 1
@@ -254,7 +254,7 @@ Evaluating
 Training
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Code path: ``lightrag.optim``.
+Code path: ``adalflow.optim``.
 
 Adalflow defines four important classes for auto-optimization: (1) ``Parameter``, similar to role of ``nn.Tensor`` in PyTorch,
 (2) ``Optimizer`` wh, (3) ``AdalComponent`` to define the training and validation steps, and (4) ``Trainer`` to run the training and validation steps on either data loaders or datasets.
@@ -284,17 +284,19 @@ Note: Documentation is work in progress for this section.
    * - :doc:`trainer_`
      - The ``Trainer`` will take the ``AdalComponent`` and run the training and validation steps on either data loaders or datasets.
 
+.. toctree::
+   :maxdepth: 1
+   :caption: Training - Classes
+   :hidden:
 
-..    :maxdepth: 1
-..    :caption: Training - Classes
-..    :hidden:
+  ..  parameter
+  ..  optimizer
+  ..  few_shot_optimizer
+  ..  auto_text_grad
+  ..  adalcomponent
+  ..  trainer
 
-..    parameter
-..    optimizer
-..    few_shot_optimizer
-..    auto_text_grad
-..    adalcomponent
-..    trainer
+   trace_graph
 
 
 
@@ -303,7 +305,7 @@ Note: Documentation is work in progress for this section.
 
 Logging & Tracing
 ------------------------------------
-Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-tracing>`.
+Code path:  :ref:`adalflow.utils <apis-utils>` and :ref:`adalflow.tracing <apis-tracing>`.
 
 .. list-table::
    :widths: 20 80
@@ -329,25 +331,23 @@ Code path:  :ref:`lightrag.utils <apis-utils>` and :ref:`lightrag.tracing <apis-
 
 
 
-Configurations
--------------------
-Code path:  :ref:`lightrag.utils <apis-utils>`.
+.. Configurations
+.. -------------------
+.. Code path:  :ref:`adalflow.utils <apis-utils>`.
 
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
+..    :widths: 20 80
+..    :header-rows: 1
 
-   * - Part
-     - Description
-   * - :doc:`configs`
-     - The configurations for the components.
-
+..    * - Part
+..      - Description
+..    * - :doc:`configs`
+..      - The configurations for the components.
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Configurations
-   :hidden:
+
+..    :maxdepth: 1
+..    :caption: Configurations
+..    :hidden:
 
 
-   configs
+..    configs

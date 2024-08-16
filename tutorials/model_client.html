@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -484,13 +480,13 @@
                   
   <section id="modelclient">
 <span id="tutorials-model-client"></span><h1>ModelClient<a class="headerlink" href="#modelclient" title="Link to this heading">#</a></h1>
-<p><a class="reference internal" href="../apis/core/core.model_client.html#core-model-client"><span class="std std-ref">ModelClient</span></a> is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with LightRAG internal components.
+<p><a class="reference internal" href="../apis/core/core.model_client.html#core-model-client"><span class="std std-ref">ModelClient</span></a> is the standardized protocol and base class for all model inference SDKs (either via APIs or local) to communicate with AdalFlow internal components.
 Therefore, by switching out the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> (those components that take models), you can make these functional components model-agnostic.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="../_images/model_client.png"><img alt="ModelClient" src="../_images/model_client.png" style="width: 400px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">The bridge between all model inference SDKs and internal components in LightRAG</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
+<p><span class="caption-text">The bridge between all model inference SDKs and internal components in AdalFlow</span><a class="headerlink" href="#id1" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <div class="admonition note">
@@ -545,7 +541,7 @@ You can refer to <code class="xref py py-class docutils literal notranslate"><sp
         <span class="k">return</span> <span class="n">TransformerEmbedder</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Second, we use <cite>convert_inputs_to_api_kwargs</cite> for subclasses to convert LightRAG inputs into the <cite>api_kwargs</cite> (SDK arguments).</p>
+<p>Second, we use <cite>convert_inputs_to_api_kwargs</cite> for subclasses to convert AdalFlow inputs into the <cite>api_kwargs</cite> (SDK arguments).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">convert_inputs_to_api_kwargs</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">,</span>
     <span class="nb">input</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -603,8 +599,8 @@ For Rerankers, you can refer to :class:`CohereAPIClient&lt;components.model_clie
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model_type </span><span class="si">{</span><span class="n">model_type</span><span class="si">}</span><span class="s2"> is not supported&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>In addition, you can add any method that parses the SDK-specific output to a format compatible with LightRAG components.
-Typically, an LLM needs to use <cite>parse_chat_completion</cite> to parse the completion to text and <cite>parse_embedding_response</cite> to parse the embedding response to a structure that LightRAG components can understand.
+<p>In addition, you can add any method that parses the SDK-specific output to a format compatible with AdalFlow components.
+Typically, an LLM needs to use <cite>parse_chat_completion</cite> to parse the completion to text and <cite>parse_embedding_response</cite> to parse the embedding response to a structure that AdalFlow components can understand.
 You can refer to <a class="reference internal" href="../apis/components/components.model_client.openai_client.html#components.model_client.openai_client.OpenAIClient" title="components.model_client.openai_client.OpenAIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAIClient</span></code></a> for API embedding model integration and <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code></a> for local embedding model integration.</p>
 <p>Lastly, the <cite>call</cite> and <cite>acall</cite> methods are used to call model inference via their own arguments.
 We encourage subclasses to provide error handling and retry mechanisms in these methods.</p>
@@ -631,9 +627,9 @@ Please check out <a class="reference internal" href="../apis/components/componen
 <h2>Use ModelClient directly<a class="headerlink" href="#use-modelclient-directly" title="Link to this heading">#</a></h2>
 <p>Though <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> is often managed in a <code class="docutils literal notranslate"><span class="pre">Generator</span></code>, <code class="docutils literal notranslate"><span class="pre">Embedder</span></code>, or <code class="docutils literal notranslate"><span class="pre">Retriever</span></code> component, you can use it directly if you plan to write your own component.
 Here is an example of using <code class="docutils literal notranslate"><span class="pre">OpenAIClient</span></code> directly, first on an LLM model:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
-<span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelType</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
 
 <span class="n">setup_env</span><span class="p">()</span>
 

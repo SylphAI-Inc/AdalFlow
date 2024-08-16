@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Data &amp; RAG &#8212; LightRAG: The Lightning Library for LLM Applications</title>
+    <title>Data (Database/Pipeline) &amp; RAG &#8212; LightRAG: The Lightning Library for LLM Applications</title>
   
   
   
@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data &amp; RAG</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -465,7 +461,7 @@
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Developer Notes</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Data &amp; RAG</li>
+    <li class="breadcrumb-item active" aria-current="page">Data...</li>
   </ul>
 </nav>
 </div>
@@ -482,8 +478,16 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="data-rag">
-<h1>Data &amp; RAG<a class="headerlink" href="#data-rag" title="Link to this heading">#</a></h1>
+  <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+   <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
+      <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+   </a>
+   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
+      <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+      <span style="vertical-align: middle;"> Open Source Code</span>
+   </a>
+</div><section id="data-database-pipeline-rag">
+<h1>Data (Database/Pipeline) &amp; RAG<a class="headerlink" href="#data-database-pipeline-rag" title="Link to this heading">#</a></h1>
 <p>The purpose of this note is to provide an overview on data, data modeling, and data storage in LLM applications along with how LightRAG works with data.
 We will conver:</p>
 <ul class="simple">
@@ -563,7 +567,7 @@ we provide mainly <a class="reference internal" href="../apis/core/core.types.ht
 </ol>
 <p>This is why data processing components like <code class="docutils literal notranslate"><span class="pre">TextSplitter</span></code> and <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code>  requires <code class="docutils literal notranslate"><span class="pre">Document</span></code> as input of each data item.</p>
 <p><strong>Create a Document</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Document</span>
 
 <span class="n">documents</span>  <span class="o">=</span> <span class="p">[</span><span class="n">Document</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">doc</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">meta_data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">doc</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]})</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">org_documents</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">documents</span><span class="p">)</span>
@@ -583,7 +587,7 @@ we provide mainly <a class="reference internal" href="../apis/core/core.types.ht
 <p>For both <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code>, we have an equivalent class in <span class="xref std std-doc">database.sqlalchemy.model`(:class:`database.sqlalchemy.modoel.Document</span>) to handle the persitence of data in a SQL database.</p>
 </div>
 <p>Here is how to get a list of <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> from the <code class="docutils literal notranslate"><span class="pre">turns</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">DialogTurn</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">,</span> <span class="n">AssistantResponse</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">DialogTurn</span><span class="p">,</span> <span class="n">UserQuery</span><span class="p">,</span> <span class="n">AssistantResponse</span>
 
 <span class="n">dialog_turns</span> <span class="o">=</span> <span class="p">[</span>
 <span class="n">DialogTurn</span><span class="p">(</span>
@@ -622,10 +626,10 @@ we simplify just need to add a mapping function to convert the original data to 
 <code class="docutils literal notranslate"><span class="pre">ToEmbeddings</span></code> is an orchestrator on <code class="docutils literal notranslate"><span class="pre">BatchEmbedder</span></code> and it will generate embeddings for a list of <code class="docutils literal notranslate"><span class="pre">Document</span></code> and store the embeddings as <code class="docutils literal notranslate"><span class="pre">List[Float]</span></code> in the <code class="docutils literal notranslate"><span class="pre">vector</span></code> field of each <code class="docutils literal notranslate"><span class="pre">Document</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">Sequential</span></code> can be easily used to chain multiple data processing components together.
 Here is the code to form a data pipeline:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.data_process</span> <span class="kn">import</span> <span class="n">DocumentSplitter</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.data_process</span> <span class="kn">import</span> <span class="n">DocumentSplitter</span><span class="p">,</span> <span class="n">ToEmbeddings</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -768,7 +772,7 @@ Adding embeddings to documents from batch: 2it [00:00, 10205.12it/s]
 <p>Now, finally, we have a good way to organize important data along its pipeline like <code class="docutils literal notranslate"><span class="pre">Document</span></code> and <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> in a database.</p>
 <p><strong>Data Loading and CRUD Operations</strong></p>
 <p>Let’s create a <code class="docutils literal notranslate"><span class="pre">LocalDB</span></code> to manage the <code class="docutils literal notranslate"><span class="pre">dialog_turns</span></code> and its data processing pipeline:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.db</span> <span class="kn">import</span> <span class="n">LocalDB</span>
 
 <span class="n">dialog_turn_db</span> <span class="o">=</span> <span class="n">LocalDB</span><span class="p">(</span><span class="s1">&#39;dialog_turns&#39;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">dialog_turn_db</span><span class="p">)</span>
@@ -829,7 +833,7 @@ This data class can be really helpful for researchers and developers to run and 
 use a retriever to control the conversation history length.</p>
 <p>First, let us prepare the generator. We will use <code class="docutils literal notranslate"><span class="pre">input_str</span></code> and <code class="docutils literal notranslate"><span class="pre">chat_history_str</span></code> from our default prompt.
 This will also leverage <code class="docutils literal notranslate"><span class="pre">DialogTurn</span></code> ‘s inheritant ability from <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> to quickly form the <code class="docutils literal notranslate"><span class="pre">chat_history_str</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
 
 <span class="n">llm_kwargs</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span>
@@ -911,7 +915,7 @@ You:
 We will use a semantic retriever to fetch relevant chunked documents from the database.
 Then, instead of directly using the documents, we will find its relevant dialog turns by comparing the <code class="docutils literal notranslate"><span class="pre">parent_doc_id</span></code> with the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the document.
 Here is the code to prepare the relevant dialog turns.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever.faiss_retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever.faiss_retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
 
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">)</span>
 <span class="n">embeddings</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">vector</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dialog_turn_db</span><span class="o">.</span><span class="n">transformed_items</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span>

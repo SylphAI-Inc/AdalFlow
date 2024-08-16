@@ -427,7 +427,9 @@
      <img alt="discord-invite" src="https://dcbadge.vercel.app/api/server/ezzszrRZvT?style=flat">
    </a>
    <a href="https://opensource.org/license/MIT"><img src="https://img.shields.io/github/license/SylphAI-Inc/LightRAG" alt="License"></a>
-</div><h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">⚡ The Library to Build and to Auto-optimize Large Language Model Applications ⚡</h3><section id="light">
+</div><h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">
+⚡ The Library to Build and to Auto-optimize Any LLM Task Pipeline ⚡
+</h3><section id="light">
 <h1>Light<a class="headerlink" href="#light" title="Link to this heading">#</a></h1>
 <p>AdalFlow shares similar design pattern as <cite>PyTorch</cite> for deep learning modeling.
 We provide developers with fundamental building blocks of <em>100% clarity and simplicity</em>.</p>
@@ -474,11 +476,11 @@ PyTorch</div>
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 AdalFlow</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">adalflow</span> <span class="k">as</span> <span class="nn">adal</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
 
 
-<span class="k">class</span> <span class="nc">SimpleQA</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SimpleQA</span><span class="p">(</span><span class="n">adal</span><span class="o">.</span><span class="n">Component</span><span class="p">):</span>
    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
       <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
       <span class="n">template</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt;</span>
@@ -487,7 +489,7 @@ AdalFlow</div>
 <span class="s2">      User: {{input_str}}</span>
 <span class="s2">      You:</span>
 <span class="s2">      &quot;&quot;&quot;</span>
-      <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
             <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
             <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;llama3-8b-8192&quot;</span><span class="p">},</span>
             <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>
@@ -532,9 +534,9 @@ AdalFlow</div>
 </pre></div>
 </div>
 <p>To switch to <cite>gpt-3.5-turbo</cite> by OpenAI, simply update the <cite>model_client`</cite> and <cite>model_kwargs</cite> in the Generator component.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
 
-<span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">adal</span><span class="o">.</span><span class="n">Generator</span><span class="p">(</span>
      <span class="n">model_client</span><span class="o">=</span><span class="n">OpenAIClient</span><span class="p">(),</span>
      <span class="n">model_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">},</span>
      <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span>

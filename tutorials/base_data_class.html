@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -652,7 +648,7 @@ Normally, this is not possible with the native <cite>dataclasses</cite> module a
 <p class="admonition-title">Note</p>
 <p><strong>Order of the fields</strong> matter as in a typical Chain of Thought, we want the reasoning/thought field to be in the output ahead of the answer.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClass</span><span class="p">,</span> <span class="n">required_field</span>
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">TrecData2</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
@@ -746,7 +742,7 @@ Let’s exclude both the <code class="docutils literal notranslate"><span class=
 <p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter works the same across all methods.</p>
 <p><strong>DataClassFormatType</strong></p>
 <p>For data class format, we have <a class="reference internal" href="../apis/core/core.base_data_class.html#core.base_data_class.DataClassFormatType" title="core.base_data_class.DataClassFormatType"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataClassFormatType</span></code></a> along with <code class="docutils literal notranslate"><span class="pre">format_class_str</span></code> method to specify the format type for the data format methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
 
 <span class="n">json_signature</span> <span class="o">=</span> <span class="n">TrecData2</span><span class="o">.</span><span class="n">format_class_str</span><span class="p">(</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">SIGNATURE_JSON</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">json_signature</span><span class="p">)</span>
@@ -832,7 +828,7 @@ True
 </div>
 <p>Similarly, (1) all <code class="docutils literal notranslate"><span class="pre">to_dict</span></code>, <code class="docutils literal notranslate"><span class="pre">to_json</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_yaml</span></code> works with <cite>exclude</cite> parameter to exclude some fields from the output,
 (2) you can use <code class="docutils literal notranslate"><span class="pre">DataClassFormatType</span></code> along with <code class="docutils literal notranslate"><span class="pre">format_example_str</span></code> method to specify the format type for the data example methods.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClassFormatType</span>
 
 <span class="n">example_str</span> <span class="o">=</span> <span class="n">example</span><span class="o">.</span><span class="n">format_example_str</span><span class="p">(</span><span class="n">DataClassFormatType</span><span class="o">.</span><span class="n">EXAMPLE_JSON</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">example_str</span><span class="p">)</span>

@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -505,14 +501,14 @@ If we want it to be even more accurate, we can move up to more expensive and acc
 <a class="reference internal image-reference" href="../_images/retriever.png"><img alt="Retriever design" src="../_images/retriever.png" style="width: 620px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">LightRAG retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
+<p><span class="caption-text">AdalFlow retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.</span><a class="headerlink" href="#id20" title="Link to this image">#</a></p>
 <div class="legend">
 </div>
 </figcaption>
 </figure>
 <section id="scope-and-design-goals">
 <h3>Scope and Design Goals<a class="headerlink" href="#scope-and-design-goals" title="Link to this heading">#</a></h3>
-<p>LightRAG library does not prioritize the coverage of integration for the following reasons:</p>
+<p>AdalFlow library does not prioritize the coverage of integration for the following reasons:</p>
 <ol class="arabic simple">
 <li><p>It is literally too-wide to cover them all.</p></li>
 <li><p>The challenges with RAG application lies more in evaluation and optimization due to many different moving parts and many hyperparmeters, and less in implementing or integrating a 3rd party retriever.</p></li>
@@ -669,8 +665,8 @@ The query can take both embeddings and str formats.</p>
 <p><code class="docutils literal notranslate"><span class="pre">faiss</span></code> package is optional in our library. When you want to use it, ensure you have it installed in your env.</p>
 </div>
 <p>We will quickly prepare the embeddings of the above documents using <cite>content</cite> field.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.embedder</span> <span class="kn">import</span> <span class="n">Embedder</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -686,7 +682,7 @@ The query can take both embeddings and str formats.</p>
 </div>
 <p>For the initialization, a retriever can take both its required documents along with hyperparmeters including <code class="docutils literal notranslate"><span class="pre">top_k</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">documents</span></code> field is optional. Let’s pass it all from <code class="docutils literal notranslate"><span class="pre">__init__</span></code> first:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">FAISSRetriever</span>
 <span class="n">retriever</span> <span class="o">=</span> <span class="n">FAISSRetriever</span><span class="p">(</span><span class="n">top_k</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">embedder</span><span class="o">=</span><span class="n">embedder</span><span class="p">,</span> <span class="n">documents</span><span class="o">=</span><span class="n">documents_embeddings</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">retriever</span><span class="p">)</span>
@@ -730,7 +726,7 @@ You can check the retriever for more type of scores.</p>
 <h3>BM25Retriever<a class="headerlink" href="#bm25retriever" title="Link to this heading">#</a></h3>
 <p>So the semantic search works pretty well. We will see how <a class="reference internal" href="../apis/components/components.retriever.bm25_retriever.html#components.retriever.bm25_retriever.BM25Retriever" title="components.retriever.bm25_retriever.BM25Retriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">BM25Retriever</span></code></a> works in comparison.
 We reimplemented the code in <a class="footnote-reference brackets" href="#id17" id="id3" role="doc-noteref"><span class="fn-bracket">[</span>9<span class="fn-bracket">]</span></a> with one improvement: instead of using <code class="docutils literal notranslate"><span class="pre">text.split(&quot;</span> <span class="pre">&quot;)</span></code>, we use tokenizer to split the text. Here is a comparison of how they different:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever.bm25_retriever</span> <span class="kn">import</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">,</span> <span class="n">split_text_by_word_fn</span>
 
 <span class="n">query_1_words</span> <span class="o">=</span> <span class="n">split_text_by_word_fn</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
 <span class="n">query_1_tokens</span> <span class="o">=</span> <span class="n">split_text_by_word_fn_then_lower_tokenized</span><span class="p">(</span><span class="n">query_1</span><span class="p">)</span>
@@ -742,7 +738,7 @@ We reimplemented the code in <a class="footnote-reference brackets" href="#id17"
 </pre></div>
 </div>
 <p>We prepare the retriever:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">BM25Retriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">BM25Retriever</span>
 
 <span class="n">document_map_func</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]</span>
 
@@ -791,13 +787,13 @@ We tested on the shorter and almost key-word like version of our queries and use
 We have integrated two rerankers: <code class="docutils literal notranslate"><span class="pre">BAAI/bge-reranker-base</span></code> <a class="footnote-reference brackets" href="#id18" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>10<span class="fn-bracket">]</span></a> hosted on <code class="docutils literal notranslate"><span class="pre">transformers</span></code> and rerankers provided by <code class="docutils literal notranslate"><span class="pre">Cohere</span></code> <a class="footnote-reference brackets" href="#id19" id="id5" role="doc-noteref"><span class="fn-bracket">[</span>11<span class="fn-bracket">]</span></a>.
 These models follow the <code class="docutils literal notranslate"><span class="pre">ModelClient</span></code> protocol and are directly accessible as retriever from <a class="reference internal" href="../apis/components/components.retriever.reranker_retriever.html#components.retriever.reranker_retriever.RerankerRetriever" title="components.retriever.reranker_retriever.RerankerRetriever"><code class="xref py py-class docutils literal notranslate"><span class="pre">RerankerRetriever</span></code></a>.</p>
 <p><strong>Reranker ModelClient Integration</strong></p>
-<p>A reranker will take <code class="docutils literal notranslate"><span class="pre">ModelType.RERANKER</span></code> and the standard LightRAG library requires it to have four arguments in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>:
-<code class="docutils literal notranslate"><span class="pre">['model',</span> <span class="pre">'top_k',</span> <span class="pre">'documents',</span> <span class="pre">'query']</span></code>. It is in the ModelClient which converts LightRAG’s standard arguments to the model’s specific arguments.
+<p>A reranker will take <code class="docutils literal notranslate"><span class="pre">ModelType.RERANKER</span></code> and the standard AdalFlow library requires it to have four arguments in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>:
+<code class="docutils literal notranslate"><span class="pre">['model',</span> <span class="pre">'top_k',</span> <span class="pre">'documents',</span> <span class="pre">'query']</span></code>. It is in the ModelClient which converts AdalFlow’s standard arguments to the model’s specific arguments.
 If you want to intergrate your reranker, either locally or using APIs, check out <a class="reference internal" href="../apis/components/components.model_client.transformers_client.html#components.model_client.transformers_client.TransformersClient" title="components.model_client.transformers_client.TransformersClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformersClient</span></code></a> and
 <a class="reference internal" href="../apis/components/components.model_client.cohere_client.html#components.model_client.cohere_client.CohereAPIClient" title="components.model_client.cohere_client.CohereAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">CohereAPIClient</span></code></a> for how to do it.</p>
 <p>To use it from the <code class="docutils literal notranslate"><span class="pre">RerankerRetriever</span></code>, we only need to pass the <code class="docutils literal notranslate"><span class="pre">model</span></code> along with other arguments who does not
 require conversion in the <code class="docutils literal notranslate"><span class="pre">model_kwargs</span></code>. Here is how we use model  <cite>rerank-english-v3.0</cite> from Cohere(Make sure you have the cohere sdk installed and prepared your api key):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">RerankerRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">RerankerRetriever</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">COHERE</span><span class="p">()</span>
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;rerank-english-v3.0&quot;</span><span class="p">}</span>
@@ -878,7 +874,7 @@ Also, if we use both the <cite>title</cite> and <cite>content</cite>, it will al
 </ol>
 <p>For the first case, with out prompt and zero-shot, <cite>gpt-3.5-turbo</cite> is not working as well as <cite>gpt-4o</cite> which got both answers right.
 Here is our code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.retriever</span> <span class="kn">import</span> <span class="n">LLMRetriever</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.retriever</span> <span class="kn">import</span> <span class="n">LLMRetriever</span>
 
 <span class="n">model_client</span> <span class="o">=</span> <span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">()</span>
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span>

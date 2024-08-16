@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="current nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -486,7 +482,7 @@
    <a href="https://colab.research.google.com/drive/1mpocvG8lPyW1ISOK7SJ4bCt9KmQCP0SJ?usp=sharing" target="_blank" style="margin-right: 10px;">
       <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
    </a>
-   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/react_note.py" target="_blank" style="display: flex; align-items: center;">
+   <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/react_note.py" target="_blank" style="display: flex; align-items: center;">
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
@@ -498,7 +494,7 @@
 </div></blockquote>
 <p>Alongside the well-known RAGs, agents <a class="footnote-reference brackets" href="#id3" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>  are another popular family of LLM applications.
 What makes agents stand out is their ability to reason, plan, and act via accessible tools.
-When it comes to implementation, LightRAG has simplified it down to a generator that can use tools, taking multiple steps (sequential or parallel) to complete a user query.</p>
+When it comes to implementation, AdalFlow has simplified it down to a generator that can use tools, taking multiple steps (sequential or parallel) to complete a user query.</p>
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
 <p>We will first introduce ReAct <a class="footnote-reference brackets" href="#id4" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, a general paradigm for building agents with a sequential of interleaving thought, action, and observation steps.</p>
@@ -659,9 +655,9 @@ It will orchestrate two components:</p>
 <p>We will set up two sets of models, <cite>llama3-70b-8192`</cite> by Groq and <cite>gpt-3.5-turbo`</cite> by OpenAI, to test two queries.
 For comparison, we will compare these with a vanilla LLM response without using the agent.
 Here are the code snippets:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.agent</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
-<span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">ModelClientType</span><span class="p">,</span> <span class="n">ModelClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.agent</span> <span class="kn">import</span> <span class="n">ReActAgent</span>
+<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">ModelClientType</span><span class="p">,</span> <span class="n">ModelClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.utils</span> <span class="kn">import</span> <span class="n">setup_env</span>
 
 <span class="n">setup_env</span><span class="p">()</span>
 
@@ -886,7 +882,7 @@ We suggest you to modify our default template: <code class="xref py py-const doc
 <p>Secondly, the <code class="docutils literal notranslate"><span class="pre">examples</span></code> in the constructor allow you to provide more examples to enforce the correct output format.
 For instance, if we want it to learn how to correctly call <cite>multiply</cite>, we can pass in a list of <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instances with the correct format.
 Classmethod <code class="docutils literal notranslate"><span class="pre">from_function</span></code> can be used to create a <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> instance from a function and its arguments.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
 
 <span class="c1"># generate an example of calling multiply with key-word arguments</span>
 <span class="n">example_using_multiply</span> <span class="o">=</span> <span class="n">FunctionExpression</span><span class="o">.</span><span class="n">from_function</span><span class="p">(</span>

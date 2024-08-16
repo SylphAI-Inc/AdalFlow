@@ -52,7 +52,7 @@
     <link rel="icon" href="../_static/LightRAG-logo-circle.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Configurations" href="configs.html" />
+    <link rel="next" title="Use Cases" href="../use_cases/index.html" />
     <link rel="prev" title="Logging" href="logging.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -401,7 +401,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -417,10 +417,6 @@
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -486,8 +482,8 @@ to lose track of the prompt changes when your current change actually makes the 
 <p>We created a <cite>GeneratorStateLogger</cite> to handle the logging and saving into json files. To further simplify developers’s process,
 we provides a class decorator <cite>trace_generator_states</cite> where a single line of code can be added to any of your task component.
 It will automatically track any attributes of type <cite>Generator</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tracing</span> <span class="kn">import</span> <span class="n">trace_generator_states</span>
-<span class="kn">from</span> <span class="nn">core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.tracing</span> <span class="kn">import</span> <span class="n">trace_generator_states</span>
+<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
 
 <span class="nd">@trace_generator_states</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">SimpleQA</span><span class="p">(</span><span class="n">Component</span><span class="p">):</span>
@@ -650,11 +646,11 @@ The structure of log directory is as follows:</p>
       </div>
     </a>
     <a class="right-next"
-       href="configs.html"
+       href="../use_cases/index.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Configurations</p>
+        <p class="prev-next-title">Use Cases</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

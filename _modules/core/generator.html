@@ -1290,7 +1290,12 @@
                 <span class="n">output</span> <span class="o">=</span> <span class="n">GeneratorOutput</span><span class="p">(</span><span class="n">raw_response</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">completion</span><span class="p">),</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
 
         <span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;output: </span><span class="si">{</span><span class="n">output</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_callbacks</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="nb">input</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_run_callbacks</span><span class="p">(</span>
+            <span class="n">output</span><span class="p">,</span>
+            <span class="nb">input</span><span class="o">=</span><span class="n">api_kwargs</span><span class="p">,</span>
+            <span class="n">prompt_kwargs</span><span class="o">=</span><span class="n">prompt_kwargs</span><span class="p">,</span>
+            <span class="n">model_kwargs</span><span class="o">=</span><span class="n">model_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">output</span></div>
 
 

@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Agent" href="agent.html" />
-    <link rel="prev" title="Data &amp; RAG" href="db.html" />
+    <link rel="prev" title="Data (Database/Pipeline) &amp; RAG" href="db.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="current nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -549,11 +545,11 @@ Many places use tools and function calls interchangably.</p>
 </pre></div>
 </div>
 </section>
-<section id="lightrag-scope-and-design">
-<h2>LightRAG Scope and Design<a class="headerlink" href="#lightrag-scope-and-design" title="Link to this heading">#</a></h2>
+<section id="scope-and-design">
+<h2>Scope and Design<a class="headerlink" href="#scope-and-design" title="Link to this heading">#</a></h2>
 <p>Even with API, users have to (1) create the function definition, (2) Parse the response, (3) Execute the function.
 What is missing in using API is: (1) How the function definitions are shown to LLM, (2) How the output format is instructured.</p>
-<p>LightRAG will provide built-in capabilities to do function calls simplily via prompt without relying on the tools API.</p>
+<p>AdalFlow will provide built-in capabilities to do function calls simplily via prompt without relying on the tools API.</p>
 <p><strong>Design Goals</strong></p>
 <p>Asking LLM to call a function with keyword arguments is the simplest way of achieving the function call.
 But it is limiting:</p>
@@ -561,7 +557,7 @@ But it is limiting:</p>
 <li><p>What if the argument value is a more complicated data structure?</p></li>
 <li><p>What if you want to use a variable as an argument?</p></li>
 </ol>
-<p>LightRAG will also provide <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> where calling a function is asking LLM to write the code snippet of the function call directly:</p>
+<p>AdalFlow will also provide <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code> where calling a function is asking LLM to write the code snippet of the function call directly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;get_current_weather(&quot;San Francisco, CA&quot;, unit=&quot;celsius&quot;)&#39;</span>
 </pre></div>
 </div>
@@ -690,7 +686,7 @@ We will demonstrate the structure and how to use each data model and component t
 <h3>1. FunctionTool<a class="headerlink" href="#functiontool" title="Link to this heading">#</a></h3>
 <p>First, let’s see how we help describe the function to LLM.</p>
 <p>Use the above functions as examples, <code class="docutils literal notranslate"><span class="pre">FunctionTool</span></code> will generate the <code class="docutils literal notranslate"><span class="pre">FunctionDefinition</span></code> for each function automatically if the user did not pass it in.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.func_tool</span> <span class="kn">import</span> <span class="n">FunctionTool</span>
 
 <span class="n">functions</span> <span class="o">=</span><span class="p">[</span><span class="n">multiply</span><span class="p">,</span> <span class="n">add</span><span class="p">,</span> <span class="n">divide</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">numpy_sum</span><span class="p">,</span> <span class="n">add_points</span><span class="p">]</span>
 <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span>
@@ -766,7 +762,7 @@ Check out the API documentation for more details.</p>
 <section id="toolmanager">
 <h3>2. ToolManager<a class="headerlink" href="#toolmanager" title="Link to this heading">#</a></h3>
 <p>Using <code class="docutils literal notranslate"><span class="pre">ToolManager</span></code> on all the above function:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.tool_manager</span> <span class="kn">import</span> <span class="n">ToolManager</span>
 
 <span class="n">tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">functions</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">tool_manager</span><span class="p">)</span>
@@ -804,7 +800,7 @@ We use the following prompt to do a single function call.</p>
 </div>
 <p><strong>Pass tools in the prompt</strong></p>
 <p>We use <cite>yaml</cite> format here and show an example with less tools.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.prompt_builder</span> <span class="kn">import</span> <span class="n">Prompt</span>
 
 <span class="n">prompt</span> <span class="o">=</span> <span class="n">Prompt</span><span class="p">(</span><span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">)</span>
 <span class="n">small_tool_manager</span> <span class="o">=</span> <span class="n">ToolManager</span><span class="p">(</span><span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
@@ -864,7 +860,7 @@ We use the following prompt to do a single function call.</p>
 <ol class="arabic simple">
 <li><p>Using the function name and arguments, we will leverage <code class="docutils literal notranslate"><span class="pre">Function</span></code> as LLM’s output data type.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">Function</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">Function</span>
 
 <span class="n">output_data_class</span> <span class="o">=</span> <span class="n">Function</span>
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
@@ -890,7 +886,7 @@ The output is:</p>
 <ol class="arabic simple" start="2">
 <li><p>Using the function call expression for which we will use <code class="docutils literal notranslate"><span class="pre">FunctionExpression</span></code>.</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">FunctionExpression</span>
 
 <span class="n">output_data_class</span> <span class="o">=</span> <span class="n">FunctionExpression</span>
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="n">output_data_class</span><span class="o">.</span><span class="n">to_json_signature</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">])</span>
@@ -910,7 +906,7 @@ The output is:</p>
 </pre></div>
 </div>
 <p>We will use <a class="reference internal" href="../apis/components/components.output_parsers.outputs.html#components.output_parsers.outputs.JsonOutputParser" title="components.output_parsers.outputs.JsonOutputParser"><code class="xref py py-class docutils literal notranslate"><span class="pre">components.output_parsers.outputs.JsonOutputParser</span></code></a> to streamline the formatting of our output data type.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
 
 <span class="n">func_parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">Function</span><span class="p">)</span>
 <span class="n">instructions</span> <span class="o">=</span> <span class="n">func_parser</span><span class="o">.</span><span class="n">format_instructions</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;thought&quot;</span><span class="p">,</span> <span class="s2">&quot;args&quot;</span><span class="p">])</span>
@@ -933,8 +929,8 @@ The output is:</p>
 <section id="function-output-format">
 <h4>Function Output Format<a class="headerlink" href="#function-output-format" title="Link to this heading">#</a></h4>
 <p>Now, let’s prepare our generator with the above prompt, <code class="docutils literal notranslate"><span class="pre">Function</span></code> data class, and <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.generator</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">model_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">}</span>
 <span class="n">prompt_kwargs</span> <span class="o">=</span> <span class="p">{</span>
@@ -1265,7 +1261,7 @@ Do not call multiple functions in one action field.
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Data &amp; RAG</p>
+        <p class="prev-next-title">Data (Database/Pipeline) &amp; RAG</p>
       </div>
     </a>
     <a class="right-next"
@@ -1296,7 +1292,7 @@ Do not call multiple functions in one action field.
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-walkthrough">Quick Walkthrough</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lightrag-scope-and-design">LightRAG Scope and Design</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scope-and-design">Scope and Design</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#function-call-in-action">Function Call in Action</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#functiontool">1. FunctionTool</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#toolmanager">2. ToolManager</a></li>

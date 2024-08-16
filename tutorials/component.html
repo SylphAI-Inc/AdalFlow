@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -486,7 +482,7 @@
    <a href="https://colab.research.google.com/drive/1aD0C8-iMB8quIn8FKhrtFAGcrboRNg2C?usp=sharing" target="_blank" style="margin-right: 10px;">
       <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
    </a>
-   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/lightrag/lightrag/core/component.py" target="_blank" style="display: flex; align-items: center;">
+   <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
       <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
       <span style="vertical-align: middle;"> Open Source Code</span>
    </a>
@@ -527,9 +523,9 @@ PyTorch</div>
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-LightRAG</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+AdalFlow</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Component</span><span class="p">,</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
 
 
 <span class="n">template_doc</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;&lt;SYS&gt; You are a doctor &lt;/SYS&gt; User: {{input_str}}&quot;&quot;&quot;</span>
@@ -602,7 +598,7 @@ Run the <code class="docutils literal notranslate"><span class="pre">DocQA</span
 <h3>Configure from file<a class="headerlink" href="#configure-from-file" title="Link to this heading">#</a></h3>
 <p>As the above example shows, we added subcomponent via attributes.
 We can also use methods to add more subcomponnents or parameters.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
 
 <span class="n">doc</span><span class="o">.</span><span class="n">register_parameter</span><span class="p">(</span><span class="s2">&quot;demo&quot;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">Parameter</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;demo&quot;</span><span class="p">))</span>
 <span class="c1"># list all parameters</span>
@@ -635,7 +631,7 @@ It is good practice to ensure that any of your components are pickable.</p>
 </div></blockquote>
 <p><a class="reference internal" href="../apis/core/core.component.html#core.component.FunComponent" title="core.component.FunComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">FunComponent</span></code></a> is a subclass of <a class="reference internal" href="../apis/core/core.component.html#core.component.Component" title="core.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a> that allows you to define a component with a function.
 You can directly use this class as:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">FunComponent</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">FunComponent</span>
 
 <span class="k">def</span> <span class="nf">add_one</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
@@ -653,7 +649,7 @@ You can directly use this class as:</p>
 <p>We also have <a class="reference internal" href="../apis/core/core.component.html#core.component.fun_to_component" title="core.component.fun_to_component"><code class="xref py py-func docutils literal notranslate"><span class="pre">fun_to_component</span></code></a> to convert a function to a <cite>FunComponent</cite> via a decorator or by directly calling the function.
 This approach gives you a unique component converted from the function name.</p>
 <p>Via direct call:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.component</span> <span class="kn">import</span> <span class="n">fun_to_component</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.component</span> <span class="kn">import</span> <span class="n">fun_to_component</span>
 
 <span class="n">fun_component</span> <span class="o">=</span> <span class="n">fun_to_component</span><span class="p">(</span><span class="n">add_one</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">fun_component</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
@@ -662,7 +658,7 @@ This approach gives you a unique component converted from the function name.</p>
 </div>
 <p>The output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2
-&lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;
+&lt;class &#39;adalflow.core.component.AddOneComponent&#39;&gt;
 </pre></div>
 </div>
 <p>Using a decorator is an even more convenient way to create a component from a function:</p>
@@ -675,7 +671,7 @@ This approach gives you a unique component converted from the function name.</p>
 
 <span class="c1"># output:</span>
 <span class="c1"># 2</span>
-<span class="c1"># &lt;class &#39;lightrag.core.component.AddOneComponent&#39;&gt;</span>
+<span class="c1"># &lt;class &#39;adalflow.core.component.AddOneComponent&#39;&gt;</span>
 </pre></div>
 </div>
 </section>
@@ -684,7 +680,7 @@ This approach gives you a unique component converted from the function name.</p>
 <p>We have the <a class="reference internal" href="../apis/core/core.container.html#core.container.Sequential" title="core.container.Sequential"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequential</span></code></a> class, which is similar to PyTorch’s <code class="docutils literal notranslate"><span class="pre">nn.Sequential</span></code> class.
 This is especially useful for chaining together components in a sequence, much like the concept of <code class="docutils literal notranslate"><span class="pre">chain</span></code> or <code class="docutils literal notranslate"><span class="pre">pipeline</span></code> in other LLM libraries.
 Let’s put the <cite>FunComponent`</cite> and <cite>DocQA`</cite> together in a sequence:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.container</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.container</span> <span class="kn">import</span> <span class="n">Sequential</span>
 
 <span class="nd">@fun_to_component</span>
 <span class="k">def</span> <span class="nf">enhance_query</span><span class="p">(</span><span class="n">query</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>

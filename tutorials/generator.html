@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -497,7 +493,7 @@ It is a pipeline consisting of three subcomponents. By switching the prompt temp
 <section id="design">
 <h2>Design<a class="headerlink" href="#design" title="Link to this heading">#</a></h2>
 <figure class="align-center" id="id2">
-<a class="reference internal image-reference" href="../_images/generator.png"><img alt="LightRAG generator design" src="../_images/generator.png" style="width: 700px;" />
+<a class="reference internal image-reference" href="../_images/generator.png"><img alt="AdalFlow generator design" src="../_images/generator.png" style="width: 700px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Generator - The Orchestrator for LLM Prediction</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
@@ -561,8 +557,8 @@ We made this design choice because it can be really helpful to log various faile
 <section id="minimum-example">
 <h3>Minimum Example<a class="headerlink" href="#minimum-example" title="Link to this heading">#</a></h3>
 <p>The minimum setup to initiate a generator in the code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">GroqAPIClient</span>
 
 <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
     <span class="n">model_client</span><span class="o">=</span><span class="n">GroqAPIClient</span><span class="p">(),</span>
@@ -699,10 +695,10 @@ They only need to stick to <code class="docutils literal notranslate"><span clas
 <h3>Use output_processors<a class="headerlink" href="#use-output-processors" title="Link to this heading">#</a></h3>
 <p>In this example, we will instruct the LLM to output a JSON object in response.
 We will use the <cite>JsonParser</cite> to parse the output back to a <cite>dict</cite> object.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
-<span class="kn">from</span> <span class="nn">lightrag.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
-<span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">GeneratorOutput</span>
+<span class="kn">from</span> <span class="nn">adalflow.components.model_client</span> <span class="kn">import</span> <span class="n">OpenAIClient</span>
+<span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
 
 <span class="n">output_format_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;Your output should be formatted as a standard JSON object with two keys:</span>
 <span class="s2">{</span>
@@ -755,7 +751,7 @@ You:
 <p>Also, did you notice that we have already switched to using models from <cite>OpenAI</cite> in the above example?
 This demonstrates how easy it is to switch the <cite>model_client</cite> in the Generator, making it a truly model-agnostic component.
 We can even use <a class="reference internal" href="../apis/core/core.types.html#core.types.ModelClientType" title="core.types.ModelClientType"><code class="xref py py-class docutils literal notranslate"><span class="pre">ModelClientType</span></code></a> to switch the model client without handling multiple imports.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.types</span> <span class="kn">import</span> <span class="n">ModelClientType</span>
 
 <span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">(</span>
     <span class="n">model_client</span><span class="o">=</span><span class="n">ModelClientType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">(),</span>  <span class="c1"># or ModelClientType.GROQ()</span>
@@ -778,7 +774,7 @@ Here is an example of an API key error with OpenAI:</p>
 <p>As with all components, we can create the generator purely from configs.</p>
 <p><strong>Know it is a Generator</strong></p>
 <p>In this case, we know we are creating a generator, we will use <code class="docutils literal notranslate"><span class="pre">from_config</span></code> method from the <code class="docutils literal notranslate"><span class="pre">Generator</span></code> class.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;model_client&quot;</span><span class="p">:</span> <span class="p">{</span>
@@ -805,8 +801,8 @@ Here is an example of an API key error with OpenAI:</p>
 <p>This is even more general.
 This method can be used to create any component from configs.
 We just need to follow the config structure: <code class="docutils literal notranslate"><span class="pre">component_name</span></code> and <code class="docutils literal notranslate"><span class="pre">component_config</span></code> for all arguments.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.utils.config</span> <span class="kn">import</span> <span class="n">new_component</span>
-<span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">Generator</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.utils.config</span> <span class="kn">import</span> <span class="n">new_component</span>
+<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">Generator</span>
 
 <span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="p">{</span>

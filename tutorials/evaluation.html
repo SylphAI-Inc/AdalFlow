@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -540,7 +536,7 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 <span class="linenos">7</span><span class="c1"># {&#39;precision&#39;: [0.9419728517532349, 0.7959791421890259], &#39;recall&#39;: [0.9419728517532349, 0.7749403119087219], &#39;f1&#39;: [0.9419728517532349, 0.7853187918663025], &#39;hashcode&#39;: &#39;distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)&#39;}</span>
 </pre></div>
 </div>
-<p>If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in LightRAG to assess both the quality of the retrieved context and the quality of the final generated answer.</p>
+<p>If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in AdalFlow to assess both the quality of the retrieved context and the quality of the final generated answer.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../apis/eval/eval.retriever_recall.html#module-eval.retriever_recall" title="eval.retriever_recall"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRecall</span></code></a>: This is used to evaluate the recall of the retriever component of the RAG pipeline.</p></li>
 <li><p><a class="reference internal" href="../apis/eval/eval.retriever_relevance.html#module-eval.retriever_relevance" title="eval.retriever_relevance"><code class="xref py py-class docutils literal notranslate"><span class="pre">RetrieverRelevance</span></code></a>: This is used to evaluate the relevance of the retrieved context to the query.</p></li>
@@ -548,7 +544,7 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 <li><p><a class="reference internal" href="../apis/eval/eval.llm_as_judge.html#module-eval.llm_as_judge" title="eval.llm_as_judge"><code class="xref py py-class docutils literal notranslate"><span class="pre">LLMasJudge</span></code></a>: This uses an LLM to get the judgement of the generated answer for a list of questions. The task description and the judgement query of the LLM judge can be customized. It computes the judgement score, which is the number of generated answers that are judged as correct by the LLM divided by the total number of generated answers.</p></li>
 </ul>
 <p>For example, you can use the following code snippet to compute the recall and relevance of the retriever component of the RAG pipeline for a single query.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">lightrag.eval</span> <span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">adalflow.eval</span> <span class="kn">import</span> <span class="n">RetrieverRecall</span><span class="p">,</span> <span class="n">RetrieverRelevance</span>
 <span class="linenos"> 2</span><span class="n">retrieved_contexts</span> <span class="o">=</span> <span class="p">[</span>
 <span class="linenos"> 3</span>    <span class="s2">&quot;Apple is founded before Google.&quot;</span><span class="p">,</span>
 <span class="linenos"> 4</span>    <span class="s2">&quot;Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.&quot;</span><span class="p">,</span>
@@ -572,7 +568,7 @@ Overall, such evaluation is a complex and multifaceted process. Below, we provid
 </pre></div>
 </div>
 <p>For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on <span class="xref std std-doc">Evaluating a RAG Pipeline</span>.</p>
-<p>If you intent to use metrics that are not available in the LightRAG library, you can also implement your own custom metric functions or use other libraries such as <a class="reference external" href="https://docs.ragas.io/en/stable/getstarted/index.html">RAGAS</a> to compute the desired metrics for evaluating RAG pipelines.</p>
+<p>If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as <a class="reference external" href="https://docs.ragas.io/en/stable/getstarted/index.html">RAGAS</a> to compute the desired metrics for evaluating RAG pipelines.</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id13" role="doc-footnote">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>

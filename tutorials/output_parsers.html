@@ -405,7 +405,7 @@
 <li class="toctree-l1"><a class="reference internal" href="embedder.html">Embedder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="retriever.html">Retriever</a></li>
 <li class="toctree-l1"><a class="reference internal" href="text_splitter.html">Text Splitter</a></li>
-<li class="toctree-l1"><a class="reference internal" href="db.html">Data &amp; RAG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="db.html">Data (Database/Pipeline) &amp; RAG</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Agent Essentials</span></p>
 <ul class="nav bd-sidenav">
@@ -421,10 +421,6 @@
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
 <li class="toctree-l1"><a class="reference internal" href="logging_tracing.html">Tracing</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Configurations</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="configs.html">Configurations</a></li>
 </ul>
 </div>
 </nav></div>
@@ -607,7 +603,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 <h2>Parser in Action<a class="headerlink" href="#parser-in-action" title="Link to this heading">#</a></h2>
 <p>All of the parsers are quite straightforward to use.</p>
 <p><strong>BooleanParser</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">BooleanParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">BooleanParser</span>
 
 <span class="n">bool_str</span> <span class="o">=</span> <span class="s2">&quot;True&quot;</span>
 <span class="n">bool_str_2</span> <span class="o">=</span> <span class="s2">&quot;False&quot;</span>
@@ -635,7 +631,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </div>
 <p>Boolean parsers will not work for ‘1’, ‘0’, ‘yes’, ‘no’ as they are not the standard boolean values.</p>
 <p><strong>IntParser</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rom</span> <span class="n">lightrag</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">string_parser</span> <span class="kn">import</span> <span class="nn">IntParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">rom</span> <span class="n">adalflow</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">string_parser</span> <span class="kn">import</span> <span class="nn">IntParser</span>
 
 <span class="n">int_str</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
 <span class="n">int_str_2</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
@@ -659,7 +655,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">IntParser</span></code> will return the integer value of the first number in the string, even if it is a float.</p>
 <p><strong>FloatParser</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">FloatParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">FloatParser</span>
 
 <span class="n">float_str</span> <span class="o">=</span> <span class="s2">&quot;42.0&quot;</span>
 <span class="n">float_str_2</span> <span class="o">=</span> <span class="s2">&quot;42&quot;</span>
@@ -683,7 +679,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">FloatParser</span></code> will return the float value of the first number in the string, even if it is an integer.</p>
 <p><strong>ListParser</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">ListParser</span>
 
 <span class="n">list_str</span> <span class="o">=</span> <span class="s1">&#39;[&quot;key&quot;, &quot;value&quot;]&#39;</span>
 <span class="n">list_str_2</span> <span class="o">=</span> <span class="s1">&#39;prefix[&quot;key&quot;, 2]...&#39;</span>
@@ -703,7 +699,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </div>
 <p><strong>JsonParser</strong></p>
 <p>Even though it can work on lists, it is better to only use it for dictionaries.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">JsonParser</span>
 
 <span class="n">dict_str</span> <span class="o">=</span> <span class="s1">&#39;{&quot;key&quot;: &quot;value&quot;}&#39;</span>
 <span class="n">nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
@@ -729,7 +725,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 </div>
 <p><strong>YamlParser</strong></p>
 <p>Though it works almost on all of the previous examples, it is better to use it for yaml formatted dictionaries.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.core.string_parser</span> <span class="kn">import</span> <span class="n">YamlParser</span>
 
 <span class="n">yaml_dict_str</span> <span class="o">=</span> <span class="s2">&quot;key: value&quot;</span>
 <span class="n">yaml_nested_dict_str</span> <span class="o">=</span> <span class="p">(</span>
@@ -760,7 +756,7 @@ Thus, <code class="docutils literal notranslate"><span class="pre">JsonOutputPar
 <p>We will create the following simple <code class="docutils literal notranslate"><span class="pre">DataClass</span></code> with one example.
 And we will demonstrate how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code> and <code class="docutils literal notranslate"><span class="pre">YamlOutputParser</span></code> to parse another example to dict object.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span> <span class="nn">lightrag.core</span> <span class="kn">import</span> <span class="n">DataClass</span>
+<span class="kn">from</span> <span class="nn">adalflow.core</span> <span class="kn">import</span> <span class="n">DataClass</span>
 
 <span class="nd">@dataclass</span>
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">DataClass</span><span class="p">):</span>
@@ -772,7 +768,7 @@ And we will demonstrate how to use <code class="docutils literal notranslate"><s
 </div>
 <p><strong>JsonOutputParser</strong></p>
 <p>Here is how to use <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">JsonOutputParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">JsonOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
@@ -833,7 +829,7 @@ ________
 </div>
 <p><strong>YamlOutputParser</strong></p>
 <p>The steps are totally the same as the <code class="docutils literal notranslate"><span class="pre">JsonOutputParser</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lightrag.components.output_parsers</span> <span class="kn">import</span> <span class="n">YamlOutputParser</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">adalflow.components.output_parsers</span> <span class="kn">import</span> <span class="n">YamlOutputParser</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">YamlOutputParser</span><span class="p">(</span><span class="n">data_class</span><span class="o">=</span><span class="n">User</span><span class="p">,</span> <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="n">user_example</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
