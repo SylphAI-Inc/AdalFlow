@@ -71,7 +71,7 @@ If you are interested in computing metrics such as accuracy, F1-score, ROUGE, BE
     print(results)
     # {'precision': [0.9419728517532349, 0.7959791421890259], 'recall': [0.9419728517532349, 0.7749403119087219], 'f1': [0.9419728517532349, 0.7853187918663025], 'hashcode': 'distilbert-base-uncased_L5_no-idf_version=0.3.12(hug_trans=4.38.2)'}
 
-If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in LightRAG to assess both the quality of the retrieved context and the quality of the final generated answer.
+If you are particulay interested in evaluating RAG (Retrieval-Augmented Generation) pipelines, we have several metrics available in AdalFlow to assess both the quality of the retrieved context and the quality of the final generated answer.
 
 - :class:`RetrieverRecall <eval.retriever_recall>`: This is used to evaluate the recall of the retriever component of the RAG pipeline.
 - :class:`RetrieverRelevance <eval.retriever_relevance>`: This is used to evaluate the relevance of the retrieved context to the query.
@@ -83,7 +83,7 @@ For example, you can use the following code snippet to compute the recall and re
 .. code-block:: python
     :linenos:
 
-    from lightrag.eval import RetrieverRecall, RetrieverRelevance
+    from adalflow.eval import RetrieverRecall, RetrieverRelevance
     retrieved_contexts = [
         "Apple is founded before Google.",
         "Feburary has 28 days in common years. Feburary has 29 days in leap years. Feburary is the second month of the year.",
@@ -107,7 +107,7 @@ For example, you can use the following code snippet to compute the recall and re
 
 For a more detailed instructions on how build and evaluate RAG pipelines, you can refer to the use case on :doc:`Evaluating a RAG Pipeline <../tutorials/eval_a_rag>`.
 
-If you intent to use metrics that are not available in the LightRAG library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
+If you intent to use metrics that are not available in the AdalFlow library, you can also implement your own custom metric functions or use other libraries such as `RAGAS <https://docs.ragas.io/en/stable/getstarted/index.html>`_ to compute the desired metrics for evaluating RAG pipelines.
 
 
 .. [1] Chang, Yupeng, et al. "A survey on evaluation of large language models." ACM Transactions on Intelligent Systems and Technology 15.3 (2024): 1-45.

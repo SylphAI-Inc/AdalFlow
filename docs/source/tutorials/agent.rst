@@ -8,7 +8,7 @@
       <a href="https://colab.research.google.com/drive/1mpocvG8lPyW1ISOK7SJ4bCt9KmQCP0SJ?usp=sharing" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/react_note.py" target="_blank" style="display: flex; align-items: center;">
+      <a href="https://github.com/SylphAI-Inc/AdalFlow/blob/main/tutorials/react_note.py" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
          <span style="vertical-align: middle;"> Open Source Code</span>
       </a>
@@ -26,7 +26,7 @@ Agent
 
 Alongside the well-known RAGs, agents [1]_  are another popular family of LLM applications.
 What makes agents stand out is their ability to reason, plan, and act via accessible tools.
-When it comes to implementation, LightRAG has simplified it down to a generator that can use tools, taking multiple steps (sequential or parallel) to complete a user query.
+When it comes to implementation, AdalFlow has simplified it down to a generator that can use tools, taking multiple steps (sequential or parallel) to complete a user query.
 
 
 
@@ -209,9 +209,9 @@ Here are the code snippets:
 
 .. code-block:: python
 
-   from lightrag.components.agent import ReActAgent
-   from lightrag.core import Generator, ModelClientType, ModelClient
-   from lightrag.utils import setup_env
+   from adalflow.components.agent import ReActAgent
+   from adalflow.core import Generator, ModelClientType, ModelClient
+   from adalflow.utils import setup_env
 
    setup_env()
 
@@ -463,7 +463,7 @@ Classmethod ``from_function`` can be used to create a ``FunctionExpression`` ins
 
 .. code-block:: python
 
-   from lightrag.core.types import FunctionExpression
+   from adalflow.core.types import FunctionExpression
 
    # generate an example of calling multiply with key-word arguments
    example_using_multiply = FunctionExpression.from_function(

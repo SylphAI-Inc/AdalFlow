@@ -1,5 +1,18 @@
-Data & RAG
-====================
+.. raw:: html
+
+   <div style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px;">
+      <a href="https://colab.research.google.com/drive/1_sGeHaKrwpI9RiL01g3cKyI2_5PJqZtr?usp=sharing" target="_blank" style="margin-right: 10px;">
+         <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
+      </a>
+      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/tutorials/prompt_note.py" target="_blank" style="display: flex; align-items: center;">
+         <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
+         <span style="vertical-align: middle;"> Open Source Code</span>
+      </a>
+   </div>
+
+
+Data (Database/Pipeline) & RAG
+================================
 
 .. .. admonition:: Author
 ..    :class: highlight
@@ -97,7 +110,7 @@ This is why data processing components like ``TextSplitter`` and ``ToEmbeddings`
 
 .. code-block:: python
 
-    from lightrag.core.types import Document
+    from adalflow.core.types import Document
 
     documents  = [Document(text=doc['content'], meta_data={'title': doc['title']}) for doc in org_documents]
     print(documents)
@@ -121,7 +134,7 @@ Here is how to get a list of ``DialogTurn`` from the ``turns``:
 
 .. code-block:: python
 
-    from lightrag.core.types import DialogTurn, UserQuery, AssistantResponse
+    from adalflow.core.types import DialogTurn, UserQuery, AssistantResponse
 
     dialog_turns = [
     DialogTurn(
@@ -167,10 +180,10 @@ Here is the code to form a data pipeline:
 
 .. code-block:: python
 
-    from lightrag.core.embedder import Embedder
-    from lightrag.core.types import ModelClientType
-    from lightrag.components.data_process import DocumentSplitter, ToEmbeddings
-    from lightrag.core.component import Sequential
+    from adalflow.core.embedder import Embedder
+    from adalflow.core.types import ModelClientType
+    from adalflow.components.data_process import DocumentSplitter, ToEmbeddings
+    from adalflow.core.component import Sequential
 
 
     model_kwargs = {
@@ -309,7 +322,7 @@ Let's create a ``LocalDB`` to manage the ``dialog_turns`` and its data processin
 
 .. code-block:: python
 
-    from lightrag.core.db import LocalDB
+    from adalflow.core.db import LocalDB
 
     dialog_turn_db = LocalDB('dialog_turns')
     print(dialog_turn_db)
@@ -385,7 +398,7 @@ This will also leverage ``DialogTurn`` 's inheritant ability from ``DataClass`` 
 
 .. code-block:: python
 
-    from lightrag.core import Generator
+    from adalflow.core import Generator
 
     llm_kwargs = {
         "model": "gpt-3.5-turbo"
@@ -479,7 +492,7 @@ Here is the code to prepare the relevant dialog turns.
 
 .. code-block:: python
 
-    from lightrag.components.retriever.faiss_retriever import FAISSRetriever
+    from adalflow.components.retriever.faiss_retriever import FAISSRetriever
 
     retriever = FAISSRetriever(top_k=3, embedder=embedder)
     embeddings = [item.vector for item in dialog_turn_db.transformed_items[key]]

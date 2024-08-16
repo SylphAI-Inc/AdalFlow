@@ -36,7 +36,7 @@ However, many proprietary APIs did not disclose their special tokens, and requir
 Design
 ----------------
 
-`LightRAG` seeks to maximize developers' control over the prompt.
+`AdalFlow` seeks to maximize developers' control over the prompt.
 Thus, in most cases, we help developers gather different sections and form them into one prompt.
 This prompt will then be sent to the LLM as a single message.
 The default role of the message we use is `system`.
@@ -170,7 +170,7 @@ Let's use the same template as above:
 
 .. code-block:: python
 
-   from lightrag.core.prompt_builder import Prompt
+   from adalflow.core.prompt_builder import Prompt
 
    prompt = Prompt(
       template=template,

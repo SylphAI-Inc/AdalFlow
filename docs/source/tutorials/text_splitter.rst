@@ -80,7 +80,7 @@ Input Document Text:
 
 ::
 
-    Hello, this is lightrag. Please implement your splitter here.
+    Hello, this is adalflow. Please implement your splitter here.
 
 
 .. list-table:: Chunking Example Detailed
@@ -94,22 +94,22 @@ Input Document Text:
    * - word
      - 5
      - 2
-     - "Hello, this is lightrag. Please", "lightrag. Please implement your splitter", "your splitter here."
+     - "Hello, this is adalflow. Please", "adalflow. Please implement your splitter", "your splitter here."
    * - sentence
      - 1
      - 0
-     - "Hello, this is lightrag.", "Please implement your splitter here."
+     - "Hello, this is adalflow.", "Please implement your splitter here."
    * - token
      - 5
      - 2
-     - "Hello, this is l", "is lightrag.", "trag. Please implement your", "implement your splitter here."
+     - "Hello, this is l", "is adalflow.", "trag. Please implement your", "implement your splitter here."
 
 When splitting by ``word`` with ``chunk_size = 5`` and ``chunk_overlap = 2``,
 each chunk will repeat 2 words from the previous chunk. These 2 words are set by ``chunk_overlap``.
 This means each chunk has ``5-2=3`` word(split unit) difference compared with its previous.
 
 When splitting using tokenizer, each chunk still keeps 5 tokens.
-For example, the tokenizer transforms ``lightrag`` to ['l', 'igh', 'trag']. So the second chunk is actually ``is`` + ``l`` + ``igh`` + ``trag`` + ``.``.
+For example, the tokenizer transforms ``adalflow`` to ['l', 'igh', 'trag']. So the second chunk is actually ``is`` + ``l`` + ``igh`` + ``trag`` + ``.``.
 
 .. note::
     ``chunk_overlap`` should always be smaller than ``chunk_size``, otherwise the window won't move and the splitting stucks.
@@ -124,8 +124,8 @@ Split by word
 
 .. code-block:: python
 
-    from lightrag.components.data_process.text_splitter import TextSplitter
-    from lightrag.core.types import Document
+    from adalflow.components.data_process.text_splitter import TextSplitter
+    from adalflow.core.types import Document
 
     # Configure the splitter settings
     text_splitter = TextSplitter(
@@ -155,8 +155,8 @@ Split by token
 ^^^^^^^^^^^^^^^^^^
 .. code-block:: python
 
-    from lightrag.components.data_process.text_splitter import TextSplitter
-    from lightrag.core.types import Document
+    from adalflow.components.data_process.text_splitter import TextSplitter
+    from adalflow.core.types import Document
     import tiktoken
 
     # Configure the splitter settings
@@ -223,7 +223,7 @@ Integration with Other Document Types
 ----------------------------------------------------------
 This functionality is ideal for segmenting texts into sentences, words, pages, or passages, which can then be processed further for NLP applications.
 For `PDFs`, developers will need to extract the text before using the splitter. Libraries like ``PyPDF2`` or ``PDFMiner`` can be utilized for this purpose.
-``LightRAG``'s future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
+AdalFlow's future implementations will introduce splitters for ``JSON``, ``HTML``, ``markdown``, and ``code``.
 
 Customization Tips
 -----------------------------

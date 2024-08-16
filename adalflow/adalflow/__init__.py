@@ -1,8 +1,8 @@
-__version__ = "0.2.0-beta.2"
+__version__ = "0.2.0-beta.3"
 
 from adalflow.core.component import Component, fun_to_component
+from adalflow.core.container import Sequential
 
-# from adalflow.core.container import Sequential
 from adalflow.optim.grad_component import GradComponent
 from adalflow.core.generator import Generator
 from adalflow.core.types import GeneratorOutput, EmbedderOutput, RetrieverOutput
@@ -41,6 +41,7 @@ from adalflow.utils import setup_env, get_logger
 __all__ = [
     "Component",
     "fun_to_component",
+    "Sequential",
     "GradComponent",
     "ModelClient",
     "Generator",
