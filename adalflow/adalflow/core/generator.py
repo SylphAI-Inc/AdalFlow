@@ -813,7 +813,12 @@ class Generator(GradComponent, CachedEngine, CallbackManager):
                 output = GeneratorOutput(raw_response=str(completion), error=str(e))
 
         log.info(f"output: {output}")
-        self._run_callbacks(output, input=api_kwargs)
+        self._run_callbacks(
+            output,
+            input=api_kwargs,
+            prompt_kwargs=prompt_kwargs,
+            model_kwargs=model_kwargs,
+        )
         return output
 
     def __call__(self, *args, **kwargs) -> Union[GeneratorOutputType, Any]:
