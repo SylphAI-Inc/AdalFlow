@@ -35,7 +35,9 @@
 
 .. raw:: html
 
-    <h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">⚡ The Library to Build and to Auto-optimize Large Language Model Applications ⚡</h3>
+    <h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">
+    ⚡ The Library to Build and to Auto-optimize LLM Applications ⚡
+    </h3>
 
 ..  <div style="text-align: center;">
 ..      <p>
