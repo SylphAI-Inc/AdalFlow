@@ -16,10 +16,11 @@
 
 <h4 align="center">
     <p>
-        <a href="https://lightrag.sylph.ai/">Documentation</a> |
-        <a href="https://lightrag.sylph.ai/apis/components/components.model_client.html">Models</a> |
-        <a href="https://lightrag.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
-        <a href="https://lightrag.sylph.ai/apis/components/components.agent.html">Agents</a>
+        <a href="https://adalflow.sylph.ai/">All Documentation</a> |
+        <a href="https://adalflow.sylph.ai/apis/components/components.model_client.html">Models</a> |
+        <a href="https://adalflow.sylph.ai/apis/components/components.retriever.html">Retrievers</a> |
+        <a href="https://adalflow.sylph.ai/apis/components/components.agent.html">Agents</a> |
+        <a href="https://adalflow.sylph.ai/use_cases/question_answering.html">Trainer & Optimizers</a>
     <p>
 </h4>
 
@@ -53,11 +54,12 @@
 
 
 
-<h1>
+<h2>
     <p align="center">
-        AdalFlow: The Library to Build and to Auto-optimize LLM Applications
+     ⚡ The Library to Build and to Auto-optimize LLM Applications ⚡
     </p>
-</h1>
+</h2>
+
 
 AdalFlow helps developers build and optimize LLM task pipelines.
 Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
@@ -73,7 +75,7 @@ Because of this, no library can provide out-of-the-box solutions. Users must bui
 
 
 Further reading: [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop),
-[Introduction](https://lightrag.sylph.ai/), [Design Philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html).
+[Introduction](https://adalflow.sylph.ai/), [Design Philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html) and [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html).
 
 
 <!--
@@ -261,7 +263,7 @@ You can switch to any model simply by using a different `model_client` (provider
 Let's use OpenAI's `gpt-3.5-turbo` model.
 
 ```python
-from lightrag.components.model_client import OpenAIClient
+from adalflow.components.model_client import OpenAIClient
 
 self.generator = Generator(
     model_client=OpenAIClient(),
@@ -281,23 +283,23 @@ Install AdalFlow with pip:
 pip install adalflow
 ```
 
-Please refer to the [full installation guide](https://lightrag.sylph.ai/get_started/installation.html) for more details.
+Please refer to the [full installation guide](https://adalflow.sylph.ai/get_started/installation.html) for more details.
 
 
 
 
 # Documentation
 
-AdalFlow full documentation available at [lightrag.sylph.ai](https://lightrag.sylph.ai/):
+AdalFlow full documentation available at [adalflow.sylph.ai](https://adalflow.sylph.ai/):
 - [How We Started](https://www.linkedin.com/posts/li-yin-ai_both-ai-research-and-engineering-use-pytorch-activity-7189366364694892544-Uk1U?utm_source=share&utm_medium=member_desktop)
-- [Introduction](https://lightrag.sylph.ai/)
-- [Full installation guide](https://lightrag.sylph.ai/get_started/installation.html)
-- [Design philosophy](https://lightrag.sylph.ai/tutorials/lightrag_design_philosophy.html)
-- [Class hierarchy](https://lightrag.sylph.ai/tutorials/class_hierarchy.html)
-- [Tutorials](https://lightrag.sylph.ai/tutorials/index.html)
-- [Supported Models](https://lightrag.sylph.ai/apis/components/components.model_client.html)
-- [Supported Retrievers](https://lightrag.sylph.ai/apis/components/components.retriever.html)
-- [API reference](https://lightrag.sylph.ai/apis/index.html)
+- [Introduction](https://adalflow.sylph.ai/)
+- [Full installation guide](https://adalflow.sylph.ai/get_started/installation.html)
+- [Design philosophy](https://adalflow.sylph.ai/tutorials/lightrag_design_philosophy.html)
+- [Class hierarchy](https://adalflow.sylph.ai/tutorials/class_hierarchy.html)
+- [Tutorials](https://adalflow.sylph.ai/tutorials/index.html)
+- [Supported Models](https://adalflow.sylph.ai/apis/components/components.model_client.html)
+- [Supported Retrievers](https://adalflow.sylph.ai/apis/components/components.retriever.html)
+- [API reference](https://adalflow.sylph.ai/apis/index.html)
 
 
 # AdalFlow: A Tribute to Ada Lovelace
