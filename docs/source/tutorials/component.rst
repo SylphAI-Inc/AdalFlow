@@ -4,7 +4,7 @@
       <a href="https://colab.research.google.com/drive/1aD0C8-iMB8quIn8FKhrtFAGcrboRNg2C?usp=sharing" target="_blank" style="margin-right: 10px;">
          <img alt="Try Quickstart in Colab" src="https://colab.research.google.com/assets/colab-badge.svg" style="vertical-align: middle;">
       </a>
-      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/lightrag/lightrag/core/component.py" target="_blank" style="display: flex; align-items: center;">
+      <a href="https://github.com/SylphAI-Inc/LightRAG/blob/main/adalflow/adalflow/core/component.py" target="_blank" style="display: flex; align-items: center;">
          <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" style="height: 20px; width: 20px; margin-right: 5px;">
          <span style="vertical-align: middle;"> Open Source Code</span>
       </a>
@@ -62,12 +62,12 @@ Here is the comparison of writing a PyTorch model and a LightRAG task pipeline.
                     x = F.relu(self.conv1(x))
                     return F.relu(self.conv2(x))
 
-    .. grid-item-card::  LightRAG
+    .. grid-item-card::  AdalFlow
 
         .. code-block:: python
 
-            from lightrag.core import Component, Generator
-            from lightrag.components.model_client import OpenAIClient
+            from adalflow.core import Component, Generator
+            from adalflow.components.model_client import OpenAIClient
 
 
             template_doc = r"""<SYS> You are a doctor </SYS> User: {{input_str}}"""
@@ -176,7 +176,7 @@ We can also use methods to add more subcomponnents or parameters.
 
 .. code-block:: python
 
-    from lightrag.core.parameter import Parameter
+    from adalflow.core.parameter import Parameter
 
     doc.register_parameter("demo", param=Parameter(data="demo"))
     # list all parameters
@@ -220,7 +220,7 @@ You can directly use this class as:
 
 .. code-block:: python
 
-    from lightrag.core.component import FunComponent
+    from adalflow.core.component import FunComponent
 
     def add_one(x):
         return x + 1
@@ -246,7 +246,7 @@ Via direct call:
 
 .. code-block:: python
 
-    from lightrag.core.component import fun_to_component
+    from adalflow.core.component import fun_to_component
 
     fun_component = fun_to_component(add_one)
     print(fun_component(1))
@@ -257,7 +257,7 @@ The output:
 .. code-block::
 
     2
-    <class 'lightrag.core.component.AddOneComponent'>
+    <class 'adalflow.core.component.AddOneComponent'>
 
 
 
@@ -275,7 +275,7 @@ Using a decorator is an even more convenient way to create a component from a fu
 
     # output:
     # 2
-    # <class 'lightrag.core.component.AddOneComponent'>
+    # <class 'adalflow.core.component.AddOneComponent'>
 
 Sequential
 --------------
@@ -288,7 +288,7 @@ Let's put the `FunComponent`` and `DocQA`` together in a sequence:
 
 .. code-block:: python
 
-    from lightrag.core.container import Sequential
+    from adalflow.core.container import Sequential
 
     @fun_to_component
     def enhance_query(query:str) -> str:

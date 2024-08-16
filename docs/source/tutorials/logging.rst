@@ -3,7 +3,7 @@ Logging
 
 
 The Python logging module [1]_ is a powerful and flexible tool for debugging and tracing.
-LightRAG uses the native logging module as the *first line of defense*.
+AdalFlow uses the native logging module as the *first line of defense*.
 
 Design
 --------------------
@@ -40,7 +40,7 @@ The simplest way to get up a logger and see the library logs is to call this fun
 
 .. code-block:: python
 
-    from lightrag.utils.logger import get_logger
+    from adalflow.utils.logger import get_logger
 
 
     root_logger = get_logger()
@@ -60,7 +60,7 @@ Here is an example of how to use it:
 
 .. code-block:: python
 
-    from lightrag.utils.logger import printc
+    from adalflow.utils.logger import printc
 
     printc("All logging examples are done. Feeling green!", color="green")
 
@@ -119,7 +119,7 @@ In the main file, you can config a single root logger to log both library and ap
 .. code-block:: python
 
     import logging
-    from lightrag.utils.logger import get_logger
+    from adalflow.utils.logger import get_logger
 
     root_logger = get_logger(level="DEBUG", save_dir="./logs") # log to ./logs/lib.log
 
@@ -138,7 +138,7 @@ In the user program, such as at `src/task.py`, you can set up a named logger and
 
 .. code-block:: python
 
-    from lightrag.utils.logger import get_logger
+    from adalflow.utils.logger import get_logger
 
     app_logger = get_logger(name="my_app", level="DEBUG", save_dir="./logs") # log to ./logs/my_app.log
 
@@ -163,7 +163,7 @@ However, you can still set up a root logger to log the library logs separately i
 
 .. .. code-block:: python
 
-..     from lightrag.utils.logger import get_logger
+..     from adalflow.utils.logger import get_logger
 
 ..     app_logger = get_logger(name="my_app", level="DEBUG", save_dir="./logs") # log to ./logs/my_app.log
 ..     # or

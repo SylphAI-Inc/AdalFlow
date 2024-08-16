@@ -1,3 +1,7 @@
+## [0.2.0.beta.3] - 2024-08-16
+### Fixed
+- missing `diskcache` package in the dependencies.
+
 ## [0.2.0.beta.2] - 2024-08-15
 ### Improved
 - ``Demo Optimizer`` with "learn-to-reason" one shot to achieve 94% on the object count, close to the 98% by the teacher gpt-4o model.

@@ -30,7 +30,7 @@ These techniques can be applied to various data types, including text, time-sens
 Additionally, they can be stored in various types of databases, such as relational databases, NoSQL databases, vector databases, and graph databases.
 
 
-.. In LightRAG
+.. In AdalFlow
 .. There are also dense and sparse retrieval methods.
 .. - Keyword search
 .. - Full-text search: Here is one example: https://www.postgresql.org/docs/current/textsearch.html
@@ -66,17 +66,17 @@ Design
     :width: 620px
 
 
-    LightRAG retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.
+    AdalFlow retriever covers (1) high-precision retrieval methods and enables them to work locally and in-memory, and (2) how to work with cloud databases for large-scale data, utilizing their built-in search and filter methods.
 
 
-    .. LightRAG retriever covers high-precision retrieval methods and enables them to work locally and in-memory, this will help researchers and developers build and test.
+    .. AdalFlow retriever covers high-precision retrieval methods and enables them to work locally and in-memory, this will help researchers and developers build and test.
     .. We also showcase how it is like to work with cloud database for **large-scale data** along with its built-in search& filter methods.
 
 
 Scope and Design Goals
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-LightRAG library does not prioritize the coverage of integration for the following reasons:
+AdalFlow library does not prioritize the coverage of integration for the following reasons:
 
 1. It is literally too-wide to cover them all.
 2. The challenges with RAG application lies more in evaluation and optimization due to many different moving parts and many hyperparmeters, and less in implementing or integrating a 3rd party retriever.
@@ -270,8 +270,8 @@ We will quickly prepare the embeddings of the above documents using `content` fi
 
 .. code-block:: python
 
-    from lightrag.core.embedder import Embedder
-    from lightrag.core.types import ModelClientType
+    from adalflow.core.embedder import Embedder
+    from adalflow.core.types import ModelClientType
 
 
     model_kwargs = {
@@ -290,7 +290,7 @@ The ``documents`` field is optional. Let's pass it all from ``__init__`` first:
 
 .. code-block:: python
 
-    from lightrag.components.retriever import FAISSRetriever
+    from adalflow.components.retriever import FAISSRetriever
     retriever = FAISSRetriever(top_k=2, embedder=embedder, documents=documents_embeddings)
 
     print(retriever)
@@ -344,7 +344,7 @@ We reimplemented the code in [9]_ with one improvement: instead of using ``text.
 
 .. code-block:: python
 
-    from lightrag.components.retriever.bm25_retriever import split_text_by_word_fn_then_lower_tokenized, split_text_by_word_fn
+    from adalflow.components.retriever.bm25_retriever import split_text_by_word_fn_then_lower_tokenized, split_text_by_word_fn
 
     query_1_words = split_text_by_word_fn(query_1)
     query_1_tokens = split_text_by_word_fn_then_lower_tokenized(query_1)
@@ -360,7 +360,7 @@ We prepare the retriever:
 
 .. code-block:: python
 
-    from lightrag.components.retriever import BM25Retriever
+    from adalflow.components.retriever import BM25Retriever
 
     document_map_func = lambda x: x["content"]
 
@@ -423,8 +423,8 @@ These models follow the ``ModelClient`` protocol and are directly accessible as 
 
 **Reranker ModelClient Integration**
 
-A reranker will take ``ModelType.RERANKER`` and the standard LightRAG library requires it to have four arguments in the ``model_kwargs``:
-``['model', 'top_k', 'documents', 'query']``. It is in the ModelClient which converts LightRAG's standard arguments to the model's specific arguments.
+A reranker will take ``ModelType.RERANKER`` and the standard AdalFlow library requires it to have four arguments in the ``model_kwargs``:
+``['model', 'top_k', 'documents', 'query']``. It is in the ModelClient which converts AdalFlow's standard arguments to the model's specific arguments.
 If you want to intergrate your reranker, either locally or using APIs, check out :class:`TransformersClient<components.model_client.transformers_client.TransformersClient>` and
 :class:`CohereAPIClient<components.model_client.cohere_client.CohereAPIClient>` for how to do it.
 
@@ -434,7 +434,7 @@ require conversion in the ``model_kwargs``. Here is how we use model  `rerank-en
 
 .. code-block:: python
 
-    from lightrag.components.retriever import RerankerRetriever
+    from adalflow.components.retriever import RerankerRetriever
 
     model_client = ModelClientType.COHERE()
     model_kwargs = {"model": "rerank-english-v3.0"}
@@ -536,7 +536,7 @@ Here is our code:
 
 .. code-block:: python
 
-    from lightrag.components.retriever import LLMRetriever
+    from adalflow.components.retriever import LLMRetriever
 
     model_client = ModelClientType.OPENAI()
     model_kwargs = {
