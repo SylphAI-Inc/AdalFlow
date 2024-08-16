@@ -35,7 +35,9 @@
 
 .. raw:: html
 
-    <h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">⚡ The Library to Build and to Auto-optimize Large Language Model Applications ⚡</h3>
+    <h3 style="text-align: center; font-size: 1.5em; margin-top: 10px;">
+    ⚡ The Library to Build and to Auto-optimize Any LLM Task Pipeline ⚡
+    </h3>
 
 ..  <div style="text-align: center;">
 ..      <p>
@@ -98,11 +100,11 @@ We provide developers with fundamental building blocks of *100% clarity and simp
 
       .. code-block:: python
 
-         from lightrag.core import Component, Generator
-         from lightrag.components.model_client import GroqAPIClient
+         import adalflow as adal
+         from adalflow.components.model_client import GroqAPIClient
 
 
-         class SimpleQA(Component):
+         class SimpleQA(adal.Component):
             def __init__(self):
                super().__init__()
                template = r"""<SYS>
@@ -111,7 +113,7 @@ We provide developers with fundamental building blocks of *100% clarity and simp
                User: {{input_str}}
                You:
                """
-               self.generator = Generator(
+               self.generator = adal.Generator(
                      model_client=GroqAPIClient(),
                      model_kwargs={"model": "llama3-8b-8192"},
                      template=template,
@@ -163,9 +165,9 @@ To switch to `gpt-3.5-turbo` by OpenAI, simply update the `model_client`` and `m
 
 .. code-block:: python
 
-   from lightrag.components.model_client import OpenAIClient
+   from adalflow.components.model_client import OpenAIClient
 
-   self.generator = Generator(
+   self.generator = adal.Generator(
         model_client=OpenAIClient(),
         model_kwargs={"model": "gpt-3.5-turbo"},
         template=template,

@@ -82,12 +82,12 @@ Then the output will need to be parsed into arguments which are then passed to t
         unit=function_args.get("unit"),
     )
 
-LightRAG Scope and Design
+Scope and Design
 ----------------------------
 Even with API, users have to (1) create the function definition, (2) Parse the response, (3) Execute the function.
 What is missing in using API is: (1) How the function definitions are shown to LLM, (2) How the output format is instructured.
 
-LightRAG will provide built-in capabilities to do function calls simplily via prompt without relying on the tools API.
+AdalFlow will provide built-in capabilities to do function calls simplily via prompt without relying on the tools API.
 
 **Design Goals**
 
@@ -97,7 +97,7 @@ But it is limiting:
 1. What if the argument value is a more complicated data structure?
 2. What if you want to use a variable as an argument?
 
-LightRAG will also provide ``FunctionExpression`` where calling a function is asking LLM to write the code snippet of the function call directly:
+AdalFlow will also provide ``FunctionExpression`` where calling a function is asking LLM to write the code snippet of the function call directly:
 
 .. code-block:: python
 
@@ -239,7 +239,7 @@ Use the above functions as examples, ``FunctionTool`` will generate the ``Functi
 
 .. code-block:: python
 
-    from lightrag.core.func_tool import FunctionTool
+    from adalflow.core.func_tool import FunctionTool
 
     functions =[multiply, add, divide, search, numpy_sum, add_points]
     tools = [
@@ -331,7 +331,7 @@ Using ``ToolManager`` on all the above function:
 
 .. code-block:: python
 
-    from lightrag.core.tool_manager import ToolManager
+    from adalflow.core.tool_manager import ToolManager
 
     tool_manager = ToolManager(tools=functions)
     print(tool_manager)
@@ -378,7 +378,7 @@ We use `yaml` format here and show an example with less tools.
 
 .. code-block:: python
 
-    from lightrag.core.prompt_builder import Prompt
+    from adalflow.core.prompt_builder import Prompt
 
     prompt = Prompt(template=template)
     small_tool_manager = ToolManager(tools=tools[:2])
@@ -442,7 +442,7 @@ We have two ways to instruct LLM to call the function:
 
 .. code-block:: python
 
-    from lightrag.core.types import Function
+    from adalflow.core.types import Function
 
     output_data_class = Function
     output_format_str = output_data_class.to_json_signature(exclude=["thought", "args"])
@@ -472,7 +472,7 @@ The output is:
 
 .. code-block:: python
 
-    from lightrag.core.types import FunctionExpression
+    from adalflow.core.types import FunctionExpression
 
     output_data_class = FunctionExpression
     output_format_str = output_data_class.to_json_signature(exclude=["thought"])
@@ -496,7 +496,7 @@ We will use :class:`components.output_parsers.outputs.JsonOutputParser` to strea
 
 .. code-block:: python
 
-    from lightrag.components.output_parsers import JsonOutputParser
+    from adalflow.components.output_parsers import JsonOutputParser
 
     func_parser = JsonOutputParser(data_class=Function)
     instructions = func_parser.format_instructions(exclude=["thought", "args"])
@@ -524,8 +524,8 @@ Now, let's prepare our generator with the above prompt, ``Function`` data class,
 
 .. code-block:: python
 
-    from lightrag.core.generator import Generator
-    from lightrag.core.types import ModelClientType
+    from adalflow.core.generator import Generator
+    from adalflow.core.types import ModelClientType
 
     model_kwargs = {"model": "gpt-3.5-turbo"}
     prompt_kwargs = {

@@ -48,9 +48,9 @@ Before you start ensure you config the API key either in the environment variabl
 
 .. code-block:: python
 
-    from lightrag.core.embedder import Embedder
-    from lightrag.components.model_client import OpenAIClient
-    from lightrag.utils import setup_env # ensure you setup OPENAI_API_KEY in your project .env file
+    from adalflow.core.embedder import Embedder
+    from adalflow.components.model_client import OpenAIClient
+    from adalflow.utils import setup_env # ensure you setup OPENAI_API_KEY in your project .env file
 
     model_kwargs = {
         "model": "text-embedding-3-small",
@@ -100,8 +100,8 @@ Set up the embedder with the local model.
 
 .. code-block:: python
 
-    from lightrag.core.embedder import Embedder
-    from lightrag.components.model_client import TransformersClient
+    from adalflow.core.embedder import Embedder
+    from adalflow.components.model_client import TransformersClient
 
     model_kwargs = {"model": "thenlper/gte-base"}
     local_embedder = Embedder(model_client=TransformersClient(), model_kwargs=model_kwargs)
@@ -124,10 +124,10 @@ If we want to decreate the embedding dimension to only 256 to save memory, we ca
 
 .. code-block:: python
 
-    from lightrag.core.types import Embedding
-    from lightrag.core.functional import normalize_vector
+    from adalflow.core.types import Embedding
+    from adalflow.core.functional import normalize_vector
     from typing import List
-    from lightrag.core.component import Component
+    from adalflow.core.component import Component
     from copy import deepcopy
 
     class DecreaseEmbeddingDim(Component):
@@ -188,13 +188,13 @@ Run a query:
 BatchEmbedder
 --------------
 Especially in data processing pipelines, you can often have more than 1000 queries to embed. We need to chunk our queries into smaller batches to avoid memory overflow.
-:class:`core.embedder.BatchEmbedder` is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use LightRAG in production data pipeline.
+:class:`core.embedder.BatchEmbedder` is designed to handle this situation. For now, the code is rather simple, but in the future it can be extended to support multi-processing when you use AdalFlow in production data pipeline.
 
 The BatchEmbedder orchestrates the ``Embedder`` and handles the batching process. To use it, you need to pass the ``Embedder`` and the batch size to the constructor.
 
 .. code-block:: python
 
-    from lightrag.core.embedder import BatchEmbedder
+    from adalflow.core.embedder import BatchEmbedder
 
     batch_embedder = BatchEmbedder(embedder=local_embedder, batch_size=100)
 
