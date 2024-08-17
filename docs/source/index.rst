@@ -189,15 +189,17 @@ This trace graph demonstrates how our auto-differentiation works: :doc:`trace_gr
 Just define it as a ``Parameter`` and pass it to our ``Generator``.
 
 
-.. figure:: /_static/images/trainable_task_pipeline.png
+.. figure:: /_static/images/Trainable_task_pipeline.png
    :alt: AdalFlow Trainable Task Pipeline
    :align: center
 
 
 
-``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
 **AdalComponent & Trainer**
+
+``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
+
 
 .. figure:: /_static/images/trainer.png
    :alt: AdalFlow AdalComponent & Trainer
