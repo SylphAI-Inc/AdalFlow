@@ -56,20 +56,34 @@
 
 <h2>
     <p align="center">
-     ⚡ The Library to Build and to Auto-optimize LLM Applications ⚡
+     ⚡ The Library to Build and Auto-optimize LLM Applications ⚡
     </p>
 </h2>
 
 
-AdalFlow helps developers build and optimize LLM task pipelines.
-Embracing similar design pattern to PyTorch, AdalFlow is light, modular, and robust, with a 100% readable codebase.
-
 
 # Why AdalFlow?
 
-LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
+Embracing a design philosophy similar to PyTorch, AdalFlow is powerful, light, modular, and robust.
 
-Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate.
+## Light, Modular, and Model-agnositc Task Pipeline
+
+LLMs are like water; AdalFlow help developers quickly shape them into any applications, from GenAI applications such as chatbots, translation, summarization, code generation, RAG, and autonomous agents to classical NLP tasks like text classification and named entity recognition.
+
+Only two fundamental but powerful base classes: `Component` for the pipeline and `DataClass` for data interaction with LLMs.
+The result is a library with bare minimum abstraction, providing developers with *maximum customizability*.
+
+You have full control over the prompt template, the model you use, and the output parsing for your task pipeline.
+
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/AdalFlow_task_pipeline.png" alt="AdalFlow Task Pipeline">
+</p>
+
+
+<!-- LLMs are like water; they can be shaped into anything, from GenAI applications such as chatbots, translation, summarization, code generation, and autonomous agents to classical NLP tasks like text classification and named entity recognition. They interact with the world beyond the model’s internal knowledge via retrievers, memory, and tools (function calls). Each use case is unique in its data, business logic, and user experience.
+
+Because of this, no library can provide out-of-the-box solutions. Users must build towards their own use case. This requires the library to be modular, robust, and have a clean, readable codebase. The only code you should put into production is code you either 100% trust or are 100% clear about how to customize and iterate. -->
 
 <!-- This is what AdalFlow is: light, modular, and robust, with a 100% readable codebase. -->
 
@@ -104,176 +118,30 @@ class Net(nn.Module):
       x = self.fc1(x)
       return self.fc2(x)
 ``` -->
-# AdalFlow Task Pipeline
+## Unified Framework for Auto-Optimization
 
-We will ask the model to respond with ``explanation`` and ``example`` of a concept. To achieve this, we will build a simple pipeline to get the structured output as ``QAOutput``.
+AdalFlow provides token-efficient and high-performing prompt optimization within a unified framework.
+To optimize your pipeline, simply define a ``Parameter`` and pass it to our ``Generator``.
+Whether you need to optimize task instructions or few-shot demonstrations,
+our unified framework offers an easy way to **diagnose**, **visualize**, **debug**, and **train** your pipeline.
 
-## Well-designed Base Classes
+This [Trace Graph](https://adalflow.sylph.ai/tutorials/trace_graph.html) demonstrates how our auto-differentiation works.
 
-This leverages our two and only powerful base classes: `Component` as building blocks for the pipeline and `DataClass` to ease the data interaction with LLMs.
+### **Trainable Task Pipeline**
 
-```python
+Just define it as a ``Parameter`` and pass it to our ``Generator``.
 
-from dataclasses import dataclass, field
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/Trainable_task_pipeline.png" alt="AdalFlow Trainable Task Pipeline">
+</p>
 
-from adalflow.core import Component, Generator, DataClass
-from adalflow.components.model_client import GroqAPIClient
-from adalflow.components.output_parsers import JsonOutputParser
+### **AdalComponent & Trainer**
 
-@dataclass
-class QAOutput(DataClass):
-    explanation: str = field(
-        metadata={"desc": "A brief explanation of the concept in one sentence."}
-    )
-    example: str = field(metadata={"desc": "An example of the concept in a sentence."})
+``AdalComponent`` acts as the `interpreter`  between task pipeline and the trainer, defining training and validation steps, optimizers, evaluators, loss functions, backward engine for textual gradients or tracing the demonstrations, the teacher generator.
 
-
-
-qa_template = r"""<SYS>
-You are a helpful assistant.
-<OUTPUT_FORMAT>
-{{output_format_str}}
-</OUTPUT_FORMAT>
-</SYS>
-User: {{input_str}}
-You:"""
-
-class QA(Component):
-    def __init__(self):
-        super().__init__()
-
-        parser = JsonOutputParser(data_class=QAOutput, return_data_class=True)
-        self.generator = Generator(
-            model_client=GroqAPIClient(),
-            model_kwargs={"model": "llama3-8b-8192"},
-            template=qa_template,
-            prompt_kwargs={"output_format_str": parser.format_instructions()},
-            output_processors=parser,
-        )
-
-    def call(self, query: str):
-        return self.generator.call({"input_str": query})
-
-    async def acall(self, query: str):
-        return await self.generator.acall({"input_str": query})
-```
-
-
-Run the following code for visualization and calling the model.
-
-```python
-
-qa = QA()
-print(qa)
-
-# call
-output = qa("What is LLM?")
-print(output)
-```
-
-## Clear Pipeline Structure
-
-Simply by using `print(qa)`, you can see the pipeline structure, which helps users understand any LLM workflow quickly.
-
-```
-QA(
-  (generator): Generator(
-    model_kwargs={'model': 'llama3-8b-8192'},
-    (prompt): Prompt(
-      template: <SYS>
-      You are a helpful assistant.
-      <OUTPUT_FORMAT>
-      {{output_format_str}}
-      </OUTPUT_FORMAT>
-      </SYS>
-      User: {{input_str}}
-      You:, prompt_kwargs: {'output_format_str': 'Your output should be formatted as a standard JSON instance with the following schema:\n```\n{\n    "explanation": "A brief explanation of the concept in one sentence. (str) (required)",\n    "example": "An example of the concept in a sentence. (str) (required)"\n}\n```\n-Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!\n-Use double quotes for the keys and string values.\n-Follow the JSON formatting conventions.'}, prompt_variables: ['output_format_str', 'input_str']
-    )
-    (model_client): GroqAPIClient()
-    (output_processors): JsonOutputParser(
-      data_class=QAOutput, examples=None, exclude_fields=None, return_data_class=True
-      (json_output_format_prompt): Prompt(
-        template: Your output should be formatted as a standard JSON instance with the following schema:
-        ```
-        {{schema}}
-        ```
-        {% if example %}
-        Examples:
-        ```
-        {{example}}
-        ```
-        {% endif %}
-        -Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
-        -Use double quotes for the keys and string values.
-        -Follow the JSON formatting conventions., prompt_variables: ['schema', 'example']
-      )
-      (output_processors): JsonParser()
-    )
-  )
-)
-```
-
-**The Output**
-
-We structure the output to both track the data and potential errors if any part of the Generator component fails.
-Here is what we get from ``print(output)``:
-
-```
-GeneratorOutput(data=QAOutput(explanation='LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.', example='For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input.'), error=None, usage=None, raw_response='```\n{\n  "explanation": "LLM stands for Large Language Model, which refers to a type of artificial intelligence designed to process and generate human-like language.",\n  "example": "For instance, LLMs are used in chatbots and virtual assistants, such as Siri and Alexa, to understand and respond to natural language input."\n}', metadata=None)
-```
-**Focus on the Prompt**
-
-Use the following code will let us see the prompt after it is formatted:
-
-```python
-
-qa2.generator.print_prompt(
-        output_format_str=qa2.generator.output_processors.format_instructions(),
-        input_str="What is LLM?",
-)
-```
-
-
-The output will be:
-
-````markdown
-<SYS>
-You are a helpful assistant.
-<OUTPUT_FORMAT>
-Your output should be formatted as a standard JSON instance with the following schema:
-```
-{
-    "explanation": "A brief explanation of the concept in one sentence. (str) (required)",
-    "example": "An example of the concept in a sentence. (str) (required)"
-}
-```
--Make sure to always enclose the JSON output in triple backticks (```). Please do not add anything other than valid JSON output!
--Use double quotes for the keys and string values.
--Follow the JSON formatting conventions.
-</OUTPUT_FORMAT>
-</SYS>
-User: What is LLM?
-You:
-````
-
-## Model-agnostic
-
-
-You can switch to any model simply by using a different `model_client` (provider) and `model_kwargs`.
-Let's use OpenAI's `gpt-3.5-turbo` model.
-
-```python
-from adalflow.components.model_client import OpenAIClient
-
-self.generator = Generator(
-    model_client=OpenAIClient(),
-    model_kwargs={"model": "gpt-3.5-turbo"},
-    template=qa_template,
-    prompt_kwargs={"output_format_str": parser.format_instructions()},
-    output_processors=parser,
-)
-```
-
+<p align="center">
+  <img src="https://raw.githubusercontent.com/SylphAI-Inc/LightRAG/main/docs/source/_static/images/trainer.png" alt="AdalFlow AdalComponent & Trainer">
+</p>
 
 # Quick Install
 
