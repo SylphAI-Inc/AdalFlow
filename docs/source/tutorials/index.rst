@@ -41,6 +41,7 @@ We have a clear :doc:`lightrag_design_philosophy`, which results in this :doc:`c
 
    lightrag_design_philosophy
    class_hierarchy
+   trace_graph
 
 
 Introduction

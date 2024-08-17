@@ -105,7 +105,7 @@ html_theme_options = {
 html_static_path = ["_static"]
 
 # html_short_title = "Lightrag"
-html_title = "LightRAG: The Lightning Library for LLM Applications"
+html_title = "AdalFlow: The Library to Build and Auto-Optimize LLM Task Pipelines"
 html_favicon = "./_static/images/LightRAG-logo-circle.png"
 # html_context = {
 #     "docstitle": "LightRAG: The Lightning Library for LLM Applications"

@@ -5,7 +5,7 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-added-large-files
-        args: ['--maxkb=1000']
+        args: ['--maxkb=4000']
       - id: debug-statements
       - id: detect-private-key
 
